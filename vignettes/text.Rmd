@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 The ```text```-package uses natural language processing and machine learning methods to examine text and numerical variables.
 
-The default method in ```text``` to map words to numbers uses BERT. BERT is a general-purpose language model that creates state-of-the-art word embeddings based on deep learning. To achieve this, ```text``` relies on ```RBERT```, which in turn is based on TensorFlow; so make sure that this packages are properly installed and working (see [RBERT](https://github.com/johnERgordon/RBERT). 
+The default method in ```text``` to map words to numbers uses [BERT](https://ai.googleblog.com/2018/11/open-sourcing-bert-state-of-art-pre.html), is a general-purpose language model that creates state-of-the-art word embeddings based on deep learning. To achieve this, ```text``` relies on ```RBERT```, which in turn is based on TensorFlow; so make sure that this packages are properly installed and working (see [RBERT](https://github.com/johnERgordon/RBERT). 
 
 Important ```text``` functions are described below. The data and methods come from the [Semantic Measures Methods](https://www.ncbi.nlm.nih.gov/pubmed/29963879) ([Pre-print](https://psyarxiv.com/er6t7/)), which demonstrates how individuals' open-ended text answers can be used to *measure*, *describe* and *differentiate* psychological constructs.
 
@@ -26,7 +26,7 @@ In short the workflow includes to first transform text variables into word embed
 ### ```textImport()```: mapping text to numbers (i.e., word embeddings)
 The example data that will be used in this tutorial comes from participants that have described their harmony in life and satisfaction with life with a text response, 10 descriptive words or rating scales. The ```textImport()``` function will automatically transform character variables in a given tibble to word embeddings. 
 
-```{r setup, eval = FALSE}
+```{r setup, eval = FALSE, warning=FALSE, message=FALSE}
 
 library(text)
 
@@ -49,7 +49,7 @@ wordembeddings <- readRDS(wordembeddings.rds)
 
 ### ```textTrain()```: Examine the relationship between text and numeric variables
 The ```textTrain()``` is used to examine how well the word embeddings from a text can predict a numeric variable. This is done by training the word embeddings using ridge regression and 10-fold cross-validation (where the word embeddings are pre-processed using pca). In the example below we examine how well the harmony text responses can pred rating scale socres from the Harmony in life scale. 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(text)
 
 # Load already imported word embeddings
@@ -69,7 +69,7 @@ model_htext_hils$Correlation
 
 ### ```predict()``` features of text based on trained models from ```textTrain```
 Trained models (for example the one we did in the example above) can be applied to new datasets. Below we will apply a model that has been trained to predict valence.   
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(text)
 library(psych)
 
@@ -93,7 +93,7 @@ corr.test(numeric_data$htext_valence, numeric_data$hilstotal)
 ### ```textSimilarity()```: Compute semantic similiarty scales
 The ```textSimilarity()``` function measures the semantic similairty between to column of texts, and the ```textSimilarityNorm()``` measures the semantic similairty between texts in a column and word norm. 
 Semantic similarity scores can be used to measure psychological construct independent from rating scales by using word norms that represent the to-be-measured construct. The word norms have been created by asking participants to describe a psychological constructs. The word norm can be used to measure the semantic similiarty between a person's answer whether they experience harmony in their life to the word norm describing harmony in life: If the score is high the person is seen to have high harmony in life. 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 
 library(text)
 library(psych)
@@ -133,7 +133,7 @@ corr.test(norm_similarity_scores_harmony, numeric_data$hilstotal)
 
 ### ```textTtest()```: Test the difference in meaning between to sets of texts
 The ```textTtest()``` function provide a test to examine whether two set of texts significantly differ in meaning. It produces a t-value, p-value and cohen's D effect size. Below we examine whether the harmont text and saitsfaction text responses differ in meaning. 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 
 library(text)
 
@@ -151,6 +151,6 @@ semantic_difference_scores <- textTtestscores(wordembeddings$harmonytexts,
 ```
 
 
-To follow the progress of this package you can follow me on Twitter [OscarKjell](https://twitter.com/OscarKjell)
+To get tips and follow the progress of this package you can follow me on Twitter [OscarKjell](https://twitter.com/OscarKjell)
 
 

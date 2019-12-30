@@ -32,7 +32,7 @@ a general-purpose language model that creates state-of-the-art word
 embeddings based on deep learning. To achieve this, `text` relies on
 `RBERT`, which in turn is based on TensorFlow; so make sure that this
 packages are properly installed and working (see
-[RBERT](https://github.com/johnERgordon/RBERT).
+[RBERT](https://github.com/johnERgordon/RBERT)).
 
 ## Map your text to numbers
 
@@ -58,8 +58,6 @@ numeric_data <- sq_data_tutorial4_100
 
 # Examine the relationship between harmony-text and Harmony in life scale (HILS) scores
 model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal)
-#> Loading required package: lattice
-#> Loading required package: ggplot2
 
 # Show the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$Correlation
@@ -67,13 +65,13 @@ model_htext_hils$Correlation
 #>  Pearson's product-moment correlation
 #> 
 #> data:  model$pred$pred and model$pred$obs
-#> t = 12.073, df = 98, p-value < 2.2e-16
+#> t = 11.783, df = 98, p-value < 2.2e-16
 #> alternative hypothesis: true correlation is not equal to 0
 #> 95 percent confidence interval:
-#>  0.6801794 0.8418399
+#>  0.6699813 0.8362944
 #> sample estimates:
 #>       cor 
-#> 0.7732868
+#> 0.7656435
 ```
 
 <!--

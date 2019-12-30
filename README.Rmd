@@ -52,7 +52,7 @@ wordembeddings <- textImport(sq_data)
 
 ## Examine how your text relate to numerical variables 
 
-```{r cars}
+```{r example 2, warning=FALSE, message=FALSE}
 library(text)
 
 # Load already imported word embeddings, and their corresponding numeric variables
