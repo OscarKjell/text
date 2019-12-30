@@ -1,0 +1,19 @@
+citHeader("To cite text in publications use:")
+
+citEntry(
+  entry    = "Unpublished",
+  note = "Psychology",
+  title    = "text: Analysing text and numeric variables with NLP and ML",
+  author   = "Oscar Kjell",
+  journal  = "xxx",
+  year     = "2020",
+  volume   = "0",
+  number   = "0",
+  pages    = "0",
+  url      = "http://www.oscarkjell.se/",
+  textVersion =
+           paste("Oscar Kjell (2020).",
+                 "text: Analysing a text and numeric variables with NLP and ML.",
+                 "Unpublished",
+                 "http://www.oscarkjell.se.")
+)

@@ -1,0 +1,25 @@
+Package: text
+Type: Package
+Title: Analyses of Text using Natural Language Processing and Machine Learning
+Version: 0.0.0.9000
+Author: Oscar Kjell
+Maintainer: The package maintainer <oscar.kjell@psy.lu.se>
+Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables etc.   
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+BuildVignettes: true
+Imports: 
+    dplyr,
+    RBERT,
+    tokenizers,
+    caret,
+    psych (== 1.8.10),
+    tibble
+RoxygenNote: 7.0.2
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
+Depends: R (>= 2.10)
