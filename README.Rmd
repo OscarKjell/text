@@ -18,43 +18,62 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of text is to ...
+The ```text```-package uses natural language processing and machine learning methods to help you examine text variables, and their relation to numerical variables. 
 
 ## Installation
 
-You can install the released version of text from [CRAN](https://CRAN.R-project.org) with:
+<!--You can install the released version of text from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("text")
-```
+```-->
 
-And the development version from [GitHub](https://github.com/) with:
+You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("oscarkjell/text")
 ```
-## Example
+The default method in ```text``` to map words to numbers uses BERT. BERT is a general-purpose language model that creates state-of-the-art word embeddings based on deep learning. To achieve this, ```text``` relies on ```RBERT```, which in turn is based on TensorFlow; so make sure that this packages are properly installed and working (see [RBERT](https://github.com/johnERgordon/RBERT)). 
 
-This is a basic example which shows you how to solve a common problem:
+## Map your text to numbers
 
-```{r example}
+You can easily transform text variables to BERT word embeddings: 
+
+```{r example, , eval = FALSE}
 library(text)
-## basic example code
+# Get example data including both text and numerical variables
+sq_data <- sq_data_tutorial8_10
+
+# Transform the text data to BERT word embeddings
+wordembeddings <- textImport(sq_data)
+
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+## Examine how your text relate to numerical variables 
 
 ```{r cars}
-summary(cars)
+library(text)
+
+# Load already imported word embeddings, and their corresponding numeric variables
+wordembeddings <- wordembeddings4_100
+numeric_data <- sq_data_tutorial4_100
+
+# Examine the relationship between harmony-text and Harmony in life scale (HILS) scores
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal)
+
+# Show the correlation between predicted and observed Harmony in life scale scores
+model_htext_hils$Correlation
+
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
 
-You can also embed plots, for example:
 
+
+
+<!--
 ```{r pressure, echo = FALSE}
 plot(pressure)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!-->
