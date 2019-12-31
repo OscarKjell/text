@@ -19,20 +19,21 @@ numerical variables.
 install.packages("text")
 ```-->
 
-You can install the development version from
-[GitHub](https://github.com/) with:
+The default method to map words to numbers in `text` uses BERT. BERT is
+a general-purpose language model that creates state-of-the-art word
+embeddings based on deep learning. To achieve this, `text` relies on
+`RBERT`, which in turn is based on TensorFlow; so make sure that these
+packages are properly installed and working\! For up-to-date
+instructions see [RBERT](https://github.com/johnERgordon/RBERT).
+
+When above packages are installed and working, you can install the
+development version `text` from [GitHub](https://github.com/), by first
+installing devtools and then the command bellow.
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("oscarkjell/text")
 ```
-
-The default method in `text` to map words to numbers uses BERT. BERT is
-a general-purpose language model that creates state-of-the-art word
-embeddings based on deep learning. To achieve this, `text` relies on
-`RBERT`, which in turn is based on TensorFlow; so make sure that this
-packages are properly installed and working (see
-[RBERT](https://github.com/johnERgordon/RBERT)).
 
 ## Map your text to numbers
 
@@ -65,13 +66,13 @@ model_htext_hils$Correlation
 #>  Pearson's product-moment correlation
 #> 
 #> data:  model$pred$pred and model$pred$obs
-#> t = 11.783, df = 98, p-value < 2.2e-16
+#> t = 11.421, df = 98, p-value < 2.2e-16
 #> alternative hypothesis: true correlation is not equal to 0
 #> 95 percent confidence interval:
-#>  0.6699813 0.8362944
+#>  0.6567008 0.8290214
 #> sample estimates:
 #>       cor 
-#> 0.7656435
+#> 0.7556493
 ```
 
 <!--

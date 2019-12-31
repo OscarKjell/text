@@ -28,7 +28,7 @@ The ```text```-package uses natural language processing and machine learning met
 install.packages("text")
 ```-->
 
-You can install the development version from [GitHub](https://github.com/) with:
+You can install the development version from [GitHub](https://github.com/), by first installing devtools and then the command bellow.
 
 ``` r
 # install.packages("devtools")
