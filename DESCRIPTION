@@ -15,7 +15,9 @@ Imports:
     tokenizers,
     caret,
     psych (== 1.8.10),
-    tibble
+    tibble,
+    stringr,
+    tidyr
 RoxygenNote: 7.0.2
 Suggests: 
     knitr,
