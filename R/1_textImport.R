@@ -37,6 +37,8 @@
 #' @importFrom tibble tibble
 #' @export
 
+#x <- sq_data_tutorial[1:2, 1:2]
+
 # This version is importing the entire paragraph in one; but only the 512-first tokens.
 textImport <- function(x, layer_indexes_REBERT = 12, batch_size_IBT = 2L, token_index_IBT = 1, layer_index_IBT = 12,  ...){
 
@@ -62,7 +64,7 @@ textImport <- function(x, layer_indexes_REBERT = 12, batch_size_IBT = 2L, token_
       examples = RBERT::make_examples_simple(tokenized_sentences1[[i]]),
       ckpt_dir = BERT_PRETRAINED_DIR,
       layer_indexes = layer_indexes_REBERT,
-      batch_size = batch_size_IBT, ...)
+      batch_size = batch_size_IBT, ...) #
     BERT_feats
 
     # Extract/Sort output vectors for all sentences... These vectors can be used as input features for downstream models.
@@ -104,7 +106,7 @@ textImport <- function(x, layer_indexes_REBERT = 12, batch_size_IBT = 2L, token_
     examples = RBERT::make_examples_simple(tokenized_sentences1_sw),
     ckpt_dir = BERT_PRETRAINED_DIR,
     layer_indexes = layer_indexes_REBERT,
-    batch_size = batch_size_IBT, ...)
+    batch_size = batch_size_IBT, ...) #
   BERT_feats_sw
 
   # Extract/Sort output vectors for all sentences... These vectors can be used as input features for downstream models.
@@ -112,12 +114,18 @@ textImport <- function(x, layer_indexes_REBERT = 12, batch_size_IBT = 2L, token_
   output_vectors_sw <- BERT_feats_sw$output %>%
     dplyr::filter(token_index == token_index_IBT, layer_index == layer_index_IBT)
     #Add frequency for each word
-  singlewords_we <- tibble(singlewords, output_vectors_sw)
-
+  singlewords_we1 <- cbind(singlewords, output_vectors_sw)
+  singlewords_we <- as_tibble(singlewords_we1)
   # Add the single words embeddings
   output_vectors$singlewords_we <- singlewords_we
   output_vectors
 }
+
+
+
+
+
+
 
 
 
