@@ -21,21 +21,21 @@
 "sq_data_tutorial8_10"
 
 
-#' Example text and numeric data.
-#'
-#' The dataset is a shortened version of the data sets of Study 3-5
-#' from Kjell, Kjell, Garcia and Sikström 2018.
-#'
-#' @format A data frame with 608 rows and 4 variables:
-#' \describe{
-#'   \item{hilstotal}{total score of the Harmony In Life Scale}
-#'   \item{swlstotal}{total score of the Satisfaction With Life Scale}
-#'   \item{age}{respondents age in years}
-#'   \item{gender}{respondents gender 1=male, 2=female}
-#'   ...
-#' }
-#' @source \url{https://psyarxiv.com/er6t7/}
-"sq_data_tutorial4_100"
+##' Example text and numeric data.
+##'
+##' The dataset is a shortened version of the data sets of Study 3-5
+##' from Kjell, Kjell, Garcia and Sikström 2018.
+##'
+##' @format A data frame with 10 rows and 4 variables:
+##' \describe{
+##'   \item{hilstotal}{total score of the Harmony In Life Scale}
+##'   \item{swlstotal}{total score of the Satisfaction With Life Scale}
+##'   \item{age}{respondents age in years}
+##'   \item{gender}{respondents gender 1=male, 2=female}
+##'   ...
+##' }
+##' @source \url{https://psyarxiv.com/er6t7/}
+#"sq_data_tutorial4_10"
 
 
 #' Example text and numeric data.
@@ -43,7 +43,7 @@
 #' The dataset is a shortened version of the data sets of Study 3-5
 #' from Kjell, Kjell, Garcia and Sikström 2018.
 #'
-#' @format A data frame with 608 rows and 4 variables:
+#' @format A data frame with 10 rows and 4 variables:
 #' \describe{
 #'   \item{sequence_index}{output from textImport}
 #'   \item{segment_index}{output from textImport}
@@ -53,7 +53,7 @@
 #'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
-"wordembeddings4_100"
+"wordembeddings4_10"
 
 
 

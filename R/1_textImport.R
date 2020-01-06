@@ -38,6 +38,8 @@
 #' @export
 
 #x <- sq_data_tutorial[1:2, 1:2]
+#x_test <- textImport(x)
+#x_test
 
 # This version is importing the entire paragraph in one; but only the 512-first tokens.
 textImport <- function(x, layer_indexes_REBERT = 12, batch_size_IBT = 2L, token_index_IBT = 1, layer_index_IBT = 12,  ...){
@@ -115,7 +117,7 @@ textImport <- function(x, layer_indexes_REBERT = 12, batch_size_IBT = 2L, token_
     dplyr::filter(token_index == token_index_IBT, layer_index == layer_index_IBT)
     #Add frequency for each word
   singlewords_we1 <- cbind(singlewords, output_vectors_sw)
-  singlewords_we <- as_tibble(singlewords_we1)
+  singlewords_we <- tibble::as_tibble(singlewords_we1)
   # Add the single words embeddings
   output_vectors$singlewords_we <- singlewords_we
   output_vectors

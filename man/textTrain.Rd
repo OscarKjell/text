@@ -42,8 +42,8 @@ A correlation between predicted and observed values; as well as predicted values
 textTrain trains word embeddings to a numeric variable.
 }
 \examples{
-wordembeddings <- wordembeddings4_100
-ratings_data <- sq_data_tutorial4_100
+wordembeddings <- wordembeddings4_10
+ratings_data <- sq_data_tutorial4_10
 wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal)
 }
 \seealso{

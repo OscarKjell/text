@@ -49,17 +49,17 @@ wordembeddings <- readRDS(wordembeddings.rds)
 
 ### ```textTrain()```: Examine the relationship between text and numeric variables
 The ```textTrain()``` is used to examine how well the word embeddings from a text can predict a numeric variable. This is done by training the word embeddings using ridge regression and 10-fold cross-validation (where the word embeddings are pre-processed using pca). In the example below we examine how well the harmony text responses can pred rating scale socres from the Harmony in life scale. 
-```{r, warning=FALSE, message=FALSE}
+```{r, eval = TRUE,  warning=FALSE, message=FALSE}
 library(text)
 
 # Load already imported word embeddings
 # (above we only imported 10 rows/participants; whereas below we load 100 rows/participants
-wordembeddings <- wordembeddings4_100
+wordembeddings <- wordembeddings4_10
 # Load corresponding numeric variables
-numeric_data <- sq_data_tutorial4_100
+numeric_data <- sq_data_tutorial8_10
 
 # Examine the relationship between harmonytext and the correspondnig rating scale
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k=2)
 
 #Examine the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$Correlation
@@ -69,14 +69,14 @@ model_htext_hils$Correlation
 
 ### ```predict()``` features of text based on trained models from ```textTrain```
 Trained models (for example the one we did in the example above) can be applied to new datasets. Below we will apply a model that has been trained to predict valence.   
-```{r, warning=FALSE, message=FALSE}
+```{r, eval = TRUE, warning=FALSE, message=FALSE}
 library(text)
 library(psych)
 
 # Load already imported word embeddings
-wordembeddings <- wordembeddings4_100
+wordembeddings <- wordembeddings4_10
 # Load corresponding numeric variables
-numeric_data <- sq_data_tutorial4_100
+numeric_data <- sq_data_tutorial8_10
 
 # Get a valence trained prediction model that has been created from another dataset. 
 valence_prediction_model <- readRDS(
@@ -93,15 +93,15 @@ corr.test(numeric_data$htext_valence, numeric_data$hilstotal)
 ### ```textSimilarity()```: Compute semantic similiarty scales
 The ```textSimilarity()``` function measures the semantic similairty between to column of texts, and the ```textSimilarityNorm()``` measures the semantic similairty between texts in a column and word norm. 
 Semantic similarity scores can be used to measure psychological construct independent from rating scales by using word norms that represent the to-be-measured construct. The word norms have been created by asking participants to describe a psychological constructs. The word norm can be used to measure the semantic similiarty between a person's answer whether they experience harmony in their life to the word norm describing harmony in life: If the score is high the person is seen to have high harmony in life. 
-```{r, warning=FALSE, message=FALSE}
+```{r, eval = TRUE, warning=FALSE, message=FALSE}
 
 library(text)
 library(psych)
 
 # Load already imported word embeddings
-wordembeddings <- wordembeddings4_100
+wordembeddings <- wordembeddings4_10
 # Load corresponding numeric variables
-numeric_data <- sq_data_tutorial4_100
+numeric_data <- sq_data_tutorial8_10
 
 # Compute semantic similiarty scores between two text columns
 semantic_similarity_scores <- textSimilarity(wordembeddings$harmonytexts, 
@@ -133,19 +133,20 @@ corr.test(norm_similarity_scores_harmony, numeric_data$hilstotal)
 
 ### ```textTtest()```: Test the difference in meaning between to sets of texts
 The ```textTtest()``` function provide a test to examine whether two set of texts significantly differ in meaning. It produces a t-value, p-value and cohen's D effect size. Below we examine whether the harmont text and saitsfaction text responses differ in meaning. 
-```{r, warning=FALSE, message=FALSE}
+```{r, eval = TRUE, warning=FALSE, message=FALSE}
 
 library(text)
 
 # Load word embeddings
-wordembeddings <- wordembeddings4_100
+wordembeddings <- wordembeddings4_10
 
 # Compare the meaning between individuals' harmony in life and satisfaction with life answers
 textTtest(wordembeddings$harmonytexts, wordembeddings$satisfactiontexts)
 
 # Note that if you want to get the scores used in the t-test use:
 semantic_difference_scores <- textTtestscores(wordembeddings$harmonytexts, 
-                                              wordembeddings$satisfactiontexts)
+                                              wordembeddings$satisfactiontexts, 
+                                              nrFolds=2)
 
 
 ```

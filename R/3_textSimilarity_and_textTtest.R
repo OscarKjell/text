@@ -140,7 +140,7 @@ textTtestscores <- function(x, y, nrFolds=10, Ndim = 768) {
 
   ## Make x and y into same length for when we will randomly draw K-folds from them
   # Function to add rows of NA until y and x have the same amount of rows.
-  addEqualNrNArows <- function(x, y) {
+  addEqualNrNArows <- function(x, y, Ndim) {
     success <- FALSE
     while (!success) {
       # Add row with NA

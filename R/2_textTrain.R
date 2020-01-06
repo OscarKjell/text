@@ -35,8 +35,8 @@
 #' @param ... Arguments from caret::createFolds, caret::trainControl and caret::train.
 #' @return A correlation between predicted and observed values; as well as predicted values.
 #' @examples
-#' wordembeddings <- wordembeddings4_100
-#' ratings_data <- sq_data_tutorial4_100
+#' wordembeddings <- wordembeddings4_10
+#' ratings_data <- sq_data_tutorial4_10
 #' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal)
 #' @seealso see \code{\link{textTtest}}
 #' @importFrom stats cor.test
@@ -50,7 +50,7 @@ textTrain <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProcessTrai
     df2 <- cbind(df1, df[2])
     df2 <- tibble::as_tibble(df2)
   } else {
-    df2 <- cbind(x, tibble::as_tibble(y))
+    df2 <- cbind(x, tibble::enframe(y))
     df2 <- dplyr::rename(df2, y = "value") #perhaps value should not be within ".."?
     df2 <- tibble::as_tibble(df2)
   }
