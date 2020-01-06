@@ -24,7 +24,7 @@ satisfactionnorm <- c("satisfaction achievement job fulfilled")
 library(tibble)
 norms <- tibble::tibble(harmonynorm, satisfactionnorm)
 library(dplyr)
-wordembeddings <- wordembeddings4_100
+wordembeddings <- wordembeddings4_10
 wordembeddings_wordnorm <- textImport(norms)
 similiarty_scores <- textSimilarityNorm(wordembeddings$harmonytext,
 wordembeddings_wordnorm$harmonynorm)

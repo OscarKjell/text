@@ -22,7 +22,7 @@ Results from a t-test including p-values, t-statistics and cohen's D.
 textTtest computes the semantic similiarty between a character variable and a word norm (i.e., a text in one cell).
 }
 \examples{
-wordembeddings <- wordembeddings4_100
+wordembeddings <- wordembeddings4_10
 Harmony_Satisfaction_ttest <- textTtest(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 Harmony_Satisfaction_ttest
 }

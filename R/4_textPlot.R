@@ -110,13 +110,13 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
       normG2_words1 <- tibble::as_tibble(as.character(normG2_words$unlist.strsplit.tolower.normG2.words........))
 
       # Get the words's word embeddings
-      #Function to aply the semantic representation to ONE word; and return vector with NA if word is not found
+      #Function to apply the semantic representation to ONE word; and return vector with NA if word is not found
       applysemrep_plot <- function(x){
         #If semrep is found get it; if not return NA vector of dimensions (which equal "Ndim"=space[["s"]][[14]] )
-        if (sum(single_word_embeddings_df$words == x[TRUE]) %in% 1) {
+        if (sum(single_wordembeddings_df$words == x[TRUE]) %in% 1) {
           x <- tolower(x)
           #Get the semantic representation for a word=x
-          word1rep <- single_word_embeddings_df[single_word_embeddings_df$words ==x, ]
+          word1rep <- single_wordembeddings_df[single_wordembeddings_df$words ==x, ]
           #Only get the semantic represenation as a vector without the actual word in the first column
           wordrep <- purrr::as_vector(word1rep[,8:length(word1rep)])
 
@@ -268,26 +268,26 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
 #'
 #' @param word_data Dataframe from textPlotData.
 #' @param top_p_words Number of significant words to plot (default -25, which plots the 25 most significant words).
-#' @param x_axes Variable to be plotted on the x axes (default is "cohensD.x")
+#' @param x_axes Variable to be plotted on the x axes (default is "cohensD.x").
 #' @param y_axes Variable to be plotted on the y axes (default is "cohensD.y"). To only print 1-dimension insert NULL.
-#' @param x_axes_label "Cohen's D",
-#' @param y_axes_label "p-value",
+#' @param x_axes_label Label on the x-axes (default: "Cohen's D").
+#' @param y_axes_label Label on the y-axes (default: "Cohen's D").
 #' @param scale_x_axes_lim NULL,
 #' @param scale_y_axes_lim NULL,
 #' @param y_axes_values NULL,
-#' @param word_font "Arial",
-#' @param colors_words c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00"),
-#' @param colors_words_scale c(-0.1, -0.01, 0, 0.01, 0.1),
-#' @param word_size_range c(3, 8),
-#' @param position_jitter_hight .0,
-#' @param position_jitter_width .03,
-#' @param point_size 0.5,
-#' @param arrow_transparency 0.1
+#' @param word_font Type of font (default: "Helvetica").
+#' @param colors_words The diffent colors of the words (default: c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00")).
+#' @param colors_words_scale Limits indicating where the colors should change (default: c(-0.1, -0.01, 0, 0.01, 0.1).
+#' @param word_size_range a vector with minimum and maximum (default: c(3, 8)).
+#' @param position_jitter_hight degree of jitter hight (default: .0).
+#' @param position_jitter_width degree of jitter hight (default: .03).
+#' @param point_size the size of the points indicating the words' position (default: 0.5).
+#' @param arrow_transparency The transparency of the lines between each word and point (default: 0.1)
 #'
 #' @return A 1- or 2-dimensional word plot.
 #' @examples
-#' word_plot_data
-#' plot <- textPlotViz(word_data = word_plot_data,
+#' # The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
+#' plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
 #'      top_p_words = -25,
 #'      x_axes = "cohensD.x",
 #'      y_axes = "cohensD.y",
@@ -296,7 +296,7 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
 #'      scale_x_axes_lim = NULL,
 #'      scale_y_axes_lim = NULL,
 #'      y_axes_values = NULL,
-#'      word_font = "Arial",
+#'      word_font = "Helvetica",
 #'      colors_words = c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00"),
 #'      colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1),
 #'      word_size_range = c(3, 8),
@@ -314,6 +314,8 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
 #' @importFrom ggplot2 position_jitter
 #' @importFrom rlang sym
 #' @export
+
+#word_data <-sq_data_plottingHw_HILSSSWLS_100
 textPlotViz <- function(word_data, top_p_words = -25,
                         x_axes = "cohensD.x",
                         y_axes = "cohensD.y",
@@ -322,7 +324,7 @@ textPlotViz <- function(word_data, top_p_words = -25,
                         scale_x_axes_lim = NULL,
                         scale_y_axes_lim = NULL,
                         y_axes_values = NULL,
-                        word_font = "Arial",
+                        word_font = "Helvetica",
                         colors_words = c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00"),
                         colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1),
                         word_size_range = c(3, 8),
@@ -333,7 +335,7 @@ textPlotViz <- function(word_data, top_p_words = -25,
 
   #Make limits for color gradient so that 0 becomes in the middle;
   #should NOT hardcode data$cohensD.x
-  color_limit <- max(abs(data$cohensD.x)) * c(-1, 1)
+  color_limit <- max(abs(word_data$cohensD.x)) * c(-1, 1)
 
   # This solution is because it is not possible to send "0" as a parameter
   if(is.null(y_axes) == TRUE){
@@ -345,16 +347,16 @@ textPlotViz <- function(word_data, top_p_words = -25,
 
   # Select lowest p-values for x or both x and y if needed.
   if(is.null(y_axes)){
-    data <- dplyr::top_n(data, top_p_words, wt = p_values.x)
+    data <- dplyr::top_n(word_data, top_p_words, wt = p_values.x)
   }else{
-    data1 <- dplyr::top_n(data, top_p_words, wt = p_values.x)
-    data2 <- dplyr::top_n(data, top_p_words, wt = p_values.y)
+    data1 <- dplyr::top_n(word_data, top_p_words, wt = p_values.x)
+    data2 <- dplyr::top_n(word_data, top_p_words, wt = p_values.y)
     data3 <- rbind(data1, data2)
     data <- unique(data3)
   }
 
   # Plot
-  plot <- word_data %>%
+  plot <- data %>%
     # Select X bottom words by p_values
     # top_n(top_p_words, wt = p_values.x) %>%
 
@@ -387,7 +389,7 @@ textPlotViz <- function(word_data, top_p_words = -25,
 
     # set word size range
     ggplot2::scale_size_continuous(range = word_size_range,
-                          guide = guide_legend(title= "Frequency",
+                          guide = ggplot2::guide_legend(title= "Frequency",
                                                title.position = "top",
                                                direction = "horizontal",
                                                label.position = "bottom",

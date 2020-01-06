@@ -22,7 +22,7 @@ A vector with semantic similarity scores (based on cosine).
 textTtestscores computes the semantic similiarty between a character variable and a word norm (i.e., a text in one cell).
 }
 \examples{
-wordembeddings <- wordembeddings4_100
+wordembeddings <- wordembeddings4_10
 similiarty_scores <- textTtestscores(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 }
 \seealso{

@@ -29,7 +29,7 @@ cosines <- function(x, y) {
 #' @return A vector with semantic similarity scores (based on cosine).
 #' @examples
 #' library(dplyr)
-#' wordembeddings <- wordembeddings4_100
+#' wordembeddings <- wordembeddings4_10
 #' similiarty_scores <- textSimilarity(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 #' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textTtest}}
 #' @export
@@ -64,7 +64,7 @@ textSimilarity <- function(x,y) {
 #' library(tibble)
 #' norms <- tibble::tibble(harmonynorm, satisfactionnorm)
 #' library(dplyr)
-#' wordembeddings <- wordembeddings4_100
+#' wordembeddings <- wordembeddings4_10
 #' wordembeddings_wordnorm <- textImport(norms)
 #' similiarty_scores <- textSimilarityNorm(wordembeddings$harmonytext,
 #' wordembeddings_wordnorm$harmonynorm)
@@ -127,7 +127,7 @@ addEqualNrNArows <- function(x, y, Ndim) {
 #' @param Ndim Number of dimension used (RBERT use 768)
 #' @return A vector with semantic similarity scores (based on cosine).
 #' @examples
-#' wordembeddings <- wordembeddings4_100
+#' wordembeddings <- wordembeddings4_10
 #' similiarty_scores <- textTtestscores(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 #' @seealso see \code{\link{textTtest}}
 #' @export
@@ -229,7 +229,7 @@ textTtestscores <- function(x, y, nrFolds=10, Ndim = 768) {
 #' @param ... Arguments from t.test function.
 #' @return Results from a t-test including p-values, t-statistics and cohen's D.
 #' @examples
-#' wordembeddings <- wordembeddings4_100
+#' wordembeddings <- wordembeddings4_10
 #' Harmony_Satisfaction_ttest <- textTtest(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 #' Harmony_Satisfaction_ttest
 #' @seealso see \code{\link{textTrain}} and \code{\link{textSimilarity}}

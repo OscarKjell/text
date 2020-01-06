@@ -44,7 +44,7 @@ textTrain trains word embeddings to a numeric variable.
 \examples{
 wordembeddings <- wordembeddings4_10
 ratings_data <- sq_data_tutorial4_10
-wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal)
+wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k=2)
 }
 \seealso{
 see \code{\link{textTtest}}

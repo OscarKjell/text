@@ -14,7 +14,7 @@ textPlotViz(
   scale_x_axes_lim = NULL,
   scale_y_axes_lim = NULL,
   y_axes_values = NULL,
-  word_font = "Arial",
+  word_font = "Helvetica",
   colors_words = c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00"),
   colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1),
   word_size_range = c(3, 8),
@@ -29,13 +29,13 @@ textPlotViz(
 
 \item{top_p_words}{Number of significant words to plot (default -25, which plots the 25 most significant words).}
 
-\item{x_axes}{Variable to be plotted on the x axes (default is "cohensD.x")}
+\item{x_axes}{Variable to be plotted on the x axes (default is "cohensD.x").}
 
 \item{y_axes}{Variable to be plotted on the y axes (default is "cohensD.y"). To only print 1-dimension insert NULL.}
 
-\item{x_axes_label}{"Cohen's D",}
+\item{x_axes_label}{Label on the x-axes (default: "Cohen's D").}
 
-\item{y_axes_label}{"p-value",}
+\item{y_axes_label}{Label on the y-axes (default: "Cohen's D").}
 
 \item{scale_x_axes_lim}{NULL,}
 
@@ -43,21 +43,21 @@ textPlotViz(
 
 \item{y_axes_values}{NULL,}
 
-\item{word_font}{"Arial",}
+\item{word_font}{Type of font (default: "Helvetica").}
 
-\item{colors_words}{c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00"),}
+\item{colors_words}{The diffent colors of the words (default: c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00")).}
 
-\item{colors_words_scale}{c(-0.1, -0.01, 0, 0.01, 0.1),}
+\item{colors_words_scale}{Limits indicating where the colors should change (default: c(-0.1, -0.01, 0, 0.01, 0.1).}
 
-\item{word_size_range}{c(3, 8),}
+\item{word_size_range}{a vector with minimum and maximum (default: c(3, 8)).}
 
-\item{position_jitter_hight}{.0,}
+\item{position_jitter_hight}{degree of jitter hight (default: .0).}
 
-\item{position_jitter_width}{.03,}
+\item{position_jitter_width}{degree of jitter hight (default: .03).}
 
-\item{point_size}{0.5,}
+\item{point_size}{the size of the points indicating the words' position (default: 0.5).}
 
-\item{arrow_transparency}{0.1}
+\item{arrow_transparency}{The transparency of the lines between each word and point (default: 0.1)}
 }
 \value{
 A 1- or 2-dimensional word plot.
@@ -66,8 +66,8 @@ A 1- or 2-dimensional word plot.
 textPlotViz trains word embeddings to a numeric variable.
 }
 \examples{
-word_plot_data
-plot <- textPlotViz(word_data = word_plot_data,
+# The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
+plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
      top_p_words = -25,
      x_axes = "cohensD.x",
      y_axes = "cohensD.y",
@@ -76,7 +76,7 @@ plot <- textPlotViz(word_data = word_plot_data,
      scale_x_axes_lim = NULL,
      scale_y_axes_lim = NULL,
      y_axes_values = NULL,
-     word_font = "Arial",
+     word_font = "Helvetica",
      colors_words = c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00"),
      colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1),
      word_size_range = c(3, 8),

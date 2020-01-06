@@ -19,7 +19,7 @@ textSimilarity computes the semantic similiarty between texts.
 }
 \examples{
 library(dplyr)
-wordembeddings <- wordembeddings4_100
+wordembeddings <- wordembeddings4_10
 similiarty_scores <- textSimilarity(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 }
 \seealso{

@@ -1,5 +1,5 @@
 ---
-title: "Introduction to ```text```
+title: "Introduction to ```text```"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{text}
@@ -151,6 +151,39 @@ semantic_difference_scores <- textTtestscores(wordembeddings$harmonytexts,
 
 ```
 
+### ```textPlotData()``` and ```textPlotViz()```:Show your data by plotting statistically significant words 
+
+### ```textPlotData()```:Pre-processes the word data 
+
+### A One-dimensional word plot
+```{r, eval = TRUE, warning=FALSE, message=FALSE}
+library(text)
+
+# Example data that have been pre-processed with textPlotData function
+
+plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
+      x_axes = "cohensD.x",
+      y_axes = NULL,
+      x_axes_label = "HILS: Cohen's D",
+      y_axes_label = " ")
+plot
+
+```
+
+### A Two-dimensional word plot
+```{r, eval = TRUE, warning=FALSE, message=FALSE}
+library(text)
+
+# Example data that have been pre-processed with textPlotData function
+
+plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
+      x_axes = "cohensD.x",
+      y_axes = "cohensD.y",
+      x_axes_label = "HILS: Cohen's D",
+      y_axes_label = "SWLS: Cohen's D")
+plot
+
+```
 
 To get tips and follow the progress of this package you can follow me on Twitter [OscarKjell](https://twitter.com/OscarKjell)
 

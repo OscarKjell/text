@@ -1,4 +1,4 @@
-#devtools::document()
+# devtools::document()
 
 #' Example text and numeric data.
 #'
@@ -21,21 +21,21 @@
 "sq_data_tutorial8_10"
 
 
-##' Example text and numeric data.
-##'
-##' The dataset is a shortened version of the data sets of Study 3-5
-##' from Kjell, Kjell, Garcia and Sikström 2018.
-##'
-##' @format A data frame with 10 rows and 4 variables:
-##' \describe{
-##'   \item{hilstotal}{total score of the Harmony In Life Scale}
-##'   \item{swlstotal}{total score of the Satisfaction With Life Scale}
-##'   \item{age}{respondents age in years}
-##'   \item{gender}{respondents gender 1=male, 2=female}
-##'   ...
-##' }
-##' @source \url{https://psyarxiv.com/er6t7/}
-#"sq_data_tutorial4_10"
+#' Example text and numeric data.
+#'
+#' The dataset is a shortened version of the data sets of Study 3-5
+#' from Kjell, Kjell, Garcia and Sikström 2018.
+#'
+#' @format A data frame with 10 rows and 4 variables:
+#' \describe{
+#'   \item{hilstotal}{total score of the Harmony In Life Scale}
+#'   \item{swlstotal}{total score of the Satisfaction With Life Scale}
+#'   \item{age}{respondents age in years}
+#'   \item{gender}{respondents gender 1=male, 2=female}
+#'   ...
+#' }
+#' @source \url{https://psyarxiv.com/er6t7/}
+"sq_data_tutorial4_10"
 
 
 #' Example text and numeric data.
@@ -55,6 +55,30 @@
 #' @source \url{https://psyarxiv.com/er6t7/}
 "wordembeddings4_10"
 
+#' Example data for plotting.
+#'
+#' The dataset is a shortened version of the data sets of Study 3-5
+#' from Kjell, Kjell, Garcia and Sikström 2018.
+#'
+#' @format A data frame with 43 rows and 13 variables:
+#' \describe{
+#'   \item{words}{output from textPlotData}
+#'   \item{mean.x}{output from textPlotData}
+#'   \item{n.x}{output from textPlotData}
+#'   \item{sd.x}{output from textPlotData}
+#'   \item{p_values.x}{output from textPlotData}
+#'   \item{t_statistic.x}{output from textPlotData}
+#'   \item{cohensD.x}{output from textPlotData}
+#'    \item{mean.y}{output from textPlotData}
+#'   \item{n.y}{output from textPlotData}
+#'   \item{sd.y}{output from textPlotData}
+#'   \item{p_values.y}{output from textPlotData}
+#'   \item{t_statistic.y}{output from textPlotData}
+#'   \item{cohensD.y}{output from textPlotData}
+#'   ...
+#' }
+#' @source \url{https://psyarxiv.com/er6t7/}
+"sq_data_plottingHw_HILSSSWLS_100"
 
 
 
