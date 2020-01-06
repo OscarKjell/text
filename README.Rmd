@@ -41,7 +41,7 @@ devtools::install_github("oscarkjell/text")
 
 You can easily transform text variables to BERT word embeddings: 
 
-```{r example, , eval = FALSE}
+```{r example, eval = TRUE}
 library(text)
 # Get example data including both text and numerical variables
 sq_data <- sq_data_tutorial8_10
@@ -53,12 +53,13 @@ wordembeddings <- textImport(sq_data)
 
 ## Examine how your text relate to numerical variables 
 
-```{r example 2, warning=FALSE, message=FALSE}
+```{r example 2, eval = FALSE, warning=TRUE, message=FALSE}
 library(text)
 
 # Load already imported word embeddings, and their corresponding numeric variables
-wordembeddings <- wordembeddings4_100
-numeric_data <- sq_data_tutorial4_100
+wordembeddings <- wordembeddings4_10
+numeric_data   <- sq_data_tutorial4_10
+
 
 # Examine the relationship between harmony-text and Harmony in life scale (HILS) scores
 model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal)

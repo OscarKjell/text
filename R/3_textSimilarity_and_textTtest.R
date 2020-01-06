@@ -102,6 +102,18 @@ normalizeV <- function(x) {x / sqrt(sum(x^2, na.rm = TRUE))}
 #Function get word embeddings and then compute COSINE
 #x and y are the semantic representations from column x and y, which have been imported with textImport
 
+## Make x and y into same length for when we will randomly draw K-folds from them
+# Function to add rows of NA until y and x have the same amount of rows.
+addEqualNrNArows <- function(x, y, Ndim) {
+  success <- FALSE
+  while (!success) {
+    # Add row with NA
+    x <- rbind(x, rep(NA, Ndim))
+    # check for success
+    success <- nrow(x) == nrow(y)
+  }
+  return(x)
+}
 
 # devtools::document()
 # ?textTtestscores
@@ -138,18 +150,7 @@ textTtestscores <- function(x, y, nrFolds=10, Ndim = 768) {
   x <- subset(x, select=-c(1:5))
   y <- subset(y, select=-c(1:5))
 
-  ## Make x and y into same length for when we will randomly draw K-folds from them
-  # Function to add rows of NA until y and x have the same amount of rows.
-  addEqualNrNArows <- function(x, y, Ndim) {
-    success <- FALSE
-    while (!success) {
-      # Add row with NA
-      x <- rbind(x, rep(NA, Ndim))
-      # check for success
-      success <- nrow(x) == nrow(y)
-    }
-    return(x)
-  }
+  # see function above
   # If statement deciding which of x or y that needs row(s) of NA
   if (nrow(x) < nrow(y) ) {
     x <- addEqualNrNArows(x, y)
