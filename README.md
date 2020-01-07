@@ -63,17 +63,6 @@ model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstota
 
 # Show the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$Correlation
-#> 
-#>  Pearson's product-moment correlation
-#> 
-#> data:  model$pred$pred and model$pred$obs
-#> t = 0.067528, df = 8, p-value = 0.9478
-#> alternative hypothesis: true correlation is not equal to 0
-#> 95 percent confidence interval:
-#>  -0.6150004  0.6438191
-#> sample estimates:
-#>        cor 
-#> 0.02386808
 ```
 
 ## Show your data by plotting statistically significant words

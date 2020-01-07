@@ -53,16 +53,16 @@ wordembeddings <- textImport(sq_data)
 
 ## Examine how your text relate to numerical variables 
 
-```{r example_2, eval = FALSE, warning=TRUE, message=FALSE}
+```{r example_2, eval = TRUE, warning=TRUE, message=FALSE}
 library(text)
 
 # Load already imported word embeddings, and their corresponding numeric variables
-wordembeddings <- wordembeddings4_10
-numeric_data   <- sq_data_tutorial4_10
+wordembeddings <- wordembeddings1_100
+numeric_data   <- sq_data_tutorial4_100
 
 
 # Examine the relationship between harmony-text and Harmony in life scale (HILS) scores
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k=2)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k=10)
 
 # Show the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$Correlation
@@ -71,7 +71,7 @@ model_htext_hils$Correlation
 
 ## Show your data by plotting statistically significant words 
 
-```{r example_3, eval = TRUE, warning=FALSE, message=FALSE}
+```{r example_3, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
 library(text)
 
 # Example data that have been pre-processed with textPlotData function

@@ -1,6 +1,6 @@
 ---
 title: "Introduction to ```text```"
-output: rmarkdown::html_vignette
+output:  github_document #rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{text}
   %\VignetteEngine{knitr::rmarkdown}
@@ -22,8 +22,8 @@ Important ```text``` functions are described below. The data and methods come fr
 In short the workflow includes to first transform text variables into word embeddings. These word embeddings are then used in different ways to, for example, predict numerical variables, compute semantic similarity scores between texts, or statistically test difference in meaning between two sets of texts.
 
 
-## Getting started with ```text```
-### ```textImport()```: mapping text to numbers (i.e., word embeddings)
+# Getting started with ```text```
+## ```textImport()```: mapping text to numbers (i.e., word embeddings)
 The example data that will be used in this tutorial comes from participants that have described their harmony in life and satisfaction with life with a text response, 10 descriptive words or rating scales. The ```textImport()``` function will automatically transform character variables in a given tibble to word embeddings. 
 
 ```{r setup, eval = FALSE, warning=FALSE, message=FALSE}
@@ -47,7 +47,7 @@ wordembeddings <- readRDS(wordembeddings.rds)
 
 ```
 
-### ```textTrain()```: Examine the relationship between text and numeric variables
+## ```textTrain()```: Examine the relationship between text and numeric variables
 The ```textTrain()``` is used to examine how well the word embeddings from a text can predict a numeric variable. This is done by training the word embeddings using ridge regression and 10-fold cross-validation (where the word embeddings are pre-processed using pca). In the example below we examine how well the harmony text responses can pred rating scale socres from the Harmony in life scale. 
 ```{r, eval = TRUE,  warning=FALSE, message=FALSE}
 library(text)
@@ -67,7 +67,7 @@ model_htext_hils$Correlation
 ```
 
 
-### ```predict()``` features of text based on trained models from ```textTrain```
+## ```predict()``` features of text based on trained models from ```textTrain```
 Trained models (for example the one we did in the example above) can be applied to new datasets. Below we will apply a model that has been trained to predict valence.   
 ```{r, eval = TRUE, warning=FALSE, message=FALSE}
 library(text)
@@ -90,7 +90,7 @@ corr.test(numeric_data$htext_valence, numeric_data$hilstotal)
 
 ```
 
-### ```textSimilarity()```: Compute semantic similiarty scales
+## ```textSimilarity()```: Compute semantic similiarty scales
 The ```textSimilarity()``` function measures the semantic similairty between to column of texts, and the ```textSimilarityNorm()``` measures the semantic similairty between texts in a column and word norm. 
 Semantic similarity scores can be used to measure psychological construct independent from rating scales by using word norms that represent the to-be-measured construct. The word norms have been created by asking participants to describe a psychological constructs. The word norm can be used to measure the semantic similiarty between a person's answer whether they experience harmony in their life to the word norm describing harmony in life: If the score is high the person is seen to have high harmony in life. 
 ```{r, eval = TRUE, warning=FALSE, message=FALSE}
@@ -131,7 +131,7 @@ corr.test(norm_similarity_scores_harmony, numeric_data$hilstotal)
 ```
 
 
-### ```textTtest()```: Test the difference in meaning between to sets of texts
+## ```textTtest()```: Test the difference in meaning between to sets of texts
 The ```textTtest()``` function provide a test to examine whether two set of texts significantly differ in meaning. It produces a t-value, p-value and cohen's D effect size. Below we examine whether the harmont text and saitsfaction text responses differ in meaning. 
 ```{r, eval = TRUE, warning=FALSE, message=FALSE}
 
@@ -151,12 +151,30 @@ semantic_difference_scores <- textTtestscores(wordembeddings$harmonytexts,
 
 ```
 
-### ```textPlotData()``` and ```textPlotViz()```:Show your data by plotting statistically significant words 
+## Plot statistically significant words 
+The plotting is made in two steps: First the ```textPlotData()``` function is pre-procssing the data, including computing statistics for each word to be plotted. Second, ```textPlotViz()``` is plotting the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made the last step goes quicker so that one can tr different visual settings.   
 
-### ```textPlotData()```:Pre-processes the word data 
-
-### A One-dimensional word plot
+### Pre-process word data with ```textPlotData()``` 
 ```{r, eval = TRUE, warning=FALSE, message=FALSE}
+library(text)
+
+# Pre-process word data to be plotted with textPlotViz-function
+
+# Get example data within package
+wordembeddings <- wordembeddings4_10
+data <- sq_data_tutorial8_10
+
+# Pre-process data
+df_for_plotting <- textPlotData(data$harmonywords, wordembeddings$harmonywords,
+wordembeddings$singlewords_we,
+data$hilstotal, data$swlstotal,
+Bonferroni = TRUE, nrFolds=2, Ndim=768)
+df_for_plotting
+
+```
+
+### ```textPlotViz()```: A One-dimensional word plot
+```{r, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
 library(text)
 
 # Example data that have been pre-processed with textPlotData function
@@ -165,13 +183,15 @@ plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
       x_axes = "cohensD.x",
       y_axes = NULL,
       x_axes_label = "HILS: Cohen's D",
-      y_axes_label = " ")
+      y_axes_label = " ",
+      scale_x_axes_lim = c(-4,4),
+      y_axes_values = element_blank())
 plot
 
 ```
 
-### A Two-dimensional word plot
-```{r, eval = TRUE, warning=FALSE, message=FALSE}
+### ```textPlotViz()```: A Two-dimensional word plot
+```{r, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
 library(text)
 
 # Example data that have been pre-processed with textPlotData function
