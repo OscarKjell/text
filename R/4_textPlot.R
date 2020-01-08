@@ -261,13 +261,13 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
 }
 
 
-
-
 # devtools::document()
 #' textPlotViz trains word embeddings to a numeric variable.
 #'
 #' @param word_data Dataframe from textPlotData.
-#' @param top_p_words Number of significant words to plot (default -25, which plots the 25 most significant words).
+#' @param plot_n_words Number of significant words to plot; selects fist according to lowest p-value and then to highest absolut Cohen's D (default 25 for each scale).
+#' @param title_top string for title (default "  ")
+#' @param titles_color Color for all the titles (default: "#61605e")
 #' @param x_axes Variable to be plotted on the x axes (default is "cohensD.x").
 #' @param y_axes Variable to be plotted on the y axes (default is "cohensD.y"). To only print 1-dimension insert NULL.
 #' @param x_axes_label Label on the x-axes (default: "Cohen's D").
@@ -288,7 +288,7 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
 #' @examples
 #' # The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
 #' plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
-#'      top_p_words = -25,
+#'      plot_n_words = 25,
 #'      x_axes = "cohensD.x",
 #'      y_axes = "cohensD.y",
 #'      x_axes_label = "HILS: Cohen's D",
@@ -308,15 +308,18 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
 #' @seealso see \code{\link{textPlotData}}
 #' @importFrom tibble as_tibble
 #' @importFrom BSDA tsum.test
-#' @importFrom dplyr row_number slice mutate_if bind_rows group_by summarize full_join
+#' @importFrom dplyr row_number slice mutate_if bind_rows group_by summarize full_join %>%
 #' @importFrom caret createFolds
 #' @importFrom scales rescale
-#' @importFrom ggplot2 position_jitter
+#' @importFrom ggplot2 position_jitter element_text
 #' @importFrom rlang sym
 #' @export
 
 #word_data <-sq_data_plottingHw_HILSSSWLS_100
-textPlotViz <- function(word_data, top_p_words = -25,
+textPlotViz <- function(word_data,
+                        plot_n_words = 25,
+                        title_top = " ",
+                        titles_color = "#61605e",
                         x_axes = "cohensD.x",
                         y_axes = "cohensD.y",
                         x_axes_label = "Cohen's D",
@@ -325,7 +328,7 @@ textPlotViz <- function(word_data, top_p_words = -25,
                         scale_y_axes_lim = NULL,
                         y_axes_values = NULL,
                         word_font = "Helvetica",
-                        colors_words = c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00"),
+                        colors_words = c("#ff0000", "#ff8080", "white", "#99e699", "#33cc33"),
                         colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1),
                         word_size_range = c(3, 8),
                         position_jitter_hight = .0,
@@ -345,23 +348,34 @@ textPlotViz <- function(word_data, top_p_words = -25,
     y_axes
   }
 
-  # Select lowest p-values for x or both x and y if needed.
+  # Select lowest p-values for x or both x and y if needed. help(which.min)
   if(is.null(y_axes)){
-    data <- dplyr::top_n(word_data, top_p_words, wt = p_values.x)
+    # Order data fram first according to lowest p-value and then to highest absolut Cohen's D
+    data1 <- word_data[with(word_data, order(p_values.x, -abs(cohensD.x))), ]
+    # Selecting the plot_n_words
+    data <- data1[1:plot_n_words, ]
   }else{
-    data1 <- dplyr::top_n(word_data, top_p_words, wt = p_values.x)
-    data2 <- dplyr::top_n(word_data, top_p_words, wt = p_values.y)
-    data3 <- rbind(data1, data2)
+   # Selecting as above but for both x and y
+   data1x <- word_data[with(word_data, order(p_values.x, -abs(cohensD.x))), ]
+   # Selecting the plot_n_words
+   data2x <- data1x[1:plot_n_words, ]
+   # Selecting as above but for both x and y
+   data1y <- word_data[with(word_data, order(p_values.y, -abs(cohensD.y))), ]
+   # Selecting the plot_n_words
+   data2y <- data1y[1:plot_n_words, ]
+   # Combing the words and selecting remove duplicates
+   data3 <- rbind(data2x, data2y)
     data <- unique(data3)
   }
 
   # Plot
   plot <- data %>%
-    # Select X bottom words by p_values
-    # top_n(top_p_words, wt = p_values.x) %>%
 
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
     ggplot2::ggplot(ggplot2::aes(!!rlang::sym(x_axes), !!rlang::sym(y_axes), label = words)) +
+
+    # Title
+    ggplot2::ggtitle(paste0(title_top)) +
 
     # Help creat possibility to remove y-axes numbers help(scale_y_continuous)
     ggplot2::scale_x_continuous(limits = scale_x_axes_lim) +
@@ -385,7 +399,7 @@ textPlotViz <- function(word_data, top_p_words = -25,
                            guide = ggplot2::guide_colorbar(direction = "horizontal",
                                                   title.position ="top",
                                                   title = "Cohen's D",
-                                                  ggplot2::element_text(color = "#61605e"))) +
+                                                  ggplot2::element_text(color = titles_color))) +
 
     # set word size range
     ggplot2::scale_size_continuous(range = word_size_range,
@@ -393,19 +407,21 @@ textPlotViz <- function(word_data, top_p_words = -25,
                                                title.position = "top",
                                                direction = "horizontal",
                                                label.position = "bottom",
-                                               ggplot2::element_text(color = "#61605e"))) +
+                                               ggplot2::element_text(color = titles_color))) +
 
     ggplot2::labs(y = y_axes_label, x = x_axes_label) +
 
     # minimal theme, and turning off legends
     ggplot2::theme_minimal() +
     ggplot2::theme(legend.position= c("bottom"),
+          plot.title = element_text(hjust = 0.5),
           legend.justification = c("right","top"),
           panel.grid.major = ggplot2::element_blank(),
           panel.grid.minor = ggplot2::element_blank(),
           axis.text.y = y_axes_values,
-          axis.title.x = ggplot2::element_text(color = "#61605e"),
-          axis.title.y = ggplot2::element_text(color = "#61605e"))
+          title = ggplot2::element_text(color = titles_color),
+          axis.title.x = ggplot2::element_text(color = titles_color),
+          axis.title.y = ggplot2::element_text(color = titles_color))
   plot
 }
 

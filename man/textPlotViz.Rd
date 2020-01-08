@@ -6,7 +6,9 @@
 \usage{
 textPlotViz(
   word_data,
-  top_p_words = -25,
+  plot_n_words = 25,
+  title_top = " ",
+  titles_color = "#61605e",
   x_axes = "cohensD.x",
   y_axes = "cohensD.y",
   x_axes_label = "Cohen's D",
@@ -15,7 +17,7 @@ textPlotViz(
   scale_y_axes_lim = NULL,
   y_axes_values = NULL,
   word_font = "Helvetica",
-  colors_words = c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00"),
+  colors_words = c("#ff0000", "#ff8080", "white", "#99e699", "#33cc33"),
   colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1),
   word_size_range = c(3, 8),
   position_jitter_hight = 0,
@@ -27,7 +29,11 @@ textPlotViz(
 \arguments{
 \item{word_data}{Dataframe from textPlotData.}
 
-\item{top_p_words}{Number of significant words to plot (default -25, which plots the 25 most significant words).}
+\item{plot_n_words}{Number of significant words to plot; selects fist according to lowest p-value and then to highest absolut Cohen's D (default 25 for each scale).}
+
+\item{title_top}{string for title (default "  ")}
+
+\item{titles_color}{Color for all the titles (default: "#61605e")}
 
 \item{x_axes}{Variable to be plotted on the x axes (default is "cohensD.x").}
 
@@ -68,7 +74,7 @@ textPlotViz trains word embeddings to a numeric variable.
 \examples{
 # The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
 plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
-     top_p_words = -25,
+     plot_n_words = 25,
      x_axes = "cohensD.x",
      y_axes = "cohensD.y",
      x_axes_label = "HILS: Cohen's D",

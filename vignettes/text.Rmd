@@ -180,12 +180,13 @@ library(text)
 # Example data that have been pre-processed with textPlotData function
 
 plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
-      x_axes = "cohensD.x",
-      y_axes = NULL,
-      x_axes_label = "HILS: Cohen's D",
-      y_axes_label = " ",
-      scale_x_axes_lim = c(-4,4),
-      y_axes_values = element_blank())
+                    title_top = "Harmony word responses",
+                    x_axes = "cohensD.x",
+                    y_axes = NULL, 
+                    x_axes_label = "HILS: Cohen's D",
+                    y_axes_label = " ",
+                    scale_x_axes_lim = c(-4,4),
+                    y_axes_values = element_blank())
 plot
 
 ```
@@ -197,10 +198,11 @@ library(text)
 # Example data that have been pre-processed with textPlotData function
 
 plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
-      x_axes = "cohensD.x",
-      y_axes = "cohensD.y",
-      x_axes_label = "HILS: Cohen's D",
-      y_axes_label = "SWLS: Cohen's D")
+                    title_top = "Harmony word responses",
+                    x_axes = "cohensD.x",
+                    y_axes = "cohensD.y",
+                    x_axes_label = "HILS: Cohen's D",
+                    y_axes_label = "SWLS: Cohen's D")
 plot
 
 ```
