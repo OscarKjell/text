@@ -79,8 +79,8 @@ library(text)
 plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
       x_axes = "cohensD.x",
       y_axes = "cohensD.y",
-      x_axes_label = "HILS: Cohen's D",
-      y_axes_label = "SWLS: Cohen's D")
+      x_axes_label = "Harmony in life scale (Cohen's D)",
+      y_axes_label = "Satisfaction with life scale (Cohen's D)")
 plot
 
 ```
