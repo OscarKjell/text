@@ -68,11 +68,19 @@ textTrain <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProcessTrai
   # train the model
   model <- caret::train(y~., data=df3, trControl=train_control, method= methodTrain, preProcess = preProcessTrain, thresh = preProcessThresh, ...)
 
+  # Describe model; adding user's-description + the name of the x and y
+  #describe_model_detail <- c(describe_model, paste(names(x)), paste(names(y)))
+  describe_model_detail <- c(deparse(substitute(x)), deparse(substitute(y)), describe_model)
+
   # Saving Output
-  outputST <- list(model, model$pred, summary(model$pred), describe_model, cor.test(model$pred$pred, model$pred$obs, method = methodCor))
+  outputST <- list(model, model$pred, summary(model$pred), describe_model_detail, cor.test(model$pred$pred, model$pred$obs, method = methodCor))
   names(outputST) <- c("Model", "Model_pred", "Summary", "Model_Desciption", "Correlation")
   outputST
 }
+# test function: textTrain(wordembeddings4_100$harmonywords, sq_data_tutorial4_100$hilstotal)
+
+
+
 
 
 ########################################################################

@@ -207,6 +207,6 @@ plot
 
 ```
 
-To get tips and follow the progress of this package you can follow me on Twitter [OscarKjell](https://twitter.com/OscarKjell)
+
 
 
