@@ -64,6 +64,14 @@ model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstota
 #Examine the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$Correlation
 
+
+# Using textTrainLists enables you to quickly run through several lists of wordembeddings 
+#predicting several outcomes 
+wordembeddings <- wordembeddings4_10[1:2]
+ratings_data <- sq_data_tutorial8_10[5:6]
+outcomes <- textTrainLists(wordembeddings, ratings_data, nrFolds_k=2)
+outcomes
+
 ```
 
 

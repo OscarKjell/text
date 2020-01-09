@@ -38,7 +38,7 @@
 #' wordembeddings <- wordembeddings4_10
 #' ratings_data <- sq_data_tutorial4_10
 #' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k=2)
-#' @seealso see \code{\link{textTtest}}
+#' @seealso see \code{\link{textTrainLists}} \code{\link{textTtest}}
 #' @importFrom stats cor.test
 #' @export
 
@@ -80,12 +80,58 @@ textTrain <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProcessTrai
 # test function: textTrain(wordembeddings4_100$harmonywords, sq_data_tutorial4_100$hilstotal)
 
 
+# devtools::document()
+#' textTrainLists trains word embeddings from several text variable to several numeric variable.
+#'
+#' @param x List of several Wordembeddings from textImport.
+#' @param y A Tibble with numeric variables to predict.
+#' @param nrFolds_k Number of folds to use.
+#' @param methodTrain Method used to train representations.
+#' @param preProcessTrain Preprocessing training.
+#' @param preProcessThresh Preprocessing threshold.
+#' @param methodCor Type of correlation used in evaluation.
+#' @param ... Arguments from caret::createFolds, caret::trainControl and caret::train.
+#' @return A correlation between predicted and observed values; as well as predicted values.
+#' @examples
+#' wordembeddings <- wordembeddings4_10[1:2]
+#' ratings_data <- sq_data_tutorial4_10[1:2]
+#' wordembeddings <- textTrainLists(wordembeddings, ratings_data, nrFolds_k=2)
+#' @seealso see \code{\link{textTrain}}
+#' @importFrom stats cor.test
+#' @export
+textTrainLists <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProcessTrain = 'pca', preProcessThresh = 0.95, methodCor = "pearson", ...){
 
+  # Get variable names in the list of outcomes
+  variables <- dput(names(y))
+  # Duplicate variable names to as many different wordembeddings there are in x
+  variables <- rep(variables, length(x))
+  # Create data fram with duplicated variables
+  y <- y[c(variables)]
+  # Order columns alphabatically
+  y <- y[,order(colnames(y))]
 
+  # Creating descriptions of which variabeles are used in training, which is  added to the output
+  descriptions <- paste(rep(names(x), length(x)), "->", names(y))
+  # Using mapply to loop of the word embeddings and the outcome variables help(mapply)
+  output <- mapply(textTrain, x, y, MoreArgs = list(nrFolds_k=nrFolds_k, methodTrain = methodTrain, preProcessTrain = preProcessTrain, preProcessThresh = preProcessThresh, methodCor = methodCor, ...),  SIMPLIFY=FALSE)
+  # Sorting the outcomes
+  output_p_r <- t(as.data.frame(lapply(output, function(output) unlist(output$Correlation)[c(3,4)])))
+  # Add Outcomes and Descriptions together; name the columns; and remove the rownames.
+  output_ordered_named <- data.frame(cbind(descriptions, output_p_r))
+  colnames(output_ordered_named) <- c("descriptions", "p_value", "correlation")
+  rownames(output_ordered_named) <- NULL
+  output_ordered_named
+}
+#wordembeddings4_100_short <- wordembeddings4_100[1:2]
+#sq_data_tutorial4_100_short <- sq_data_tutorial4_100[1:2]
+#x=wordembeddings4_100_short
+#y=sq_data_tutorial4_100_short
+#tesinagdad <- textTrainLists(wordembeddings4_100_short, sq_data_tutorial4_100_short,nrFolds_k=2)
+#tesinagdad
 
 ########################################################################
 ########
-########  semTrainMulti: Training the word embeddings to numeric output
+########  textTrainAddition: Training the word embeddings to numeric output
 ########
 ########################################################################
 
