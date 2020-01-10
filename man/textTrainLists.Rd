@@ -16,7 +16,7 @@ textTrainLists(
 )
 }
 \arguments{
-\item{x}{List of several Wordembeddings from textImport.}
+\item{x}{List of several Wordembeddings with same length from textImport (i.e., remove single_word_we).}
 
 \item{y}{A Tibble with numeric variables to predict.}
 

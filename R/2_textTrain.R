@@ -83,7 +83,7 @@ textTrain <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProcessTrai
 # devtools::document()
 #' textTrainLists trains word embeddings from several text variable to several numeric variable.
 #'
-#' @param x List of several Wordembeddings from textImport.
+#' @param x List of several Wordembeddings with same length from textImport (i.e., remove single_word_we).
 #' @param y A Tibble with numeric variables to predict.
 #' @param nrFolds_k Number of folds to use.
 #' @param methodTrain Method used to train representations.
