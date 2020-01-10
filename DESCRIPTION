@@ -23,7 +23,8 @@ Imports:
     ggrepel,
     scales,
     rlang,
-    purrr
+    purrr,
+    Matrix
 RoxygenNote: 7.0.2
 Suggests: 
     knitr,
