@@ -1,23 +1,18 @@
 
-### textImport
-#library(roxygen2)
+
 ########################################################################
 ########
 ########      textImport
 ########
 ########################################################################
-#Importart Tibble so that every character variables get word embeddings
-#The function takes all character variables in tibble;
-# Split up sentences (NOW ONLY 512 tokens!!!);
+
+# Split up sentences (NOW ONLY 512 tokens!);
 # Extract pre-trained BERT-embeddings)
-# devtools::load_all()
 # devtools::document()
-# ?textImport
-# Fint tags: https://cran.r-project.org/doc/manuals/R-exts.html#Marking-text
 #' textImport extracts word embeddings for all text in character variables in dataframe
 #'
 #' @param x Tibble.
-#' @param layer_indexes_REBERT layers to be used from RBERT (default 12; in REBERT it is 1:12).
+#' @param layer_indexes_RBERT layers to be used from RBERT (default 12; in REBERT it is 1:12).
 #' @param batch_size_IBT batch size from RBERT (default 2L)
 #' @param token_index_IBT from RBERT
 #' @param layer_index_IBT from RBERT
@@ -41,8 +36,9 @@
 #x_test <- textImport(x)
 #x_test
 
-# This version is importing the entire paragraph in one; but only the 512-first tokens.
-textImport <- function(x, layer_indexes_REBERT = 12, batch_size_IBT = 2L, token_index_IBT = 1, layer_index_IBT = 12,  ...){
+# This version is importing the entire cell/response/paragraph in one; but only the 512-first tokens.
+# However, should make one that take in individual words without context; and another taking in sentences that are summed up?
+textImport <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, token_index_IBT = 1, layer_index_IBT = 12,  ...){
 
   # Download pre-trained BERT model. This will go to an appropriate cache
   # directory by default.
@@ -65,7 +61,7 @@ textImport <- function(x, layer_indexes_REBERT = 12, batch_size_IBT = 2L, token_
     BERT_feats[[i]] <- RBERT::extract_features(
       examples = RBERT::make_examples_simple(tokenized_sentences1[[i]]),
       ckpt_dir = BERT_PRETRAINED_DIR,
-      layer_indexes = layer_indexes_REBERT,
+      layer_indexes = layer_indexes_RBERT,
       batch_size = batch_size_IBT, ...) #
     BERT_feats
 
@@ -81,7 +77,7 @@ textImport <- function(x, layer_indexes_REBERT = 12, batch_size_IBT = 2L, token_
 
   #Single words' word embeddings for semantic plots
 
-  # Get word-embeddings for all individual-words
+  # Get word-embeddings for all individual-words (which is used for the word plot)
   #Unite all text variables into one
   x_characters2 <- tidyr::unite(x_characters, "x_characters2", 1:ncol(x_characters), sep = " ")
   # unite all rows in the column into one cell
@@ -107,7 +103,7 @@ textImport <- function(x, layer_indexes_REBERT = 12, batch_size_IBT = 2L, token_
   BERT_feats_sw <- RBERT::extract_features(
     examples = RBERT::make_examples_simple(tokenized_sentences1_sw),
     ckpt_dir = BERT_PRETRAINED_DIR,
-    layer_indexes = layer_indexes_REBERT,
+    layer_indexes = layer_indexes_RBERT,
     batch_size = batch_size_IBT, ...) #
   BERT_feats_sw
 
