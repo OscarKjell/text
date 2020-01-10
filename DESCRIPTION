@@ -11,7 +11,7 @@ LazyData: true
 BuildVignettes: true
 Imports: 
     dplyr,
-    RBERT,
+    RBERT (== 0.1.9),
     tokenizers,
     caret,
     psych (== 1.8.10),
