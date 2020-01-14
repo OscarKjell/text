@@ -77,7 +77,7 @@ outcomes
 
 ## ```predict()``` features of text based on trained models from ```textTrain```
 Trained models (for example the one we did in the example above) can be applied to new datasets. Below we will apply a model that has been trained to predict valence.   
-```{r, eval = TRUE, warning=FALSE, message=FALSE}
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 library(psych)
 
