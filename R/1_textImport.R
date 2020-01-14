@@ -165,6 +165,10 @@ textImport <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, token_i
 #layer_index_IBT = 12
 #Ndim=768
 
+# General description. textImportWords is first getting the word embedding for individuals words in a dataset;
+# then these word embeddings are attached to the data (i.e., this is to avoid to call for the same word-embeddings
+# several time)
+
 textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, token_index_IBT = 1,
                             layer_index_IBT = 12, Ndim=768, ...){
 
@@ -177,20 +181,20 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
   x_characters <- dplyr::select_if(x, is.character)
 
   #Single words' word embeddings
-
   # Get word-embeddings for all individual-words
-  #Unite all text variables into one
+
+  # Unite all text variables into one
   x_characters2 <- tidyr::unite(x_characters, "x_characters2", 1:ncol(x_characters), sep = " ")
-  # unite all rows in the column into one cell
+  # Unite all rows in the column into one cell
   x_characters3 <- paste(x_characters2[1], collapse = ' ')
-  #Remove remove all punctuation characters
+  # Remove all punctuation characters
   x_characters4 <- stringr::str_replace_all(x_characters3, "[[:punct:]]", " ")
-  #Remove  \n
+  # Remove "\n"
   x_characters5 <- gsub("[\r\n]", " ", x_characters4)
   x_characters6 <- gsub("[\n]", " ", x_characters5)
-  #Tokenize into single words
+  # Tokenize into single words
   x_characters7 <- tokenizers::tokenize_words(x_characters6, simplify=T)
-  #Create datafrema with single words and frequency
+  # Create dataframe with single words and frequency
   x_characters8 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters7), " ")))))
   singlewords <- tibble(x_characters8$Var1, x_characters8$Freq)
   colnames(singlewords) <- c("words", "n")
@@ -203,13 +207,13 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
     examples = RBERT::make_examples_simple(tokenized_sentences1_sw),
     ckpt_dir = BERT_PRETRAINED_DIR,
     layer_indexes = layer_indexes_RBERT,
-    batch_size = batch_size_IBT) # , ...
+    batch_size = batch_size_IBT, ...) #
   BERT_feats_sw
 
   # Extract/Sort output vectors for all words.
   output_vectors_sw <- BERT_feats_sw$output %>%
     dplyr::filter(token_index == token_index_IBT, layer_index == layer_index_IBT)
-  #Add frequency for each word
+  # Add frequency for each word
   singlewords_we1 <- cbind(singlewords, output_vectors_sw)
   singlewords_we <- tibble::as_tibble(singlewords_we1)
   # Add the single words embeddings
@@ -217,22 +221,18 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
   output_vectors_sw$singlewords_we <- singlewords_we
   output_vectors_sw
 
-  # Get a word variable
-  x_characters[1]
-  x <- "peaceful"
-  # Look up word embeddings for each word in output_vectors_sw
-  # Get the words' word embeddings
-  # Function to apply the semantic representation to ONE word; and return vector with NA if word is not found
+  # Function to apply the semantic representation to ONE word; and return vector with NA if word is not found.
+  # That is, look up word embeddings for each word in output_vectors_sw
   applysemrep_plot <- function(x){
-    #If semrep is found get it; if not return NA vector of dimensions (which equal "Ndim"=space[["s"]][[14]] )
+    # If semrep is found get it; if not return NA vector of dimensions
     if (sum(singlewords_we$words == x[TRUE]) %in% 1) {
       x <- tolower(x)
-      #Get the semantic representation for a word=x
+      # Get the semantic representation for a word=x
       word1rep <- singlewords_we[singlewords_we$words ==x, ]
-      #Only get the semantic represenation as a vector without the actual word in the first column
+      # Only get the semantic represenation as a vector without the actual word in the first column
       wordrep <- purrr::as_vector(word1rep[,8:length(word1rep)])
 
-      #If the word does not have a semrep return vector with Ndim (512) dimensions of NA; Ndim=768
+      # If the word does not have a semrep return vector with Ndim (default Ndim=768) dimensions of NA
     }else if (x %in% NA) {
       wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
       class(wordrep)
@@ -247,20 +247,19 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
   # The function is using above applysemrep_plot function
   semanticrepresentation <- function(x) {
     x <- tolower(x)
-    #Separates the words in a cell into a character vector with separate words.
+    # Separates the words in a cell into a character vector with separate words.
     x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
     colnames(x) <- c("wordsAll1")
     x <- as_tibble(x)
     x <- as.character(x$wordsAll1)
-    #If empty return a NA semantic representation
+    # If empty return a NA semantic representation
     if (length(x)== 0){
       x2 <- data.frame(matrix(ncol = Ndim, nrow = 1))
       x2 <- as.numeric(x2)
     }else{
       # Create a matrix with all the semantic representations using the function above
-      #x1 <-  apply(x, 1, applysemrep)
       x1 <-  sapply(x, applysemrep_plot)
-      #IF more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept
+      # If more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept
       x2 <- Matrix::rowSums(x1, na.rm=TRUE)
       # If all values are 0 they should be NA instead; otherwise return the semantic representation.
       if (all(x2 == 0)== TRUE){
@@ -307,44 +306,6 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
 
 
 
-
-# This function SHOULD NOT BE USED as above have been updated; below splits the text up into sentences; and submitts the two first ones to BERT model
-textImport2 <- function(x, layer_indexes_IBT = 12, batch_size_IBT = 2L, ...){
-  # Download pre-trained BERT model. This will go to an appropriate cache
-  # directory by default.
-  BERT_PRETRAINED_DIR <- RBERT::download_BERT_checkpoint(
-    model = "bert_base_uncased")
-
-  # Select all character variables
-  x_characters <- dplyr::select_if(x, is.character)
-  #Create lists
-  BERT_feats <- list()
-  output_vectors <- list()
-  tokenized_sentences1 <- list()
-
-  # Loop over character variables to tokenize sentences; create BERT-embeddings and Add them to list
-  for (i in 1:length(x_characters)) {
-    # Tokenize sentences to list
-    tokenized_sentences1[[i]] <- mapply(tokenizers::tokenize_sentences, x_characters[[i]])
-
-    # Extract BERT feature
-    BERT_feats[[i]] <- RBERT::extract_features(
-      examples = make_examples_simple(tokenized_sentences1[[i]]),
-      ckpt_dir = BERT_PRETRAINED_DIR,
-      layer_indexes = layer_indexes_IBT,
-      batch_size = batch_size_IBT, ...)
-    BERT_feats
-
-    # Extract/Sort output vectors for all sentences... These vectors can be used as input features for downstream models.
-    # Convenience functions for doing this extraction will be added to the RBERT package in the near future.
-    output_vectors[[i]] <- BERT_feats[[i]]$output %>%
-      dplyr::filter(token_index == 1, layer_index == 12)
-    output_vectors
-  }
-  # Gives the names in the list the same name as the orginal character variables
-  names(output_vectors) <- names(x_characters)
-  output_vectors
-}
 
 
 
