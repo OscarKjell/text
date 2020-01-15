@@ -90,7 +90,7 @@ valence_prediction_model <- rio::import("https://oscarkjell.se/text_models/train
 numeric_data$htext_valence <- predict(valence_prediction_model$Model, wordembeddings$harmonytexts)
 
 # Examine the correlation between the predicted valence and the Harmony in life scale score
-corr.test(numeric_data$htext_valence, numeric_data$hilstotal)
+psych::corr.test(numeric_data$htext_valence, numeric_data$hilstotal)
 
 ```
 
@@ -129,7 +129,7 @@ norm_similarity_scores_harmony <- textSimilarityNorm(wordembeddings$harmonywords
                                                      word_norms_embeddings$harmonynorm)
 
 # Correlating the semantic measure with the corresponding rating scale
-corr.test(norm_similarity_scores_harmony, numeric_data$hilstotal)
+psych::corr.test(norm_similarity_scores_harmony, numeric_data$hilstotal)
 
 ```
 

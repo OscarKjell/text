@@ -24,7 +24,8 @@ Imports:
     scales,
     rlang,
     purrr,
-    Matrix
+    Matrix,
+    rio
 RoxygenNote: 7.0.2
 Suggests: 
     knitr,

@@ -109,33 +109,11 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
       normG2_words <- data.frame(unlist(strsplit(tolower(normG2$words), " ")))
       normG2_words1 <- tibble::as_tibble(as.character(normG2_words$unlist.strsplit.tolower.normG2.words........))
 
-      # Get the words's word embeddings
-      #Function to apply the semantic representation to ONE word; and return vector with NA if word is not found
-      applysemrep <- function(x){
-        #If semrep is found get it; if not return NA vector of dimensions (which equal "Ndim"=space[["s"]][[14]] )
-        if (sum(single_wordembeddings_df$words == x[TRUE]) %in% 1) {
-          x <- tolower(x)
-          #Get the semantic representation for a word=x
-          word1rep <- single_wordembeddings_df[single_wordembeddings_df$words ==x, ]
-          #Only get the semantic represenation as a vector without the actual word in the first column
-          wordrep <- purrr::as_vector(word1rep[,8:length(word1rep)])
-
-          #If the word does not have a semrep return vector with Ndim (512) dimensions of NA; Ndim=768
-        }else if (x %in% NA) {
-          wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
-          class(wordrep)
-          wordrep <- as.numeric(wordrep)
-        } else {
-          wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
-          wordrep <- as.numeric(wordrep)
-        }
-      }
-
-      #Get word embeddings for each word
-      group1_single1 <- sapply(normG1_words1$value, applysemrep)
+      #Get word embeddings for each word; applysemrep is created in 1_textImport
+      group1_single1 <- sapply(normG1_words1$value, applysemrep, single_wordembeddings_df, Ndim)
       group1_single2 <- tibble::as_tibble(t(group1_single1))
 
-      group2_single1 <-  sapply(normG2_words1$value, applysemrep)
+      group2_single1 <-  sapply(normG2_words1$value, applysemrep, single_wordembeddings_df, Ndim)
       group2_single2 <- tibble::as_tibble(t(group2_single1))
 
       # Adds the Semantic Difference Representation into a Tibble and then duplicates it

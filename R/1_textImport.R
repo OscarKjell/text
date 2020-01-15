@@ -122,6 +122,89 @@ textImport <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, token_i
 
 
 
+# Below are two general functions used in other functions; but not exported for users of the package
+
+
+# devtools::document()
+#' applysemrep
+#' Function to apply the semantic representation to ONE word from a matrix of semreps; and
+#' return vector with NA if word is not found.
+#' That is, look up word embeddings for each word in output_vectors_sw
+#' @param x A word
+#' @return semantic representation from a matrix.
+#' @export
+applysemrep <- function(x){
+  #If semrep is found get it; if not return NA vector of dimensions (which equal "Ndim"=space[["s"]][[14]] )
+  if (sum(single_wordembeddings_df$words == x[TRUE]) %in% 1) {
+    x <- tolower(x)
+    #Get the semantic representation for a word=x
+    word1rep <- single_wordembeddings_df[single_wordembeddings_df$words ==x, ]
+    #Only get the semantic represenation as a vector without the actual word in the first column
+    wordrep <- purrr::as_vector(word1rep[,8:length(word1rep)])
+
+    #If the word does not have a semrep return vector with Ndim (512) dimensions of NA; Ndim=768
+  }else if (x %in% NA) {
+    wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
+    class(wordrep)
+    wordrep <- as.numeric(wordrep)
+  } else {
+    wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
+    wordrep <- as.numeric(wordrep)
+  }
+}
+
+
+
+#applysemrep <- function(x){
+#  # If semrep is found get it; if not return NA vector of dimensions
+#  if (sum(singlewords_we$words == x[TRUE]) %in% 1) {
+#    x <- tolower(x)
+#    # Get the semantic representation for a word=x
+#    word1rep <- singlewords_we[singlewords_we$words ==x, ]
+#    # Only get the semantic represenation as a vector without the actual word in the first column
+#    wordrep <- purrr::as_vector(word1rep[,8:length(word1rep)])
+#
+#    # If the word does not have a semrep return vector with Ndim (default Ndim=768) dimensions of NA
+#  }else if (x %in% NA) {
+#    wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
+#    class(wordrep)
+#    wordrep <- as.numeric(wordrep)
+#  } else {
+#    wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
+#    wordrep <- as.numeric(wordrep)
+#  }
+#}
+
+# Function to apply a common semantic representaion for ALL words in a CELL; and if there are no words return a Ndim vector with NAs
+# The function is using above applysemrep function
+semanticrepresentation <- function(x) {
+  x <- tolower(x)
+  # Separates the words in a cell into a character vector with separate words.
+  x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
+  colnames(x) <- c("wordsAll1")
+  x <- as_tibble(x)
+  x <- as.character(x$wordsAll1)
+  # If empty return a NA semantic representation
+  if (length(x)== 0){
+    x2 <- data.frame(matrix(ncol = Ndim, nrow = 1))
+    x2 <- as.numeric(x2)
+  }else{
+    # Create a matrix with all the semantic representations using the function above
+    x1 <-  sapply(x, applysemrep)
+    # If more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept
+    x2 <- Matrix::rowSums(x1, na.rm=TRUE)
+    # If all values are 0 they should be NA instead; otherwise return the semantic representation.
+    if (all(x2 == 0)== TRUE){
+      x2 <- data.frame(matrix(ncol = Ndim, nrow = 1))
+      x2 <- as.numeric(x2)
+    }else{
+      x2 <- x2
+    }
+  }
+}
+
+
+
 
 # This function gets DECONTEXTUALISED word embeddings for single words;
 # and then adds them together to represent the
@@ -215,61 +298,11 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
     dplyr::filter(token_index == token_index_IBT, layer_index == layer_index_IBT)
   # Add frequency for each word
   singlewords_we1 <- cbind(singlewords, output_vectors_sw)
-  singlewords_we <- tibble::as_tibble(singlewords_we1)
+  single_wordembeddings_df <- tibble::as_tibble(singlewords_we1)
   # Add the single words embeddings
   output_vectors_sw <- list()
-  output_vectors_sw$singlewords_we <- singlewords_we
+  output_vectors_sw$single_wordembeddings_df <- single_wordembeddings_df
   output_vectors_sw
-
-  # Function to apply the semantic representation to ONE word; and return vector with NA if word is not found.
-  # That is, look up word embeddings for each word in output_vectors_sw
-  applysemrep <- function(x){
-    # If semrep is found get it; if not return NA vector of dimensions
-    if (sum(singlewords_we$words == x[TRUE]) %in% 1) {
-      x <- tolower(x)
-      # Get the semantic representation for a word=x
-      word1rep <- singlewords_we[singlewords_we$words ==x, ]
-      # Only get the semantic represenation as a vector without the actual word in the first column
-      wordrep <- purrr::as_vector(word1rep[,8:length(word1rep)])
-
-      # If the word does not have a semrep return vector with Ndim (default Ndim=768) dimensions of NA
-    }else if (x %in% NA) {
-      wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
-      class(wordrep)
-      wordrep <- as.numeric(wordrep)
-    } else {
-      wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
-      wordrep <- as.numeric(wordrep)
-    }
-  }
-
-  # Function to apply a common semantic representaion for ALL words in a CELL; and if there are no words return a Ndim vector with NAs
-  # The function is using above applysemrep function
-  semanticrepresentation <- function(x) {
-    x <- tolower(x)
-    # Separates the words in a cell into a character vector with separate words.
-    x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
-    colnames(x) <- c("wordsAll1")
-    x <- as_tibble(x)
-    x <- as.character(x$wordsAll1)
-    # If empty return a NA semantic representation
-    if (length(x)== 0){
-      x2 <- data.frame(matrix(ncol = Ndim, nrow = 1))
-      x2 <- as.numeric(x2)
-    }else{
-      # Create a matrix with all the semantic representations using the function above
-      x1 <-  sapply(x, applysemrep)
-      # If more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept
-      x2 <- Matrix::rowSums(x1, na.rm=TRUE)
-      # If all values are 0 they should be NA instead; otherwise return the semantic representation.
-      if (all(x2 == 0)== TRUE){
-        x2 <- data.frame(matrix(ncol = Ndim, nrow = 1))
-        x2 <- as.numeric(x2)
-      }else{
-        x2 <- x2
-      }
-    }
-}
 
   # The semanticrepresentation function is now looped over all variables in x_characters
   # Creating empty list
