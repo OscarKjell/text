@@ -122,8 +122,7 @@ textImport <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, token_i
 
 
 
-# Below are two general functions used in other functions; but not exported for users of the package
-
+# Below are two helper functions not exported for users of the package
 
 # devtools::document()
 #' applysemrep
@@ -131,9 +130,10 @@ textImport <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, token_i
 #' return vector with NA if word is not found.
 #' That is, look up word embeddings for each word in output_vectors_sw
 #' @param x A word
+#' @param Ndim numbr of dimensions in embedding/space
 #' @return semantic representation from a matrix.
-#' @export
-applysemrep <- function(x){
+#' @noRd
+applysemrep <- function(x, single_wordembeddings_df, Ndim){
   #If semrep is found get it; if not return NA vector of dimensions (which equal "Ndim"=space[["s"]][[14]] )
   if (sum(single_wordembeddings_df$words == x[TRUE]) %in% 1) {
     x <- tolower(x)
@@ -153,31 +153,15 @@ applysemrep <- function(x){
   }
 }
 
-
-
-#applysemrep <- function(x){
-#  # If semrep is found get it; if not return NA vector of dimensions
-#  if (sum(singlewords_we$words == x[TRUE]) %in% 1) {
-#    x <- tolower(x)
-#    # Get the semantic representation for a word=x
-#    word1rep <- singlewords_we[singlewords_we$words ==x, ]
-#    # Only get the semantic represenation as a vector without the actual word in the first column
-#    wordrep <- purrr::as_vector(word1rep[,8:length(word1rep)])
-#
-#    # If the word does not have a semrep return vector with Ndim (default Ndim=768) dimensions of NA
-#  }else if (x %in% NA) {
-#    wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
-#    class(wordrep)
-#    wordrep <- as.numeric(wordrep)
-#  } else {
-#    wordrep <- data.frame(matrix(ncol = Ndim, nrow = 1))
-#    wordrep <- as.numeric(wordrep)
-#  }
-#}
-
-# Function to apply a common semantic representaion for ALL words in a CELL; and if there are no words return a Ndim vector with NAs
-# The function is using above applysemrep function
-semanticrepresentation <- function(x) {
+#  devtools::document()
+#' semanticrepresentation
+#' Function to apply a common semantic representaion for ALL words in a CELL; and if there are no words return a Ndim vector with NAs
+#' The function is using above applysemrep function.
+#' @param x words
+#' @param Ndim Number of dimensions in embedding/space
+#' @return semantic representations for all words in cells.
+#' @noRd
+semanticrepresentation <- function(x, Ndim, ...) {
   x <- tolower(x)
   # Separates the words in a cell into a character vector with separate words.
   x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
@@ -190,7 +174,7 @@ semanticrepresentation <- function(x) {
     x2 <- as.numeric(x2)
   }else{
     # Create a matrix with all the semantic representations using the function above
-    x1 <-  sapply(x, applysemrep)
+    x1 <-  sapply(x, applysemrep, ...)
     # If more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept
     x2 <- Matrix::rowSums(x1, na.rm=TRUE)
     # If all values are 0 they should be NA instead; otherwise return the semantic representation.
@@ -241,12 +225,6 @@ semanticrepresentation <- function(x) {
 #' @export
 
 #x <- sq_data_tutorial8_10[1:2, 1:2]
-
-#layer_indexes_RBERT = 12
-#batch_size_IBT = 2L
-#token_index_IBT = 1
-#layer_index_IBT = 12
-#Ndim=768
 
 # General description. textImportWords is first getting the word embedding for individuals words in a dataset;
 # then these word embeddings are attached to the data (i.e., this is to avoid to call for the same word-embeddings
@@ -310,7 +288,7 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
   # For loop that apply the word embeddings to each character variable
   for (i in 1:length(x_characters)) {
     # Apply the semanticrepresentation function to all rows; transpose the resulting matrix and making a tibble
-    list_semrep[[i]] <- as_tibble(t(sapply(x_characters[[i]], semanticrepresentation)))
+    list_semrep[[i]] <- as_tibble(t(sapply(x_characters[[i]], semanticrepresentation, single_wordembeddings_df=single_wordembeddings_df, Ndim=768)))
   }
 
   # Gives the tibbles in the list the same name as the orginal character variables
@@ -318,6 +296,8 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
   list_semrep
 }
 
+#library(tidyverse)
+#x <- sq_data_tutorial8_10[1:2, 1:2]
 #decontext_we <- textImportWords(x)
 
 
