@@ -111,7 +111,7 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
 
       # Get the words's word embeddings
       #Function to apply the semantic representation to ONE word; and return vector with NA if word is not found
-      applysemrep_plot <- function(x){
+      applysemrep <- function(x){
         #If semrep is found get it; if not return NA vector of dimensions (which equal "Ndim"=space[["s"]][[14]] )
         if (sum(single_wordembeddings_df$words == x[TRUE]) %in% 1) {
           x <- tolower(x)
@@ -132,10 +132,10 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
       }
 
       #Get word embeddings for each word
-      group1_single1 <- sapply(normG1_words1$value, applysemrep_plot)
+      group1_single1 <- sapply(normG1_words1$value, applysemrep)
       group1_single2 <- tibble::as_tibble(t(group1_single1))
 
-      group2_single1 <-  sapply(normG2_words1$value, applysemrep_plot)
+      group2_single1 <-  sapply(normG2_words1$value, applysemrep)
       group2_single2 <- tibble::as_tibble(t(group2_single1))
 
       # Adds the Semantic Difference Representation into a Tibble and then duplicates it

@@ -223,7 +223,7 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
 
   # Function to apply the semantic representation to ONE word; and return vector with NA if word is not found.
   # That is, look up word embeddings for each word in output_vectors_sw
-  applysemrep_plot <- function(x){
+  applysemrep <- function(x){
     # If semrep is found get it; if not return NA vector of dimensions
     if (sum(singlewords_we$words == x[TRUE]) %in% 1) {
       x <- tolower(x)
@@ -244,7 +244,7 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
   }
 
   # Function to apply a common semantic representaion for ALL words in a CELL; and if there are no words return a Ndim vector with NAs
-  # The function is using above applysemrep_plot function
+  # The function is using above applysemrep function
   semanticrepresentation <- function(x) {
     x <- tolower(x)
     # Separates the words in a cell into a character vector with separate words.
@@ -258,7 +258,7 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
       x2 <- as.numeric(x2)
     }else{
       # Create a matrix with all the semantic representations using the function above
-      x1 <-  sapply(x, applysemrep_plot)
+      x1 <-  sapply(x, applysemrep)
       # If more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept
       x2 <- Matrix::rowSums(x1, na.rm=TRUE)
       # If all values are 0 they should be NA instead; otherwise return the semantic representation.
