@@ -51,15 +51,15 @@ wordembeddings <- readRDS(wordembeddings.rds)
 The ```textTrain()``` is used to examine how well the word embeddings from a text can predict a numeric variable. This is done by training the word embeddings using ridge regression and 10-fold cross-validation (where the word embeddings are pre-processed using pca). In the example below we examine how well the harmony text responses can pred rating scale socres from the Harmony in life scale. 
 ```{r, eval = TRUE,  warning=FALSE, message=FALSE}
 library(text)
-
+library(rio)
 # Load already imported word embeddings
 # (above we only imported 10 rows/participants; whereas below we load 100 rows/participants
-wordembeddings <- wordembeddings4_10
+wordembeddings <- rio::import("https://oscarkjell.se/text_data_examples/wordembeddings4_100.rda")
 # Load corresponding numeric variables
-numeric_data <- sq_data_tutorial8_10
+numeric_data <- rio::import("https://oscarkjell.se/text_data_examples/sq_data_tutorial4_100.rda")
 
 # Examine the relationship between harmonytext and the correspondnig rating scale
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k=2)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k=10)
 
 #Examine the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$Correlation
@@ -67,9 +67,9 @@ model_htext_hils$Correlation
 
 # Using textTrainLists enables you to quickly run through several lists of wordembeddings 
 #predicting several outcomes 
-wordembeddings <- wordembeddings4_10[1:2]
-ratings_data <- sq_data_tutorial8_10[5:6]
-outcomes <- textTrainLists(wordembeddings, ratings_data, nrFolds_k=2)
+#wordembeddings <- wordembeddings4_100[1:2]
+#ratings_data <- sq_data_tutorial4_100[5:6]
+outcomes <- textTrainLists(wordembeddings[1:2], numeric_data[1:2], nrFolds_k=10)
 outcomes
 
 ```
@@ -77,18 +77,14 @@ outcomes
 
 ## ```predict()``` features of text based on trained models from ```textTrain```
 Trained models (for example the one we did in the example above) can be applied to new datasets. Below we will apply a model that has been trained to predict valence.   
-```{r, eval = FALSE, warning=FALSE, message=FALSE}
+```{r, eval = TRUE, warning=FALSE, message=FALSE}
 library(text)
 library(psych)
-
-# Load already imported word embeddings
-wordembeddings <- wordembeddings4_10
-# Load corresponding numeric variables
-numeric_data <- sq_data_tutorial8_10
+library(rio)
 
 # Get a valence trained prediction model that has been created from another dataset. 
-valence_prediction_model <- readRDS(
-  url("https://oscarkjell.se/text_models/trained_anew1999_valence.rda"))
+valence_prediction_model <- rio::import("https://oscarkjell.se/text_models/trained_anew1999_valence.rds")
+
 
 # Apply the valence model to the harmony text
 numeric_data$htext_valence <- predict(valence_prediction_model$Model, wordembeddings$harmonytexts)
@@ -105,11 +101,11 @@ Semantic similarity scores can be used to measure psychological construct indepe
 
 library(text)
 library(psych)
-
+library(rio)
 # Load already imported word embeddings
-wordembeddings <- wordembeddings4_10
+#wordembeddings <- wordembeddings4_10
 # Load corresponding numeric variables
-numeric_data <- sq_data_tutorial8_10
+#numeric_data <- sq_data_tutorial8_10
 
 # Compute semantic similiarty scores between two text columns
 semantic_similarity_scores <- textSimilarity(wordembeddings$harmonytexts, 
@@ -118,8 +114,7 @@ semantic_similarity_scores <- textSimilarity(wordembeddings$harmonytexts,
 head(semantic_similarity_scores)
 
 # Get word embeddings for word norms from a free online library
-word_norms_embeddings <- readRDS(
-  url("https://oscarkjell.se/text_models/semsim_Word_Norms_Mental_Health_Kjell2018.rda"))
+word_norms_embeddings <- readRDS(url("https://oscarkjell.se/text_models/semsim_Word_Norms_Mental_Health_Kjell2018.rda"))
 
 # Examine which word norms there are
 names(word_norms_embeddings)
@@ -145,9 +140,6 @@ The ```textTtest()``` function provide a test to examine whether two set of text
 
 library(text)
 
-# Load word embeddings
-wordembeddings <- wordembeddings4_10
-
 # Compare the meaning between individuals' harmony in life and satisfaction with life answers
 textTtest(wordembeddings$harmonytexts, wordembeddings$satisfactiontexts)
 
@@ -167,15 +159,14 @@ The plotting is made in two steps: First the ```textPlotData()``` function is pr
 library(text)
 
 # Pre-process word data to be plotted with textPlotViz-function
-
 # Get example data within package
-wordembeddings <- wordembeddings4_10
-data <- sq_data_tutorial8_10
+wordembeddings_10 <- wordembeddings4_10
+data_10 <- sq_data_tutorial8_10
 
 # Pre-process data
-df_for_plotting <- textPlotData(data$harmonywords, wordembeddings$harmonywords,
-wordembeddings$singlewords_we,
-data$hilstotal, data$swlstotal,
+df_for_plotting <- textPlotData(data_10$harmonywords, wordembeddings_10$harmonywords,
+wordembeddings_10$singlewords_we,
+data_10$hilstotal, data_10$swlstotal,
 Bonferroni = TRUE, nrFolds=2, Ndim=768)
 df_for_plotting
 
@@ -185,7 +176,7 @@ df_for_plotting
 ```{r, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
 library(text)
 
-# Example data that have been pre-processed with textPlotData function
+# Example data that have been pre-processed with textPlotData function is called sq_data_plottingHw_HILSSSWLS_100
 
 plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
                     title_top = "Harmony word responses",
