@@ -8,8 +8,8 @@
 <!-- badges: end -->
 
 The `text`-package uses natural language processing and machine learning
-methods to assist in examining text variables, and their relation to
-numerical variables.
+methods to assist in examining text variables, as well as their relation
+to numerical variables.
 
 ## Installation
 
@@ -22,8 +22,8 @@ install.packages("text")
 The default method to map words to numbers in `text` uses BERT. BERT is
 a general-purpose language model that creates state-of-the-art word
 embeddings based on deep learning. To achieve this, `text` relies on
-`RBERT`, which in turn is based on TensorFlow; so make sure that these
-packages are properly installed and working\! For up-to-date
+`RBERT`, which in turn is based on TensorFlow; so please make sure that
+these packages are properly installed and working\! For up-to-date
 instructions see [RBERT](https://github.com/johnERgordon/RBERT).
 
 When above packages are installed and working, you can install the
@@ -67,13 +67,13 @@ model_htext_hils$Correlation
 #>  Pearson's product-moment correlation
 #> 
 #> data:  model$pred$pred and model$pred$obs
-#> t = 11.149, df = 98, p-value < 2.2e-16
+#> t = 12.076, df = 98, p-value < 2.2e-16
 #> alternative hypothesis: true correlation is not equal to 0
 #> 95 percent confidence interval:
-#>  0.6462528 0.8232583
+#>  0.6802706 0.8418893
 #> sample estimates:
-#>       cor 
-#> 0.7477542
+#>      cor 
+#> 0.773355
 ```
 
 ## Show your data by plotting statistically significant words

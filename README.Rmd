@@ -27,7 +27,7 @@ The ```text```-package uses natural language processing and machine learning met
 ``` r
 install.packages("text")
 ```-->
-The default method to map words to numbers in ```text``` uses BERT. BERT is a general-purpose language model that creates state-of-the-art word embeddings based on deep learning. To achieve this, ```text``` relies on ```RBERT```, which in turn is based on TensorFlow; so make sure that these packages are properly installed and working! For up-to-date instructions see [RBERT](https://github.com/johnERgordon/RBERT). 
+The default method to map words to numbers in ```text``` uses BERT. BERT is a general-purpose language model that creates state-of-the-art word embeddings based on deep learning. To achieve this, ```text``` relies on ```RBERT```, which in turn is based on TensorFlow; so please make sure that these packages are properly installed and working! For up-to-date instructions see [RBERT](https://github.com/johnERgordon/RBERT). 
 
 When above packages are installed and working, you can install the development version ```text``` from [GitHub](https://github.com/), by first installing devtools and then the command bellow.
 
