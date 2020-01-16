@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The ```text```-package uses natural language processing and machine learning methods to help you examine text variables, and their relation to numerical variables. 
+The ```text```-package uses natural language processing and machine learning methods to assist in examining text variables, and their relation to numerical variables. 
 
 ## Installation
 

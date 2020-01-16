@@ -1,5 +1,5 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file --> 
+<!-- README.md is generated from README.Rmd. Please edit that file devtools::build_readme() -->
 
 # text
 
@@ -67,13 +67,13 @@ model_htext_hils$Correlation
 #>  Pearson's product-moment correlation
 #> 
 #> data:  model$pred$pred and model$pred$obs
-#> t = 11.21, df = 98, p-value < 2.2e-16
+#> t = 11.097, df = 98, p-value < 2.2e-16
 #> alternative hypothesis: true correlation is not equal to 0
 #> 95 percent confidence interval:
-#>  0.6486449 0.8245810
+#>  0.6442273 0.8221368
 #> sample estimates:
 #>       cor 
-#> 0.7495644
+#> 0.7462203
 ```
 
 ## Show your data by plotting statistically significant words
