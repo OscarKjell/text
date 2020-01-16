@@ -7,12 +7,11 @@
 #'
 #' @param words Words to be plotted.
 #' @param wordembeddings Wordembeddings from textImport for the words to be plotted .
-#' @param single_wordembeddings_df Wordembeddings from textImport for individual words "
+#' @param single_wordembeddings Wordembeddings from textImport for individual words "
 #' @param x Numeric variable of a dimension the words should be plotted according to (y=NULL)
 #' @param y Numeric variable of a dimension the words should be plotted according to (y=NULL)
 #' @param Bonferroni Whether to apply Bonferroni correction in relation to the number of t-test carried out for each individual word (default = TRUE)
 #' @param nrFolds Number of folds used in creation of semantic similiarty scores for individual words.
-#' @param Ndim Number of dimensions used in the word embedding (default = 768).
 #'
 # #' @param ... Arguments from caret::createFolds, caret::trainControl and caret::train.
 #' @return A dataframe with variables (e.g., including p-values, frequency, Cohen's D) for the individual words
@@ -23,7 +22,7 @@
 #' df_for_plotting <- textPlotData(data$harmonywords, wordembeddings$harmonywords,
 #' wordembeddings$singlewords_we,
 #' data$hilstotal, data$swlstotal,
-#' Bonferroni = TRUE, nrFolds=2, Ndim=768)
+#' Bonferroni = TRUE, nrFolds=2)
 #' df_for_plotting
 #' @seealso see \code{\link{textPlotViz}}
 #' @importFrom tibble as_tibble
@@ -35,7 +34,7 @@
 #' @export
 
 # Function that creates semnatic t-test scores for single words for plotting purposes
-textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=NULL, Bonferroni = TRUE, nrFolds=10, Ndim=768) {
+textPlotData <- function(words, wordembeddings, single_wordembeddings = single_wordembeddings_df, x, y=NULL, Bonferroni = TRUE, nrFolds=10) {
 
   if (is.null(y) == TRUE) {
     x <- data.frame(x)
@@ -110,10 +109,10 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings_df, x, y=N
       normG2_words1 <- tibble::as_tibble(as.character(normG2_words$unlist.strsplit.tolower.normG2.words........))
 
       #Get word embeddings for each word; applysemrep is created in 1_textImport
-      group1_single1 <- sapply(normG1_words1$value, applysemrep, single_wordembeddings_df, Ndim)
+      group1_single1 <- sapply(normG1_words1$value, applysemrep, single_wordembeddings)
       group1_single2 <- tibble::as_tibble(t(group1_single1))
 
-      group2_single1 <-  sapply(normG2_words1$value, applysemrep, single_wordembeddings_df, Ndim)
+      group2_single1 <-  sapply(normG2_words1$value, applysemrep, single_wordembeddings)
       group2_single2 <- tibble::as_tibble(t(group2_single1))
 
       # Adds the Semantic Difference Representation into a Tibble and then duplicates it

@@ -167,7 +167,7 @@ data_10 <- sq_data_tutorial8_10
 df_for_plotting <- textPlotData(data_10$harmonywords, wordembeddings_10$harmonywords,
 wordembeddings_10$singlewords_we,
 data_10$hilstotal, data_10$swlstotal,
-Bonferroni = TRUE, nrFolds=2, Ndim=768)
+Bonferroni = TRUE, nrFolds=2)
 df_for_plotting
 
 ```

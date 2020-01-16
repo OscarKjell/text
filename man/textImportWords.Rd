@@ -11,7 +11,6 @@ textImportWords(
   batch_size_IBT = 2L,
   token_index_IBT = 1,
   layer_index_IBT = 12,
-  Ndim = 768,
   ...
 )
 }
@@ -25,8 +24,6 @@ textImportWords(
 \item{token_index_IBT}{from RBERT}
 
 \item{layer_index_IBT}{from RBERT}
-
-\item{Ndim}{Number of dimensions in the word embedding}
 
 \item{...}{arguments from RBERT function extract_features}
 }

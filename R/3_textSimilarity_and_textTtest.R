@@ -104,11 +104,11 @@ normalizeV <- function(x) {x / sqrt(sum(x^2, na.rm = TRUE))}
 
 ## Make x and y into same length for when we will randomly draw K-folds from them
 # Function to add rows of NA until y and x have the same amount of rows.
-addEqualNrNArows <- function(x, y, Ndim) {
+addEqualNrNArows <- function(x, y) {
   success <- FALSE
   while (!success) {
     # Add row with NA
-    x <- rbind(x, rep(NA, Ndim))
+    x <- rbind(x, rep(NA, length(x)))
     # check for success
     success <- nrow(x) == nrow(y)
   }
@@ -124,7 +124,6 @@ addEqualNrNArows <- function(x, y, Ndim) {
 #' @param x Wordembeddings from textImport.
 #' @param y Wordembeddings from textImport.
 #' @param nrFolds Number of folds used.
-#' @param Ndim Number of dimension used (RBERT use 768)
 #' @return A vector with semantic similarity scores (based on cosine).
 #' @examples
 #' wordembeddings <- wordembeddings4_10
@@ -132,7 +131,7 @@ addEqualNrNArows <- function(x, y, Ndim) {
 #' @seealso see \code{\link{textTtest}}
 #' @export
 ## Function that creates semnatic t-test scores
-textTtestscores <- function(x, y, nrFolds=10, Ndim = 768) {
+textTtestscores <- function(x, y, nrFolds=10) {
 
   # Apply semrpe if variables are characters (i.e., they have not already been imported)
   #  if (is.character(x)==TRUE){

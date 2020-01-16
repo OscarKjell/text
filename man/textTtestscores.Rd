@@ -4,7 +4,7 @@
 \alias{textTtestscores}
 \title{textTtestscores computes the semantic similiarty between a character variable and a word norm (i.e., a text in one cell).}
 \usage{
-textTtestscores(x, y, nrFolds = 10, Ndim = 768)
+textTtestscores(x, y, nrFolds = 10)
 }
 \arguments{
 \item{x}{Wordembeddings from textImport.}
@@ -12,8 +12,6 @@ textTtestscores(x, y, nrFolds = 10, Ndim = 768)
 \item{y}{Wordembeddings from textImport.}
 
 \item{nrFolds}{Number of folds used.}
-
-\item{Ndim}{Number of dimension used (RBERT use 768)}
 }
 \value{
 A vector with semantic similarity scores (based on cosine).

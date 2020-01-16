@@ -7,12 +7,11 @@
 textPlotData(
   words,
   wordembeddings,
-  single_wordembeddings_df,
+  single_wordembeddings = single_wordembeddings_df,
   x,
   y = NULL,
   Bonferroni = TRUE,
-  nrFolds = 10,
-  Ndim = 768
+  nrFolds = 10
 )
 }
 \arguments{
@@ -20,7 +19,7 @@ textPlotData(
 
 \item{wordembeddings}{Wordembeddings from textImport for the words to be plotted .}
 
-\item{single_wordembeddings_df}{Wordembeddings from textImport for individual words "}
+\item{single_wordembeddings}{Wordembeddings from textImport for individual words "}
 
 \item{x}{Numeric variable of a dimension the words should be plotted according to (y=NULL)}
 
@@ -29,8 +28,6 @@ textPlotData(
 \item{Bonferroni}{Whether to apply Bonferroni correction in relation to the number of t-test carried out for each individual word (default = TRUE)}
 
 \item{nrFolds}{Number of folds used in creation of semantic similiarty scores for individual words.}
-
-\item{Ndim}{Number of dimensions used in the word embedding (default = 768).}
 }
 \value{
 A dataframe with variables (e.g., including p-values, frequency, Cohen's D) for the individual words
@@ -45,7 +42,7 @@ data <- sq_data_tutorial8_10
 df_for_plotting <- textPlotData(data$harmonywords, wordembeddings$harmonywords,
 wordembeddings$singlewords_we,
 data$hilstotal, data$swlstotal,
-Bonferroni = TRUE, nrFolds=2, Ndim=768)
+Bonferroni = TRUE, nrFolds=2)
 df_for_plotting
 }
 \seealso{
