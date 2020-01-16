@@ -8,7 +8,7 @@
 <!-- badges: end -->
 
 The `text`-package uses natural language processing and machine learning
-methods to help you examine text variables, and their relation to
+methods to assist in examining text variables, and their relation to
 numerical variables.
 
 ## Installation
@@ -67,13 +67,13 @@ model_htext_hils$Correlation
 #>  Pearson's product-moment correlation
 #> 
 #> data:  model$pred$pred and model$pred$obs
-#> t = 11.097, df = 98, p-value < 2.2e-16
+#> t = 11.149, df = 98, p-value < 2.2e-16
 #> alternative hypothesis: true correlation is not equal to 0
 #> 95 percent confidence interval:
-#>  0.6442273 0.8221368
+#>  0.6462528 0.8232583
 #> sample estimates:
 #>       cor 
-#> 0.7462203
+#> 0.7477542
 ```
 
 ## Show your data by plotting statistically significant words
