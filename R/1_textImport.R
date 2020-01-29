@@ -32,6 +32,8 @@
 #' @importFrom tokenizers tokenize_words
 #' @importFrom stringr str_replace_all
 #' @importFrom tibble tibble
+#' @importFrom purrr map
+#' @importFrom stringi stri_encode
 #' @export
 
 #x <- sq_data_tutorial[1:2, 1:2]
@@ -49,7 +51,8 @@ textImport <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, token_i
 
   # Select all character variables
   x_characters <- dplyr::select_if(x, is.character)
-
+  # This makes sure that all variables are UTF-8 coded, since BERT wants it that way
+  x_characters <- tibble::as_tibble(purrr::map(x_characters, stri_encode, "", "UTF-8"))
   # Create lists
   BERT_feats <- list()
   output_vectors <- list()
