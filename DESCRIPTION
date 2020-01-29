@@ -25,7 +25,8 @@ Imports:
     rlang,
     purrr,
     Matrix,
-    rio
+    rio,
+    stringi
 RoxygenNote: 7.0.2
 Suggests: 
     knitr,

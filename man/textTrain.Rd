@@ -33,7 +33,7 @@ textTrain(
 
 \item{describe_model}{Input text to describe your model.}
 
-\item{...}{Arguments from caret::createFolds, caret::trainControl and caret::train.}
+\item{...}{Arguments fom caret::createFolds, caret::trainControl and caret::train.}
 }
 \value{
 A correlation between predicted and observed values; as well as predicted values.

@@ -40,10 +40,10 @@ wordembeddings <- textImport(sq_data)
 wordembeddings
 
 # Save the word embeddings to avoid having to import the text every time
-saveRDS(wordembeddings.rds)
+saveRDS(wordembeddings, "wordembeddings.rds")
 
 # Get the word embeddings again  
-wordembeddings <- readRDS(wordembeddings.rds)
+wordembeddings <- readRDS("_YOURPATH_/wordembeddings.rds")
 
 ```
 
