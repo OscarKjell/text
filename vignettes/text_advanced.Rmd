@@ -1,0 +1,22 @@
+---
+title: "text_advanced"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{text_advanced}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+testing advanced hello world
+```{r setup}
+library(text)
+
+
+
+```
