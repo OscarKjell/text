@@ -1,6 +1,6 @@
 ---
 title: "Introduction to ```text```"
-output:  rmarkdown::html_vignette
+output: github_document #rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{text}
   %\VignetteEngine{knitr::rmarkdown}
