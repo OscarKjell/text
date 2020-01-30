@@ -117,7 +117,3 @@
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
 "sq_data_plottingHw_HILSSSWLS_100"
-
-
-
-

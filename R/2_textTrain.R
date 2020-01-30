@@ -37,14 +37,14 @@
 #' @examples
 #' wordembeddings <- wordembeddings4_10
 #' ratings_data <- sq_data_tutorial4_10
-#' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k=2)
+#' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k = 2)
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textTtest}}
 #' @importFrom stats cor.test na.omit
 #' @importFrom dplyr select starts_with
 #' @export
-#x <- wordembeddings4_10$satisfactiontexts
-#y <- sq_data_tutorial4_10$hilstotal
-textTrain <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProcessTrain = 'pca', preProcessThresh = 0.95, methodCor = "pearson", describe_model = "Describe the model and share it with others", ...){
+# x <- wordembeddings4_10$satisfactiontexts
+# y <- sq_data_tutorial4_10$hilstotal
+textTrain <- function(x, y, nrFolds_k = 10, methodTrain = "ridge", preProcessTrain = "pca", preProcessThresh = 0.95, methodCor = "pearson", describe_model = "Describe the model and share it with others", ...) {
   # Preparing a df for training: Import data if x is character or use semreps if it has already been imported
   if (is.character(x) == TRUE) {
     df <- tibble::tibble(x, y)
@@ -53,11 +53,11 @@ textTrain <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProcessTrai
     df2 <- tibble::as_tibble(df2)
   } else {
     df2 <- cbind(x, tibble::enframe(y))
-    df2 <- dplyr::rename(df2, y = "value") #perhaps value should not be within ".."?
+    df2 <- dplyr::rename(df2, y = "value") # perhaps value should not be within ".."?
     df2 <- tibble::as_tibble(df2)
   }
   # Remove unnecassary columns
-  df3 <- subset(df2, select=-c(1:5))
+  df3 <- subset(df2, select = -c(1:5))
   df3 <- dplyr::select(df3, -dplyr::starts_with("name"))
 
   # Remove rows with NA
@@ -70,12 +70,12 @@ textTrain <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProcessTrai
   # define folds
   cv_folds <- caret::createFolds(ytrain_df3, k = nrFolds_k, list = TRUE, returnTrain = TRUE) # , ...
   # define training control
-  train_control <- caret::trainControl(method="cv", index = cv_folds, savePredictions = 'final') #, ...
+  train_control <- caret::trainControl(method = "cv", index = cv_folds, savePredictions = "final") # , ...
   # train the model help(train)
-  model <- caret::train(y~., data=df3, trControl=train_control, method= methodTrain, preProcess = preProcessTrain, thresh = preProcessThresh, na.action="na.omit")#, ...)
+  model <- caret::train(y ~ ., data = df3, trControl = train_control, method = methodTrain, preProcess = preProcessTrain, thresh = preProcessThresh, na.action = "na.omit") # , ...)
 
   # Describe model; adding user's-description + the name of the x and y
-  #describe_model_detail <- c(describe_model, paste(names(x)), paste(names(y)))
+  # describe_model_detail <- c(describe_model, paste(names(x)), paste(names(y)))
   describe_model_detail <- c(deparse(substitute(x)), deparse(substitute(y)), describe_model)
 
   # Saving Output
@@ -101,11 +101,11 @@ textTrain <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProcessTrai
 #' @examples
 #' wordembeddings <- wordembeddings4_10[1:2]
 #' ratings_data <- sq_data_tutorial4_10[1:2]
-#' wordembeddings <- textTrainLists(wordembeddings, ratings_data, nrFolds_k=2)
+#' wordembeddings <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
 #' @seealso see \code{\link{textTrain}}
 #' @importFrom stats cor.test
 #' @export
-textTrainLists <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProcessTrain = 'pca', preProcessThresh = 0.95, methodCor = "pearson", ...){
+textTrainLists <- function(x, y, nrFolds_k = 10, methodTrain = "ridge", preProcessTrain = "pca", preProcessThresh = 0.95, methodCor = "pearson", ...) {
 
   # Get variable names in the list of outcomes
   variables <- dput(names(y))
@@ -114,26 +114,26 @@ textTrainLists <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProces
   # Create data fram with duplicated variables
   y <- y[c(variables)]
   # Order columns alphabatically
-  y <- y[,order(colnames(y))]
+  y <- y[, order(colnames(y))]
 
   # Creating descriptions of which variabeles are used in training, which is  added to the output
   descriptions <- paste(rep(names(x), length(x)), "->", names(y))
   # Using mapply to loop of the word embeddings and the outcome variables help(mapply)
-  output <- mapply(textTrain, x, y, MoreArgs = list(nrFolds_k=nrFolds_k, methodTrain = methodTrain, preProcessTrain = preProcessTrain, preProcessThresh = preProcessThresh, methodCor = methodCor, ...),  SIMPLIFY=FALSE)
+  output <- mapply(textTrain, x, y, MoreArgs = list(nrFolds_k = nrFolds_k, methodTrain = methodTrain, preProcessTrain = preProcessTrain, preProcessThresh = preProcessThresh, methodCor = methodCor, ...), SIMPLIFY = FALSE)
   # Sorting the outcomes
-  output_p_r <- t(as.data.frame(lapply(output, function(output) unlist(output$Correlation)[c(3,4)])))
+  output_p_r <- t(as.data.frame(lapply(output, function(output) unlist(output$Correlation)[c(3, 4)])))
   # Add Outcomes and Descriptions together; name the columns; and remove the rownames.
   output_ordered_named <- data.frame(cbind(descriptions, output_p_r))
   colnames(output_ordered_named) <- c("descriptions", "p_value", "correlation")
   rownames(output_ordered_named) <- NULL
   output_ordered_named
 }
-#wordembeddings4_100_short <- wordembeddings4_100[1:2]
-#sq_data_tutorial4_100_short <- sq_data_tutorial4_100[1:2]
-#x=wordembeddings4_100_short
-#y=sq_data_tutorial4_100_short
-#tesinagdad <- textTrainLists(wordembeddings4_100_short, sq_data_tutorial4_100_short,nrFolds_k=2)
-#tesinagdad
+# wordembeddings4_100_short <- wordembeddings4_100[1:2]
+# sq_data_tutorial4_100_short <- sq_data_tutorial4_100[1:2]
+# x=wordembeddings4_100_short
+# y=sq_data_tutorial4_100_short
+# tesinagdad <- textTrainLists(wordembeddings4_100_short, sq_data_tutorial4_100_short,nrFolds_k=2)
+# tesinagdad
 
 ########################################################################
 ########
@@ -191,4 +191,3 @@ textTrainLists <- function(x, y,  nrFolds_k=10, methodTrain = "ridge", preProces
 #   outputST
 # }
 #
-

@@ -55,11 +55,11 @@ library(text)
 
 # Load already imported word embeddings, and their corresponding numeric variables
 wordembeddings <- wordembeddings1_100
-numeric_data   <- sq_data_tutorial4_100
+numeric_data <- sq_data_tutorial4_100
 
 
 # Examine the relationship between harmony-text and Harmony in life scale (HILS) scores
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k=10)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 10)
 
 # Show the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$Correlation
@@ -67,13 +67,13 @@ model_htext_hils$Correlation
 #>  Pearson's product-moment correlation
 #> 
 #> data:  model$pred$pred and model$pred$obs
-#> t = 12.076, df = 98, p-value < 2.2e-16
+#> t = 11.493, df = 98, p-value < 2.2e-16
 #> alternative hypothesis: true correlation is not equal to 0
 #> 95 percent confidence interval:
-#>  0.6802706 0.8418893
+#>  0.6593903 0.8304990
 #> sample estimates:
-#>      cor 
-#> 0.773355
+#>       cor 
+#> 0.7576769
 ```
 
 ## Show your data by plotting statistically significant words
@@ -83,11 +83,13 @@ library(text)
 
 # Example data that have been pre-processed with textPlotData function
 
-plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
-      x_axes = "cohensD.x",
-      y_axes = "cohensD.y",
-      x_axes_label = "Harmony in life scale (Cohen's D)",
-      y_axes_label = "Satisfaction with life scale (Cohen's D)")
+plot <- textPlotViz(
+  word_data = sq_data_plottingHw_HILSSSWLS_100,
+  x_axes = "cohensD.x",
+  y_axes = "cohensD.y",
+  x_axes_label = "Harmony in life scale (Cohen's D)",
+  y_axes_label = "Satisfaction with life scale (Cohen's D)"
+)
 plot
 ```
 

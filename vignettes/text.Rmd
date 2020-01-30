@@ -42,9 +42,8 @@ wordembeddings
 # Save the word embeddings to avoid having to import the text every time
 saveRDS(wordembeddings, "wordembeddings.rds")
 
-# Get the word embeddings again  
+# Get the word embeddings again
 wordembeddings <- readRDS("_YOURPATH_/wordembeddings.rds")
-
 ```
 
 ## ```textTrain()```: Examine the relationship between text and numeric variables
@@ -59,19 +58,18 @@ wordembeddings <- rio::import("https://oscarkjell.se/text_data_examples/wordembe
 numeric_data <- rio::import("https://oscarkjell.se/text_data_examples/sq_data_tutorial4_100.rda")
 
 # Examine the relationship between harmonytext and the corresponding rating scale
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k=10)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 10)
 
-#Examine the correlation between predicted and observed Harmony in life scale scores
+# Examine the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$Correlation
 
 
-# Using textTrainLists enables you to quickly run through several lists of wordembeddings 
-#predicting several outcomes 
-#wordembeddings <- wordembeddings4_100[1:2]
-#ratings_data <- sq_data_tutorial4_100[5:6]
-outcomes <- textTrainLists(wordembeddings[1:2], numeric_data[1:2], nrFolds_k=10)
+# Using textTrainLists enables you to quickly run through several lists of wordembeddings
+# predicting several outcomes
+# wordembeddings <- wordembeddings4_100[1:2]
+# ratings_data <- sq_data_tutorial4_100[5:6]
+outcomes <- textTrainLists(wordembeddings[1:2], numeric_data[1:2], nrFolds_k = 10)
 outcomes
-
 ```
 
 
@@ -82,7 +80,7 @@ library(text)
 library(psych)
 library(rio)
 
-# Get a valence trained prediction model that has been created from another dataset. 
+# Get a valence trained prediction model that has been created from another dataset.
 valence_prediction_model <- rio::import("https://oscarkjell.se/text_models/trained_anew1999_valence.rds")
 
 
@@ -91,7 +89,6 @@ numeric_data$htext_valence <- predict(valence_prediction_model$Model, wordembedd
 
 # Examine the correlation between the predicted valence and the Harmony in life scale score
 psych::corr.test(numeric_data$htext_valence, numeric_data$hilstotal)
-
 ```
 
 ## ```textSimilarity()```: Compute semantic similarity scales
@@ -103,13 +100,15 @@ library(text)
 library(psych)
 library(rio)
 # Load already imported word embeddings
-#wordembeddings <- wordembeddings4_10
+# wordembeddings <- wordembeddings4_10
 # Load corresponding numeric variables
-#numeric_data <- sq_data_tutorial8_10
+# numeric_data <- sq_data_tutorial8_10
 
 # Compute semantic similarity scores between two text columns
-semantic_similarity_scores <- textSimilarity(wordembeddings$harmonytexts, 
-                                             wordembeddings$satisfactiontexts)
+semantic_similarity_scores <- textSimilarity(
+  wordembeddings$harmonytexts,
+  wordembeddings$satisfactiontexts
+)
 # Look at the first scores
 head(semantic_similarity_scores)
 
@@ -123,14 +122,15 @@ names(word_norms_embeddings)
 word_norms_embeddings$descrition_of_norms
 
 # Compute semantic similarity score between the harmony answers and the harmony norm
-# Note that the descriptive word answers are used instead of text answers to correspond with 
-#how the word norm was created.
-norm_similarity_scores_harmony <- textSimilarityNorm(wordembeddings$harmonywords, 
-                                                     word_norms_embeddings$harmonynorm)
+# Note that the descriptive word answers are used instead of text answers to correspond with
+# how the word norm was created.
+norm_similarity_scores_harmony <- textSimilarityNorm(
+  wordembeddings$harmonywords,
+  word_norms_embeddings$harmonynorm
+)
 
 # Correlating the semantic measure with the corresponding rating scale
 psych::corr.test(norm_similarity_scores_harmony, numeric_data$hilstotal)
-
 ```
 
 
@@ -144,11 +144,10 @@ library(text)
 textTtest(wordembeddings$harmonytexts, wordembeddings$satisfactiontexts)
 
 # Note that if you want to get the scores used in the t-test use:
-semantic_difference_scores <- textTtestscores(wordembeddings$harmonytexts, 
-                                              wordembeddings$satisfactiontexts, 
-                                              nrFolds=2)
-
-
+semantic_difference_scores <- textTtestscores(wordembeddings$harmonytexts,
+  wordembeddings$satisfactiontexts,
+  nrFolds = 2
+)
 ```
 
 ## Plot statistically significant words 
@@ -165,11 +164,11 @@ data_10 <- sq_data_tutorial8_10
 
 # Pre-process data
 df_for_plotting <- textPlotData(data_10$harmonywords, wordembeddings_10$harmonywords,
-wordembeddings_10$singlewords_we,
-data_10$hilstotal, data_10$swlstotal,
-Bonferroni = TRUE, nrFolds=2)
+  wordembeddings_10$singlewords_we,
+  data_10$hilstotal, data_10$swlstotal,
+  Bonferroni = TRUE, nrFolds = 2
+)
 df_for_plotting
-
 ```
 
 ### ```textPlotViz()```: A One-dimensional word plot
@@ -178,16 +177,17 @@ library(text)
 
 # Example data that have been pre-processed with textPlotData function is called sq_data_plottingHw_HILSSSWLS_100
 
-plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
-                    title_top = "Harmony word responses",
-                    x_axes = "cohensD.x",
-                    y_axes = NULL, 
-                    x_axes_label = "HILS: Cohen's D",
-                    y_axes_label = " ",
-                    scale_x_axes_lim = c(-4,4),
-                    y_axes_values = element_blank())
+plot <- textPlotViz(
+  word_data = sq_data_plottingHw_HILSSSWLS_100,
+  title_top = "Harmony word responses",
+  x_axes = "cohensD.x",
+  y_axes = NULL,
+  x_axes_label = "HILS: Cohen's D",
+  y_axes_label = " ",
+  scale_x_axes_lim = c(-4, 4),
+  y_axes_values = element_blank()
+)
 plot
-
 ```
 
 ### ```textPlotViz()```: A Two-dimensional word plot
@@ -196,14 +196,15 @@ library(text)
 
 # Example data that have been pre-processed with textPlotData function
 
-plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
-                    title_top = "Harmony word responses",
-                    x_axes = "cohensD.x",
-                    y_axes = "cohensD.y",
-                    x_axes_label = "HILS: Cohen's D",
-                    y_axes_label = "SWLS: Cohen's D")
+plot <- textPlotViz(
+  word_data = sq_data_plottingHw_HILSSSWLS_100,
+  title_top = "Harmony word responses",
+  x_axes = "cohensD.x",
+  y_axes = "cohensD.y",
+  x_axes_label = "HILS: Cohen's D",
+  y_axes_label = "SWLS: Cohen's D"
+)
 plot
-
 ```
 
 

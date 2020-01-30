@@ -48,7 +48,6 @@ sq_data <- sq_data_tutorial8_10
 
 # Transform the text data to BERT word embeddings
 wordembeddings <- textImport(sq_data)
-
 ```
 
 ## Examine how your text relate to numerical variables 
@@ -58,15 +57,14 @@ library(text)
 
 # Load already imported word embeddings, and their corresponding numeric variables
 wordembeddings <- wordembeddings1_100
-numeric_data   <- sq_data_tutorial4_100
+numeric_data <- sq_data_tutorial4_100
 
 
 # Examine the relationship between harmony-text and Harmony in life scale (HILS) scores
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k=10)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 10)
 
 # Show the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$Correlation
-
 ```
 
 ## Show your data by plotting statistically significant words 
@@ -76,13 +74,14 @@ library(text)
 
 # Example data that have been pre-processed with textPlotData function
 
-plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
-      x_axes = "cohensD.x",
-      y_axes = "cohensD.y",
-      x_axes_label = "Harmony in life scale (Cohen's D)",
-      y_axes_label = "Satisfaction with life scale (Cohen's D)")
+plot <- textPlotViz(
+  word_data = sq_data_plottingHw_HILSSSWLS_100,
+  x_axes = "cohensD.x",
+  y_axes = "cohensD.y",
+  x_axes_label = "Harmony in life scale (Cohen's D)",
+  y_axes_label = "Satisfaction with life scale (Cohen's D)"
+)
 plot
-
 ```
 
 
