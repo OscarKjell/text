@@ -14,7 +14,7 @@ Imports:
     RBERT (== 0.1.11),
     tokenizers,
     caret,
-    psych (== 1.8.10),
+    psych,
     tibble,
     stringr,
     tidyr,
