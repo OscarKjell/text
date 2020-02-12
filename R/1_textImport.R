@@ -52,7 +52,7 @@ textImport <- function(x,
                        layer_index_filter = 12,
                        ...) {
 
-  # Download/set pre-trained BERT model. This will go to an appropriate cache
+  # Download/select pre-trained BERT model. This will go to an appropriate cache
   # directory by default.
   BERT_PRETRAINED_DIR <- RBERT::download_BERT_checkpoint(
     model = model
@@ -65,15 +65,9 @@ textImport <- function(x,
   # Create lists
   BERT_feats <- list()
   output_vectors <- list()
-  # tokenized_sentences1 <- list()
 
   # Loop over character variables to tokenize sentences; create BERT-embeddings and Add them to list
   for (i in 1:length(x_characters)) {
-    # Get the character variable to get word embeddings
-    #sentences1[[i]] <- x_characters[[i]]
-
-# max_seq_length = Integer; the maximum number of tokens that will be considered together.
-
     # Extract BERT feature; help(extract_features) help(make_examples_simple)
     BERT_feats[[i]] <- RBERT::extract_features(
       examples = x_characters[[i]],
@@ -81,64 +75,90 @@ textImport <- function(x,
       layer_indexes = layer_indexes_RBERT,
       batch_size = batch_size,
       ...
-    ) #
-    BERT_feats
-
+    )
     # Extract/Sort output vectors for all sentences...
     # Convenience functions for doing this extraction will be added to the RBERT package in the near future.
     output_vectors[[i]] <- BERT_feats[[i]]$output %>%
       dplyr::filter(token_index == token_index_filter, layer_index == layer_index_filter)
-    output_vectors
   }
   # Gives the names in the list the same name as the orginal character variables
   names(output_vectors) <- names(x_characters)
-
-
-  # Get word-embeddings for all individual-words (which is used for the word plot)
-  # Unite all text variables into one
-  x_characters2 <- tidyr::unite(x_characters, "x_characters2", 1:ncol(x_characters), sep = " ")
-  # unite all rows in the column into one cell
-  x_characters3 <- paste(x_characters2[1], collapse = " ")
-  # Remove remove all punctuation characters
-  x_characters4 <- stringr::str_replace_all(x_characters3, "[[:punct:]]", " ")
-  # Remove  \n
-  x_characters5 <- gsub("[\r\n]", " ", x_characters4)
-  x_characters6 <- gsub("[\n]", " ", x_characters5)
-  # Tokenize into single words
-  x_characters7 <- tokenizers::tokenize_words(x_characters6, simplify = T)
-  # Create dataframe with single words and frequency
-  x_characters8 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters7), " ")))))
-  singlewords <- tibble(x_characters8$Var1, x_characters8$Freq)
-  colnames(singlewords) <- c("words", "n")
-  singlewords$words <- as.character(singlewords$words)
-
-
-  # Tokenize sentences to list
-  # singlewords$words
-
-  # Extract BERT feature
-  BERT_feats_sw <- RBERT::extract_features(
-    examples = singlewords$words,
-    ckpt_dir = BERT_PRETRAINED_DIR,
-    layer_indexes = layer_indexes_RBERT,
-    batch_size = batch_size,
-    ...
-  )
-
-  # Extract/Sort output vectors for all sentences... These vectors can be used as input features for downstream models.
-  # Convenience functions for doing this extraction will be added to the RBERT package in the near future.
-  output_vectors_sw <- BERT_feats_sw$output %>%
-    dplyr::filter(token_index == token_index_filter, layer_index == layer_index_filter)
-  # Add frequency for each word
-  singlewords_we1 <- cbind(singlewords, output_vectors_sw)
-  singlewords_we <- tibble::as_tibble(singlewords_we1)
-  # Add the single words embeddings
-  output_vectors$singlewords_we <- singlewords_we
   output_vectors
 }
 
 
 
+
+
+textImportWordsPlot <- function(x,
+                       model = "bert_base_uncased",
+                       layer_indexes_RBERT = 12,
+                       batch_size = 2L,
+                       token_index_filter = 1,
+                       layer_index_filter = 12,
+                       ...) {
+
+  # Download/select pre-trained BERT model. This will go to an appropriate cache
+  # directory by default.
+  BERT_PRETRAINED_DIR <- RBERT::download_BERT_checkpoint(
+    model = model
+  )
+
+  # Select all character variables
+  x_characters <- dplyr::select_if(x, is.character)
+  # This makes sure that all variables are UTF-8 coded, since BERT wants it that way
+  x_characters <- tibble::as_tibble(purrr::map(x_characters, stri_encode, "", "UTF-8"))
+  # Create lists
+  output_vectors_sw <- list()
+
+# Get word-embeddings for all individual-words (which is used for the word plot)
+# Unite all text variables into one
+x_characters2 <- tidyr::unite(x_characters, "x_characters2", 1:ncol(x_characters), sep = " ")
+# unite all rows in the column into one cell
+x_characters3 <- paste(x_characters2[1], collapse = " ")
+# Remove remove all punctuation characters
+x_characters4 <- stringr::str_replace_all(x_characters3, "[[:punct:]]", " ")
+# Remove  \n
+x_characters5 <- gsub("[\r\n]", " ", x_characters4)
+x_characters6 <- gsub("[\n]", " ", x_characters5)
+# Tokenize into single words
+x_characters7 <- tokenizers::tokenize_words(x_characters6, simplify = T)
+# Create dataframe with single words and frequency
+x_characters8 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters7), " ")))))
+singlewords <- tibble(x_characters8$Var1, x_characters8$Freq)
+colnames(singlewords) <- c("words", "n")
+singlewords$words <- as.character(singlewords$words)
+
+# Extract BERT feature
+BERT_feats_sw <- RBERT::extract_features(
+  examples = singlewords$words,
+  ckpt_dir = BERT_PRETRAINED_DIR,
+  layer_indexes = layer_indexes_RBERT,
+  batch_size = batch_size,
+  ...
+)
+
+# Extract/Sort output vectors for all sentences... These vectors can be used as input features for downstream models.
+# Convenience functions for doing this extraction will be added to the RBERT package in the near future.
+output_vectors_sw <- BERT_feats_sw$output %>%
+  dplyr::filter(token_index == token_index_filter, layer_index == layer_index_filter)
+# Add frequency for each word
+singlewords_we1 <- cbind(singlewords, output_vectors_sw)
+singlewords_we <- tibble::as_tibble(singlewords_we1)
+# Add the single words embeddings
+output_vectors_sw$singlewords_we <- singlewords_we
+output_vectors_sw
+}
+
+
+
+wordembeddings <- textImportWordsPlot(sq_data_tutorial)
+
+
+
+
+wordembeddings <- textImport(sq_data_tutorial)
+wordembeddings1 <- textImport(sq_data_tutorial, model = "bert_large_uncased")
 
 
 
