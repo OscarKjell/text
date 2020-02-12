@@ -6,6 +6,16 @@
 
 ## HAVE TO LOOK CLOSER SO THAT THE EXTRACTION FROM RBERT MAKES SENSE
 
+# Select all character variables and make then UTF-8 coded, since BERT wants it that way
+select_character_v_utf8 <- function(x){
+  # Select all character variables
+  x_characters <- dplyr::select_if(x, is.character)
+  # This makes sure that all variables are UTF-8 coded, since BERT wants it that way
+  x_characters <- tibble::as_tibble(purrr::map(x_characters, stri_encode, "", "UTF-8"))
+}
+
+
+
 # Split up sentences (NOW ONLY 512 tokens!);
 # Extract pre-trained BERT-embeddings)
 # devtools::document()
@@ -58,10 +68,9 @@ textImport <- function(x,
     model = model
   )
 
-  # Select all character variables
-  x_characters <- dplyr::select_if(x, is.character)
-  # This makes sure that all variables are UTF-8 coded, since BERT wants it that way
-  x_characters <- tibble::as_tibble(purrr::map(x_characters, stri_encode, "", "UTF-8"))
+  # Select all character variables and make then UTF-8 coded, since BERT wants it that way
+  x_characters <- select_character_v_utf8(x)
+
   # Create lists
   BERT_feats <- list()
   output_vectors <- list()
@@ -103,11 +112,9 @@ textImportWordsPlot <- function(x,
   BERT_PRETRAINED_DIR <- RBERT::download_BERT_checkpoint(
     model = model
   )
+  # Select all character variables and make then UTF-8 coded, since BERT wants it that way
+  x_characters <- select_character_v_utf8(x)
 
-  # Select all character variables
-  x_characters <- dplyr::select_if(x, is.character)
-  # This makes sure that all variables are UTF-8 coded, since BERT wants it that way
-  x_characters <- tibble::as_tibble(purrr::map(x_characters, stri_encode, "", "UTF-8"))
   # Create lists
   output_vectors_sw <- list()
 
@@ -152,11 +159,10 @@ output_vectors_sw
 
 
 
-wordembeddings <- textImportWordsPlot(sq_data_tutorial)
 
 
 
-
+wordembeddings_sw <- textImportWordsPlot(sq_data_tutorial)
 wordembeddings <- textImport(sq_data_tutorial)
 wordembeddings1 <- textImport(sq_data_tutorial, model = "bert_large_uncased")
 
