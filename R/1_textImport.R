@@ -54,7 +54,7 @@ select_character_v_utf8 <- function(x){
 
 # This version is importing the entire cell/response/paragraph in one; but only the 512-first tokens.
 # However, should make one that take in individual words without context; and another taking in sentences that are summed up?
-textImport <- function(x,
+textImportText <- function(x,
                        model = "bert_base_uncased",
                        layer_indexes_RBERT = 12,
                        batch_size = 2L,
@@ -96,9 +96,7 @@ textImport <- function(x,
 }
 
 
-
-
-
+# This function it creating a decontextualised embedding for each single word
 textImportWordsPlot <- function(x,
                        model = "bert_base_uncased",
                        layer_indexes_RBERT = 12,
@@ -118,53 +116,68 @@ textImportWordsPlot <- function(x,
   # Create lists
   output_vectors_sw <- list()
 
-# Get word-embeddings for all individual-words (which is used for the word plot)
-# Unite all text variables into one
-x_characters2 <- tidyr::unite(x_characters, "x_characters2", 1:ncol(x_characters), sep = " ")
-# unite all rows in the column into one cell
-x_characters3 <- paste(x_characters2[1], collapse = " ")
-# Remove remove all punctuation characters
-x_characters4 <- stringr::str_replace_all(x_characters3, "[[:punct:]]", " ")
-# Remove  \n
-x_characters5 <- gsub("[\r\n]", " ", x_characters4)
-x_characters6 <- gsub("[\n]", " ", x_characters5)
-# Tokenize into single words
-x_characters7 <- tokenizers::tokenize_words(x_characters6, simplify = T)
-# Create dataframe with single words and frequency
-x_characters8 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters7), " ")))))
-singlewords <- tibble(x_characters8$Var1, x_characters8$Freq)
-colnames(singlewords) <- c("words", "n")
-singlewords$words <- as.character(singlewords$words)
+  # Get word-embeddings for all individual-words (which is used for the word plot)
+  # Unite all text variables into one
+  x_characters2 <- tidyr::unite(x_characters, "x_characters2", 1:ncol(x_characters), sep = " ")
+  # unite all rows in the column into one cell
+  x_characters3 <- paste(x_characters2[1], collapse = " ")
+  # Remove remove all punctuation characters
+  x_characters4 <- stringr::str_replace_all(x_characters3, "[[:punct:]]", " ")
+  # Remove  \n
+  x_characters5 <- gsub("[\r\n]", " ", x_characters4)
+  x_characters6 <- gsub("[\n]", " ", x_characters5)
+  # Tokenize into single words
+  x_characters7 <- tokenizers::tokenize_words(x_characters6, simplify = T)
+  # Create dataframe with single words and frequency
+  x_characters8 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters7), " ")))))
+  singlewords <- tibble(x_characters8$Var1, x_characters8$Freq)
+  colnames(singlewords) <- c("words", "n")
+  singlewords$words <- as.character(singlewords$words)
 
-# Extract BERT feature
-BERT_feats_sw <- RBERT::extract_features(
-  examples = singlewords$words,
-  ckpt_dir = BERT_PRETRAINED_DIR,
-  layer_indexes = layer_indexes_RBERT,
-  batch_size = batch_size,
-  ...
-)
+  # Extract BERT feature
+  BERT_feats_sw <- RBERT::extract_features(
+    examples = singlewords$words,
+    ckpt_dir = BERT_PRETRAINED_DIR,
+    layer_indexes = layer_indexes_RBERT,
+    batch_size = batch_size,
+    ...
+  )
 
-# Extract/Sort output vectors for all sentences... These vectors can be used as input features for downstream models.
-# Convenience functions for doing this extraction will be added to the RBERT package in the near future.
-output_vectors_sw <- BERT_feats_sw$output %>%
-  dplyr::filter(token_index == token_index_filter, layer_index == layer_index_filter)
-# Add frequency for each word
-singlewords_we1 <- cbind(singlewords, output_vectors_sw)
-singlewords_we <- tibble::as_tibble(singlewords_we1)
-# Add the single words embeddings
-output_vectors_sw$singlewords_we <- singlewords_we
-output_vectors_sw
+  # Extract/Sort output vectors for all sentences... These vectors can be used as input features for downstream models.
+  # Convenience functions for doing this extraction will be added to the RBERT package in the near future.
+  output_vectors_sw <- BERT_feats_sw$output %>%
+    dplyr::filter(token_index == token_index_filter, layer_index == layer_index_filter)
+  # Add frequency for each word
+  singlewords_we1 <- cbind(singlewords, output_vectors_sw)
+  singlewords_we <- tibble::as_tibble(singlewords_we1)
+  # Add the single words embeddings
+  output_vectors_sw <- list()
+  output_vectors_sw$singlewords_we <- singlewords_we
+  output_vectors_sw
 }
 
 
+textImport <- function(x,
+                      model = "bert_base_uncased",
+                      layer_indexes_RBERT = 12,
+                      batch_size = 2L,
+                      token_index_filter = 1,
+                      layer_index_filter = 12,
+                      ...) {
+
+  wordembeddings_text <- textImportText(x)
+  wordembeddings_sw <- textImportWordsPlot(x)
+  wordembeddings_text$singlewords_we <- wordembeddings_sw$singlewords_we
+  wordembeddings_text
+}
+
+#wordembeddings <- textImport(sq_data_tutorial)
+#wordembeddings_text <- textImportText(sq_data_tutorial)
+#wordembeddings_sw1 <- textImportWordsPlot(sq_data_tutorial)
 
 
 
 
-wordembeddings_sw <- textImportWordsPlot(sq_data_tutorial)
-wordembeddings <- textImport(sq_data_tutorial)
-wordembeddings1 <- textImport(sq_data_tutorial, model = "bert_large_uncased")
 
 
 
