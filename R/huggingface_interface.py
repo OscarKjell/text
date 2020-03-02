@@ -29,7 +29,11 @@ def hgTransformerGetEmbedding(text_strings = "Here is more text.",
     else:
         return all_embs
 if __name__   == '__main__':
-    embeddings, tokens = hgTransformerGetEmbedding("Here is an example.")
+    if return_tokens:
+        embeddings, tokens = hgTransformerGetEmbedding("Here is an example.", return_tokens=return_tokens)
+    else:
+        embeddings = hgTransformerGetEmbedding("Here is an example.", return_tokens=return_tokens)
+    
     print(np.array(embeddings).shape)
     print(tokens)
 
