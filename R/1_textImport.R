@@ -11,7 +11,7 @@ select_character_v_utf8 <- function(x){
   # Select all character variables
   x_characters <- dplyr::select_if(x, is.character)
   # This makes sure that all variables are UTF-8 coded, since BERT wants it that way
-  x_characters <- tibble::as_tibble(purrr::map(x_characters, stri_encode, "", "UTF-8"))
+  x_characters <- tibble::as_tibble(purrr::map(x_characters, stringi::stri_encode, "", "UTF-8"))
 }
 
 textEmbeddingAggregation <- function(x, aggregation = "min"){
@@ -27,6 +27,7 @@ textEmbeddingAggregation <- function(x, aggregation = "min"){
   }
 }
 
+#library(tensorflow)
 
 # Split up sentences (NOW ONLY 512 tokens!);
 # Extract pre-trained BERT-embeddings)
@@ -111,10 +112,13 @@ textImportText <- function(x,
 
 # Aggregation of word embeddings; WHAT HAPPENS IF ONE TAKES SEVERAL LAYERS
 
-# Swedish test GIVE ERROR
+# Swedish test GIVE ERROR library(tidyverse) library(text) library(stri_encode)
 gg <- tibble("I am fine", "How are you")
-wordembeddings2 <- textImportText(gg, "bert_base_uncased")
-wordembeddings2
+gg <- tibble("I am fine")
+
+wordembeddings2 <- textImportText(gg)
+unlist(wordembeddings2)
+wordembeddings2$`"I am fine"`
 
 
 # Swedish test GIVE ERROR
