@@ -14,6 +14,18 @@ select_character_v_utf8 <- function(x){
   x_characters <- tibble::as_tibble(purrr::map(x_characters, stri_encode, "", "UTF-8"))
 }
 
+textEmbeddingAggregation <- function(x, aggregation = "min"){
+  if(aggregation == "min"){
+    min_vector <- unlist(map(x, min))
+  } else if (aggregation == "max") {
+    max_vector <- unlist(map(x, max))
+  } else if (aggregation == "mean") {
+    mean_vector <- unlist(map(x, mean))
+  } else if (aggregation == "CLS"){
+    CLS <- x %>%
+      dplyr::filter(token_index == 1, layer_index == 1)
+  }
+}
 
 
 # Split up sentences (NOW ONLY 512 tokens!);
@@ -60,6 +72,7 @@ textImportText <- function(x,
                        batch_size = 2L,
                        token_index_filter = 1,
                        layer_index_filter = 12,
+                       aggregation = "mean",
                        ...) {
 
   # Download/select pre-trained BERT model. This will go to an appropriate cache
@@ -87,17 +100,34 @@ textImportText <- function(x,
     )
     # Extract/Sort output vectors for all sentences...
     # Convenience functions for doing this extraction will be added to the RBERT package in the near future.
-    output_vectors[[i]] <- BERT_feats[[i]]$output %>%
-      dplyr::filter(token_index == token_index_filter, layer_index == layer_index_filter)
+    #output_vectors[[i]] <- BERT_feats[[i]]$output %>%
+    #  dplyr::filter(token_index == token_index_filter, layer_index == layer_index_filter)
+    output_vectors[[i]] <- textEmbeddingAggregation(BERT_feats[[i]]$output, aggregation = aggregation)
   }
   # Gives the names in the list the same name as the orginal character variables
   names(output_vectors) <- names(x_characters)
   output_vectors
 }
 
+# Aggregation of word embeddings; WHAT HAPPENS IF ONE TAKES SEVERAL LAYERS
+
+# Swedish test GIVE ERROR
+gg <- tibble("I am fine", "How are you")
+wordembeddings2 <- textImportText(gg, "bert_base_uncased")
+wordembeddings2
+
+
+# Swedish test GIVE ERROR
+gg <- tibble("är mår öde", "Jag är lycklig")
+wordembeddings1 <- textImportText(gg, "bert_base_multilingual_cased")
+wordembeddings2 <- textImportText(gg, "bert_base_uncased")
+wordembeddings1
+wordembeddings2
+
+
 
 # This function it creating a decontextualised embedding for each single word
-textImportWordsPlot <- function(x,
+textImportDecontext <- function(x,
                        model = "bert_base_uncased",
                        layer_indexes_RBERT = 12,
                        batch_size = 2L,
@@ -112,8 +142,7 @@ textImportWordsPlot <- function(x,
   )
   # Select all character variables and make then UTF-8 coded, since BERT wants it that way
   x_characters <- select_character_v_utf8(x)
-
-  # Create lists
+  # Create list to store output
   output_vectors_sw <- list()
 
   # Get word-embeddings for all individual-words (which is used for the word plot)
@@ -157,6 +186,16 @@ textImportWordsPlot <- function(x,
 }
 
 
+# Decontextualised test: you in different contexts get same embedding!
+ggr1 <- tibble("hello", "you", "are")
+ggr2 <- tibble("how", "you", "sick")
+wordembeddings3 <- textImportDecontext(ggr1, "bert_base_uncased")
+wordembeddings4 <- textImportDecontext(ggr2, "bert_base_uncased")
+table(wordembeddings3[3] %in% wordembeddings4[3])
+
+
+
+
 textImport <- function(x,
                       model = "bert_base_uncased",
                       layer_indexes_RBERT = 12,
@@ -166,17 +205,14 @@ textImport <- function(x,
                       ...) {
 
   wordembeddings_text <- textImportText(x)
-  wordembeddings_sw <- textImportWordsPlot(x)
+  wordembeddings_sw <- textImportDecontext(x)
   wordembeddings_text$singlewords_we <- wordembeddings_sw$singlewords_we
   wordembeddings_text
 }
 
-#wordembeddings <- textImport(sq_data_tutorial)
+wordembeddings <- textImport(sq_data_tutorial, "bert_base_multilingual_cased")
 #wordembeddings_text <- textImportText(sq_data_tutorial)
 #wordembeddings_sw1 <- textImportWordsPlot(sq_data_tutorial)
-
-
-
 
 
 
