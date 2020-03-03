@@ -5,8 +5,8 @@ def hgTransformerGetEmbedding(text_strings = "Here is more text.",
                               pretrained_weights = 'bert-base-uncased',
                               tokenizer_class = BertTokenizer,
                               model_class = BertModel,
-                              layers = 'all',  #all or a list of layers to keep
-                              return_tokens=True):
+                              layers = 11:12, 
+                              return_tokens= False):
     tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
     transformer_model = model_class.from_pretrained(pretrained_weights, output_hidden_states=True)
     if not isinstance(text_strings, list):
@@ -29,6 +29,7 @@ def hgTransformerGetEmbedding(text_strings = "Here is more text.",
     else:
         return all_embs
 if __name__   == '__main__':
+    return_tokens=False
     if return_tokens:
         embeddings, tokens = hgTransformerGetEmbedding("Here is an example.", return_tokens=return_tokens)
     else:
