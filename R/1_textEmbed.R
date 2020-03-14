@@ -37,6 +37,7 @@ textEmbeddingAggregation <- function(x, aggregation = "mean"){
 
 #install.packages(reticulate)
 #.rs.restartR()
+# Reticulate is a library providing a link to python
 library(reticulate)
 
 #By default, reticulate uses the version of Python found on your PATH (i.e. Sys.which("python")).
@@ -51,15 +52,32 @@ py_config()
 
 # Run python file with hungface interface
 source_python("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/text/R/huggingface_interface.py")
-x  <-  "I want!"
-y  <-  hgTransformerGetEmbedding(text_strings = x,
+x  <-  "I am here"
+y1  <-  hgTransformerGetEmbedding(text_strings = x,
                                  pretrained_weights = 'bert-base-uncased',
                                  tokenizer_class = BertTokenizer,
                                  model_class = BertModel,
-                                 layers = 'all',  #all or a list of layers to keep
-                                 return_tokens = 'False') #setting does not work
-y
+                                 num_hidden_layers = 10,  #all or a list of layers to keep
+                                 return_tokens = FALSE) #setting does not work
+y1
 
+y12  <-  hgTransformerGetEmbedding(text_strings = x,
+                                  pretrained_weights = 'bert-base-uncased',
+                                  tokenizer_class = BertTokenizer,
+                                  model_class = BertModel,
+                                  num_hidden_layers = 9,  #all or a list of layers to keep
+                                  return_tokens = FALSE) #setting does not work
+y12
+identical(y1, y12)
+
+
+kuyy2  <-  hgTransformerGetEmbedding(text_strings = x,
+                                 pretrained_weights = 'roberta-base',
+                                 tokenizer_class = RobertaTokenizer,
+                                 model_class = RobertaModel,
+                                 layers = 'all',  #all or a list of layers to keep
+                                 return_tokens = FALSE) #setting does not work
+y2
 
 
 # Create parameter to pass to Python function

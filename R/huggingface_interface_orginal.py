@@ -5,7 +5,7 @@ def hgTransformerGetEmbedding(text_strings = "Here is more text.",
                               pretrained_weights = 'bert-base-uncased',
                               tokenizer_class = BertTokenizer,
                               model_class = BertModel,
-                              num_hidden_layers = 11, 
+                              layers = 'all', 
                               return_tokens= True):
     tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
     transformer_model = model_class.from_pretrained(pretrained_weights, output_hidden_states=True)
@@ -20,7 +20,7 @@ def hgTransformerGetEmbedding(text_strings = "Here is more text.",
         with torch.no_grad():
             hidden_states = transformer_model(torch.tensor([input_ids]))[0]
             #if layers != 'all':
-            #    hidden_states = num_hidden_layers[int(layers)]
+            #    hidden_states = hidden_states[layers]
             all_embs.append(hidden_states.tolist())
             if return_tokens:
                 all_toks.append(tokens)
@@ -37,4 +37,3 @@ if __name__   == '__main__':
     
     print(np.array(embeddings).shape)
     print(tokens)
-

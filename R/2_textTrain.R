@@ -2,10 +2,14 @@
 # library(caret)
 # usethis::use_data()
 
-### semTrain: Training the word embeddings to numeric output
+### textTrain: Training the word embeddings to numeric output
+### textTrainLists: Get multiple resutls at once from the textTrain of training of the word embeddings to numeric output
 
-# semTrainMulti: Adding several text-variables together with individual pca:s
-# semTrainMCV:
+
+# textTrainMultiT: Adding several text-variables together with individual pca:s
+# textTrainMultiTnN: Adding several text and numeric variables together with individual pca:s
+
+# textTrainMCV:
 
 ########################################################################
 ########
