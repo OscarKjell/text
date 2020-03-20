@@ -8,8 +8,8 @@ library(lsa)
 # Second, functions to apply semantic representations from the LSA space to the words
 
 # Test data
-#data_raw <- read_csv("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/spaces/StudiesAll_Eng.csv", col_names = FALSE)
-
+data_raw <- read_csv("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/spaces/StudiesAll_Eng.csv", col_names = FALSE)
+x <- data_raw[1:10,]
 
 # Create LSA space; x = column with text; dims = number of dimensions to create, where dimcalc_share() is function from lsa that helps you select number of dimensions
 textSpace <- function(x, dims = dimcalc_share()) {
@@ -31,11 +31,14 @@ textSpace <- function(x, dims = dimcalc_share()) {
 
   # Splitting the two different matrices
   lsa_space_tk <- lsa_space$tk
-  lsa_space_df <- lsa_space$dk
-
-  # Add words, add them to a list and give the names
+  colnames(lsa_space_tk) <- c(paste("V", 1:(ncol(lsa_space_tk)), sep=""))
   lsa_space_tk <- tibble::rownames_to_column(as.data.frame(lsa_space_tk), "words")
+
+  lsa_space_df <- lsa_space$dk
+  colnames(lsa_space_df) <- c(paste("V", 1:(ncol(lsa_space_df)), sep=""))
   lsa_space_df <- tibble::rownames_to_column(as.data.frame(lsa_space_df), "words")
+
+  # Add them to a list and give the names
   space <- list(lsa_space_tk, lsa_space_df)
   names(space) <- c("tk", "df")
   space
@@ -44,93 +47,73 @@ textSpace <- function(x, dims = dimcalc_share()) {
 
 # REMOVE
 
-# Function to apply the semantic representation to ONE word; and return vector with NA if word is not found
-applysemrep <- function(x, space = space){
-  #If semrep is found get it; if not return NA vector of dimensions (which equal "Ndim"=space[["s"]][[14]] )
-  if (sum(space$words==x[TRUE]) %in% 1) {
-    x <- tolower(x)
-    #Get the semantic representation for a word=x
-    word1rep <- space[space$words==x, ]
-
-    #Only get the semantic represenation as a vector without the actual word in the first column
-    wordrep <- as_vector(word1rep[,2:length(word1rep)])
-
-    # If the word does not have a semrep return vector with Ndim (512) dimensions of NA
-  }else if (x %in% NA) {
-    wordrep <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
-    class(wordrep)
-    wordrep <- as.numeric(wordrep)
-  } else {
-    wordrep <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
-    wordrep <- as.numeric(wordrep)
-  }
-}
-
-
-# Ad this to the other.
-
-#  Function to take min, max, mean or the CLS (which comes from BERT models; not Static spaces) from list of vectors
-textEmbeddingAggregation <- function(x, aggregation = "min"){
-  if(aggregation == "min"){
-    min_vector <- unlist(map(x, min, na.rm = TRUE))
-  } else if (aggregation == "max") {
-    max_vector <- unlist(map(x, max, na.rm = TRUE))
-  } else if (aggregation == "mean") {
-    mean_vector <- unlist(map(x, mean, na.rm = TRUE))
-  } else if (aggregation == "CLS"){
-    CLS <- x %>%
-      dplyr::filter(token_index == 1, layer_index == 1)
-  } else if (aggregation == "normalize1") {
-#    norma_vector <- unlist(map(x, norma))
-    x2 <- x[complete.cases(x), ]
-    x3 <- colSums(x2)
-    x4 <- normalize.vector(x3)
-  }
-}
+# # Function to apply the semantic representation to ONE word; and return vector with NA if word is not found
+# applysemrep <- function(x, space = space){
+#   #If semrep is found get it; if not return NA vector of dimensions (which equal "Ndim"=space[["s"]][[14]] )
+#   if (sum(space$words==x[TRUE]) %in% 1) {
+#     x <- tolower(x)
+#     #Get the semantic representation for a word=x
+#     word1rep <- space[space$words==x, ]
+#
+#     #Only get the semantic represenation as a vector without the actual word in the first column
+#     wordrep <- as_vector(word1rep[,2:length(word1rep)])
+#
+#     # If the word does not have a semrep return vector with Ndim (512) dimensions of NA
+#   }else if (x %in% NA) {
+#     wordrep <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
+#     class(wordrep)
+#     wordrep <- as.numeric(wordrep)
+#   } else {
+#     wordrep <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
+#     wordrep <- as.numeric(wordrep)
+#   }
+# }
 
 
 # x <- c("happy", "joy") aggregate = "normalize1" space=
 # if x= "" replace with NA
 # Generic function to apply a common semantic representaion for ALL words in a CELL; and if there are no words return a Ndim vector with NAs
-semanticrepresentation <- function(x, space = space, aggregate = "min") {
-  x <- tolower(x)
-  #Separates the words in a cell into a character vector with separate words.
-  x <- data.frame(unlist(str_extract_all(x, "[[:alpha:]]+")))
-  colnames(x) <- c("wordsAll1")
-  x <- as.tibble(x)
-  x <- as.character(x$wordsAll1)
-  #If empty return a NA semantic representation
-  if (length(x)== 0){
-    x2 <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
-    x2 <- as.numeric(x2)
-  }else{
-    # Create a matrix with all the semantic representations using the function above
-    #x1 <-  apply(x, 1, applysemrep)
-    x1 <-  sapply(x, applysemrep, space)
-    x1 <- tibble::as_tibble(t(x1))
-    #IF more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept aggre
-    x2 <- textEmbeddingAggregation(x1, aggregation = aggregate) #aggregate
-    x2
-    #If all values are 0 they should be NA instead; otherwise return the semantic representation.
-    if (all(x2 == 0|x2 == Inf|x2 == -Inf | is.nan(x2)) == TRUE){
-      x2 <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
-      x2 <- as.numeric(x2)
-    }else{
-      x2 <- x2
-    }
-  }
-}
+# semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min", ...) {
+#    x <- tolower(x)
+#    #Separates the words in a cell into a character vector with separate words.
+#    x <- data.frame(unlist(str_extract_all(x, "[[:alpha:]]+")))
+#    colnames(x) <- c("wordsAll1")
+#    x <- as.tibble(x)
+#    x <- as.character(x$wordsAll1)
+#    #If empty return a NA semantic representation
+#    if (length(x)== 0){
+#      x2 <- data.frame(matrix(ncol = length(single_wordembeddings2 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
+# ####     x2 <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
+#      x2 <- as.numeric(x2)
+#    }else{
+#      # Create a matrix with all the semantic representations using the function above
+#      #x1 <-  apply(x, 1, applysemrep)
+#      x1 <-  sapply(x, applysemrep, ...) ###
+#      x1 <- tibble::as_tibble(t(x1))
+#      #IF more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept aggre
+#      x2 <- textEmbeddingAggregation(x1, aggregation = aggregate) #aggregate
+#      x2
+#      #If all values are 0 they should be NA instead; otherwise return the semantic representation.
+#      if (all(x2 == 0|x2 == Inf|x2 == -Inf | is.nan(x2)) == TRUE){
+#        x2 <- data.frame(matrix(ncol = length(single_wordembeddings2 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
+# ###### x2 <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
+#        x2 <- as.numeric(x2)
+#      }else{
+#        x2 <- x2
+#      }
+#    }
+#  }
 
 
 
 ### Function applying semreps for all character variables and saves them in a list.
 ##This is done because applying semreps takes time to do over and over again.
 #Apply semrep to all character variables; save them as tibbles in a list; where the tibbles are called the same as the original variable
-textStaticSpace <- function(df, space=space, tk_df = "tk", aggregate = "min") {
+textStaticSpace <- function(df, space, tk_df = "tk", aggregate = "min") {
 
     # Select the tk or dk matrrix derived from the lsa (svd)
   if(tk_df == "tk") {
-  space <- tibble::as_tibble(space$tk)
+    space <- tibble::as_tibble(space$tk)
   } else if (tk_df == "df"){
     space <- tibble:as_tibble(space$df)
   } else {
@@ -141,11 +124,13 @@ textStaticSpace <- function(df, space=space, tk_df = "tk", aggregate = "min") {
 
   # Create empty list
   list_semrep <- list()
-
+  # Send the space to Semanticrepresentation function as single_wordembeddings2
+  single_wordembeddings2 <- space
+  single_wordembeddings1 <- space
   # For loop that apply the semrep to each character variable
   for (i in 1:length(df_characters)) {
     # Apply the semantic representation funtion to all rows; transpose the resulting matrix and making a tibble
-    list_semrep[[i]] <- as_tibble(t(sapply(df_characters[[i]], semanticrepresentation, space, aggregate)))
+    list_semrep[[i]] <- as_tibble(t(sapply(df_characters[[i]], semanticrepresentation, single_wordembeddings2, aggregate, single_wordembeddings1=single_wordembeddings1)))
   }
 
   # Gives the tibbles in the list the same name as the orginal character variables
@@ -155,9 +140,9 @@ textStaticSpace <- function(df, space=space, tk_df = "tk", aggregate = "min") {
 
 
 # Testing
-#x <- c("happy joy", "sad unhappy", "sadfsdfds ljhlj asdffd")
-#y <- c(1, 2, 3)
-#tbl <- tibble(x, y)
+x <- c("happy joy", "sad unhappy", "sadfsdfds ljhlj asdffd")
+y <- c(1, 2, 3)
+tbl <- tibble(x, y)
 
 # Creating space
 #data_comun_with_text <- data_raw
@@ -166,8 +151,26 @@ space_test
 space_test$tk
 
 # Testing applying space
-data_testing <- textStaticSpace(tbl, space=space_ok, aggregate = "max")
+data_testing <- textStaticSpace(tbl, space=space_test, tk_df = "tk",
+                                aggregate = "max")
 data_testing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
