@@ -1,6 +1,6 @@
  
-# NB! This file contain two functions that conceptualually are the same as in Semantic Excel (however, the results are similar 
-# but not excactly the same between the programs!) These functions have LOW priority and does not have to be reviewed at this stage or ever" 
+# NB! Two functions that are similar to analyses in  Semantic Excel (for comparison purposes only)! The functions are conceptualually the same as in Semantic Excel (however, the results are similar 
+# but NOT excactly the same between the programs!) These functions have LOW priority and does not have to be reviewed at this stage or ever" 
 # This file contain two functions; one to train word variables to numeric variables; and one 
 #to save the training as a predictive models. 
 
