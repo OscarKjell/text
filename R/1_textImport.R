@@ -14,6 +14,7 @@ select_character_v_utf8 <- function(x){
   x_characters <- tibble::as_tibble(purrr::map(x_characters, stringi::stri_encode, "", "UTF-8"))
 }
 
+library(ppls)
 
 #  Function to take min, max, mean or the CLS (which comes from BERT models; not Static spaces) from list of vectors
 textEmbeddingAggregation <- function(x, aggregation = "min"){
@@ -30,7 +31,7 @@ textEmbeddingAggregation <- function(x, aggregation = "min"){
     #    norma_vector <- unlist(map(x, norma))
     x2 <- x[complete.cases(x), ]
     x3 <- colSums(x2)
-    x4 <- normalize.vector(x3)
+    x4 <- ppls::normalize.vector(x3)
   }
 }
 
@@ -266,12 +267,6 @@ applysemrep <- function(x, single_wordembeddings1) {
 }
 
 
-
-
-
-
-
-
 #  devtools::document()
 #' semanticrepresentation
 #' Function to apply an aggregated semantic representaion for ALL words in a CELL; and if there are no words return a vector with NAs
@@ -294,6 +289,7 @@ semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min",
   } else {
     # Create a matrix with all the semantic representations using the function above
     x1 <- sapply(x, applysemrep, ...)
+    x1 <- tibble::as_tibble(t(x1))  ################## This makes it work for textStaticSpace, but might do something bad with other function?
     # If more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept
     x2 <- textEmbeddingAggregation(x1, aggregation = aggregate) #aggregate
     # If all values are 0 they should be NA instead; otherwise return the semantic representation.
@@ -306,7 +302,6 @@ semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min",
     }
   }
 }
-
 
 
 
