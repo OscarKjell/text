@@ -229,9 +229,6 @@ wordembeddings <- textImport(sq_data_tutorial, "bert_base_multilingual_cased")
 
 
 
-
-
-
 # Below are two helper functions not exported for users of the package
 # embeddings <- wordembeddings4_10[1]
 # words <- c("happy", "harmony", "joy", "sad", "cry", "ad", "afdg", "adgh", "asdfg", "age")
@@ -283,7 +280,7 @@ applysemrep <- function(x, single_wordembeddings1) {
 #' @param single_wordembeddings Used to get number of dimensions in embedding/space
 #' @return semantic representations for all words in cells.
 #' @noRd
-semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min"...) {
+semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min", ...) {
   x <- tolower(x)
   # Separates the words in a cell into a character vector with separate words.
   x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
@@ -309,6 +306,9 @@ semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min".
     }
   }
 }
+
+
+
 
 
 
