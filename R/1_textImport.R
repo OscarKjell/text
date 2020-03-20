@@ -14,18 +14,26 @@ select_character_v_utf8 <- function(x){
   x_characters <- tibble::as_tibble(purrr::map(x_characters, stringi::stri_encode, "", "UTF-8"))
 }
 
+
+#  Function to take min, max, mean or the CLS (which comes from BERT models; not Static spaces) from list of vectors
 textEmbeddingAggregation <- function(x, aggregation = "min"){
   if(aggregation == "min"){
-    min_vector <- unlist(map(x, min))
+    min_vector <- unlist(map(x, min, na.rm = TRUE))
   } else if (aggregation == "max") {
-    max_vector <- unlist(map(x, max))
+    max_vector <- unlist(map(x, max, na.rm = TRUE))
   } else if (aggregation == "mean") {
-    mean_vector <- unlist(map(x, mean))
+    mean_vector <- unlist(map(x, mean, na.rm = TRUE))
   } else if (aggregation == "CLS"){
     CLS <- x %>%
       dplyr::filter(token_index == 1, layer_index == 1)
+  } else if (aggregation == "normalize1") {
+    #    norma_vector <- unlist(map(x, norma))
+    x2 <- x[complete.cases(x), ]
+    x3 <- colSums(x2)
+    x4 <- normalize.vector(x3)
   }
 }
+
 
 #library(tensorflow)
 
@@ -419,3 +427,24 @@ textImportWords <- function(x, layer_indexes_RBERT = 12, batch_size_IBT = 2L, to
 # decontext_we3
 # decontext_we <- textImport(x)
 #
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
