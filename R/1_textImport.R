@@ -36,6 +36,81 @@ textEmbeddingAggregation <- function(x, aggregation = "min"){
 }
 
 
+# Below are two helper functions not exported for users of the package
+# embeddings <- wordembeddings4_10[1]
+# words <- c("happy", "harmony", "joy", "sad", "cry", "ad", "afdg", "adgh", "asdfg", "age")
+# single_wordembeddings_df <- cbind(words, embeddings$harmonywords)
+# single_wordembeddings_df <- as_tibble(single_wordembeddings_df)
+# devtools::document()
+#' applysemrep
+#' Function to apply the semantic representation to ONE word from a matrix of semreps; and
+#' return vector with NA if word is not found.
+#' That is, look up word embeddings for each word in output_vectors_sw
+#' @param x A word
+#' @param single_wordembeddings Used to get number of dimensions in embedding/space
+#' @return semantic representation from a matrix.
+#' @noRd
+# x="happy"
+# single_wordembeddings_df
+applysemrep <- function(x, single_wordembeddings1) {
+  # If semrep is found get it; if not return NA vector of dimensions
+  if (sum(single_wordembeddings1$words == x[TRUE]) %in% 1) {
+    x <- tolower(x)
+    # Get the semantic representation for a word=x
+    word1rep <- single_wordembeddings1[single_wordembeddings1$words == x, ]
+    # Only get the semantic represenation as a vector without the actual word in the first column
+    wordrep <- purrr::as_vector(word1rep %>% dplyr::select(dplyr::starts_with("V")))
+    # If the word does not have a semrep return vector with NA the same number of dimensions as columns with V
+  } else if (x %in% NA) {
+    # The length() refers to how many column starts with V (i.e., how many dimensions)
+    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
+    class(wordrep)
+    wordrep <- as.numeric(wordrep)
+  } else {
+    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
+    wordrep <- as.numeric(wordrep)
+  }
+}
+
+
+#  devtools::document()
+#' semanticrepresentation
+#' Function to apply an aggregated semantic representaion for ALL words in a CELL; and if there are no words return a vector with NAs
+#' The function is using above applysemrep function.
+#' @param x words
+#' @param single_wordembeddings Used to get number of dimensions in embedding/space
+#' @return semantic representations for all words in cells.
+#' @noRd
+semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min", ...) {
+  x <- tolower(x)
+  # Separates the words in a cell into a character vector with separate words.
+  x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
+  colnames(x) <- c("wordsAll1")
+  x <- as_tibble(x)
+  x <- as.character(x$wordsAll1)
+  # If empty return a "semantic representation" with NA
+  if (length(x) == 0) {
+    x2 <- data.frame(matrix(ncol = length(single_wordembeddings2 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
+    x2 <- as.numeric(x2)
+  } else {
+    # Create a matrix with all the semantic representations using the function above
+    x1 <- sapply(x, applysemrep, ...)
+    x1 <- tibble::as_tibble(t(x1))  ################## This makes it work for textStaticSpace, but might do something bad with other function?
+    # If more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept
+    x2 <- textEmbeddingAggregation(x1, aggregation = aggregate) #aggregate
+    # If all values are 0 they should be NA instead; otherwise return the semantic representation.
+    if (all(x2 == 0|x2 == Inf|x2 == -Inf | is.nan(x2)) == TRUE){
+      x2 <- data.frame(matrix(ncol = length(single_wordembeddings2 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
+      #OLD:   x2 <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
+      x2 <- as.numeric(x2)
+    } else {
+      x2 <- x2
+    }
+  }
+}
+
+
+
 #library(tensorflow)
 
 # Split up sentences (NOW ONLY 512 tokens!);
@@ -227,81 +302,6 @@ wordembeddings <- textImport(sq_data_tutorial, "bert_base_multilingual_cased")
 #wordembeddings_text <- textImportText(sq_data_tutorial)
 #wordembeddings_sw1 <- textImportWordsPlot(sq_data_tutorial)
 
-
-
-
-# Below are two helper functions not exported for users of the package
-# embeddings <- wordembeddings4_10[1]
-# words <- c("happy", "harmony", "joy", "sad", "cry", "ad", "afdg", "adgh", "asdfg", "age")
-# single_wordembeddings_df <- cbind(words, embeddings$harmonywords)
-# single_wordembeddings_df <- as_tibble(single_wordembeddings_df)
-# devtools::document()
-#' applysemrep
-#' Function to apply the semantic representation to ONE word from a matrix of semreps; and
-#' return vector with NA if word is not found.
-#' That is, look up word embeddings for each word in output_vectors_sw
-#' @param x A word
-#' @param single_wordembeddings Used to get number of dimensions in embedding/space
-#' @return semantic representation from a matrix.
-#' @noRd
-# x="happy"
-# single_wordembeddings_df
-applysemrep <- function(x, single_wordembeddings1) {
-  # If semrep is found get it; if not return NA vector of dimensions
-  if (sum(single_wordembeddings1$words == x[TRUE]) %in% 1) {
-    x <- tolower(x)
-    # Get the semantic representation for a word=x
-    word1rep <- single_wordembeddings1[single_wordembeddings1$words == x, ]
-    # Only get the semantic represenation as a vector without the actual word in the first column
-    wordrep <- purrr::as_vector(word1rep %>% dplyr::select(dplyr::starts_with("V")))
-    # If the word does not have a semrep return vector with NA the same number of dimensions as columns with V
-  } else if (x %in% NA) {
-    # The length() refers to how many column starts with V (i.e., how many dimensions)
-    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
-    class(wordrep)
-    wordrep <- as.numeric(wordrep)
-  } else {
-    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
-    wordrep <- as.numeric(wordrep)
-  }
-}
-
-
-#  devtools::document()
-#' semanticrepresentation
-#' Function to apply an aggregated semantic representaion for ALL words in a CELL; and if there are no words return a vector with NAs
-#' The function is using above applysemrep function.
-#' @param x words
-#' @param single_wordembeddings Used to get number of dimensions in embedding/space
-#' @return semantic representations for all words in cells.
-#' @noRd
-semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min", ...) {
-  x <- tolower(x)
-  # Separates the words in a cell into a character vector with separate words.
-  x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
-  colnames(x) <- c("wordsAll1")
-  x <- as_tibble(x)
-  x <- as.character(x$wordsAll1)
-  # If empty return a "semantic representation" with NA
-  if (length(x) == 0) {
-    x2 <- data.frame(matrix(ncol = length(single_wordembeddings2 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
-    x2 <- as.numeric(x2)
-  } else {
-    # Create a matrix with all the semantic representations using the function above
-    x1 <- sapply(x, applysemrep, ...)
-    x1 <- tibble::as_tibble(t(x1))  ################## This makes it work for textStaticSpace, but might do something bad with other function?
-    # If more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept
-    x2 <- textEmbeddingAggregation(x1, aggregation = aggregate) #aggregate
-    # If all values are 0 they should be NA instead; otherwise return the semantic representation.
-    if (all(x2 == 0|x2 == Inf|x2 == -Inf | is.nan(x2)) == TRUE){
-      x2 <- data.frame(matrix(ncol = length(single_wordembeddings2 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
-      #OLD:   x2 <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
-      x2 <- as.numeric(x2)
-    } else {
-      x2 <- x2
-    }
-  }
-}
 
 
 
