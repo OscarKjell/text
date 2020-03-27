@@ -9,11 +9,15 @@
 # textTrainMultiT: Adding several text-variables together with individual pca:s
 # textTrainMultiTnN: Adding several text and numeric variables together with individual pca:s
 
-# textTrainMCV:
+# textTrainMCV: text variablelse are predicting all the rating scales and then used to predict outcome
+
+
+
+
 
 ########################################################################
 ########
-########     textTrain: Training the word embeddings to numeric output
+########     textTrain: CARET Training the word embeddings to numeric output
 ########
 ########################################################################
 # x is V1 - V778
@@ -90,6 +94,9 @@ textTrain <- function(x, y, nrFolds_k = 10, methodTrain = "ridge", preProcessTra
 # test function: textTrain(wordembeddings4_100$harmonywords, sq_data_tutorial4_100$hilstotal)
 
 
+
+
+
 # devtools::document()
 #' textTrainLists trains word embeddings from several text variable to several numeric variable.
 #'
@@ -115,7 +122,7 @@ textTrainLists <- function(x, y, nrFolds_k = 10, methodTrain = "ridge", preProce
   variables <- dput(names(y))
   # Duplicate variable names to as many different wordembeddings there are in x
   variables <- rep(variables, length(x))
-  # Create data fram with duplicated variables
+  # Create data frame with duplicated variables
   y <- y[c(variables)]
   # Order columns alphabatically
   y <- y[, order(colnames(y))]
