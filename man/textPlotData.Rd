@@ -40,9 +40,10 @@ textPlotData computes variables about individual words for plotting.
 wordembeddings <- wordembeddings4_10
 data <- sq_data_tutorial8_10
 df_for_plotting <- textPlotData(data$harmonywords, wordembeddings$harmonywords,
-wordembeddings$singlewords_we,
-data$hilstotal, data$swlstotal,
-Bonferroni = TRUE, nrFolds=2)
+  wordembeddings$singlewords_we,
+  data$hilstotal, data$swlstotal,
+  Bonferroni = TRUE, nrFolds = 2
+)
 df_for_plotting
 }
 \seealso{

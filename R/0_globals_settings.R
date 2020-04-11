@@ -6,5 +6,9 @@ utils::globalVariables(c(
   "SS", "p_values.x", "p_values.y", "words", "n.x",
   "addEqualNrNArows", "applysemrep", "single_wordembeddings_df", "Ndim",
   "semanticrepresentation",
-  "guide_legend"
+  "guide_legend", "V1",
+  "textTrainRandomForest", "textTrainCVpredictions", "textTrainCVpredictionsRF",
+  "penalty", "mixture",
+  "id1", "y.y", "id",
+  ".pred", ".", "analysis", "assessment", "df3_glmn_grid"
 ))

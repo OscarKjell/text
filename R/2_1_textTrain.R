@@ -1,66 +1,82 @@
 
-library(tidymodels)
+#library(tidymodels)
 # Basic example: https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/
 # recipies: https://tidymodels.github.io/recipes/articles/Simple_Example.html
 # rsample: https://tidymodels.github.io/rsample/articles/Basics.html
 # parsnip: https://tidymodels.github.io/parsnip/articles/parsnip_Intro.html
 # yardstick: https://tidymodels.github.io/yardstick/reference/index.html
 # Two-day workshop: https://github.com/tidymodels/aml-training/tree/master/two%20day
-
 # .rs.restartR()
 
 # https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#29
-library(doParallel)
-cl <- makeCluster(6)
-registerDoParallel(cl)
+#library(doParallel)
+#help(doParallel)
+#cl <- makeCluster(6)
+#registerDoParallel(cl)
+#stopCluster(cl)
 
-stopCluster(cl)
+# library(text)
+# library(tidymodels)
+# library(rlang)
+# library(magrittr)
+# library(recipes)
+# library(workflows)
+# library(parsnip)
+# library(tune)
+# library(data.table)
+# library(stats)
+# library(tidyselect)
+# library(tidyverse)
 
-
-
-library(text)
-library(tidymodels)
-library(rlang)
-library(magrittr)
-
-library(recipes)
-library(workflows)
-library(parsnip)
-library(tune)
-
-library(data.table)
-
-library(tidyselect)
 # test data
-#x = solmini_sd300_tk_mean$movement[1:40,]
-#y = solmini$phq_tot[1:40]
+# x = solmini_sd300_tk_mean$movement[1:50,]
+# y = solmini$phq_tot[1:50]
 
 
 
-# textTrain function using Tidymodeels
-textTrainTidy <- function(x, y){
+# textTrain using Tidymodels
+
+# devtools::document()
+#' textTrain trains word embeddings to a numeric variable.
+#'
+#' @param x Wordembeddings from textImport.
+#' @param y The numeric variable to predict.
+#' @param nrFolds_k Number of folds to use.
+#' @param preProcessPCAthresh Preprocessing threshold.
+#' @param strata_y variables to stratify according; default y, can set to NULL
+#' @param methodCor Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").
+#' @param describe_model Input text to describe your model.
+#' @return A correlation between predicted and observed values; as well as predicted values.
+#' @examples
+#' wordembeddings <- wordembeddings4_10
+#' ratings_data <- sq_data_tutorial4_10
+#' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k = 2)
+#' @seealso see \code{\link{textTrainLists}} \code{\link{textTtest}}
+#' @importFrom stats cor.test na.omit
+#' @importFrom dplyr select starts_with filter
+#' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
+#' @importFrom rsample vfold_cv
+#' @importFrom parsnip linear_reg set_engine
+#' @importFrom tune tune control_grid tune_grid select_best collect_predictions
+#' @export
+textTrain <- function(x, y, nrFolds_k = 10, preProcessPCAthresh = 0.95, strata_y = "y", methodCor = "pearson", describe_model = "Describe the model further and share it with others"){
   x1 <- dplyr::select(x, dplyr::starts_with("V"))
   df2 <- cbind(x1, y)
-  nrow(df2)
+  df3 <- df2 #[complete.cases(df2),]
 
-  df3 <- df2#[complete.cases(df2),]
-  nrow(df3)
-
-  # Recipe: Preprocessing with pca help(recipe) help(step_naomit)
+  # Recipe: Preprocessing with pca, see options: ls("package:recipes", pattern = "^step_")
   df3_recipe <-
     recipes::recipe(y ~ .,
                     data = df3) %>%
-    #  step_BoxCox(all_predictors()) %>%
-    step_naomit(V1, skip = TRUE) %>%
+    #  recipes::step_BoxCox(all_predictors()) %>%
+    recipes::step_naomit(V1, skip = TRUE) %>%
     recipes::step_center(all_predictors()) %>%
     recipes::step_scale(all_predictors()) %>%
-    recipes::step_pca(all_predictors(), threshold = .95) #%>%
-  # recipes::step_pca(one_of(!!stations), num_comp = tune())
-  # recipes::prep(training = bivariate_data_train)
+    recipes::step_pca(all_predictors(), threshold = preProcessPCAthresh) #%>% num_comp = tune()
 
-  # Cross-validation
+  # Cross-validation help(vfold_cv)
   set.seed(42)
-  df3_cv_splits <- rsample::vfold_cv(df3, v = 10, repeats = 1, strata = NULL) # , ... ,  breaks = 4
+  df3_cv_splits <- rsample::vfold_cv(df3, v = nrFolds_k, strata = strata_y) # , ... ,  breaks = 4
 
   # Model
   df3_model <-
@@ -73,61 +89,92 @@ textTrainTidy <- function(x, y){
     mixture = (0:5) / 5
     )
 
-  ctrl <- control_grid(save_pred = TRUE)
+  ctrl <- tune::control_grid(save_pred = TRUE)
 
-  #cl <- makeCluster(10)
-  #registerDoParallel(cl)
-  # Tune_grid()
-  df3_glmn_tune <- tune_grid(
+  # Tune_grid
+  df3_glmn_tune <- tune::tune_grid(
     df3_recipe,
     model = df3_model,
     resamples = df3_cv_splits,
     grid = df3_glmn_grid,
     control = ctrl
     )
-    #stopCluster(cl)
 
-  # Select the best penelty and mixture based on rmsea
-  best_glmn <-
-    select_best(df3_glmn_tune, metric = "rmse", maximize = FALSE)
+  # Select the best penelty and mixture based on rmse help(select_best)
+  best_glmn <- tune::select_best(df3_glmn_tune, metric = "rmse", maximize = TRUE)
 
   # Get predictions and observed (https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#32)
   df3_predictions <- tune::collect_predictions(df3_glmn_tune) %>%
-    filter(penalty == best_glmn$penalty, mixture == best_glmn$mixture)
-  df3_predictions
+    dplyr::filter(penalty == best_glmn$penalty, mixture == best_glmn$mixture)
 
-  # Evaluating the predictions using correlation
-  correlation <- cor.test(df3_predictions$y, df3_predictions$.pred)
-  output <- list(correlation, df3_predictions)
-  names(output) <- c("correlation", "predictions")
+  # Evaluating the predictions using correlation help(filter)
+  correlation <- stats::cor.test(df3_predictions$y, df3_predictions$.pred, method = methodCor)
+
+  # Describe model; adding user's-description + the name of the x and y
+  # describe_model_detail <- c(describe_model, paste(names(x)), paste(names(y)))
+  describe_model_detail <- c(deparse(substitute(x)), deparse(substitute(y)), describe_model)
+
+  output <- list(df3_predictions, describe_model_detail, correlation)
+  names(output) <- c("predictions", "model description", "correlation")
   output
 }
-### End of textTrainTidy function
-#test1 <- textTrainTidy(xs, y)
+######################
+########### End of textTrain function
+######################
+# wordembeddings <- wordembeddings4_10
+# ratings_data <- sq_data_tutorial4_10
+# wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k = 2)
 
 
+# x <- solmini_text_11
+# y <- solmini_n4[4]
+# colnames(y) <- c("hils_tot")
+#
+# method = "textTrainCVpredictions"
+#
+#  x <- list(solmini_sd300_tk_mean1$dep_all[1:100,], solmini_sd300_tk_mean1$movement[1:100,]) # , solmini_sd300_tk_mean1$sleep[1:150,]
+#  y <- tibble(solmini$phq_tot[1:100], solmini$gad_tot[1:100]) #, solmini$hils_tot[1:150]
+#
+#  y <- tibble(as.factor(solmini$minidep_diagnose[1:100]), as.factor(solmini$miniGAD_diagnose[1:100]))
+#
+#  names(x) <- c("dep_all", "movement") #, "sleep"
+#  names(y) <- c("phq", "gad") # , "hils"
+#  names(y) <- c("minidep", "minigad")
 
-####### textTrainTidyList analyse list of text variables and tibble of numeric variables
-# x  list of word embeddings
-# y  tibble with numeric varaibles to predict
+####### textTrainList analyse list of text variables and tibble of numeric variables
+# x = list of word-embeddings
+# y = tibble with variables to be predicted
 
 
-
- x <- list(solmini_sd300_tk_mean1$dep_all[1:150,], solmini_sd300_tk_mean1$movement[1:150,]) # , solmini_sd300_tk_mean1$sleep[1:150,]
- y <- tibble(solmini$phq_tot[1:150], solmini$gad_tot[1:150]) #, solmini$hils_tot[1:150]
- y <- tibble(as.factor(solmini$minidep_diagnose[1:150]), as.factor(solmini$miniGAD_diagnose[1:150]))
-
- names(x) <- c("dep_all", "movement") #, "sleep"
- names(y) <- c("phq", "gad") # , "hils"
- names(y) <- c("minidep", "minigad")
-
- library(data.table)
- # x = list of word-embeddings
- # y = tibble with variablesto be predicted
-textTrainTidyLists <- function(x, y, method = "randomForest", trees=500) { # method="regression"
+# devtools::document()
+#' textTrainLists trains word embeddings from several text variable to several numeric variable.
+#'
+#' @param x List of several Wordembeddings with same length from textImport (NB remove single_word_we).
+#' @param y A Tibble with numeric variables to predict.
+#' @param trainMethod Method to train wordembeddings, default "regression", or "randomForest"
+#' @param nrFolds_k Number of folds to use.
+#' @param nrFolds_k_out Number of outer folds (only for textTrainCVpredictions textTrainCVpredictionsRF).
+#' @param preProcessPCAthresh Preprocessing threshold.
+#' @param strata_y variables to stratify according; default y, can set to NULL
+#' @param methodCor Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").
+#' @param trees Number of trees used in random forest.
+#' @param ... Arguments from textTrain.
+#' @return A correlation between predicted and observed values; as well as predicted values.
+#' @examples
+#' wordembeddings <- wordembeddings4_10[1:2]
+#' ratings_data <- sq_data_tutorial4_10[1:2]
+#' wordembeddings <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
+#' @seealso see \code{\link{textTrain}}
+#' @importFrom stats cor.test
+#' @importFrom tibble as_tibble
+#' @importFrom magrittr %>%
+#' @importFrom dplyr arrange
+#' @importFrom data.table %like%
+#' @export
+textTrainLists <- function(x, y, trainMethod = "regression", nrFolds_k = 10, preProcessPCAthresh = 0.95, strata_y = "y", methodCor = "pearson", trees=500, nrFolds_k_out = 10, ...) { #  , trees=500 method="regression"  method= "textTrainCVpredictions";  method= "textTrainCVpredictionsRF"
 
   # Get variable names in the list of outcomes
-  variables <- dput(names(y))
+  variables <- names(y)
   # Duplicate variable names to as many different wordembeddings there are in x
   variables <- rep(variables, length(x))
   # Create data frame with duplicated variables
@@ -135,20 +182,23 @@ textTrainTidyLists <- function(x, y, method = "randomForest", trees=500) { # met
   # Order columns alphabatically
   y1 <- y1[, order(colnames(y1))]
 
-  # Creating descriptions of which variabeles are used in training, which is  added to the output help(paste)
-  descriptions <- paste(rep(names(x), length(y)), "_", names(y), sep = "")
+  # Creating descriptions of which variabeles are used in training, which is  added to the output help(mapply)
+  descriptions <- paste(rep(names(x), length(y)), "_", names(y1), sep = "")
 
-  if (method == "regression"){
-    # Using mapply to loop of the word embeddings and the outcome variables help(mapply)
-    output <- mapply(textTrainTidy, x, y1, SIMPLIFY = FALSE)   #MoreArgs = list(nrFolds_k = nrFolds_k, methodTrain = methodTrain, preProcessTrain = preProcessTrain, preProcessThresh = preProcessThresh, methodCor = methodCor, ...),
+  if (trainMethod == "regression"){
+    # Using mapply to loop over the word embeddings and the outcome variables help(mapply)
+    output <- mapply(textTrain, x, y1, SIMPLIFY = FALSE, MoreArgs = list(nrFolds_k = nrFolds_k, preProcessPCAthresh = preProcessPCAthresh, strata_y = strata_y, methodCor = methodCor, ...))   #, preProcessPCAthresh=preProcessPCAthresh, strata_y = strata_y, methodCor = methodCor, MoreArgs = list(nrFolds_k = nrFolds_k, methodTrain = methodTrain, preProcessTrain = preProcessTrain, preProcessThresh = preProcessThresh, methodCor = methodCor, ...),
 
-    # Sorting the outcomes
-    output_p_r <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[c(4, 2, 3, 1, 6)])))
+    output_t  <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[1]][c(1)])))
+    output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[2]][c(1)])))
+    output_p  <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[3]][c(1)])))
+    output_r  <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[4]][c(1)])))
+    output_a  <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[6]][c(1)])))
+
     # Add Outcomes and Descriptions together; name the columns; and remove the rownames.
-    output_ordered_named <- data.frame(cbind(descriptions, output_p_r))
+    output_ordered_named <- data.frame(cbind(descriptions, output_r, output_df, output_p, output_t, output_a))
     colnames(output_ordered_named) <- c("descriptions", "correlation", "df", "p_value", "t_statistics", "alternative")
     rownames(output_ordered_named) <- NULL
-    output_ordered_named
 
     output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
     output_predscore_reg <- output_predscore[rownames(output_predscore) %like% ".pred", ] # like comes from data.table
@@ -157,182 +207,98 @@ textTrainTidyLists <- function(x, y, method = "randomForest", trees=500) { # met
     names(results) <- c("predscores", "results")
     results
 
-  } else if (method == "randomForest"){
-    output <- mapply(textTrainRandomForest, x, y1, SIMPLIFY = FALSE, MoreArgs = list(trees=trees))
+  } else if (trainMethod == "randomForest"){ #
+    # Apply textTrainRandomForest function between each list element and sort outcome
+    output <- mapply(textTrainRandomForest, x, y1, SIMPLIFY = FALSE, MoreArgs = list(trees = trees, nrFolds_k = nrFolds_k, strata_y = strata_y))
     output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[1]][[1]])))
     output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[2]][[1]])))
     output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[3]][[1]])))
     output_p_r <- tibble(output_chi, output_df, output_p)
+
     # Add Outcomes and Descriptions together; name the columns; and remove the rownames.
     output_ordered_named <- data.frame(cbind(descriptions, output_p_r))
     colnames(output_ordered_named) <- c("descriptions", "chi2", "df", "p_value")
     output_ordered_named
 
+    # Get and sort the Prediction scores
+    output_predscore1 <- lapply(output, "[[", "predictions")
+    names(output_predscore1) <- descriptions
+    output_predscore <- do.call(cbind, output_predscore1) %>%
+      tibble::as_tibble() %>%
+      dplyr::arrange()
 
-    output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
-    output_predscore_c <- output_predscore[rownames(output_predscore) %like% ".pred_c", ] #like comes from data.table
-    output_predscore_0 <- output_predscore[rownames(output_predscore) %like% ".pred_0", ]
-    output_predscore_c0 <- cbind(output_predscore_0, output_predscore_c)
-    colnames(output_predscore_c0) <- c(paste(descriptions, "_pred0", sep=""), paste(descriptions, "_class", sep=""))
-    output_predscore_c0_1 <- as_tibble(output_predscore_c0)
-    # output_predscore$original_row_number <- output[[1]][[2]]$.row
-    # output_predscore <- output_predscore %>% dplyr::arrange(original_row_number)
-
-    results <- list(output_predscore_c0_1, output_ordered_named)
+    # Combine output
+    results <- list(output_predscore, output_ordered_named)
     names(results) <- c("predscores", "results")
     results
+
+    } else if (trainMethod == "textTrainCVpredictions"){
+      output <- mapply(textTrainCVpredictions, x, y1, SIMPLIFY = FALSE, MoreArgs = list(nrFolds_k = nrFolds_k, nrFolds_k_out=nrFolds_k_out, preProcessPCAthresh = preProcessPCAthresh, strata_y = strata_y))
+
+      output_predscore <- as.data.frame(lapply(output, function(output) unlist(output)))
+      output_predscore_reg <- output_predscore[rownames(output_predscore) %like% ".pred", ] # like comes from data.table
+      colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep=""))
+      results <- list(output_predscore_reg)
+      names(results) <- c("CVpredscores")
+      results
+
+    } else if (trainMethod == "textTrainCVpredictionsRF"){
+      output <- mapply(textTrainCVpredictionsRF, x, y1, SIMPLIFY = FALSE,  MoreArgs = list(trees = trees, nrFolds_k_out = nrFolds_k_out, nrFolds_k = nrFolds_k, strata_y = strata_y))
+
+      # Get and sort the prediction scores
+      names(output) <- descriptions
+      output_predscore <- do.call(cbind, output) %>%
+        tibble::as_tibble() %>%
+        dplyr::arrange()
+
+      results <- list(output_predscore)
+      names(results) <- c("CVpredscores")
+      results
     }
 }
-
-
-### End of textTrainTidyList function
-
-# train_lists_test <- textTrainTidyLists(x, y, method = "regression")
-# train_lists_test <- textTrainTidyLists(x, y, method = "randomForest")
-
-
-# text11_num4 <- textTrainTidyLists(solmini_text_11 , solmini_n4, method = "regression")
-
-text11_num4$predscores
-text11_preds_tibble <- text11_num4$predscores %>%
-  sapply(as.numeric) %>%
-  as_tibble()
-
-dep_mini_diagnose <- as.factor(solmini$minidep_diagnose)
-CVpredsDepmini <- trainCVpredictions(text11_preds_tibble, dep_mini_diagnose)
-
-chisq.test(solmini$minidep_diagnose, output$predictions$.pred_class)
-
-gad_mini_diagnose <- as_factor(solmini$miniGAD_diagnose)
-trainCVpredictions(text11_num4$predscores, gad_mini_diagnose)
-
-
-##### Function to train predicted scores with rating scales (SHOULD BE USED ON TESTING DATA?)
-
-
-# Sort out crossvalidated predictions and add above rating scales
-train_lists_test$predscores
-solmini_n4 <- solmini[c("phq_tot", "gad_tot", "swls_tot", "hils_tot")]
-x <- cbind(train_lists_test$predscores, solmini_n4[1:150,])
-
-y <- as_factor(solmini$minidep_diagnose[1:150])
-
-x <- text11_preds_tibble
-y <- dep_mini_diagnose
-
-nrow(df2)
-df3 <- df2#[complete.cases(df2),]
-nrow(df3)
-table(is.na(df3))
-
-################
-#### Training Cross-validated predicted data
-################
-# x = Tibble with predictor variables (e.g., cross-validated predictions from textTrainTidyLists, other rating scales etc)
-# y = the outcome variable
-
-
-trainCVpredictions <- function(x, y) {
-
-  df3 <- cbind(x, y)
-  df3 <- as_tibble(df3)
-  df3 <- df3[complete.cases(df3),]
-  # Recipe: Preprocessing with pca help(recipe) help(step_naomit)
-  df3_recipe <-
-    recipes::recipe(y ~ .,
-                    data = df3) %>%
-    #  step_BoxCox(all_predictors()) %>%
-    recipes::step_knnimpute(all_predictors(), neighbors=round(sqrt(nrow(df3[complete.cases(df3),])))) %>% # See PERHAPS ROUND THIS;
-    recipes::step_naomit(all_predictors(), skip = TRUE) %>%
-    recipes::step_center(all_predictors()) %>%
-    recipes::step_scale(all_predictors()) %>%
-    recipes::step_pca(all_predictors(), threshold = .95) #%>%
-
-  # Cross-validation
-  set.seed(42)
-  df3_cv_splits <- rsample::vfold_cv(df3, v = 10, repeats = 1, strata = y) # , ... ,  breaks = 4
-
-  # Model
-  df3_model <-
-    #parsnip::linear_reg(penalty = tune(), mixture = tune()) %>% # tune() uses the grid
-    parsnip::logistic_reg(mode = "classification", penalty = tune(), mixture = tune()) %>%
-    parsnip::set_engine("glmnet")
-
-  # Tuning; parameters; grid for ridge regression. https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#26
-  df3_glmn_grid <- base::expand.grid(
-    penalty = 10 ^ seq(-3, -1, length = 20),
-    mixture = (0:5) / 5
-  )
-
-  ctrl <- control_grid(save_pred = TRUE)
-
-  # tune_grid() df3_glmn_tune$.notes
-  df3_glmn_tune <- tune_grid(
-    df3_recipe,
-    model = df3_model,
-    resamples = df3_cv_splits,
-    grid = df3_glmn_grid,
-    control = ctrl
-  )
-
-  # Select best predictions based on rmse tail(df3_glmn_tune$.metrics[[10]][3]).metric
-  # best_glmn <-
-  #  select_best(df3_glmn_tune, metric = "rmse", maximize = FALSE)
-
-  # Accuracy could also be roc_auc:NEED TO PUT IN IF STATEMENT ABOVE
-  best_glmn <-
-    select_best(df3_glmn_tune, metric = "accuracy", maximize = FALSE)
-
-  # Get predictions and observed (https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#32)
-  df3_predictions <- tune::collect_predictions(df3_glmn_tune) %>%
-    filter(penalty == best_glmn$penalty, mixture == best_glmn$mixture)
-
-  df3_predictions <- df3_predictions %>% arrange(.row)
-
-  # Evaluating the predictions using correlation
-  # result <- cor.test(df3_predictions$y, df3_predictions$.pred)
-
-  #For categorical NEED TO PUT IN IF STATEMENT ABOVE
-  result <- chisq.test(df3_predictions$y, df3_predictions$.pred_class)
-
-  output <- list(df3_predictions, result)
-  names(output) <- c("predictions", "results")
-  output
-}
 ######################
-########### END trainCVpredictions
+###########  End of textTrainList function
 ######################
-
-outputCVpred <- trainCVpredictions(x, y)
-
-# train on 90 percent and use the model to predict on 10 that is used to
-
-
-
-
-# What the AI gets
-
-#AI_category <- output$predictions %>%
-#  mutate(AI_category1 = cut(.pred, breaks=c(-Inf, 0.5, Inf), labels=c("0","1")))
-
-# solmini$phq_tot_diagnose10
-
-#chisq.test(solmini$minidep_diagnose, AI_category$AI_category1)
-
-chisq.test(solmini$minidep_diagnose, output$predictions$.pred_class)
-
-
-
-cor.test(as.numeric(solmini$minidep_diagnose), as.numeric(output$predictions$.pred))
+# wordembeddings <- wordembeddings1_100[1]
+# ratings_data <- sq_data_tutorial4_100[4]
+# y <- sq_data_tutorial4_100$gender
+#
+#
+# wordembeddings <- wordembeddings4_10[1:2]
+# ratings_data <- sq_data_tutorial4_10[3]
+# wordembeddings <- textTrainLists(wordembeddings, ratings_data, trainMethod = "regression", nrFolds_k = 2) # randomForest , nrFolds_k = 2)
+#
+# # Categorical
+# catgender1 <- sq_data_tutorial4_100$gender
+# catgender2 <- sq_data_tutorial4_100$gender
+# catgender3 <- sq_data_tutorial4_100$gender
+# categ <- tibble(catgender1, catgender2, catgender3)
+# x <- wordembeddings
+# y <- categ
+# wordembeddings <- textTrainLists(x, y, trainMethod = "randomForest", trees = 5)
+# wordembeddings
 
 
+#solmini_1 <- read_csv("/Users/oscar/Desktop/0 Studies/13 OnlineMini/combinedSOL_SM.csv")
+#solmini_sd300_tk_mean1 <- read_rds("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/spaces/spaceDomain_solminidata_solmini_sd300_tk_mean.rds")
+#x <- solmini_sd300_tk_mean1[1:2]
+#y <- as_tibble(solmini_1$phq_tot)
+#colnames(y) <- c("phq")
+#train_lists_test_reg <- textTrainLists(x, y, trainMethod = "regression", nrFolds_k = 3) #, nrFolds_k = 2
+#train_lists_test_reg
+
+#y <- as_tibble(solmini_1$minidiagnose_cat)
+#colnames(y) <- c("diagnose")
+#train_lists_test <- textTrainLists(x, y, trainMethod = "randomForest", trees = 5, nrFolds_k = 2, strata_y = "y")
+#train_lists_test
 
 
-# What a clinician using 10 as cut of would get:
-solmini <- solmini %>%
-  mutate(phq_tot_diagnose10 = cut(phq_tot, breaks=c(-Inf, 10, Inf), labels=c("0","1")))
 
-chisq.test(solmini$minidep_diagnose, solmini$phq_tot_diagnose10)
-cor.test(as.numeric(solmini$minidep_diagnose), as.numeric(solmini$phq_tot_diagnose10))
 
+# train_lists_test <- textTrainLists(x, y, trainMethod = "textTrainCVpredictions", nrFolds_k_out=2)
+
+
+#train_lists_test <- textTrainLists(x, y, trainMethod = "textTrainCVpredictionsRF", trees=50)
+#train_lists_test
+#colnames(train_lists_test$CVpredscores)
 

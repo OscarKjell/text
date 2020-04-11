@@ -121,7 +121,7 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings = single_w
       # For x: Only get the word embeddings and make them numeric
       group1_single3 <- group1_single2 %>%
         dplyr::mutate_if(is.character, as.numeric)
-      # Get as many SemDifRep as group_single3 so that it can be compred
+      # Get as many SemDifRep as group_single3 so that it can be compared
       semDifRep_x <- tibble::as_tibble(t(semDifRep)) %>%
         dplyr::slice(rep(dplyr::row_number(), nrow(group1_single2)))
       # Get Semantic Similairty score between words and SemDifRep
@@ -241,7 +241,7 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings = single_w
   word_data_tibble
 }
 
-
+# word_data <-sq_data_plottingHw_HILSSSWLS_100
 # devtools::document()
 #' textPlotViz trains word embeddings to a numeric variable.
 #'
@@ -264,7 +264,6 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings = single_w
 #' @param position_jitter_width degree of jitter hight (default: .03).
 #' @param point_size the size of the points indicating the words' position (default: 0.5).
 #' @param arrow_transparency The transparency of the lines between each word and point (default: 0.1)
-#'
 #' @return A 1- or 2-dimensional word plot.
 #' @examples
 #' # The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
@@ -294,11 +293,9 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings = single_w
 #' @importFrom dplyr row_number slice mutate_if bind_rows group_by summarize full_join %>%
 #' @importFrom caret createFolds
 #' @importFrom scales rescale
-#' @importFrom ggplot2 position_jitter element_text
+#' @importFrom ggplot2 position_jitter element_text element_blank
 #' @importFrom rlang sym
 #' @export
-
-# word_data <-sq_data_plottingHw_HILSSSWLS_100
 textPlotViz <- function(word_data,
                         plot_n_words = 25,
                         title_top = " ",

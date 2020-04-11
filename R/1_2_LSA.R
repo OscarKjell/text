@@ -1,22 +1,42 @@
 
 
-library(tidyverse)
-library(quanteda)
-library(lsa)
+#library(tidyverse)
+#library(quanteda)
+#library(lsa)
 
 # First a function to create an LSA-based space;
 # Second, functions to apply semantic representations from the LSA space to the words
 
-# Test data
-data_raw <- read_csv("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/spaces/StudiesAll_Eng.csv", col_names = FALSE)
-x <- data_raw[1:10,]
-
-# Create LSA space; x = column with text; dims = number of dimensions to create, where dimcalc_share() is function from lsa that helps you select number of dimensions
+# library(Matrix) help(%*%)
+# #library(import)
+# insert link in the future to \code{\link{textEmbed}}
+# devtools::document()
+#' textSpace: Create an LSA-based space with semantic representation for each word
+#'
+#' @param x column with text.
+#' @param dims number of dimensions to create, where the default dimcalc_share() is a
+#' function from lsa that assisst in selecting number of dimensions.
+#' @return A list with two spaces ("tk" and "df") with words in the first column, followed
+#' by N number of columns representing the words' semantic representation.
+#' @examples
+#' example_rawdata <- sq_data_tutorial8_10$harmonywords
+#' space <- textSpace(example_rawdata)
+#' @seealso see \code{\link{textStaticSpace}}
+#' @importFrom quanteda dfm
+#' @importFrom lsa lw_logtf gw_idf lsa dimcalc_share
+#' @importFrom tibble rownames_to_column
+#' @importFrom Matrix t
+#' @export
+# library(text)
+# x <- sq_data_tutorial8_10$harmonywords help(t)
 textSpace <- function(x, dims = dimcalc_share()) {
   dtm <- quanteda::dfm(x, verbose = FALSE)
-
+  # help(Matrix)
+  # detach("package:Matrix", unload=TRUE)
   # Get the "feature in document" co-occurrence matrix
-  dtm_ok <- t(dtm) %*% dtm
+  dtm_ok <- Matrix::t(dtm) %*% dtm
+  # import::from("Matrix", "%*%")
+  # dtm_ok <- t(dtm) %&% dtm
 
   # Calculates a weighted document-term matrix according to the chosen local and/or global weighting scheme. help(lsa) help(lw_logtf)
   # From lsa package example: Create a vector space with Latent Semantic Analysis (LSA)
@@ -44,83 +64,33 @@ textSpace <- function(x, dims = dimcalc_share()) {
   space
 }
 
-
-# REMOVE
-
-# # Function to apply the semantic representation to ONE word; and return vector with NA if word is not found
-# applysemrep <- function(x, space = space){
-#   #If semrep is found get it; if not return NA vector of dimensions (which equal "Ndim"=space[["s"]][[14]] )
-#   if (sum(space$words==x[TRUE]) %in% 1) {
-#     x <- tolower(x)
-#     #Get the semantic representation for a word=x
-#     word1rep <- space[space$words==x, ]
-#
-#     #Only get the semantic represenation as a vector without the actual word in the first column
-#     wordrep <- as_vector(word1rep[,2:length(word1rep)])
-#
-#     # If the word does not have a semrep return vector with Ndim (512) dimensions of NA
-#   }else if (x %in% NA) {
-#     wordrep <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
-#     class(wordrep)
-#     wordrep <- as.numeric(wordrep)
-#   } else {
-#     wordrep <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
-#     wordrep <- as.numeric(wordrep)
-#   }
-# }
-
-
-# x <- c("happy", "joy") aggregate = "normalize1" space=
-# if x= "" replace with NA
-# Generic function to apply a common semantic representaion for ALL words in a CELL; and if there are no words return a Ndim vector with NAs
-# semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min", ...) {
-#    x <- tolower(x)
-#    #Separates the words in a cell into a character vector with separate words.
-#    x <- data.frame(unlist(str_extract_all(x, "[[:alpha:]]+")))
-#    colnames(x) <- c("wordsAll1")
-#    x <- as.tibble(x)
-#    x <- as.character(x$wordsAll1)
-#    #If empty return a NA semantic representation
-#    if (length(x)== 0){
-#      x2 <- data.frame(matrix(ncol = length(single_wordembeddings2 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
-# ####     x2 <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
-#      x2 <- as.numeric(x2)
-#    }else{
-#      # Create a matrix with all the semantic representations using the function above
-#      #x1 <-  apply(x, 1, applysemrep)
-#      x1 <-  sapply(x, applysemrep, ...) ###
-#      x1 <- tibble::as_tibble(t(x1))
-#      #IF more than one semrep; Sum all the semantic represenations; if not return it as is so that NA etc is returned/kept aggre
-#      x2 <- textEmbeddingAggregation(x1, aggregation = aggregate) #aggregate
-#      x2
-#      #If all values are 0 they should be NA instead; otherwise return the semantic representation.
-#      if (all(x2 == 0|x2 == Inf|x2 == -Inf | is.nan(x2)) == TRUE){
-#        x2 <- data.frame(matrix(ncol = length(single_wordembeddings2 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
-# ###### x2 <- data.frame(matrix(ncol = length(space)-1, nrow = 1))
-#        x2 <- as.numeric(x2)
-#      }else{
-#        x2 <- x2
-#      }
-#    }
-#  }
-
-
-
-### Function applying semreps for all character variables and saves them in a list.
-##This is done because applying semreps takes time to do over and over again.
-#Apply semrep to all character variables; save them as tibbles in a list; where the tibbles are called the same as the original variable
-textStaticSpace <- function(df, space, tk_df = "tk", aggregate = "min") {
+# insert link in the future to \code{\link{textEmbed}}
+# devtools::document()
+#' textStaticSpace: Applies semantic representations to all character variables
+#'
+#' @param df dataframe with that at least contain one character column.
+#' @param space semantic space from textSpace.
+#' @param tk_df option to use either the "tk" of "df" space from textSpace.
+#' @param aggregate method to aggregate semantic representation when their are more than a single word.
+#' (default is "mean"; see also "min" and "max")
+#' @return A list with tibbles for each character variable. Each tibble comprises a column with the text, followed by
+#' collumns representing the semantic representations of the text. The tibbles are called the same as the original variable.
+#' @seealso see \code{\link{textSpace}}
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr select_if
+#' @export
+textStaticSpace <- function(df, space, tk_df = "tk", aggregate = "mean") {
 
     # Select the tk or dk matrrix derived from the lsa (svd)
   if(tk_df == "tk") {
     space <- tibble::as_tibble(space$tk)
   } else if (tk_df == "df"){
-    space <- tibble:as_tibble(space$df)
+    space <- tibble::as_tibble(space$df)
   } else {
     space
     }
   # Select all character variables
-  df_characters <-   select_if(df, is.character)
+  df_characters <-   dplyr::select_if(df, is.character)
 
   # Create empty list
   list_semrep <- list()
@@ -130,7 +100,7 @@ textStaticSpace <- function(df, space, tk_df = "tk", aggregate = "min") {
   # For loop that apply the semrep to each character variable
   for (i in 1:length(df_characters)) {
     # Apply the semantic representation funtion to all rows; transpose the resulting matrix and making a tibble
-    list_semrep[[i]] <- as_tibble(t(sapply(df_characters[[i]], semanticrepresentation, single_wordembeddings2, aggregate, single_wordembeddings1=single_wordembeddings1)))
+    list_semrep[[i]] <- tibble::as_tibble(t(sapply(df_characters[[i]], semanticrepresentation, single_wordembeddings2, aggregate, single_wordembeddings1=single_wordembeddings1)))
   }
 
   # Gives the tibbles in the list the same name as the orginal character variables
@@ -139,38 +109,85 @@ textStaticSpace <- function(df, space, tk_df = "tk", aggregate = "min") {
 }
 
 
-# Testing
-x <- c("happy joy", "sad unhappy", "sadfsdfds ljhlj asdffd")
-y <- c(1, 2, 3)
-tbl <- tibble(x, y)
-
-# Creating space
-#data_comun_with_text <- data_raw
-space_test <- textSpace(tbl$x)
-space_test
-space_test$tk
+# # Testing
+# x <- c("happy joy", "sad unhappy", "sadfsdfds ljhlj asdffd")
+# y <- c(1, 2, 3)
+# tbl <- tibble(x, y)
+#
+# # Creating space
+# #data_comun_with_text <- data_raw
+# space_test <- textSpace(tbl$x)
+# space_test
+# space_test$tk
 
 # Testing applying space
-data_testing <- textStaticSpace(tbl, space=space_test, tk_df = "tk",
-                                aggregate = "max")
-data_testing
+#data_testing <- textStaticSpace(tbl, space=space_test, tk_df = "tk",
+#                                aggregate = "max")
+#data_testing
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+# # Glove
+# library(text2vec)
+# #install.packages("text2vec")
+#
+# word_data <- data_space_raw$X1
+#
+#
+# # Create iterator over tokens
+# tokens = space_tokenizer(word_data)
+# # Create vocabulary. Terms will be unigrams (simple words).
+# it = itoken(tokens, progressbar = FALSE)
+# vocab = create_vocabulary(it)
+#
+#
+# vocab = prune_vocabulary(vocab, term_count_min = 2L)
+#
+# # Use our filtered vocabulary
+# vectorizer = vocab_vectorizer(vocab)
+# # use window of 5 for context words
+# tcm = create_tcm(it, vectorizer, skip_grams_window = 10L)
+#
+# #glove = GlobalVectors$new(word_vectors_size = 50, x_max = 10)
+# glove = GlobalVectors$new(rank = 50, x_max = 10)
+#
+# wv_main = glove$fit_transform(tcm, n_iter = 10, convergence_tol = 0.01, n_threads = 8)
+#
+# dim(wv_main)
+#
+#
+# glove = GlobalVectors$new(word_vectors_size = 150, vocabulary = vocab, x_max = 10)
+#
+# #glove = GlobalVectors$new(rank = 50, vocabulary = vocab, x_max = 10)
+# # `glove` object will be modified by `fit_transform()` call !
+# wv_main = fit_transform(tcm, glove, n_iter = 20)
+#
+# wv_context = glove$components
+# dim(wv_context)
+#
+#
+# word_vectors = wv_main + t(wv_context)
+#
+#
+# space_glove <- tibble::as_tibble(tibble::rownames_to_column(as.data.frame(word_vectors), "words"))
+#
+# solmini <- read_csv("/Users/oscar/Desktop/0 Studies/13 OnlineMini/combinedSOL_SM.csv")
+# nrow(solmini)
+#
+# solmini_norm_test     <- textStaticSpace(solmini, space = space_glove, tk_df = " ", aggregate  = "normalize1")
+#
+# train_tk_phq_min_test <- textTrain(solmini_norm_test$dep_all, solmini$phq_tot)  # 50 dims: 0.5973861; 150 dims:
+# semantictrainingtest_textspace_mean <- semanticTraining(solmini_norm_test$dep_all, solmini$phq_tot, Ndim = 150) # 50: 0.6059; 150:
+#
+#
+# solmini_norm_test2     <- textStaticSpace(solmini, space = space_glove, tk_df = " ", aggregate  = "min")
+#
+# train_tk_phq_min_test2 <- textTrain(solmini_norm_test2$dep_all, solmini$phq_tot)  # 150:
+# semantictrainingtest_textspace_mean2 <- semanticTraining(solmini_norm_test2$dep_all, solmini$phq_tot, Ndim = 150) # 150:
+#
 
 
 

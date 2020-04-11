@@ -1,19 +1,52 @@
 
-
-library(tidyselect)
-library(tidymodels)
-library(tidyverse)
-text_we_1 <- solmini_text_11$dep_all
-text_we_2 <- solmini_text_11$wor_all
-
-xlist <- solmini_text_11[1:3]
-y <- solmini_num_6$phq_tot
-
-####### textTrainTidyMultiText
+####### textTrainMultiText
 # Description: Function takes several text variables; applies separet PCAs to each text's word embeddings separetaly;
 # concenate the PCA components to predict one outcome with ridge regression!
-# x is a list of word embeddings
-textTrainMultiTexts <- function(xlist, y){
+
+
+# devtools::document()
+#' textTrainMultiTexts trains word embeddings from several text variables to a numeric variable.
+#'
+#' @param xlist list of word embeddings from textImport.
+#' @param y The numeric variable to predict.
+#' @param nrFolds_k Number of folds to use.
+#' @param preProcessThresh Preprocessing threshold.
+#' @param strata_y variables to stratify according; default y, can set to NULL
+#' @param methodCor Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").
+#' @param describe_model Input text to describe your model.
+#' @return A correlation between predicted and observed values; as well as predicted values.
+#' @description Concenate word embeddings from several text xariables to predict an outcome. The word embeddings for each text variables
+#' go through seperate PCA, where the PCA components acre concenated and used in a ridge regression.
+#' @examples
+#' wordembeddings <- wordembeddings4_10[1:4]
+#' ratings_data <- sq_data_tutorial4_10$hilstotal
+#' wordembeddings <- textTrainMultiTexts(wordembeddings, ratings_data, nrFolds_k = 2)
+#' @seealso see \code{\link{textTrainLists}} \code{\link{textTtest}}
+#' @importFrom stats cor.test na.omit
+#' @importFrom dplyr select starts_with filter bind_cols matches
+#' @importFrom recipes recipe step_naomit step_center step_scale step_pca
+#' @importFrom rsample vfold_cv
+#' @importFrom parsnip linear_reg set_engine
+#' @importFrom tune control_grid tune_grid select_best collect_predictions
+#' @export
+
+# load("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/text_data_examples/sq_data_tutorial4_100.rda")
+# load("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/text_data_examples/wordembeddings4_100.rda")
+# y <- sq_data_tutorial4_100$hilstotal
+# xlist <- wordembeddings4_100[1:4]
+# preProcessThresh = 0.95
+# nrFolds_k = 10
+# strata_y = "y"
+# methodCor = "pearson"
+# describe_model = "Describe the model further and share it with others"
+
+textTrainMultiTexts <- function(xlist, y, preProcessThresh = 0.95, nrFolds_k = 10, strata_y = "y", methodCor = "pearson", describe_model = "Describe the model further and share it with others"){
+
+
+  # Select all variables that starts with V in each dataframe of the list.
+  xlist <- lapply(xlist, function(X) {
+                         X <- dplyr::select(X, dplyr::starts_with("V"))
+                         })
 
   set.seed(2020)
   Nword_variables <- length(xlist)
@@ -23,12 +56,15 @@ textTrainMultiTexts <- function(xlist, y){
   }
 
   # Make vector with each index so that we can allocate them separately for the PCAs
+  variable_index_vec <- list()
   for (i in 1:Nword_variables){
     variable_index_vec[i] <- paste("V_text", i, sep="")
   }
 
   # Make one df rather then list.
-  df1 <- bind_cols(xlist)
+  df1 <- dplyr::bind_cols(xlist)
+
+  # Get the name of the first variable; which is used to exclude NA (i.e., word embedding have NA in all columns)
   V1 <- colnames(df1)[1]
 
   #x1 <- dplyr::select(x, dplyr::starts_with("V"))
@@ -39,7 +75,7 @@ textTrainMultiTexts <- function(xlist, y){
   df3_recipe <-
     recipes::recipe(y ~ .,
                     data = df3) %>%
-    #    recipes::step_BoxCox(all_predictors()) %>%
+    #recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(V1, skip = TRUE) %>%
     recipes::step_center(all_predictors()) %>%
     recipes::step_scale(all_predictors())
@@ -50,16 +86,17 @@ textTrainMultiTexts <- function(xlist, y){
       df3_recipe %>%
       # !! splices the current name into the `matches()` function.
       # We use a custom prefix so there are no name collisions for the
-      # results of each PCA step.
-      step_pca(matches(!!i), threshold = .95, prefix = paste("PCA_", i, "_"))
+      # results of each PCA step. (maybe maatches from another package??) help(matches)
+      step_pca(dplyr::matches(!!i), threshold = preProcessThresh, prefix = paste("PCA_", i, "_"))
   }
 
   # Cross-validation
-  df3_cv_splits <- rsample::vfold_cv(df3, v = 10, repeats = 1, strata = y) # , ... ,  breaks = 4
+  df3_cv_splits <- rsample::vfold_cv(df3, v = nrFolds_k, repeats = 1, strata = strata_y)
 
   # Model
   df3_model <-
-    parsnip::linear_reg(penalty = tune(), mixture = tune()) %>% # tune() uses the grid
+    parsnip::linear_reg(penalty = tune(), mixture = tune()) %>%
+    #parsnip::logistic_reg(mode = "classification", penalty = tune(), mixture = tune()) %>%
     parsnip::set_engine("glmnet")
 
   # Tuning; parameters; grid for ridge regression. https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#26
@@ -70,9 +107,7 @@ textTrainMultiTexts <- function(xlist, y){
 
   ctrl <- control_grid(save_pred = TRUE, verbose = TRUE)
 
-  #cl <- makeCluster(10)
-  #registerDoParallel(cl)
-  # tune_grid() df3_glmn_tune$.notes
+  # Tune grid; df3_glmn_tune$.predictions
   df3_glmn_tune <- tune_grid(
     df3_recipe,
     model = df3_model,
@@ -81,19 +116,38 @@ textTrainMultiTexts <- function(xlist, y){
     control = ctrl
   )
 
-  # Select the best penelty and mixture based on rmsea
+  # Select the best penelty and mixture based on rmse; df3_glmn_tune$.metrics; accuracy
   best_glmn <- select_best(df3_glmn_tune, metric = "rmse", maximize = FALSE)
 
   # Get predictions and observed (https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#32)
-  df3_predictions <- tune::collect_predictions(df3_glmn_tune) %>%
+  predictions <- tune::collect_predictions(df3_glmn_tune) %>%
     filter(penalty == best_glmn$penalty, mixture == best_glmn$mixture)
 
-  # Evaluating the predictions using correlation
-  correlation <- cor.test(df3_predictions$y, df3_predictions$.pred)
-  output <- list(df3_predictions, correlation)
-  names(output) <- c("predictions", "correlation")
+  # For linear regression: Evaluating the predictions using correlation
+  results <- cor.test(predictions$y, predictions$.pred, method = methodCor)
+
+  # For logistic regression: chisq.test
+  # results <- stats::chisq.test(predictions$y, predictions$.pred_class)
+
+  # Describe model; adding user's-description + the name of the x and y
+  # describe_model_detail <- c(describe_model, paste(names(x)), paste(names(y)))
+  describe_model_detail <- c(deparse(substitute(x)), deparse(substitute(y)), describe_model)
+
+  output <- list(predictions, describe_model_detail, results)
+  names(output) <- c("predictions", "model description", "results")
   output
 }
-### End of textTrainTidy function
+######################
+########### End of textTrain function
+######################
+#solmini_1 <- read_csv("/Users/oscar/Desktop/0 Studies/13 OnlineMini/combinedSOL_SM.csv")
+#solmini_sd300_tk_mean1 <- read_rds("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/spaces/spaceDomain_solminidata_solmini_sd300_tk_mean.rds")
+#xlist <- solmini_sd300_tk_mean1[1:2]
+#y <- solmini_1$phq_tot
+
+#testMulti <- textTrainMultiTexts(xlist, y)
+
+
+
 
 

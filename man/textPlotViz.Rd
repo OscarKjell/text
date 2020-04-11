@@ -73,23 +73,25 @@ textPlotViz trains word embeddings to a numeric variable.
 }
 \examples{
 # The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
-plot <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
-     plot_n_words = 25,
-     x_axes = "cohensD.x",
-     y_axes = "cohensD.y",
-     x_axes_label = "HILS: Cohen's D",
-     y_axes_label = "SWLS: Cohen's D",
-     scale_x_axes_lim = NULL,
-     scale_y_axes_lim = NULL,
-     y_axes_values = NULL,
-     word_font = "Helvetica",
-     colors_words = c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00"),
-     colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1),
-     word_size_range = c(3, 8),
-     position_jitter_hight = .0,
-     position_jitter_width = .03,
-     point_size = 0.5,
-     arrow_transparency = 0.1)
+plot <- textPlotViz(
+  word_data = sq_data_plottingHw_HILSSSWLS_100,
+  plot_n_words = 25,
+  x_axes = "cohensD.x",
+  y_axes = "cohensD.y",
+  x_axes_label = "HILS: Cohen's D",
+  y_axes_label = "SWLS: Cohen's D",
+  scale_x_axes_lim = NULL,
+  scale_y_axes_lim = NULL,
+  y_axes_values = NULL,
+  word_font = "Helvetica",
+  colors_words = c("#ff0000", "#ff8080", "white", "#1aff1a", "#00cc00"),
+  colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1),
+  word_size_range = c(3, 8),
+  position_jitter_hight = .0,
+  position_jitter_width = .03,
+  point_size = 0.5,
+  arrow_transparency = 0.1
+)
 plot
 }
 \seealso{

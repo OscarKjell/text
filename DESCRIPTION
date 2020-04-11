@@ -1,8 +1,8 @@
 Package: text
 Type: Package
 Title: Analyses of Text using Natural Language Processing and Machine Learning
-Version: 0.0.0.9000
-Author: Oscar Kjell
+Version: 0.0.1.9000
+Author: Oscar Kjell & Andrew Schwartz
 Maintainer: The package maintainer <oscar.kjell@psy.lu.se>
 Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables etc.   
 License: GPL-3
@@ -26,7 +26,18 @@ Imports:
     purrr,
     Matrix,
     rio,
-    stringi
+    stringi,
+    data.table,
+    magrittr,
+    parsnip,
+    recipes,
+    rsample,
+    tune,
+    ppls,
+    workflows,
+    yardstick,
+    lsa,
+    quanteda
 RoxygenNote: 7.0.2
 Suggests: 
     knitr,

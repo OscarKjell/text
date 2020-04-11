@@ -58,7 +58,7 @@ wordembeddings <- rio::import("https://oscarkjell.se/text_data_examples/wordembe
 numeric_data <- rio::import("https://oscarkjell.se/text_data_examples/sq_data_tutorial4_100.rda")
 
 # Examine the relationship between harmonytext and the corresponding rating scale
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 10)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 2)
 
 # Examine the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$Correlation
@@ -68,7 +68,7 @@ model_htext_hils$Correlation
 # predicting several outcomes
 # wordembeddings <- wordembeddings4_100[1:2]
 # ratings_data <- sq_data_tutorial4_100[5:6]
-outcomes <- textTrainLists(wordembeddings[1:2], numeric_data[1:2], nrFolds_k = 10)
+outcomes <- textTrainLists(wordembeddings[1:2], numeric_data[1:2], nrFolds_k = 2)
 outcomes
 ```
 
@@ -172,7 +172,7 @@ df_for_plotting
 ```
 
 ### ```textPlotViz()```: A One-dimensional word plot
-```{r, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
+```{r, eval = FALSE, warning=FALSE, message=FALSE, dpi=300}
 library(text)
 
 # Example data that have been pre-processed with textPlotData function is called sq_data_plottingHw_HILSSSWLS_100

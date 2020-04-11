@@ -8,19 +8,18 @@
 ########     textSimilarity [NOW I AM NORMALIZING IT; perhaps shouldn't!]
 ########
 ########################################################################
-# First, creat cosine function
-# Second creat function that computes the cosine between columns
-#
 
+#  devtools::document()
+#' Compute cosine
+#'
+#' @param x a word embedding
+#' @param y a word embedding
+#' @return cosine between x and y.
+#' @noRd
 # Computing the cosine between two semantic represenations
 cosines <- function(x, y) {
   rowSums(x * y, na.rm = TRUE) / (sqrt(rowSums(x * x, na.rm = TRUE)) * sqrt(rowSums(y * y, na.rm = TRUE)))
 }
-# devtools::document()
-# ?textSimilarity
-# Function get word embeddings and then compute COSINE
-# x and y are the semantic representations from column x and y, which have been imported with textImport
-# \code  \link{} \link{} @section
 
 #' textSimilarity computes the semantic similiarty between texts.
 #'
@@ -33,11 +32,12 @@ cosines <- function(x, y) {
 #' similiarty_scores <- textSimilarity(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 #' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textTtest}}
 #' @export
-
 textSimilarity <- function(x, y) {
-  # Remove unnecassary columns
-  x1 <- subset(x, select = -c(1:5))
-  y1 <- subset(y, select = -c(1:5))
+  # Select necassary columns
+  x1 <- dplyr::select(x, dplyr::starts_with("V"))
+  y1 <- dplyr::select(y, dplyr::starts_with("V"))
+  #x1 <- subset(x, select = -c(1:5))
+  #y1 <- subset(y, select = -c(1:5))
 
   # Apply the cosines functions
   cosines(x1, y1)
@@ -49,7 +49,6 @@ textSimilarity <- function(x, y) {
 ########
 ########################################################################
 # devtools::document()
-# ?textSimilarityNorm
 # Function get word embeddings and then compute COSINE
 # x and y are the semantic representations from column x and y, which have been imported with textImport
 #' textSimilarityNorm computes the semantic similiarty between a character variable and a word norm (i.e., a text in one cell).
@@ -71,13 +70,15 @@ textSimilarity <- function(x, y) {
 #'   wordembeddings_wordnorm$harmonynorm
 #' )
 #' @seealso see \code{\link{textSimilarity}} and \code{\link{textTtest}}
-#' @importFrom dplyr row_number
+#' @importFrom dplyr row_number slice select starts_with
 #' @export
-
 textSimilarityNorm <- function(x, y) {
   # Remove unnecassary columns
-  x1 <- subset(x, select = -c(1:5))
-  y1 <- subset(y, select = -c(1:5))
+  x1 <- dplyr::select(x, dplyr::starts_with("V"))
+  y1 <- dplyr::select(as_tibble(as.list(y)), dplyr::starts_with("V"))
+  #x1 <- subset(x, select = -c(1:5))
+  #y1 <- subset(y, select = -c(1:5)) help(enframe)
+  is.vector(y)
 
   y2 <- y1 %>%
     dplyr::slice(rep(row_number(), nrow(x1)))
@@ -85,7 +86,6 @@ textSimilarityNorm <- function(x, y) {
   # Apply the cosines functions
   cosines(x1, y2)
 }
-
 
 ########################################################################
 ########
@@ -96,18 +96,23 @@ textSimilarityNorm <- function(x, y) {
 # 2. semTtestscores(x, y) gives the scores that one can use for t-test, or ANOVA etc.
 
 
-# Function to normlaise the vector to one; unit vector
+#  devtools::document()
+#' Function to normlaise the vector to one; unit vector
+#'
+#' @param x a word embedding
+#' @return normalised (unit) vector/word embedding.
+#' @noRd
 normalizeV <- function(x) {
   x / sqrt(sum(x^2, na.rm = TRUE))
 }
 
-# devtools::document()
-# ?textTtestscores
-# Function get word embeddings and then compute COSINE
-# x and y are the semantic representations from column x and y, which have been imported with textImport
-
-## Make x and y into same length for when we will randomly draw K-folds from them
-# Function to add rows of NA until y and x have the same amount of rows.
+#  devtools::document()
+#' Make x and y into same length for when we will randomly draw K-folds from them
+#' Function to add rows of NA until y and x have the same amount of rows.
+#' @param x a variable
+#' @param y a variable
+#' @return x and y have equal length.
+#' @noRd
 addEqualNrNArows <- function(x, y) {
   success <- FALSE
   while (!success) {
@@ -133,6 +138,7 @@ addEqualNrNArows <- function(x, y) {
 #' wordembeddings <- wordembeddings4_10
 #' similiarty_scores <- textTtestscores(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 #' @seealso see \code{\link{textTtest}}
+#' @importFrom dplyr select starts_with
 #' @export
 ## Function that creates semnatic t-test scores
 textTtestscores <- function(x, y, nrFolds = 10) {
@@ -150,8 +156,12 @@ textTtestscores <- function(x, y, nrFolds = 10) {
   #  }else{
   #    y <- y
   #  }
-  x <- subset(x, select = -c(1:5))
-  y <- subset(y, select = -c(1:5))
+
+  x <- dplyr::select(x, dplyr::starts_with("V"))
+  y <- dplyr::select(y, dplyr::starts_with("V"))
+
+  #x <- subset(x, select = -c(1:5))
+  #y <- subset(y, select = -c(1:5))
 
   # see function above
   # If statement deciding which of x or y that needs row(s) of NA
