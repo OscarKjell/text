@@ -55,7 +55,7 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings = single_w
 
     # Splitting datasets up to low versus high according to median split
     group1 <- x1[ x1[2] > stats::median(x1[[2]]), ]
-    group2 <- x1[ x1[2] <= stats::median(x1[[2]]), ]
+    group2 <- x1[ x1[2] < stats::median(x1[[2]]), ]
 
     # Use function addEqualNrNArows from textTtestscores
     # Function adds rows of NA until group2 and group1 have the same amount of rows.
