@@ -6,6 +6,24 @@
 #library(text)
 
 
+# Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution help(switch)
+p_value_comparing_with_Null <- function(NULLresults, Observedresults, Npermutations, alternative){
+  switch(alternative,
+         "two.sided" = {
+           p_value <- 2 * (min(sum(NULLresults < results["estimate"]), sum(NULLresults > results["estimate"])) / sum(!is.na(NULLresults)))
+           },
+         "less" = {
+           p_value <- sum(NULLresults < results["estimate"]) / sum(!is.na(NULLresults))
+           },
+         "greater" = {
+           p_value <- sum(NULLresults > results["estimate"]) / sum(!is.na(NULLresults))
+           }
+  )
+  if (p_value == 0) { p_value <- 1 / (Npermutations + 1) }
+  }
+
+
+
 # For Observed data we have = Mean and SD (perhaps I could bootstrap and Mean of means? )
 
 # For Permutated data we have = Mean of means and the SD of the Mean of means.; which then becomes the standard error?
@@ -82,7 +100,7 @@ textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative 
       if(method == "unpaired"){
         R1_all <- textEmbeddingAggregation(rdata1, aggregation = "mean")
         R2_all <- textEmbeddingAggregation(rdata2, aggregation = "mean")
-        # Compute cosine between the simmed word embedding
+        # Compute cosine between the summed word embedding
         rcosines <- lsa::cosine(R1_all, R2_all)
         # Compute the data's mean of the cosine
         return(abs(rcosines))
@@ -92,20 +110,9 @@ textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative 
   }, xx=x, yy=y)
   NULLresults <- unlist(distribution_mean_cosine_permutated)
 
-  # Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution
-  switch(alternative,
-         "two.sided" = {
-           results["p.value"] <- 2 * (min(sum(NULLresults < results["estimate"]), sum(NULLresults > results["estimate"])) / sum(!is.na(NULLresults)))
-         },
-         "less" = {
-           results["p.value"] <- sum(NULLresults < results["estimate"]) / sum(!is.na(NULLresults))
-         },
-         "greater" = {
-           results["p.value"] <- sum(NULLresults > results["estimate"]) / sum(!is.na(NULLresults))
-         }
-  )
-  if (results["p.value"] == 0) { results["p.value"] <- 1 / (Npermutations + 1) }
-  #}
+  # Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution help(switch)
+  p_value <- p_value_comparing_with_Null(NULLresults, Observedresults=results["estimate"], Npermutations = Npermutations, alternative=alternative)
+  results["p.value"] <- p_value
   results <- as.list(results)
 
   if (output.permutations) {
