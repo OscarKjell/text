@@ -33,15 +33,18 @@
 #' @importFrom caret createFolds
 #' @importFrom stats median sd
 #' @export
-
 # Function that creates semnatic t-test scores for single words for plotting purposes
 textPlotData <- function(words, wordembeddings, single_wordembeddings = single_wordembeddings_df, x, y = NULL, Bonferroni = TRUE, nrFolds = 10) {
+  set.seed(2020)
   if (is.null(y) == TRUE) {
     x <- data.frame(x)
   } else {
     # Combing the dimensions for for-loop
     x <- data.frame(x, y)
   }
+
+  # Select all variables that starts with V in each dataframe of the list.
+  wordembeddings <- dplyr::select(wordembeddings, dplyr::starts_with("V"))
 
   # Creating list for the x and y dimension
   word_data_list <- list()
@@ -82,12 +85,12 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings = single_w
     semanticTtestscoreslistG2 <- list()
 
     for (i in 1:nrF) {
-      ### Summ all semrep in one column and normlise to one SHOULD AVOID HARDCODING 1:7!!!  i=1
-      colXsemrep <- colSums(group1[, -c(1:7)][ -folds[[i]], ], na.rm = TRUE)
+      ### Summ all semrep in one column and normlise to one i=1
+      colXsemrep <- colSums(group1[ , -c(1:2)][ -folds[[i]], ], na.rm = TRUE)
       # SHOULD WE NORMALISE HERE
       # colXsemrep <- normalizeV(colXsemrep)
 
-      colYsemrep <- colSums(group2[, -c(1:7)][ -folds[[i]], ], na.rm = TRUE)
+      colYsemrep <- colSums(group2[ , -c(1:2)][ -folds[[i]], ], na.rm = TRUE)
       # colYsemrep <- normalizeV(colYsemrep)
 
       # The Semantic Difference Represenation: Taking colX minus colY
@@ -168,8 +171,9 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings = single_w
     Words_info_sd <- dplyr::group_by(semanticTtestscoreslistG1G2done, words) %>%
       dplyr::summarize(sd = stats::sd(SS))
 
-    semanticTtestscoreslistG1G2done$words
-    table(semanticTtestscoreslistG1G2done$words, useNA = "always")
+    #semanticTtestscoreslistG1G2done$words
+    #table(semanticTtestscoreslistG1G2done$words, useNA = "always")
+
     # The n/frequency of each word
     Words_info$n <- as.numeric(table(semanticTtestscoreslistG1G2done$words, useNA = "ifany"))
     Words_info$sd <- Words_info_sd$sd
@@ -198,6 +202,7 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings = single_w
     cohens_d <- function(mean_x, sd_x, n_x, mean_y, sd_y, n_y) {
       (mean_x - mean_y) / (sqrt((sd_x^2 + sd_y^2) / 2))
     }
+
     # Applying Cohens D individually for each word
     cohen_D_df <- data.frame(mapply(cohens_d,
       mean_x = Words_info$mean, sd_x = Words_info$sd, n_x = Words_info$n, # Words_info$n_2 adds so it is at least 2 words; and more t-tests can be made.
@@ -219,27 +224,28 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings = single_w
     word_data_tibble <- dplyr::full_join(word_data_list[[1]], word_data_list[[2]], by = "words")
   }
 
-  # Bonferroni correction or not
-  if (isTRUE(Bonferroni) == TRUE) {
-    # If there are no y axes or not.
-    if (is.null(y) == TRUE) {
+  # Bonferroni correction or not view(word_data_tibble); view(word_data_tibble_bonf)
+  if (isTRUE(Bonferroni) == TRUE & is.null(y) == TRUE) {
       bonferroni_x <- as.numeric(table(!is.na(word_data_tibble$p_values.x))["TRUE"])
       word_data_tibble_bonf <- word_data_tibble[word_data_tibble$p_values.x < .05 / bonferroni_x, ]
-    } else {
+    } else if (isTRUE(Bonferroni) == TRUE & is.null(y) == FALSE) {
       # Counting number of t-test made (i.e, on words more than 1)
       bonferroni_x <- as.numeric(table(!is.na(word_data_tibble$p_values.x))["TRUE"])
       bonferroni_y <- as.numeric(table(!is.na(word_data_tibble$p_values.y))["TRUE"])
       # Select significant words when Bonferroni correcting for multiple comparison
       word_data_tibble_bonf <- word_data_tibble[word_data_tibble$p_values.x < .05 / bonferroni_x | word_data_tibble$p_values.y < .05 / bonferroni_y, ]
+    } else if (isTRUE(Bonferroni) == FALSE & is.null(y) == TRUE) {
+      word_data_tibble_bonf <- word_data_tibble
+    } else if (isTRUE(Bonferroni) == FALSE & is.null(y) == FALSE) {
+      word_data_tibble_bonf <- word_data_tibble
     }
+
     # Remove NAs
     word_data_tibble <- word_data_tibble_bonf[!is.na(word_data_tibble_bonf$words), ]
     word_data_tibble
-  } else {
-    word_data_tibble
   }
-  word_data_tibble
-}
+#  word_data_tibble
+#}
 
 # word_data <-sq_data_plottingHw_HILSSSWLS_100
 # devtools::document()
@@ -296,6 +302,9 @@ textPlotData <- function(words, wordembeddings, single_wordembeddings = single_w
 #' @importFrom ggplot2 position_jitter element_text element_blank
 #' @importFrom rlang sym
 #' @export
+
+#word_data <- plot_data_old
+#y_axes = NULL
 textPlotViz <- function(word_data,
                         plot_n_words = 25,
                         title_top = " ",
@@ -307,7 +316,7 @@ textPlotViz <- function(word_data,
                         scale_x_axes_lim = NULL,
                         scale_y_axes_lim = NULL,
                         y_axes_values = NULL,
-                        word_font = "Helvetica",
+                        word_font = "Arial",
                         colors_words = c("#ff0000", "#ff8080", "white", "#99e699", "#33cc33"),
                         colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1),
                         word_size_range = c(3, 8),
@@ -319,14 +328,6 @@ textPlotViz <- function(word_data,
   # Make limits for color gradient so that 0 becomes in the middle;
   # should NOT hardcode data$cohensD.x
   color_limit <- max(abs(word_data$cohensD.x)) * c(-1, 1)
-
-  # This solution is because it is not possible to send "0" as a parameter
-  if (is.null(y_axes) == TRUE) {
-    one_dime <- 0
-    y_axes <- "one_dime"
-  } else {
-    y_axes
-  }
 
   # Select lowest p-values for x or both x and y if needed. help(which.min)
   if (is.null(y_axes)) {
@@ -346,6 +347,14 @@ textPlotViz <- function(word_data,
     # Combing the words and selecting remove duplicates
     data3 <- rbind(data2x, data2y)
     data <- unique(data3)
+  }
+
+  # This solution is because it is not possible to send "0" as a parameter
+  if (is.null(y_axes) == TRUE) {
+    one_dime <- 0
+    y_axes <- "one_dime"
+  } else {
+    y_axes
   }
 
   # Plot
