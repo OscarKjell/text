@@ -21,7 +21,7 @@
 #' wordembeddings <- wordembeddings4_10[1:4]
 #' ratings_data <- sq_data_tutorial4_10$hilstotal
 #' wordembeddings <- textTrainMultiTexts(wordembeddings, ratings_data, nrFolds_k = 2)
-#' @seealso see \code{\link{textTrainLists}} \code{\link{textTtest}}
+#' @seealso see \code{\link{textTrainLists}} \code{\link{textDiff}}
 #' @importFrom stats cor.test na.omit
 #' @importFrom dplyr select starts_with filter bind_cols matches
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca

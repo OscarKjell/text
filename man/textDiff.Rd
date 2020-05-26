@@ -10,7 +10,7 @@ textDiff(
   y,
   Npermutations = 1000,
   method = "paired",
-  alternative = c("two.sided", "less", "greater"),
+  alternative = c("two_sided", "less", "greater"),
   output.permutations = TRUE,
   N_cluster_nodes = 1
 )
@@ -41,7 +41,4 @@ textDiff: Test whether there is a significant difference between two sets of tex
 x <- wordembeddings4_10$harmonywords
 y <- wordembeddings4_10$satisfactionwords
 textDiff(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1)
-}
-\seealso{
-see \code{\link{textTtest}}
 }

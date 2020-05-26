@@ -4,7 +4,7 @@
 \alias{textSpace}
 \title{textSpace: Create an LSA-based space with semantic representation for each word}
 \usage{
-textSpace(x, dims = dimcalc_share())
+textSpace(x, dims = lsa::dimcalc_share())
 }
 \arguments{
 \item{x}{column with text.}

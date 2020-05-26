@@ -4,7 +4,8 @@
 \name{sq_data_tutorial8_10}
 \alias{sq_data_tutorial8_10}
 \title{Example text and numeric data.}
-\format{A data frame with 10 rows and 8 variables:
+\format{
+A data frame with 10 rows and 8 variables:
 \describe{
   \item{harmonywords}{descriptive words where respondents describe their harmony in life}
   \item{satisfactionwords}{descriptive words where respondents describe their satisfaction with life}
@@ -15,7 +16,8 @@
   \item{age}{respondents age in years}
   \item{gender}{respondents gender 1=male, 2=female}
   ...
-}}
+}
+}
 \source{
 \url{https://psyarxiv.com/er6t7/}
 }

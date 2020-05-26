@@ -42,5 +42,5 @@ ratings_data <- sq_data_tutorial4_10$hilstotal
 wordembeddings <- textTrainMultiTexts(wordembeddings, ratings_data, nrFolds_k = 2)
 }
 \seealso{
-see \code{\link{textTrainLists}} \code{\link{textTtest}}
+see \code{\link{textTrainLists}} \code{\link{textDiff}}
 }

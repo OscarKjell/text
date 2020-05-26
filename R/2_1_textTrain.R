@@ -50,8 +50,9 @@
 #' @examples
 #' wordembeddings <- wordembeddings4_10
 #' ratings_data <- sq_data_tutorial4_10
-#' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k = 2)
-#' @seealso see \code{\link{textTrainLists}} \code{\link{textTtest}}
+#' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
+#' nrFolds_k = 2, strata_y = NULL)
+#' @seealso see \code{\link{textTrainLists}} \code{\link{textDiff}}
 #' @importFrom stats cor.test na.omit
 #' @importFrom dplyr select starts_with filter
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors

@@ -1,91 +1,30 @@
 
-library(text)
-library(tidyverse)
-# .libPaths()
-# regarding warnings about reached elapsed time limit.
-# gc()
-# https://community.rstudio.com/t/reached-elapsed-time-limit-warnings-rstudio/36647/4
 
-
-#DELETE THE FOLLOING FUNCTIONS AS THEY COME FROM OTHER FILES; EXISTS IN textSimilairty... help(map)
-addEqualNrNArows <- function(x, y) {
-  success <- FALSE
-  while (!success) {
-    # Add row with NA
-    x <- rbind(x, rep(NA, length(x)))
-    # check for success
-    success <- nrow(x) == nrow(y)
-  }
-  return(x)
-}
-# REMOVE when done
-cosines <- function(x, y) {
-  rowSums(x * y, na.rm = TRUE) / (sqrt(rowSums(x * x, na.rm = TRUE)) * sqrt(rowSums(y * y, na.rm = TRUE)))
-}
-# REMOVE when done
-applysemrep <- function(x, single_wordembeddings1) {
-  # If semrep is found get it; if not return NA vector of dimensions
-  if (sum(single_wordembeddings1$words == x[TRUE]) %in% 1) {
-    x <- tolower(x)
-    # Get the semantic representation for a word=x
-    word1rep <- single_wordembeddings1[single_wordembeddings1$words == x, ]
-    # Only get the semantic represenation as a vector without the actual word in the first column
-    wordrep <- purrr::as_vector(word1rep %>% dplyr::select(dplyr::starts_with("V")))
-    # If the word does not have a semrep return vector with NA the same number of dimensions as columns with V
-  } else if (x %in% NA) {
-    # The length() refers to how many column starts with V (i.e., how many dimensions)
-    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
-    class(wordrep)
-    wordrep <- as.numeric(wordrep)
-  } else {
-    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
-    wordrep <- as.numeric(wordrep)
-  }
-}
-# REMOVE when done
-textEmbeddingAggregation <- function(x, aggregation = "min"){
-  if(aggregation == "min"){
-    min_vector <- unlist(map(x, min, na.rm = TRUE))
-  } else if (aggregation == "max") {
-    max_vector <- unlist(map(x, max, na.rm = TRUE))
-  } else if (aggregation == "mean") {
-    mean_vector <- colMeans(x, na.rm = TRUE)
-  } else if (aggregation == "CLS"){
-    CLS <- x %>%
-      dplyr::filter(token_index == 1, layer_index == 1)
-  } else if (aggregation == "normalize1") {
-    #    norma_vector <- unlist(map(x, norma))
-    x2 <- x[complete.cases(x), ]
-    x3 <- colSums(x2) # BELOW NEED FIXING; REMOVED FROM CRAN
-    # x4 <- ppls::normalize.vector(x3)
-  }
+#  devtools::document()
+#' Takes all words as input and arrange them in column with an accomponing column with frequency
+#'
+#' @param x words
+#' @return Column with all words and an accomponing column with their frequency.
+#' @importFrom tibble as_tibble
+#' @noRd
+unique_freq_words <- function(words){
+  words_group <- data.frame(unlist(strsplit(tolower(words), " ")))
+  words_groupb <- tibble::as_tibble(as.character(words_group[,1]))
+  words_groupb_freq <- tibble::as_tibble(table(words_groupb))
+  colnames(words_groupb_freq) <- c("words", "n")
+  words_groupb_freq
 }
 
-# REMOVE WHEN DONE: Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution help(switch)
-p_value_comparing_with_Null <- function(Observedresults, NULLresults, Npermutations, alternative){
-  switch(alternative,
-         "two_sided" = {
-           p_value <- 2 * (min(sum(NULLresults < Observedresults), sum(NULLresults > Observedresults)) / sum(!is.na(NULLresults)))
-         },
-         # SHOULD NOT THESE: < BE <= CONSIDERING THAT THE DEF. FOR P IS "the probability of a result at least as extreme as the one observed"
-         # https://stats.stackexchange.com/questions/120099/big-difference-in-p-value-from-permutation-test
-         "less" = {
-           p_value <- sum(NULLresults < Observedresults) / sum(!is.na(NULLresults))
-         },
-         "greater" = {
-           p_value <- sum(NULLresults > Observedresults) / sum(!is.na(NULLresults))
-         }
-  )
-  #  if (!is.na(p_value)) {   # This is removed so that p_values can be 0; otherwise need to do many bonferroni
-  #    if (p_value == 0) { p_value <- 1 / (Npermutations + 1) }
-  #  }
-  return(p_value)
-}
-
-
-
-
-# KEEP HERE: Creat distribution: Helper Function
+#  devtools::document()
+#' Create cummalative distribution; Permutates randomly from within group and compute cosine to the group's aggregated embedding
+#'
+#' @param words_groupX_single_wordembedding_b Each word's word embedding
+#' @param Aggregated_word_embedding_groupX The groups aggregated word embedding
+#' @param Npermutations Number of permutations (i.e., number of cosines to return)
+#' @param n_per_split Number of permutations that should be done in each forloop (too many crashes computer/too few takes a long time)
+#' @return Distribution of cosines to the group's aggregated embedding
+#' @importFrom tibble as_tibble
+#' @noRd
 GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembedding_b, Aggregated_word_embedding_groupX, Npermutations, n_per_split) {
   forloops <- ceiling(Npermutations/n_per_split)
   cosine_null_distribution <- list()
@@ -99,68 +38,85 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
     cosine_null_distribution[i] <- as_tibble(group2_rcosines)
     cosine_null_distribution
   }
-  cosine_null_distribution <- as_tibble(unlist(cosine_null_distribution))
+  cosine_null_distribution <- tibble::as_tibble(unlist(cosine_null_distribution))
   cosine_null_distribution <- cosine_null_distribution[complete.cases(cosine_null_distribution),]
 }
 
 
-# KEEP HERE: Helper Function, take all words as input and arrange them in column with an accomponing column with frequency
-unique_freq_words <- function(words){
-  words_group <- data.frame(unlist(strsplit(tolower(words), " ")))
-  words_groupb <- tibble::as_tibble(as.character(words_group[,1]))
-  words_groupb_freq <- as_tibble(table(words_groupb))
-  colnames(words_groupb_freq) <- c("words", "n")
-  words_groupb_freq
-}
+
 
 # This is just to get variables when testing the function
-load("/Users/oscarkjell/Desktop/Projects/0 Research/0 text r-package/text_data_examples/sq_data_tutorial4_100.rda")
-sq_data_tutorial4_100
-load("/Users/oscarkjell/Desktop/Projects/0 Research/0 text r-package/text_data_examples/wordembeddings4_100.rda")
-sq_data_tutorial8_100 <- read_rds("/Users/oscarkjell/Desktop/Projects/0 Research/0 text r-package/text_plot_test/sq_data_tutorial8_100.rda")
-
-
-
-# Large
-# words <- solmini_no_na_raw$harmonywords
-# wordembeddings <- solmini_no_na_wordembeddings4_600$harmonywords
-# single_wordembeddings <- solmini_no_na_wordembeddings4_600$singlewords_we
-# x <- solmini_no_na_raw$hilstotal
-
-# small
-words = sq_data_tutorial8_100$harmonywords
-wordembeddings = wordembeddings4_100$harmonywords
-single_wordembeddings = wordembeddings4_100$singlewords_we
-x = sq_data_tutorial8_100$hilstotal
-
-#x <- rnorm(100, mean=50, sd=10)
-y = NULL #sq_data_tutorial8_100$swlstotal
-Npermutations = 1000
-n_per_split = 100
-aggregation = "mean"
-i_dim = 1
-word_weight_power = 1
-split = "median"
+# load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/sq_data_tutorial4_100.rda")
+# sq_data_tutorial4_100
+# load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/wordembeddings4_100.rda")
+# sq_data_tutorial8_100 <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_plot_test/sq_data_tutorial8_100.rda")
+# words = sq_data_tutorial8_100$harmonywords
+# wordembeddings = wordembeddings4_100$harmonywords
+# single_wordembeddings = wordembeddings4_100$singlewords_we
+# x = sq_data_tutorial8_100$hilstotal
+# y = NULL #sq_data_tutorial8_100$swlstotal
+# Npermutations = 1000
+# n_per_split = 100
+# aggregation = "mean"
+# i_dim = 1
 # word_weight_power = 1 #; take the power of X of the frequency in the computation of aggreated word embeddings for group 1 and 2.
-min_freq_words = 0
-pca = NULL   # ; pca = 10 pca = 0.9 pca = 1 # Number of pca dimensions on the word embeddings; if under 1 it takes out % of variance; if equal or above 1 it takes out dimensions
+# split = "median"
+# min_freq_words = 0
+#
 
-# Function that creates semnatic t-test scores for single words for plotting purposes
-textPlotDataTextDiff <- function(words,
-                                 wordembeddings,
-                                 single_wordembeddings = single_wordembeddings_df,
-                                 pca = NULL,
-                                 x,
-                                 y = NULL,
-                                 aggregation = "mean",
-                                 split = "median",
-                                 word_weight_power = 1,
-                                 min_freq_words=0,
-                                 n_per_split = 50000, # this is to avoid reaching memory limits, the higher the faster; but different systems can compute different
-                                 Npermutations = 10000) {
+# devtools::document()
+#' textPlotData computes variables for plotting words.
+#'
+#' @param words Words or text variable to be plotted.
+#' @param wordembeddings Wordembeddings from textEmbedd for the words to be plotted (i.e., the aggregated word embeddings for the "words" variable).
+#' @param single_wordembeddings Wordembeddings from textEmbedd for individual words.
+#' @param x Numeric variable the words should be plotted according to.
+#' @param y Numeric variable the words should be plotted according to (y=NULL).
+#' @param pca Number of pca dimensions applied to the word embeddings in the beginning of the function. A number below 1 takes out \% of variance;
+#' An integer specify number of components to extract.
+#' @param aggregation Method to aggreate the word embeddings (default = "mean"; see also, "min", "max", or "normalise1").
+#' @param split Method to split the axes (default = "quartile" (i.e., selecting lower and upper quartile); see also "median").
+#' @param word_weight_power Takes the power of the frequency in the computation of aggreated word embeddings for group low (1) and high (2).
+#' @param min_freq_words Option to only select words that have occured a specified number of times (default = 0).
+#' @param Npermutations Number of permutations in the creation of the null distribution.
+#' @param n_per_split A setting to avoid reaching computer memory limits; the higher the faster, but too high may lead to abortion.
+#' @return A dataframe with variables (e.g., including dot product, frequencies, p-values) for the individual words
+#' that is used for the plotting in the textPlotViz function.
+#' @examples
+#' wordembeddings <- wordembeddings4_10
+#' data <- sq_data_tutorial8_10
+#' df_for_plotting <- textPlotData(data$harmonywords, wordembeddings$harmonywords,
+#'   wordembeddings$singlewords_we,
+#'   data$hilstotal,
+#'   split = "quartile",
+#'   Npermutations = 10,
+#'   n_per_split = 1
+#' )
+#' df_for_plotting
+#' @seealso see \code{\link{textPlotViz}}
+#' @importFrom tibble as_tibble
+#' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake
+#' @importFrom tidyr uncount
+#' @importFrom dplyr full_join rename starts_with
+#' @importFrom broom tidy
+#' @importFrom stats median sd setNames
+#' @importFrom purrr as_vector
+#' @export
+textPlotData <- function(words,
+                         wordembeddings,
+                         single_wordembeddings = single_wordembeddings_df,
+                         x,
+                         y = NULL,
+                         pca = NULL,
+                         aggregation = "mean",
+                         split = "quartile",
+                         word_weight_power = 1,
+                         min_freq_words=0,
+                         n_per_split = 50000,
+                         Npermutations = 10000) {
 
 
-
+  set.seed(2020)
   # PCA on single_wordembeddings
   if (is.numeric(pca)) {
     # Select word embeddings to be included in plot
@@ -182,7 +138,7 @@ textPlotDataTextDiff <- function(words,
 
     pca_estimates <- recipes::prep(pca_trans, training = uniques_words_all_wordembedding)
     pca_data <- recipes::bake(pca_estimates, uniques_words_all_wordembedding)
-    pca_data <- pca_data %>% setNames(paste0('V_', names(.)))
+    pca_data <- pca_data %>% stats::setNames(paste0('V_', names(.)))
     single_wordembeddings <- dplyr::bind_cols(uniques_words_all, pca_data)
     single_wordembeddings
   }
@@ -209,7 +165,7 @@ textPlotDataTextDiff <- function(words,
     group1 <- x2[ x2[2] < stats::median(x2[[2]]), ]
     group2 <- x2[ x2[2] > stats::median(x2[[2]]), ]
 
-    # Use function addEqualNrNArows from textTtestscores
+    # Use function addEqualNrNArows from 3_1_testSimilarity
     # Function adds rows of NA until group2 and group1 have the same amount of rows.
     if (nrow(group1) < nrow(group2)) {
       group1 <- addEqualNrNArows(group1, group2)
@@ -220,7 +176,6 @@ textPlotDataTextDiff <- function(words,
       group2 <- group2
     }
 
-    set.seed(2020)
     ##########
     ####        Get word embeddings
     ##########
@@ -238,6 +193,14 @@ textPlotDataTextDiff <- function(words,
     words_group2b_freq$n_g1_g2 <- words_group2b_freq$n * 1
     words_group2_single_wordembedding <- sapply(words_group2b_freq$words, applysemrep, single_wordembeddings)
     words_group2_single_wordembedding_b <- tibble::as_tibble(t(words_group2_single_wordembedding))
+
+    # All: Group 1&2 min_freq_words=1
+    words_group1_2_freq <- unique_freq_words(x2$words)
+    words_group1_2_freq_b <- words_group1_2_freq[words_group1_2_freq$n >= min_freq_words, ]
+    words_group1_2_freq_b <- dplyr::rename(words_group1_2_freq_b, n_all = n)
+    words_group1_2_single_wordembedding <- sapply(words_group1_2_freq_b$words, applysemrep, single_wordembeddings)
+    words_group1_2_single_wordembedding_b <- tibble::as_tibble(t(words_group1_2_single_wordembedding))
+    words_group1_2_single_wordembedding_c <- cbind(words_group1_2_freq_b, words_group1_2_single_wordembedding_b)
 
 
     ############
@@ -269,16 +232,16 @@ textPlotDataTextDiff <- function(words,
       words_group2_agg_single_wordembedding_c <- cbind(words_group2_agg_freq, words_group2_agg_single_wordembedding_b)
     }
 
-    words_group1_agg_single_wordembedding_c <- as_tibble(words_group1_agg_single_wordembedding_c)
-    words_group2_agg_single_wordembedding_c <- as_tibble(words_group2_agg_single_wordembedding_c)
+    words_group1_agg_single_wordembedding_c <- tibble::as_tibble(words_group1_agg_single_wordembedding_c)
+    words_group2_agg_single_wordembedding_c <- tibble::as_tibble(words_group2_agg_single_wordembedding_c)
 
-    # Weight words for aggregated word embedding: Repeat rows according to n word_weight_power = 2 word_weight_power = 5
+    # Weight words for aggregated word embedding: Repeat rows according to n word_weight_power
     words_group1_agg_single_wordembedding_d <-  words_group1_agg_single_wordembedding_c %>%
-      mutate(., n1 = n^word_weight_power)  %>%
+      dplyr::mutate(., n1 = n^word_weight_power)  %>%
       tidyr::uncount(n1)
 
     words_group2_agg_single_wordembedding_d <-  words_group2_agg_single_wordembedding_c %>%
-      mutate(., n1 = n^word_weight_power)  %>%
+      dplyr::mutate(., n1 = n^word_weight_power)  %>%
       tidyr::uncount(n1)
 
     Aggregated_word_embedding_group1 <- textEmbeddingAggregation(dplyr::select(words_group1_agg_single_wordembedding_d, dplyr::starts_with("V")), aggregation = aggregation)
@@ -315,12 +278,12 @@ textPlotDataTextDiff <- function(words,
     # Get df with ALL embedding to randomly draw from (without log transformed, and quartiles)
     words_group1_agg_single_wordembedding_e <- cbind(words_group1b_freq, words_group1_single_wordembedding_b)
     words_group1_agg_single_wordembedding_f <-  words_group1_agg_single_wordembedding_e %>%
-      mutate(., n1_e = n)  %>%
+      dplyr::mutate(., n1_e = n)  %>%
       tidyr::uncount(n1_e)
 
     words_group2_agg_single_wordembedding_e <- cbind(words_group2b_freq, words_group2_single_wordembedding_b)
     words_group2_agg_single_wordembedding_f <-  words_group2_agg_single_wordembedding_e %>%
-      mutate(., n1_e = n)  %>%
+      dplyr::mutate(., n1_e = n)  %>%
       tidyr::uncount(n1_e)
 
     words_group1_2_agg_single_wordembedding_e <- rbind(words_group1_agg_single_wordembedding_f, words_group2_agg_single_wordembedding_f)
@@ -330,7 +293,6 @@ textPlotDataTextDiff <- function(words,
     # Splitting up the permutations in different loops to avoid memory issues n_per_split=1000
     forloops <- ceiling(Npermutations/n_per_split)
     dot_null_distribution <- list()
-
 
     for(i in 1:forloops){
       ### Create new Projected embedding
@@ -359,178 +321,67 @@ textPlotDataTextDiff <- function(words,
       dot_null_distribution[i] <- dot_products_null
       dot_null_distribution
     }
-    dot_null_distribution <- as_tibble(unlist(dot_null_distribution))
+    dot_null_distribution <- tibble::as_tibble(unlist(dot_null_distribution))
 
     ### Compare observed dot-product with null
     dot_null_distribution <- dot_null_distribution[complete.cases(dot_null_distribution),]
-    p_values_dot_prod <- purrr::map(as.list(as_vector(dot_products_observed)), p_value_comparing_with_Null,
+    p_values_dot_prod <- purrr::map(as.list(purrr::as_vector(dot_products_observed)), p_value_comparing_with_Null,
                                     dot_null_distribution,
                                     Npermutations = Npermutations, alternative = "two_sided")
     p_values_dot_prod <- unlist(p_values_dot_prod)
     # Sort out dataframe
-    dot_result <- cbind(all_unique_words_freq, dot_products_observed, as_tibble(unlist(p_values_dot_prod)))
-    dot_result <- as_tibble(dot_result)
-    colnames(dot_result) <- c("words", "n", "dot", "dot2", "p_value_dot")
-    dot_result <- select(dot_result,-c(dot2))
+    dot_result <- cbind(all_unique_words_freq, dot_products_observed, tibble::as_tibble(unlist(p_values_dot_prod)))
+    dot_result <- tibble::as_tibble(dot_result)
+    colnames(dot_result) <- c("words", "n", "dot", "dot2", "p_values_dot")
+    dot_result <- dplyr::select(dot_result,-c(dot2))
+    words_group2b_freq<- dplyr::select(words_group2b_freq,-c(n))
+    words_group1b_freq<- dplyr::select(words_group1b_freq,-c(n))
 
-
+    dot_result1 <- dplyr::full_join(dot_result, words_group1b_freq, by = "words")
+    dot_result2 <- dplyr::full_join(dot_result1, words_group2b_freq, by = "words")
+    dot_result <- tibble::as_tibble(dot_result2)
+    colnames(dot_result) <- c("words", "n", "dot", "p_values_dot", "n_g1", "n_g2")
 
     ############
-    ######         Cosine based plots
+    ######         Cosine Similarity based plots
     #############
 
-    ###### WITHIN ANALYSES: Compute cosine semantic similairty score between single words and aggregated word embedding
-    # Group1 single words compared with Group2 aggregated word embedding
-    group1_words_cosine_within <- cosines(words_group1_single_wordembedding_b, t(replicate(nrow(words_group1_single_wordembedding_b), Aggregated_word_embedding_group1)))
-    group1_words_cosine_within_1<- tibble::tibble(words_group1b_freq$words, group1_words_cosine_within)
-    # Group2 single words compared with Group1 aggregated word embedding
-    group2_words_cosine_within <- cosines(words_group2_single_wordembedding_b, t(replicate(nrow(words_group2_single_wordembedding_b), Aggregated_word_embedding_group2)))
-    group2_words_cosine_within_1<- tibble::tibble(words_group2b_freq$words, group2_words_cosine_within)
+    ### WITHIN ANALYSES: Compute cosine semantic similairty score between single words and aggregated word embedding
+    # The aggreagated word embedding of all words
+    Aggregated_word_embedding_group1_2 <- rbind(Aggregated_word_embedding_group1, Aggregated_word_embedding_group2)
+    Aggregated_word_embedding_group1_2a <- textEmbeddingAggregation(Aggregated_word_embedding_group1_2, aggregation = "mean")
 
-    # ###### BETWEEN: Compute COSINE between single words and aggregated word embedding view(group1_words_cosine_1)
-    # # Group1 single words compared with Group2 aggregated word embedding
-    # group1_words_cosine_between <- cosines(words_group1_single_wordembedding_b, t(replicate(nrow(words_group1_single_wordembedding_b), Aggregated_word_embedding_group2)))
-    # group1_words_cosine_between_1<- tibble::tibble(words_group1b_freq$words, group1_words_cosine_between)
-    # # Group2 single words compared with Group1 aggregated word embedding
-    # group2_words_cosine_between <- cosines(words_group2_single_wordembedding_b, t(replicate(nrow(words_group2_single_wordembedding_b), Aggregated_word_embedding_group1)))
-    # group2_words_cosine_between_1<- tibble::tibble(words_group2b_freq$words, group2_words_cosine_between)
-    #
-    # ###### BETWEEN with DIFF-EMBEDDING
-    # Aggregated_word_embedding_group2_MINUS_1a <- Aggregated_word_embedding_group2 - Aggregated_word_embedding_group1
-    # Aggregated_word_embedding_group1_MINUS_2b <- Aggregated_word_embedding_group1 - Aggregated_word_embedding_group2
-    # # Group1 single words compared with Group2 aggregated word embedding
-    # group1_words_cosine_between_diff <- cosines(words_group1_single_wordembedding_b, t(replicate(nrow(words_group1_single_wordembedding_b), Aggregated_word_embedding_group2_MINUS_1a)))
-    # group1_words_cosine_between_diff_1<- tibble::tibble(words_group1b_freq$words, group1_words_cosine_between_diff)
-    # # Group2 single words compared with Group1 aggregated word embedding
-    # group2_words_cosine_between_diff <- cosines(words_group2_single_wordembedding_b, t(replicate(nrow(words_group2_single_wordembedding_b), Aggregated_word_embedding_group1_MINUS_2b)))
-    # group2_words_cosine_between_diff_1 <- tibble::tibble(words_group2b_freq$words, group2_words_cosine_between_diff)
+    words_group1_2_single_wordembedding_c1 <- dplyr::select(words_group1_2_single_wordembedding_c, dplyr::starts_with("V"))
+    Within_cosine_similarity <- cosines(words_group1_2_single_wordembedding_c1, t(replicate(nrow(words_group1_2_single_wordembedding_c1), Aggregated_word_embedding_group1_2a)))
+    cosine_df <- tibble::tibble(words_group1_2_single_wordembedding_c[, 1:2], Within_cosine_similarity)
 
 
-    ##########
-    #####     Create NULL distribution
-    ##########
+    ###     Create NULL distribution
 
-    # Permutate randomly from Group 1 and compute cosine to Group 1 aggregated embedding; Npermutations = 10000
-    # Group 1; WITHIN distribution
-    Group1_Null_distribution_cosine_permutated_within <- GroupX_cummalative_distribution_cosine(words_group1_single_wordembedding_b,
-                                                                                                Aggregated_word_embedding_group1,
-                                                                                                Npermutations, n_per_split)
-    # Group 2; WITHIN distribution
-    Group2_Null_distribution_cosine_permutated_within <- GroupX_cummalative_distribution_cosine(words_group2_single_wordembedding_b,
-                                                                                                Aggregated_word_embedding_group2,
-                                                                                                Npermutations, n_per_split)
+    # WITHIN distribution Permutate randomly from within group and compute cosine to the group's aggregated embedding
+    Null_distribution_cosine_permutated_within <- GroupX_cummalative_distribution_cosine(words_group1_2_single_wordembedding_c1,
+                                                                                         Aggregated_word_embedding_group1_2a,
+                                                                                         Npermutations, n_per_split)
 
-    # Group 1; BETWEEN comparison distribution
-    Group1_Null_distribution_cosine_permutated_between <- GroupX_cummalative_distribution_cosine(words_group1_single_wordembedding_b,
-                                                                                                 Aggregated_word_embedding_group1,
-                                                                                                 Npermutations, n_per_split)
-    # Group 2; BETWEEN comparison distribution
-    Group2_Null_distribution_cosine_permutated_between <- GroupX_cummalative_distribution_cosine(words_group2_single_wordembedding_b,
-                                                                                                 Aggregated_word_embedding_group2,
-                                                                                                 Npermutations, n_per_split)
-
-    # Group 1; BETWEEN-DIFFERENCE EMBEDDING comparison distribution
-    Group1_Null_distribution_cosine_permutated_between_diff <- GroupX_cummalative_distribution_cosine(words_group1_single_wordembedding_b,
-                                                                                                      Aggregated_word_embedding_group2_MINUS_1a, #Perhaps try change here
-                                                                                                      Npermutations, n_per_split)
-    # Group 2; BETWEEN-DIFFERENCE EMBEDDING comparison distribution
-    Group2_Null_distribution_cosine_permutated_between_diff <- GroupX_cummalative_distribution_cosine(words_group2_single_wordembedding_b,
-                                                                                                      Aggregated_word_embedding_group1_MINUS_2b, #Perhaps try change here
-                                                                                                      Npermutations, n_per_split)
-
-
-
-
-    ##########
-    #####         4     Comparing observed with NULL distribution
-    ##########
-    # Group 1
-    # WITHIN 1
-    Group1_p_values_within <- purrr::map(as.list(as_vector(group1_words_cosine_within_1[,2])), p_value_comparing_with_Null,
-                                         Group1_Null_distribution_cosine_permutated_within,
+    ###      Comparing observed with NULL distribution
+    p_values_within_cosine <- purrr::map(as.list(purrr::as_vector(cosine_df[,3])), p_value_comparing_with_Null,
+                                         Null_distribution_cosine_permutated_within,
                                          Npermutations = Npermutations, alternative = "greater")
-    # BETWEEN
-    Group1_p_values_between <- purrr::map(as.list(as_vector(group1_words_cosine_between_1[,2])), p_value_comparing_with_Null,
-                                          Group1_Null_distribution_cosine_permutated_between, # Group2_Null_distribution_cosine_permutated_between
-                                          Npermutations = Npermutations, alternative = "two_sided")
-
-    # BETWEEN DIFFERENCE
-    Group1_p_values_between_diff <- purrr::map(as.list(as_vector(group1_words_cosine_between_diff_1[,2])), p_value_comparing_with_Null,
-                                               Group1_Null_distribution_cosine_permutated_between_diff, # Group1_Null_distribution_cosine_permutated_between_diff
-                                               Npermutations = Npermutations, alternative = "two_sided")
 
     # Sorting out Dataframe
-    Group1_result <- cbind(group1_words_cosine_between_1, as_tibble(unlist(Group1_p_values_between)),
-                           group1_words_cosine_between_diff_1[,2], as_tibble(unlist(Group1_p_values_between_diff)),
-                           group1_words_cosine_within_1[,2], as_tibble(unlist(Group1_p_values_within)))
+    Cosine_result <- cbind(cosine_df, tibble::as_tibble(unlist(p_values_within_cosine)))
 
-    Group1_result$forG2 <- rep(NA, nrow(group1_words_cosine_between_1))
-    Group1_result$forG2_1 <- rep(NA, nrow(group1_words_cosine_between_1))
-    colnames(Group1_result) <- c("words", "cosine_between", "p_values_between",
-                                 "cosine_between_diff", "p_values_between_diff",
-                                 "cosine_within_g1", "p_values_within_g1",
-                                 "cosine_within_g2", "p_values_within_g2")
+    colnames(Cosine_result) <- c("words", "n_all", "Within_cosine_similarity", "p_values_cosine")
 
-    Group1_result_n <- dplyr::full_join(Group1_result, words_group1b_freq, by = "words") %>%
-      unique()
-
-
-    # Group 2
-    # WITHIN
-    Group2_p_values_within <- purrr::map(as.list(as_vector(group2_words_cosine_within_1[,2])), p_value_comparing_with_Null,
-                                         Group2_Null_distribution_cosine_permutated_within,
-                                         Npermutations = Npermutations, alternative = "greater")
-    # BETWEEN
-    Group2_p_values_between <- purrr::map(as.list(as_vector(group2_words_cosine_between_1[,2])), p_value_comparing_with_Null,
-                                          Group1_Null_distribution_cosine_permutated_between, # Group2_Null_distribution_cosine_permutated
-                                          Npermutations = Npermutations, alternative = "two_sided")
-
-    # BETWEEN DIFFERENCE
-    Group2_p_values_between_diff <- purrr::map(as.list(as_vector(group2_words_cosine_between_diff_1[,2])), p_value_comparing_with_Null,
-                                               Group1_Null_distribution_cosine_permutated_between_diff, # Group2_Null_distribution_cosine_permutated
-                                               Npermutations = Npermutations, alternative = "two_sided")
-
-    # Sorting out Dataframe
-    forG1 <- rep(NA, nrow(group2_words_cosine_between_1))
-
-    Group2_result <- cbind(group2_words_cosine_between_1, as_tibble(unlist(Group2_p_values_between)),
-                           group2_words_cosine_between_diff_1[,2], as_tibble(unlist(Group2_p_values_between_diff)),
-                           forG1, forG1,
-                           group2_words_cosine_within_1[,2], as_tibble(unlist(Group2_p_values_within)))
-
-
-    colnames(Group2_result) <- c("words", "cosine_between", "p_values_between",
-                                 "cosine_between_diff", "p_values_between_diff",
-                                 "cosine_within_g1", "p_values_within_g1",
-                                 "cosine_within_g2", "p_values_within_g2")
-    head(Group2_result)
-    Group2_result_n <- dplyr::full_join(Group2_result, words_group2b_freq, by = "words") %>%
-      unique()
-
-
-    # Sorting out the resuts; make grouping variable
-    Group1_result_n$g1_1_g2_2 <- rep(1, nrow(Group1_result_n))
-    Group2_result_n$g1_1_g2_2 <- rep(2, nrow(Group2_result_n))
-
-    # Reverse transoform Cosine to be intuitive to plot
-    Group1_result_n$cosine_between_rev <- Group1_result_n$cosine_between  # -1
-    Group2_result_n$cosine_between_rev <- Group2_result_n$cosine_between *-1 # -1) #* -1
-
-    # Reverse transoform Cosine to be intuitive to plot
-    Group1_result_n$cosine_between_diff_rev <- Group1_result_n$cosine_between_diff #*-1 # -1
-    Group2_result_n$cosine_between_diff_rev <- Group2_result_n$cosine_between_diff *-1 # -1) #* -1
-
-    # Bind all words together
-    Group1_2_result <- dplyr::bind_rows(Group1_result_n, Group2_result_n) # View(Group2_result_n)
-    head(Group1_2_result)
-
-    # Merge the within cosine and within p-values to one g1_g2 column each; also make cosine in group -, so they are plotted to the left
-    Group1_2_result$cosine_within_g1_g2   <-   coalesce((Group1_2_result$cosine_within_g1*-1), Group1_2_result$cosine_within_g2)
-    Group1_2_result$p_value_within_g1_g2  <-   coalesce(Group1_2_result$p_values_within_g1, Group1_2_result$p_values_within_g2)
+    #    Group2_result_n <- dplyr::full_join(Group2_result, words_group2b_freq, by = "words") %>%
+    #      unique()
 
 
     #Including dot restuls.
-    Group1_2_result_dot <- dplyr::full_join(Group1_2_result, dot_result, by = "words")
+    Group1_2_result_dot <- dplyr::full_join(dot_result, Cosine_result, by = "words")
+    Group1_2_result_dot <- tibble::as_tibble(Group1_2_result_dot)
+
+
     #dput(colnames(Group1_2_result_dot))
     #head(Group1_2_result_dot)
 
@@ -541,12 +392,9 @@ textPlotDataTextDiff <- function(words,
   if (is.null(y) == TRUE) {
     word_data_tibble <- word_data_list[[1]]
     colnames(word_data_tibble) <-
-      c("words", "cosine_between.x", "p_values_between.x", "cosine_between_diff.x",
-        "p_values_between_diff.x", "cosine_within_g1.x", "p_values_within_g1.x",
-        "cosine_within_g2.x", "p_values_within_g2.x", "n.x", "n_g1_g2.x", "g1_1_g2_2.x",
-        "cosine_between_rev.x", "cosine_between_diff_rev.x", "cosine_within_g1_g2.x",
-        "p_value_within_g1_g2.x", "n.y", "dot.x", "dot2.x", "p_value_dot.x")
-    #colnames(word_data_tibble) <- c("words", "cosine.x", "p_values_between.x", "cosine_within_g1.x", "p_values_within_g1.x", "cosine_within_g2.x", "p_values_within_g2.x", "n.x", "n_g1g2.x", "g1_1_g2_2.x", "cosine_between_rev.x", "cosine_within_g1_g2.x", "p_values_within_g1_g2.x", "n.dot", "dot", "dot2", "p_value_dot")
+      c("words", "n.x", "dot.x", "p_values_dot.x", "n_g1.x", "n_g2.x", "n_all.x", "Within_cosine_similarity.x", "p_values_cosine.x")
+    word_data_tibble <- select(word_data_tibble, -c(n.x))
+
   } else {
     word_data_tibble <- dplyr::full_join(word_data_list[[1]], word_data_list[[2]], by = "words")
   }
@@ -557,169 +405,294 @@ textPlotDataTextDiff <- function(words,
 
 
 
-#word_data <- plot_data
-#y_axes = NULL
-# word_data <- plot_data
-# plot_n_words = 25
+# word_data <- plot_data_small_2d
+# word_data <- plot_data_large_hil
 # title_top = " "
 # titles_color = "#61605e"
-# x_axes = "cosine_within_g1_g2.x"
-# y_axes = NULL
-# p_values = "p_values_within_g1_g2.x"
+#
+# x_axes = "dot.x"
+# y_axes = "dot.y"
+# p_values_x = "p_values_dot.x"
+# p_values_y = "p_values_dot.y"
 # p_alpha = 0.05
-# p_adjust_method = "holm" # c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
-# x_axes_label = "Semantic Distance"
-# y_axes_label = "Semantic Distance"
-# scale_x_axes_lim = NULL
-# scale_y_axes_lim = NULL
-# y_axes_values = element_blank()
+#
+# plot_n_words_p = 20
+# plot_n_word_extreme = 5
+# plot_n_word_frequency = 5
+# plot_n_words_middle = 15
+#
+# p_adjust_method = "BY" # c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
+# x_axes_label = "Dot Product Projection"
+# y_axes_label = "Dot Product Projection"
+# scale_x_axes_lim = c(-4.5, 4.5)
+# scale_y_axes_lim = c(-4.5, 4.5)
+# y_axes_values = NULL #element_blank()
 # word_font = "Arial"
-# colors_words = c("#ff0000", "#ff8080", "white", "#99e699", "#33cc33")
-# colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1)
+# bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688",
+#                            "#e07f6a", "#EAEAEA", "#40DD52",
+#                            "#FF0000", "#EA7467", "#85DB8E")
+#
 # word_size_range = c(3, 8)
 # position_jitter_hight = .0
 # position_jitter_width = .03
 # point_size = 0.5
 # arrow_transparency = 0.1
+#
+# legend_title = "DPP"
+# legend_x_axes_label = "DPP: HILS"
+# legend_y_axes_label = "DPP: SWLS"
+# legend_x_position = 0.02
+# legend_y_position = 0.05
+# legend_h_size = 0.2
+# legend_w_size = 0.2
+# legend_title_size=7
+# ns_size = 3
 
 
-textPlotVizTextDiff <- function(word_data,
-                                plot_n_words = 25,
-                                title_top = " ",
-                                titles_color = "#61605e",
-                                x_axes = "cosine_rev.x",
-                                y_axes = NULL,
-                                p_values = "p_values_within_g1_g2.x",
-                                p_alpha = 0.05,
-                                p_adjust_method = "none", # c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
-                                x_axes_label = "Semantic Distance",
-                                y_axes_label = "Semantic Distance",
-                                scale_x_axes_lim = NULL,
-                                scale_y_axes_lim = NULL,
-                                y_axes_values = element_blank(),
-                                word_font = "Arial",
-                                colors_words = c("#ff0000", "#ff8080", "white", "#99e699", "#33cc33"),
-                                colors_words_scale = c(-0.1, -0.01, 0, 0.01, 0.1),
-                                word_size_range = c(3, 8),
-                                position_jitter_hight = .0,
-                                position_jitter_width = .03,
-                                point_size = 0.5,
-                                arrow_transparency = 0.1) {
+# Select colours: https://paletton.com/#uid=1000u0kllllaFw0g0qFqFg0w0aF  https://www.sessions.edu/color-calculator/
+# https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Colors/Color_picker_tool
+# # Build bivariate_palette; https://www.datalorax.com/post/creating-bivariate-color-palettes/
+# devtools::document()
+#' textPlotViz plot words
+#'
+#' @param word_data Dataframe from textPlotData.
+#' @param plot_n_words_p Number of significant words to plot (per dimension, where duplicates are removed);
+#' selects fist according to lowest p-value and then to frequency (default 25  per dimension, where duplicates are removed).
+#' @param plot_n_word_extreme Number of words that are extreme on dot product projection
+#' (i.e., even if not significant;  per dimensions, where duplicates are removed).
+#' @param plot_n_word_frequency Number of words based on most frequent
+#' (i.e., even if not significant;  per dimensions, where duplicates are removed).
+#' @param plot_n_words_middle Number of words plotted that are in the middle in dot product projection score
+#' (i.e., even if not significant;  per dimensions, where duplicates are removed).
+#' @param title_top string for title (default "  ")
+#' @param titles_color Color for all the titles (default: "#61605e")
+#' @param x_axes Variable to be plotted on the x axes (default is "dot_product.x").
+#' @param y_axes Variable to be plotted on the y axes (default is "cohensD.y"). To only print 1-dimension insert NULL.
+#' @param p_values_x P-values variable to plott according to.
+#' @param p_values_y P-values variable to plott according to.
+#' @param p_alpha Alpha (default = .05).
+#' @param p_adjust_method Method to adjust/correct p-value for multiple comparisons (deafult = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr")
+#' @param x_axes_label Label on the x-axes.
+#' @param y_axes_label Label on the y-axes.
+#' @param scale_x_axes_lim Manually set the legth of the x-axes (deafult=NULL; e.g., try c(-5, 5)).
+#' @param scale_y_axes_lim Manually set the legth of the y-axes (deafult=NULL; e.g., try c(-5, 5)).
+#' @param y_axes_values NULL,
+#' @param word_font Type of font (default: "Arial").
+#' @param bivariate_color_codes The diffent colors of the words (default: c("#398CF9", "#60A1F7", "#5dc688",
+#'                                                                          "#e07f6a", "#EAEAEA", "#40DD52",
+#'                                                                          "#FF0000", "#EA7467", "#85DB8E")).
+#' @param word_size_range a vector with minimum and maximum (default: c(3, 8)).
+#' @param position_jitter_hight degree of jitter hight (default: .0).
+#' @param position_jitter_width degree of jitter hight (default: .03).
+#' @param point_size the size of the points indicating the words' position (default: 0.5).
+#' @param arrow_transparency The transparency of the lines between each word and point (default: 0.1).
+#' @param legend_title Label on the color legend (default: "(DPP)".
+#' @param legend_x_axes_label Label on the color legend (default: "(x)".
+#' @param legend_y_axes_label Label on the color legend (default: "(y)".
+#' @param legend_x_position Position on the x coordinates of the color legend (default: 0.02).
+#' @param legend_y_position Position on the y coordinates of the color legend (default: 0.05).
+#' @param legend_h_size The height of the color legend (default 0.15).
+#' @param legend_w_size The width of the color legend (default 0.15).
+#' @param legend_title_size =7
+#' @param ns_size size of the "ns" in the legend (default = 3)
+#' @return A 1- or 2-dimensional word plot.
+#' @examples
+#' # The test-data included in the package is called: sq_data_tutorial_plotting_hilswl
+#' plot_projection <- textPlotViz(
+#' word_data = sq_data_tutorial_plotting_hilswl,
+#' plot_n_words_p = 50,
+#' x_axes = "dot.x",
+#' y_axes = NULL,
+#' x_axes_label = "Dot product",
+#' y_axes_label = NULL,
+#' p_alpha = .05,
+#' p_values_x = "p_values_dot.x",
+#' p_values_y = NULL,
+#' p_adjust_method = "holm",
+#' title_top = "Dot-Project",
+#' scale_y_axes_lim = NULL
+#' )
+#' plot_projection
+#' @seealso see \code{\link{textPlotData}}
+#' @importFrom tibble as_tibble tibble
+#' @importFrom dplyr row_number slice mutate mutate_if bind_rows group_by summarize full_join %>%
+#' @importFrom tidyr gather separate
+#' @importFrom scales rescale
+#' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme theme_void theme_minimal aes labs scale_color_identity
+#' @importFrom rlang sym
+#' @importFrom cowplot ggdraw draw_plot
+#' @export
+textPlotViz <- function(word_data,
+                        plot_n_words_p = 20,
+                        plot_n_word_extreme = 5,
+                        plot_n_word_frequency = 5,
+                        plot_n_words_middle = 10,
+                        titles_color = "#61605e",
+                        x_axes = "dot.x",
+                        y_axes = NULL,
+                        p_values_x = "p_values_dot.x",
+                        p_values_y = NULL,
+                        p_alpha = 0.05,
+                        p_adjust_method = "none", # c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
+                        title_top = " Dot Product ",
+                        x_axes_label = "Dot product projection (DPP)",
+                        y_axes_label = "Dot product projection (DPP)",
+                        scale_x_axes_lim = NULL,
+                        scale_y_axes_lim = NULL,
+                        y_axes_values = element_blank(),
+                        word_font = NULL,
+                        bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688",
+                                                  "#e07f6a", "#EAEAEA", "#40DD52",
+                                                  "#FF0000", "#EA7467", "#85DB8E"),
+                        word_size_range = c(3, 8),
+                        position_jitter_hight = .0,
+                        position_jitter_width = .03,
+                        point_size = 0.5,
+                        arrow_transparency = 0.1,
+                        legend_title = "DPP",
+                        legend_x_axes_label = "(DPP x)",
+                        legend_y_axes_label = "(DPP y)",
+                        legend_x_position = 0.02,
+                        legend_y_position = 0.02,
+                        legend_h_size = 0.2,
+                        legend_w_size = 0.2,
+                        legend_title_size=7,
+                        ns_size = 2) {
   set.seed(2020)
 
+  ### Selecting words to plot
+  # Computing adjusted p-values
+  word_data$adjusted_p_values.x <- stats::p.adjust(as_vector(word_data[, p_values_x]), method = p_adjust_method)
 
-  # Select words to plot according to p-value and selected adjustment for multiple comparison (e.g., bonferroni)
-  if (is.character(p_adjust_method) == TRUE & is.null(y_axes) == TRUE) {
-    # Getting adjusted p-values head(word_data) help(p.adjust)
-    word_data$adjusted_p_values.x <- stats::p.adjust(word_data[, p_values], method = p_adjust_method)
-    word_data_p <- word_data[word_data$adjusted_p_values.x < p_alpha, ] #View(word_data_p)
-
-  } else if (is.character(p_adjust_method) & is.null(y_axes) == FALSE) {
-    # Select significant words when correcting for multiple comparison
-    word_data$adjusted_p_values.x <- stats::p.adjust(word_data$p_values.x, method = p_adjust_method)
-    word_data$adjusted_p_values.y <- stats::p.adjust(word_data$p_values.y, method = p_adjust_method)
-    word_data_p <- word_data[((word_data$adjusted_p_values.x < p_alpha) | (word_data$adjusted_p_values.y < p_alpha)), ]
-    # Only using p-value (i.e., now correction)
-  } else if (is.null(p_adjust_method)==TRUE & is.null(y_axes) == TRUE) {
-    word_data_p <- word_data[(word_data$p_values.x < p_alpha), ]
-  } else if (is.null(p_adjust_method) == TRUE & is.null(y_axes) == FALSE) {
-    word_data_p <- word_data[((word_data$p_values.x < p_alpha)| (word_data$p_values.y < p_alpha)), ]
+  if (is.null(y_axes) == FALSE) {
+    # Computing adjusted p-values
+    word_data$adjusted_p_values.y <- stats::p.adjust(as_vector(word_data[, p_values_y]), method = p_adjust_method)
   }
 
-  # Remove NAs view(word_data)
-  word_data <- word_data_p[!is.na(word_data_p$words), ]
+  # Select only words below alpha; and then top dot.x
+  data_p_x <- word_data %>%
+    dplyr::filter(adjusted_p_values.x < p_alpha) %>%
+    dplyr::top_n(plot_n_words_p, dot.x)
 
-  # Make limits for color gradient so that 0 becomes in the middle;
-  color_limit <- max(abs(word_data[, x_axes]), na.rm=TRUE) * c(-1, 1)
+  # Select plot_n_word_extreme and Select plot_n_word_frequency
+  word_data_extrem_max_x <- word_data %>% dplyr::top_n(plot_n_word_extreme, dot.x)
+  word_data_extrem_min_x <- word_data %>% dplyr::top_n(plot_n_word_extreme, -dot.x)
+  word_data_frequency_x <- word_data %>% dplyr::top_n(plot_n_word_frequency, n_all.x)
+  # Select the middle range, order according to frequency and then select the plot_n_words_middle =5
+  mean_m_sd_x <- mean(word_data$dot.x, na.rm=TRUE) - (sd(word_data$dot.x, na.rm=TRUE)/10) # TODO Possibility to set this one? It may be that no words comes within thi
+  mean_p_sd_x <- mean(word_data$dot.x, na.rm=TRUE) + (sd(word_data$dot.x, na.rm=TRUE)/10)
+  word_data_middle_x <- word_data %>%
+    dplyr::filter(dplyr::between(word_data$dot.x, mean_m_sd_x, mean_p_sd_x)) %>%
+    dplyr::top_n(plot_n_words_middle, n_all.x) # TODO selecting on frequency again. perhaps point to have exact middle?
 
-  # Select lowest p-values for x or both x and y if needed. help(get)
-  if (is.null(y_axes)) {
-    # Order data from first according to lowest p-value and then to highest absolut cosine p_values="p_values_within_g1_g2.x"
-    data1 <- word_data[with(word_data, order(-n.x, base::get(p_values))), ]
-    #data1 <- word_data[with(word_data, order(-n.x, p_values_within_g1_g2.x)), ] # p_values_between, -abs(cosine_rev) view(word_data) view(data1)
-    # Selecting the plot_n_words
-    data <- data1[1:plot_n_words, ]
-    data
+  nonsig_words_x <- rbind(word_data_extrem_max_x, word_data_extrem_min_x,
+                          word_data_frequency_x, word_data_middle_x) %>%
+    tibble::as_tibble()
 
+  data_all_x <- rbind(data_p_x, nonsig_words_x) %>% tibble::as_tibble()
 
-  } else {
-    # Selecting as above but for both x and y
-    data1x <- word_data[with(word_data, order(p_values.x, -abs(cosine_rev.x))), ]
-    # Selecting the plot_n_words
-    data2x <- data1x[1:plot_n_words, ]
-    # Selecting as above but for both x and y
-    data1y <- word_data[with(word_data, order(p_values.y, -abs(cosine_rev.y))), ]
-    # Selecting the plot_n_words
-    data2y <- data1y[1:plot_n_words, ]
-    # Combing the words and selecting remove duplicates
-    data3 <- rbind(data2x, data2y)
-    data <- unique(data3)
+  if (is.null(y_axes) == FALSE) { # is.character(p_adjust_method) &
+    # Computing adjusted p-values
+    # Select only words below alpha; and then top dot.x
+    data_p_y <- word_data %>%
+      dplyr::filter(adjusted_p_values.y < p_alpha) %>%
+      dplyr::top_n(plot_n_words_p, dot.y)
+
+    # Select plot_n_word_extreme and Select plot_n_word_frequency
+    word_data_extrem_max_y <- word_data %>% dplyr::top_n(plot_n_word_extreme, dot.y)
+    word_data_extrem_min_y <- word_data %>% dplyr::top_n(plot_n_word_extreme, -dot.y)
+    word_data_frequency_y <- word_data %>% dplyr::top_n(plot_n_word_frequency, n_all.y)
+    # Select the middle range, order according to frequency and then select the plot_n_words_middle =5
+    mean_m_sd_y <- mean(word_data$dot.y, na.rm=TRUE) - (sd(word_data$dot.y, na.rm=TRUE)/10) # TODO Possibility to set this one? It may be that no words comes within thi
+    mean_p_sd_y <- mean(word_data$dot.y, na.rm=TRUE) + (sd(word_data$dot.y, na.rm=TRUE)/10)
+    word_data_middle_y <- word_data %>%
+      dplyr::filter(dplyr::between(word_data$dot.y, mean_m_sd_y, mean_p_sd_y)) %>%
+      dplyr::top_n(plot_n_words_middle, n_all.y) # TODO selecting on frequency again. perhaps point to have exact middle?
+
+    nonsig_words_y <- rbind(word_data_extrem_max_y, word_data_extrem_min_y,
+                            word_data_frequency_y, word_data_middle_y) %>%
+      tibble::as_tibble()
+    data_all_y <- rbind(data_p_y, nonsig_words_y) %>% tibble::as_tibble()
+
+    data_all <- rbind(data_all_x, data_all_y)
+    # Categorise words to apply specific color
+    data_all <- data_all %>%
+      dplyr::mutate(colour_categories = dplyr::case_when(
+      dot.x < 0 & adjusted_p_values.x < p_alpha    &  dot.y > 0 & adjusted_p_values.y < p_alpha   ~ bivariate_color_codes[1],
+                  adjusted_p_values.x > p_alpha    &  dot.y > 0 & adjusted_p_values.y < p_alpha   ~ bivariate_color_codes[2],
+      dot.x > 0 & adjusted_p_values.x < p_alpha    &  dot.y > 0 & adjusted_p_values.y < p_alpha   ~ bivariate_color_codes[3],
+      dot.x < 0 & adjusted_p_values.x < p_alpha    &              adjusted_p_values.y > p_alpha   ~ bivariate_color_codes[4],
+                  adjusted_p_values.x > p_alpha    &              adjusted_p_values.y > p_alpha   ~ bivariate_color_codes[5],
+      dot.x > 0 & adjusted_p_values.x < p_alpha    &              adjusted_p_values.y > p_alpha   ~ bivariate_color_codes[6],
+      dot.x < 0 & adjusted_p_values.x < p_alpha    &  dot.y < 0 & adjusted_p_values.y < p_alpha   ~ bivariate_color_codes[7],
+                  adjusted_p_values.x > p_alpha    &  dot.y < 0 & adjusted_p_values.y < p_alpha   ~ bivariate_color_codes[8],
+      dot.x > 0 & adjusted_p_values.x < p_alpha    &  dot.y < 0 & adjusted_p_values.y < p_alpha   ~ bivariate_color_codes[9]
+    ))
+  }
+
+  if (is.null(y_axes) == TRUE) {
+    data_all <- data_all_x %>%
+      dplyr::mutate(colour_categories = dplyr::case_when(
+        dot.x < 0 & adjusted_p_values.x < p_alpha   ~ bivariate_color_codes[4],
+        dot.x < 0 & adjusted_p_values.x > p_alpha   ~ bivariate_color_codes[5],
+        dot.x > 0 & adjusted_p_values.x < p_alpha   ~ bivariate_color_codes[6]
+      ))
   }
 
   # This solution is because it is not possible to send "0" as a parameter
   if (is.null(y_axes) == TRUE) {
-    one_dime <- 0
-    y_axes <- "one_dime"
-  } else {
-    y_axes
+    only_x_dimension <- 0
+    y_axes <- "only_x_dimension"
   }
 
+  # Remove duplicates (i.e., words can be selected as both most extreme AND most frequent etc.)
+  data_all <- unique(data_all)
+
   # Plot
-  plot <- data %>%
-
+  plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
-    ggplot2::ggplot(ggplot2::aes(!!rlang::sym(x_axes), !!rlang::sym(y_axes), label = words)) +
+    ggplot2::ggplot(data = data_all, ggplot2::aes(!!rlang::sym(x_axes), !!rlang::sym(y_axes), label = words)) +
 
-    # Title
-    ggplot2::ggtitle(paste0(title_top)) +
-
-    # Help creat possibility to remove y-axes numbers help(scale_y_continuous)
-    ggplot2::scale_x_continuous(limits = scale_x_axes_lim) +
-    ggplot2::scale_y_continuous(limits = scale_y_axes_lim) +
-
-    # ggrepel geom, make arrows transparent, color by rank, size by n help(geom_text_repel)
+    # ggrepel geom, make arrows transparent, color by rank, size by n
     ggrepel::geom_text_repel(
+      data = data_all,
       segment.alpha  = arrow_transparency,
       position = ggplot2::position_jitter(h = position_jitter_hight, w = position_jitter_width),
-      ggplot2::aes(color = !!rlang::sym(x_axes), size = n.x, family = word_font) #size = n.x
+      ggplot2::aes(color = colour_categories, size = n_all.x, family = word_font),
     ) +
+
+    ggplot2::scale_color_identity() +
 
     # Decide size and color of the points
     ggplot2::geom_point(
+      data = data_all,
       size = point_size,
-      ggplot2::aes(color = !!rlang::sym(x_axes))
+      ggplot2::aes(color = colour_categories)
     ) +
 
-    # set color gradient, & customize legend help(guide_colorbar) help(rescale) help(scale_colour_gradientn)
-    ggplot2::scale_colour_gradientn(
-      colours = colors_words,
-      limit = color_limit,
-      values = scales::rescale(colors_words_scale), #scales::rescale(colors_words_scale)
-      space = "Lab",
-      aesthetics = "colour",
-      guide = ggplot2::guide_colorbar(
-        direction = "horizontal",
-        title.position = "top",
-        title = "Cosine",
-        ggplot2::element_text(color = titles_color)
-      )
-    ) +
+    # Kan denna kanske tas bort?
+    # guides()+
 
-    # set word size range
-    ggplot2::scale_size_continuous(
-      range = word_size_range,
-      guide = ggplot2::guide_legend(
-        title = "Frequency",
-        title.position = "top",
-        direction = "horizontal",
-        label.position = "bottom",
-        ggplot2::element_text(color = titles_color)
-      )
-    ) +
+  # set word size range and the guide
+  ggplot2::scale_size_continuous(
+    range = word_size_range,
+    guide = ggplot2::guide_legend(
+      title = "Frequency",
+      title.position = "top",
+      direction = "horizontal",
+      label.position = "bottom",
+      ggplot2::element_text(color = titles_color))
+  ) +
 
+    # Title
+    ggplot2::ggtitle(paste0(title_top)) +
     ggplot2::labs(y = y_axes_label, x = x_axes_label) +
 
-    # minimal theme, and turning off legends
+    # Help create possibility to remove y-axes numbers help(scale_y_continuous)
+    ggplot2::scale_x_continuous(limits = scale_x_axes_lim) +
+    ggplot2::scale_y_continuous(limits = scale_y_axes_lim) +
+
+    # Minimal theme, and turning off legends
     ggplot2::theme_minimal() +
     ggplot2::theme(
       legend.position = c("bottom"),
@@ -733,8 +706,94 @@ textPlotVizTextDiff <- function(word_data,
       axis.title.y = ggplot2::element_text(color = titles_color)
     )
   plot
-}
+
+  # Creating legend
+#  bivariate_color_codes <- c("#398CF9", "#60A1F7", "#5dc688",
+#                             "#e07f6a", "#EAEAEA", "#40DD52",
+#                             "#FF0000", "#EA7467", "#85DB8E")
+
+  bivariate_color_data <- tibble::tibble( "1 - 3" = "#0078FF", "2 - 3" = "blue", "3 - 3" = "#49FF00", "1 - 2" = "#8700FF", "2 - 2" = "#B8B8B8", "3 - 2" = "#34AC04", "1 - 1" = "#FF1300", "2 - 1" = "#FF8300", "3 - 1" = "#04AC93")
+  bivariate_color_data <- rbind(bivariate_color_data, bivariate_color_codes)
+  bivariate_color_data = bivariate_color_data[-1, ]
+
+  if (y_axes == "only_x_dimension") {
+    bivariate_color_data <- bivariate_color_data[, c(4, 5, 6)]
+    colnames(bivariate_color_data) <- c("1 - 2", "2 - 2", "3 - 2")
+    bivariate_color_data
+  }
+  legend <- bivariate_color_data %>%
+    tidyr::gather("group", "fill") %>%
+    tidyr::separate(group, into = c("x", "y"), sep = " - ") %>%
+    dplyr::mutate(x = as.integer(x),
+           y = as.integer(y)) %>%
+    ggplot2::ggplot(ggplot2::aes(x, y)) +
+    ggplot2::geom_tile(ggplot2::aes(fill = fill)) +
+    ggplot2::ggtitle(paste0(legend_title)) +
+    ggplot2::scale_fill_identity() +
+    ggplot2::labs(x = legend_x_axes_label,
+         y = legend_y_axes_label) +
+    ggplot2::theme_void() +
+    ggplot2::annotate(geom="text", x=2, y=2, label="ns",
+               color = titles_color, size=ns_size)+
+    ggplot2::theme(plot.title = element_text(hjust = 0.5, size = legend_title_size+1),
+          title = ggplot2::element_text(color = titles_color),
+          axis.title.x = ggplot2::element_text(color = titles_color),
+          axis.title = element_text(size = legend_title_size),
+          axis.title.y = element_text(angle = 90, color = titles_color)) +
+    ggplot2::coord_fixed()
+  #legend
+
+  # Plot both figure and legend help(ggdraw)
+  cowplot::ggdraw() +
+    cowplot::draw_plot(plot, 0, 0, 1, 1) +
+    cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size)
+  }
 ###### End textPlotVizTextDiff
+
+
+
+
+
+
+
+# plot_projection_1 <- textPlotViz(word_data = sq_data_tutorial_plotting_hilswl,
+#                         plot_n_words_p = 200,
+#                         plot_n_word_extreme = 0,
+#                         plot_n_word_frequency = 0,
+#                         plot_n_words_middle = 0,
+#                         titles_color = "#61605e",
+#                         x_axes = "dot.x",
+#                         y_axes = NULL, #"dot.y", # NULL, #
+#                         p_values_x = "p_values_dot.x",
+#                         p_values_y = NULL, #"p_values_dot.y", #NULL, #
+#                         p_alpha = 0.05,
+#                         p_adjust_method = "none", # c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
+#                         title_top = " Dot Product ",
+#                         x_axes_label = "Dot product projection (DPP)",
+#                         y_axes_label = "Dot product projection (DPP)",
+#                         scale_x_axes_lim = NULL,
+#                         scale_y_axes_lim = NULL,
+#                         y_axes_values = element_blank(),
+#                         word_font = "Arial",
+#                         bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688",
+#                                                   "#e07f6a", "#EAEAEA", "#40DD52",
+#                                                   "#FF0000", "#EA7467", "#85DB8E"),
+#                         word_size_range = c(3, 8),
+#                         position_jitter_hight = .0,
+#                         position_jitter_width = .03,
+#                         point_size = 0.5,
+#                         arrow_transparency = 0.1,
+#                         legend_title = "DPP",
+#                         legend_x_axes_label = "(DPP x)",
+#                         legend_y_axes_label = "(DPP y)",
+#                         legend_x_position = 0.02,
+#                         legend_y_position = 0.02,
+#                         legend_h_size = 0.2,
+#                         legend_w_size = 0.2,
+#                         legend_title_size=7,
+#                         ns_size = 2)
+# plot_projection_1
+
 
 
 

@@ -101,19 +101,23 @@
 #' @format A data frame with 43 rows and 13 variables:
 #' \describe{
 #'   \item{words}{output from textPlotData}
-#'   \item{mean.x}{output from textPlotData}
 #'   \item{n.x}{output from textPlotData}
-#'   \item{sd.x}{output from textPlotData}
-#'   \item{p_values.x}{output from textPlotData}
-#'   \item{t_statistic.x}{output from textPlotData}
-#'   \item{cohensD.x}{output from textPlotData}
-#'    \item{mean.y}{output from textPlotData}
+#'   \item{dot.x}{output from textPlotData}
+#'   \item{p_values_dot.x}{output from textPlotData}
+#'   \item{n_g1.x}{output from textPlotData}
+#'   \item{n_g2.x}{output from textPlotData}
+#'    \item{n_all.x}{output from textPlotData}
+#'   \item{Within_cosine_similarity.x}{output from textPlotData}
+#'   \item{p_values_cosine.x}{output from textPlotData}
 #'   \item{n.y}{output from textPlotData}
-#'   \item{sd.y}{output from textPlotData}
-#'   \item{p_values.y}{output from textPlotData}
-#'   \item{t_statistic.y}{output from textPlotData}
-#'   \item{cohensD.y}{output from textPlotData}
+#'   \item{dot.y}{output from textPlotData}
+#'   \item{p_values_dot.y}{output from textPlotData}
+#'   \item{n_g1.y}{output from textPlotData}
+#'   \item{n_g2.y}{output from textPlotData}
+#'    \item{n_all.y}{output from textPlotData}
+#'   \item{Within_cosine_similarity.y}{output from textPlotData}
+#'   \item{p_values_cosine.y}{output from textPlotData}
 #'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
-"sq_data_plottingHw_HILSSSWLS_100"
+"sq_data_tutorial_plotting_hilswl"

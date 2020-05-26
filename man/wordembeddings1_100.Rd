@@ -4,7 +4,8 @@
 \name{wordembeddings1_100}
 \alias{wordembeddings1_100}
 \title{Example wordembeddings.}
-\format{A data frame with 100 rows and 772 variables including the wordembeddings:
+\format{
+A data frame with 100 rows and 772 variables including the wordembeddings:
 \describe{
   \item{sequence_index}{output from textImport}
   \item{segment_index}{output from textImport}
@@ -12,7 +13,8 @@
   \item{layer_index}{output from textImport}
   \item{V1:V768}{dimension output from textImport}
   ...
-}}
+}
+}
 \source{
 \url{https://psyarxiv.com/er6t7/}
 }

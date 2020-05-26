@@ -7,21 +7,32 @@
 
 
 # Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution help(switch)
-p_value_comparing_with_Null <- function(NULLresults, Observedresults, Npermutations, alternative){
+#  devtools::document()
+#' p_value_comparing_with_Null
+#'
+#' @param NULLresults a vector with NULL distribution of estimate (cosines)
+#' @param Observedresults a value representing the observed cosine
+#' @param Npermutations Number of permutation used in the test
+#' @param alternative "two_sided", "greater", "less"
+#' @return p_value
+#' @noRd
+p_value_comparing_with_Null <- function(Observedresults, NULLresults,  Npermutations, alternative = c("two_sided", "less", "greater")){
   switch(alternative,
-         "two.sided" = {
-           p_value <- 2 * (min(sum(NULLresults < results["estimate"]), sum(NULLresults > results["estimate"])) / sum(!is.na(NULLresults)))
+         "two_sided" = {
+           p_value <- 2 * (min(sum(NULLresults < Observedresults), sum(NULLresults > Observedresults)) / sum(!is.na(NULLresults)))
            },
          "less" = {
-           p_value <- sum(NULLresults < results["estimate"]) / sum(!is.na(NULLresults))
+           p_value <- sum(NULLresults < Observedresults) / sum(!is.na(NULLresults))
            },
          "greater" = {
-           p_value <- sum(NULLresults > results["estimate"]) / sum(!is.na(NULLresults))
+           p_value <- sum(NULLresults > Observedresults) / sum(!is.na(NULLresults))
            }
   )
-  if (p_value == 0) { p_value <- 1 / (Npermutations + 1) }
+  if (!is.na(p_value)) {
+    if (p_value == 0) { p_value <- 1 / (Npermutations + 1) }
   }
-
+  return(p_value)
+}
 
 
 # For Observed data we have = Mean and SD (perhaps I could bootstrap and Mean of means? )
@@ -29,8 +40,8 @@ p_value_comparing_with_Null <- function(NULLresults, Observedresults, Npermutati
 # For Permutated data we have = Mean of means and the SD of the Mean of means.; which then becomes the standard error?
 
 
-#x <- wordembeddings4_10$harmonywords
-#y <- wordembeddings4_10$satisfactionwords
+# x <- wordembeddings4_10$harmonywords
+# y <- wordembeddings4_10$satisfactionwords
 # devtools::document()
 #' textDiff: Test whether there is a significant difference between two sets of texts
 #' (i.e., between their word embeddings). This is achieved using permutation, in the following steps:
@@ -47,16 +58,16 @@ p_value_comparing_with_Null <- function(NULLresults, Observedresults, Npermutati
 #' x <- wordembeddings4_10$harmonywords
 #' y <- wordembeddings4_10$satisfactionwords
 #' textDiff(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1)
-#' @seealso see \code{\link{textTtest}}
 #' @importFrom dplyr select starts_with
 #' @importFrom lsa cosine
 #' @importFrom parallel splitIndices mclapply
 #' @export
-textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative = c("two.sided", "less", "greater"), output.permutations = TRUE, N_cluster_nodes = 1) {
+
+textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative = c("two_sided", "less", "greater"), output.permutations = TRUE, N_cluster_nodes = 1) {
   set.seed(2020)
   if ((nrow(x) != nrow(y))) { stop("x and y must have the same number of rows for a paired textDiff test.") }
   alternative <- match.arg(alternative)
-  results <- c("estimate"=NA, "p.value"=NA)
+  results <- c("estimate" = NA, "p.value" = NA)
 
   # Select variables beginning with V
   x1 <- dplyr::select(x, dplyr::starts_with("V"))
@@ -68,6 +79,7 @@ textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative 
     # Compute the data's mean of the cosine
     results["estimate"] <- mean(abs(cosine_observed))
     }
+
   if(method == "unpaired"){
     X_all <- textEmbeddingAggregation(x1, aggregation = "mean")
     Y_all <- textEmbeddingAggregation(y1, aggregation = "mean")
@@ -93,11 +105,11 @@ textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative 
       rdata1 <- x1y1[indices, ]
       rdata2 <- x1y1[!indices, ]
       # Compute the cosine between randomly drawn word embeddings and compute the mean
-      if(method == "paired"){
+      if(method == "paired") {
         rcosines <- cosines(rdata1, rdata2)
         return(mean(abs(rcosines)))
       }
-      if(method == "unpaired"){
+      if(method == "unpaired") {
         R1_all <- textEmbeddingAggregation(rdata1, aggregation = "mean")
         R2_all <- textEmbeddingAggregation(rdata2, aggregation = "mean")
         # Compute cosine between the summed word embedding
@@ -117,15 +129,15 @@ textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative 
 
   if (output.permutations) {
   results <- c(list("random.estimates.4.null" = NULLresults, results))
+  results
   }
-  return (results)
+
+
 }
 
-
-
 ######
-
-#textDiff(x, y, Npermutation = 10, alternative="greater", N_cluster_nodes = 2)
+# library(text)
+# textDiff(wordembeddings4_10$harmonywords, wordembeddings4_10$satisfactionwords, Npermutation = 10, alternative="two_sided", N_cluster_nodes = 2)
 
 # T1_2core <- Sys.time()
 # test_pair <- textDiff(x, y, Npermutation = 1000, method = "paired", alternative="greater", N_cluster_nodes=2, output.permutations=TRUE)

@@ -1,7 +1,7 @@
 Package: text
 Type: Package
 Title: Analyses of Text using Natural Language Processing and Machine Learning
-Version: 0.0.1.9000
+Version: 0.2.0.9000
 Author: Oscar Kjell & Andrew Schwartz
 Maintainer: The package maintainer <oscar.kjell@psy.lu.se>
 Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables etc.   
@@ -13,19 +13,17 @@ Imports:
     dplyr,
     RBERT (== 0.1.11),
     tokenizers,
-    caret,
     psych,
     tibble,
     stringr,
     tidyr,
-    BSDA,
     ggplot2,
     ggrepel,
+    cowplot,
     scales,
     rlang,
     purrr,
     Matrix,
-    rio,
     stringi,
     data.table,
     magrittr,
@@ -33,15 +31,16 @@ Imports:
     recipes,
     rsample,
     tune,
-    ppls,
     workflows,
     yardstick,
     lsa,
-    quanteda
-RoxygenNote: 7.0.2
+    quanteda,
+    broom
+RoxygenNote: 7.1.0
 Suggests: 
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    rio
 VignetteBuilder: knitr
 Depends: R (>= 2.10)

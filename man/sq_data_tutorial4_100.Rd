@@ -4,14 +4,16 @@
 \name{sq_data_tutorial4_100}
 \alias{sq_data_tutorial4_100}
 \title{Example text and numeric data.}
-\format{A data frame with 100 rows and 4 variables:
+\format{
+A data frame with 100 rows and 4 variables:
 \describe{
   \item{hilstotal}{total score of the Harmony In Life Scale}
   \item{swlstotal}{total score of the Satisfaction With Life Scale}
   \item{age}{respondents age in years}
   \item{gender}{respondents gender 1=male, 2=female}
   ...
-}}
+}
+}
 \source{
 \url{https://psyarxiv.com/er6t7/}
 }

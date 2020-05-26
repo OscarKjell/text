@@ -28,8 +28,8 @@
 #' @importFrom Matrix t
 #' @export
 # library(text)
-# x <- sq_data_tutorial8_10$harmonywords help(t)
-textSpace <- function(x, dims = dimcalc_share()) {
+# x <- sq_data_tutorial8_10$harmonywords
+textSpace <- function(x, dims = lsa::dimcalc_share()) {
   dtm <- quanteda::dfm(x, verbose = FALSE)
   # help(Matrix)
   # detach("package:Matrix", unload=TRUE)
@@ -103,15 +103,23 @@ textStaticSpace <- function(df, space, tk_df = "tk", aggregate = "mean") {
     list_semrep[[i]] <- tibble::as_tibble(t(sapply(df_characters[[i]], semanticrepresentation, single_wordembeddings2, aggregate, single_wordembeddings1=single_wordembeddings1)))
   }
 
+  # Add single word embeddings used for plotting
+  singlewords <- getUniqueWordsAndFreq(df_characters)
+  output_vectors_sw <- map(singlewords$words, applysemrep,  single_wordembeddings1)
+  names(output_vectors_sw) <- singlewords$words
+  output_vectors_sw2 <- bind_cols(output_vectors_sw)
+  singlewords_we <- bind_cols(singlewords, as_tibble(t(output_vectors_sw2)))
+
   # Gives the tibbles in the list the same name as the orginal character variables
   names(list_semrep) <- names(df_characters)
+  list_semrep$singlewords_we <- singlewords_we
   list_semrep
 }
 
 
 # # Testing
-# x <- c("happy joy", "sad unhappy", "sadfsdfds ljhlj asdffd")
-# y <- c(1, 2, 3)
+# x <- c("happy joy", "sad unhappy"), "sadfsdfds ljhlj asdffd")
+# y <- c(1, 2), 3)
 # tbl <- tibble(x, y)
 #
 # # Creating space
@@ -119,7 +127,6 @@ textStaticSpace <- function(df, space, tk_df = "tk", aggregate = "mean") {
 # space_test <- textSpace(tbl$x)
 # space_test
 # space_test$tk
-
 # Testing applying space
 #data_testing <- textStaticSpace(tbl, space=space_test, tk_df = "tk",
 #                                aggregate = "max")

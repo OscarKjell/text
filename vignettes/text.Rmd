@@ -48,7 +48,7 @@ wordembeddings <- readRDS("_YOURPATH_/wordembeddings.rds")
 
 ## ```textTrain()```: Examine the relationship between text and numeric variables
 The ```textTrain()``` is used to examine how well the word embeddings from a text can predict a numeric variable. This is done by training the word embeddings using ridge regression and 10-fold cross-validation (where the word embeddings are pre-processed using pca). In the example below we examine how well the harmony text responses can predict the rating scale scores from the Harmony in life scale. 
-```{r, eval = TRUE,  warning=FALSE, message=FALSE}
+```{r, eval = FALSE,  warning=FALSE, message=FALSE}
 library(text)
 library(rio)
 # Load already imported word embeddings
@@ -75,7 +75,7 @@ outcomes
 
 ## ```predict()``` features of text based on trained models from ```textTrain```
 Trained models (for example the one we did in the example above) can be applied to new datasets. Below we will apply a model that has been trained to predict valence.   
-```{r, eval = TRUE, warning=FALSE, message=FALSE}
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 library(psych)
 library(rio)
@@ -94,7 +94,7 @@ psych::corr.test(numeric_data$htext_valence, numeric_data$hilstotal)
 ## ```textSimilarity()```: Compute semantic similarity scales
 The ```textSimilarity()``` function measures the semantic similairty between to column of texts, and the ```textSimilarityNorm()``` measures the semantic similairty between texts in a column and word norm. 
 Semantic similarity scores can be used to measure psychological construct independent from rating scales by using word norms that represent the to-be-measured construct. The word norms have been created by asking participants to describe a psychological constructs. The word norm can be used to measure the semantic similarity between a person's answer whether they experience harmony in their life to the word norm describing harmony in life: If the score is high the person is seen to have high harmony in life. 
-```{r, eval = TRUE, warning=FALSE, message=FALSE}
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
 
 library(text)
 library(psych)
@@ -134,27 +134,21 @@ psych::corr.test(norm_similarity_scores_harmony, numeric_data$hilstotal)
 ```
 
 
-## ```textTtest()```: Test the difference in meaning between to sets of texts
-The ```textTtest()``` function provide a test to examine whether two sets of texts significantly differ in meaning. It produces a t-value, p-value and cohen's D effect size. Below we examine whether the harmont text and satisfaction text responses differ in meaning. 
-```{r, eval = TRUE, warning=FALSE, message=FALSE}
+## ```textDiff()```: Test the difference in meaning between to sets of texts
+The ```textDiff()``` function provides a permutation based test to examine whether two sets of texts significantly differ in meaning. It produces a p-value and estimate as an effect size. Below we examine whether the harmony text and satisfaction text responses differ in meaning. 
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
 
 library(text)
 
 # Compare the meaning between individuals' harmony in life and satisfaction with life answers
-textTtest(wordembeddings$harmonytexts, wordembeddings$satisfactiontexts)
-
-# Note that if you want to get the scores used in the t-test use:
-semantic_difference_scores <- textTtestscores(wordembeddings$harmonytexts,
-  wordembeddings$satisfactiontexts,
-  nrFolds = 2
-)
+textDiff(wordembeddings4_10$harmonytexts, wordembeddings4_10$satisfactiontexts, Npermutations = 100)
 ```
 
 ## Plot statistically significant words 
-The plotting is made in two steps: First the ```textPlotData()``` function is pre-procssing the data, including computing statistics for each word to be plotted. Second, ```textPlotViz()``` is plotting the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made the last step goes quicker so that one can tr different visual settings.   
+The plotting is made in two steps: First the ```textPlotData()``` function is pre-procssing the data, including computing statistics for each word to be plotted. Second, ```textPlotViz()``` is plotting the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made in the first step, the last step goes quicker so that one can try different design settings.   
 
 ### Pre-process word data with ```textPlotData()``` 
-```{r, eval = TRUE, warning=FALSE, message=FALSE}
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 
 # Pre-process word data to be plotted with textPlotViz-function
@@ -165,8 +159,7 @@ data_10 <- sq_data_tutorial8_10
 # Pre-process data
 df_for_plotting <- textPlotData(data_10$harmonywords, wordembeddings_10$harmonywords,
   wordembeddings_10$singlewords_we,
-  data_10$hilstotal, data_10$swlstotal,
-  Bonferroni = TRUE, nrFolds = 2
+  data_10$hilstotal, data_10$swlstotal
 )
 df_for_plotting
 ```
@@ -191,7 +184,7 @@ plot
 ```
 
 ### ```textPlotViz()```: A Two-dimensional word plot
-```{r, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
+```{r, eval = FALSE, warning=FALSE, message=FALSE, dpi=300}
 library(text)
 
 # Example data that have been pre-processed with textPlotData function

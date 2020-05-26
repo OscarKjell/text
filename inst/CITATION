@@ -4,7 +4,7 @@ citEntry(
   entry    = "Unpublished",
   note = "Psychology",
   title    = "text: Analysing text and numeric variables with NLP and ML",
-  author   = "Oscar Kjell",
+  author   = "Oscar Kjell & Andrew Schwartz",
   journal  = "xxx",
   year     = "2020",
   volume   = "0",
@@ -12,7 +12,7 @@ citEntry(
   pages    = "0",
   url      = "http://www.oscarkjell.se/",
   textVersion =
-           paste("Oscar Kjell (2020).",
+           paste("Oscar Kjell & Andrew Schwartz (2020).",
                  "text: Analysing a text and numeric variables with NLP and ML.",
                  "Unpublished",
                  "http://www.oscarkjell.se.")
