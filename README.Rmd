@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file devtools::build_readme() -->
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -18,77 +18,87 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The ```text```-package uses natural language processing and machine learning methods to assist in examining text variables, as well as their relation to numerical variables. 
+The `text`-package uses natural language processing and machine learning
+methods to assist in examining text variables, as well as their relation
+to numerical variables.
 
 ## Installation
 
-<!--You can install the released version of text from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of text from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("text")
-```-->
-The default method to map words to numbers in ```text``` uses BERT. BERT is a general-purpose language model that creates state-of-the-art word embeddings based on deep learning. To achieve this, ```text``` relies on ```RBERT```, which in turn is based on TensorFlow; so please make sure that these packages are properly installed and working! For up-to-date instructions see [RBERT](https://github.com/johnERgordon/RBERT). 
+```
 
-When above packages are installed and working, you can install the development version ```text``` from [GitHub](https://github.com/), by first installing devtools and then the command bellow.
+The default method to map words to numbers in `text` uses BERT. BERT is
+a general-purpose language model that creates state-of-the-art word
+embeddings based on deep learning. To achieve this, `text` relies on
+`RBERT`, which in turn is based on TensorFlow; so please make sure that
+these packages are properly installed and working\! For up-to-date
+instructions see [RBERT](https://github.com/johnERgordon/RBERT).
+
+When above packages are installed and working, you can install the
+development version `text` from [GitHub](https://github.com/), by first
+installing devtools and then the command bellow.
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("oscarkjell/text")
 ```
 
-
 ## Map your text to numbers
 
-You can easily transform text variables to BERT word embeddings: 
+You can easily transform text variables to BERT word embeddings:
 
-```{r example, eval = FALSE}
+
+```{r Embedd example}
 library(text)
 # Get example data including both text and numerical variables
 sq_data <- sq_data_tutorial8_10
 
 # Transform the text data to BERT word embeddings
-wordembeddings <- textImport(sq_data)
+# wordembeddings <- textEmbedd(sq_data)
+
 ```
 
-## Examine how your text relate to numerical variables 
-
-```{r example_2, eval = TRUE, warning=TRUE, message=FALSE}
+```{r training, message=FALSE}
 library(text)
-
 # Load already imported word embeddings, and their corresponding numeric variables
 wordembeddings <- wordembeddings1_100
 numeric_data <- sq_data_tutorial4_100
 
 
 # Examine the relationship between harmony-text and Harmony in life scale (HILS) scores
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 10)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 2)
 
 # Show the correlation between predicted and observed Harmony in life scale scores
-model_htext_hils$Correlation
+model_htext_hils$correlation
+
 ```
 
-## Show your data by plotting statistically significant words 
 
-```{r example_3, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
+```{r DPP_plot, message=FALSE, warning=FALSE}
 library(text)
-
 # Example data that have been pre-processed with textPlotData function
-
-plot <- textPlotViz(
-  word_data = sq_data_plottingHw_HILSSSWLS_100,
-  x_axes = "cohensD.x",
-  y_axes = "cohensD.y",
-  x_axes_label = "Harmony in life scale (Cohen's D)",
-  y_axes_label = "Satisfaction with life scale (Cohen's D)"
+# The test-data included in the package is called: sq_data_tutorial_plotting_hilswl
+load("data/sq_data_tutorial_plotting_hilswl.rda")
+plot_projection <- textPlotViz(
+word_data = sq_data_tutorial_plotting_hilswl,
+plot_n_words_p = 50,
+x_axes = "dot.x",
+y_axes = NULL,
+x_axes_label = "Dot product",
+y_axes_label = NULL,
+p_alpha = .05,
+p_values_x = "p_values_dot.x",
+p_values_y = NULL,
+p_adjust_method = "BY",
+title_top = "Dot-Project",
+scale_y_axes_lim = NULL
 )
-plot
+plot_projection
+
 ```
 
 
 
-<!--
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!-->

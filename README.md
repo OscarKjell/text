@@ -1,5 +1,5 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file devtools::build_readme() -->
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # text
 
@@ -13,11 +13,12 @@ to numerical variables.
 
 ## Installation
 
-<!--You can install the released version of text from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of text from
+[CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("text")
-```-->
+```
 
 The default method to map words to numbers in `text` uses BERT. BERT is
 a general-purpose language model that creates state-of-the-art word
@@ -45,57 +46,55 @@ library(text)
 sq_data <- sq_data_tutorial8_10
 
 # Transform the text data to BERT word embeddings
-wordembeddings <- textImport(sq_data)
+# wordembeddings <- textEmbedd(sq_data)
 ```
-
-## Examine how your text relate to numerical variables
 
 ``` r
 library(text)
-
 # Load already imported word embeddings, and their corresponding numeric variables
 wordembeddings <- wordembeddings1_100
 numeric_data <- sq_data_tutorial4_100
 
 
 # Examine the relationship between harmony-text and Harmony in life scale (HILS) scores
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 10)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 2)
+#> Warning: The `maximize` argument is no longer needed. This value was ignored.
 
 # Show the correlation between predicted and observed Harmony in life scale scores
-model_htext_hils$Correlation
+model_htext_hils$correlation
 #> 
 #>  Pearson's product-moment correlation
 #> 
-#> data:  model$pred$pred and model$pred$obs
-#> t = 11.493, df = 98, p-value < 2.2e-16
+#> data:  df3_predictions$y and df3_predictions$.pred
+#> t = 10.62, df = 98, p-value < 2.2e-16
 #> alternative hypothesis: true correlation is not equal to 0
 #> 95 percent confidence interval:
-#>  0.6593903 0.8304990
+#>  0.6248292 0.8113259
 #> sample estimates:
-#>       cor 
-#> 0.7576769
+#>      cor 
+#> 0.731475
 ```
-
-## Show your data by plotting statistically significant words
 
 ``` r
 library(text)
-
 # Example data that have been pre-processed with textPlotData function
-
-plot <- textPlotViz(
-  word_data = sq_data_plottingHw_HILSSSWLS_100,
-  x_axes = "cohensD.x",
-  y_axes = "cohensD.y",
-  x_axes_label = "Harmony in life scale (Cohen's D)",
-  y_axes_label = "Satisfaction with life scale (Cohen's D)"
+# The test-data included in the package is called: sq_data_tutorial_plotting_hilswl
+load("data/sq_data_tutorial_plotting_hilswl.rda")
+plot_projection <- textPlotViz(
+word_data = sq_data_tutorial_plotting_hilswl,
+plot_n_words_p = 50,
+x_axes = "dot.x",
+y_axes = NULL,
+x_axes_label = "Dot product",
+y_axes_label = NULL,
+p_alpha = .05,
+p_values_x = "p_values_dot.x",
+p_values_y = NULL,
+p_adjust_method = "BY",
+title_top = "Dot-Project",
+scale_y_axes_lim = NULL
 )
-plot
+plot_projection
 ```
 
-<img src="man/figures/README-example_3-1.png" width="100%" />
-
-<!--
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!-->
+<img src="man/figures/README-DPP_plot-1.png" width="100%" />
