@@ -43,8 +43,6 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 }
 
 
-
-
 # This is just to get variables when testing the function
 # load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/sq_data_tutorial4_100.rda")
 # sq_data_tutorial4_100
@@ -55,14 +53,23 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 # single_wordembeddings = wordembeddings4_100$singlewords_we
 # x = sq_data_tutorial8_100$hilstotal
 # y = NULL #sq_data_tutorial8_100$swlstotal
+
 # Npermutations = 1000
 # n_per_split = 100
 # aggregation = "mean"
 # i_dim = 1
 # word_weight_power = 1 #; take the power of X of the frequency in the computation of aggreated word embeddings for group 1 and 2.
-# split = "median"
-# min_freq_words = 0
+# split = "quartile"
+# min_freq_words = 1
+# pca = NULL
 #
+# words = words_swl_hil
+# wordembeddings = wordembeddings_swl_hil
+# single_wordembeddings = single_wordembeddings_swl_hil
+# x = x_swl_hil
+# y = y_swl_hil
+#
+
 
 # devtools::document()
 #' textPlotData computes variables for plotting words.
@@ -214,8 +221,8 @@ textPlotData <- function(words,
       words_group1_agg_single_wordembedding_c <- cbind(words_group1b_freq, words_group1_single_wordembedding_b)
       words_group2_agg_single_wordembedding_c <- cbind(words_group2b_freq, words_group2_single_wordembedding_b)
 
-    } else if(split =="quartile"){
-      # Get lower and upper quatiles
+    } else if(split == "quartile"){
+      # Get lower and upper quartile
       z <- x1[,2]
       qs <- broom::tidy(summary(z))
       group1_agg <- x2[ x2[2] < qs$q1, ]
@@ -522,6 +529,7 @@ textPlotData <- function(words,
 #' @importFrom rlang sym
 #' @importFrom cowplot ggdraw draw_plot
 #' @export
+
 textPlotViz <- function(word_data,
                         plot_n_words_p = 20,
                         plot_n_word_extreme = 5,
@@ -550,8 +558,8 @@ textPlotViz <- function(word_data,
                         point_size = 0.5,
                         arrow_transparency = 0.1,
                         legend_title = "DPP",
-                        legend_x_axes_label = "(DPP x)",
-                        legend_y_axes_label = "(DPP y)",
+                        legend_x_axes_label = "x",
+                        legend_y_axes_label = "y",
                         legend_x_position = 0.02,
                         legend_y_position = 0.02,
                         legend_h_size = 0.2,
@@ -717,9 +725,12 @@ textPlotViz <- function(word_data,
   bivariate_color_data = bivariate_color_data[-1, ]
 
   if (y_axes == "only_x_dimension") {
+    # Only select 3 colours
     bivariate_color_data <- bivariate_color_data[, c(4, 5, 6)]
     colnames(bivariate_color_data) <- c("1 - 2", "2 - 2", "3 - 2")
     bivariate_color_data
+    # Remove the y axes title on the legend
+    legend_y_axes_label <- " "
   }
   legend <- bivariate_color_data %>%
     tidyr::gather("group", "fill") %>%

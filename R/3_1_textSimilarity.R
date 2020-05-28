@@ -21,6 +21,25 @@ cosines <- function(x, y) {
   rowSums(x * y, na.rm = TRUE) / (sqrt(rowSums(x * x, na.rm = TRUE)) * sqrt(rowSums(y * y, na.rm = TRUE)))
 }
 
+
+#  devtools::document()
+#' Make x and y into same length for when we will randomly draw K-folds from them
+#' Function to add rows of NA until y and x have the same amount of rows.
+#' @param x a variable
+#' @param y a variable
+#' @return x and y have equal length.
+#' @noRd
+addEqualNrNArows <- function(x, y) {
+  success <- FALSE
+  while (!success) {
+    # Add row with NA
+    x <- rbind(x, rep(NA, length(x)))
+    # check for success
+    success <- nrow(x) == nrow(y)
+  }
+  return(x)
+}
+
 #' textSimilarity computes the semantic similiarty between texts.
 #'
 #' @param x Wordembeddings from textImport.
@@ -98,22 +117,6 @@ normalizeV <- function(x) {
   x / sqrt(sum(x^2, na.rm = TRUE))
 }
 
-#  devtools::document()
-#' Make x and y into same length for when we will randomly draw K-folds from them
-#' Function to add rows of NA until y and x have the same amount of rows.
-#' @param x a variable
-#' @param y a variable
-#' @return x and y have equal length.
-#' @noRd
-addEqualNrNArows <- function(x, y) {
-  success <- FALSE
-  while (!success) {
-    # Add row with NA
-    x <- rbind(x, rep(NA, length(x)))
-    # check for success
-    success <- nrow(x) == nrow(y)
-  }
-  return(x)
-}
+
 
 

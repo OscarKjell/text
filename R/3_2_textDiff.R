@@ -62,7 +62,6 @@ p_value_comparing_with_Null <- function(Observedresults, NULLresults,  Npermutat
 #' @importFrom lsa cosine
 #' @importFrom parallel splitIndices mclapply
 #' @export
-
 textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative = c("two_sided", "less", "greater"), output.permutations = TRUE, N_cluster_nodes = 1) {
   set.seed(2020)
   if ((nrow(x) != nrow(y))) { stop("x and y must have the same number of rows for a paired textDiff test.") }
