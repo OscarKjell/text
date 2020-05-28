@@ -6,35 +6,6 @@
 #library(text)
 
 
-# Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution help(switch)
-#  devtools::document()
-#' p_value_comparing_with_Null
-#'
-#' @param NULLresults a vector with NULL distribution of estimate (cosines)
-#' @param Observedresults a value representing the observed cosine
-#' @param Npermutations Number of permutation used in the test
-#' @param alternative "two_sided", "greater", "less"
-#' @return p_value
-#' @noRd
-p_value_comparing_with_Null <- function(Observedresults, NULLresults,  Npermutations, alternative = c("two_sided", "less", "greater")){
-  switch(alternative,
-         "two_sided" = {
-           p_value <- 2 * (min(sum(NULLresults < Observedresults), sum(NULLresults > Observedresults)) / sum(!is.na(NULLresults)))
-           },
-         "less" = {
-           p_value <- sum(NULLresults < Observedresults) / sum(!is.na(NULLresults))
-           },
-         "greater" = {
-           p_value <- sum(NULLresults > Observedresults) / sum(!is.na(NULLresults))
-           }
-  )
-  if (!is.na(p_value)) {
-    if (p_value == 0) { p_value <- 1 / (Npermutations + 1) }
-  }
-  return(p_value)
-}
-
-
 # For Observed data we have = Mean and SD (perhaps I could bootstrap and Mean of means? )
 
 # For Permutated data we have = Mean of means and the SD of the Mean of means.; which then becomes the standard error?

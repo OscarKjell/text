@@ -23,22 +23,16 @@ cosines <- function(x, y) {
 
 
 #  devtools::document()
-#' Make x and y into same length for when we will randomly draw K-folds from them
-#' Function to add rows of NA until y and x have the same amount of rows.
-#' @param x a variable
-#' @param y a variable
-#' @return x and y have equal length.
+#' Function to normlaise the vector to one; unit vector
+#'
+#' @param x a word embedding
+#' @return normalised (unit) vector/word embedding.
 #' @noRd
-addEqualNrNArows <- function(x, y) {
-  success <- FALSE
-  while (!success) {
-    # Add row with NA
-    x <- rbind(x, rep(NA, length(x)))
-    # check for success
-    success <- nrow(x) == nrow(y)
-  }
-  return(x)
+normalizeV <- function(x) {
+  x / sqrt(sum(x^2, na.rm = TRUE))
 }
+
+
 
 #' textSimilarity computes the semantic similiarty between texts.
 #'
@@ -106,16 +100,6 @@ textSimilarityNorm <- function(x, y) {
   cosines(x1, y2)
 }
 
-
-#  devtools::document()
-#' Function to normlaise the vector to one; unit vector
-#'
-#' @param x a word embedding
-#' @return normalised (unit) vector/word embedding.
-#' @noRd
-normalizeV <- function(x) {
-  x / sqrt(sum(x^2, na.rm = TRUE))
-}
 
 
 
