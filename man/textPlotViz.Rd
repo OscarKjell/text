@@ -6,6 +6,9 @@
 \usage{
 textPlotViz(
   word_data,
+  k_n_words_two_test = TRUE,
+  min_freq_words = 1,
+  plot_n_words_square = 3,
   plot_n_words_p = 20,
   plot_n_word_extreme = 5,
   plot_n_word_frequency = 5,
@@ -31,6 +34,8 @@ textPlotViz(
   position_jitter_width = 0.03,
   point_size = 0.5,
   arrow_transparency = 0.1,
+  points_without_words_size = 0,
+  points_without_words_alpha = 0,
   legend_title = "DPP",
   legend_x_axes_label = "x",
   legend_y_axes_label = "y",
@@ -39,20 +44,26 @@ textPlotViz(
   legend_h_size = 0.2,
   legend_w_size = 0.2,
   legend_title_size = 7,
-  ns_size = 2
+  legend_number_size = 2
 )
 }
 \arguments{
 \item{word_data}{Dataframe from textPlotData.}
 
-\item{plot_n_words_p}{Number of significant words to plot (per dimension, where duplicates are removed);
-selects fist according to lowest p-value and then to frequency (default 25  per dimension, where duplicates are removed).}
+\item{k_n_words_two_test}{Selects the k most frequent words to significance test (k = sqrt(100*N); N = number of paricipant responses). Default = TRUE.}
 
-\item{plot_n_word_extreme}{Number of words that are extreme on dot product projection
+\item{min_freq_words}{Select words to signficance test that has occured at least min_freq_words (default = 1).}
+
+\item{plot_n_words_square}{Select number of significant words in each square to plot.}
+
+\item{plot_n_words_p}{Number of significant words to plot (n per x and y axes, where duplicates are removed);
+selects fist according to lowest p-value and then to frequency (default 25  per axes, where duplicates are removed).}
+
+\item{plot_n_word_extreme}{Number of words that are extreme on dot product projection per dimension.
 (i.e., even if not significant;  per dimensions, where duplicates are removed).}
 
-\item{plot_n_word_frequency}{Number of words based on most frequent
-(i.e., even if not significant;  per dimensions, where duplicates are removed).}
+\item{plot_n_word_frequency}{Number of words based on being most frequent.
+(i.e., even if not significant).}
 
 \item{plot_n_words_middle}{Number of words plotted that are in the middle in dot product projection score
 (i.e., even if not significant;  per dimensions, where duplicates are removed).}
@@ -97,7 +108,11 @@ selects fist according to lowest p-value and then to frequency (default 25  per 
 
 \item{point_size}{the size of the points indicating the words' position (default: 0.5).}
 
-\item{arrow_transparency}{The transparency of the lines between each word and point (default: 0.1).}
+\item{arrow_transparency}{the transparency of the lines between each word and point (default: 0.1).}
+
+\item{points_without_words_size}{sets the size of the points (without showing words, default is to not show it, i.e., 0).}
+
+\item{points_without_words_alpha}{sets the transperency of the points (without showing words, default is to not show it, i.e., 0).}
 
 \item{legend_title}{Label on the color legend (default: "(DPP)".}
 
@@ -115,7 +130,7 @@ selects fist according to lowest p-value and then to frequency (default 25  per 
 
 \item{legend_title_size}{=7}
 
-\item{ns_size}{size of the "ns" in the legend (default = 3)}
+\item{legend_number_size}{size of the values in the legend (default = 2)}
 }
 \value{
 A 1- or 2-dimensional word plot.

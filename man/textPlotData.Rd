@@ -15,8 +15,8 @@ textPlotData(
   split = "quartile",
   word_weight_power = 1,
   min_freq_words = 0,
-  n_per_split = 50000,
-  Npermutations = 10000
+  Npermutations = 10000,
+  n_per_split = 50000
 )
 }
 \arguments{
@@ -39,11 +39,12 @@ An integer specify number of components to extract.}
 
 \item{word_weight_power}{Takes the power of the frequency in the computation of aggreated word embeddings for group low (1) and high (2).}
 
-\item{min_freq_words}{Option to only select words that have occured a specified number of times (default = 0).}
-
-\item{n_per_split}{A setting to avoid reaching computer memory limits; the higher the faster, but too high may lead to abortion.}
+\item{min_freq_words}{Option to only select words that have occured a specified number of times (default = 0); when creating the dot product projection
+line (although single words recieve dot product projection and p-value) and within cosine similairty.}
 
 \item{Npermutations}{Number of permutations in the creation of the null distribution.}
+
+\item{n_per_split}{A setting to avoid reaching computer memory limits; the higher the faster, but too high may lead to abortion.}
 }
 \value{
 A dataframe with variables (e.g., including dot product, frequencies, p-values) for the individual words

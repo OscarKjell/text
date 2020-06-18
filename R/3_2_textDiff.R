@@ -5,9 +5,8 @@
 #
 #library(text)
 
-
+# To get Cohen's D effect size:
 # For Observed data we have = Mean and SD (perhaps I could bootstrap and Mean of means? )
-
 # For Permutated data we have = Mean of means and the SD of the Mean of means.; which then becomes the standard error?
 
 
