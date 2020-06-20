@@ -1,3 +1,4 @@
+# .rs.restartR()
 #  devtools::document()
 #' Select all character variables and make then UTF-8 coded, since BERT wants it that way
 #'
@@ -114,7 +115,6 @@ semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min",
   }
 }
 
-
 # devtools::document()
 #' getUniqueWordsAndFreq
 #' Function unites several text variables and rows to one, where all text is tranformed to lowercase and tokenized.
@@ -141,4 +141,131 @@ getUniqueWordsAndFreq <- function(x_characters){
   singlewords$words <- as.character(singlewords$words)
   singlewords
 }
+
+
+# textTransform (Installations needed?)
+# if error then install: Error in py_run_file_impl(file, local, convert) :  ModuleNotFoundError: No module named 'transformers'
+# Reticulate provides a link to python
+###install.packages("reticulate")
+########### library(reticulate)
+########### reticulate::py_install("PyTorch")
+########### reticulate::py_install("transformers")
+########### torch <- reticulate::import('torch')
+########### transformers <- reticulate::import('transformers')
+
+# not needed?: np <- import('numpy')
+
+# By default, reticulate uses the version of Python found on your PATH (i.e. Sys.which("python")).
+# Sys.which("python3")
+
+# Python versions discovered on the system:
+# py_config()
+# You can also use the py_discover_config() function to see what version of Python will be used without actually loading Python:
+#cpy_discover_config()
+
+# Needed? : py_install("anaconda")
+# use_condaenv("anaconda3")
+
+# Set the path to the Python executable file
+# Needed?: use_python("/opt/anaconda3/bin/python3", required = T)
+
+# Check the version of Python.
+#py_config()
+
+# Split up sentences (NOW ONLY 512 tokens!);
+# devtools::document()
+#' textEmbed extracts word embeddings for all text in character variables in dataframe
+#'
+#' @param x Tibble.
+#' @param pretrained_weights Character specifying pre-trained language model through RBERT. Current options
+#' "bert_base_uncased", "bert_base_cased", "bert_large_uncased",
+#' "bert_large_cased", "bert_large_uncased_wwm", "bert_large_cased_wwm",
+#' "bert_base_multilingual_cased", "bert_base_chinese", "scibert_scivocab_uncased",
+#' "scibert_scivocab_cased", "scibert_basevocab_uncased", and "scibert_basevocab_cased".
+#' @param tokenizer_class tokenizer that match pretrained_weights
+#' @param model_class model class that matches pretrained_weights and tokenizer_class
+#' @param layers best to extract 'all', and then remove in other function, when aggregating embeddings
+#' @param return_tokens f
+#' @return A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer
+# @examples
+# x <- sq_data_tutorial8_10[1:2, 1:2]
+# wordembeddings <- textEmbedd(x)
+#' @seealso see \code{\link{textTrain}}, \code{\link{textDiff}} and \code{\link{textSimilarity}}
+#' @importFrom reticulate source_python
+#'@importFrom dplyr %>% bind_rows
+#' @importFrom tibble tibble as_tibble
+#' @importFrom purrr map
+#' @importFrom magrittr set_colnames
+#' @export
+#data = x
+#pretrained_weights = 'bert-base-uncased'
+#tokenizer_class = BertTokenizer
+#model_class = BertModel
+#layers = 'all'  # all or a list of layers to keep
+#return_tokens = TRUE
+textTransform <- function(data,
+                      pretrained_weights = 'bert-base-uncased',
+                      tokenizer_class = BertTokenizer,
+                      model_class = BertModel,
+                      layers = 'all',  # all or a list of layers to keep
+                      return_tokens = TRUE) {
+
+  # Run python file with HunggingFace interface to state-of-the-art transformers
+  reticulate::source_python("R/huggingface_interface.py")
+
+  # Function from python file
+  hg_embeddings <- hgTransformerGetEmbedding(text_strings = data,
+                                             pretrained_weights = pretrained_weights,
+                                             tokenizer_class = tokenizer_class,
+                                             model_class = model_class,
+                                             layers = layers,  # all or a list of layers to keep
+                                             return_tokens = return_tokens)
+
+  # Tidy-structure tokens and embeddings
+  # Loop over the variable
+  variable_x <- list()
+  for(i_in_varialbe in 1:length(x)){   # i_in_varialbe=1; i_in_varialbe=2
+    tokens <- hg_embeddings[[2]][[i_in_varialbe]]
+    layers <- hg_embeddings[[1]][[i_in_varialbe]]
+
+    # loop of layers
+    layers_list <- list()
+    for(i in 1:length(layers[[1]])){
+      layers_x <- layers[[1]][[i]] # i=1     i=2     i=3
+
+      layers_x_u <- t(dplyr::bind_cols(layers_x)) %>%
+        tibble::as_tibble() %>%
+        magrittr::set_colnames(c(paste0("Dim", 1:length(layers_x))))
+
+      tokens_lnumber <- tibble::tibble(tokens, rep(i-1, length(tokens)))
+      colnames(tokens_lnumber) <- c("tokens", "layer_number")
+      tokens_lnumber_layers <- bind_cols(tokens_lnumber, layers_x_u)
+
+      layers_list[[i]] <- tokens_lnumber_layers
+      layers_list
+    }
+
+    layers_tibble <- dplyr::bind_rows(layers_list)
+
+    variable_x[[i_in_varialbe]] <- layers_tibble
+  }
+
+  variable_x
+
+}
+#x <-  c("I am here")
+#x <-  c("I am here", "where are you")
+#textEmbed(x)
+
+#
+
+
+
+
+
+
+
+
+
+
 

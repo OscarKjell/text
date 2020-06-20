@@ -44,7 +44,7 @@ line (although single words recieve dot product projection and p-value) and with
 
 \item{Npermutations}{Number of permutations in the creation of the null distribution.}
 
-\item{n_per_split}{A setting to avoid reaching computer memory limits; the higher the faster, but too high may lead to abortion.}
+\item{n_per_split}{A setting to split Npermutations to avoid reaching computer memory limits; the higher the faster, but too high may lead to abortion.}
 }
 \value{
 A dataframe with variables (e.g., including dot product, frequencies, p-values) for the individual words

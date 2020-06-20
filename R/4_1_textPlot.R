@@ -43,30 +43,30 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 }
 
 # This is just to get variables when testing the function
-   load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/sq_data_tutorial4_100.rda")
-   sq_data_tutorial4_100
-   load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/wordembeddings4_100.rda")
-   sq_data_tutorial8_100 <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_plot_test/sq_data_tutorial8_100.rda")
-
-sq_data_tutorial_plotting_hilswl <- textPlotData(words = sq_data_tutorial8_100$harmonywords,
-                            wordembeddings = wordembeddings4_100$harmonywords,
-                            single_wordembeddings = wordembeddings4_100$singlewords_we,
-                x = sq_data_tutorial8_100$hilstotal,
-                y = sq_data_tutorial8_100$swlstotal,
-                            pca = NULL,
-                            aggregation = "mean",
-                            split = "quartile",
-                            word_weight_power = 1,
-                            min_freq_words=0,
-                            Npermutations = 1000000,
-                            n_per_split = 50000)
-
-
-
-   words = sq_data_tutorial8_100$harmonywords
-    wordembeddings = wordembeddings4_100$harmonywords
-
-
+#   load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/sq_data_tutorial4_100.rda")
+#   sq_data_tutorial4_100
+#   load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/wordembeddings4_100.rda")
+#   sq_data_tutorial8_100 <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_plot_test/sq_data_tutorial8_100.rda")
+#
+#sq_data_tutorial_plotting_hilswl <- textPlotData(words = sq_data_tutorial8_100$harmonywords,
+#                            wordembeddings = wordembeddings4_100$harmonywords,
+#                            single_wordembeddings = wordembeddings4_100$singlewords_we,
+#                x = sq_data_tutorial8_100$hilstotal,
+#                y = sq_data_tutorial8_100$swlstotal,
+#                            pca = NULL,
+#                            aggregation = "mean",
+#                            split = "quartile",
+#                            word_weight_power = 1,
+#                            min_freq_words=0,
+#                            Npermutations = 1000000,
+#                            n_per_split = 50000)
+#
+#
+#
+#   words = sq_data_tutorial8_100$harmonywords
+#    wordembeddings = wordembeddings4_100$harmonywords
+#
+#
     #   single_wordembeddings = wordembeddings4_100$singlewords_we
  #   x = sq_data_tutorial8_100$hilstotal
  #   y = sq_data_tutorial8_100$swlstotal #NULL #
