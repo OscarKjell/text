@@ -91,8 +91,6 @@
 "wordembeddings1_100"
 
 
-
-
 #' Example data for plotting.
 #'
 #' The dataset is a shortened version of the data sets of Study 3-5
@@ -117,7 +115,8 @@
 #'    \item{n_all.y}{output from textPlotData}
 #'   \item{Within_cosine_similarity.y}{output from textPlotData}
 #'   \item{p_values_cosine.y}{output from textPlotData}
+#'   \item{N_participant_responses}{output from textPlotData}
 #'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
-"sq_data_tutorial_plotting_hilswl"
+"sq_data_plottingHw_HILSSSWLS_100"

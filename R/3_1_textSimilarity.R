@@ -21,7 +21,6 @@ cosines <- function(x, y) {
   rowSums(x * y, na.rm = TRUE) / (sqrt(rowSums(x * x, na.rm = TRUE)) * sqrt(rowSums(y * y, na.rm = TRUE)))
 }
 
-
 #  devtools::document()
 #' Function to normlaise the vector to one; unit vector
 #'
@@ -31,8 +30,6 @@ cosines <- function(x, y) {
 normalizeV <- function(x) {
   x / sqrt(sum(x^2, na.rm = TRUE))
 }
-
-
 
 #' textSimilarity computes the semantic similiarty between texts.
 #'
@@ -77,7 +74,7 @@ textSimilarity <- function(x, y) {
 # norms <- tibble::tibble(harmonynorm, satisfactionnorm)
 # library(dplyr)
 # wordembeddings <- wordembeddings4_10
-# wordembeddings_wordnorm <- textImport(norms)
+# wordembeddings_wordnorm <- textTransform(norms)
 # similiarty_scores <- textSimilarityNorm(
 #   wordembeddings$harmonytext,
 #   wordembeddings_wordnorm$harmonynorm

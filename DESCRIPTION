@@ -1,10 +1,10 @@
 Package: text
 Type: Package
 Title: Analyses of Text using Natural Language Processing and Machine Learning
-Version: 0.2.0.9000
+Version: 0.6.0.9000
 Author: Oscar Kjell & Andrew Schwartz
 Maintainer: The package maintainer <oscar.kjell@psy.lu.se>
-Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables etc.   
+Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables, and visual statisticall significant words according to various dimensions etc.   
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -30,6 +30,7 @@ Imports:
     parsnip,
     recipes,
     rsample,
+    reticulate,
     tune,
     workflows,
     yardstick,
@@ -44,3 +45,10 @@ Suggests:
     rio
 VignetteBuilder: knitr
 Depends: R (>= 2.10)
+Config/reticulate:
+  list(
+    packages = list(
+      list(package = "torch"),
+      list(package = "transformers")
+    )
+  )

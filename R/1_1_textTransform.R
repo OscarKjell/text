@@ -170,13 +170,13 @@ getUniqueWordsAndFreq <- function(x_characters){
 # Needed?: use_python("/opt/anaconda3/bin/python3", required = T)
 
 # Check the version of Python.
-#py_config()
+# py_config()
 
 # Split up sentences (NOW ONLY 512 tokens!);
 # devtools::document()
-#' textEmbed extracts word embeddings for all text in character variables in dataframe
+#' textTransform extracts word embeddings for all text in character variables in dataframe
 #'
-#' @param x Tibble.
+#' @param data Tibble.
 #' @param pretrained_weights Character specifying pre-trained language model through RBERT. Current options
 #' "bert_base_uncased", "bert_base_cased", "bert_large_uncased",
 #' "bert_large_cased", "bert_large_uncased_wwm", "bert_large_cased_wwm",
@@ -189,10 +189,10 @@ getUniqueWordsAndFreq <- function(x_characters){
 #' @return A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer
 # @examples
 # x <- sq_data_tutorial8_10[1:2, 1:2]
-# wordembeddings <- textEmbedd(x)
+# wordembeddings <- textTransform(x)
 #' @seealso see \code{\link{textTrain}}, \code{\link{textDiff}} and \code{\link{textSimilarity}}
 #' @importFrom reticulate source_python
-#'@importFrom dplyr %>% bind_rows
+#' @importFrom dplyr %>% bind_rows
 #' @importFrom tibble tibble as_tibble
 #' @importFrom purrr map
 #' @importFrom magrittr set_colnames
@@ -211,7 +211,7 @@ textTransform <- function(data,
                       return_tokens = TRUE) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
-  reticulate::source_python("R/huggingface_interface.py")
+  reticulate::source_python("R/Huggingface_Interface.py")
 
   # Function from python file
   hg_embeddings <- hgTransformerGetEmbedding(text_strings = data,
@@ -255,7 +255,7 @@ textTransform <- function(data,
 }
 #x <-  c("I am here")
 #x <-  c("I am here", "where are you")
-#textEmbed(x)
+# textTransform(x)
 
 #
 

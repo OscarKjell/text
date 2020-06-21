@@ -13,5 +13,9 @@ utils::globalVariables(c(
   ".pred", ".", "analysis", "assessment", "df3_glmn_grid",
   "n", "n1", "n1_e", "dot2", "adjusted_p_values.x", "dot.x", "plot_n_word_extreme",
   "plot_n_word_frequency", "plot_n_words_middle", "n_all.x", "adjusted_p_values.y", "dot.y",
-  "n_all.y", "colour_categories", "scale_color_identity", "group", "x", "y", "fill"
+  "n_all.y", "colour_categories", "scale_color_identity", "group", "x", "y", "fill",
+  "check_p_square", "check_p_x", "check_extreme_max_x", "check_extreme_min_x", "check_extreme_frequency_x",
+  "check_middle_x", "check_p_y", "check_extreme_max_y", "check_extreme_min_y", "check_extreme_frequency_y",
+  "check_middle_y", "extremes_all_x", "extremes_all_y", "BertTokenizer", "BertModel",
+  "hgTransformerGetEmbedding"
 ))

@@ -409,7 +409,7 @@ textPlotData <- function(words,
     word_data_list[i_dim] <- list(Group1_2_result_dot)
   }
   # N_participants
-  N_participant_respondense <- length(words)
+  N_participant_responses <- length(words)
 
   # Arranging it to one tibble; accounting for x versus x and y input
   if (is.null(y) == TRUE) {
@@ -417,10 +417,10 @@ textPlotData <- function(words,
     colnames(word_data_tibble) <-
       c("words", "n.x", "dot.x", "p_values_dot.x", "n_g1.x", "n_g2.x", "n_all.x", "Within_cosine_similarity.x", "p_values_cosine.x")
     word_data_tibble <- select(word_data_tibble, -c(n.x))
-    word_data_tibble$N_participant_respondenses <- c(rep(N_participant_respondense, nrow(word_data_tibble)))
+    word_data_tibble$N_participant_responses <- c(rep(N_participant_responses, nrow(word_data_tibble)))
   } else {
     word_data_tibble <- dplyr::full_join(word_data_list[[1]], word_data_list[[2]], by = "words")
-    word_data_tibble$N_participant_respondenses <- c(rep(N_participant_respondense, nrow(word_data_tibble)))
+    word_data_tibble$N_participant_responses <- c(rep(N_participant_responses, nrow(word_data_tibble)))
   }
   return(word_data_tibble)
 }
@@ -430,52 +430,54 @@ textPlotData <- function(words,
 
 # word_data <- plot_data_small_2d
 # word_data <- plot_data_large_hil
+#
+# word_data <- sq_data_plottingHw_HILSSSWLS_100
+#  title_top = " "
+#  titles_color = "#61605e"
+#  k_n_words_two_test = FALSE
+#
+# x_axes = "dot.x"
+# y_axes = "dot.y"
+# p_values_x = "p_values_dot.x"
+# p_values_y = "p_values_dot.y"
+# p_alpha = 0.05
+#
+# min_freq_words = 1
+# plot_n_words_square = 0
+# plot_n_words_p = 1
+# plot_n_word_extreme = 0
+# plot_n_word_frequency = 0
+# plot_n_words_middle = 0
+#
+# p_adjust_method = "BY" # c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
+# x_axes_label = "Dot Product Projection"
+# y_axes_label = "Dot Product Projection"
+# scale_x_axes_lim = c(-4.5, 4.5)
+# scale_y_axes_lim = c(-4.5, 4.5)
+# y_axes_values = NULL #element_blank()
+# word_font = "Arial"
+# bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688",
+#                            "#e07f6a", "#EAEAEA", "#40DD52",
+#                            "#FF0000", "#EA7467", "#85DB8E")
+#
+# word_size_range = c(3, 8)
+# position_jitter_hight = .0
+# position_jitter_width = .03
+# point_size = 0.5
+# arrow_transparency = 0.1
+# points_without_words_size = 0.3
+# points_without_words_alpha = 0.3
+# legend_title = "DPP"
+# legend_x_axes_label = "DPP: HILS"
+# legend_y_axes_label = "DPP: SWLS"
+# legend_x_position = 0.02
+# legend_y_position = 0.05
+# legend_h_size = 0.2
+# legend_w_size = 0.2
+# legend_title_size=7
+# legend_number_size = 3
+#
 
- # word_data <- sq_data_tutorial_plotting_hilswl
- #  title_top = " "
- #  titles_color = "#61605e"
- #  k_n_words_two_test = FALSE
- #
- # x_axes = "dot.x"
- # y_axes = "dot.y"
- # p_values_x = "p_values_dot.x"
- # p_values_y = "p_values_dot.y"
- # p_alpha = 0.05
- #
- # min_freq_words = 1
- # plot_n_words_square = 0
- # plot_n_words_p = 1
- # plot_n_word_extreme = 0
- # plot_n_word_frequency = 0
- # plot_n_words_middle = 0
- #
- # p_adjust_method = "BY" # c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
- # x_axes_label = "Dot Product Projection"
- # y_axes_label = "Dot Product Projection"
- # scale_x_axes_lim = c(-4.5, 4.5)
- # scale_y_axes_lim = c(-4.5, 4.5)
- # y_axes_values = NULL #element_blank()
- # word_font = "Arial"
- # bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688",
- #                            "#e07f6a", "#EAEAEA", "#40DD52",
- #                            "#FF0000", "#EA7467", "#85DB8E")
- #
- # word_size_range = c(3, 8)
- # position_jitter_hight = .0
- # position_jitter_width = .03
- # point_size = 0.5
- # arrow_transparency = 0.1
- # points_without_words_size = 0.3
- # points_without_words_alpha = 0.3
- # legend_title = "DPP"
- # legend_x_axes_label = "DPP: HILS"
- # legend_y_axes_label = "DPP: SWLS"
- # legend_x_position = 0.02
- # legend_y_position = 0.05
- # legend_h_size = 0.2
- # legend_w_size = 0.2
- # legend_title_size=7
- # legend_number_size = 3
 
 
 # Select colours: https://paletton.com/#uid=1000u0kllllaFw0g0qFqFg0w0aF  https://www.sessions.edu/color-calculator/
@@ -531,17 +533,18 @@ textPlotData <- function(words,
 #' @param legend_number_size size of the values in the legend (default = 2)
 #' @return A 1- or 2-dimensional word plot.
 #' @examples
-#' # The test-data included in the package is called: sq_data_tutorial_plotting_hilswl
+#' # The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
 #' plot_projection <- textPlotViz(
-#' word_data = sq_data_tutorial_plotting_hilswl,
-#' plot_n_words_p = 50,
+#' word_data = sq_data_plottingHw_HILSSSWLS_100,
+#' k_n_words_two_test = TRUE,
 #' x_axes = "dot.x",
-#' y_axes = NULL,
+#' y_axes = "dot.y",
+#' p_values_x = "p_values_dot.x",
+#' p_values_y = "p_values_dot.y",
+#' p_alpha = 0.05,
+#' plot_n_words_p = 50,
 #' x_axes_label = "Dot product",
 #' y_axes_label = NULL,
-#' p_alpha = .05,
-#' p_values_x = "p_values_dot.x",
-#' p_values_y = NULL,
 #' p_adjust_method = "holm",
 #' title_top = "Dot-Project",
 #' scale_y_axes_lim = NULL
@@ -602,7 +605,7 @@ textPlotViz <- function(word_data,
   ### Selecting words to plot
   if(k_n_words_two_test == TRUE){
     # Computing adjusted p-values with those words selected by: k = sqrt(100*N)
-    words_k = sqrt(100*word_data$N_participant_respondenses[1])
+    words_k = sqrt(100*word_data$N_participant_responses[1])
     word_data_padjusted <- word_data %>%
       dplyr::arrange(-n_all.x) %>%
       slice(0:words_k)
@@ -929,7 +932,7 @@ textPlotViz <- function(word_data,
 ###### End textPlotVizTextDiff
 
 
-# plot_projection_1 <- textPlotViz(word_data = sq_data_tutorial_plotting_hilswl,
+# plot_projection_1 <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,
 #                         plot_n_words_p = 200,
 #                         plot_n_word_extreme = 0,
 #                         plot_n_word_frequency = 0,
