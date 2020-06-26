@@ -79,7 +79,7 @@ textTrain <- function(x,
     recipes::recipe(y ~ .,
                     data = df3) %>%
     #  recipes::step_BoxCox(all_predictors()) %>%
-    recipes::step_naomit(V1, skip = TRUE) %>%
+    recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(all_predictors()) %>%
     recipes::step_scale(all_predictors()) %>%
     recipes::step_pca(all_predictors(), threshold = preProcessPCAthresh) #%>% num_comp = tune()

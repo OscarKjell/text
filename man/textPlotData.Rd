@@ -59,7 +59,7 @@ data <- sq_data_tutorial8_10
 df_for_plotting <- textPlotData(data$harmonywords, wordembeddings$harmonywords,
   wordembeddings$singlewords_we,
   data$hilstotal,
-  split = "quartile",
+  split = "median",
   Npermutations = 10,
   n_per_split = 1
 )

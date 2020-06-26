@@ -42,11 +42,12 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
   cosine_null_distribution <- cosine_null_distribution[complete.cases(cosine_null_distribution),]
 }
 
+library(tidyverse)
 # This is just to get variables when testing the function
-#   load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/sq_data_tutorial4_100.rda")
-#   sq_data_tutorial4_100
-#   load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/wordembeddings4_100.rda")
-#   sq_data_tutorial8_100 <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_plot_test/sq_data_tutorial8_100.rda")
+##   load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/sq_data_tutorial4_100.rda")
+##   sq_data_tutorial4_100
+##   load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/wordembeddings4_100.rda")
+##   sq_data_tutorial8_100 <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/Example data/sq_data_tutorial8_100.rda")
 #
 #wordembeddings_all <- wordembeddings4_10
 # data <- sq_data_tutorial8_10
@@ -62,24 +63,24 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 # df_for_plotting
 #
 #   words = sq_data_tutorial8_100$harmonywords
-#    wordembeddings = wordembeddings4_100$harmonywords
+#   wordembeddings = wordembeddings4_100$harmonywords
+#
+##library(text)
+#   single_wordembeddings = wordembeddings4_100$singlewords_we
+#   x = sq_data_tutorial8_100$hilstotal
+#   y = NULL # sq_data_tutorial8_100$swlstotal #NULL #
+# #
+#   Npermutations = 1000
+#   n_per_split = 100
+#   aggregation = "mean"
+#   i_dim = 1
+#   word_weight_power = 1 #; take the power of X of the frequency in the computation of aggreated word embeddings for group 1 and 2.
+#   split = "quartile"
+#   min_freq_words = 1
+#   pca = NULL
 
-#library(text)
-#    single_wordembeddings = wordembeddings4_100$singlewords_we
- #   x = sq_data_tutorial8_100$hilstotal
- #   y = sq_data_tutorial8_100$swlstotal #NULL #
- # #
- #   Npermutations = 1000
- #   n_per_split = 100
- #   aggregation = "mean"
- #   i_dim = 1
- #   word_weight_power = 1 #; take the power of X of the frequency in the computation of aggreated word embeddings for group 1 and 2.
- #   split = "quartile"
- #   min_freq_words = 1
- #   pca = NULL
- #
- # words = words_swl_hil
- # wordembeddings = wordembeddings_swl_hil
+# words = words_swl_hil
+# wordembeddings = wordembeddings_swl_hil
 # single_wordembeddings = single_wordembeddings_swl_hil
 # x = x_swl_hil
 # y = y_swl_hil
@@ -112,7 +113,7 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 #' df_for_plotting <- textPlotData(data$harmonywords, wordembeddings$harmonywords,
 #'   wordembeddings$singlewords_we,
 #'   data$hilstotal,
-#'   split = "quartile",
+#'   split = "median",
 #'   Npermutations = 10,
 #'   n_per_split = 1
 #' )
@@ -134,7 +135,7 @@ textPlotData <- function(words,
                          aggregation = "mean",
                          split = "quartile",
                          word_weight_power = 1,
-                         min_freq_words=0,
+                         min_freq_words = 0,
                          Npermutations = 10000,
                          n_per_split = 50000 ) {
 
@@ -151,7 +152,7 @@ textPlotData <- function(words,
     pca_trans <- rec_pca %>%
       recipes::step_center(recipes::all_numeric()) %>%
       recipes::step_scale(recipes::all_numeric()) %>%
-      recipes::step_naomit(V1 , skip = TRUE)
+      recipes::step_naomit(Dim1 , skip = TRUE)
 
     if(pca < 1) {
       pca_trans <- recipes::step_pca(pca_trans, recipes::all_numeric(), threshold = pca)
@@ -161,13 +162,13 @@ textPlotData <- function(words,
 
     pca_estimates <- recipes::prep(pca_trans, training = uniques_words_all_wordembedding)
     pca_data <- recipes::bake(pca_estimates, uniques_words_all_wordembedding)
-    pca_data <- pca_data %>% stats::setNames(paste0('V_', names(.)))
+    pca_data <- pca_data %>% stats::setNames(paste0('Dim_', names(.))) # Should V1 be Dim?
     single_wordembeddings <- dplyr::bind_cols(uniques_words_all, pca_data)
     single_wordembeddings
   }
 
   # Make datafram (and combine x and y)
-  if (is.null(y) == TRUE) {
+  if (is.null(y)) {
     x <- tibble::as_tibble_col(x)
   } else {
     # Combine the dimensions for for-loop

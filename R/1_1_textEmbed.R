@@ -94,15 +94,15 @@ applysemrep <- function(x, single_wordembeddings1) {
     # Get the semantic representation for a word=x
     word1rep <- single_wordembeddings1[single_wordembeddings1$words == x, ]
     # Only get the semantic represenation as a vector without the actual word in the first column
-    wordrep <- purrr::as_vector(word1rep %>% dplyr::select(dplyr::starts_with("V")))
+    wordrep <- purrr::as_vector(word1rep %>% dplyr::select(dplyr::starts_with("Dim")))
     # If the word does not have a semrep return vector with NA the same number of dimensions as columns with V
   } else if (x %in% NA) {
     # The length() refers to how many column starts with V (i.e., how many dimensions)
-    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
+    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
     class(wordrep)
     wordrep <- as.numeric(wordrep)
   } else {
-    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("V"))), nrow = 1))
+    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
     wordrep <- as.numeric(wordrep)
   }
 }
