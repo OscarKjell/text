@@ -1,6 +1,5 @@
 
 # textSimilairty
-# usethis::use_package(psych==1.8.10)
 
 
 ########################################################################
@@ -44,8 +43,8 @@ normalizeV <- function(x) {
 #' @export
 textSimilarity <- function(x, y) {
   # Select necassary columns
-  x1 <- dplyr::select(x, dplyr::starts_with("V"))
-  y1 <- dplyr::select(y, dplyr::starts_with("V"))
+  x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
+  y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
   #x1 <- subset(x, select = -c(1:5))
   #y1 <- subset(y, select = -c(1:5))
 
@@ -84,8 +83,8 @@ textSimilarity <- function(x, y) {
 #' @export
 textSimilarityNorm <- function(x, y) {
   # Remove unnecassary columns
-  x1 <- dplyr::select(x, dplyr::starts_with("V"))
-  y1 <- dplyr::select(as_tibble(as.list(y)), dplyr::starts_with("V"))
+  x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
+  y1 <- dplyr::select(as_tibble(as.list(y)), dplyr::starts_with("Dim"))
   #x1 <- subset(x, select = -c(1:5))
   #y1 <- subset(y, select = -c(1:5)) help(enframe)
   is.vector(y)

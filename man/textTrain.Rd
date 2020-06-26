@@ -11,7 +11,8 @@ textTrain(
   preProcessPCAthresh = 0.95,
   strata_y = "y",
   methodCor = "pearson",
-  describe_model = "Describe the model further and share it with others"
+ 
+    model_description = "author(s): XXXX; data: N=XXX, population =  XXXX; publication: title = if_any; description = XXX"
 )
 }
 \arguments{
@@ -27,7 +28,7 @@ textTrain(
 
 \item{methodCor}{Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").}
 
-\item{describe_model}{Input text to describe your model.}
+\item{model_description}{Input text to describe your model (and share it with other).}
 }
 \value{
 A correlation between predicted and observed values; as well as predicted values.

@@ -20,7 +20,7 @@ textPlotViz(
   p_values_y = NULL,
   p_alpha = 0.05,
   p_adjust_method = "none",
-  title_top = " Dot Product ",
+  title_top = " Dot Product Projection",
   x_axes_label = "Dot product projection (DPP)",
   y_axes_label = "Dot product projection (DPP)",
   scale_x_axes_lim = NULL,
@@ -140,22 +140,27 @@ textPlotViz plot words
 }
 \examples{
 # The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
+
+# Dot Product Projection Plot
 plot_projection <- textPlotViz(
-word_data = sq_data_plottingHw_HILSSSWLS_100,
-k_n_words_two_test = TRUE,
-x_axes = "dot.x",
-y_axes = "dot.y",
-p_values_x = "p_values_dot.x",
-p_values_y = "p_values_dot.y",
-p_alpha = 0.05,
-plot_n_words_p = 50,
-x_axes_label = "Dot product",
-y_axes_label = NULL,
-p_adjust_method = "holm",
-title_top = "Dot-Project",
-scale_y_axes_lim = NULL
+ word_data = sq_data_plottingHw_HILSSSWLS_100,
+ k_n_words_two_test = TRUE,
+ x_axes = "dot.x",
+ y_axes = "dot.y",
+ p_values_x = "p_values_dot.x",
+ p_values_y = "p_values_dot.y",
+ p_alpha = 0.05,
+ plot_n_words_p = 50,
+ title_top = " Dot Product Projection (DPP)",
+ x_axes_label = "Low vs. High HILS score",
+ y_axes_label = "Low vs. High SWLS score",
+ p_adjust_method = "holm",
+ scale_y_axes_lim = NULL
 )
 plot_projection
+
+names(sq_data_plottingHw_HILSSSWLS_100)
+
 }
 \seealso{
 see \code{\link{textPlotData}}

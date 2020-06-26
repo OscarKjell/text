@@ -45,7 +45,7 @@ textTrainMultiTexts <- function(xlist, y, preProcessThresh = 0.95, nrFolds_k = 1
 
   # Select all variables that starts with V in each dataframe of the list.
   xlist <- lapply(xlist, function(X) {
-                         X <- dplyr::select(X, dplyr::starts_with("V"))
+                         X <- dplyr::select(X, dplyr::starts_with("Dim"))
                          })
 
   set.seed(2020)
@@ -67,7 +67,7 @@ textTrainMultiTexts <- function(xlist, y, preProcessThresh = 0.95, nrFolds_k = 1
   # Get the name of the first variable; which is used to exclude NA (i.e., word embedding have NA in all columns)
   V1 <- colnames(df1)[1]
 
-  #x1 <- dplyr::select(x, dplyr::starts_with("V"))
+  #x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   df2 <- cbind(df1, y)
   df3 <- df2[complete.cases(df2),]
   df3 <- as_tibble(df3)

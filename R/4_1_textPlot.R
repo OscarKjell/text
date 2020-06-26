@@ -48,26 +48,24 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 #   load("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/wordembeddings4_100.rda")
 #   sq_data_tutorial8_100 <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_plot_test/sq_data_tutorial8_100.rda")
 #
-#sq_data_tutorial_plotting_hilswl <- textPlotData(words = sq_data_tutorial8_100$harmonywords,
-#                            wordembeddings = wordembeddings4_100$harmonywords,
-#                            single_wordembeddings = wordembeddings4_100$singlewords_we,
-#                x = sq_data_tutorial8_100$hilstotal,
-#                y = sq_data_tutorial8_100$swlstotal,
-#                            pca = NULL,
-#                            aggregation = "mean",
-#                            split = "quartile",
-#                            word_weight_power = 1,
-#                            min_freq_words=0,
-#                            Npermutations = 1000000,
-#                            n_per_split = 50000)
-#
-#
+#wordembeddings_all <- wordembeddings4_10
+# data <- sq_data_tutorial8_10
+# df_for_plotting <- textPlotData(
+#   words= data$harmonywords,
+#   wordembeddings=wordembeddings_all$harmonywords,
+#   single_wordembeddings=wordembeddings_all$singlewords_we,
+#   x=data$hilstotal,
+#   split = "quartile",
+#   Npermutations = 10,
+#   n_per_split = 1
+# )
+# df_for_plotting
 #
 #   words = sq_data_tutorial8_100$harmonywords
 #    wordembeddings = wordembeddings4_100$harmonywords
-#
-#
-    #   single_wordembeddings = wordembeddings4_100$singlewords_we
+
+#library(text)
+#    single_wordembeddings = wordembeddings4_100$singlewords_we
  #   x = sq_data_tutorial8_100$hilstotal
  #   y = sq_data_tutorial8_100$swlstotal #NULL #
  # #
@@ -86,6 +84,9 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 # x = x_swl_hil
 # y = y_swl_hil
 #
+
+
+
 # devtools::document()
 #' textPlotData computes variables for plotting words.
 #'
@@ -121,7 +122,6 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake
 #' @importFrom tidyr uncount
 #' @importFrom dplyr full_join rename starts_with
-#' @importFrom broom tidy
 #' @importFrom stats median sd setNames
 #' @importFrom purrr as_vector
 #' @export
@@ -185,8 +185,8 @@ textPlotData <- function(words,
     x2 <- tibble::as_tibble(cbind(x1, wordembeddings)) # Do I really need these aggregated embeddings
 
     # Splitting datasets up to low versus high according to median split
-    group1 <- x2[ x2[2] < stats::median(as_vector(x2[2])), ]
-    group2 <- x2[ x2[2] > stats::median(as_vector(x2[2])), ]
+    group1 <- x2[ x2[2] < stats::median(as_vector(x2$value), na.rm = TRUE), ]
+    group2 <- x2[ x2[2] > stats::median(as_vector(x2$value), na.rm = TRUE), ]
 
     # Use function addEqualNrNArows from 3_1_testSimilarity
     # Function adds rows of NA until group2 and group1 have the same amount of rows.
@@ -239,10 +239,8 @@ textPlotData <- function(words,
 
     } else if(split == "quartile"){
       # Select according to lower and upper quartile
-      z <- x1[,2]
-      z <- as.numeric(z[[1]])
-      q1 <- summary(z)[2][[1]]
-      q3 <- summary(z)[5][[1]]
+      q1 <- summary(x1$value)[2][[1]]
+      q3 <- summary(x1$value)[5][[1]]
       group1_agg <- x2[ x2[2] < q1, ]
       group2_agg <- x2[ x2[2] > q3, ]
 
@@ -271,8 +269,8 @@ textPlotData <- function(words,
       dplyr::mutate(., n1 = n^word_weight_power)  %>%
       tidyr::uncount(n1)
 
-    Aggregated_word_embedding_group1 <- textEmbeddingAggregation(dplyr::select(words_group1_agg_single_wordembedding_d, dplyr::starts_with("V")), aggregation = aggregation)
-    Aggregated_word_embedding_group2 <- textEmbeddingAggregation(dplyr::select(words_group2_agg_single_wordembedding_d, dplyr::starts_with("V")), aggregation = aggregation)
+    Aggregated_word_embedding_group1 <- textEmbeddingAggregation(dplyr::select(words_group1_agg_single_wordembedding_d, dplyr::starts_with("Dim")), aggregation = aggregation)
+    Aggregated_word_embedding_group2 <- textEmbeddingAggregation(dplyr::select(words_group2_agg_single_wordembedding_d, dplyr::starts_with("Dim")), aggregation = aggregation)
 
     ############
     ######         Project embedding
@@ -309,7 +307,7 @@ textPlotData <- function(words,
       tidyr::uncount(n1_e)
 
     words_group1_2_agg_single_wordembedding_e <- rbind(words_group1_agg_single_wordembedding_f, words_group2_agg_single_wordembedding_f)
-    words_group1_2_agg_single_wordembedding_e1 <- dplyr::select(words_group1_2_agg_single_wordembedding_e, dplyr::starts_with("V"))
+    words_group1_2_agg_single_wordembedding_e1 <- dplyr::select(words_group1_2_agg_single_wordembedding_e, dplyr::starts_with("Dim"))
 
 
     # Splitting up the permutations in different loops to avoid memory issues n_per_split=1000
@@ -363,6 +361,15 @@ textPlotData <- function(words,
     colnames(dot_result) <- c("words", "n", "dot", "p_values_dot", "n_g1", "n_g2")
 
 
+
+
+
+
+
+
+
+
+
     ############
     ######         Cosine Similarity based plots
     #############
@@ -372,7 +379,7 @@ textPlotData <- function(words,
     Aggregated_word_embedding_group1_2 <- rbind(Aggregated_word_embedding_group1, Aggregated_word_embedding_group2)
     Aggregated_word_embedding_group1_2a <- textEmbeddingAggregation(Aggregated_word_embedding_group1_2, aggregation = "mean")
 
-    words_group1_2_single_wordembedding_c1 <- dplyr::select(words_group1_2_single_wordembedding_c, dplyr::starts_with("V"))
+    words_group1_2_single_wordembedding_c1 <- dplyr::select(words_group1_2_single_wordembedding_c, dplyr::starts_with("Dim"))
     Within_cosine_similarity <- cosines(words_group1_2_single_wordembedding_c1, t(replicate(nrow(words_group1_2_single_wordembedding_c1), Aggregated_word_embedding_group1_2a)))
     cosine_df <- tibble::tibble(words_group1_2_single_wordembedding_c[, 1:2], Within_cosine_similarity)
 
@@ -534,27 +541,31 @@ textPlotData <- function(words,
 #' @return A 1- or 2-dimensional word plot.
 #' @examples
 #' # The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
-#' plot_projection <- textPlotViz(
-#' word_data = sq_data_plottingHw_HILSSSWLS_100,
-#' k_n_words_two_test = TRUE,
-#' x_axes = "dot.x",
-#' y_axes = "dot.y",
-#' p_values_x = "p_values_dot.x",
-#' p_values_y = "p_values_dot.y",
-#' p_alpha = 0.05,
-#' plot_n_words_p = 50,
-#' x_axes_label = "Dot product",
-#' y_axes_label = NULL,
-#' p_adjust_method = "holm",
-#' title_top = "Dot-Project",
-#' scale_y_axes_lim = NULL
-#' )
-#' plot_projection
+#'
+#'# Dot Product Projection Plot
+#'plot_projection <- textPlotViz(
+#'  word_data = sq_data_plottingHw_HILSSSWLS_100,
+#'  k_n_words_two_test = TRUE,
+#'  x_axes = "dot.x",
+#'  y_axes = "dot.y",
+#'  p_values_x = "p_values_dot.x",
+#'  p_values_y = "p_values_dot.y",
+#'  p_alpha = 0.05,
+#'  plot_n_words_p = 50,
+#'  title_top = " Dot Product Projection (DPP)",
+#'  x_axes_label = "Low vs. High HILS score",
+#'  y_axes_label = "Low vs. High SWLS score",
+#'  p_adjust_method = "holm",
+#'  scale_y_axes_lim = NULL
+#')
+#'plot_projection
+#'
+#'names(sq_data_plottingHw_HILSSSWLS_100)
+#'
 #' @seealso see \code{\link{textPlotData}}
 #' @importFrom tibble as_tibble tibble
 #' @importFrom dplyr row_number slice mutate mutate_if bind_rows group_by summarize left_join %>%
 #' @importFrom tidyr gather separate
-#' @importFrom scales rescale
 #' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme theme_void theme_minimal aes labs scale_color_identity
 #' @importFrom rlang sym
 #' @importFrom cowplot ggdraw draw_plot
@@ -574,7 +585,7 @@ textPlotViz <- function(word_data,
                         p_values_y = NULL,
                         p_alpha = 0.05,
                         p_adjust_method = "none",
-                        title_top = " Dot Product ",
+                        title_top = " Dot Product Projection",
                         x_axes_label = "Dot product projection (DPP)",
                         y_axes_label = "Dot product projection (DPP)",
                         scale_x_axes_lim = NULL,
@@ -930,6 +941,12 @@ textPlotViz <- function(word_data,
     cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size)
   }
 ###### End textPlotVizTextDiff
+
+
+
+
+
+
 
 
 # plot_projection_1 <- textPlotViz(word_data = sq_data_plottingHw_HILSSSWLS_100,

@@ -10,7 +10,7 @@
 # y = solmini$minidiagnose_cat[1:40]
 # y
 #df3_data <- as_tibble(df3)
-#colnames(df3_data) <- c(paste("V", 1:(ncol(df3_data)-1), sep=""), "y")
+#colnames(df3_data) <- c(paste("Dim", 1:(ncol(df3_data)-1), sep=""), "y")
 
 # devtools::document()
 #' textTrainRandomForest trains word embeddings to a categorical variable using random forrest.
@@ -39,7 +39,7 @@ textTrainRandomForest <- function(x, y, trees=500, nrFolds_k = 10, strata_y = "y
 
   set.seed(2020)
   y <- as.factor(y)
-  x1 <- dplyr::select(x, dplyr::starts_with("V"))
+  x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   df2 <- cbind(x1, y)
   df2$id1 <- c(1:nrow(df2))
   df2_formergingNA <- tibble(df2$id1, df2$y)

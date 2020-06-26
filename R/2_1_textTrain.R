@@ -32,7 +32,10 @@
 # x = solmini_sd300_tk_mean$movement[1:50,]
 # y = solmini$phq_tot[1:50]
 
-
+# wordembeddings <- wordembeddings4_10
+# ratings_data <- sq_data_tutorial4_10
+# wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
+# nrFolds_k = 2, strata_y = NULL)
 
 # textTrain using Tidymodels
 
@@ -45,7 +48,7 @@
 #' @param preProcessPCAthresh Preprocessing threshold.
 #' @param strata_y variables to stratify according; default y, can set to NULL
 #' @param methodCor Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").
-#' @param describe_model Input text to describe your model.
+#' @param model_description Input text to describe your model (and share it with other).
 #' @return A correlation between predicted and observed values; as well as predicted values.
 #' @examples
 #' wordembeddings <- wordembeddings4_10
@@ -60,8 +63,14 @@
 #' @importFrom parsnip linear_reg set_engine
 #' @importFrom tune tune control_grid tune_grid select_best collect_predictions
 #' @export
-textTrain <- function(x, y, nrFolds_k = 10, preProcessPCAthresh = 0.95, strata_y = "y", methodCor = "pearson", describe_model = "Describe the model further and share it with others"){
-  x1 <- dplyr::select(x, dplyr::starts_with("V"))
+textTrain <- function(x,
+                      y,
+                      nrFolds_k = 10,
+                      preProcessPCAthresh = 0.95,
+                      strata_y = "y",
+                      methodCor = "pearson",
+  model_description = "author(s): XXXX; data: N=XXX, population =  XXXX; publication: title = if_any; description = XXX"){
+  x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   df2 <- cbind(x1, y)
   df3 <- df2 #[complete.cases(df2),]
 
@@ -112,10 +121,10 @@ textTrain <- function(x, y, nrFolds_k = 10, preProcessPCAthresh = 0.95, strata_y
   correlation <- stats::cor.test(df3_predictions$y, df3_predictions$.pred, method = methodCor)
 
   # Describe model; adding user's-description + the name of the x and y
-  # describe_model_detail <- c(describe_model, paste(names(x)), paste(names(y)))
-  describe_model_detail <- c(deparse(substitute(x)), deparse(substitute(y)), describe_model)
+  # model_description_detail <- c(model_description, paste(names(x)), paste(names(y)))
+  model_description_detail <- c(deparse(substitute(x)), deparse(substitute(y)), model_description)
 
-  output <- list(df3_predictions, describe_model_detail, correlation)
+  output <- list(df3_predictions, model_description_detail, correlation)
   names(output) <- c("predictions", "model description", "correlation")
   output
 }

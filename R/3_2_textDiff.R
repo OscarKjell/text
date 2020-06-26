@@ -29,7 +29,6 @@
 #' y <- wordembeddings4_10$satisfactionwords
 #' textDiff(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1)
 #' @importFrom dplyr select starts_with
-#' @importFrom lsa cosine
 #' @importFrom parallel splitIndices mclapply
 #' @export
 textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative = c("two_sided", "less", "greater"), output.permutations = TRUE, N_cluster_nodes = 1) {
@@ -39,8 +38,8 @@ textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative 
   results <- c("estimate" = NA, "p.value" = NA)
 
   # Select variables beginning with V
-  x1 <- dplyr::select(x, dplyr::starts_with("V"))
-  y1 <- dplyr::select(y, dplyr::starts_with("V"))
+  x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
+  y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
 
   if(method == "paired") {
     # Compute cosine between all pairs
@@ -53,7 +52,13 @@ textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative 
     X_all <- textEmbeddingAggregation(x1, aggregation = "mean")
     Y_all <- textEmbeddingAggregation(y1, aggregation = "mean")
     # Compute cosine between the simmed word embedding
-    cosine_observed <- lsa::cosine(X_all, Y_all)
+
+    # This is to make it work with the cosines function that require several word embeddings
+    X_all <- rbind(X_all,X_all)
+    Y_all <- rbind(Y_all,Y_all)
+
+    cosine_observed <- cosines(X_all, Y_all)
+
     # Compute the data's mean of the cosine
     results["estimate"] <- mean(abs(cosine_observed))
     }
@@ -82,7 +87,12 @@ textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative 
         R1_all <- textEmbeddingAggregation(rdata1, aggregation = "mean")
         R2_all <- textEmbeddingAggregation(rdata2, aggregation = "mean")
         # Compute cosine between the summed word embedding
-        rcosines <- lsa::cosine(R1_all, R2_all)
+
+        # This is to make it work with the cosines function that require several word embeddings
+        R1_all <- rbind(R1_all,R1_all)
+        R2_all <- rbind(R2_all,R2_all)
+        rcosines <- cosines(R1_all, R2_all)
+
         # Compute the data's mean of the cosine
         return(abs(rcosines))
       }

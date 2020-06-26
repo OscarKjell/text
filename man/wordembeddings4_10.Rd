@@ -5,7 +5,8 @@
 \alias{wordembeddings4_10}
 \title{Example wordembeddings.}
 \format{
-A data frame with 10 rows and 772 variables including the wordembeddings:
+A data frame with 10 rows and 772 variables including the
+BERT-base wordembeddings from layer 11:12 (mean aggregated):
 \describe{
   \item{sequence_index}{output from textImport}
   \item{segment_index}{output from textImport}

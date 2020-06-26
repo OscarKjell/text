@@ -7,24 +7,22 @@ Maintainer: The package maintainer <oscar.kjell@psy.lu.se>
 Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables, and visual statisticall significant words according to various dimensions etc.   
 License: GPL-3
 Encoding: UTF-8
+Archs: x64
+SystemRequirements: Python (>= 2.7.0)
 LazyData: true
 BuildVignettes: true
 Imports: 
     dplyr,
-    RBERT (== 0.1.11),
     tokenizers,
-    psych,
     tibble,
     stringr,
+    stringi,
     tidyr,
     ggplot2,
     ggrepel,
     cowplot,
-    scales,
     rlang,
     purrr,
-    Matrix,
-    stringi,
     data.table,
     magrittr,
     parsnip,
@@ -33,10 +31,7 @@ Imports:
     reticulate,
     tune,
     workflows,
-    yardstick,
-    lsa,
-    quanteda,
-    broom
+    yardstick
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,
@@ -48,7 +43,7 @@ Depends: R (>= 2.10)
 Config/reticulate:
   list(
     packages = list(
-      list(package = "torch"),
-      list(package = "transformers")
+      list(package = "torch", pip = TRUE),
+      list(package = "transformers", version = "2.4.1", pip = TRUE)
     )
   )
