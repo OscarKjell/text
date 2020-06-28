@@ -19,6 +19,18 @@ textSimilarityNorm computes the semantic similiarty between a character variable
 }
 \examples{
 
+harmonynorm <- c("harmony peace cooperation balance")
+satisfactionnorm <- c("satisfaction achievement job fulfilled")
+library(tibble)
+norms <- tibble::tibble(harmonynorm, satisfactionnorm)
+library(dplyr)
+wordembeddings <- wordembeddings4_10
+wordembeddings_wordnorm <- textEmbed(norms)
+similiarty_scores <- textSimilarityNorm(
+ wordembeddings$harmonytext,
+ wordembeddings_wordnorm$harmonynorm
+)
+similiarty_scores
 }
 \seealso{
 see \code{\link{textSimilarity}} and \code{\link{textDiff}}

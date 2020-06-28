@@ -67,17 +67,18 @@ textSimilarity <- function(x, y) {
 #' @return A vector with semantic similarity scores (based on cosine).
 #' @examples
 #'
-# harmonynorm <- c("harmony peace cooperation balance")
-# satisfactionnorm <- c("satisfaction achievement job fulfilled")
-# library(tibble)
-# norms <- tibble::tibble(harmonynorm, satisfactionnorm)
-# library(dplyr)
-# wordembeddings <- wordembeddings4_10
-# wordembeddings_wordnorm <- textTransform(norms)
-# similiarty_scores <- textSimilarityNorm(
-#   wordembeddings$harmonytext,
-#   wordembeddings_wordnorm$harmonynorm
-# )
+#'harmonynorm <- c("harmony peace cooperation balance")
+#'satisfactionnorm <- c("satisfaction achievement job fulfilled")
+#'library(tibble)
+#'norms <- tibble::tibble(harmonynorm, satisfactionnorm)
+#'library(dplyr)
+#'wordembeddings <- wordembeddings4_10
+#'wordembeddings_wordnorm <- textEmbed(norms)
+#'similiarty_scores <- textSimilarityNorm(
+#'  wordembeddings$harmonytext,
+#'  wordembeddings_wordnorm$harmonynorm
+#')
+#'similiarty_scores
 #' @seealso see \code{\link{textSimilarity}} and \code{\link{textDiff}}
 #' @importFrom dplyr row_number slice select starts_with
 #' @export
@@ -95,6 +96,19 @@ textSimilarityNorm <- function(x, y) {
   # Apply the cosines functions
   cosines(x1, y2)
 }
+
+#
+#harmonynorm <- c("harmony peace cooperation balance")
+#satisfactionnorm <- c("satisfaction achievement job fulfilled")
+#library(tibble)
+#norms <- tibble::tibble(harmonynorm, satisfactionnorm)
+#library(dplyr)
+#wordembeddings <- wordembeddings4_10
+#wordembeddings_wordnorm <- textEmbed(norms)
+#similiarty_scores <- textSimilarityNorm(
+#  wordembeddings$harmonytext,
+#  wordembeddings_wordnorm$harmonynorm
+#)
 
 
 

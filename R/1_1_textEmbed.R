@@ -87,6 +87,13 @@ textEmbeddingAggregation <- function(x, aggregation = "min"){
 #' @noRd
 # x="happy"
 # single_wordembeddings_df
+
+#x1 <- centrality_plot_data_raw$harmony
+#x1 <- unique_freq_words(x1)
+#x <- x1$words[1]
+#x <- x1$words[3]
+#x <- "be-tolerant-of-others"
+
 applysemrep <- function(x, single_wordembeddings1) {
   # If semrep is found get it; if not return NA vector of dimensions
   if (sum(single_wordembeddings1$words == x[TRUE]) %in% 1) {
@@ -95,17 +102,23 @@ applysemrep <- function(x, single_wordembeddings1) {
     word1rep <- single_wordembeddings1[single_wordembeddings1$words == x, ]
     # Only get the semantic represenation as a vector without the actual word in the first column
     wordrep <- purrr::as_vector(word1rep %>% dplyr::select(dplyr::starts_with("Dim")))
-    # If the word does not have a semrep return vector with NA the same number of dimensions as columns with V
+    # If the word does not have a semrep return vector with NA the same number of dimensions as columns with Dim
   } else if (x %in% NA) {
-    # The length() refers to how many column starts with V (i.e., how many dimensions)
+    # The length() refers to how many column starts with Dim (i.e., how many dimensions)
     wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
     class(wordrep)
     wordrep <- as.numeric(wordrep)
   } else {
     wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>% dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
-    wordrep <- as.numeric(wordrep)
+    colnames(wordrep) <- paste0("Dim", sep="", 1:length(wordrep))
+    #wordrep1 <- is.numeric(wordrep)
+    #wordrep <- tibble_cols(wordrep)
+    wordrep
   }
 }
+
+
+
 
 #  devtools::document()
 #' semanticrepresentation

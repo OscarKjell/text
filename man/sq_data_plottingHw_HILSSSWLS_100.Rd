@@ -3,28 +3,22 @@
 \docType{data}
 \name{sq_data_plottingHw_HILSSSWLS_100}
 \alias{sq_data_plottingHw_HILSSSWLS_100}
-\title{Example data for plotting.}
+\title{Example data for plotting a Dot Product Projection Plot.}
 \format{
-A data frame with 43 rows and 13 variables:
+A data frame with 583 rows and 12 variables:
 \describe{
-  \item{words}{output from textPlotData}
-  \item{n.x}{output from textPlotData}
-  \item{dot.x}{output from textPlotData}
-  \item{p_values_dot.x}{output from textPlotData}
-  \item{n_g1.x}{output from textPlotData}
-  \item{n_g2.x}{output from textPlotData}
-   \item{n_all.x}{output from textPlotData}
-  \item{Within_cosine_similarity.x}{output from textPlotData}
-  \item{p_values_cosine.x}{output from textPlotData}
-  \item{n.y}{output from textPlotData}
-  \item{dot.y}{output from textPlotData}
-  \item{p_values_dot.y}{output from textPlotData}
-  \item{n_g1.y}{output from textPlotData}
-  \item{n_g2.y}{output from textPlotData}
-   \item{n_all.y}{output from textPlotData}
-  \item{Within_cosine_similarity.y}{output from textPlotData}
-  \item{p_values_cosine.y}{output from textPlotData}
-  \item{N_participant_responses}{output from textPlotData}
+  \item{words}{output from textProjectionData}
+  \item{dot.x}{output from textProjectionData}
+  \item{p_values_dot.x}{output from textProjectionData}
+  \item{n_g1.x}{output from textProjectionData}
+  \item{n_g2.x}{output from textProjectionData}
+  \item{dot.y}{output from textProjectionData}
+  \item{p_values_dot.y}{output from textProjectionData}
+  \item{n_g1.y}{output from textProjectionData}
+  \item{n_g2.y}{output from textProjectionData}
+  \item{n}{output from textProjectionData}
+  \item{n.percent}{output from textProjectionData}
+  \item{N_participant_responses}{output from textProjectionData}
   ...
 }
 }
