@@ -105,11 +105,11 @@ A 1-dimensioal word plot.
 textCentralityPlot plots words
 }
 \examples{
-# The test-data included in the package is called: cetntrality_data_harmony
-names(cetntrality_data_harmony)
+# The test-data included in the package is called: centrality_data_harmony
+names(centrality_data_harmony)
 # Plot
 centrality_plot <- textCentralityPlot(
- word_data=cetntrality_data_harmony,
+ word_data=centrality_data_harmony,
  min_freq_words = 10,
  plot_n_word_extreme = 10,
  plot_n_word_frequency = 10,

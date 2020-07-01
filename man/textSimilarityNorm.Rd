@@ -7,9 +7,9 @@
 textSimilarityNorm(x, y)
 }
 \arguments{
-\item{x}{Wordembeddings from textImport (with several rows of text).}
+\item{x}{Wordembeddings from textEmbed (with several rows of text).}
 
-\item{y}{Wordembeddings from textImport (with only one text).}
+\item{y}{Wordembeddings from textEmbed (with only one text).}
 }
 \value{
 A vector with semantic similarity scores (based on cosine).
@@ -18,19 +18,14 @@ A vector with semantic similarity scores (based on cosine).
 textSimilarityNorm computes the semantic similiarty between a character variable and a word norm (i.e., a text in one cell).
 }
 \examples{
-
-harmonynorm <- c("harmony peace cooperation balance")
-satisfactionnorm <- c("satisfaction achievement job fulfilled")
-library(tibble)
-norms <- tibble::tibble(harmonynorm, satisfactionnorm)
 library(dplyr)
+library(tibble)
+harmonynorm <- c("harmony peace ")
+satisfactionnorm <- c("satisfaction achievement")
+
+norms <- tibble::tibble(harmonynorm, satisfactionnorm)
 wordembeddings <- wordembeddings4_10
 wordembeddings_wordnorm <- textEmbed(norms)
-similiarty_scores <- textSimilarityNorm(
- wordembeddings$harmonytext,
- wordembeddings_wordnorm$harmonynorm
-)
-similiarty_scores
 }
 \seealso{
 see \code{\link{textSimilarity}} and \code{\link{textDiff}}

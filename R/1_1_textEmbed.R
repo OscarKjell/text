@@ -28,7 +28,7 @@
 # py_config()
 
 #  devtools::document()
-#' Select all character variables and make then UTF-8 coded, since BERT wants it that way
+#' Select all character variables and make them UTF-8 coded, since BERT wants it that way
 #'
 #' @param tibble including both text and numeric variabes
 #' @return all character variables in UTF-8 format.
@@ -87,13 +87,6 @@ textEmbeddingAggregation <- function(x, aggregation = "min"){
 #' @noRd
 # x="happy"
 # single_wordembeddings_df
-
-#x1 <- centrality_plot_data_raw$harmony
-#x1 <- unique_freq_words(x1)
-#x <- x1$words[1]
-#x <- x1$words[3]
-#x <- "be-tolerant-of-others"
-
 applysemrep <- function(x, single_wordembeddings1) {
   # If semrep is found get it; if not return NA vector of dimensions
   if (sum(single_wordembeddings1$words == x[TRUE]) %in% 1) {
@@ -116,8 +109,6 @@ applysemrep <- function(x, single_wordembeddings1) {
     wordrep
   }
 }
-
-
 
 
 #  devtools::document()
@@ -375,7 +366,8 @@ textHuggingFace <- function(x,
 #aggregation = "mean"
 #layers = "all"
 
-
+#test <- textHuggingFace(tibble("I'm feeling relatedness with other"))
+#test$context[1][1][1]
 
 # devtools::document()
 #' textLayerAggregation selects and aggregate layers of hidden states to get word embeddings.

@@ -69,10 +69,10 @@ textTrain <- function(x,
                       preProcessPCAthresh = 0.95,
                       strata_y = "y",
                       methodCor = "pearson",
-  model_description = "author(s): XXXX; data: N=XXX, population =  XXXX; publication: title = if_any; description = XXX"){
+  model_description = "Consider writing a description here"){
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   df2 <- cbind(x1, y)
-  df3 <- df2 #[complete.cases(df2),]
+  df3 <- df2
 
   # Recipe: Preprocessing with pca, see options: ls("package:recipes", pattern = "^step_")
   df3_recipe <-
@@ -84,7 +84,7 @@ textTrain <- function(x,
     recipes::step_scale(all_predictors()) %>%
     recipes::step_pca(all_predictors(), threshold = preProcessPCAthresh) #%>% num_comp = tune()
 
-  # Cross-validation help(vfold_cv)
+  # Cross-validation
   set.seed(42)
   df3_cv_splits <- rsample::vfold_cv(df3, v = nrFolds_k, strata = strata_y) # , ... ,  breaks = 4
 
@@ -110,7 +110,7 @@ textTrain <- function(x,
     control = ctrl
     )
 
-  # Select the best penelty and mixture based on rmse help(select_best)
+  # Select the best penelty and mixture based on rmse
   best_glmn <- tune::select_best(df3_glmn_tune, metric = "rmse", maximize = TRUE)
 
   # Get predictions and observed (https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#32)

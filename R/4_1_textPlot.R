@@ -537,7 +537,7 @@ textProjectionData <- function(words,
 #')
 #'plot_projection
 #'
-#'names(sq_data_plottingHw_HILSSSWLS_100)
+#' names(sq_data_plottingHw_HILSSSWLS_100)
 #'
 #' @seealso see \code{\link{textProjectionData}}
 #' @importFrom tibble as_tibble tibble
@@ -1089,11 +1089,11 @@ textCentralityData <- function(words,
 #' @param legend_number_size size of the values in the legend (default = 2)
 #' @return A 1-dimensioal word plot.
 #' @examples
-#' # The test-data included in the package is called: cetntrality_data_harmony
-#'names(cetntrality_data_harmony)
+#' # The test-data included in the package is called: centrality_data_harmony
+#'names(centrality_data_harmony)
 #' # Plot
 #'centrality_plot <- textCentralityPlot(
-#'  word_data=cetntrality_data_harmony,
+#'  word_data=centrality_data_harmony,
 #'  min_freq_words = 10,
 #'  plot_n_word_extreme = 10,
 #'  plot_n_word_frequency = 10,
@@ -1278,6 +1278,30 @@ textCentralityPlot <- function(word_data,
 ###### End textCentralityPlot
 
 
+# The test-data included in the package is called: cetntrality_data_harmony
+#names(cetntrality_data_harmony)
+## Plot
+#centrality_plot <- textCentralityPlot(
+#  word_data=cetntrality_data_harmony,
+#  min_freq_words = 10,
+#  plot_n_word_extreme = 10,
+#  plot_n_word_frequency = 10,
+#  plot_n_words_middle = 10,
+#  titles_color = "#61605e",
+#  x_axes = "central_cosine",
+#
+#  title_top = "Semantic Centrality Plot",
+#  x_axes_label = "Semantic Centrality",
+#
+#  word_font = NULL,
+#  centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9"),
+#  word_size_range = c(3, 8),
+#  point_size = 0.5,
+#  arrow_transparency = 0.1,
+#  points_without_words_size = 0.5,
+#  points_without_words_alpha = 0.5,
+#)
+#centrality_plot
 
 
 

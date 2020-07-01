@@ -7,9 +7,9 @@
 textSimilarity(x, y)
 }
 \arguments{
-\item{x}{Wordembeddings from textImport.}
+\item{x}{Wordembeddings from textEmbed.}
 
-\item{y}{Wordembeddings from textImport.}
+\item{y}{Wordembeddings from textEmbed.}
 }
 \value{
 A vector with semantic similarity scores (based on cosine).

@@ -133,4 +133,4 @@
 #'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
-"cetntrality_data_harmony"
+"centrality_data_harmony"

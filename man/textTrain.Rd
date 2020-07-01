@@ -11,8 +11,7 @@ textTrain(
   preProcessPCAthresh = 0.95,
   strata_y = "y",
   methodCor = "pearson",
- 
-    model_description = "author(s): XXXX; data: N=XXX, population =  XXXX; publication: title = if_any; description = XXX"
+  model_description = "Consider writing a description here"
 )
 }
 \arguments{

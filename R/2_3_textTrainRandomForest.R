@@ -54,7 +54,7 @@ textTrainRandomForest <- function(x, y, trees=500, nrFolds_k = 10, strata_y = "y
     recipes::update_role(id1, new_role = "id variable") %>%
     recipes::update_role(-id1, new_role = "predictor") %>%
     recipes::update_role(y, new_role = "outcome") %>%
-    recipes::step_naomit(V1, skip = FALSE) %>% # Does this not work here?
+    recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
     recipes::step_center(all_predictors()) %>%
     recipes::step_scale(all_predictors()) %>%
     recipes::step_BoxCox(all_predictors())
