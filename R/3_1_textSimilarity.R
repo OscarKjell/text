@@ -30,11 +30,11 @@ normalizeV <- function(x) {
   x / sqrt(sum(x^2, na.rm = TRUE))
 }
 
-#' textSimilarity computes the semantic similiarty between texts.
+#' Compute the cosine semantic similarity between two text variables.
 #'
 #' @param x Wordembeddings from textEmbed.
 #' @param y Wordembeddings from textEmbed.
-#' @return A vector with semantic similarity scores (based on cosine).
+#' @return A vector comprising cosine semantic similarity scores.
 #' @examples
 #' library(dplyr)
 #' wordembeddings <- wordembeddings4_10
@@ -58,13 +58,13 @@ textSimilarity <- function(x, y) {
 ########
 ########################################################################
 # devtools::document()
-# Function get word embeddings and then compute COSINE
 # x and y are the semantic representations from column x and y, which have been imported with textEmbed
-#' textSimilarityNorm computes the semantic similiarty between a character variable and a word norm (i.e., a text in one cell).
+#' Compute the semantic similarity between a text variable and a word norm (i.e., a text represented by one word embedding
+#' that represent a construct).
 #'
 #' @param x Wordembeddings from textEmbed (with several rows of text).
-#' @param y Wordembeddings from textEmbed (with only one text).
-#' @return A vector with semantic similarity scores (based on cosine).
+#' @param y Wordembedding from textEmbed (from only one text).
+#' @return A vector comprising cosine semantic similarity scores.
 #' @examples
 #'\dontrun{
 #'library(dplyr)

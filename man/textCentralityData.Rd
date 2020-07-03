@@ -2,7 +2,8 @@
 % Please edit documentation in R/4_1_textPlot.R
 \name{textCentralityData}
 \alias{textCentralityData}
-\title{textCentralityData computes cosine semantic similairty score between single words and the aggreagated word embedding of all words.}
+\title{Compute cosine semantic similarity score between single words' word embeddings
+and the aggreagated word embedding of all words.}
 \usage{
 textCentralityData(
   words,
@@ -13,27 +14,28 @@ textCentralityData(
 )
 }
 \arguments{
-\item{words}{Words or text variable to be plotted.}
+\item{words}{Word or text variable to be plotted.}
 
-\item{wordembeddings}{Wordembeddings from textEmbedd for the words to be plotted (i.e., the aggregated word embeddings for the "words" variable).}
+\item{wordembeddings}{Word embeddings from textEmbed for the words to be plotted (i.e., the aggregated word embeddings for the "words" variable).}
 
-\item{single_wordembeddings}{Wordembeddings from textEmbedd for individual words.}
+\item{single_wordembeddings}{Word embeddings from textEmbed for individual words (i.e., the decontextualised word embeddings).}
 
-\item{aggregation}{Method to aggreate the word embeddings (default = "mean"; see also, "min", "max", or "normalise1").}
+\item{aggregation}{Method to aggregate the word embeddings (default = "mean"; see also "min" or "max").}
 
-\item{min_freq_words}{Option to only select words that have occured a specified number of times (default = 0); when creating the dot product projection
-line (although single words recieve dot product projection and p-value) and within cosine similairty.}
+\item{min_freq_words}{Option to  select words that have at least occured a specified number of times (default = 0); when creating the semantic similarity
+scores within cosine similairty.}
 }
 \value{
-A dataframe with variables (e.g., including semantic simikarity, frequencies) for the individual words
-that is used for the plotting in the textCentralityPlot function.
+A dataframe with variables (e.g., including semantic similarity, frequencies) for the individual words
+that are used for the plotting in the textCentralityPlot function.
 }
 \description{
-textCentralityData computes cosine semantic similairty score between single words and the aggreagated word embedding of all words.
+Compute cosine semantic similarity score between single words' word embeddings
+and the aggreagated word embedding of all words.
 }
 \examples{
 wordembeddings <- wordembeddings4_10
-data <- sq_data_tutorial8_10
+data <- Language_based_assessment_data_8_10
 df_for_plotting <- textCentralityData(data$harmonywords,
                                       wordembeddings$harmonywords,
                                       wordembeddings$singlewords_we

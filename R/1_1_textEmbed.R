@@ -258,7 +258,7 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens){
 #library(text)
 # Split up sentences (NOW ONLY 512 tokens!); # TODO: Add function in case there are more than 512 tokens it needs to split up.
 #x <-  c("harmony", "I'm harmonious.")
-#x <- sq_data_tutorial8_10[1:3, c(1:2, 5)]
+#x <- Language_based_assessment_data_8_10[1:3, c(1:2, 5)]
 #
 #contexts = TRUE
 #decontexts = TRUE
@@ -269,25 +269,26 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens){
 #return_tokens = TRUE
 
 # devtools::document()
-#' textHuggingFace extracts layers of hidden states (word embeddings) for all character variables in the dataframe.
+#' Extract layers of hidden states (word embeddings) for all character variables in the dataframe
 #'
-#' @param x Tibble/dataframe with at least one character variables.
-#' @param contexts provides word embeddings based on contexts (default = TRUE).
-#' @param decontexts provides word embeddings of single words as input (default = TRUE), which are used for plotting.
-#' @param pretrained_weights Character specifying pre-trained language model through RBERT. Current options
-#' "bert_base_uncased", "bert_base_cased", "bert_large_uncased",
-#' "bert_large_cased", "bert_large_uncased_wwm", "bert_large_cased_wwm",
-#' "bert_base_multilingual_cased", "bert_base_chinese", "scibert_scivocab_uncased",
-#' "scibert_scivocab_cased", "scibert_basevocab_uncased", and "scibert_basevocab_cased".
-#' @param tokenizer_class tokenizer that match pretrained_weights
-#' @param model_class model class that matches pretrained_weights and tokenizer_class
-#' @param layers most efficient to only extract the ones you need; but can also extract 'all',
-#' and then remove in textLayerAggregation function, when aggregating embeddings.
-#' @param return_tokens provide the tokens used in transformer model.
-#' @return A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer
+#' @param x Tibble/dataframe with at least one character variable.
+#' @param contexts Provide word embeddings based on word contexts (standard method; default = TRUE).
+#' @param decontexts Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).
+#' @param pretrained_weights Character specifying pre-trained language model (default 'bert-base-uncased'). For an up-to-date
+#' list of avaiable models see https://github.com/huggingface/transformers.
+#' @param tokenizer_class Tokenizer that match pretrained_weights (default BertTokenizer). For an up-to-date
+#' list of avaiable models see https://github.com/huggingface/transformers.
+#' @param model_class Model class that matches pretrained_weights and tokenizer_class (default BertModel). For an up-to-date
+#' list of avaiable models see https://github.com/huggingface/transformers.
+#' @param layers Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
+#' that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
+#' These layers can then be aggregated in the textLayerAggregation function.
+#' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
+#' @return A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer, and should
+#' normally not be used.
 #' @examples
 #'\dontrun{
-#' x <- sq_data_tutorial8_10[1:2, 1:2]
+#' x <- Language_based_assessment_data_8_10[1:2, 1:2]
 #' wordembeddings <- textHuggingFace(x)
 #'}
 #' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textEmbed}}
@@ -302,7 +303,7 @@ textHuggingFace <- function(x,
                             pretrained_weights = 'bert-base-uncased',
                             tokenizer_class = BertTokenizer,
                             model_class = BertModel,
-                            layers = 'all',  # all or a list of layers to keep
+                            layers = 'all',
                             return_tokens = TRUE) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
@@ -328,7 +329,7 @@ textHuggingFace <- function(x,
                                              layers = layers,
                                              return_tokens = return_tokens)
 
-  #x <- sq_data_tutorial8_10[1:5, c(1:2, 5)]
+  #x <- Language_based_assessment_data_8_10[1:5, c(1:2, 5)]
   #hg_embeddings <- hgTransformerGetEmbedding(text_strings = x[[1]],
   #                                           pretrained_weights = 'bert-base-uncased',
   #                                           tokenizer_class = BertTokenizer,
@@ -379,7 +380,7 @@ textHuggingFace <- function(x,
   word_embeddings_with_layers
 }
 
-#x <- sq_data_tutorial8_10[1:6, c(1:2, 5)]
+#x <- Language_based_assessment_data_8_10[1:6, c(1:2, 5)]
 #test_context_decontext_true <- textHuggingFace(x, return_tokens = TRUE, layers = 1:2)
 #test_context_decontext_true$context
 #test_context_decontext_false <- textHuggingFace(x, return_tokens = FALSE, layers = 1:2)
@@ -391,19 +392,19 @@ textHuggingFace <- function(x,
 #aggregation = "mean"
 #layers = "all"
 
-#test <- textHuggingFace(tibble("I'm feeling relatedness with other"))
+#word_embeddings_layers <- textHuggingFace(tibble("I'm feeling relatedness with other", "hello how are you"))
 #test$context[1][1][1]
-
+#word_embeddings_layers
 # devtools::document()
-#' textLayerAggregation selects and aggregate layers of hidden states to get word embeddings.
+#' Select and aggregate layers of hidden states to form a word embeddings.
 #'
 #' @param word_embeddings_layers Layers outputted from textHuggingFace.
-#' @param layers state the the numbers of the layers that you want to select for aggregation (e.g., c(1, 10:11) to get the first, tenth and eleventh).
-#' Note that layer 0 is the input embedding to the transformer.
-#' @param aggregation aggregation method of the dimension of each layer selected with layers parameter above (e.g., "mean", "min" or "max).
-#' @param tokens_select option to select embeddings linked to specifc tokens such as [CLS] and [SEP].
-#' @param tokens_deselect option to deselect embeddings linked to specifc tokens such as [CLS] and [SEP].
-#' @return A tibble with word embeddings. Note that layer 0 is the input embedding to the transformer.
+#' @param layers The numbers of the layers to be aggregated (e.g., c(11:12) to aggregate the eleventh and twelth; 'all' is not possible here).
+#' Note that layer 0 is the input embedding to the transformer, and should normally not be used.
+#' @param aggregation Method to aggregate the dimensions of each selected layer (default "mean"; see also "min" or "max).
+#' @param tokens_select Option to only select embeddings linked to specifc token such as [CLS] and [SEP] (default NULL).
+#' @param tokens_deselect Option to deselect embeddings linked to specifc token such as [CLS] and [SEP] (default NULL).
+#' @return A tibble with word embeddings. Note that layer 0 is the input embedding to the transformer, which is normally not used.
 #' @examples
 #'\dontrun{
 #' wordembeddings <- textLayerAggregation(word_embeddings_layers)
@@ -412,19 +413,28 @@ textHuggingFace <- function(x,
 #' @importFrom dplyr %>% bind_rows
 #' @export
 textLayerAggregation <- function(word_embeddings_layers,
-                                 layers = "all",
+                                 layers = 1:12,
                                  aggregation = "mean",
                                  tokens_select=NULL,
                                  tokens_deselect=NULL){
 
   # If selecting "all" layers, find out number of layers to help indicate layer index later in code
   if(is.character(layers)) {
-    layers <- 0:(length(x[[1]][[1]])-1)
+    # Get the first embeddings
+    x_layer <- word_embeddings_layers[[1]][[1]][[1]]
+    # Get which layers
+    x_layer_unique <- unique(x_layer$layer_number)
+    # Remove layer 0 becuase it is the input layer for the word embeddings.
+    if(x_layer_unique[1] == 0) {
+      layers <- x_layer_unique[2:length(x_layer_unique)]
+    }
   }
+
   # Loop over the list of variables
   selected_layers_aggregated_tibble <- list()
   for (variable_list_i in 1:length(word_embeddings_layers)) {   # variable_list_i =1
   x <- word_embeddings_layers[[variable_list_i]]
+
   # Go over the lists and select the layers (in case "all" or too many have been retrieved from textHuggingFace)
   selected_layers <- lapply(x, function(x) x[x$layer_number %in% layers,])
 
@@ -455,34 +465,33 @@ textLayerAggregation <- function(word_embeddings_layers,
 
 
 # devtools::document()
-#' textEmbed extracts layers and aggregate them to word embeddings, for all character variables in the dataframe.
+#' Extract layers and aggregate them to word embeddings, for all character variables in the dataframe.
 #'
-#' @param x Tibble/dataframe with at least one character variables.
-#' @param contexts provides word embeddings based on contexts (default = TRUE).
-#' @param decontexts provides word embeddings of single words as input (default = TRUE), which are used for plotting.
-#' @param pretrained_weights Character specifying pre-trained language model through RBERT. Current options
-#' "bert_base_uncased", "bert_base_cased", "bert_large_uncased",
-#' "bert_large_cased", "bert_large_uncased_wwm", "bert_large_cased_wwm",
-#' "bert_base_multilingual_cased", "bert_base_chinese", "scibert_scivocab_uncased",
-#' "scibert_scivocab_cased", "scibert_basevocab_uncased", and "scibert_basevocab_cased".
-#' @param tokenizer_class tokenizer that match pretrained_weights
-#' @param model_class model class that matches pretrained_weights and tokenizer_class
-#' @param layers most efficient to only extract the ones you need; but can also extract 'all',
-#' and then remove in textLayerAggregation function, when aggregating embeddings.
-# @param return_tokens provide the tokens used in transformer model.
-#' @param context_aggregation method to aggregate the contextualised layers (e.g., "mean", "min" or "max).
-#' @param context_tokens_select option to select embeddings linked to specifc tokens such as [CLS] and [SEP] for the context embeddings.
-#' @param context_tokens_deselect option to select embeddings linked to specifc tokens such as [CLS] and [SEP] for the decontext embeddings.
-#' @param decontext_layers layers to use for the decontext embeddings.
-#' @param decontext_return_tokens TRUE or FALSE for returning tokens.
+#' @param x Tibble/dataframe with at least one character variable.
+#' @param contexts Provide word embeddings based on word contexts (standard method; default = TRUE).
+#' @param decontexts Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).
+#' @param pretrained_weights Character specifying pre-trained language model (default 'bert-base-uncased'). For an up-to-date
+#' list of avaiable models see https://github.com/huggingface/transformers.
+#' @param tokenizer_class Tokenizer that match pretrained_weights (default BertTokenizer). For an up-to-date
+#' list of avaiable models see https://github.com/huggingface/transformers.
+#' @param model_class Model class that matches pretrained_weights and tokenizer_class (default BertModel). For an up-to-date
+#' list of avaiable models see https://github.com/huggingface/transformers.
+#' @param layers Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
+#' that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
+#' These layers can then be aggregated in the textLayerAggregation function.
+#' @param context_aggregation Method to aggregate the contextualised layers (e.g., "mean", "min" or "max).
+#' @param context_tokens_select Option to select word embeddings linked to specific tokens such as [CLS] and [SEP] for the context embeddings.
+#' @param context_tokens_deselect Option to deselect embeddings linked to specific tokens such as [CLS] and [SEP] for the context embeddings.
+#' @param decontext_layers Layers to aggregate for the decontext embeddings.
+#' @param decontext_return_tokens If TRUE, provide the tokens used in the specified transformer model, for decontextualised embeddings.
 #' @param decontext_aggregation Method to aggregate the decontextualised layers (i.e., embeddings from single words; e.g., "mean", "min" or "max).
-#' @param decontext_tokens_select option to select embeddings linked to specifc tokens such as [CLS] and [SEP] for the decontext embeddings.
+#' @param decontext_tokens_select Option to select embeddings linked to specific tokens such as [CLS] and [SEP] for the decontext embeddings.
 #' @param decontext_tokens_deselect option to deselect embeddings linked to specifc tokens such as [CLS] and [SEP] for the decontext embeddings.
 #' @return A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer
 #' @examples
 #'\dontrun{
-#' x <- sq_data_tutorial8_10[1:2, 1:2]
-#' wordembeddings <- textEmbed(x)
+#' x <- Language_based_assessment_data_8_10[1:2, 1:2]
+#' wordembeddings <- textEmbed(x, layers = 'all')
 #'}
 #' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textEmbed}}
 #' @export
@@ -492,12 +501,11 @@ textEmbed <- function(x,
                       pretrained_weights = 'bert-base-uncased',
                       tokenizer_class = BertTokenizer,
                       model_class = BertModel,
-                      layers = 11,  # all or a list of layers to keep
-                      #return_tokens = TRUE,
+                      layers = 11:12,
                       context_aggregation = "mean",
                       context_tokens_select = NULL,
                       context_tokens_deselect = NULL,
-                      decontext_layers = 11:12,  # all or a list of layers to keep
+                      decontext_layers = 11:12,
                       decontext_return_tokens = TRUE,
                       decontext_aggregation = "mean",
                       decontext_tokens_select = NULL,
@@ -537,7 +545,7 @@ textEmbed <- function(x,
   all_embeddings
 }
 
-#x <- sq_data_tutorial8_10[1:3, c(1:2, 5)]
+#x <- Language_based_assessment_data_8_10[1:3, c(1:2, 5)]
 #everying <- textEmbed(x)
 #everying
 

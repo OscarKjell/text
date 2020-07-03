@@ -2,8 +2,8 @@
 % Please edit documentation in R/3_2_textDiff.R
 \name{textDiff}
 \alias{textDiff}
-\title{textDiff: Test whether there is a significant difference between two sets of texts
-(i.e., between their word embeddings). This is achieved using permutation, in the following steps:}
+\title{Test whether there is a significant difference in meaning between two sets of texts
+(i.e., between their word embeddings).}
 \usage{
 textDiff(
   x,
@@ -16,26 +16,26 @@ textDiff(
 )
 }
 \arguments{
-\item{x}{set of word embeddings from textEmbedd.}
+\item{x}{Set of word embeddings from textEmbed.}
 
-\item{y}{set of word embeddings from textEmbedd.}
+\item{y}{Set of word embeddings from textEmbed.}
 
-\item{Npermutations}{number of permatation (default 1000).}
+\item{Npermutations}{Number of permatations (default 1000).}
 
-\item{method}{compute a "paired" or "unpaired" test.}
+\item{method}{Compute a "paired" or an "unpaired" test.}
 
-\item{alternative}{wheather to use a two or one-sided test.}
+\item{alternative}{Use a two or one-sided test (select on of: "two_sided", "less", "greater").}
 
 \item{output.permutations}{If TRUE returns permuted values in output.}
 
-\item{N_cluster_nodes}{Number of cluster nodes to use (more makes computation faster; see parallel package.}
+\item{N_cluster_nodes}{Number of cluster nodes to use (more makes computation faster; see parallel package).}
 }
 \value{
-A list with a p-value, estimate and perumted values if output.permutations=TRUE.
+A list with a p-value, estimate and permuted values if output.permutations=TRUE.
 }
 \description{
-textDiff: Test whether there is a significant difference between two sets of texts
-(i.e., between their word embeddings). This is achieved using permutation, in the following steps:
+Test whether there is a significant difference in meaning between two sets of texts
+(i.e., between their word embeddings).
 }
 \examples{
 x <- wordembeddings4_10$harmonywords

@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_2_textTrainMulti.R
 \name{textTrainMultiTexts}
 \alias{textTrainMultiTexts}
-\title{textTrainMultiTexts trains word embeddings from several text variables to a numeric variable.}
+\title{Train several word embeddings from several text variables to a numeric variable.}
 \usage{
 textTrainMultiTexts(
   xlist,
@@ -15,30 +15,30 @@ textTrainMultiTexts(
 )
 }
 \arguments{
-\item{xlist}{list of word embeddings from textImport.}
+\item{xlist}{list of word embeddings from textEmbed.}
 
-\item{y}{The numeric variable to predict.}
+\item{y}{Numeric variable to predict.}
 
-\item{preProcessThresh}{Preprocessing threshold.}
+\item{preProcessThresh}{Preprocessing threshold for amount of variance to retain (default 0.95).}
 
 \item{nrFolds_k}{Number of folds to use.}
 
-\item{strata_y}{variables to stratify according; default y, can set to NULL}
+\item{strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{methodCor}{Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").}
+\item{methodCor}{Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").}
 
-\item{describe_model}{Input text to describe your model.}
+\item{describe_model}{Text to describe your model.}
 }
 \value{
 A correlation between predicted and observed values; as well as predicted values.
 }
 \description{
-Concenate word embeddings from several text xariables to predict an outcome. The word embeddings for each text variables
-go through seperate PCA, where the PCA components acre concenated and used in a ridge regression.
+Concenate word embeddings from several text variables to predict an outcome. The word embeddings for each text variable
+go through seperate PCAs, where the PCA components are concenated and used in a ridge regression.
 }
 \examples{
 wordembeddings <- wordembeddings4_10[1:4]
-ratings_data <- sq_data_tutorial4_10$hilstotal
+ratings_data <- Language_based_assessment_data_8_10$hilstotal
 wordembeddings <- textTrainMultiTexts(wordembeddings, ratings_data, nrFolds_k = 2)
 }
 \seealso{

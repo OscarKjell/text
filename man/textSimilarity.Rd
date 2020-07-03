@@ -2,7 +2,7 @@
 % Please edit documentation in R/3_1_textSimilarity.R
 \name{textSimilarity}
 \alias{textSimilarity}
-\title{textSimilarity computes the semantic similiarty between texts.}
+\title{Compute the cosine semantic similarity between two text variables.}
 \usage{
 textSimilarity(x, y)
 }
@@ -12,10 +12,10 @@ textSimilarity(x, y)
 \item{y}{Wordembeddings from textEmbed.}
 }
 \value{
-A vector with semantic similarity scores (based on cosine).
+A vector comprising cosine semantic similarity scores.
 }
 \description{
-textSimilarity computes the semantic similiarty between texts.
+Compute the cosine semantic similarity between two text variables.
 }
 \examples{
 library(dplyr)

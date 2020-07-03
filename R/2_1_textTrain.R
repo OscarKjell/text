@@ -15,47 +15,48 @@
 #registerDoParallel(cl)
 #stopCluster(cl)
 
- library(text)
- library(tidymodels)
- library(rlang)
- library(magrittr)
- library(recipes)
- library(workflows)
- library(parsnip)
- library(tune)
- library(data.table)
- library(stats)
- library(tidyselect)
- library(tidyverse)
-
-
- x = wordembeddings4_10$harmonytext
- y = sq_data_tutorial4_10$hilstotal
- nrFolds_k = 10
- preProcessPCAthresh = 0.95
- strata_y = "y"
- methodCor = "pearson"
- model_description = "Consider writing a description here"
+# library(text)
+# library(tidymodels)
+# library(rlang)
+# library(magrittr)
+# library(recipes)
+# library(workflows)
+# library(parsnip)
+# library(tune)
+# library(data.table)
+# library(stats)
+# library(tidyselect)
+# library(tidyverse)
+#
+#
+# x = wordembeddings4_10$harmonytext
+# y = Language_based_assessment_data_8_10$hilstotal
+# nrFolds_k = 10
+# preProcessPCAthresh = 0.95
+# strata_y = "y"
+# methodCor = "pearson"
+# model_description = "Consider writing a description here"
 
 # textTrain using Tidymodels
 
 # devtools::document()
-#' textTrain trains word embeddings to a numeric variable.
+#' Train word embeddings to a numeric variable.
 #'
-#' @param x Wordembeddings from textImport.
-#' @param y The numeric variable to predict.
+#' @param x Wordembeddings from textEmbed (or textLayerAggregation).
+#' @param y Numeric variable to predict.
 #' @param nrFolds_k Number of folds to use.
-#' @param preProcessPCAthresh Preprocessing threshold.
-#' @param strata_y variables to stratify according; default y, can set to NULL
-#' @param methodCor Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").
-#' @param model_description Input text to describe your model (and share it with other).
-#' @return A correlation between predicted and observed values; as well as predicted values.
+#' @param preProcessPCAthresh Preprocessing threshold for amount of variance to retain (default 0.95).
+#' @param strata_y Variable to stratify according (default y; can set to NULL).
+#' @param methodCor Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").
+#' @param model_description Text to describe your model (optional; good when sharing the model with others).
+#' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
 #' @examples
 #' wordembeddings <- wordembeddings4_10
-#' ratings_data <- sq_data_tutorial4_10
+#' ratings_data <- Language_based_assessment_data_8_10
 #' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
 #' nrFolds_k = 2, strata_y = NULL)
-#' @seealso see \code{\link{textTrainLists}} \code{\link{textDiff}}
+#' @seealso see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
+#' \code{\link{textTrainMultiTexts}} \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
 #' @importFrom stats cor.test na.omit
 #' @importFrom dplyr select starts_with filter
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
@@ -133,7 +134,7 @@ textTrain <- function(x,
 ########### End of textTrain function
 ######################
 # wordembeddings <- wordembeddings4_10
-# ratings_data <- sq_data_tutorial4_10
+# ratings_data <- Language_based_assessment_data_8_10
 # wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k = 2)
 
 
@@ -158,22 +159,24 @@ textTrain <- function(x,
 
 
 # devtools::document()
-#' textTrainLists trains word embeddings from several text variable to several numeric variable.
+#' Trains word embeddings from several text variables to several numeric variables.
 #'
-#' @param x List of several Wordembeddings with same length from textImport (NB remove single_word_we).
-#' @param y A Tibble with numeric variables to predict.
-#' @param trainMethod Method to train wordembeddings, default "regression", or "randomForest"
+#' @param x List of lists comprising several word embeddings from textEmbed
+#' (NB need to remove any word embeddings from the decontextualised single words).
+#' @param y Tibble with numeric variables to predict.
+#' @param trainMethod Method to train wordembeddings (default "regression"; see also "randomForest").
 #' @param nrFolds_k Number of folds to use.
-#' @param nrFolds_k_out Number of outer folds (only for textTrainCVpredictions textTrainCVpredictionsRF).
-#' @param preProcessPCAthresh Preprocessing threshold.
-#' @param strata_y variables to stratify according; default y, can set to NULL
-#' @param methodCor Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").
+#' @param nrFolds_k_out Number of outer folds (only for textTrainCVpredictions textTrainCVpredictionsRF,
+#' which is not yet fully implemented).
+#' @param preProcessPCAthresh Preprocessing threshold for amount of variance to retain (default 0.95).
+#' @param strata_y Variable to stratify according (default y; can set to NULL).
+#' @param methodCor Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").
 #' @param trees Number of trees used in random forest.
-#' @param ... Arguments from textTrain.
-#' @return A correlation between predicted and observed values; as well as predicted values.
+#' @param ... Arguments for the textTrain function.
+#' @return Correlations between predicted and observed values.
 #' @examples
 #' wordembeddings <- wordembeddings4_10[1:2]
-#' ratings_data <- sq_data_tutorial4_10[1:2]
+#' ratings_data <- Language_based_assessment_data_8_10[5:6]
 #' wordembeddings <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
 #' @seealso see \code{\link{textTrain}}
 #' @importFrom stats cor.test
@@ -276,7 +279,7 @@ textTrainLists <- function(x, y, trainMethod = "regression", nrFolds_k = 10, pre
 #
 #
 # wordembeddings <- wordembeddings4_10[1:2]
-# ratings_data <- sq_data_tutorial4_10[3]
+# ratings_data <- Language_based_assessment_data_8_10[7]
 # wordembeddings <- textTrainLists(wordembeddings, ratings_data, trainMethod = "regression", nrFolds_k = 2) # randomForest , nrFolds_k = 2)
 #
 # # Categorical

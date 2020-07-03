@@ -3,16 +3,14 @@
 \docType{data}
 \name{wordembeddings4_10}
 \alias{wordembeddings4_10}
-\title{Example wordembeddings.}
+\title{Wordembeddings for 4 text variables for 10 participants}
 \format{
-A data frame with 10 rows and 772 variables including the
-BERT-base wordembeddings from layer 11:12 (mean aggregated):
+A list with word embeddings for harmony words, satisfaction words, harmony text, satisfaction
+text and decontextualised word embeddings. BERT-base embeddings based on mean aggregation of layer 11 and 12.
 \describe{
-  \item{sequence_index}{output from textImport}
-  \item{segment_index}{output from textImport}
-  \item{token_index}{output from textImport}
-  \item{layer_index}{output from textImport}
-  \item{V1:V768}{dimension output from textImport}
+  \item{words}{words}
+  \item{n}{word frequency}
+  \item{Dim1:Dim768}{Word embeddings dimensions}
   ...
 }
 }

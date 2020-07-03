@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_1_textTrain.R
 \name{textTrainLists}
 \alias{textTrainLists}
-\title{textTrainLists trains word embeddings from several text variable to several numeric variable.}
+\title{Trains word embeddings from several text variables to several numeric variables.}
 \usage{
 textTrainLists(
   x,
@@ -18,35 +18,37 @@ textTrainLists(
 )
 }
 \arguments{
-\item{x}{List of several Wordembeddings with same length from textImport (NB remove single_word_we).}
+\item{x}{List of lists comprising several word embeddings from textEmbed
+(NB need to remove any word embeddings from the decontextualised single words).}
 
-\item{y}{A Tibble with numeric variables to predict.}
+\item{y}{Tibble with numeric variables to predict.}
 
-\item{trainMethod}{Method to train wordembeddings, default "regression", or "randomForest"}
+\item{trainMethod}{Method to train wordembeddings (default "regression"; see also "randomForest").}
 
 \item{nrFolds_k}{Number of folds to use.}
 
-\item{preProcessPCAthresh}{Preprocessing threshold.}
+\item{preProcessPCAthresh}{Preprocessing threshold for amount of variance to retain (default 0.95).}
 
-\item{strata_y}{variables to stratify according; default y, can set to NULL}
+\item{strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{methodCor}{Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").}
+\item{methodCor}{Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").}
 
 \item{trees}{Number of trees used in random forest.}
 
-\item{nrFolds_k_out}{Number of outer folds (only for textTrainCVpredictions textTrainCVpredictionsRF).}
+\item{nrFolds_k_out}{Number of outer folds (only for textTrainCVpredictions textTrainCVpredictionsRF,
+which is not yet fully implemented).}
 
-\item{...}{Arguments from textTrain.}
+\item{...}{Arguments for the textTrain function.}
 }
 \value{
-A correlation between predicted and observed values; as well as predicted values.
+Correlations between predicted and observed values.
 }
 \description{
-textTrainLists trains word embeddings from several text variable to several numeric variable.
+Trains word embeddings from several text variables to several numeric variables.
 }
 \examples{
 wordembeddings <- wordembeddings4_10[1:2]
-ratings_data <- sq_data_tutorial4_10[1:2]
+ratings_data <- Language_based_assessment_data_8_10[5:6]
 wordembeddings <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
 }
 \seealso{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textHuggingFace}
 \alias{textHuggingFace}
-\title{textHuggingFace extracts layers of hidden states (word embeddings) for all character variables in the dataframe.}
+\title{Extract layers of hidden states (word embeddings) for all character variables in the dataframe}
 \usage{
 textHuggingFace(
   x,
@@ -16,36 +16,37 @@ textHuggingFace(
 )
 }
 \arguments{
-\item{x}{Tibble/dataframe with at least one character variables.}
+\item{x}{Tibble/dataframe with at least one character variable.}
 
-\item{contexts}{provides word embeddings based on contexts (default = TRUE).}
+\item{contexts}{Provide word embeddings based on word contexts (standard method; default = TRUE).}
 
-\item{decontexts}{provides word embeddings of single words as input (default = TRUE), which are used for plotting.}
+\item{decontexts}{Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).}
 
-\item{pretrained_weights}{Character specifying pre-trained language model through RBERT. Current options
-"bert_base_uncased", "bert_base_cased", "bert_large_uncased",
-"bert_large_cased", "bert_large_uncased_wwm", "bert_large_cased_wwm",
-"bert_base_multilingual_cased", "bert_base_chinese", "scibert_scivocab_uncased",
-"scibert_scivocab_cased", "scibert_basevocab_uncased", and "scibert_basevocab_cased".}
+\item{pretrained_weights}{Character specifying pre-trained language model (default 'bert-base-uncased'). For an up-to-date
+list of avaiable models see https://github.com/huggingface/transformers.}
 
-\item{tokenizer_class}{tokenizer that match pretrained_weights}
+\item{tokenizer_class}{Tokenizer that match pretrained_weights (default BertTokenizer). For an up-to-date
+list of avaiable models see https://github.com/huggingface/transformers.}
 
-\item{model_class}{model class that matches pretrained_weights and tokenizer_class}
+\item{model_class}{Model class that matches pretrained_weights and tokenizer_class (default BertModel). For an up-to-date
+list of avaiable models see https://github.com/huggingface/transformers.}
 
-\item{layers}{most efficient to only extract the ones you need; but can also extract 'all',
-and then remove in textLayerAggregation function, when aggregating embeddings.}
+\item{layers}{Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
+that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
+These layers can then be aggregated in the textLayerAggregation function.}
 
-\item{return_tokens}{provide the tokens used in transformer model.}
+\item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
 }
 \value{
-A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer
+A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer, and should
+normally not be used.
 }
 \description{
-textHuggingFace extracts layers of hidden states (word embeddings) for all character variables in the dataframe.
+Extract layers of hidden states (word embeddings) for all character variables in the dataframe
 }
 \examples{
 \dontrun{
-x <- sq_data_tutorial8_10[1:2, 1:2]
+x <- Language_based_assessment_data_8_10[1:2, 1:2]
 wordembeddings <- textHuggingFace(x)
 }
 }

@@ -1,0 +1,54 @@
+
+url: https://r-text.org
+
+development:
+  mode: devel
+
+home:
+  title: text
+  links:
+  - text: Ask a question about text
+    href: https://stackoverflow.com/
+
+authors:
+  Oscar Kjell:
+    href: https://oscarkjell.se/
+  Salvatore Giorgi:
+    href: http://www.salvatoregiorgi.com/
+  Andrew Schwartz:
+    href: https://www3.cs.stonybrook.edu/~has/
+
+
+
+
+reference:
+- title: Transform text to word embeddings
+  contents:
+  - textEmbed
+  - textHuggingFace
+  - textLayerAggregation
+- title: Train word embeddings
+  contents:
+    - textTrain
+    - textTrainLists
+    - textTrainMultiTexts
+    - textTrainRandomForest
+- title: Analyse Semantic Similairties
+  contents:
+    - textSimilarity
+    - textSimilarityNorm
+    - textDiff
+- title: Plot words in the word embedding space
+  contents:
+    - textProjectionData
+    - textProjectionPlot
+    - textCentralityData
+    - textCentralityPlot
+- title: Example Data
+  contents:
+    - Language_based_assessment_data_8_10
+    - wordembeddings4_10
+    - Language_based_assessment_data_3_100
+    - DP_projections_HILS_SWLS_100
+    - centrality_data_harmony
+

@@ -19,7 +19,7 @@ test_that("textEmbed produces a list of word embeddings, that are 768 dimensions
   #text_to_test_import2 <- c("I'm happy", "Let's go")
   #data_tibble_to_test <- tibble::tibble(text_to_test_import1, text_to_test_import2)
   #data_tibble_to_test
-  x <- sq_data_tutorial8_10[1:2, 1:2]
+  x <- Language_based_assessment_data_8_10[1:2, 1:2]
   #wordembeddings <- textHuggingFace(x)
   #wordembeddings_text <- text::textEmbed(data_tibble_to_test)
 

@@ -2,10 +2,20 @@ Package: text
 Type: Package
 Title: Analyses of Text using Natural Language Processing and Machine Learning
 Version: 0.6.0.9000
-Author: Oscar Kjell & Andrew Schwartz
-Maintainer: The package maintainer <oscar.kjell@psy.lu.se>
+Authors@R: c(
+    person("Oscar", "Kjell", , "oscar.kjell@psy.lu.se", role = c("aut", "cre"), 
+      comment = c(ORCID = "0000-0002-2728-6278")
+    ),
+    person("Salvatore", "Giorgi", role = c("aut"), 
+      comment = c(ORCID = "0000-0001-7381-6295")
+    ),
+    person("Andrew", "Schwartz", role = c("aut"), 
+      comment = c(ORCID = "0000-0002-6383-3339"))
+    )
 Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables, and visual statisticall significant words according to various dimensions etc.   
 License: GPL-3
+URL: https://github.com/OscarKjell/text
+BugReports: https://github.com/OscarKjell/text/issues
 Encoding: UTF-8
 Archs: x64
 SystemRequirements: Python (>= 2.7.0)

@@ -13,18 +13,18 @@
 #colnames(df3_data) <- c(paste("Dim", 1:(ncol(df3_data)-1), sep=""), "y")
 
 # devtools::document()
-#' textTrainRandomForest trains word embeddings to a categorical variable using random forrest.
+#' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Wordembeddings from textEmbed.
-#' @param y The categorical variable to predict.
+#' @param y Categorical variable to predict.
 #' @param nrFolds_k Number of folds to use (default 10).
-#' @param trees Number of trees to use default 500).
-#' @param strata_y variables to stratify according; default y, can set to NULL
-#' @param describe_model Input text to describe your model.
+#' @param trees Number of trees to use (default 500).
+#' @param strata_y Variable to stratify according (default y; can set to NULL).
+#' @param describe_model Text to describe your model.
 #' @return A correlation between predicted and observed values; as well as predicted values.
 #' @examples
 #' wordembeddings <- wordembeddings4_10
-#' ratings_data <- sq_data_tutorial4_10
+#' ratings_data <- Language_based_assessment_data_8_10
 #' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k = 2)
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textDiff}}
 #' @importFrom stats cor.test na.omit chisq.test

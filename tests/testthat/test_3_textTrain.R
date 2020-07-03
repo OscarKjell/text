@@ -13,7 +13,7 @@ context("Training Functions")
 test_that("textTrain produces list of results with prediction being numeric", {
 
 
-  trained <- textTrain(wordembeddings4_10$harmonytext, sq_data_tutorial4_10$hilstotal,
+  trained <- textTrain(wordembeddings4_10$harmonytext, Language_based_assessment_data_8_10$hilstotal,
    nrFolds_k = 2, strata_y = NULL)
 
   expect_that(trained, is_a("list"))

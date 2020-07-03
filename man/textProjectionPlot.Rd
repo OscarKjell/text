@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlot.R
 \name{textProjectionPlot}
 \alias{textProjectionPlot}
-\title{textProjectionPlot plots words}
+\title{Plot words according to Dot Product Projections.}
 \usage{
 textProjectionPlot(
   word_data,
@@ -48,19 +48,19 @@ textProjectionPlot(
 )
 }
 \arguments{
-\item{word_data}{Dataframe from textPlotData.}
+\item{word_data}{Dataframe from textProjectionData}
 
-\item{k_n_words_two_test}{Selects the k most frequent words to significance test (k = sqrt(100*N); N = number of paricipant responses). Default = TRUE.}
+\item{k_n_words_two_test}{Select the k most frequent words to significance test (k = sqrt(100*N); N = number of paricipant responses). Default = TRUE.}
 
-\item{min_freq_words}{Select words to signficance test that has occured at least min_freq_words (default = 1).}
+\item{min_freq_words}{Select words to signficance test that have occured at least min_freq_words (default = 1).}
 
-\item{plot_n_words_square}{Select number of significant words in each square to plot.}
+\item{plot_n_words_square}{Select number of significant words in each square of the figure to plot.}
 
-\item{plot_n_words_p}{Number of significant words to plot (n per x and y axes, where duplicates are removed);
-selects fist according to lowest p-value and then to frequency (default 25  per axes, where duplicates are removed).}
+\item{plot_n_words_p}{Number of significant words to plot (n per x-axes and n per y-axes, where duplicates are removed);
+selects fist according to lowest p-value and then to frequency.}
 
 \item{plot_n_word_extreme}{Number of words that are extreme on dot product projection per dimension.
-(i.e., even if not significant;  per dimensions, where duplicates are removed).}
+(i.e., even if not significant; per dimensions, where duplicates are removed).}
 
 \item{plot_n_word_frequency}{Number of words based on being most frequent.
 (i.e., even if not significant).}
@@ -70,51 +70,52 @@ selects fist according to lowest p-value and then to frequency (default 25  per 
 
 \item{titles_color}{Color for all the titles (default: "#61605e")}
 
-\item{x_axes}{Variable to be plotted on the x axes (default is "dot_product.x").}
+\item{x_axes}{Variable to be plotted on the x-axes (default is "dot_product.x").}
 
-\item{y_axes}{Variable to be plotted on the y axes (default is "cohensD.y"). To only print 1-dimension insert NULL.}
+\item{y_axes}{Variable to be plotted on the y-axes (default is "cohensD.y"). To only print 1-dimension insert NULL.}
 
-\item{p_values_x}{P-values variable to plott according to.}
+\item{p_values_x}{P-value variable to plot according to.}
 
-\item{p_values_y}{P-values variable to plott according to.}
+\item{p_values_y}{P-value variable to plot according to.}
 
 \item{p_alpha}{Alpha (default = .05).}
 
-\item{p_adjust_method}{Method to adjust/correct p-value for multiple comparisons (deafult = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr")}
+\item{p_adjust_method}{Method to adjust/correct p-values for multiple comparisons (deafult = "holm"; see also "none", "hochberg",
+"hommel", "bonferroni", "BH", "BY",  "fdr").}
 
-\item{title_top}{string for title (default "  ")}
+\item{title_top}{Title (default "  ")}
 
 \item{x_axes_label}{Label on the x-axes.}
 
 \item{y_axes_label}{Label on the y-axes.}
 
-\item{scale_x_axes_lim}{Manually set the legth of the x-axes (deafult=NULL; e.g., try c(-5, 5)).}
+\item{scale_x_axes_lim}{Manually set the legth of the x-axes (deafult = NULL; e.g., try c(-5, 5)).}
 
-\item{scale_y_axes_lim}{Manually set the legth of the y-axes (deafult=NULL; e.g., try c(-5, 5)).}
+\item{scale_y_axes_lim}{Manually set the legth of the y-axes (deafult = NULL; e.g., try c(-5, 5)).}
 
-\item{y_axes_values}{NULL,}
+\item{y_axes_values}{default NULL}
 
-\item{word_font}{Type of font (default: "Arial").}
+\item{word_font}{Font type (default: "Arial").}
 
 \item{bivariate_color_codes}{The diffent colors of the words (default: c("#398CF9", "#60A1F7", "#5dc688",
 "#e07f6a", "#EAEAEA", "#40DD52",
 "#FF0000", "#EA7467", "#85DB8E")).}
 
-\item{word_size_range}{a vector with minimum and maximum (default: c(3, 8)).}
+\item{word_size_range}{Vector with minimum and maximum font size (default: c(3, 8)).}
 
-\item{position_jitter_hight}{degree of jitter hight (default: .0).}
+\item{position_jitter_hight}{Jitter hight (default: .0).}
 
-\item{position_jitter_width}{degree of jitter hight (default: .03).}
+\item{position_jitter_width}{Jitter width (default: .03).}
 
-\item{point_size}{the size of the points indicating the words' position (default: 0.5).}
+\item{point_size}{Size of the points indicating the words' position (default: 0.5).}
 
-\item{arrow_transparency}{the transparency of the lines between each word and point (default: 0.1).}
+\item{arrow_transparency}{Transparency of the lines between each word and point (default: 0.1).}
 
-\item{points_without_words_size}{sets the size of the points (without showing words, default is to not show it, i.e., 0).}
+\item{points_without_words_size}{Size of the points not linked with a words (default is to not show it, i.e., 0).}
 
-\item{points_without_words_alpha}{sets the transperency of the points (without showing words, default is to not show it, i.e., 0).}
+\item{points_without_words_alpha}{Transperency of the points not linked with a words (default is to not show it, i.e., 0).}
 
-\item{legend_title}{Label on the color legend (default: "(DPP)".}
+\item{legend_title}{Title on the color legend (default: "(DPP)".}
 
 \item{legend_x_axes_label}{Label on the color legend (default: "(x)".}
 
@@ -124,26 +125,26 @@ selects fist according to lowest p-value and then to frequency (default 25  per 
 
 \item{legend_y_position}{Position on the y coordinates of the color legend (default: 0.05).}
 
-\item{legend_h_size}{The height of the color legend (default 0.15).}
+\item{legend_h_size}{Height of the color legend (default 0.15).}
 
-\item{legend_w_size}{The width of the color legend (default 0.15).}
+\item{legend_w_size}{Width of the color legend (default 0.15).}
 
-\item{legend_title_size}{=7}
+\item{legend_title_size}{Font size (default: 7).}
 
-\item{legend_number_size}{size of the values in the legend (default = 2)}
+\item{legend_number_size}{Font size of the values in the legend (default: 2).}
 }
 \value{
 A 1- or 2-dimensional word plot.
 }
 \description{
-textProjectionPlot plots words
+Plot words according to Dot Product Projections.
 }
 \examples{
-# The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
+# The test-data included in the package is called: DP_projections_HILS_SWLS_100
 
 # Dot Product Projection Plot
 plot_projection <- textProjectionPlot(
- word_data = sq_data_plottingHw_HILSSSWLS_100,
+ word_data = DP_projections_HILS_SWLS_100,
  k_n_words_two_test = FALSE,
  min_freq_words = 1,
  plot_n_words_square = 3,
@@ -164,7 +165,7 @@ plot_projection <- textProjectionPlot(
 )
 plot_projection
 
-names(sq_data_plottingHw_HILSSSWLS_100)
+names(DP_projections_HILS_SWLS_100)
 
 }
 \seealso{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlot.R
 \name{textProjectionData}
 \alias{textProjectionData}
-\title{textProjectionData computes variables for plotting words.}
+\title{Compute Dot Product Projection and related variables for plotting words.}
 \usage{
 textProjectionData(
   words,
@@ -20,42 +20,44 @@ textProjectionData(
 )
 }
 \arguments{
-\item{words}{Words or text variable to be plotted.}
+\item{words}{Word or text variable to be plotted.}
 
-\item{wordembeddings}{Wordembeddings from textEmbedd for the words to be plotted (i.e., the aggregated word embeddings for the "words" variable).}
+\item{wordembeddings}{Wordembeddings from textEmbed for the words to be plotted (i.e., the aggregated word embeddings for the "words" parameter).}
 
-\item{single_wordembeddings}{Wordembeddings from textEmbedd for individual words.}
+\item{single_wordembeddings}{Wordembeddings from textEmbed for individual words (i.e., decontextualised embeddings).}
 
-\item{x}{Numeric variable the words should be plotted according to.}
+\item{x}{Numeric variable that the words should be plotted according to on the x-axes.}
 
-\item{y}{Numeric variable the words should be plotted according to (y=NULL).}
+\item{y}{Numeric variable that the words should be plotted according to on the y-axes (y=NULL).}
 
-\item{pca}{Number of pca dimensions applied to the word embeddings in the beginning of the function. A number below 1 takes out \% of variance;
-An integer specify number of components to extract.}
+\item{pca}{Number of PCA dimensions applied to the word embeddings in the beginning of the function. A number below 1 takes out \% of variance;
+An integer specify number of components to extract (this setting has not yet been evaluated).}
 
-\item{aggregation}{Method to aggreate the word embeddings (default = "mean"; see also, "min", "max", or "normalise1").}
+\item{aggregation}{Method to aggregate the word embeddings (default = "mean"; see also "min", or "max").}
 
-\item{split}{Method to split the axes (default = "quartile" (i.e., selecting lower and upper quartile); see also "median").}
+\item{split}{Method to split the axes (default = "quartile" involving selecting lower and upper quartile; see also "median").}
 
-\item{word_weight_power}{Takes the power of the frequency in the computation of aggreated word embeddings for group low (1) and high (2).}
+\item{word_weight_power}{Compute the power of the frequency of the words and multiply
+the word embeddings with this in the computation of aggreated word embeddings for group low (1) and group high (2). This increases
+the weight of more frequent words.}
 
-\item{min_freq_words}{Option to only select words that have occured a specified number of times (default = 0); when creating the dot product projection
-line (although single words recieve dot product projection and p-value) and within cosine similairty.}
+\item{min_freq_words}{Option to select words that have occured a specified number of times (default = 0); when creating the dot product projection
+line (i.e., single words recieve dot product projection and p-value).}
 
 \item{Npermutations}{Number of permutations in the creation of the null distribution.}
 
 \item{n_per_split}{A setting to split Npermutations to avoid reaching computer memory limits; the higher the faster, but too high may lead to abortion.}
 }
 \value{
-A dataframe with variables (e.g., including dot product, frequencies, p-values) for the individual words
+A dataframe with variables (e.g., including dot product projection, frequencies, p-values) for the individual words
 that is used for the plotting in the textProjectionPlot function.
 }
 \description{
-textProjectionData computes variables for plotting words.
+Compute Dot Product Projection and related variables for plotting words.
 }
 \examples{
 wordembeddings <- wordembeddings4_10
-data <- sq_data_tutorial8_10
+data <- Language_based_assessment_data_8_10
 # Pre-processing data for plotting
 df_for_plotting <- textProjectionData(data$harmonywords,
                                      wordembeddings$harmonywords,

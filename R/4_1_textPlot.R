@@ -53,7 +53,7 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 ##   sq_data_tutorial8_100 <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/Example data/sq_data_tutorial8_100.rda")
 #
 #wordembeddings_all <- wordembeddings4_10
-# data <- sq_data_tutorial8_10
+# data <- Language_based_assessment_data_8_10
 # df_for_plotting <- textPlotData(
 #   words= data$harmonywords,
 #   wordembeddings=wordembeddings_all$harmonywords,
@@ -91,28 +91,30 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 
 
 # devtools::document()
-#' textProjectionData computes variables for plotting words.
+#' Compute Dot Product Projection and related variables for plotting words.
 #'
-#' @param words Words or text variable to be plotted.
-#' @param wordembeddings Wordembeddings from textEmbedd for the words to be plotted (i.e., the aggregated word embeddings for the "words" variable).
-#' @param single_wordembeddings Wordembeddings from textEmbedd for individual words.
-#' @param x Numeric variable the words should be plotted according to.
-#' @param y Numeric variable the words should be plotted according to (y=NULL).
-#' @param pca Number of pca dimensions applied to the word embeddings in the beginning of the function. A number below 1 takes out \% of variance;
-#' An integer specify number of components to extract.
-#' @param aggregation Method to aggreate the word embeddings (default = "mean"; see also, "min", "max", or "normalise1").
-#' @param split Method to split the axes (default = "quartile" (i.e., selecting lower and upper quartile); see also "median").
-#' @param word_weight_power Takes the power of the frequency in the computation of aggreated word embeddings for group low (1) and high (2).
-#' @param min_freq_words Option to only select words that have occured a specified number of times (default = 0); when creating the dot product projection
-#' line (although single words recieve dot product projection and p-value) and within cosine similairty.
+#' @param words Word or text variable to be plotted.
+#' @param wordembeddings Wordembeddings from textEmbed for the words to be plotted (i.e., the aggregated word embeddings for the "words" parameter).
+#' @param single_wordembeddings Wordembeddings from textEmbed for individual words (i.e., decontextualised embeddings).
+#' @param x Numeric variable that the words should be plotted according to on the x-axes.
+#' @param y Numeric variable that the words should be plotted according to on the y-axes (y=NULL).
+#' @param pca Number of PCA dimensions applied to the word embeddings in the beginning of the function. A number below 1 takes out \% of variance;
+#' An integer specify number of components to extract (this setting has not yet been evaluated).
+#' @param aggregation Method to aggregate the word embeddings (default = "mean"; see also "min", or "max").
+#' @param split Method to split the axes (default = "quartile" involving selecting lower and upper quartile; see also "median").
+#' @param word_weight_power Compute the power of the frequency of the words and multiply
+#' the word embeddings with this in the computation of aggreated word embeddings for group low (1) and group high (2). This increases
+#' the weight of more frequent words.
+#' @param min_freq_words Option to select words that have occured a specified number of times (default = 0); when creating the dot product projection
+#' line (i.e., single words recieve dot product projection and p-value).
 #' @param Npermutations Number of permutations in the creation of the null distribution.
 #' @param n_per_split A setting to split Npermutations to avoid reaching computer memory limits; the higher the faster, but too high may lead to abortion.
-#' @return A dataframe with variables (e.g., including dot product, frequencies, p-values) for the individual words
+#' @return A dataframe with variables (e.g., including dot product projection, frequencies, p-values) for the individual words
 #' that is used for the plotting in the textProjectionPlot function.
 #' @examples
 # Data
 #'wordembeddings <- wordembeddings4_10
-#'data <- sq_data_tutorial8_10
+#'data <- Language_based_assessment_data_8_10
 #'# Pre-processing data for plotting
 #'df_for_plotting <- textProjectionData(data$harmonywords,
 #'                                      wordembeddings$harmonywords,
@@ -410,7 +412,7 @@ textProjectionData <- function(words,
 
 # Plotting
 #
-#word_data <- sq_data_plottingHw_HILSSSWLS_100
+#word_data <- DP_projections_HILS_SWLS_100
 #
 #word_data <- dppp_data
 #
@@ -463,60 +465,61 @@ textProjectionData <- function(words,
 # https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Colors/Color_picker_tool
 # # Build bivariate_palette; https://www.datalorax.com/post/creating-bivariate-color-palettes/
 # devtools::document()
-#' textProjectionPlot plots words
+#' Plot words according to Dot Product Projections.
 #'
-#' @param word_data Dataframe from textPlotData.
-#' @param k_n_words_two_test Selects the k most frequent words to significance test (k = sqrt(100*N); N = number of paricipant responses). Default = TRUE.
-#' @param min_freq_words Select words to signficance test that has occured at least min_freq_words (default = 1).
-#' @param plot_n_words_square Select number of significant words in each square to plot.
-#' @param plot_n_words_p Number of significant words to plot (n per x and y axes, where duplicates are removed);
-#' selects fist according to lowest p-value and then to frequency (default 25  per axes, where duplicates are removed).
+#' @param word_data Dataframe from textProjectionData
+#' @param k_n_words_two_test Select the k most frequent words to significance test (k = sqrt(100*N); N = number of paricipant responses). Default = TRUE.
+#' @param min_freq_words Select words to signficance test that have occured at least min_freq_words (default = 1).
+#' @param plot_n_words_square Select number of significant words in each square of the figure to plot.
+#' @param plot_n_words_p Number of significant words to plot (n per x-axes and n per y-axes, where duplicates are removed);
+#' selects fist according to lowest p-value and then to frequency.
 #' @param plot_n_word_extreme Number of words that are extreme on dot product projection per dimension.
-#' (i.e., even if not significant;  per dimensions, where duplicates are removed).
+#' (i.e., even if not significant; per dimensions, where duplicates are removed).
 #' @param plot_n_word_frequency Number of words based on being most frequent.
 #' (i.e., even if not significant).
 #' @param plot_n_words_middle Number of words plotted that are in the middle in dot product projection score
 #' (i.e., even if not significant;  per dimensions, where duplicates are removed).
-#' @param title_top string for title (default "  ")
+#' @param title_top Title (default "  ")
 #' @param titles_color Color for all the titles (default: "#61605e")
-#' @param x_axes Variable to be plotted on the x axes (default is "dot_product.x").
-#' @param y_axes Variable to be plotted on the y axes (default is "cohensD.y"). To only print 1-dimension insert NULL.
-#' @param p_values_x P-values variable to plott according to.
-#' @param p_values_y P-values variable to plott according to.
+#' @param x_axes Variable to be plotted on the x-axes (default is "dot_product.x").
+#' @param y_axes Variable to be plotted on the y-axes (default is "cohensD.y"). To only print 1-dimension insert NULL.
+#' @param p_values_x P-value variable to plot according to.
+#' @param p_values_y P-value variable to plot according to.
 #' @param p_alpha Alpha (default = .05).
-#' @param p_adjust_method Method to adjust/correct p-value for multiple comparisons (deafult = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr")
+#' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons (deafult = "holm"; see also "none", "hochberg",
+#' "hommel", "bonferroni", "BH", "BY",  "fdr").
 #' @param x_axes_label Label on the x-axes.
 #' @param y_axes_label Label on the y-axes.
-#' @param scale_x_axes_lim Manually set the legth of the x-axes (deafult=NULL; e.g., try c(-5, 5)).
-#' @param scale_y_axes_lim Manually set the legth of the y-axes (deafult=NULL; e.g., try c(-5, 5)).
-#' @param y_axes_values NULL,
-#' @param word_font Type of font (default: "Arial").
+#' @param scale_x_axes_lim Manually set the legth of the x-axes (deafult = NULL; e.g., try c(-5, 5)).
+#' @param scale_y_axes_lim Manually set the legth of the y-axes (deafult = NULL; e.g., try c(-5, 5)).
+#' @param y_axes_values default NULL
+#' @param word_font Font type (default: "Arial").
 #' @param bivariate_color_codes The diffent colors of the words (default: c("#398CF9", "#60A1F7", "#5dc688",
 #'                                                                          "#e07f6a", "#EAEAEA", "#40DD52",
 #'                                                                          "#FF0000", "#EA7467", "#85DB8E")).
-#' @param word_size_range a vector with minimum and maximum (default: c(3, 8)).
-#' @param position_jitter_hight degree of jitter hight (default: .0).
-#' @param position_jitter_width degree of jitter hight (default: .03).
-#' @param point_size the size of the points indicating the words' position (default: 0.5).
-#' @param arrow_transparency the transparency of the lines between each word and point (default: 0.1).
-#' @param points_without_words_size sets the size of the points (without showing words, default is to not show it, i.e., 0).
-#' @param points_without_words_alpha sets the transperency of the points (without showing words, default is to not show it, i.e., 0).
-#' @param legend_title Label on the color legend (default: "(DPP)".
+#' @param word_size_range Vector with minimum and maximum font size (default: c(3, 8)).
+#' @param position_jitter_hight Jitter hight (default: .0).
+#' @param position_jitter_width Jitter width (default: .03).
+#' @param point_size Size of the points indicating the words' position (default: 0.5).
+#' @param arrow_transparency Transparency of the lines between each word and point (default: 0.1).
+#' @param points_without_words_size Size of the points not linked with a words (default is to not show it, i.e., 0).
+#' @param points_without_words_alpha Transperency of the points not linked with a words (default is to not show it, i.e., 0).
+#' @param legend_title Title on the color legend (default: "(DPP)".
 #' @param legend_x_axes_label Label on the color legend (default: "(x)".
 #' @param legend_y_axes_label Label on the color legend (default: "(y)".
 #' @param legend_x_position Position on the x coordinates of the color legend (default: 0.02).
 #' @param legend_y_position Position on the y coordinates of the color legend (default: 0.05).
-#' @param legend_h_size The height of the color legend (default 0.15).
-#' @param legend_w_size The width of the color legend (default 0.15).
-#' @param legend_title_size =7
-#' @param legend_number_size size of the values in the legend (default = 2)
+#' @param legend_h_size Height of the color legend (default 0.15).
+#' @param legend_w_size Width of the color legend (default 0.15).
+#' @param legend_title_size Font size (default: 7).
+#' @param legend_number_size Font size of the values in the legend (default: 2).
 #' @return A 1- or 2-dimensional word plot.
 #' @examples
-#' # The test-data included in the package is called: sq_data_plottingHw_HILSSSWLS_100
+#' # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 #'
 #' # Dot Product Projection Plot
 #'plot_projection <- textProjectionPlot(
-#'  word_data = sq_data_plottingHw_HILSSSWLS_100,
+#'  word_data = DP_projections_HILS_SWLS_100,
 #'  k_n_words_two_test = FALSE,
 #'  min_freq_words = 1,
 #'  plot_n_words_square = 3,
@@ -537,7 +540,7 @@ textProjectionData <- function(words,
 #')
 #'plot_projection
 #'
-#' names(sq_data_plottingHw_HILSSSWLS_100)
+#' names(DP_projections_HILS_SWLS_100)
 #'
 #' @seealso see \code{\link{textProjectionData}}
 #' @importFrom tibble as_tibble tibble
@@ -918,7 +921,7 @@ textProjectionPlot <- function(word_data,
   }
 ###### End textProjectionPlot
 
-#plot_projection_1 <- textProjectionPlot(word_data = dppp_data, # sq_data_plottingHw_HILSSSWLS_100, dppp_data centrality_data
+#plot_projection_1 <- textProjectionPlot(word_data = dppp_data, # DP_projections_HILS_SWLS_100, dppp_data centrality_data
 #                                        title_top = " ",
 #                                        titles_color = "#61605e",
 #                                        k_n_words_two_test = FALSE,
@@ -983,19 +986,20 @@ textProjectionPlot <- function(word_data,
 
 
 # devtools::document()
-#' textCentralityData computes cosine semantic similairty score between single words and the aggreagated word embedding of all words.
+#' Compute cosine semantic similarity score between single words' word embeddings
+#' and the aggreagated word embedding of all words.
 #'
-#' @param words Words or text variable to be plotted.
-#' @param wordembeddings Wordembeddings from textEmbedd for the words to be plotted (i.e., the aggregated word embeddings for the "words" variable).
-#' @param single_wordembeddings Wordembeddings from textEmbedd for individual words.
-#' @param aggregation Method to aggreate the word embeddings (default = "mean"; see also, "min", "max", or "normalise1").
-#' @param min_freq_words Option to only select words that have occured a specified number of times (default = 0); when creating the dot product projection
-#' line (although single words recieve dot product projection and p-value) and within cosine similairty.
-#' @return A dataframe with variables (e.g., including semantic simikarity, frequencies) for the individual words
-#' that is used for the plotting in the textCentralityPlot function.
+#' @param words Word or text variable to be plotted.
+#' @param wordembeddings Word embeddings from textEmbed for the words to be plotted (i.e., the aggregated word embeddings for the "words" variable).
+#' @param single_wordembeddings Word embeddings from textEmbed for individual words (i.e., the decontextualised word embeddings).
+#' @param aggregation Method to aggregate the word embeddings (default = "mean"; see also "min" or "max").
+#' @param min_freq_words Option to  select words that have at least occured a specified number of times (default = 0); when creating the semantic similarity
+#' scores within cosine similairty.
+#' @return A dataframe with variables (e.g., including semantic similarity, frequencies) for the individual words
+#' that are used for the plotting in the textCentralityPlot function.
 #' @examples
 #' wordembeddings <- wordembeddings4_10
-#' data <- sq_data_tutorial8_10
+#' data <- Language_based_assessment_data_8_10
 #' df_for_plotting <- textCentralityData(data$harmonywords,
 #'                                       wordembeddings$harmonywords,
 #'                                       wordembeddings$singlewords_we
@@ -1053,41 +1057,42 @@ textCentralityData <- function(words,
 # https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Colors/Color_picker_tool
 # # Build bivariate_palette; https://www.datalorax.com/post/creating-bivariate-color-palettes/
 # devtools::document()
-#' textCentralityPlot plots words
+#' Plot words according to cosine semantic similarity to the aggreagated word embedding.
 #'
-#' @param word_data Dataframe from textPlotData.
-#' @param min_freq_words Select words to signficance test that has occured at least min_freq_words (default = 1).
-#' @param plot_n_word_extreme Number of words that are extreme on dot product projection per dimension.
-#' (i.e., even if not significant;  per dimensions, where duplicates are removed).
-#' @param plot_n_word_frequency Number of words based on being most frequent.
+#' @param word_data Tibble from textPlotData.
+#' @param min_freq_words Select words to signficance test that have occurred at least min_freq_words (default = 1).
+#' @param plot_n_word_extreme Number of words per dimension to plot with extreme dot product projection value.
+#' (i.e., even if not significant;  duplicates are removed).
+#' @param plot_n_word_frequency Number of words to plot according to their frequency.
 #' (i.e., even if not significant).
-#' @param plot_n_words_middle Number of words plotted that are in the middle in dot product projection score
-#' (i.e., even if not significant;  per dimensions, where duplicates are removed).
-#' @param title_top string for title (default "  ")
-#' @param titles_color Color for all the titles (default: "#61605e")
-#' @param x_axes Variable to be plotted on the x axes (default is "dot_product.x").
+#' @param plot_n_words_middle Number of words to plot that are in the middle in dot product projection score
+#' (i.e., even if not significant; duplicates are removed).
+#' @param title_top Title (default "  ").
+#' @param titles_color Color for all the titles (default: "#61605e").
+#' @param x_axes Variable to be plotted on the x-axes (default is "central_cosine").
 #' @param x_axes_label Label on the x-axes.
-#' @param scale_x_axes_lim Manually set the legth of the x-axes (deafult=NULL; e.g., try c(-5, 5)).
-#' @param scale_y_axes_lim Manually set the legth of the y-axes (deafult=NULL; e.g., try c(-5, 5)).
-#' @param y_axes_values NULL,
-#' @param word_font Type of font (default: "Arial").
-#' @param centrality_color_codes The diffent colors of the words (default: c("#EAEAEA","#85DB8E", "#398CF9")).
-#' @param word_size_range a vector with minimum and maximum (default: c(3, 8)).
-#' @param position_jitter_hight degree of jitter hight (default: .0).
-#' @param position_jitter_width degree of jitter hight (default: .03).
-#' @param point_size the size of the points indicating the words' position (default: 0.5).
-#' @param arrow_transparency the transparency of the lines between each word and point (default: 0.1).
-#' @param points_without_words_size sets the size of the points (without showing words, default is to not show it, i.e., 0).
-#' @param points_without_words_alpha sets the transperency of the points (without showing words, default is to not show it, i.e., 0).
-#' @param legend_title Label on the color legend (default: "(DPP)".
+#' @param scale_x_axes_lim Legth of the x-axes (deafult: NULL; e.g., try c(-5, 5)).
+#' @param scale_y_axes_lim Legth of the y-axes (deafult: NULL; e.g., try c(-5, 5)).
+#' @param y_axes_values NULL.
+#' @param word_font Type of font (default: NULL).
+#' @param centrality_color_codes Colors of the words depending on check_extreme_min_x...
+#'  (default: c("#EAEAEA","#85DB8E", "#398CF9")).
+#' @param word_size_range Vector with minimum and maximum font size (default: c(3, 8)).
+#' @param position_jitter_hight Jitter hight (default: .0).
+#' @param position_jitter_width Jitter width (default: .03).
+#' @param point_size Size of the points indicating the words' position (default: 0.5).
+#' @param arrow_transparency Transparency of the lines between each word and point (default: 0.1).
+#' @param points_without_words_size Size of the points not linked to a word (default is to not show the point; , i.e., 0).
+#' @param points_without_words_alpha Transperency of the points that are not linked to a word (default is to not show it; i.e., 0).
+#' @param legend_title Title of the color legend (default: "(DPP)").
 #' @param legend_x_axes_label Label on the color legend (default: "(x)".
 #' @param legend_x_position Position on the x coordinates of the color legend (default: 0.02).
 #' @param legend_y_position Position on the y coordinates of the color legend (default: 0.05).
-#' @param legend_h_size The height of the color legend (default 0.15).
-#' @param legend_w_size The width of the color legend (default 0.15).
-#' @param legend_title_size =7
-#' @param legend_number_size size of the values in the legend (default = 2)
-#' @return A 1-dimensioal word plot.
+#' @param legend_h_size Height of the color legend (default 0.15).
+#' @param legend_w_size Width of the color legend (default 0.15).
+#' @param legend_title_size Font size of the title (default = 7).
+#' @param legend_number_size Font size of the values in the legend (default = 2).
+#' @return A 1-dimensional word plot based on cosine similarity to the aggregated word embedding.
 #' @examples
 #' # The test-data included in the package is called: centrality_data_harmony
 #'names(centrality_data_harmony)

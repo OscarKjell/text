@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlot.R
 \name{textCentralityPlot}
 \alias{textCentralityPlot}
-\title{textCentralityPlot plots words}
+\title{Plot words according to cosine semantic similarity to the aggreagated word embedding.}
 \usage{
 textCentralityPlot(
   word_data,
@@ -37,52 +37,53 @@ textCentralityPlot(
 )
 }
 \arguments{
-\item{word_data}{Dataframe from textPlotData.}
+\item{word_data}{Tibble from textPlotData.}
 
-\item{min_freq_words}{Select words to signficance test that has occured at least min_freq_words (default = 1).}
+\item{min_freq_words}{Select words to signficance test that have occurred at least min_freq_words (default = 1).}
 
-\item{plot_n_word_extreme}{Number of words that are extreme on dot product projection per dimension.
-(i.e., even if not significant;  per dimensions, where duplicates are removed).}
+\item{plot_n_word_extreme}{Number of words per dimension to plot with extreme dot product projection value.
+(i.e., even if not significant;  duplicates are removed).}
 
-\item{plot_n_word_frequency}{Number of words based on being most frequent.
+\item{plot_n_word_frequency}{Number of words to plot according to their frequency.
 (i.e., even if not significant).}
 
-\item{plot_n_words_middle}{Number of words plotted that are in the middle in dot product projection score
-(i.e., even if not significant;  per dimensions, where duplicates are removed).}
+\item{plot_n_words_middle}{Number of words to plot that are in the middle in dot product projection score
+(i.e., even if not significant; duplicates are removed).}
 
-\item{titles_color}{Color for all the titles (default: "#61605e")}
+\item{titles_color}{Color for all the titles (default: "#61605e").}
 
-\item{x_axes}{Variable to be plotted on the x axes (default is "dot_product.x").}
+\item{x_axes}{Variable to be plotted on the x-axes (default is "central_cosine").}
 
-\item{title_top}{string for title (default "  ")}
+\item{title_top}{Title (default "  ").}
 
 \item{x_axes_label}{Label on the x-axes.}
 
-\item{y_axes_values}{NULL,}
+\item{y_axes_values}{NULL.}
 
-\item{scale_x_axes_lim}{Manually set the legth of the x-axes (deafult=NULL; e.g., try c(-5, 5)).}
+\item{scale_x_axes_lim}{Legth of the x-axes (deafult: NULL; e.g., try c(-5, 5)).}
 
-\item{scale_y_axes_lim}{Manually set the legth of the y-axes (deafult=NULL; e.g., try c(-5, 5)).}
+\item{scale_y_axes_lim}{Legth of the y-axes (deafult: NULL; e.g., try c(-5, 5)).}
 
-\item{word_font}{Type of font (default: "Arial").}
+\item{word_font}{Type of font (default: NULL).}
 
-\item{centrality_color_codes}{The diffent colors of the words (default: c("#EAEAEA","#85DB8E", "#398CF9")).}
+\item{centrality_color_codes}{Colors of the words depending on check_extreme_min_x...
+(default: c("#EAEAEA","#85DB8E", "#398CF9")).}
 
-\item{word_size_range}{a vector with minimum and maximum (default: c(3, 8)).}
+\item{word_size_range}{Vector with minimum and maximum font size (default: c(3, 8)).}
 
-\item{position_jitter_hight}{degree of jitter hight (default: .0).}
+\item{position_jitter_hight}{Jitter hight (default: .0).}
 
-\item{position_jitter_width}{degree of jitter hight (default: .03).}
+\item{position_jitter_width}{Jitter width (default: .03).}
 
-\item{point_size}{the size of the points indicating the words' position (default: 0.5).}
+\item{point_size}{Size of the points indicating the words' position (default: 0.5).}
 
-\item{arrow_transparency}{the transparency of the lines between each word and point (default: 0.1).}
+\item{arrow_transparency}{Transparency of the lines between each word and point (default: 0.1).}
 
-\item{points_without_words_size}{sets the size of the points (without showing words, default is to not show it, i.e., 0).}
+\item{points_without_words_size}{Size of the points not linked to a word (default is to not show the point; , i.e., 0).}
 
-\item{points_without_words_alpha}{sets the transperency of the points (without showing words, default is to not show it, i.e., 0).}
+\item{points_without_words_alpha}{Transperency of the points that are not linked to a word (default is to not show it; i.e., 0).}
 
-\item{legend_title}{Label on the color legend (default: "(DPP)".}
+\item{legend_title}{Title of the color legend (default: "(DPP)").}
 
 \item{legend_x_axes_label}{Label on the color legend (default: "(x)".}
 
@@ -90,19 +91,19 @@ textCentralityPlot(
 
 \item{legend_y_position}{Position on the y coordinates of the color legend (default: 0.05).}
 
-\item{legend_h_size}{The height of the color legend (default 0.15).}
+\item{legend_h_size}{Height of the color legend (default 0.15).}
 
-\item{legend_w_size}{The width of the color legend (default 0.15).}
+\item{legend_w_size}{Width of the color legend (default 0.15).}
 
-\item{legend_title_size}{=7}
+\item{legend_title_size}{Font size of the title (default = 7).}
 
-\item{legend_number_size}{size of the values in the legend (default = 2)}
+\item{legend_number_size}{Font size of the values in the legend (default = 2).}
 }
 \value{
-A 1-dimensioal word plot.
+A 1-dimensional word plot based on cosine similarity to the aggregated word embedding.
 }
 \description{
-textCentralityPlot plots words
+Plot words according to cosine semantic similarity to the aggreagated word embedding.
 }
 \examples{
 # The test-data included in the package is called: centrality_data_harmony

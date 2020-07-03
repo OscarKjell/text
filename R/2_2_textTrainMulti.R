@@ -5,21 +5,22 @@
 
 
 # devtools::document()
-#' textTrainMultiTexts trains word embeddings from several text variables to a numeric variable.
+#' Train several word embeddings from several text variables to a numeric variable.
 #'
 #' @param xlist list of word embeddings from textEmbed.
-#' @param y The numeric variable to predict.
+#' @param y Numeric variable to predict.
 #' @param nrFolds_k Number of folds to use.
-#' @param preProcessThresh Preprocessing threshold.
-#' @param strata_y variables to stratify according; default y, can set to NULL
-#' @param methodCor Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").
-#' @param describe_model Input text to describe your model.
+
+#' @param preProcessThresh Preprocessing threshold for amount of variance to retain (default 0.95).
+#' @param strata_y Variable to stratify according (default y; can set to NULL).
+#' @param methodCor Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").
+#' @param describe_model Text to describe your model.
 #' @return A correlation between predicted and observed values; as well as predicted values.
-#' @description Concenate word embeddings from several text xariables to predict an outcome. The word embeddings for each text variables
-#' go through seperate PCA, where the PCA components acre concenated and used in a ridge regression.
+#' @description Concenate word embeddings from several text variables to predict an outcome. The word embeddings for each text variable
+#' go through seperate PCAs, where the PCA components are concenated and used in a ridge regression.
 #' @examples
 #' wordembeddings <- wordembeddings4_10[1:4]
-#' ratings_data <- sq_data_tutorial4_10$hilstotal
+#' ratings_data <- Language_based_assessment_data_8_10$hilstotal
 #' wordembeddings <- textTrainMultiTexts(wordembeddings, ratings_data, nrFolds_k = 2)
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textDiff}}
 #' @importFrom stats cor.test na.omit

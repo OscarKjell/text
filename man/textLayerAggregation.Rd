@@ -2,11 +2,11 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textLayerAggregation}
 \alias{textLayerAggregation}
-\title{textLayerAggregation selects and aggregate layers of hidden states to get word embeddings.}
+\title{Select and aggregate layers of hidden states to form a word embeddings.}
 \usage{
 textLayerAggregation(
   word_embeddings_layers,
-  layers = "all",
+  layers = 1:12,
   aggregation = "mean",
   tokens_select = NULL,
   tokens_deselect = NULL
@@ -15,20 +15,20 @@ textLayerAggregation(
 \arguments{
 \item{word_embeddings_layers}{Layers outputted from textHuggingFace.}
 
-\item{layers}{state the the numbers of the layers that you want to select for aggregation (e.g., c(1, 10:11) to get the first, tenth and eleventh).
-Note that layer 0 is the input embedding to the transformer.}
+\item{layers}{The numbers of the layers to be aggregated (e.g., c(11:12) to aggregate the eleventh and twelth; 'all' is not possible here).
+Note that layer 0 is the input embedding to the transformer, and should normally not be used.}
 
-\item{aggregation}{aggregation method of the dimension of each layer selected with layers parameter above (e.g., "mean", "min" or "max).}
+\item{aggregation}{Method to aggregate the dimensions of each selected layer (default "mean"; see also "min" or "max).}
 
-\item{tokens_select}{option to select embeddings linked to specifc tokens such as [CLS] and [SEP].}
+\item{tokens_select}{Option to only select embeddings linked to specifc token such as [CLS] and [SEP] (default NULL).}
 
-\item{tokens_deselect}{option to deselect embeddings linked to specifc tokens such as [CLS] and [SEP].}
+\item{tokens_deselect}{Option to deselect embeddings linked to specifc token such as [CLS] and [SEP] (default NULL).}
 }
 \value{
-A tibble with word embeddings. Note that layer 0 is the input embedding to the transformer.
+A tibble with word embeddings. Note that layer 0 is the input embedding to the transformer, which is normally not used.
 }
 \description{
-textLayerAggregation selects and aggregate layers of hidden states to get word embeddings.
+Select and aggregate layers of hidden states to form a word embeddings.
 }
 \examples{
 \dontrun{

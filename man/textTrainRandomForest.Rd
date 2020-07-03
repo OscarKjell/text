@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_3_textTrainRandomForest.R
 \name{textTrainRandomForest}
 \alias{textTrainRandomForest}
-\title{textTrainRandomForest trains word embeddings to a categorical variable using random forrest.}
+\title{Train word embeddings to a categorical variable using random forrest.}
 \usage{
 textTrainRandomForest(
   x,
@@ -14,27 +14,27 @@ textTrainRandomForest(
 )
 }
 \arguments{
-\item{x}{Wordembeddings from textImport.}
+\item{x}{Wordembeddings from textEmbed.}
 
-\item{y}{The categorical variable to predict.}
+\item{y}{Categorical variable to predict.}
 
-\item{trees}{Number of trees to use default 500).}
+\item{trees}{Number of trees to use (default 500).}
 
 \item{nrFolds_k}{Number of folds to use (default 10).}
 
-\item{strata_y}{variables to stratify according; default y, can set to NULL}
+\item{strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{describe_model}{Input text to describe your model.}
+\item{describe_model}{Text to describe your model.}
 }
 \value{
 A correlation between predicted and observed values; as well as predicted values.
 }
 \description{
-textTrainRandomForest trains word embeddings to a categorical variable using random forrest.
+Train word embeddings to a categorical variable using random forrest.
 }
 \examples{
 wordembeddings <- wordembeddings4_10
-ratings_data <- sq_data_tutorial4_10
+ratings_data <- Language_based_assessment_data_8_10
 wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k = 2)
 }
 \seealso{

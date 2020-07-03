@@ -1,5 +1,16 @@
 
+library("pkgdown")
+# Run once to configure your package to use pkgdown
+# usethis::use_pkgdown()
+# Run to build the website
+# devtools::document()
+# pkgdown::build_site()
+# build_home(pkg = ".", override = list(), preview = NA, quiet = TRUE)
+# build_reference()
+# build_reference_index()
 
+
+#Anaylse human language data with state-of-the-art Natural Language Processing and Deep Learning.
 
 # devtools::load_all
 # devtools::document()

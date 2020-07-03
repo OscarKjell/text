@@ -13,17 +13,16 @@
 # x <- wordembeddings4_10$harmonywords
 # y <- wordembeddings4_10$satisfactionwords
 # devtools::document()
-#' textDiff: Test whether there is a significant difference between two sets of texts
-#' (i.e., between their word embeddings). This is achieved using permutation, in the following steps:
-#'
-#' @param x set of word embeddings from textEmbedd.
-#' @param y set of word embeddings from textEmbedd.
-#' @param Npermutations number of permatation (default 1000).
-#' @param method compute a "paired" or "unpaired" test.
-#' @param alternative wheather to use a two or one-sided test.
+#' Test whether there is a significant difference in meaning between two sets of texts
+#' (i.e., between their word embeddings).
+#' @param x Set of word embeddings from textEmbed.
+#' @param y Set of word embeddings from textEmbed.
+#' @param Npermutations Number of permatations (default 1000).
+#' @param method Compute a "paired" or an "unpaired" test.
+#' @param alternative Use a two or one-sided test (select on of: "two_sided", "less", "greater").
 #' @param output.permutations If TRUE returns permuted values in output.
-#' @param N_cluster_nodes Number of cluster nodes to use (more makes computation faster; see parallel package.
-#' @return A list with a p-value, estimate and perumted values if output.permutations=TRUE.
+#' @param N_cluster_nodes Number of cluster nodes to use (more makes computation faster; see parallel package).
+#' @return A list with a p-value, estimate and permuted values if output.permutations=TRUE.
 #' @examples
 #' x <- wordembeddings4_10$harmonywords
 #' y <- wordembeddings4_10$satisfactionwords

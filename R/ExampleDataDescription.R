@@ -1,11 +1,11 @@
 # devtools::document()
 # usethis::use_data(/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/data/sq_data_tutorial_plotting_hilswl.rda)
-#' Example text and numeric data.
+#' Text and numeric data for 10 participants.
 #'
 #' The dataset is a shortened version of the data sets of Study 3-5
-#' from Kjell, Kjell, Garcia and Sikström 2018.
+#' from Kjell et al., (2018; https://psyarxiv.com/er6t7/).
 #'
-#' @format A data frame with 10 rows and 8 variables:
+#' @format A data frame with 10 participants and 8 variables:
 #' \describe{
 #'   \item{harmonywords}{descriptive words where respondents describe their harmony in life}
 #'   \item{satisfactionwords}{descriptive words where respondents describe their satisfaction with life}
@@ -18,24 +18,7 @@
 #'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
-"sq_data_tutorial8_10"
-
-
-# Example text and numeric data.
-#
-# The dataset is a shortened version of the data sets of Study 3-5
-# from Kjell, Kjell, Garcia and Sikström 2018.
-#
-# @format A data frame with 100 rows and 4 variables:
-# \describe{
-#   \item{hilstotal}{total score of the Harmony In Life Scale}
-#   \item{swlstotal}{total score of the Satisfaction With Life Scale}
-#   \item{age}{respondents age in years}
-#   \item{gender}{respondents gender 1=male, 2=female}
-#   ...
-# }
-# @source \url{https://psyarxiv.com/er6t7/}
-#"sq_data_tutorial4_100"
+"Language_based_assessment_data_8_10"
 
 
 #' Example text and numeric data.
@@ -43,80 +26,76 @@
 #' The dataset is a shortened version of the data sets of Study 3-5
 #' from Kjell, Kjell, Garcia and Sikström 2018.
 #'
-#' @format A data frame with 10 rows and 4 variables:
+#' @format A data frame with 100 rows and 4 variables:
 #' \describe{
+#'    \item{harmonywords}{Word responses from the harmony in life word question}
 #'   \item{hilstotal}{total score of the Harmony In Life Scale}
 #'   \item{swlstotal}{total score of the Satisfaction With Life Scale}
-#'   \item{age}{respondents age in years}
-#'   \item{gender}{respondents gender 1=male, 2=female}
 #'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
-"sq_data_tutorial4_10"
+"Language_based_assessment_data_3_100"
 
 
-#' Example wordembeddings.
+#' Wordembeddings for 4 text variables for 10 participants
 #'
 #' The dataset is a shortened version of the data sets of Study 3-5
 #' from Kjell, Kjell, Garcia and Sikström 2018.
 #'
-#' @format A data frame with 10 rows and 772 variables including the
-#' BERT-base wordembeddings from layer 11:12 (mean aggregated):
+#' @format A list with word embeddings for harmony words, satisfaction words, harmony text, satisfaction
+#' text and decontextualised word embeddings. BERT-base embeddings based on mean aggregation of layer 11 and 12.
 #' \describe{
-#'   \item{sequence_index}{output from textImport}
-#'   \item{segment_index}{output from textImport}
-#'   \item{token_index}{output from textImport}
-#'   \item{layer_index}{output from textImport}
-#'   \item{V1:V768}{dimension output from textImport}
+#'   \item{words}{words}
+#'   \item{n}{word frequency}
+#'   \item{Dim1:Dim768}{Word embeddings dimensions}
 #'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
 "wordembeddings4_10"
 
 
-#' Example wordembeddings.
-#'
-#' The dataset is a shortened version of the data sets of Study 3-5
-#' from Kjell, Kjell, Garcia and Sikström 2018.
-#'
-#' @format A data frame with 100 rows and 772 variables including the wordembeddings:
-#' \describe{
-#'   \item{sequence_index}{output from textImport}
-#'   \item{segment_index}{output from textImport}
-#'   \item{token_index}{output from textImport}
-#'   \item{layer_index}{output from textImport}
-#'   \item{V1:V768}{dimension output from textImport}
-#'   ...
-#' }
-#' @source \url{https://psyarxiv.com/er6t7/}
-"wordembeddings1_100"
+# Wordembeddings for one variables for 100 participants.
+#
+# The dataset is a shortened version of the data sets of Study 3-5
+# from Kjell, Kjell, Garcia and Sikström 2018.
+#
+# @format A data frame with 100 rows and 772 variables including the wordembeddings:
+# \describe{
+#   \item{sequence_index}{output from textImport}
+#   \item{segment_index}{output from textImport}
+#   \item{token_index}{output from textImport}
+#   \item{layer_index}{output from textImport}
+#   \item{V1:V768}{dimension output from textImport}
+#   ...
+# }
+# @source \url{https://psyarxiv.com/er6t7/}
+#"wordembeddings1_100"
 
 
-#' Example data for plotting a Dot Product Projection Plot.
+#' Data for plotting a Dot Product Projection Plot.
 #'
+#' Tibble is the output from textProjectionData.
 #' The dataset is a shortened version of the data sets of Study 3-5
 #' from Kjell, Kjell, Garcia and Sikström 2018.
 #'
 #' @format A data frame with 583 rows and 12 variables:
 #' \describe{
-#'   \item{words}{output from textProjectionData}
-#'   \item{dot.x}{output from textProjectionData}
-#'   \item{p_values_dot.x}{output from textProjectionData}
-#'   \item{n_g1.x}{output from textProjectionData}
-#'   \item{n_g2.x}{output from textProjectionData}
-#'   \item{dot.y}{output from textProjectionData}
-#'   \item{p_values_dot.y}{output from textProjectionData}
-#'   \item{n_g1.y}{output from textProjectionData}
-#'   \item{n_g2.y}{output from textProjectionData}
-#'   \item{n}{output from textProjectionData}
-#'   \item{n.percent}{output from textProjectionData}
-#'   \item{N_participant_responses}{output from textProjectionData}
+#'   \item{words}{unique words}
+#'   \item{dot.x}{dot product projection on the x-axes}
+#'   \item{p_values_dot.x}{p-value for the word in relation to the x-axes}
+#'   \item{n_g1.x}{frequency of the word in group 1 on the x-axes variable}
+#'   \item{n_g2.x}{frequency of the word in group 2 on the x-axes variable}
+#'   \item{dot.y}{dot product projection on the y-axes}
+#'   \item{p_values_dot.y}{p-value for the word in relation to the y-axes}
+#'   \item{n_g1.y}{frequency of the word in group 1 on the y-axes variable}
+#'   \item{n_g2.y}{frequency of the word in group 2 on the x-axes variable}
+#'   \item{n}{overall word frequency}
+#'   \item{n.percent}{frequency in percent}
+#'   \item{N_participant_responses}{number of participants (as this is needed in the analuses)}
 #'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
-"sq_data_plottingHw_HILSSSWLS_100"
-
-
+"DP_projections_HILS_SWLS_100"
 
 
 #' Example data for plotting a Semantic Centrality Plot.
@@ -126,11 +105,11 @@
 #'
 #' @format A data frame with 2,146 and 4 variables:
 #' \describe{
-#'   \item{words}{output from textProjectionData}
-#'   \item{n}{output from textProjectionData}
-#'   \item{central_cosine}{output from textProjectionData}
-#'   \item{n_percent}{output from textProjectionData}
+#'   \item{words}{unique words}
+#'   \item{n}{overall word frequency}
+#'   \item{central_cosine}{cosine semantic similarity to the aggregated word embedding}
+#'   \item{n_percent}{frequency in percent}
 #'   ...
 #' }
-#' @source \url{https://psyarxiv.com/er6t7/}
+#' @source \url{https://link.springer.com/article/10.1007/s11205-015-0903-z}
 "centrality_data_harmony"

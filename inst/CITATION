@@ -3,17 +3,15 @@ citHeader("To cite text in publications use:")
 citEntry(
   entry    = "Unpublished",
   note = "Psychology",
-  title    = "text: Analysing text and numeric variables with NLP and ML",
-  author   = "Oscar Kjell & Andrew Schwartz",
-  journal  = "xxx",
-  year     = "2020",
+  title    = "text: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning",
+  author   = "Oscar Kjell, Salvatore Giorgi & Andrew Schwartz",
+  journal  = "",
+  year     = "In progress",
   volume   = "0",
   number   = "0",
   pages    = "0",
-  url      = "http://www.oscarkjell.se/",
+  url      = "https://www.r-text.org/",
   textVersion =
-           paste("Oscar Kjell & Andrew Schwartz (2020).",
-                 "text: Analysing a text and numeric variables with NLP and ML.",
-                 "Unpublished",
-                 "http://www.oscarkjell.se.")
+           paste("Oscar Kjell, Salvatore Giorgi & Andrew Schwartz (In Progress).",
+                 "text: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning.", "https://www.r-text.org/.")
 )

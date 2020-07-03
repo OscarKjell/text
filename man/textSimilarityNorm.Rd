@@ -2,20 +2,22 @@
 % Please edit documentation in R/3_1_textSimilarity.R
 \name{textSimilarityNorm}
 \alias{textSimilarityNorm}
-\title{textSimilarityNorm computes the semantic similiarty between a character variable and a word norm (i.e., a text in one cell).}
+\title{Compute the semantic similarity between a text variable and a word norm (i.e., a text represented by one word embedding
+that represent a construct).}
 \usage{
 textSimilarityNorm(x, y)
 }
 \arguments{
 \item{x}{Wordembeddings from textEmbed (with several rows of text).}
 
-\item{y}{Wordembeddings from textEmbed (with only one text).}
+\item{y}{Wordembedding from textEmbed (from only one text).}
 }
 \value{
-A vector with semantic similarity scores (based on cosine).
+A vector comprising cosine semantic similarity scores.
 }
 \description{
-textSimilarityNorm computes the semantic similiarty between a character variable and a word norm (i.e., a text in one cell).
+Compute the semantic similarity between a text variable and a word norm (i.e., a text represented by one word embedding
+that represent a construct).
 }
 \examples{
 \dontrun{

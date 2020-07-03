@@ -7,15 +7,15 @@
 \format{
 A data frame with 2,146 and 4 variables:
 \describe{
-  \item{words}{output from textProjectionData}
-  \item{n}{output from textProjectionData}
-  \item{central_cosine}{output from textProjectionData}
-  \item{n_percent}{output from textProjectionData}
+  \item{words}{unique words}
+  \item{n}{overall word frequency}
+  \item{central_cosine}{cosine semantic similarity to the aggregated word embedding}
+  \item{n_percent}{frequency in percent}
   ...
 }
 }
 \source{
-\url{https://psyarxiv.com/er6t7/}
+\url{https://link.springer.com/article/10.1007/s11205-015-0903-z}
 }
 \usage{
 centrality_data_harmony

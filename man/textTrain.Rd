@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_1_textTrain.R
 \name{textTrain}
 \alias{textTrain}
-\title{textTrain trains word embeddings to a numeric variable.}
+\title{Train word embeddings to a numeric variable.}
 \usage{
 textTrain(
   x,
@@ -15,32 +15,33 @@ textTrain(
 )
 }
 \arguments{
-\item{x}{Wordembeddings from textImport.}
+\item{x}{Wordembeddings from textEmbed (or textLayerAggregation).}
 
-\item{y}{The numeric variable to predict.}
+\item{y}{Numeric variable to predict.}
 
 \item{nrFolds_k}{Number of folds to use.}
 
-\item{preProcessPCAthresh}{Preprocessing threshold.}
+\item{preProcessPCAthresh}{Preprocessing threshold for amount of variance to retain (default 0.95).}
 
-\item{strata_y}{variables to stratify according; default y, can set to NULL}
+\item{strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{methodCor}{Type of correlation used in evaluation; default pearson (see also "spearman", "kendall").}
+\item{methodCor}{Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").}
 
-\item{model_description}{Input text to describe your model (and share it with other).}
+\item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
 }
 \value{
-A correlation between predicted and observed values; as well as predicted values.
+A correlation between predicted and observed values; as well as a tibble of predicted values.
 }
 \description{
-textTrain trains word embeddings to a numeric variable.
+Train word embeddings to a numeric variable.
 }
 \examples{
 wordembeddings <- wordembeddings4_10
-ratings_data <- sq_data_tutorial4_10
+ratings_data <- Language_based_assessment_data_8_10
 wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
 nrFolds_k = 2, strata_y = NULL)
 }
 \seealso{
-see \code{\link{textTrainLists}} \code{\link{textDiff}}
+see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
+\code{\link{textTrainMultiTexts}} \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
 }
