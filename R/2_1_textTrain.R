@@ -15,27 +15,27 @@
 #registerDoParallel(cl)
 #stopCluster(cl)
 
-# library(text)
-# library(tidymodels)
-# library(rlang)
-# library(magrittr)
-# library(recipes)
-# library(workflows)
-# library(parsnip)
-# library(tune)
-# library(data.table)
-# library(stats)
-# library(tidyselect)
-# library(tidyverse)
+ library(text)
+ library(tidymodels)
+ library(rlang)
+ library(magrittr)
+ library(recipes)
+ library(workflows)
+ library(parsnip)
+ library(tune)
+ library(data.table)
+ library(stats)
+ library(tidyselect)
+ library(tidyverse)
 
-# test data
-# x = solmini_sd300_tk_mean$movement[1:50,]
-# y = solmini$phq_tot[1:50]
 
-# wordembeddings <- wordembeddings4_10
-# ratings_data <- sq_data_tutorial4_10
-# wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
-# nrFolds_k = 2, strata_y = NULL)
+ x = wordembeddings4_10$harmonytext
+ y = sq_data_tutorial4_10$hilstotal
+ nrFolds_k = 10
+ preProcessPCAthresh = 0.95
+ strata_y = "y"
+ methodCor = "pearson"
+ model_description = "Consider writing a description here"
 
 # textTrain using Tidymodels
 
@@ -69,10 +69,11 @@ textTrain <- function(x,
                       preProcessPCAthresh = 0.95,
                       strata_y = "y",
                       methodCor = "pearson",
-  model_description = "Consider writing a description here"){
+                      model_description = "Consider writing a description here"){
+
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
-  df2 <- cbind(x1, y)
-  df3 <- df2
+  df3 <- cbind(x1, y)
+  #df3 <- df2
 
   # Recipe: Preprocessing with pca, see options: ls("package:recipes", pattern = "^step_")
   df3_recipe <-
@@ -85,7 +86,7 @@ textTrain <- function(x,
     recipes::step_pca(all_predictors(), threshold = preProcessPCAthresh) #%>% num_comp = tune()
 
   # Cross-validation
-  set.seed(42)
+  set.seed(2020)
   df3_cv_splits <- rsample::vfold_cv(df3, v = nrFolds_k, strata = strata_y) # , ... ,  breaks = 4
 
   # Model
@@ -101,23 +102,23 @@ textTrain <- function(x,
 
   ctrl <- tune::control_grid(save_pred = TRUE)
 
-  # Tune_grid
+  # Tune_grid help(tune_grid)
   df3_glmn_tune <- tune::tune_grid(
+    object = df3_model,
     df3_recipe,
-    model = df3_model,
     resamples = df3_cv_splits,
     grid = df3_glmn_grid,
     control = ctrl
     )
 
   # Select the best penelty and mixture based on rmse
-  best_glmn <- tune::select_best(df3_glmn_tune, metric = "rmse", maximize = TRUE)
+  best_glmn <- tune::select_best(df3_glmn_tune, metric = "rmse") #, maximize = TRUE
 
   # Get predictions and observed (https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#32)
   df3_predictions <- tune::collect_predictions(df3_glmn_tune) %>%
     dplyr::filter(penalty == best_glmn$penalty, mixture == best_glmn$mixture)
 
-  # Evaluating the predictions using correlation help(filter)
+  # Evaluating the predictions using correlation
   correlation <- stats::cor.test(df3_predictions$y, df3_predictions$.pred, method = methodCor)
 
   # Describe model; adding user's-description + the name of the x and y

@@ -15,7 +15,7 @@
 # devtools::document()
 #' textTrainRandomForest trains word embeddings to a categorical variable using random forrest.
 #'
-#' @param x Wordembeddings from textImport.
+#' @param x Wordembeddings from textEmbed.
 #' @param y The categorical variable to predict.
 #' @param nrFolds_k Number of folds to use (default 10).
 #' @param trees Number of trees to use default 500).

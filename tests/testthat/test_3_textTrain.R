@@ -10,15 +10,16 @@ library(dplyr)
 
 context("Training Functions")
 
-wordembeddings_text <- readRDS("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/text/tests/testthat/wordembeddings_for_testthat.RData")
-numeric_variables <- readRDS("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/text/tests/testthat/numeric_for_testthat.RData")
+test_that("textTrain produces list of results with prediction being numeric", {
 
 
-test_that("textTrain produces trainged results", {
+  trained <- textTrain(wordembeddings4_10$harmonytext, sq_data_tutorial4_10$hilstotal,
+   nrFolds_k = 2, strata_y = NULL)
 
-  trained <- textTrain(wordembeddings_text$harmonytexts,
-                       numeric_variables$hilstotal)
   expect_that(trained, is_a("list"))
+
+  expect_is(trained$prediction$.pred[1], 'numeric')
+
 
 })
 

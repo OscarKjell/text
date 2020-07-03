@@ -27,6 +27,19 @@
 # Check the version of Python.
 # py_config()
 
+
+
+#  devtools::document()
+#' Testing F1 function from python
+#'
+#' @return "f one"
+#' @export
+f1_from_python <- function(){
+  f1()
+}
+# f1_from_python()
+
+
 #  devtools::document()
 #' Select all character variables and make them UTF-8 coded, since BERT wants it that way
 #'
@@ -110,7 +123,6 @@ applysemrep <- function(x, single_wordembeddings1) {
   }
 }
 
-
 #  devtools::document()
 #' semanticrepresentation
 #' Function to apply an aggregated semantic representaion for ALL words in a CELL; and if there are no words return a vector with NAs
@@ -174,6 +186,76 @@ getUniqueWordsAndFreq <- function(x_characters){
   singlewords
 }
 
+# devtools::document()
+#' sortingLayers
+#' This is a function that sorts out the embeddings (and is used again below for decontextualised words)
+#' @param x List of layers
+#' @param layers The number of layers to get (setting comes from textHuggingFace)
+#' @param return_tokens bolean wther tokens have been returened (setting comes from textHuggingFace)
+#' @return Layers in tidy tibble format with each dimension column caled Dim1, Dim2 etc.
+#' @noRd
+sortingLayers <- function(x, layers = layers, return_tokens = return_tokens){
+  # If selecting "all" layers, find out number of layers to help indicate layer index later in code
+  if(is.character(layers)) {
+    layers <- 0:(length(x[[1]][[1]])-1)
+  }
+
+  # Find Number Dimensions (where the place differ depending on return_token is TRUE or FALSE)
+  if(return_tokens){
+    dimensions <- length(x[[1]][[1]][[1]][[1]][[1]])
+    participants <- length(x[[1]])
+  }else{
+    dimensions <- length(x[[1]][[1]][[1]][[1]])
+    participants <- length(x)
+  }
+
+  # Tidy-structure tokens and embeddings
+  # Loop over the cases in the variable
+  variable_x <- list()
+  for(i_in_variable in 1:participants){   # 3 i_in_variable=1; i_in_variable=2
+
+    if(return_tokens){
+      tokens <- x[[2]][[i_in_variable]]
+      all_layers <- x[[1]][[i_in_variable]]
+    }else{
+      tokens <- NULL
+      all_layers <- x[[i_in_variable]]
+    }
+
+    # Loop of the number of layers
+    layers_list <- list()
+    for(i_layers in 1:length(all_layers)){ # 2 i_layers = 1
+      i_layers_for_tokens <- all_layers[i_layers]
+
+      # Transpose layers and give each column a DimX names library(tidyverse)
+      # layers_4_token <- suppressMessages(t(dplyr::bind_cols(i_layers_for_tokens))) %>%
+      layers_4_token <- suppressMessages(t(dplyr::bind_cols(i_layers_for_tokens))) %>%
+        magrittr::set_colnames(c(paste0("Dim", 1:dimensions))) #%>%
+      layers_4_token <- tibble::as_tibble(layers_4_token)
+
+      if(return_tokens){
+        tokens_layer_number <- tibble::tibble(tokens, rep(layers[i_layers], length(tokens)))
+        colnames(tokens_layer_number) <- c("tokens", "layer_number")
+        tokens_lnumber_layers <- bind_cols(tokens_layer_number, layers_4_token)
+        #tokens_lnumber_layers_true <- tokens_lnumber_layers
+      }else{
+        layer_number <- tibble::tibble(rep(layers[i_layers], nrow(layers_4_token))) # 11; 14
+        colnames(layer_number) <- c("layer_number")
+        tokens_lnumber_layers <- bind_cols(layer_number, layers_4_token)
+      }
+
+      layers_list[[i_layers]] <- tokens_lnumber_layers
+      layers_list
+    }
+    layers_tibble <- dplyr::bind_rows(layers_list)
+
+    variable_x[[i_in_variable]] <- layers_tibble
+  }
+  variable_x
+}
+
+
+#library(text)
 # Split up sentences (NOW ONLY 512 tokens!); # TODO: Add function in case there are more than 512 tokens it needs to split up.
 #x <-  c("harmony", "I'm harmonious.")
 #x <- sq_data_tutorial8_10[1:3, c(1:2, 5)]
@@ -203,9 +285,11 @@ getUniqueWordsAndFreq <- function(x_characters){
 #' and then remove in textLayerAggregation function, when aggregating embeddings.
 #' @param return_tokens provide the tokens used in transformer model.
 #' @return A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer
-# @examples
-# x <- sq_data_tutorial8_10[1:2, 1:2]
-# wordembeddings <- textHuggingFace(x)
+#' @examples
+#'\dontrun{
+#' x <- sq_data_tutorial8_10[1:2, 1:2]
+#' wordembeddings <- textHuggingFace(x)
+#'}
 #' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python
 #' @importFrom dplyr %>% bind_rows
@@ -223,76 +307,17 @@ textHuggingFace <- function(x,
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python("inst/python/huggingface_Interface3.py")
+  #reticulate::source_python("/Users/augustnilsson/Dropbox/text/august/text/inst/python/huggingface_Interface3.py")
 
   # Select all character variables and make then UTF-8 coded, since BERT wants it that way
   data_character_variables <- select_character_v_utf8(x)
-
-  # This is a function that sorts out the embeddings (and is used again below for decontextualised words)
-  sortingLayers <- function(x, layers = layers, return_tokens = return_tokens){
-    # If selecting "all" layers, find out number of layers to help indicate layer index later in code
-    if(is.character(layers)) {
-      layers <- 0:(length(x[[1]][[1]])-1)
-    }
-
-    # Find Number Dimensions (where the place differ depending on return_token is TRUE or FALSE)
-    if(return_tokens){
-      dimensions <- length(x[[1]][[1]][[1]][[1]][[1]])
-      participants <- length(x[[1]])
-    }else{
-      dimensions <- length(x[[1]][[1]][[1]][[1]])
-      participants <- length(x)
-    }
-
-    # Tidy-structure tokens and embeddings
-    # Loop over the cases in the variable
-    variable_x <- list()
-    for(i_in_variable in 1:participants){   # 3 i_in_variable=1; i_in_variable=2
-
-      if(return_tokens){
-        tokens <- x[[2]][[i_in_variable]]
-        all_layers <- x[[1]][[i_in_variable]]
-      }else{
-        tokens <- NULL
-        all_layers <- x[[i_in_variable]]
-      }
-
-      # Loop of the number of layers
-      layers_list <- list()
-      for(i_layers in 1:length(all_layers)){ # 2 i_layers = 1
-        i_layers_for_tokens <- all_layers[i_layers]
-
-        # Transpose layers and give each column a DimX names
-        layers_4_token <- suppressMessages(t(dplyr::bind_cols(i_layers_for_tokens))) %>%
-          tibble::as_tibble() %>%
-          magrittr::set_colnames(c(paste0("Dim", 1:dimensions)))
-
-        if(return_tokens){
-          tokens_layer_number <- tibble::tibble(tokens, rep(layers[i_layers], length(tokens)))
-          colnames(tokens_layer_number) <- c("tokens", "layer_number")
-          tokens_lnumber_layers <- bind_cols(tokens_layer_number, layers_4_token)
-          #tokens_lnumber_layers_true <- tokens_lnumber_layers
-        }else{
-          layer_number <- tibble::tibble(rep(layers[i_layers], nrow(layers_4_token))) # 11; 14
-          colnames(layer_number) <- c("layer_number")
-          tokens_lnumber_layers <- bind_cols(layer_number, layers_4_token)
-        }
-
-        layers_list[[i_layers]] <- tokens_lnumber_layers
-        layers_list
-      }
-      layers_tibble <- dplyr::bind_rows(layers_list)
-
-      variable_x[[i_in_variable]] <- layers_tibble
-    }
-    variable_x
-  }
 
   # This gives sorted word embeddings based on context (i.e., the entire text is sent to the transformer model)
   if(contexts){
   x <- data_character_variables
   sorted_layers_ALL_variables <- list()
   sorted_layers_ALL_variables$context <- list()
-  # Loop over all character variables i_variables
+  # Loop over all character variables i_variables = 1
   for (i_variables in 1:length(data_character_variables)){
 
   # Python file function to HuggingFace # i_variables=2
@@ -379,8 +404,10 @@ textHuggingFace <- function(x,
 #' @param tokens_select option to select embeddings linked to specifc tokens such as [CLS] and [SEP].
 #' @param tokens_deselect option to deselect embeddings linked to specifc tokens such as [CLS] and [SEP].
 #' @return A tibble with word embeddings. Note that layer 0 is the input embedding to the transformer.
-# @examples
-# wordembeddings <- textLayerAggregation(word_embeddings_layers)
+#' @examples
+#'\dontrun{
+#' wordembeddings <- textLayerAggregation(word_embeddings_layers)
+#'}
 #' @seealso see \code{\link{textHuggingFace}} and \code{\link{textEmbed}}
 #' @importFrom dplyr %>% bind_rows
 #' @export
@@ -452,9 +479,11 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' @param decontext_tokens_select option to select embeddings linked to specifc tokens such as [CLS] and [SEP] for the decontext embeddings.
 #' @param decontext_tokens_deselect option to deselect embeddings linked to specifc tokens such as [CLS] and [SEP] for the decontext embeddings.
 #' @return A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer
-# @examples
-# x <- sq_data_tutorial8_10[1:2, 1:2]
-# wordembeddings <- textEmbed(x)
+#' @examples
+#'\dontrun{
+#' x <- sq_data_tutorial8_10[1:2, 1:2]
+#' wordembeddings <- textEmbed(x)
+#'}
 #' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textEmbed}}
 #' @export
 textEmbed <- function(x,
@@ -475,6 +504,7 @@ textEmbed <- function(x,
                       decontext_tokens_deselect = NULL){
 
   reticulate::source_python("inst/python/huggingface_Interface3.py")
+  #reticulate::source_python("/Users/augustnilsson/Dropbox/text/august/text/inst/python/huggingface_Interface3.py")
 
   # Get hiden states/layers for all text; both context and decontext
   all_wanted_layers <- textHuggingFace(x,

@@ -7,7 +7,7 @@
 # devtools::document()
 #' textTrainMultiTexts trains word embeddings from several text variables to a numeric variable.
 #'
-#' @param xlist list of word embeddings from textImport.
+#' @param xlist list of word embeddings from textEmbed.
 #' @param y The numeric variable to predict.
 #' @param nrFolds_k Number of folds to use.
 #' @param preProcessThresh Preprocessing threshold.

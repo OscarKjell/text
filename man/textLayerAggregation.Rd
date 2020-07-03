@@ -30,6 +30,11 @@ A tibble with word embeddings. Note that layer 0 is the input embedding to the t
 \description{
 textLayerAggregation selects and aggregate layers of hidden states to get word embeddings.
 }
+\examples{
+\dontrun{
+wordembeddings <- textLayerAggregation(word_embeddings_layers)
+}
+}
 \seealso{
 see \code{\link{textHuggingFace}} and \code{\link{textEmbed}}
 }

@@ -18,6 +18,7 @@ A vector with semantic similarity scores (based on cosine).
 textSimilarityNorm computes the semantic similiarty between a character variable and a word norm (i.e., a text in one cell).
 }
 \examples{
+\dontrun{
 library(dplyr)
 library(tibble)
 harmonynorm <- c("harmony peace ")
@@ -26,6 +27,11 @@ satisfactionnorm <- c("satisfaction achievement")
 norms <- tibble::tibble(harmonynorm, satisfactionnorm)
 wordembeddings <- wordembeddings4_10
 wordembeddings_wordnorm <- textEmbed(norms)
+similiarty_scores <- textSimilarityNorm(
+ wordembeddings$harmonytext,
+ wordembeddings_wordnorm$harmonynorm
+)
+}
 }
 \seealso{
 see \code{\link{textSimilarity}} and \code{\link{textDiff}}

@@ -1,5 +1,6 @@
 
-#install.packages(c("dplyr", "tokenizers", "psych", "tibble", "stringr", "tidyr", "ggplot2", "ggrepel", "cowplot", "scales", "rlang", "purrr", "stringi", "data.table", "magrittr", "parsnip", "recipes", "rsample", "reticulate", "tune", "workflows", "yardstick", "lsa", "quanteda", "broom"))
+
+
 # devtools::load_all
 # devtools::document()
 # https://cran.r-project.org/web/packages/reticulate/vignettes/package.html
@@ -9,20 +10,20 @@
     warning("The text package requires running R on a 64-bit systems as it is dependent on torch from ptyhon; and you are not doing this.")
   }
   packageStartupMessage(cat(paste0("\033[0;", 32, "m", "This is text (version 0.6.0.9000).","\033[0m","\n"),
-                            paste0("\033[0;", 34, "m", "Newer versions may have updated default settings to reflect current understqnding of the state-of-the-art.","\033[0m")))
+                            paste0("\033[0;", 34, "m", "Newer versions may have updated default settings to reflect current understandings of the state-of-the-art.","\033[0m")))
 }
 
 
 
-#' @export
-hgTransformerGetEmbedding <- NULL
-
-.onLoad <- function(libname, pkgname) {
-   the_module <- reticulate::import_from_path(module = "huggingface_Interface3", path = system.file("python", package = "text"))
-
-   hgTransformerGetEmbedding <<- the_module$hgTransformerGetEmbedding
-}
-
+#f1 <- NULL
+#the_module <- NULL
+#
+#.onLoad <- function(libname, pkgname) {
+#  the_module <- reticulate::import_from_path(
+#    "the_py_module",
+#    file.path("inst", "python"))
+#  f1 <<- the_module$f1
+#}
 
 
 

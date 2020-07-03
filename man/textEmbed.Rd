@@ -64,6 +64,12 @@ A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is
 \description{
 textEmbed extracts layers and aggregate them to word embeddings, for all character variables in the dataframe.
 }
+\examples{
+\dontrun{
+x <- sq_data_tutorial8_10[1:2, 1:2]
+wordembeddings <- textEmbed(x)
+}
+}
 \seealso{
 see \code{\link{textLayerAggregation}} and \code{\link{textEmbed}}
 }

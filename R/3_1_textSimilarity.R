@@ -66,6 +66,7 @@ textSimilarity <- function(x, y) {
 #' @param y Wordembeddings from textEmbed (with only one text).
 #' @return A vector with semantic similarity scores (based on cosine).
 #' @examples
+#'\dontrun{
 #'library(dplyr)
 #'library(tibble)
 #'harmonynorm <- c("harmony peace ")
@@ -74,10 +75,11 @@ textSimilarity <- function(x, y) {
 #'norms <- tibble::tibble(harmonynorm, satisfactionnorm)
 #'wordembeddings <- wordembeddings4_10
 #'wordembeddings_wordnorm <- textEmbed(norms)
-#similiarty_scores <- textSimilarityNorm(
-#  wordembeddings$harmonytext,
-#  wordembeddings_wordnorm$harmonynorm
-#)
+#'similiarty_scores <- textSimilarityNorm(
+#'  wordembeddings$harmonytext,
+#'  wordembeddings_wordnorm$harmonynorm
+#')
+#'}
 #similiarty_scores
 #' @seealso see \code{\link{textSimilarity}} and \code{\link{textDiff}}
 #' @importFrom dplyr row_number slice select starts_with
