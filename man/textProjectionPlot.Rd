@@ -6,7 +6,7 @@
 \usage{
 textProjectionPlot(
   word_data,
-  k_n_words_two_test = TRUE,
+  k_n_words_two_test = FALSE,
   min_freq_words = 1,
   plot_n_words_square = 3,
   plot_n_words_p = 5,
@@ -20,12 +20,12 @@ textProjectionPlot(
   p_values_y = NULL,
   p_alpha = 0.05,
   p_adjust_method = "none",
-  title_top = " Dot Product Projection",
+  title_top = "Dot Product Projection",
   x_axes_label = "Dot product projection (DPP)",
   y_axes_label = "Dot product projection (DPP)",
   scale_x_axes_lim = NULL,
   scale_y_axes_lim = NULL,
-  y_axes_values = element_blank(),
+  y_axes_values_hide = TRUE,
   word_font = NULL,
   bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688", "#e07f6a", "#EAEAEA",
     "#40DD52", "#FF0000", "#EA7467", "#85DB8E"),
@@ -93,7 +93,7 @@ selects fist according to lowest p-value and then to frequency.}
 
 \item{scale_y_axes_lim}{Manually set the legth of the y-axes (deafult = NULL; e.g., try c(-5, 5)).}
 
-\item{y_axes_values}{default NULL}
+\item{y_axes_values_hide}{If TRUE, hides the values on y-axes (which is good for one-dimensional plots).}
 
 \item{word_font}{Font type (default: "Arial").}
 

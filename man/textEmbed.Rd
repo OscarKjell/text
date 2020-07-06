@@ -6,17 +6,16 @@
 \usage{
 textEmbed(
   x,
-  contexts = TRUE,
-  decontexts = TRUE,
   pretrained_weights = "bert-base-uncased",
   tokenizer_class = BertTokenizer,
   model_class = BertModel,
+  contexts = TRUE,
   layers = 11:12,
   context_aggregation = "mean",
   context_tokens_select = NULL,
   context_tokens_deselect = NULL,
+  decontexts = TRUE,
   decontext_layers = 11:12,
-  decontext_return_tokens = TRUE,
   decontext_aggregation = "mean",
   decontext_tokens_select = NULL,
   decontext_tokens_deselect = NULL
@@ -24,10 +23,6 @@ textEmbed(
 }
 \arguments{
 \item{x}{Tibble/dataframe with at least one character variable.}
-
-\item{contexts}{Provide word embeddings based on word contexts (standard method; default = TRUE).}
-
-\item{decontexts}{Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).}
 
 \item{pretrained_weights}{Character specifying pre-trained language model (default 'bert-base-uncased'). For an up-to-date
 list of avaiable models see https://github.com/huggingface/transformers.}
@@ -37,6 +32,8 @@ list of avaiable models see https://github.com/huggingface/transformers.}
 
 \item{model_class}{Model class that matches pretrained_weights and tokenizer_class (default BertModel). For an up-to-date
 list of avaiable models see https://github.com/huggingface/transformers.}
+
+\item{contexts}{Provide word embeddings based on word contexts (standard method; default = TRUE).}
 
 \item{layers}{Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
 that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
@@ -48,9 +45,9 @@ These layers can then be aggregated in the textLayerAggregation function.}
 
 \item{context_tokens_deselect}{Option to deselect embeddings linked to specific tokens such as [CLS] and [SEP] for the context embeddings.}
 
-\item{decontext_layers}{Layers to aggregate for the decontext embeddings.}
+\item{decontexts}{Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).}
 
-\item{decontext_return_tokens}{If TRUE, provide the tokens used in the specified transformer model, for decontextualised embeddings.}
+\item{decontext_layers}{Layers to aggregate for the decontext embeddings.}
 
 \item{decontext_aggregation}{Method to aggregate the decontextualised layers (i.e., embeddings from single words; e.g., "mean", "min" or "max).}
 
@@ -71,5 +68,5 @@ wordembeddings <- textEmbed(x, layers = 'all')
 }
 }
 \seealso{
-see \code{\link{textLayerAggregation}} and \code{\link{textEmbed}}
+see \code{\link{textLayerAggregation}} and \code{\link{textHuggingFace}}
 }

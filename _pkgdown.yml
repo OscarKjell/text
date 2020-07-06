@@ -18,9 +18,6 @@ authors:
   Andrew Schwartz:
     href: https://www3.cs.stonybrook.edu/~has/
 
-
-
-
 reference:
 - title: Transform text to word embeddings
   contents:
@@ -51,4 +48,22 @@ reference:
     - Language_based_assessment_data_3_100
     - DP_projections_HILS_SWLS_100
     - centrality_data_harmony
+
+articles:
+- title: Set-up
+  navbar: ~
+  contents:
+  - Extended_Installation_Guide
+  - Computer_Capacity
+- title: Tutorials
+  desc: >
+    These tutorials go into detail about various text-analyses.
+  contents:
+  - Word_embeddings
+- title: Comments
+  desc: >
+    General comments about text-analyses.
+  contents:
+  - Pre-registration
+
 

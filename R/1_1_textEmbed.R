@@ -1,3 +1,4 @@
+# library(text)
 # .rs.restartR()
 # not needed?: np <- import('numpy')
 # textTransform (Installations needed?)
@@ -483,7 +484,6 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' @param context_tokens_select Option to select word embeddings linked to specific tokens such as [CLS] and [SEP] for the context embeddings.
 #' @param context_tokens_deselect Option to deselect embeddings linked to specific tokens such as [CLS] and [SEP] for the context embeddings.
 #' @param decontext_layers Layers to aggregate for the decontext embeddings.
-#' @param decontext_return_tokens If TRUE, provide the tokens used in the specified transformer model, for decontextualised embeddings.
 #' @param decontext_aggregation Method to aggregate the decontextualised layers (i.e., embeddings from single words; e.g., "mean", "min" or "max).
 #' @param decontext_tokens_select Option to select embeddings linked to specific tokens such as [CLS] and [SEP] for the decontext embeddings.
 #' @param decontext_tokens_deselect option to deselect embeddings linked to specifc tokens such as [CLS] and [SEP] for the decontext embeddings.
@@ -493,26 +493,25 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' x <- Language_based_assessment_data_8_10[1:2, 1:2]
 #' wordembeddings <- textEmbed(x, layers = 'all')
 #'}
-#' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textEmbed}}
+#' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textHuggingFace}}
 #' @export
 textEmbed <- function(x,
-                      contexts = TRUE,
-                      decontexts = TRUE,
                       pretrained_weights = 'bert-base-uncased',
                       tokenizer_class = BertTokenizer,
                       model_class = BertModel,
+                      contexts = TRUE,
                       layers = 11:12,
                       context_aggregation = "mean",
                       context_tokens_select = NULL,
                       context_tokens_deselect = NULL,
+                      decontexts = TRUE,
                       decontext_layers = 11:12,
-                      decontext_return_tokens = TRUE,
                       decontext_aggregation = "mean",
                       decontext_tokens_select = NULL,
                       decontext_tokens_deselect = NULL){
-
+  # .rs.restartR()
+  #library(text)
   reticulate::source_python("inst/python/huggingface_Interface3.py")
-  #reticulate::source_python("/Users/augustnilsson/Dropbox/text/august/text/inst/python/huggingface_Interface3.py")
 
   # Get hiden states/layers for all text; both context and decontext
   all_wanted_layers <- textHuggingFace(x,
@@ -535,7 +534,7 @@ textEmbed <- function(x,
                                                       layers = decontext_layers,
                                                       aggregation = decontext_aggregation,
                                                       tokens_select = decontext_tokens_select,
-                                                      tokens_deselect = decontext_tokens_select)
+                                                      tokens_deselect = decontext_tokens_deselect)
   # Combine the words for each decontextualised embedding
   decontextualised_embeddings_words <- dplyr::bind_cols(all_wanted_layers$decontext$single_words, decontextualised_embeddings)
 

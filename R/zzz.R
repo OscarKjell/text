@@ -1,5 +1,5 @@
+# text KLOK999
 
-library("pkgdown")
 # Run once to configure your package to use pkgdown
 # usethis::use_pkgdown()
 # Run to build the website
@@ -9,6 +9,11 @@ library("pkgdown")
 # build_reference()
 # build_reference_index()
 
+
+
+
+#![computer servers](/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/docs/dev/img/computer_servers.jpg)
+#<span>Photo by <a href="https://unsplash.com/@wocintechchat?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Christina @ wocintechchat.com</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
 #Anaylse human language data with state-of-the-art Natural Language Processing and Deep Learning.
 

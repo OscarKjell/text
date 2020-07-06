@@ -4,7 +4,7 @@ Title: Analyses of Text using Natural Language Processing and Machine Learning
 Version: 0.6.0.9000
 Authors@R: c(
     person("Oscar", "Kjell", , "oscar.kjell@psy.lu.se", role = c("aut", "cre"), 
-      comment = c(ORCID = "0000-0002-2728-6278")
+      comment = c(ORCID = "0000-0002-2728-6278"),
     ),
     person("Salvatore", "Giorgi", role = c("aut"), 
       comment = c(ORCID = "0000-0001-7381-6295")

@@ -54,24 +54,6 @@
 "wordembeddings4_10"
 
 
-# Wordembeddings for one variables for 100 participants.
-#
-# The dataset is a shortened version of the data sets of Study 3-5
-# from Kjell, Kjell, Garcia and Sikström 2018.
-#
-# @format A data frame with 100 rows and 772 variables including the wordembeddings:
-# \describe{
-#   \item{sequence_index}{output from textImport}
-#   \item{segment_index}{output from textImport}
-#   \item{token_index}{output from textImport}
-#   \item{layer_index}{output from textImport}
-#   \item{V1:V768}{dimension output from textImport}
-#   ...
-# }
-# @source \url{https://psyarxiv.com/er6t7/}
-#"wordembeddings1_100"
-
-
 #' Data for plotting a Dot Product Projection Plot.
 #'
 #' Tibble is the output from textProjectionData.

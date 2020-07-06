@@ -1,5 +1,4 @@
-#words = centrality_plot_data_raw$harmony
-#words = sq_data_tutorial8_100$harmonywords
+
 
 #  devtools::document()
 #' Takes all words as input and arrange them in column with an accomponing column with frequency
@@ -194,8 +193,8 @@ textProjectionData <- function(words,
     x2 <- tibble::as_tibble(cbind(x1, wordembeddings)) # Do I really need these aggregated embeddings
 
     # Splitting datasets up to low versus high according to median split
-    group1 <- x2[ x2[2] < stats::median(as_vector(x2$value), na.rm = TRUE), ]
-    group2 <- x2[ x2[2] > stats::median(as_vector(x2$value), na.rm = TRUE), ]
+    group1 <- x2[ x2[2] < stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
+    group2 <- x2[ x2[2] > stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
 
     # Use function addEqualNrNArows from 3_1_testSimilarity
     # Function adds rows of NA until group2 and group1 have the same amount of rows.
@@ -413,52 +412,47 @@ textProjectionData <- function(words,
 # Plotting
 #
 #word_data <- DP_projections_HILS_SWLS_100
-#
-#word_data <- dppp_data
-#
-#title_top = " "
-#titles_color = "#61605e"
+##
 #k_n_words_two_test = TRUE
-#
-#x_axes = "dot.x"
-#y_axes = "dot.y"
-#p_values_x = "p_values_dot.x"
-#p_values_y = "p_values_dot.y"
-#p_alpha = 0.05
-#
 #min_freq_words = 1
-#plot_n_words_square = 0
-#plot_n_words_p = 1
-#plot_n_word_extreme = 0
-#plot_n_word_frequency = 0
-#plot_n_words_middle = 0
-#
-#p_adjust_method = "BY" # c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
-#x_axes_label = "Dot Product Projection"
-#y_axes_label = "Dot Product Projection"
-#scale_x_axes_lim = c(-4.5, 4.5)
-#scale_y_axes_lim = c(-4.5, 4.5)
-#y_axes_values = NULL #element_blank()
-#word_font = "Arial"
+#plot_n_words_square = 3
+#plot_n_words_p = 5
+#plot_n_word_extreme = 5
+#plot_n_word_frequency = 5
+#plot_n_words_middle = 5
+#titles_color = "#61605e"
+#x_axes = "dot.x"
+#y_axes = NULL
+#p_values_x = "p_values_dot.x"
+#p_values_y = NULL
+#p_alpha = 0.05
+#p_adjust_method = "none"
+#title_top = "Dot Product Projection"
+#x_axes_label = "Dot product projection (DPP)"
+#y_axes_label = "Dot product projection (DPP)"
+#scale_x_axes_lim = NULL
+#scale_y_axes_lim = NULL
+#y_axes_values_hide = TRUE
+#word_font = NULL
 #bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688",
-#                           "#e07f6a", "#EAEAEA", "#40DD52",
-#                           "#FF0000", "#EA7467", "#85DB8E")
+#                          "#e07f6a", "#EAEAEA", "#40DD52",
+#                          "#FF0000", "#EA7467", "#85DB8E")
 #word_size_range = c(3, 8)
 #position_jitter_hight = .0
 #position_jitter_width = .03
 #point_size = 0.5
 #arrow_transparency = 0.1
-#points_without_words_size = 0.3
-#points_without_words_alpha = 0.3
+#points_without_words_size = 0.2
+#points_without_words_alpha = 0.2
 #legend_title = "DPP"
-#legend_x_axes_label = "DPP: HILS"
-#legend_y_axes_label = "DPP: SWLS"
+#legend_x_axes_label = "x"
+#legend_y_axes_label = "y"
 #legend_x_position = 0.02
-#legend_y_position = 0.05
+#legend_y_position = 0.02
 #legend_h_size = 0.2
 #legend_w_size = 0.2
 #legend_title_size=7
-#legend_number_size = 3
+#legend_number_size = 2
 
 
 # Select colours: https://paletton.com/#uid=1000u0kllllaFw0g0qFqFg0w0aF  https://www.sessions.edu/color-calculator/
@@ -469,7 +463,7 @@ textProjectionData <- function(words,
 #'
 #' @param word_data Dataframe from textProjectionData
 #' @param k_n_words_two_test Select the k most frequent words to significance test (k = sqrt(100*N); N = number of paricipant responses). Default = TRUE.
-#' @param min_freq_words Select words to signficance test that have occured at least min_freq_words (default = 1).
+#' @param min_freq_words Select words to signficance test that have occurred at least min_freq_words (default = 1).
 #' @param plot_n_words_square Select number of significant words in each square of the figure to plot.
 #' @param plot_n_words_p Number of significant words to plot (n per x-axes and n per y-axes, where duplicates are removed);
 #' selects fist according to lowest p-value and then to frequency.
@@ -490,9 +484,9 @@ textProjectionData <- function(words,
 #' "hommel", "bonferroni", "BH", "BY",  "fdr").
 #' @param x_axes_label Label on the x-axes.
 #' @param y_axes_label Label on the y-axes.
-#' @param scale_x_axes_lim Manually set the legth of the x-axes (deafult = NULL; e.g., try c(-5, 5)).
-#' @param scale_y_axes_lim Manually set the legth of the y-axes (deafult = NULL; e.g., try c(-5, 5)).
-#' @param y_axes_values default NULL
+#' @param scale_x_axes_lim Manually set the length of the x-axes (deafult = NULL, which uses ggplot2::scale_x_continuous(limits = scale_x_axes_lim); change e.g., by trying c(-5, 5)).
+#' @param scale_y_axes_lim Manually set the length of the y-axes (deafult = NULL; which uses uses ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c(-5, 5)).
+#' @param y_axes_values_hide If TRUE, hides the values on y-axes (which is good for one-dimensional plots).
 #' @param word_font Font type (default: "Arial").
 #' @param bivariate_color_codes The diffent colors of the words (default: c("#398CF9", "#60A1F7", "#5dc688",
 #'                                                                          "#e07f6a", "#EAEAEA", "#40DD52",
@@ -549,9 +543,10 @@ textProjectionData <- function(words,
 #' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme theme_void theme_minimal aes labs scale_color_identity
 #' @importFrom rlang sym
 #' @importFrom cowplot ggdraw draw_plot
+#' @importFrom purrr as_vector
 #' @export
 textProjectionPlot <- function(word_data,
-                        k_n_words_two_test = TRUE,
+                        k_n_words_two_test = FALSE,
                         min_freq_words = 1,
                         plot_n_words_square = 3,
                         plot_n_words_p = 5,
@@ -565,12 +560,12 @@ textProjectionPlot <- function(word_data,
                         p_values_y = NULL,
                         p_alpha = 0.05,
                         p_adjust_method = "none",
-                        title_top = " Dot Product Projection",
+                        title_top = "Dot Product Projection",
                         x_axes_label = "Dot product projection (DPP)",
                         y_axes_label = "Dot product projection (DPP)",
                         scale_x_axes_lim = NULL,
                         scale_y_axes_lim = NULL,
-                        y_axes_values = element_blank(),
+                        y_axes_values_hide = TRUE,
                         word_font = NULL,
                         bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688",
                                                   "#e07f6a", "#EAEAEA", "#40DD52",
@@ -605,15 +600,15 @@ textProjectionPlot <- function(word_data,
       dplyr::slice(0:words_k)
   }
 
-  word_data_padjusted$adjusted_p_values.x <- stats::p.adjust(as_vector(word_data_padjusted[, p_values_x]), method = p_adjust_method)
-  #word_data <- full_join(word_data, word_data_padjusted[,c("words", "adjusted_p_values.x")], by="words")
-  word_data <- left_join(word_data, word_data_padjusted[,c("words", "adjusted_p_values.x")], by="words")
-  #word_data_test <- left_join(word_data, word_data_padjusted[,c("words", "adjusted_p_values.x")], by="words")
+  word_data_padjusted$adjusted_p_values.x <- stats::p.adjust(purrr::as_vector(word_data_padjusted[, p_values_x]), method = p_adjust_method)
+  #word_data <- dplyr::full_join(word_data, word_data_padjusted[,c("words", "adjusted_p_values.x")], by="words")
+  word_data <- dplyr::left_join(word_data, word_data_padjusted[,c("words", "adjusted_p_values.x")], by="words")
+  #word_data_test <- dplyr::left_join(word_data, word_data_padjusted[,c("words", "adjusted_p_values.x")], by="words")
 
   if (is.null(y_axes) == FALSE) {
     # Computing adjusted p-values
     word_data_padjusted_y <- word_data[word_data$n >= min_freq_words, ]
-    word_data_padjusted_y$adjusted_p_values.y <- stats::p.adjust(as_vector(word_data_padjusted_y[, p_values_y]), method = p_adjust_method)
+    word_data_padjusted_y$adjusted_p_values.y <- stats::p.adjust(purrr::as_vector(word_data_padjusted_y[, p_values_y]), method = p_adjust_method)
     #word_data <- full_join(word_data, word_data_padjusted_y[,c("words", "adjusted_p_values.y")], by="words")
     word_data <- left_join(word_data, word_data_padjusted_y[,c("words", "adjusted_p_values.y")], by="words")
   }
@@ -718,12 +713,12 @@ textProjectionPlot <- function(word_data,
     dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. perhaps point to have exact middle?
 
   word_data_x <- word_data %>%
-    dplyr::left_join(data_p_sq_all %>% dplyr::transmute(words, check_p_square = 1)) %>%
-    dplyr::left_join(data_p_x %>% dplyr::transmute(words, check_p_x = 1)) %>%
-    dplyr::left_join(word_data_extrem_max_x %>% dplyr::transmute(words, check_extreme_max_x = 1)) %>%
-    dplyr::left_join(word_data_extrem_min_x %>% dplyr::transmute(words, check_extreme_min_x = 1)) %>%
-    dplyr::left_join(word_data_frequency_x %>% dplyr::transmute(words, check_extreme_frequency_x = 1)) %>%
-    dplyr::left_join(word_data_middle_x %>% dplyr::transmute(words, check_middle_x = 1)) %>%
+    dplyr::left_join(data_p_sq_all %>% dplyr::transmute(words, check_p_square = 1), by = "words") %>%
+    dplyr::left_join(data_p_x %>% dplyr::transmute(words, check_p_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_extrem_max_x %>% dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_extrem_min_x %>% dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_frequency_x %>% dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_middle_x %>% dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
     dplyr::mutate(extremes_all_x = rowSums(cbind(check_p_square, check_p_x, check_extreme_max_x, check_extreme_min_x,
                                                 check_extreme_frequency_x, check_middle_x), na.rm = T))
 
@@ -757,11 +752,11 @@ textProjectionPlot <- function(word_data,
       dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. perhaps point to have exact middle?
 
     word_data_all <- word_data_x %>%
-      dplyr::left_join(data_p_y %>% dplyr::transmute(words, check_p_y = 1)) %>%
-      dplyr::left_join(word_data_extrem_max_y %>% dplyr::transmute(words, check_extreme_max_y = 1)) %>%
-      dplyr::left_join(word_data_extrem_min_y %>% dplyr::transmute(words, check_extreme_min_y = 1)) %>%
-      dplyr::left_join(word_data_frequency_y %>% dplyr::transmute(words, check_extreme_frequency_y = 1)) %>%
-      dplyr::left_join(word_data_middle_y %>% dplyr::transmute(words, check_middle_y = 1)) %>%
+      dplyr::left_join(data_p_y %>% dplyr::transmute(words, check_p_y = 1), by = "words") %>%
+      dplyr::left_join(word_data_extrem_max_y %>% dplyr::transmute(words, check_extreme_max_y = 1), by = "words") %>%
+      dplyr::left_join(word_data_extrem_min_y %>% dplyr::transmute(words, check_extreme_min_y = 1), by = "words") %>%
+      dplyr::left_join(word_data_frequency_y %>% dplyr::transmute(words, check_extreme_frequency_y = 1), by = "words") %>%
+      dplyr::left_join(word_data_middle_y %>% dplyr::transmute(words, check_middle_y = 1), by = "words") %>%
       dplyr::mutate(extremes_all_y = rowSums(cbind(check_p_y, check_extreme_max_y, check_extreme_min_y,
                                                   check_extreme_frequency_y, check_middle_y), na.rm = T)) %>%
       dplyr::mutate(extremes_all = rowSums(cbind(extremes_all_x, extremes_all_y), na.rm = T))
@@ -798,13 +793,20 @@ textProjectionPlot <- function(word_data,
     y_axes <- "only_x_dimension"
   }
 
+  # Add or Remove values on y-axes
+  if(y_axes_values_hide){
+    y_axes_values <- ggplot2::element_blank()
+  } else{
+    y_axes_values <- ggplot2::element_text()
+  }
+
   # Plot
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
     ggplot2::ggplot(data = word_data_all, ggplot2::aes(!!rlang::sym(x_axes), !!rlang::sym(y_axes), label = words)) +
 
     ggplot2::geom_point(
-      data = word_data_all, # [word_data_all$extremes_all_x==0 | word_data_all$extremes_all_y==0, ]
+      data = word_data_all,
       size = points_without_words_size,
       alpha = points_without_words_alpha,
       ggplot2::aes(color = colour_categories)
@@ -994,7 +996,7 @@ textProjectionPlot <- function(word_data,
 #' @param single_wordembeddings Word embeddings from textEmbed for individual words (i.e., the decontextualised word embeddings).
 #' @param aggregation Method to aggregate the word embeddings (default = "mean"; see also "min" or "max").
 #' @param min_freq_words Option to  select words that have at least occured a specified number of times (default = 0); when creating the semantic similarity
-#' scores within cosine similairty.
+#' scores within cosine similarity.
 #' @return A dataframe with variables (e.g., including semantic similarity, frequencies) for the individual words
 #' that are used for the plotting in the textCentralityPlot function.
 #' @examples
@@ -1071,12 +1073,13 @@ textCentralityData <- function(words,
 #' @param titles_color Color for all the titles (default: "#61605e").
 #' @param x_axes Variable to be plotted on the x-axes (default is "central_cosine").
 #' @param x_axes_label Label on the x-axes.
-#' @param scale_x_axes_lim Legth of the x-axes (deafult: NULL; e.g., try c(-5, 5)).
-#' @param scale_y_axes_lim Legth of the y-axes (deafult: NULL; e.g., try c(-5, 5)).
+#' @param scale_x_axes_lim Length of the x-axes (deafult: NULL, which uses c(min(word_data$central_cosine)-0.05, max(word_data$central_cosine)+0.05);
+#' change this by e.g., try c(-5, 5)).
+#' @param scale_y_axes_lim Length of the y-axes (deafult: NULL, which uses c(-1, 1); change e.g., by trying c(-5, 5)).
 #' @param y_axes_values NULL.
 #' @param word_font Type of font (default: NULL).
-#' @param centrality_color_codes Colors of the words depending on check_extreme_min_x...
-#'  (default: c("#EAEAEA","#85DB8E", "#398CF9")).
+#' @param centrality_color_codes Colors of the words selected as plot_n_word_extreme (minimum values), plot_n_words_middle and
+#' plot_n_word_extreme (maximum values); the default is c("#EAEAEA","#85DB8E", "#398CF9"), respectively.
 #' @param word_size_range Vector with minimum and maximum font size (default: c(3, 8)).
 #' @param position_jitter_hight Jitter hight (default: .0).
 #' @param position_jitter_width Jitter width (default: .03).
@@ -1187,10 +1190,10 @@ textCentralityPlot <- function(word_data,
     dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. perhaps point to have exact middle?
 
   word_data_all <- word_data %>%
-    dplyr::left_join(word_data_extrem_max_x %>% dplyr::transmute(words, check_extreme_max_x = 1)) %>%
-    dplyr::left_join(word_data_extrem_min_x %>% dplyr::transmute(words, check_extreme_min_x = 1)) %>%
-    dplyr::left_join(word_data_frequency_x %>% dplyr::transmute(words, check_extreme_frequency_x = 1)) %>%
-    dplyr::left_join(word_data_middle_x %>% dplyr::transmute(words, check_middle_x = 1)) %>%
+    dplyr::left_join(word_data_extrem_max_x %>% dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_extrem_min_x %>% dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_frequency_x %>% dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_middle_x %>% dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
     dplyr::mutate(extremes_all_x = rowSums(cbind(check_extreme_max_x, check_extreme_min_x,
                                                  check_extreme_frequency_x, check_middle_x), na.rm = T))
 

@@ -1,5 +1,5 @@
 ---
-title: "Introduction to ```text```"
+title: "Getting started"
 output: github_document #rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{text}
@@ -13,28 +13,24 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-The ```text```-package uses natural language processing and machine learning methods to examine text and numerical variables.
+The *text*-package uses natural language processing and machine learning methods to examine text and numerical variables.  
 
-The default method in ```text``` to map words to numbers uses [BERT](https://ai.googleblog.com/2018/11/open-sourcing-bert-state-of-art-pre.html), which is a general-purpose language model that creates state-of-the-art word embeddings based on deep learning. To achieve this, ```text``` relies on ```RBERT```, which in turn is based on TensorFlow; so make sure that this packages are properly installed and working (see [RBERT](https://github.com/johnERgordon/RBERT). 
+Central *text* functions are described below. The data and methods come from the [Kjell et al., 2019](https://www.ncbi.nlm.nih.gov/pubmed/29963879) ([pre-print](https://psyarxiv.com/er6t7/)), which show how individuals' open-ended text answers can be used to *measure*, *describe* and *differentiate* psychological constructs.  
 
-Important ```text``` functions are described below. The data and methods come from the [Semantic Measures Methods](https://www.ncbi.nlm.nih.gov/pubmed/29963879) ([Pre-print](https://psyarxiv.com/er6t7/)), which demonstrates how individuals' open-ended text answers can be used to *measure*, *describe* and *differentiate* psychological constructs.
+In short the workflow includes to first transform text variables into word embeddings. These word embeddings are then used to, for example, predict numerical variables, compute semantic similarity scores, statistically test difference in meaning between two sets of texts and plot words in the word embedding space.  
 
-In short the workflow includes to first transform text variables into word embeddings. These word embeddings are then used in different ways to, for example, predict numerical variables, compute semantic similarity scores between texts, or statistically test difference in meaning between two sets of texts.
-
-
-# Getting started with ```text```
-## ```textImport()```: mapping text to numbers (i.e., word embeddings)
-The example data that will be used in this tutorial comes from participants that have described their harmony in life and satisfaction with life with a text response, 10 descriptive words or rating scales. The ```textImport()``` function will automatically transform character variables in a given tibble to word embeddings. 
+### textEmbed(): mapping text to numbers
+The ```textEmbed()``` function automatically transforms character variables in a given tibble to word embeddings. The example data that will be used in this tutorial comes from participants that have described their harmony in life and satisfaction with life with a text response, 10 descriptive words or rating scales. For a more detailed description please see the [word embedding tutorial](https://www.r-text.org/articles/Word%20embeddings.html) 
 
 ```{r setup, eval = FALSE, warning=FALSE, message=FALSE}
 
 library(text)
 
 # Get example data including both text and numerical variables
-sq_data <- sq_data_tutorial8_10
+sq_data <- Language_based_assessment_data_8_10
 
 # Transform the text data to BERT word embeddings
-wordembeddings <- textImport(sq_data)
+wordembeddings <- textEmbed(sq_data)
 
 # See how word embeddings are structured
 wordembeddings
@@ -46,108 +42,39 @@ saveRDS(wordembeddings, "wordembeddings.rds")
 wordembeddings <- readRDS("_YOURPATH_/wordembeddings.rds")
 ```
 
-## ```textTrain()```: Examine the relationship between text and numeric variables
-The ```textTrain()``` is used to examine how well the word embeddings from a text can predict a numeric variable. This is done by training the word embeddings using ridge regression and 10-fold cross-validation (where the word embeddings are pre-processed using pca). In the example below we examine how well the harmony text responses can predict the rating scale scores from the Harmony in life scale. 
+
+### textTrain(): Examine the relationship between text and numeric variables
+The ```textTrain()``` is used to examine how well the word embeddings from a text can predict a numeric variable. This is done by training the word embeddings using ridge regression and 10-fold cross-validation (where the word embeddings are pre-processed using pca). In the example below we examine how well the harmony text responses can predict the rating scale scores from the Harmony in life scale.
+
 ```{r, eval = FALSE,  warning=FALSE, message=FALSE}
 library(text)
 library(rio)
-# Load already imported word embeddings
-# (above we only imported 10 rows/participants; whereas below we load 100 rows/participants
-wordembeddings <- rio::import("https://oscarkjell.se/text_data_examples/wordembeddings4_100.rda")
+# Load data that has already gone through textEmbed
+# The previous example only imported 10 participants; whereas below we load data from 100 participants
+wordembeddings <- rio::import("https://r-text.org/text_data_examples/wordembeddings4_100.rda")
 # Load corresponding numeric variables
-numeric_data <- rio::import("https://oscarkjell.se/text_data_examples/sq_data_tutorial4_100.rda")
+numeric_data <-   rio::import("https://r-text.org/text_data_examples/Language_based_assessment_data_8_100.rda")
 
 # Examine the relationship between harmonytext and the corresponding rating scale
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 2)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 10)
 
 # Examine the correlation between predicted and observed Harmony in life scale scores
-model_htext_hils$Correlation
-
-
-# Using textTrainLists enables you to quickly run through several lists of wordembeddings
-# predicting several outcomes
-# wordembeddings <- wordembeddings4_100[1:2]
-# ratings_data <- sq_data_tutorial4_100[5:6]
-outcomes <- textTrainLists(wordembeddings[1:2], numeric_data[1:2], nrFolds_k = 2)
-outcomes
+model_htext_hils$correlation
 ```
 
-
-## ```predict()``` features of text based on trained models from ```textTrain```
-Trained models (for example the one we did in the example above) can be applied to new datasets. Below we will apply a model that has been trained to predict valence.   
-```{r, eval = FALSE, warning=FALSE, message=FALSE}
-library(text)
-library(psych)
-library(rio)
-
-# Get a valence trained prediction model that has been created from another dataset.
-valence_prediction_model <- rio::import("https://oscarkjell.se/text_models/trained_anew1999_valence.rds")
-
-
-# Apply the valence model to the harmony text
-numeric_data$htext_valence <- predict(valence_prediction_model$Model, wordembeddings$harmonytexts)
-
-# Examine the correlation between the predicted valence and the Harmony in life scale score
-psych::corr.test(numeric_data$htext_valence, numeric_data$hilstotal)
-```
-
-## ```textSimilarity()```: Compute semantic similarity scales
-The ```textSimilarity()``` function measures the semantic similairty between to column of texts, and the ```textSimilarityNorm()``` measures the semantic similairty between texts in a column and word norm. 
-Semantic similarity scores can be used to measure psychological construct independent from rating scales by using word norms that represent the to-be-measured construct. The word norms have been created by asking participants to describe a psychological constructs. The word norm can be used to measure the semantic similarity between a person's answer whether they experience harmony in their life to the word norm describing harmony in life: If the score is high the person is seen to have high harmony in life. 
-```{r, eval = FALSE, warning=FALSE, message=FALSE}
-
-library(text)
-library(psych)
-library(rio)
-# Load already imported word embeddings
-# wordembeddings <- wordembeddings4_10
-# Load corresponding numeric variables
-# numeric_data <- sq_data_tutorial8_10
-
-# Compute semantic similarity scores between two text columns
-semantic_similarity_scores <- textSimilarity(
-  wordembeddings$harmonytexts,
-  wordembeddings$satisfactiontexts
-)
-# Look at the first scores
-head(semantic_similarity_scores)
-
-# Get word embeddings for word norms from a free online library
-word_norms_embeddings <- readRDS(url("https://oscarkjell.se/text_models/semsim_Word_Norms_Mental_Health_Kjell2018.rda"))
-
-# Examine which word norms there are
-names(word_norms_embeddings)
-
-# See information about the norms
-word_norms_embeddings$descrition_of_norms
-
-# Compute semantic similarity score between the harmony answers and the harmony norm
-# Note that the descriptive word answers are used instead of text answers to correspond with
-# how the word norm was created.
-norm_similarity_scores_harmony <- textSimilarityNorm(
-  wordembeddings$harmonywords,
-  word_norms_embeddings$harmonynorm
-)
-
-# Correlating the semantic measure with the corresponding rating scale
-psych::corr.test(norm_similarity_scores_harmony, numeric_data$hilstotal)
-```
-
-
-## ```textDiff()```: Test the difference in meaning between to sets of texts
+## textDiff(): Test the difference in meaning between to sets of texts
 The ```textDiff()``` function provides a permutation based test to examine whether two sets of texts significantly differ in meaning. It produces a p-value and estimate as an effect size. Below we examine whether the harmony text and satisfaction text responses differ in meaning. 
-```{r, eval = FALSE, warning=FALSE, message=FALSE}
-
+```{r, eval = TRUE, warning=FALSE, message=FALSE}
 library(text)
 
 # Compare the meaning between individuals' harmony in life and satisfaction with life answers
-textDiff(wordembeddings4_10$harmonytexts, wordembeddings4_10$satisfactiontexts, Npermutations = 100)
+textDiff(wordembeddings4_10$harmonytexts, wordembeddings4_10$satisfactiontexts, Npermutations = 100, output.permutations = FALSE)
 ```
 
 ## Plot statistically significant words 
 The plotting is made in two steps: First the ```textPlotData()``` function is pre-procssing the data, including computing statistics for each word to be plotted. Second, ```textPlotViz()``` is plotting the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made in the first step, the last step goes quicker so that one can try different design settings.   
 
-### Pre-process word data with ```textPlotData()``` 
+### textPlotData(): Pre-process data for plotting 
 ```{r, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 
@@ -164,40 +91,34 @@ df_for_plotting <- textPlotData(data_10$harmonywords, wordembeddings_10$harmonyw
 df_for_plotting
 ```
 
-### ```textPlotViz()```: A One-dimensional word plot
-```{r, eval = FALSE, warning=FALSE, message=FALSE, dpi=300}
+
+### textPlotViz(): A two-dimensional word plot
+```{r, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
 library(text)
-
-# Example data that have been pre-processed with textPlotData function is called sq_data_plottingHw_HILSSSWLS_100
-
-plot <- textPlotViz(
-  word_data = sq_data_plottingHw_HILSSSWLS_100,
-  title_top = "Harmony word responses",
-  x_axes = "cohensD.x",
-  y_axes = NULL,
-  x_axes_label = "HILS: Cohen's D",
-  y_axes_label = " ",
-  scale_x_axes_lim = c(-4, 4),
-  y_axes_values = element_blank()
+# Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function
+plot_projection <- textProjectionPlot(
+  word_data = DP_projections_HILS_SWLS_100,
+  k_n_words_two_test = FALSE,
+  plot_n_words_square = 5,
+  plot_n_words_p = 5,
+  plot_n_word_extreme = 1,
+  plot_n_word_frequency = 1,
+  plot_n_words_middle = 1,
+  x_axes = "dot.x",
+  y_axes = "dot.y",
+  p_values_x = "p_values_dot.x",
+  p_values_y = "p_values_dot.y",
+  p_alpha = 0.05,
+  title_top = " Dot Product Projection (DPP) of Harmony in life words",
+  x_axes_label = "Low vs. High HILS score",
+  y_axes_label = "Low vs. High SWLS score",
+  p_adjust_method = "bonferroni",
+  points_without_words_size = 0.4,
+  points_without_words_alpha = 0.4,
+  y_axes_values_hide = FALSE
 )
-plot
-```
+plot_projection
 
-### ```textPlotViz()```: A Two-dimensional word plot
-```{r, eval = FALSE, warning=FALSE, message=FALSE, dpi=300}
-library(text)
-
-# Example data that have been pre-processed with textPlotData function
-
-plot <- textPlotViz(
-  word_data = sq_data_plottingHw_HILSSSWLS_100,
-  title_top = "Harmony word responses",
-  x_axes = "cohensD.x",
-  y_axes = "cohensD.y",
-  x_axes_label = "HILS: Cohen's D",
-  y_axes_label = "SWLS: Cohen's D"
-)
-plot
 ```
 
 

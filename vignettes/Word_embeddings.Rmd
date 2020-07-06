@@ -1,0 +1,120 @@
+---
+title: "Word Embeddings: Defaults and Specifications"
+output: github_document #rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Word_Embeddings}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+A word embedding comprise vallues that represents the latent meaning of a word. The numbers may be seen as coordinates in a space that comprises several hundred dimensions. The more similar two words’ embeddings are, the closer positioned they are in this embedding space, and thus, the more similar the words are in meaning. Hence, embeddings reflect the relationships among words, where proximity in the embedding space represents similarity in latent meaning. ```Text``` uses already existing language models to map text data to high quality word embeddings.
+
+To represent several words, sentences and paragraphs, word embeddings of single words may be combined or aggregated into one word embedding. This can be achieved by taking the mean, minimum or maximum value of each dimension of the embeddings.
+
+This tutorial focuses on how to *retrieve* layers and how to *aggregate* them to receive word embeddings in ```text```. The focus will be on the actual functions.  
+
+For more detailed information about word embeddings and the language models in regard to ```text``` please see [*text: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning*](www); and for more comprehensive infomration about the inner functions of the language models, for example see [Illustrated BERT](https://jalammar.github.io/illustrated-bert/).
+
+## textEmbed: Reflecting standards and state-of-the-arts
+The main function to transform text to word embeddings is ```textEmbed()```. First, provide a tibble containing the text-variables that you want to transform (note that it is OK to submit other variables too, but the function will only grab the character variables). Second, set the language model specific settings; making sure that they work together (otherwise you will get an error). Table 1 show the most common model language; for more detailed information see [HuggingFace]()
+
+``` {r HF_tabble, echo=FALSE, results='asis'}
+library(magrittr)
+models_long <- c("BertModel", "BertModel", "OpenAIGPTModel", "GPT2Model", "CTRLModel", "TransfoXLModel", "XLNetModel", "XLMModel", "DistilBertModel", "RobertaModel", "XLMRobertaModel")
+
+tokenizer_long <- c("BertTokenizer", "BertTokenizer", "OpenAIGPTTokenizer", "GPT2Tokenizer",  "CTRLTokenizer", "TransfoXLTokenizer",  "XLNetTokenizer", "XLMTokenizer", "DistilBertTokenizer", "RobertaTokenizer", "XLMRobertaTokenizer")
+
+pretrained_weights_shortcut_long <- c("'bert-base-uncased'", "**'bert-multilingual-uncased'**", "'openai-gpt'", "'gpt2'", "'ctrl'", "'transfo-xl-wt103'", "'xlnet-base-cased'", "'xlm-mlm-enfr-1024'", "'distilbert-base-cased'", "'roberta-base'", "'xlm-roberta-base'")
+
+HF_tables_long <- tibble::tibble(models_long, tokenizer_long, pretrained_weights_shortcut_long)
+
+knitr::kable(HF_tables_long, caption="", bootstrap_options = c("hover"), full_width = T)
+```
+
+Third, decide whether you want contextualised and/or decontextualised word embeddings; by setting these parameters to TRUE/FALSE. Contexutalised word embeddings are standard and return word embeddings that have taken into account the context in which the word was used; the decontextualised word embeddings do not take into the context of how the word was used and are used in the plot functions. Last, select the number of layers you want and the way you want to aggregate them.  
+
+```{r word_embedding_tutorial_b1, eval = FALSE, warning=FALSE, message=FALSE}
+library(text)
+
+# Transform the text data to BERT word embeddings
+wordembeddings <- textEmbed(x = Language_based_assessment_data_8_10,
+                            pretrained_weights = 'bert-base-uncased',
+                            tokenizer_class = BertTokenizer,
+                            model_class = BertModel,
+                            contexts = TRUE,
+                            layers = 11:12,
+                            context_aggregation = "mean",
+                            decontexts = TRUE,
+                            decontext_layers = 11:12,
+                            decontext_aggregation = "mean")
+
+# Save the word embeddings to avoid having to import the text every time
+# saveRDS(wordembeddings, "_YOURPATH_/wordembeddings.rds")
+# Get the word embeddings again
+# wordembeddings <- readRDS("_YOURPATH_/wordembeddings.rds")
+
+# See how word embeddings are structured
+wordembeddings
+```
+
+The ```textEmbed()``` function is suitable when you are just interested in getting good word embeddings to test some research hypothesis with. That is, the defaults are based on general experience of what works. Under the hood ```textEmbed``` uses one function for retreiving the layers (```textHuggingFace```) and another function for aggregating them (```textLayerAggregation```). So, if you are interested in examining different layers and different aggregation methods it is better to split up the work flow so that you first retrieve all layers (which takes most time) and then test different aggregation methods. 
+
+## textHuggingFace: Get tokens and all the layers
+The ```textHuggingFace``` function is used to retrieve the layers of hidden states. 
+
+
+```{r word_embedding_tutorial_b2, eval = FALSE, warning=FALSE, message=FALSE}
+
+library(text)
+
+#Transform the text data to BERT word embeddings
+
+x <- Language_based_assessment_data_8_10[1:2, 1:2]
+ 
+wordembeddings_tokens_layers <- textHuggingFace(x,
+                                                contexts = TRUE,
+                                                decontexts = FALSE,
+                                                pretrained_weights = 'bert-base-uncased',
+                                                tokenizer_class = BertTokenizer,
+                                                model_class = BertModel,
+                                                layers = 'all',
+                                                return_tokens = TRUE)
+wordembeddings_tokens_layers
+
+
+```
+
+
+
+## textLayerAggregation: Testing different layers 
+The output from the ```textLayerAggregation()``` function is the same as that of ```textEmbed()```; but, now you have the possibility to test different ways to aggregate the layers without having to retrieve them from the language model. In ```textLayerAggregation()```, you can select any combination of the layers that you want to aggregate; and then you can select to aggregate them using the mean of the dimensions, the minimum or maximum value.  
+
+```{r word_embedding_tutorial_b3, eval = FALSE, warning=FALSE, message=FALSE}
+
+library(text)
+
+# Aggregating layer 11 and 12 by taking the mean of each dimension. 
+we_11_12_mean <- textLayerAggregation(word_embeddings_layers = wordembeddings_tokens_layers,
+                                      layers = 11:12,
+                                      aggregation = "mean")
+
+# Aggregating layer 11 and 12 by taking the minimum of each dimension accross the two layers.
+we_11_12_min <- textLayerAggregation(word_embeddings_layers = wordembeddings_tokens_layers,
+                                     layers = 11:12,
+                                     aggregation = "min")
+
+# Aggregating layer 1 to 12 by taking the max value of each dimension accross the 12 layers.
+we_1_12_min <- textLayerAggregation(word_embeddings_layers = wordembeddings_tokens_layers,
+                                    layers = 1:12,
+                                    aggregation = "max")
+we_1_12_min
+```
+
+Now the word embeddings are ready to be used in down stream tasks such as predicing numeric variables or be plotted according to different dimensions. 

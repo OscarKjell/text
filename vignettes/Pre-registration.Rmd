@@ -1,0 +1,52 @@
+---
+title: "Pre-registration and Researcher Degrees of Freedom"
+output: github_document #rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Pre-registration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+The flexibility of ```text``` provides researchers with a lot of freedome to select different options. For example, a researcher  can select among many different layers (in BERT base 12 and in BERT large 24); and these layers can be aggregated in different ways including using mean, minimum or maximum. It is also possible to use different number of PCA componenets (or not use PCA at all) in training; as well as selecting different regression algorithms including (multiple linear regression or ridge). All these options are great for learning more about these methods. However, when hypotheses testing is important to not fall pray for *researcher degrees of freedom* and avoid the risk of (unconsciously) p-hacking (e.g., see Simmons, Nelson, & Simonsohn, 2011).  
+ 
+### Careful with the flexibility in data analyses
+Researcher degrees of freedom refers to the inherent flexibility involved in conducting research including carrying out experiments as well as analyzing the data. Researchers can choose among many ways of analyzing their data, and these ways can, for example, be selected arbitrarily or on the basis that certain ways result in more desirable outcomes such as a statistically significant result (Simmons, Nelson, & Simonsohn, 2011). Or put another way, the flexibility in ```text``` is a double edged sward where abusing the options leads to p-hacking: the analytic process of consicously or unconsciously trying several types of analyses until achieving the desired results.  
+
+### Requirements Specifc for text analyses
+Specify language model , specify which layers that will be used and how they will be aggregated. 
+
+**Example of aspects to consider in a pre-registration of hypotheses testing**  
+This is not an exhaustive list; rather think through your analyses as carefully as possible and consider which decisions that can be appropriately be made in advance. For example,  
+
+* Type of model (e.g., BERT-base, BERT-large, multilingual BERT, RoBERTA, XLnet, etc.)  
+
+* Which layers (e.g., all, 11 and 12 etc.)  
+
+* Layer aggregation method (e.g., mean, minimum, and maximum)  
+
+* Exclusion of some token (e.g., [CLS] and [SEP])
+
+* Type of ML algorithm (e.g., ridge, Random Forest etc.)  
+
+* Number of cross validation folds in textTrain 
+
+* Criteria for ploting (e.g., number of words to significance test, plots etc.)
+
+* Number of permutations (e.g., in textDiff, textProjectionData?)  
+
+* Not(ing) change of random seed. In computer science literature it has recently been discussed that different random seeds can give very different restuls (e.g., see Mosbach et al., 2020). So perhaps even consider pointing out that seeds will not be changed or commit to a specific seed 
+
+
+##### References
+Simmons, J. P., Nelson, L. D., & Simonsohn, U. (2011). [False-positive psychology: Undisclosed flexibility in data collection and analysis allows presenting anything as significant.](https://journals.sagepub.com/doi/full/10.1177/0956797611417632) Psychological science.
+Mosbach, M., Andriushchenko, M., & Klakow, D. (2020). [On the Stability of Fine-tuning BERT: Misconceptions, Explanations, and Strong Baselines.](https://arxiv.org/pdf/2006.04884.pdf)
+
+
