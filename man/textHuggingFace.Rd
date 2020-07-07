@@ -47,7 +47,7 @@ Extract layers of hidden states (word embeddings) for all character variables in
 \examples{
 \dontrun{
 x <- Language_based_assessment_data_8_10[1:2, 1:2]
-wordembeddings <- textHuggingFace(x)
+wordembeddings <- textHuggingFace(x, layers = 'all')
 }
 }
 \seealso{

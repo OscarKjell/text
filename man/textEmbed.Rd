@@ -9,8 +9,9 @@ textEmbed(
   pretrained_weights = "bert-base-uncased",
   tokenizer_class = BertTokenizer,
   model_class = BertModel,
-  contexts = TRUE,
   layers = 11:12,
+  contexts = TRUE,
+  context_layers = 11:12,
   context_aggregation = "mean",
   context_tokens_select = NULL,
   context_tokens_deselect = NULL,
@@ -33,11 +34,13 @@ list of avaiable models see https://github.com/huggingface/transformers.}
 \item{model_class}{Model class that matches pretrained_weights and tokenizer_class (default BertModel). For an up-to-date
 list of avaiable models see https://github.com/huggingface/transformers.}
 
+\item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient to only extract the layers
+that you need (e.g., 12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
+These layers can then be aggregated in the textLayerAggregation function. If you want all layers then use 'all'.}
+
 \item{contexts}{Provide word embeddings based on word contexts (standard method; default = TRUE).}
 
-\item{layers}{Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
-that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
-These layers can then be aggregated in the textLayerAggregation function.}
+\item{context_layers}{Specify the layers that should be aggregated (default 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.}
 
 \item{context_aggregation}{Method to aggregate the contextualised layers (e.g., "mean", "min" or "max).}
 
@@ -64,7 +67,7 @@ Extract layers and aggregate them to word embeddings, for all character variable
 \examples{
 \dontrun{
 x <- Language_based_assessment_data_8_10[1:2, 1:2]
-wordembeddings <- textEmbed(x, layers = 'all')
+wordembeddings <- textEmbed(x, context_layers = 'all', decontext_layers='all')
 }
 }
 \seealso{

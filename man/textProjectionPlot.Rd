@@ -52,7 +52,7 @@ textProjectionPlot(
 
 \item{k_n_words_two_test}{Select the k most frequent words to significance test (k = sqrt(100*N); N = number of paricipant responses). Default = TRUE.}
 
-\item{min_freq_words}{Select words to signficance test that have occured at least min_freq_words (default = 1).}
+\item{min_freq_words}{Select words to signficance test that have occurred at least min_freq_words (default = 1).}
 
 \item{plot_n_words_square}{Select number of significant words in each square of the figure to plot.}
 
@@ -89,9 +89,9 @@ selects fist according to lowest p-value and then to frequency.}
 
 \item{y_axes_label}{Label on the y-axes.}
 
-\item{scale_x_axes_lim}{Manually set the legth of the x-axes (deafult = NULL; e.g., try c(-5, 5)).}
+\item{scale_x_axes_lim}{Manually set the length of the x-axes (deafult = NULL, which uses ggplot2::scale_x_continuous(limits = scale_x_axes_lim); change e.g., by trying c(-5, 5)).}
 
-\item{scale_y_axes_lim}{Manually set the legth of the y-axes (deafult = NULL; e.g., try c(-5, 5)).}
+\item{scale_y_axes_lim}{Manually set the length of the y-axes (deafult = NULL; which uses uses ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c(-5, 5)).}
 
 \item{y_axes_values_hide}{If TRUE, hides the values on y-axes (which is good for one-dimensional plots).}
 

@@ -60,14 +60,15 @@ textCentralityPlot(
 
 \item{y_axes_values}{NULL.}
 
-\item{scale_x_axes_lim}{Legth of the x-axes (deafult: NULL; e.g., try c(-5, 5)).}
+\item{scale_x_axes_lim}{Length of the x-axes (deafult: NULL, which uses c(min(word_data$central_cosine)-0.05, max(word_data$central_cosine)+0.05);
+change this by e.g., try c(-5, 5)).}
 
-\item{scale_y_axes_lim}{Legth of the y-axes (deafult: NULL; e.g., try c(-5, 5)).}
+\item{scale_y_axes_lim}{Length of the y-axes (deafult: NULL, which uses c(-1, 1); change e.g., by trying c(-5, 5)).}
 
 \item{word_font}{Type of font (default: NULL).}
 
-\item{centrality_color_codes}{Colors of the words depending on check_extreme_min_x...
-(default: c("#EAEAEA","#85DB8E", "#398CF9")).}
+\item{centrality_color_codes}{Colors of the words selected as plot_n_word_extreme (minimum values), plot_n_words_middle and
+plot_n_word_extreme (maximum values); the default is c("#EAEAEA","#85DB8E", "#398CF9"), respectively.}
 
 \item{word_size_range}{Vector with minimum and maximum font size (default: c(3, 8)).}
 

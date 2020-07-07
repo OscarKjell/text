@@ -17,10 +17,10 @@ knitr::opts_chunk$set(
 
 The flexibility of ```text``` provides researchers with a lot of freedome to select different options. For example, a researcher  can select among many different layers (in BERT base 12 and in BERT large 24); and these layers can be aggregated in different ways including using mean, minimum or maximum. It is also possible to use different number of PCA componenets (or not use PCA at all) in training; as well as selecting different regression algorithms including (multiple linear regression or ridge). All these options are great for learning more about these methods. However, when hypotheses testing is important to not fall pray for *researcher degrees of freedom* and avoid the risk of (unconsciously) p-hacking (e.g., see Simmons, Nelson, & Simonsohn, 2011).  
  
-### Careful with the flexibility in data analyses
+### Flexibility: The double edged sword in data analyses
 Researcher degrees of freedom refers to the inherent flexibility involved in conducting research including carrying out experiments as well as analyzing the data. Researchers can choose among many ways of analyzing their data, and these ways can, for example, be selected arbitrarily or on the basis that certain ways result in more desirable outcomes such as a statistically significant result (Simmons, Nelson, & Simonsohn, 2011). Or put another way, the flexibility in ```text``` is a double edged sward where abusing the options leads to p-hacking: the analytic process of consicously or unconsciously trying several types of analyses until achieving the desired results.  
 
-### Requirements Specifc for text analyses
+### Specifc pre-registration requirements for text analyses
 Specify language model , specify which layers that will be used and how they will be aggregated. 
 
 **Example of aspects to consider in a pre-registration of hypotheses testing**  

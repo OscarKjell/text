@@ -1,9 +1,12 @@
 #Oscar, here is a version of the python transformers code that seems to be working well for returning both select layers and returning the tokens. 
 #note: I think layer 0 is the input embedding. 
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
 from transformers import *
 import numpy as np
+
 
 
 #TODO:#dictionary of pretrained weights to models

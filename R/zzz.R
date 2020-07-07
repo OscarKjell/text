@@ -1,5 +1,11 @@
 # text KLOK999
 
+# devtools::document()
+# devtools::check()
+# devtools::install_github("oscarkjell/text")
+#?install_github
+
+
 # Run once to configure your package to use pkgdown
 # usethis::use_pkgdown()
 # Run to build the website

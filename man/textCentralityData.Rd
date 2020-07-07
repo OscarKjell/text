@@ -23,7 +23,7 @@ textCentralityData(
 \item{aggregation}{Method to aggregate the word embeddings (default = "mean"; see also "min" or "max").}
 
 \item{min_freq_words}{Option to  select words that have at least occured a specified number of times (default = 0); when creating the semantic similarity
-scores within cosine similairty.}
+scores within cosine similarity.}
 }
 \value{
 A dataframe with variables (e.g., including semantic similarity, frequencies) for the individual words
