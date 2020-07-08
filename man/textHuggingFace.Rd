@@ -8,9 +8,7 @@ textHuggingFace(
   x,
   contexts = TRUE,
   decontexts = TRUE,
-  pretrained_weights = "bert-base-uncased",
-  tokenizer_class = BertTokenizer,
-  model_class = BertModel,
+  model = "bert-base-uncased",
   layers = "all",
   return_tokens = TRUE
 )
@@ -22,14 +20,8 @@ textHuggingFace(
 
 \item{decontexts}{Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).}
 
-\item{pretrained_weights}{Character specifying pre-trained language model (default 'bert-base-uncased'). For an up-to-date
-list of avaiable models see https://github.com/huggingface/transformers.}
-
-\item{tokenizer_class}{Tokenizer that match pretrained_weights (default BertTokenizer). For an up-to-date
-list of avaiable models see https://github.com/huggingface/transformers.}
-
-\item{model_class}{Model class that matches pretrained_weights and tokenizer_class (default BertModel). For an up-to-date
-list of avaiable models see https://github.com/huggingface/transformers.}
+\item{model}{Character strinng specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
+"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".}
 
 \item{layers}{Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
 that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.

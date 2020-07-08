@@ -1,3 +1,5 @@
+#.rs.restartR()
+
 # text KLOK999
 
 # devtools::document()
@@ -15,6 +17,19 @@
 # build_reference()
 # build_reference_index()
 
+#getwd()
+#reticulate::import("huggingface_Interface3")
+#help(import)
+#x <- "how are you"
+#hgTransformerGetEmbedding(x, layers=11)
+#
+#getwd()
+#setwd("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/inst/python/")
+#reticulate::import("the_py_module")
+#f1()
+#
+#reticulate::source_python("the_py_module.py")
+#f1()
 
 
 

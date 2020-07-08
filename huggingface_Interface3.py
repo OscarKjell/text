@@ -57,7 +57,7 @@ def hgTransformerGetEmbedding(text_strings, #list of strings
 #    embeddings, tokens = hgTransformerGetEmbedding("Here is one sentence.", layers=[0,10])
 #    print(np.array(embeddings).shape)
 #    print(tokens)
-#
+
 #    embeddings, tokens = hgTransformerGetEmbedding("Here is more sentences. But why is not . and , and ? indicated with SEP?", layers=[0,10])
 #    print(np.array(embeddings).shape)
 #    print(tokens)

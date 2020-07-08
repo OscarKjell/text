@@ -41,7 +41,6 @@ f1_from_python <- function(){
 }
 # f1_from_python()
 
-
 #  devtools::document()
 #' Select all character variables and make them UTF-8 coded, since BERT wants it that way
 #'
@@ -269,6 +268,15 @@ grep_col_by_name_in_list <- function(l, pattern) {
 }
 
 
+# devtools::document()
+# setting_up_model_tokenizer_weights
+# This function sets up the specific of the models; the parameters for HuggingFace.
+# @param model A characther string naming the model according to HuggingFace's way of aning the pretrained weights.
+# @return whcih pretrained_weights, tokenizer_class and model_class to use.
+# @noRd
+#setting_up_model_tokenizer_weights <- function(model)
+
+
 #library(text)
 # Split up sentences (NOW ONLY 512 tokens!); # TODO: Add function in case there are more than 512 tokens it needs to split up.
 #x <-  c("harmony", "I'm harmonious.")
@@ -288,12 +296,8 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @param x Tibble/dataframe with at least one character variable.
 #' @param contexts Provide word embeddings based on word contexts (standard method; default = TRUE).
 #' @param decontexts Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).
-#' @param pretrained_weights Character specifying pre-trained language model (default 'bert-base-uncased'). For an up-to-date
-#' list of avaiable models see https://github.com/huggingface/transformers.
-#' @param tokenizer_class Tokenizer that match pretrained_weights (default BertTokenizer). For an up-to-date
-#' list of avaiable models see https://github.com/huggingface/transformers.
-#' @param model_class Model class that matches pretrained_weights and tokenizer_class (default BertModel). For an up-to-date
-#' list of avaiable models see https://github.com/huggingface/transformers.
+#' @param model Character strinng specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
+#' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".
 #' @param layers Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
 #' that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
 #' These layers can then be aggregated in the textLayerAggregation function.
@@ -314,14 +318,55 @@ grep_col_by_name_in_list <- function(l, pattern) {
 textHuggingFace <- function(x,
                             contexts = TRUE,
                             decontexts = TRUE,
-                            pretrained_weights = 'bert-base-uncased',
-                            tokenizer_class = BertTokenizer,
-                            model_class = BertModel,
+                            model = "bert-base-uncased",
                             layers = 'all',
                             return_tokens = TRUE) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python("inst/python/huggingface_Interface3.py")
+
+  # Setting up the specifics of the models; the parameters for HuggingFace.
+  if(model == "bert-base-uncased"){
+    pretrained_weights = 'bert-base-uncased'
+    tokenizer_class = BertTokenizer
+    model_class = BertModel
+  } else if (model == "openai-gpt"){
+    pretrained_weights = 'openai-gpt'
+    tokenizer_class = OpenAIGPTTokenizer
+    model_class = OpenAIGPTModel
+  } else if (model == "gpt2"){
+    pretrained_weights = 'GPT2Tokenizer'
+    tokenizer_class = OpenAIGPTTokenizer
+    model_class = GPT2Model
+  } else if (model == "ctrl"){
+    pretrained_weights = 'ctrl'
+    tokenizer_class = CTRLTokenizer
+    model_class = CTRLModel
+  } else if (model == "transfo-xl-wt103"){
+    pretrained_weights = 'transfo-xl-wt103'
+    tokenizer_class = TransfoXLTokenizer
+    model_class = TransfoXLModel
+  } else if (model == "xlnet-base-cased"){
+    pretrained_weights = 'xlnet-base-cased'
+    tokenizer_class = XLNetTokenizer
+    model_class = XLNetModel
+  } else if (model == "xlm-mlm-enfr-1024"){
+    pretrained_weights = 'xlm-mlm-enfr-1024'
+    tokenizer_class = XLMTokenizer
+    model_class = XLMModel
+  } else if (model == "distilbert-base-cased"){
+    pretrained_weights = 'distilbert-base-cased'
+    tokenizer_class = DistilBertTokenizer
+    model_class = DistilBertModel
+  } else if (model == "roberta-base"){
+    pretrained_weights = 'roberta-base'
+    tokenizer_class = RobertaTokenizer
+    model_class = RobertaModel
+  } else if (model == "xlm-roberta-base"){
+    pretrained_weights = 'xlm-roberta-base'
+    tokenizer_class = XLMRobertaTokenizer
+    model_class = XLMRobertaModel
+  }
 
   # Select all character variables and make then UTF-8 coded, since BERT wants it that way
   data_character_variables <- select_character_v_utf8(x)
@@ -447,8 +492,6 @@ textLayerAggregation <- function(word_embeddings_layers,
     layers
   }
 
-
-
   # Loop over the list of variables
   selected_layers_aggregated_tibble <- list()
   for (variable_list_i in 1:length(word_embeddings_layers)) {   # variable_list_i =1
@@ -489,12 +532,8 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' @param x Tibble/dataframe with at least one character variable.
 #' @param contexts Provide word embeddings based on word contexts (standard method; default = TRUE).
 #' @param decontexts Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).
-#' @param pretrained_weights Character specifying pre-trained language model (default 'bert-base-uncased'). For an up-to-date
-#' list of avaiable models see https://github.com/huggingface/transformers.
-#' @param tokenizer_class Tokenizer that match pretrained_weights (default BertTokenizer). For an up-to-date
-#' list of avaiable models see https://github.com/huggingface/transformers.
-#' @param model_class Model class that matches pretrained_weights and tokenizer_class (default BertModel). For an up-to-date
-#' list of avaiable models see https://github.com/huggingface/transformers.
+#' @param model Character strinng specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
+#' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".
 #' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient to only extract the layers
 #' that you need (e.g., 12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
 #' These layers can then be aggregated in the textLayerAggregation function. If you want all layers then use 'all'.
@@ -518,9 +557,7 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textHuggingFace}}
 #' @export
 textEmbed <- function(x,
-                      pretrained_weights = 'bert-base-uncased',
-                      tokenizer_class = BertTokenizer,
-                      model_class = BertModel,
+                      model = 'bert-base-uncased',
                       layers = 11:12,
                       contexts = TRUE,
                       context_layers = 11:12,
@@ -540,9 +577,7 @@ textEmbed <- function(x,
   all_wanted_layers <- textHuggingFace(x,
                                        contexts = contexts,
                                        decontexts = decontexts,
-                                       pretrained_weights = pretrained_weights,
-                                       tokenizer_class = tokenizer_class,
-                                       model_class = model_class,
+                                       model = model,
                                        layers = layers,
                                        return_tokens = FALSE)
 

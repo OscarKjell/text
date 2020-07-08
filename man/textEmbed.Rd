@@ -6,9 +6,7 @@
 \usage{
 textEmbed(
   x,
-  pretrained_weights = "bert-base-uncased",
-  tokenizer_class = BertTokenizer,
-  model_class = BertModel,
+  model = "bert-base-uncased",
   layers = 11:12,
   contexts = TRUE,
   context_layers = 11:12,
@@ -25,14 +23,8 @@ textEmbed(
 \arguments{
 \item{x}{Tibble/dataframe with at least one character variable.}
 
-\item{pretrained_weights}{Character specifying pre-trained language model (default 'bert-base-uncased'). For an up-to-date
-list of avaiable models see https://github.com/huggingface/transformers.}
-
-\item{tokenizer_class}{Tokenizer that match pretrained_weights (default BertTokenizer). For an up-to-date
-list of avaiable models see https://github.com/huggingface/transformers.}
-
-\item{model_class}{Model class that matches pretrained_weights and tokenizer_class (default BertModel). For an up-to-date
-list of avaiable models see https://github.com/huggingface/transformers.}
+\item{model}{Character strinng specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
+"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".}
 
 \item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient to only extract the layers
 that you need (e.g., 12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
@@ -67,7 +59,10 @@ Extract layers and aggregate them to word embeddings, for all character variable
 \examples{
 \dontrun{
 x <- Language_based_assessment_data_8_10[1:2, 1:2]
-wordembeddings <- textEmbed(x, context_layers = 'all', decontext_layers='all')
+#Example 1
+wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
+#Example 1
+wordembeddings <- textEmbed(x, layers = 'all', context_layers = 'all', decontext_layers = 'all')
 }
 }
 \seealso{
