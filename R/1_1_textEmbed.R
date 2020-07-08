@@ -329,7 +329,7 @@ textHuggingFace <- function(x,
                             tokenizer_class = NULL,
                             model_class = NULL) {
 
-  # Run python file with HunggingFace interface to state-of-the-art transformers
+  # Run python file with HunggingFace interface to state-of-the-art transformers UPDATING
   # reticulate::source_python("~/inst/python/huggingface_Interface3.py")
   reticulate::source_python(system.file("inst/python/", "huggingface_Interface3.py", package="text", mustWork = TRUE))
 
