@@ -20,8 +20,8 @@ textHuggingFace(
 
 \item{decontexts}{Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).}
 
-\item{model}{Character strinng specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
-"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".}
+\item{model}{Character strinng specifying pre-trained language model (default 'bert-base-uncased'; options "bert-base-multilingual-uncased", "bert-base-multilingual-cased", "openai-gpt",
+"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased", "roberta-base", or "xlm-roberta-base", "xlm-roberta-large".}
 
 \item{layers}{Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
 that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.

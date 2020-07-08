@@ -296,8 +296,12 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @param x Tibble/dataframe with at least one character variable.
 #' @param contexts Provide word embeddings based on word contexts (standard method; default = TRUE).
 #' @param decontexts Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).
-#' @param model Character strinng specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
-#' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".
+#' @param model Character strinng specifying pre-trained language model. Default 'bert-base-uncased'; options "bert-base-multilingual-uncased", "bert-base-multilingual-cased", "openai-gpt",
+#' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased", "roberta-base", or "xlm-roberta-base", "xlm-roberta-large". See
+#' also https://www.r-text.org/articles/Word_embeddings.html. If specified as NULL, set parameters pretrained_weights, tokenizer_class and model_class.
+#' @param pretrained_weights advanced parameter submitted to HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/
+#' @param tokenizer_class advanced parameter submitted to HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/
+#' @param model_class advanced parameter submitted to HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/
 #' @param layers Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
 #' that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
 #' These layers can then be aggregated in the textLayerAggregation function.
@@ -320,7 +324,10 @@ textHuggingFace <- function(x,
                             decontexts = TRUE,
                             model = "bert-base-uncased",
                             layers = 'all',
-                            return_tokens = TRUE) {
+                            return_tokens = TRUE,
+                            pretrained_weights = NULL,
+                            tokenizer_class = NULL,
+                            model_class = NULL) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python("inst/python/huggingface_Interface3.py")
@@ -330,7 +337,15 @@ textHuggingFace <- function(x,
     pretrained_weights = 'bert-base-uncased'
     tokenizer_class = BertTokenizer
     model_class = BertModel
-  } else if (model == "openai-gpt"){
+    } else if (model == "bert-base-multilingual-uncased"){
+      pretrained_weights = 'bert-base-multilingual-uncased'
+      tokenizer_class = BertTokenizer
+      model_class = BertModel
+    } else if (model == "bert-base-multilingual-cased"){
+      pretrained_weights = 'bert-base-multilingual-cased'
+      tokenizer_class = BertTokenizer
+      model_class = BertModel
+      }  else if (model == "openai-gpt"){
     pretrained_weights = 'openai-gpt'
     tokenizer_class = OpenAIGPTTokenizer
     model_class = OpenAIGPTModel
@@ -354,8 +369,8 @@ textHuggingFace <- function(x,
     pretrained_weights = 'xlm-mlm-enfr-1024'
     tokenizer_class = XLMTokenizer
     model_class = XLMModel
-  } else if (model == "distilbert-base-cased"){
-    pretrained_weights = 'distilbert-base-cased'
+  } else if (model == "distilbert-base-uncased"){
+    pretrained_weights = 'distilbert-base-uncased'
     tokenizer_class = DistilBertTokenizer
     model_class = DistilBertModel
   } else if (model == "roberta-base"){
@@ -366,6 +381,14 @@ textHuggingFace <- function(x,
     pretrained_weights = 'xlm-roberta-base'
     tokenizer_class = XLMRobertaTokenizer
     model_class = XLMRobertaModel
+  } else if (model == "xlm-roberta-large"){
+    pretrained_weights = 'xlm-roberta-large'
+    tokenizer_class = XLMRobertaTokenizer
+    model_class = XLMRobertaModel
+  } else if (is.null(model)){
+    pretrained_weights
+    tokenizer_class
+    model_class
   }
 
   # Select all character variables and make then UTF-8 coded, since BERT wants it that way

@@ -42,6 +42,8 @@ devtools::install_github("oscarkjell/text")
 ### Map your text to numbers
 Recent significant advances in NLP research have resulted in improved representations of human language (i.e., language models). These language models have produced big performance gains in tasks related to understanding human language. Using deep learning to model word order and context now gives great results. Multilingual language models can also represent several languages; multilingual BERT comprises *104 different languages*. Text are making these SOTA models  easily accessible through an interface to [HuggingFace](https://huggingface.co/transformers/) in Python.
 
+Model                 | Reference           | Layers | States/dimensions | Language
+'bert-base-uncased'   | Devlan et al., 2019 | 12     | 768               | English
 *Table 1. Some of the available language models*
 ``` {r HF_tabble_short, echo=FALSE, results='asis'}
 library(magrittr)

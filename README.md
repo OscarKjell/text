@@ -51,7 +51,9 @@ different languages*. Text are making these SOTA models easily
 accessible through an interface to
 [HuggingFace](https://huggingface.co/transformers/) in Python.
 
-*Table 1. Some of the available language models*
+Model | Reference | Layers | States/dimensions | Language
+‘bert-base-uncased’ | Devlan et al., 2019 | 12 | 768 | English *Table
+1. Some of the available language models*
 
 | model\_short    | tokenizer\_short    | pretrained\_weights\_shortcut\_short |
 | :-------------- | :------------------ | :----------------------------------- |

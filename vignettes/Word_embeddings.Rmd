@@ -23,7 +23,7 @@ This tutorial focuses on how to *retrieve* layers and how to *aggregate* them to
 For more detailed information about word embeddings and the language models in regard to ```text``` please see [*text: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning*](www); and for more comprehensive infomration about the inner functions of the language models, for example see [Illustrated BERT](https://jalammar.github.io/illustrated-bert/).
 
 ## textEmbed: Reflecting standards and state-of-the-arts
-The main function to transform text to word embeddings is ```textEmbed()```. First, provide a tibble containing the text-variables that you want to transform (note that it is OK to submit other variables too, but the function will only grab the character variables). Second, set the language model specific settings; making sure that they work together (otherwise you will get an error). Table 1 show the most common model language; for more detailed information see [HuggingFace]()
+The main function to transform text to word embeddings is ```textEmbed()```. First, provide a tibble containing the text-variables that you want to transform (note that it is OK to submit other variables too, but the function will only grab the character variables). Second, set the language model specific settings; making sure that they work together (otherwise you will get an error). Table 1 show the most common model language; for more detailed information see [HuggingFace](https://huggingface.co/)
 
 ``` {r HF_tabble, echo=FALSE, results='asis'}
 library(magrittr)
