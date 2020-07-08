@@ -10,7 +10,10 @@ textHuggingFace(
   decontexts = TRUE,
   model = "bert-base-uncased",
   layers = "all",
-  return_tokens = TRUE
+  return_tokens = TRUE,
+  pretrained_weights = NULL,
+  tokenizer_class = NULL,
+  model_class = NULL
 )
 }
 \arguments{
@@ -20,14 +23,21 @@ textHuggingFace(
 
 \item{decontexts}{Provide word embeddings of single words as input (embeddings used for plotting; default = TRUE).}
 
-\item{model}{Character strinng specifying pre-trained language model (default 'bert-base-uncased'; options "bert-base-multilingual-uncased", "bert-base-multilingual-cased", "openai-gpt",
-"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased", "roberta-base", or "xlm-roberta-base", "xlm-roberta-large".}
+\item{model}{Character strinng specifying pre-trained language model. Default 'bert-base-uncased'; options "bert-base-multilingual-uncased", "bert-base-multilingual-cased", "openai-gpt",
+"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased", "roberta-base", or "xlm-roberta-base", "xlm-roberta-large". See
+also https://www.r-text.org/articles/Word_embeddings.html. If specified as NULL, set parameters pretrained_weights, tokenizer_class and model_class.}
 
 \item{layers}{Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
 that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
 These layers can then be aggregated in the textLayerAggregation function.}
 
 \item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
+
+\item{pretrained_weights}{advanced parameter submitted to HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/}
+
+\item{tokenizer_class}{advanced parameter submitted to HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/}
+
+\item{model_class}{advanced parameter submitted to HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/}
 }
 \value{
 A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer, and should

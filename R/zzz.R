@@ -4,10 +4,9 @@
 
 # devtools::document()
 # devtools::check()
-devtools::install_github("OscarKjell/text", auth_token = "44f269339bb0ea5776f77ccb3c3e582f59a2164c")
-devtools::install_github("OscarKjell/text", auth_token = "99a9388f1ef7a1e44b94f3650d9aeb7ea0658bea")
-1#?install_github
-?install_github
+#devtools::install_github("OscarKjell/text", auth_token = "99a9388f1ef7a1e44b94f3650d9aeb7ea0658bea")
+#1#?install_github
+#?install_github
 
 # Run once to configure your package to use pkgdown
 # usethis::use_pkgdown()
