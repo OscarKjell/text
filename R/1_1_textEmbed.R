@@ -595,7 +595,8 @@ textEmbed <- function(x,
                       decontext_tokens_deselect = NULL){
   # .rs.restartR()
   #library(text)
-  reticulate::source_python("inst/python/huggingface_Interface3.py")
+  #reticulate::source_python("inst/python/huggingface_Interface3.py")
+  reticulate::source_python(system.file("python", "huggingface_Interface3.py", package="text", mustWork = TRUE))
 
   # Get hiden states/layers for all text; both context and decontext
   all_wanted_layers <- textHuggingFace(x,
