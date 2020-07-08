@@ -9,7 +9,7 @@ textHuggingFace(
   contexts = TRUE,
   decontexts = TRUE,
   model = "bert-base-uncased",
-  layers = "all",
+  layers = 11:12,
   return_tokens = TRUE,
   pretrained_weights = NULL,
   tokenizer_class = NULL,
