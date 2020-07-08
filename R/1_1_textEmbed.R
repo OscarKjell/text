@@ -330,7 +330,7 @@ textHuggingFace <- function(x,
                             model_class = NULL) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
-  reticulate::source_python("inst/python/huggingface_Interface3.py")
+  reticulate::source_python("./inst/python/huggingface_Interface3.py")
 
   # Setting up the specifics of the models; the parameters for HuggingFace.
   if(model == "bert-base-uncased"){

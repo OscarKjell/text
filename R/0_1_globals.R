@@ -20,5 +20,9 @@ utils::globalVariables(c(
   "check_p_square", "check_p_x", "check_extreme_max_x", "check_extreme_min_x", "check_extreme_frequency_x",
   "check_middle_x", "check_p_y", "check_extreme_max_y", "check_extreme_min_y", "check_extreme_frequency_y",
   "check_middle_y", "extremes_all_x", "extremes_all_y", "BertTokenizer", "BertModel",
-  "hgTransformerGetEmbedding", "central_cosine"
+  "hgTransformerGetEmbedding", "central_cosine",
+  "CTRLModel", "CTRLTokenizer", "DistilBertModel", "DistilBertTokenizer", "GPT2Model",
+  "OpenAIGPTModel", "OpenAIGPTTokenizer", "RobertaModel", "RobertaTokenizer",
+  "TransfoXLModel", "TransfoXLTokenizer", "XLMModel", "XLMRobertaModel",
+  "XLMRobertaTokenizer", "XLMTokenizer", "XLNetModel", "XLNetTokenizer"
 ))
