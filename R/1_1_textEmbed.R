@@ -302,8 +302,8 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @param pretrained_weights advanced parameter submitted to HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/
 #' @param tokenizer_class advanced parameter submitted to HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/
 #' @param model_class advanced parameter submitted to HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/
-#' @param layers Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
-#' that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
+#' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient to only extract the layers
+#' that you need (e.g., 11:12); but you can also extract all by setting this paramenter to "all". Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
 #' These layers can then be aggregated in the textLayerAggregation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
 #' @return A tibble with tokens, layer identifyer and word embeddings. Note that layer 0 is the input embedding to the transformer, and should

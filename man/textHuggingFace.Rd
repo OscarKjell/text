@@ -27,8 +27,8 @@ textHuggingFace(
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased", "roberta-base", or "xlm-roberta-base", "xlm-roberta-large". See
 also https://www.r-text.org/articles/Word_embeddings.html. If specified as NULL, set parameters pretrained_weights, tokenizer_class and model_class.}
 
-\item{layers}{Specify the layers that should be extracted (default 'all'). It is more efficient to only extract the layers
-that you need (e.g., 11:12). Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
+\item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient to only extract the layers
+that you need (e.g., 11:12); but you can also extract all by setting this paramenter to "all". Layer 0 is the decontextualised input layer (i.e., not comprising hidden states) and thus adviced to not use.
 These layers can then be aggregated in the textLayerAggregation function.}
 
 \item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}

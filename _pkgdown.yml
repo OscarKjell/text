@@ -18,6 +18,10 @@ authors:
   Andrew Schwartz:
     href: https://www3.cs.stonybrook.edu/~has/
 
+twitter:
+  icon: "fab fa-twitter fa-lg"
+  href: http://twitter.com/OscarKjell
+
 reference:
 - title: Transform text to word embeddings
   contents:

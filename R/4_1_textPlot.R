@@ -408,9 +408,9 @@ textProjectionData <- function(words,
 
 
 
-
-# Plotting
-#
+#library(text)
+## Plotting
+##
 #word_data <- DP_projections_HILS_SWLS_100
 ##
 #k_n_words_two_test = TRUE
@@ -698,7 +698,6 @@ textProjectionPlot <- function(word_data,
   word_data_extrem_min_x <- word_data %>%
     dplyr::arrange(dot.x) %>%
     dplyr::slice(0:plot_n_word_extreme)
-
 
   word_data_frequency_x <- word_data %>%
     dplyr::arrange(-n) %>%
@@ -1078,8 +1077,8 @@ textCentralityData <- function(words,
 #' @param scale_y_axes_lim Length of the y-axes (deafult: NULL, which uses c(-1, 1); change e.g., by trying c(-5, 5)).
 #' @param y_axes_values NULL.
 #' @param word_font Type of font (default: NULL).
-#' @param centrality_color_codes Colors of the words selected as plot_n_word_extreme (minimum values), plot_n_words_middle and
-#' plot_n_word_extreme (maximum values); the default is c("#EAEAEA","#85DB8E", "#398CF9"), respectively.
+#' @param centrality_color_codes Colors of the words selected as plot_n_word_extreme (minimum values), plot_n_words_middle,
+#' plot_n_word_extreme (maximum values) and plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000"), respectively.
 #' @param word_size_range Vector with minimum and maximum font size (default: c(3, 8)).
 #' @param position_jitter_hight Jitter hight (default: .0).
 #' @param position_jitter_width Jitter width (default: .03).
@@ -1096,12 +1095,13 @@ textCentralityData <- function(words,
 #' @param legend_title_size Font size of the title (default = 7).
 #' @param legend_number_size Font size of the values in the legend (default = 2).
 #' @return A 1-dimensional word plot based on cosine similarity to the aggregated word embedding.
+#' @seealso see \code{\link{textCentralityData}} and \code{\link{textProjectionData}}
 #' @examples
 #' # The test-data included in the package is called: centrality_data_harmony
-#'names(centrality_data_harmony)
+#' names(centrality_data_harmony)
 #' # Plot
-#'centrality_plot <- textCentralityPlot(
-#'  word_data=centrality_data_harmony,
+#' centrality_plot <- textCentralityPlot(
+#'  word_data = centrality_data_harmony,
 #'  min_freq_words = 10,
 #'  plot_n_word_extreme = 10,
 #'  plot_n_word_frequency = 10,
@@ -1113,7 +1113,7 @@ textCentralityData <- function(words,
 #'  x_axes_label = "Semantic Centrality",
 #'
 #'  word_font = NULL,
-#'  centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9"),
+#'  centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9", "#000000"),
 #'  word_size_range = c(3, 8),
 #'  point_size = 0.5,
 #'  arrow_transparency = 0.1,
@@ -1122,8 +1122,6 @@ textCentralityData <- function(words,
 #')
 #'centrality_plot
 #'
-#'
-#' @seealso see \code{\link{textCentralityData}} and \code{\link{textProjectionData}}
 #' @importFrom dplyr arrange slice filter between left_join transmute mutate case_when
 #' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme theme_void theme_minimal aes labs scale_color_identity
 #' @importFrom rlang sym
@@ -1144,7 +1142,7 @@ textCentralityPlot <- function(word_data,
                        scale_y_axes_lim = NULL, #c(-1, 1),
 
                        word_font = NULL,
-                       centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9"),
+                       centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9", "#000000"),
                        word_size_range = c(3, 8),
                        position_jitter_hight = .0,
                        position_jitter_width = .03,
@@ -1180,7 +1178,6 @@ textCentralityPlot <- function(word_data,
     dplyr::slice(0:plot_n_word_frequency)
 
 
-
   # Select the middle range, order according to frequency and then select the plot_n_words_middle = 5
   mean_m_sd_x <- mean(word_data$central_cosine, na.rm=TRUE) - (sd(word_data$central_cosine, na.rm=TRUE)/10) # TODO Possibility to set this one? It may be that no words comes within thi
   mean_p_sd_x <- mean(word_data$central_cosine, na.rm=TRUE) + (sd(word_data$central_cosine, na.rm=TRUE)/10)
@@ -1197,14 +1194,13 @@ textCentralityPlot <- function(word_data,
     dplyr::mutate(extremes_all_x = rowSums(cbind(check_extreme_max_x, check_extreme_min_x,
                                                  check_extreme_frequency_x, check_middle_x), na.rm = T))
 
-
-
   # Categorise words to apply specific color
   word_data_all <- word_data_all %>%
     dplyr::mutate(colour_categories = dplyr::case_when(
-      check_extreme_min_x ==1 ~ centrality_color_codes[1],
-      check_middle_x ==1 ~ centrality_color_codes[2],
-      check_extreme_max_x ==1  ~ centrality_color_codes[3]
+      check_extreme_min_x == 1 ~ centrality_color_codes[1],
+      check_middle_x == 1 ~ centrality_color_codes[2],
+      check_extreme_max_x == 1  ~ centrality_color_codes[3],
+      check_extreme_frequency_x == 1  ~ centrality_color_codes[4]
          ))
 
 

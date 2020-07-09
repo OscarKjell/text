@@ -18,7 +18,7 @@ textCentralityPlot(
   scale_x_axes_lim = NULL,
   scale_y_axes_lim = NULL,
   word_font = NULL,
-  centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9"),
+  centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#000000"),
   word_size_range = c(3, 8),
   position_jitter_hight = 0,
   position_jitter_width = 0.03,
@@ -67,8 +67,8 @@ change this by e.g., try c(-5, 5)).}
 
 \item{word_font}{Type of font (default: NULL).}
 
-\item{centrality_color_codes}{Colors of the words selected as plot_n_word_extreme (minimum values), plot_n_words_middle and
-plot_n_word_extreme (maximum values); the default is c("#EAEAEA","#85DB8E", "#398CF9"), respectively.}
+\item{centrality_color_codes}{Colors of the words selected as plot_n_word_extreme (minimum values), plot_n_words_middle,
+plot_n_word_extreme (maximum values) and plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000"), respectively.}
 
 \item{word_size_range}{Vector with minimum and maximum font size (default: c(3, 8)).}
 
@@ -111,7 +111,7 @@ Plot words according to cosine semantic similarity to the aggreagated word embed
 names(centrality_data_harmony)
 # Plot
 centrality_plot <- textCentralityPlot(
- word_data=centrality_data_harmony,
+ word_data = centrality_data_harmony,
  min_freq_words = 10,
  plot_n_word_extreme = 10,
  plot_n_word_frequency = 10,
@@ -123,7 +123,7 @@ centrality_plot <- textCentralityPlot(
  x_axes_label = "Semantic Centrality",
 
  word_font = NULL,
- centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9"),
+ centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9", "#000000"),
  word_size_range = c(3, 8),
  point_size = 0.5,
  arrow_transparency = 0.1,
@@ -131,7 +131,6 @@ centrality_plot <- textCentralityPlot(
  points_without_words_alpha = 0.5,
 )
 centrality_plot
-
 
 }
 \seealso{
