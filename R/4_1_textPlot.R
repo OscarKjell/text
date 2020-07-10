@@ -410,7 +410,7 @@ textProjectionData <- function(words,
 
 #library(text)
 ## Plotting
-##
+#
 #word_data <- DP_projections_HILS_SWLS_100
 ##
 #k_n_words_two_test = TRUE
@@ -421,10 +421,10 @@ textProjectionData <- function(words,
 #plot_n_word_frequency = 5
 #plot_n_words_middle = 5
 #titles_color = "#61605e"
-#x_axes = "dot.x"
-#y_axes = NULL
-#p_values_x = "p_values_dot.x"
-#p_values_y = NULL
+#x_axes = TRUE
+#y_axes = FALSE
+####p_values_x = "p_values_dot.x"
+####p_values_y = NULL
 #p_alpha = 0.05
 #p_adjust_method = "none"
 #title_top = "Dot Product Projection"
@@ -432,7 +432,7 @@ textProjectionData <- function(words,
 #y_axes_label = "Dot product projection (DPP)"
 #scale_x_axes_lim = NULL
 #scale_y_axes_lim = NULL
-#y_axes_values_hide = TRUE
+####y_axes_values_hide = TRUE
 #word_font = NULL
 #bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688",
 #                          "#e07f6a", "#EAEAEA", "#40DD52",
@@ -475,10 +475,9 @@ textProjectionData <- function(words,
 #' (i.e., even if not significant;  per dimensions, where duplicates are removed).
 #' @param title_top Title (default "  ")
 #' @param titles_color Color for all the titles (default: "#61605e")
-#' @param x_axes Variable to be plotted on the x-axes (default is "dot_product.x").
-#' @param y_axes Variable to be plotted on the y-axes (default is "cohensD.y"). To only print 1-dimension insert NULL.
-#' @param p_values_x P-value variable to plot according to.
-#' @param p_values_y P-value variable to plot according to.
+#' @param x_axes If TRUE, plotting on the x_axes.
+#' @param y_axes If TRUE, also plotting on the y-axes (default is FALSE). Also plotting on y-axes produces a two dimension 2-dimensional plot,
+#' but the textProjectionData function has to have hada variable on the y-axes.
 #' @param p_alpha Alpha (default = .05).
 #' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons (deafult = "holm"; see also "none", "hochberg",
 #' "hommel", "bonferroni", "BH", "BY",  "fdr").
@@ -486,7 +485,6 @@ textProjectionData <- function(words,
 #' @param y_axes_label Label on the y-axes.
 #' @param scale_x_axes_lim Manually set the length of the x-axes (deafult = NULL, which uses ggplot2::scale_x_continuous(limits = scale_x_axes_lim); change e.g., by trying c(-5, 5)).
 #' @param scale_y_axes_lim Manually set the length of the y-axes (deafult = NULL; which uses uses ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c(-5, 5)).
-#' @param y_axes_values_hide If TRUE, hides the values on y-axes (which is good for one-dimensional plots).
 #' @param word_font Font type (default: "Arial").
 #' @param bivariate_color_codes The diffent colors of the words (default: c("#398CF9", "#60A1F7", "#5dc688",
 #'                                                                          "#e07f6a", "#EAEAEA", "#40DD52",
@@ -521,10 +519,8 @@ textProjectionData <- function(words,
 #'  plot_n_word_extreme = 1,
 #'  plot_n_word_frequency = 1,
 #'  plot_n_words_middle = 1,
-#'  x_axes = "dot.x",
-#'  y_axes = "dot.y",
-#'  p_values_x = "p_values_dot.x",
-#'  p_values_y = "p_values_dot.y",
+#'  x_axes = TRUE,
+#'  y_axes = FALSE,
 #'  p_alpha = 0.05,
 #'  title_top = " Dot Product Projection (DPP)",
 #'  x_axes_label = "Low vs. High HILS score",
@@ -554,10 +550,8 @@ textProjectionPlot <- function(word_data,
                         plot_n_word_frequency = 5,
                         plot_n_words_middle = 5,
                         titles_color = "#61605e",
-                        x_axes = "dot.x",
-                        y_axes = NULL,
-                        p_values_x = "p_values_dot.x",
-                        p_values_y = NULL,
+                        x_axes = TRUE,
+                        y_axes = FALSE,
                         p_alpha = 0.05,
                         p_adjust_method = "none",
                         title_top = "Dot Product Projection",
@@ -565,7 +559,6 @@ textProjectionPlot <- function(word_data,
                         y_axes_label = "Dot product projection (DPP)",
                         scale_x_axes_lim = NULL,
                         scale_y_axes_lim = NULL,
-                        y_axes_values_hide = TRUE,
                         word_font = NULL,
                         bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688",
                                                   "#e07f6a", "#EAEAEA", "#40DD52",
@@ -588,6 +581,25 @@ textProjectionPlot <- function(word_data,
                         legend_number_size = 2) {
   set.seed(2020)
 
+  # Sorting out axes
+  if(x_axes == TRUE){
+    x_axes_1 = "dot.x"
+    p_values_x = "p_values_dot.x"
+  } else {
+    x_axes_1 = NULL
+    p_values_x = NULL
+  }
+
+  if(y_axes == TRUE){
+    y_axes_1 = "dot.y"
+    p_values_y = "p_values_dot.y"
+    y_axes_values_hide = FALSE
+  } else if (y_axes == FALSE) {
+    y_axes_1 = NULL
+    p_values_y = NULL
+    y_axes_values_hide = TRUE
+  }
+
   ### Selecting words to plot
   # Computing adjusted p-values with those words selected by min_freq_words = 2
   word_data_padjusted <- word_data[word_data$n >= min_freq_words, ]
@@ -605,7 +617,7 @@ textProjectionPlot <- function(word_data,
   word_data <- dplyr::left_join(word_data, word_data_padjusted[,c("words", "adjusted_p_values.x")], by="words")
   #word_data_test <- dplyr::left_join(word_data, word_data_padjusted[,c("words", "adjusted_p_values.x")], by="words")
 
-  if (is.null(y_axes) == FALSE) {
+  if (is.null(y_axes_1) == FALSE) {
     # Computing adjusted p-values
     word_data_padjusted_y <- word_data[word_data$n >= min_freq_words, ]
     word_data_padjusted_y$adjusted_p_values.y <- stats::p.adjust(purrr::as_vector(word_data_padjusted_y[, p_values_y]), method = p_adjust_method)
@@ -614,7 +626,7 @@ textProjectionPlot <- function(word_data,
   }
 
   # Select only words based on square-position; and then top frequency in each "square" (see legend) plot_n_words_square=5
-  if (is.null(y_axes) == TRUE) {
+  if (is.null(y_axes_1) == TRUE) {
     word_data <- word_data %>%
       dplyr::mutate(square_categories = dplyr::case_when(
         dot.x < 0 & adjusted_p_values.x < p_alpha   ~ 1,
@@ -635,7 +647,7 @@ textProjectionPlot <- function(word_data,
     data_p_sq_all <- rbind(data_p_sq1, data_p_sq3) #data_p_sq2,
   }
 
-  if (is.null(y_axes) == FALSE) {
+  if (is.null(y_axes_1) == FALSE) {
   # Categorise words to apply specific color plot_n_words_square=1
   word_data <- word_data %>%
     dplyr::mutate(square_categories = dplyr::case_when(
@@ -721,7 +733,7 @@ textProjectionPlot <- function(word_data,
     dplyr::mutate(extremes_all_x = rowSums(cbind(check_p_square, check_p_x, check_extreme_max_x, check_extreme_min_x,
                                                 check_extreme_frequency_x, check_middle_x), na.rm = T))
 
-  if (is.null(y_axes) == FALSE) { # is.character(p_adjust_method) &
+  if (is.null(y_axes_1) == FALSE) { # is.character(p_adjust_method) &
     # Computing adjusted p-values
     # Select only words below alpha; and then top dot.x
     data_p_y <- word_data %>%
@@ -777,7 +789,7 @@ textProjectionPlot <- function(word_data,
 
   }
 
-  if (is.null(y_axes) == TRUE) {
+  if (is.null(y_axes_1) == TRUE) {
     word_data_all <- word_data_x %>%
       dplyr::mutate(colour_categories = dplyr::case_when(
         dot.x < 0 & adjusted_p_values.x < p_alpha   ~ bivariate_color_codes[4],
@@ -787,9 +799,9 @@ textProjectionPlot <- function(word_data,
   }
 
   # This solution is because it is not possible to send "0" as a parameter
-  if (is.null(y_axes) == TRUE) {
+  if (is.null(y_axes_1) == TRUE) {
     only_x_dimension <- 0
-    y_axes <- "only_x_dimension"
+    y_axes_1 <- "only_x_dimension"
   }
 
   # Add or Remove values on y-axes
@@ -799,10 +811,17 @@ textProjectionPlot <- function(word_data,
     y_axes_values <- ggplot2::element_text()
   }
 
+  # Word data adjusted for if y_axes exist
+  if(y_axes==TRUE){
+    word_data_all_yadjusted = word_data_all[word_data_all$extremes_all_x==1 | word_data_all$extremes_all_y==1, ]
+  } else if(y_axes==FALSE){
+    word_data_all_yadjusted = word_data_all[word_data_all$extremes_all_x==1, ]
+  }
+
   # Plot
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
-    ggplot2::ggplot(data = word_data_all, ggplot2::aes(!!rlang::sym(x_axes), !!rlang::sym(y_axes), label = words)) +
+    ggplot2::ggplot(data = word_data_all, ggplot2::aes(!!rlang::sym(x_axes_1), !!rlang::sym(y_axes_1), label = words)) +
 
     ggplot2::geom_point(
       data = word_data_all,
@@ -813,7 +832,7 @@ textProjectionPlot <- function(word_data,
 
     # ggrepel geom, make arrows transparent, color by rank, size by n
     ggrepel::geom_text_repel(
-      data = word_data_all[word_data_all$extremes_all_x==1 | word_data_all$extremes_all_y==1, ],
+      data = word_data_all_yadjusted,
       segment.alpha  = arrow_transparency,
       position = ggplot2::position_jitter(h = position_jitter_hight, w = position_jitter_width),
       ggplot2::aes(color = colour_categories, size = n, family = word_font),
@@ -823,7 +842,7 @@ textProjectionPlot <- function(word_data,
 
     # Decide size and color of the points
     ggplot2::geom_point(
-      data = word_data_all[word_data_all$extremes_all_x==1 | word_data_all$extremes_all_y==1, ],
+      data = word_data_all_yadjusted,
       size = point_size,
       ggplot2::aes(color = colour_categories)
     ) +
@@ -867,7 +886,7 @@ textProjectionPlot <- function(word_data,
   bivariate_color_data <- rbind(bivariate_color_data, bivariate_color_codes)
   bivariate_color_data = bivariate_color_data[-1, ]
 
-  if (y_axes == "only_x_dimension") {
+  if (y_axes_1 == "only_x_dimension") {
     # Only select 3 colours
     bivariate_color_data <- bivariate_color_data[, c(4, 5, 6)]
     colnames(bivariate_color_data) <- c("1 - 2", "2 - 2", "3 - 2")
@@ -926,10 +945,8 @@ textProjectionPlot <- function(word_data,
 #                                        title_top = " ",
 #                                        titles_color = "#61605e",
 #                                        k_n_words_two_test = FALSE,
-#                                        x_axes = "dot.x",
-#                                        y_axes = "dot.y",
-#                                        p_values_x = "p_values_dot.x",
-#                                        p_values_y = "p_values_dot.y",
+#                                        x_axes = TRUE,
+#                                        y_axes = FALSE,
 #                                        p_alpha = 0.05,
 #
 #                                        min_freq_words = 1,
@@ -1100,27 +1117,27 @@ textCentralityData <- function(words,
 #' # The test-data included in the package is called: centrality_data_harmony
 #' names(centrality_data_harmony)
 #' # Plot
-#' centrality_plot <- textCentralityPlot(
-#'  word_data = centrality_data_harmony,
-#'  min_freq_words = 10,
-#'  plot_n_word_extreme = 10,
-#'  plot_n_word_frequency = 10,
-#'  plot_n_words_middle = 10,
-#'  titles_color = "#61605e",
-#'  x_axes = "central_cosine",
-#'
-#'  title_top = "Semantic Centrality Plot",
-#'  x_axes_label = "Semantic Centrality",
-#'
-#'  word_font = NULL,
-#'  centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9", "#000000"),
-#'  word_size_range = c(3, 8),
-#'  point_size = 0.5,
-#'  arrow_transparency = 0.1,
-#'  points_without_words_size = 0.5,
-#'  points_without_words_alpha = 0.5,
-#')
-#'centrality_plot
+# centrality_plot <- textCentralityPlot(
+#  word_data = centrality_data_harmony,
+#  min_freq_words = 10,
+#  plot_n_word_extreme = 10,
+#  plot_n_word_frequency = 10,
+#  plot_n_words_middle = 10,
+#  titles_color = "#61605e",
+#  x_axes = "central_cosine",
+#
+#  title_top = "Semantic Centrality Plot",
+#  x_axes_label = "Semantic Centrality",
+#
+#  word_font = NULL,
+#  centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9", "#000000"),
+#  word_size_range = c(3, 8),
+#  point_size = 0.5,
+#  arrow_transparency = 0.1,
+#  points_without_words_size = 0.5,
+#  points_without_words_alpha = 0.5,
+#)
+#centrality_plot
 #'
 #' @importFrom dplyr arrange slice filter between left_join transmute mutate case_when
 #' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme theme_void theme_minimal aes labs scale_color_identity

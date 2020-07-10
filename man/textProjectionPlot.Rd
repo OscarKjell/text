@@ -14,10 +14,8 @@ textProjectionPlot(
   plot_n_word_frequency = 5,
   plot_n_words_middle = 5,
   titles_color = "#61605e",
-  x_axes = "dot.x",
-  y_axes = NULL,
-  p_values_x = "p_values_dot.x",
-  p_values_y = NULL,
+  x_axes = TRUE,
+  y_axes = FALSE,
   p_alpha = 0.05,
   p_adjust_method = "none",
   title_top = "Dot Product Projection",
@@ -25,7 +23,6 @@ textProjectionPlot(
   y_axes_label = "Dot product projection (DPP)",
   scale_x_axes_lim = NULL,
   scale_y_axes_lim = NULL,
-  y_axes_values_hide = TRUE,
   word_font = NULL,
   bivariate_color_codes = c("#398CF9", "#60A1F7", "#5dc688", "#e07f6a", "#EAEAEA",
     "#40DD52", "#FF0000", "#EA7467", "#85DB8E"),
@@ -70,13 +67,10 @@ selects fist according to lowest p-value and then to frequency.}
 
 \item{titles_color}{Color for all the titles (default: "#61605e")}
 
-\item{x_axes}{Variable to be plotted on the x-axes (default is "dot_product.x").}
+\item{x_axes}{If TRUE, plotting on the x_axes.}
 
-\item{y_axes}{Variable to be plotted on the y-axes (default is "cohensD.y"). To only print 1-dimension insert NULL.}
-
-\item{p_values_x}{P-value variable to plot according to.}
-
-\item{p_values_y}{P-value variable to plot according to.}
+\item{y_axes}{If TRUE, also plotting on the y-axes (default is FALSE). Also plotting on y-axes produces a two dimension 2-dimensional plot,
+but the textProjectionData function has to have hada variable on the y-axes.}
 
 \item{p_alpha}{Alpha (default = .05).}
 
@@ -92,8 +86,6 @@ selects fist according to lowest p-value and then to frequency.}
 \item{scale_x_axes_lim}{Manually set the length of the x-axes (deafult = NULL, which uses ggplot2::scale_x_continuous(limits = scale_x_axes_lim); change e.g., by trying c(-5, 5)).}
 
 \item{scale_y_axes_lim}{Manually set the length of the y-axes (deafult = NULL; which uses uses ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c(-5, 5)).}
-
-\item{y_axes_values_hide}{If TRUE, hides the values on y-axes (which is good for one-dimensional plots).}
 
 \item{word_font}{Font type (default: "Arial").}
 
@@ -152,10 +144,8 @@ plot_projection <- textProjectionPlot(
  plot_n_word_extreme = 1,
  plot_n_word_frequency = 1,
  plot_n_words_middle = 1,
- x_axes = "dot.x",
- y_axes = "dot.y",
- p_values_x = "p_values_dot.x",
- p_values_y = "p_values_dot.y",
+ x_axes = TRUE,
+ y_axes = FALSE,
  p_alpha = 0.05,
  title_top = " Dot Product Projection (DPP)",
  x_axes_label = "Low vs. High HILS score",

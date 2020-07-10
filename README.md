@@ -83,15 +83,13 @@ space.
 
 ``` r
 library(text)
-#> [0;32mThis is text (version 0.7.12.9000).[0m
+#> [0;32mThis is text (version 0.7.14.9000).[0m
 #>  [0;34mNewer versions may have updated default settings to reflect current understandings of the state-of-the-art.[0m
 # Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function; the preprocessed test-data included in the package is called: DP_projections_HILS_SWLS_100
 plot_projection <- textProjectionPlot(
   word_data = DP_projections_HILS_SWLS_100,
-  x_axes = "dot.x",
-  y_axes = "dot.y",
-  p_values_x = "p_values_dot.x",
-  p_values_y = "p_values_dot.y",
+  x_axes = TRUE,
+  y_axes = TRUE,
   title_top = " Dot Product Projection (DPP) of Harmony in life words",
   x_axes_label = "Low vs. High HILS score",
   y_axes_label = "Low vs. High SWLS score",

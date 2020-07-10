@@ -110,27 +110,6 @@ Plot words according to cosine semantic similarity to the aggreagated word embed
 # The test-data included in the package is called: centrality_data_harmony
 names(centrality_data_harmony)
 # Plot
-centrality_plot <- textCentralityPlot(
- word_data = centrality_data_harmony,
- min_freq_words = 10,
- plot_n_word_extreme = 10,
- plot_n_word_frequency = 10,
- plot_n_words_middle = 10,
- titles_color = "#61605e",
- x_axes = "central_cosine",
-
- title_top = "Semantic Centrality Plot",
- x_axes_label = "Semantic Centrality",
-
- word_font = NULL,
- centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9", "#000000"),
- word_size_range = c(3, 8),
- point_size = 0.5,
- arrow_transparency = 0.1,
- points_without_words_size = 0.5,
- points_without_words_alpha = 0.5,
-)
-centrality_plot
 
 }
 \seealso{

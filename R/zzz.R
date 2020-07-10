@@ -45,7 +45,7 @@
   if(!grepl(x = R.Version()$arch, pattern = "64")){
     warning("The text package requires running R on a 64-bit systems as it is dependent on torch from ptyhon; and you are not doing this.")
   }
-  packageStartupMessage(cat(paste0("\033[0;", 32, "m", "This is text (version 0.7.13.9000).","\033[0m","\n"),
+  packageStartupMessage(cat(paste0("\033[0;", 32, "m", "This is text (version 0.7.14.9000).","\033[0m","\n"),
                             paste0("\033[0;", 34, "m", "Newer versions may have updated default settings to reflect current understandings of the state-of-the-art.","\033[0m")))
 }
 

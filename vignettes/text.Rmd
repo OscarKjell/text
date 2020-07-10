@@ -104,18 +104,15 @@ plot_projection <- textProjectionPlot(
   plot_n_word_extreme = 1,
   plot_n_word_frequency = 1,
   plot_n_words_middle = 1,
-  x_axes = "dot.x",
-  y_axes = "dot.y",
-  p_values_x = "p_values_dot.x",
-  p_values_y = "p_values_dot.y",
+  x_axes = TRUE,
+  y_axes = TRUE,
   p_alpha = 0.05,
   title_top = " Dot Product Projection (DPP) of Harmony in life words",
   x_axes_label = "Low vs. High HILS score",
   y_axes_label = "Low vs. High SWLS score",
   p_adjust_method = "bonferroni",
   points_without_words_size = 0.4,
-  points_without_words_alpha = 0.4,
-  y_axes_values_hide = FALSE
+  points_without_words_alpha = 0.4
 )
 plot_projection
 
