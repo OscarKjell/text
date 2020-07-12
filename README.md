@@ -16,14 +16,14 @@ objectives:
     downstream tasks.
 
   - Second, to serve as an *end-to-end solution* that provides
-    state-of-the-art AI techniques tailored for social and behavioural
+    state-of-the-art AI techniques tailored for social and behavioral
     scientists.
 
 *Text* is created through a collaboration between psychology and
 computer science to address research needs and ensure state-of-the-art
-techiniques. It provides powerful functions tailored to test research
-hypotheses in social and behaviour sciences for both relatively small
-and large datasets.
+techniques. It provides powerful functions tailored to test research
+hypotheses in social and behavior sciences for both relatively small and
+large datasets.
 
 ### Short installation guide
 
