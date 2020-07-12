@@ -29,7 +29,7 @@ conda_install(envname = 'r-reticulate', c('PyTorch', 'transformers'))
 
 ```
 
-The exact way to install these packages may differ across systems. If the above does not try installing the python packages outside of R or RStudio. Please see: 
+The exact way to install these packages may differ across systems. If the above does not work for you try installing the python packages outside of R or RStudio. Please see: 
 [Python](https://www.python.org/) 
 [torch](https://pytorch.org/)
 transformers

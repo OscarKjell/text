@@ -1,51 +1,12 @@
 
-#library(tidymodels)
-# Basic example: https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/
-# recipies: https://tidymodels.github.io/recipes/articles/Simple_Example.html
-# rsample: https://tidymodels.github.io/rsample/articles/Basics.html
-# parsnip: https://tidymodels.github.io/parsnip/articles/parsnip_Intro.html
-# yardstick: https://tidymodels.github.io/yardstick/reference/index.html
-# Two-day workshop: https://github.com/tidymodels/aml-training/tree/master/two%20day
-# .rs.restartR()
-
-# https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#29
-#library(doParallel)
-#help(doParallel)
-#cl <- makeCluster(6)
-#registerDoParallel(cl)
-#stopCluster(cl)
-
-# library(text)
-# library(tidymodels)
-# library(rlang)
-# library(magrittr)
-# library(recipes)
-# library(workflows)
-# library(parsnip)
-# library(tune)
-# library(data.table)
-# library(stats)
-# library(tidyselect)
-# library(tidyverse)
-#
-#
-# x = wordembeddings4_10$harmonytext
-# y = Language_based_assessment_data_8_10$hilstotal
-# nrFolds_k = 10
-# preProcessPCAthresh = 0.95
-# strata_y = "y"
-# methodCor = "pearson"
-# model_description = "Consider writing a description here"
-
-# textTrain using Tidymodels
 
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
-#' @param x Wordembeddings from textEmbed (or textLayerAggregation).
+#' @param x Word embeddings from textEmbed (or textLayerAggregation).
 #' @param y Numeric variable to predict.
 #' @param nrFolds_k Number of folds to use.
-#' @param preProcessPCAthresh Preprocessing threshold for amount of variance to retain (default 0.95).
+#' @param preProcessPCAthresh Pre-processing threshold for amount of variance to retain (default 0.95).
 #' @param strata_y Variable to stratify according (default y; can set to NULL).
 #' @param methodCor Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
@@ -74,13 +35,12 @@ textTrain <- function(x,
 
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   df3 <- cbind(x1, y)
-  #df3 <- df2
 
-  # Recipe: Preprocessing with pca, see options: ls("package:recipes", pattern = "^step_")
+  # Recipe: Pre-processing with pca, see options: ls("package:recipes", pattern = "^step_")
   df3_recipe <-
     recipes::recipe(y ~ .,
                     data = df3) %>%
-    #  recipes::step_BoxCox(all_predictors()) %>%
+    # recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(all_predictors()) %>%
     recipes::step_scale(all_predictors()) %>%
@@ -112,7 +72,7 @@ textTrain <- function(x,
     control = ctrl
     )
 
-  # Select the best penelty and mixture based on rmse
+  # Select the best penalty and mixture based on rmse
   best_glmn <- tune::select_best(df3_glmn_tune, metric = "rmse") #, maximize = TRUE
 
   # Get predictions and observed (https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#32)
@@ -159,19 +119,18 @@ textTrain <- function(x,
 
 
 # devtools::document()
-#' Trains word embeddings from several text variables to several numeric variables.
-#'
-#' @param x List of lists comprising several word embeddings from textEmbed
-#' (NB need to remove any word embeddings from the decontextualised single words).
+#' Individually trains word embeddings from several text variables to several numeric variables.
+#' @param x List of lists comprising several word embeddings from textEmbed.
+#' (NB need to remove any word embeddings from the decontextualized single words).
 #' @param y Tibble with numeric variables to predict.
-#' @param trainMethod Method to train wordembeddings (default "regression"; see also "randomForest").
+#' @param trainMethod Method to train word embeddings (default "regression"; see also "randomForest").
 #' @param nrFolds_k Number of folds to use.
 #' @param nrFolds_k_out Number of outer folds (only for textTrainCVpredictions textTrainCVpredictionsRF,
 #' which is not yet fully implemented).
-#' @param preProcessPCAthresh Preprocessing threshold for amount of variance to retain (default 0.95).
+#' @param preProcessPCAthresh Pre-processing threshold for amount of variance to retain (default 0.95).
 #' @param strata_y Variable to stratify according (default y; can set to NULL).
 #' @param methodCor Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").
-#' @param trees Number of trees used in random forest.
+#' @param trees Number of trees used in the random forest.
 #' @param ... Arguments for the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples
@@ -185,22 +144,30 @@ textTrain <- function(x,
 #' @importFrom dplyr arrange
 #' @importFrom data.table %like%
 #' @export
-textTrainLists <- function(x, y, trainMethod = "regression", nrFolds_k = 10, preProcessPCAthresh = 0.95, strata_y = "y", methodCor = "pearson", trees=500, nrFolds_k_out = 10, ...) { #  , trees=500 method="regression"  method= "textTrainCVpredictions";  method= "textTrainCVpredictionsRF"
+textTrainLists <- function(x,
+                           y,
+                           trainMethod = "regression",
+                           nrFolds_k = 10,
+                           preProcessPCAthresh = 0.95,
+                           strata_y = "y",
+                           methodCor = "pearson",
+                           trees=500,
+                           nrFolds_k_out = 10, ...) { #  , trees=500 method="regression"  method= "textTrainCVpredictions";  method= "textTrainCVpredictionsRF"
 
-  # Get variable names in the list of outcomes
+  # Get variable names in the list of outcomes.
   variables <- names(y)
-  # Duplicate variable names to as many different wordembeddings there are in x
+  # Duplicate variable names to as many different word embeddings there are in x.
   variables <- rep(variables, length(x))
-  # Create data frame with duplicated variables
+  # Create data frame with duplicated variables.
   y1 <- y[c(variables)]
-  # Order columns alphabatically
+  # Order columns alphabetically.
   y1 <- y1[, order(colnames(y1))]
 
-  # Creating descriptions of which variabeles are used in training, which is  added to the output help(mapply)
+  # Creating descriptions of which variables are used in training, which is  added to the output.
   descriptions <- paste(rep(names(x), length(y)), "_", names(y1), sep = "")
 
   if (trainMethod == "regression"){
-    # Using mapply to loop over the word embeddings and the outcome variables help(mapply)
+    # Using mapply to loop over the word embeddings and the outcome variables.
     output <- mapply(textTrain, x, y1, SIMPLIFY = FALSE, MoreArgs = list(nrFolds_k = nrFolds_k, preProcessPCAthresh = preProcessPCAthresh, strata_y = strata_y, methodCor = methodCor, ...))   #, preProcessPCAthresh=preProcessPCAthresh, strata_y = strata_y, methodCor = methodCor, MoreArgs = list(nrFolds_k = nrFolds_k, methodTrain = methodTrain, preProcessTrain = preProcessTrain, preProcessThresh = preProcessThresh, methodCor = methodCor, ...),
 
     output_t  <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[1]][c(1)])))
@@ -209,7 +176,7 @@ textTrainLists <- function(x, y, trainMethod = "regression", nrFolds_k = 10, pre
     output_r  <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[4]][c(1)])))
     output_a  <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[6]][c(1)])))
 
-    # Add Outcomes and Descriptions together; name the columns; and remove the rownames.
+    # Add Outcomes and Descriptions together; name the columns; and remove the row names.
     output_ordered_named <- data.frame(cbind(descriptions, output_r, output_df, output_p, output_t, output_a))
     colnames(output_ordered_named) <- c("descriptions", "correlation", "df", "p_value", "t_statistics", "alternative")
     rownames(output_ordered_named) <- NULL
@@ -222,14 +189,14 @@ textTrainLists <- function(x, y, trainMethod = "regression", nrFolds_k = 10, pre
     results
 
   } else if (trainMethod == "randomForest"){ #
-    # Apply textTrainRandomForest function between each list element and sort outcome
+    # Apply textTrainRandomForest function between each list element and sort outcome.
     output <- mapply(textTrainRandomForest, x, y1, SIMPLIFY = FALSE, MoreArgs = list(trees = trees, nrFolds_k = nrFolds_k, strata_y = strata_y))
     output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[1]][[1]])))
     output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[2]][[1]])))
     output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[3]][[1]])))
     output_p_r <- tibble(output_chi, output_df, output_p)
 
-    # Add Outcomes and Descriptions together; name the columns; and remove the rownames.
+    # Add Outcomes and Descriptions together; name the columns; and remove the row names.
     output_ordered_named <- data.frame(cbind(descriptions, output_p_r))
     colnames(output_ordered_named) <- c("descriptions", "chi2", "df", "p_value")
     output_ordered_named

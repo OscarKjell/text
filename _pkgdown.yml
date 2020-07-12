@@ -6,6 +6,7 @@ development:
 
 home:
   title: text
+  description: An r-package for analyzing text using NLP and deep learning.
   links:
   - text: Ask a question about text
     href: https://stackoverflow.com/
@@ -59,6 +60,7 @@ articles:
   contents:
   - Extended_Installation_Guide
   - Computer_Capacity
+  - Removing_Cache_Files
 - title: Tutorials
   desc: >
     These tutorials go into detail about various text-analyses.

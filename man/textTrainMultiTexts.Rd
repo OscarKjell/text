@@ -2,7 +2,9 @@
 % Please edit documentation in R/2_2_textTrainMulti.R
 \name{textTrainMultiTexts}
 \alias{textTrainMultiTexts}
-\title{Train several word embeddings from several text variables to a numeric variable.}
+\title{Combine several word embeddings from several text variables and train to a numeric variable.
+Takes several text variables; applies separate PCAs to each text's word embeddings separately;
+concatenate the PCA components to then be trained to predict one outcome with ridge regression.}
 \usage{
 textTrainMultiTexts(
   xlist,
@@ -15,11 +17,11 @@ textTrainMultiTexts(
 )
 }
 \arguments{
-\item{xlist}{list of word embeddings from textEmbed.}
+\item{xlist}{List of word embeddings from textEmbed.}
 
 \item{y}{Numeric variable to predict.}
 
-\item{preProcessThresh}{Preprocessing threshold for amount of variance to retain (default 0.95).}
+\item{preProcessThresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
 
 \item{nrFolds_k}{Number of folds to use.}
 
@@ -33,8 +35,8 @@ textTrainMultiTexts(
 A correlation between predicted and observed values; as well as predicted values.
 }
 \description{
-Concenate word embeddings from several text variables to predict an outcome. The word embeddings for each text variable
-go through seperate PCAs, where the PCA components are concenated and used in a ridge regression.
+Concatenate word embeddings from several text variables to predict an outcome. The word embeddings for each text variable
+go through separate PCAs, where the PCA components are concatenated and used in a ridge regression.
 }
 \examples{
 wordembeddings <- wordembeddings4_10[1:4]

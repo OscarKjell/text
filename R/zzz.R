@@ -1,13 +1,12 @@
 #.rs.restartR()
 
 # text KLOK999
-#library(text)
-#help(textEmbed)
+# library(text)
+# help(textEmbed)
 
 # devtools::document()
 # devtools::check()
 #devtools::install_github("OscarKjell/text", auth_token = "99a9388f1ef7a1e44b94f3650d9aeb7ea0658bea")
-#1#?install_github
 #?install_github
 #library(pkgdown)
 # Run once to configure your package to use pkgdown

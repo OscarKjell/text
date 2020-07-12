@@ -20,13 +20,13 @@ textDiff(
 
 \item{y}{Set of word embeddings from textEmbed.}
 
-\item{Npermutations}{Number of permatations (default 1000).}
+\item{Npermutations}{Number of permutations (default 1000).}
 
 \item{method}{Compute a "paired" or an "unpaired" test.}
 
-\item{alternative}{Use a two or one-sided test (select on of: "two_sided", "less", "greater").}
+\item{alternative}{Use a two or one-sided test (select one of: "two_sided", "less", "greater").}
 
-\item{output.permutations}{If TRUE returns permuted values in output.}
+\item{output.permutations}{If TRUE, returns permuted values in output.}
 
 \item{N_cluster_nodes}{Number of cluster nodes to use (more makes computation faster; see parallel package).}
 }

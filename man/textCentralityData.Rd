@@ -3,7 +3,7 @@
 \name{textCentralityData}
 \alias{textCentralityData}
 \title{Compute cosine semantic similarity score between single words' word embeddings
-and the aggreagated word embedding of all words.}
+and the aggregated word embedding of all words.}
 \usage{
 textCentralityData(
   words,
@@ -18,11 +18,11 @@ textCentralityData(
 
 \item{wordembeddings}{Word embeddings from textEmbed for the words to be plotted (i.e., the aggregated word embeddings for the "words" variable).}
 
-\item{single_wordembeddings}{Word embeddings from textEmbed for individual words (i.e., the decontextualised word embeddings).}
+\item{single_wordembeddings}{Word embeddings from textEmbed for individual words (i.e., the decontextualized word embeddings).}
 
-\item{aggregation}{Method to aggregate the word embeddings (default = "mean"; see also "min" or "max").}
+\item{aggregation}{Method to aggregate the word embeddings (default = "mean"; see also "min", "max" or "[CLS]").}
 
-\item{min_freq_words}{Option to  select words that have at least occured a specified number of times (default = 0); when creating the semantic similarity
+\item{min_freq_words}{Option to  select words that have at least occurred a specified number of times (default = 0); when creating the semantic similarity
 scores within cosine similarity.}
 }
 \value{
@@ -31,7 +31,7 @@ that are used for the plotting in the textCentralityPlot function.
 }
 \description{
 Compute cosine semantic similarity score between single words' word embeddings
-and the aggreagated word embedding of all words.
+and the aggregated word embedding of all words.
 }
 \examples{
 wordembeddings <- wordembeddings4_10

@@ -14,7 +14,7 @@ textTrainRandomForest(
 )
 }
 \arguments{
-\item{x}{Wordembeddings from textEmbed.}
+\item{x}{Word embeddings from textEmbed.}
 
 \item{y}{Categorical variable to predict.}
 

@@ -47,9 +47,9 @@ textProjectionPlot(
 \arguments{
 \item{word_data}{Dataframe from textProjectionData}
 
-\item{k_n_words_two_test}{Select the k most frequent words to significance test (k = sqrt(100*N); N = number of paricipant responses). Default = TRUE.}
+\item{k_n_words_two_test}{Select the k most frequent words to significance test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.}
 
-\item{min_freq_words}{Select words to signficance test that have occurred at least min_freq_words (default = 1).}
+\item{min_freq_words}{Select words to significance test that have occurred at least min_freq_words (default = 1).}
 
 \item{plot_n_words_square}{Select number of significant words in each square of the figure to plot.}
 
@@ -70,7 +70,7 @@ selects fist according to lowest p-value and then to frequency.}
 \item{x_axes}{If TRUE, plotting on the x_axes.}
 
 \item{y_axes}{If TRUE, also plotting on the y-axes (default is FALSE). Also plotting on y-axes produces a two dimension 2-dimensional plot,
-but the textProjectionData function has to have hada variable on the y-axes.}
+but the textProjectionData function has to have had a variable on the y-axes.}
 
 \item{p_alpha}{Alpha (default = .05).}
 
@@ -83,19 +83,19 @@ but the textProjectionData function has to have hada variable on the y-axes.}
 
 \item{y_axes_label}{Label on the y-axes.}
 
-\item{scale_x_axes_lim}{Manually set the length of the x-axes (deafult = NULL, which uses ggplot2::scale_x_continuous(limits = scale_x_axes_lim); change e.g., by trying c(-5, 5)).}
+\item{scale_x_axes_lim}{Manually set the length of the x-axes (default = NULL, which uses ggplot2::scale_x_continuous(limits = scale_x_axes_lim); change e.g., by trying c(-5, 5)).}
 
-\item{scale_y_axes_lim}{Manually set the length of the y-axes (deafult = NULL; which uses uses ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c(-5, 5)).}
+\item{scale_y_axes_lim}{Manually set the length of the y-axes (default = NULL; which uses uses ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c(-5, 5)).}
 
-\item{word_font}{Font type (default: "Arial").}
+\item{word_font}{Font type (default: NULL).}
 
-\item{bivariate_color_codes}{The diffent colors of the words (default: c("#398CF9", "#60A1F7", "#5dc688",
+\item{bivariate_color_codes}{The different colors of the words (default: c("#398CF9", "#60A1F7", "#5dc688",
 "#e07f6a", "#EAEAEA", "#40DD52",
 "#FF0000", "#EA7467", "#85DB8E")).}
 
 \item{word_size_range}{Vector with minimum and maximum font size (default: c(3, 8)).}
 
-\item{position_jitter_hight}{Jitter hight (default: .0).}
+\item{position_jitter_hight}{Jitter height (default: .0).}
 
 \item{position_jitter_width}{Jitter width (default: .03).}
 
@@ -105,7 +105,7 @@ but the textProjectionData function has to have hada variable on the y-axes.}
 
 \item{points_without_words_size}{Size of the points not linked with a words (default is to not show it, i.e., 0).}
 
-\item{points_without_words_alpha}{Transperency of the points not linked with a words (default is to not show it, i.e., 0).}
+\item{points_without_words_alpha}{Transparency of the points not linked with a words (default is to not show it, i.e., 0).}
 
 \item{legend_title}{Title on the color legend (default: "(DPP)".}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlot.R
 \name{textCentralityPlot}
 \alias{textCentralityPlot}
-\title{Plot words according to cosine semantic similarity to the aggreagated word embedding.}
+\title{Plot words according to cosine semantic similarity to the aggregated word embedding.}
 \usage{
 textCentralityPlot(
   word_data,
@@ -14,7 +14,6 @@ textCentralityPlot(
   x_axes = "central_cosine",
   title_top = "Semantic Centrality Plot",
   x_axes_label = "Semantic Centrality",
-  y_axes_values = element_blank(),
   scale_x_axes_lim = NULL,
   scale_y_axes_lim = NULL,
   word_font = NULL,
@@ -39,7 +38,7 @@ textCentralityPlot(
 \arguments{
 \item{word_data}{Tibble from textPlotData.}
 
-\item{min_freq_words}{Select words to signficance test that have occurred at least min_freq_words (default = 1).}
+\item{min_freq_words}{Select words to significance test that have occurred at least min_freq_words (default = 1).}
 
 \item{plot_n_word_extreme}{Number of words per dimension to plot with extreme dot product projection value.
 (i.e., even if not significant;  duplicates are removed).}
@@ -58,12 +57,10 @@ textCentralityPlot(
 
 \item{x_axes_label}{Label on the x-axes.}
 
-\item{y_axes_values}{NULL.}
-
-\item{scale_x_axes_lim}{Length of the x-axes (deafult: NULL, which uses c(min(word_data$central_cosine)-0.05, max(word_data$central_cosine)+0.05);
+\item{scale_x_axes_lim}{Length of the x-axes (default: NULL, which uses c(min(word_data$central_cosine)-0.05, max(word_data$central_cosine)+0.05);
 change this by e.g., try c(-5, 5)).}
 
-\item{scale_y_axes_lim}{Length of the y-axes (deafult: NULL, which uses c(-1, 1); change e.g., by trying c(-5, 5)).}
+\item{scale_y_axes_lim}{Length of the y-axes (default: NULL, which uses c(-1, 1); change e.g., by trying c(-5, 5)).}
 
 \item{word_font}{Type of font (default: NULL).}
 
@@ -72,7 +69,7 @@ plot_n_word_extreme (maximum values) and plot_n_word_frequency; the default is c
 
 \item{word_size_range}{Vector with minimum and maximum font size (default: c(3, 8)).}
 
-\item{position_jitter_hight}{Jitter hight (default: .0).}
+\item{position_jitter_hight}{Jitter height (default: .0).}
 
 \item{position_jitter_width}{Jitter width (default: .03).}
 
@@ -82,7 +79,7 @@ plot_n_word_extreme (maximum values) and plot_n_word_frequency; the default is c
 
 \item{points_without_words_size}{Size of the points not linked to a word (default is to not show the point; , i.e., 0).}
 
-\item{points_without_words_alpha}{Transperency of the points that are not linked to a word (default is to not show it; i.e., 0).}
+\item{points_without_words_alpha}{Transparency of the points that are not linked to a word (default is to not show it; i.e., 0).}
 
 \item{legend_title}{Title of the color legend (default: "(DPP)").}
 
@@ -104,7 +101,7 @@ plot_n_word_extreme (maximum values) and plot_n_word_frequency; the default is c
 A 1-dimensional word plot based on cosine similarity to the aggregated word embedding.
 }
 \description{
-Plot words according to cosine semantic similarity to the aggreagated word embedding.
+Plot words according to cosine semantic similarity to the aggregated word embedding.
 }
 \examples{
 # The test-data included in the package is called: centrality_data_harmony

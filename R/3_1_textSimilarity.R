@@ -1,30 +1,29 @@
 
-# textSimilairty
-
+# Is normalizeV function used somewhere?
 
 ########################################################################
 ########
-########     textSimilarity [NOW I AM NORMALIZING IT; perhaps shouldn't!]
+########     textSimilarity
 ########
 ########################################################################
 
 #  devtools::document()
 #' Compute cosine
 #'
-#' @param x a word embedding
-#' @param y a word embedding
-#' @return cosine between x and y.
+#' @param x A word embedding.
+#' @param y A word embedding.
+#' @return Cosine between x and y.
 #' @noRd
-# Computing the cosine between two semantic representations
+# Computing the cosine between two word embeddings.
 cosines <- function(x, y) {
   rowSums(x * y, na.rm = TRUE) / (sqrt(rowSums(x * x, na.rm = TRUE)) * sqrt(rowSums(y * y, na.rm = TRUE)))
 }
 
 #  devtools::document()
-#' Function to normlaise the vector to one; unit vector
+#' Function to normalize the vector to one; to a unit vector.
 #'
 #' @param x a word embedding
-#' @return normalised (unit) vector/word embedding.
+#' @return normalized (unit) vector/word embedding.
 #' @noRd
 normalizeV <- function(x) {
   x / sqrt(sum(x^2, na.rm = TRUE))
@@ -32,8 +31,8 @@ normalizeV <- function(x) {
 
 #' Compute the cosine semantic similarity between two text variables.
 #'
-#' @param x Wordembeddings from textEmbed.
-#' @param y Wordembeddings from textEmbed.
+#' @param x Word embeddings from textEmbed.
+#' @param y Word embeddings from textEmbed.
 #' @return A vector comprising cosine semantic similarity scores.
 #' @examples
 #' library(dplyr)
@@ -42,11 +41,9 @@ normalizeV <- function(x) {
 #' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textDiff}}
 #' @export
 textSimilarity <- function(x, y) {
-  # Select necassary columns
+  # Select necessary columns
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
-  #x1 <- subset(x, select = -c(1:5))
-  #y1 <- subset(y, select = -c(1:5))
 
   # Apply the cosines functions
   cosines(x1, y1)
@@ -57,13 +54,13 @@ textSimilarity <- function(x, y) {
 ########     semSimilarityNorm: Compute Semantic similarity between a column and a word-norm
 ########
 ########################################################################
+
 # devtools::document()
-# x and y are the semantic representations from column x and y, which have been imported with textEmbed
 #' Compute the semantic similarity between a text variable and a word norm (i.e., a text represented by one word embedding
 #' that represent a construct).
 #'
-#' @param x Wordembeddings from textEmbed (with several rows of text).
-#' @param y Wordembedding from textEmbed (from only one text).
+#' @param x Word embeddings from textEmbed (with several rows of text).
+#' @param y Word embedding from textEmbed (from only one text).
 #' @return A vector comprising cosine semantic similarity scores.
 #' @examples
 #'\dontrun{
@@ -75,12 +72,11 @@ textSimilarity <- function(x, y) {
 #'norms <- tibble::tibble(harmonynorm, satisfactionnorm)
 #'wordembeddings <- wordembeddings4_10
 #'wordembeddings_wordnorm <- textEmbed(norms)
-#'similiarty_scores <- textSimilarityNorm(
+#'similarity_scores <- textSimilarityNorm(
 #'  wordembeddings$harmonytext,
 #'  wordembeddings_wordnorm$harmonynorm
 #')
 #'}
-#similiarty_scores
 #' @seealso see \code{\link{textSimilarity}} and \code{\link{textDiff}}
 #' @importFrom dplyr row_number slice select starts_with
 #' @export
@@ -96,18 +92,6 @@ textSimilarityNorm <- function(x, y) {
   cosines(x1, y2)
 }
 
-#
-#harmonynorm <- c("harmony peace cooperation balance")
-#satisfactionnorm <- c("satisfaction achievement job fulfilled")
-#library(tibble)
-#norms <- tibble::tibble(harmonynorm, satisfactionnorm)
-#library(dplyr)
-#wordembeddings <- wordembeddings4_10
-#wordembeddings_wordnorm <- textEmbed(norms)
-#similiarty_scores <- textSimilarityNorm(
-#  wordembeddings$harmonytext,
-#  wordembeddings_wordnorm$harmonynorm
-#)
 
 
 

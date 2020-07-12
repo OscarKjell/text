@@ -15,13 +15,13 @@ textTrain(
 )
 }
 \arguments{
-\item{x}{Wordembeddings from textEmbed (or textLayerAggregation).}
+\item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
 
 \item{y}{Numeric variable to predict.}
 
 \item{nrFolds_k}{Number of folds to use.}
 
-\item{preProcessPCAthresh}{Preprocessing threshold for amount of variance to retain (default 0.95).}
+\item{preProcessPCAthresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
 
 \item{strata_y}{Variable to stratify according (default y; can set to NULL).}
 

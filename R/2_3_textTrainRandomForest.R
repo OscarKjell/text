@@ -5,17 +5,10 @@
 #### Random Forest: Training Cross-validated data
 ################
 
-# x = solmini_sd300_tk_mean$movement[1:40,1:5]
-# y = solmini$minidep_diagnose[1:40]
-# y = solmini$minidiagnose_cat[1:40]
-# y
-#df3_data <- as_tibble(df3)
-#colnames(df3_data) <- c(paste("Dim", 1:(ncol(df3_data)-1), sep=""), "y")
-
 # devtools::document()
 #' Train word embeddings to a categorical variable using random forrest.
 #'
-#' @param x Wordembeddings from textEmbed.
+#' @param x Word embeddings from textEmbed.
 #' @param y Categorical variable to predict.
 #' @param nrFolds_k Number of folds to use (default 10).
 #' @param trees Number of trees to use (default 500).
@@ -47,7 +40,7 @@ textTrainRandomForest <- function(x, y, trees=500, nrFolds_k = 10, strata_y = "y
   df3_data <- as_tibble(df2[complete.cases(df2),])
   nrow(df3_data)
 
-  # Recipe: Preprocessing by removing na and normalising variables help(step_naomit)
+  # Recipe: Pre-processing by removing na and normalizing variables.
   df3_recipe <-
     recipes::recipe(y ~ .,
                   data = df3_data) %>%
@@ -62,12 +55,11 @@ textTrainRandomForest <- function(x, y, trees=500, nrFolds_k = 10, strata_y = "y
   # Cross-validation
   df3_cv_splits <- rsample::vfold_cv(df3_data, v = nrFolds_k, repeats = 1, strata = strata_y) # , ... ,  breaks = 4
 
-  # Model: random forrest help(rand_forest)
+  # Model: random forest
   df3_model <- parsnip::rand_forest(trees = trees, mode = "classification") %>%
     #set_engine("ranger")
     set_engine("randomForest")
 
-  # help("workflow")
   df3_workflow <-
     workflows::workflow() %>%
     workflows::add_model(df3_model) %>%

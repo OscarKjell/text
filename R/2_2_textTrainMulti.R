@@ -1,23 +1,20 @@
 
 ####### textTrainMultiText
-# Description: Function takes several text variables; applies separet PCAs to each text's word embeddings separetaly;
-# concenate the PCA components to predict one outcome with ridge regression!
-
 
 # devtools::document()
-#' Train several word embeddings from several text variables to a numeric variable.
-#'
-#' @param xlist list of word embeddings from textEmbed.
+#' Combine several word embeddings from several text variables and train to a numeric variable.
+#' Takes several text variables; applies separate PCAs to each text's word embeddings separately;
+#' concatenate the PCA components to then be trained to predict one outcome with ridge regression.
+#' @param xlist List of word embeddings from textEmbed.
 #' @param y Numeric variable to predict.
 #' @param nrFolds_k Number of folds to use.
-
-#' @param preProcessThresh Preprocessing threshold for amount of variance to retain (default 0.95).
+#' @param preProcessThresh Pre-processing threshold for amount of variance to retain (default 0.95).
 #' @param strata_y Variable to stratify according (default y; can set to NULL).
 #' @param methodCor Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").
 #' @param describe_model Text to describe your model.
 #' @return A correlation between predicted and observed values; as well as predicted values.
-#' @description Concenate word embeddings from several text variables to predict an outcome. The word embeddings for each text variable
-#' go through seperate PCAs, where the PCA components are concenated and used in a ridge regression.
+#' @description Concatenate word embeddings from several text variables to predict an outcome. The word embeddings for each text variable
+#' go through separate PCAs, where the PCA components are concatenated and used in a ridge regression.
 #' @examples
 #' wordembeddings <- wordembeddings4_10[1:4]
 #' ratings_data <- Language_based_assessment_data_8_10$hilstotal
@@ -41,17 +38,22 @@
 # methodCor = "pearson"
 # describe_model = "Describe the model further and share it with others"
 
-textTrainMultiTexts <- function(xlist, y, preProcessThresh = 0.95, nrFolds_k = 10, strata_y = "y", methodCor = "pearson", describe_model = "Describe the model further and share it with others"){
+textTrainMultiTexts <- function(xlist,
+                                y,
+                                preProcessThresh = 0.95,
+                                nrFolds_k = 10,
+                                strata_y = "y",
+                                methodCor = "pearson",
+                                describe_model = "Describe the model further and share it with others"){
 
-
-  # Select all variables that starts with V in each dataframe of the list.
+  # Select all variables that starts with Dim in each dataframe of the list.
   xlist <- lapply(xlist, function(X) {
                          X <- dplyr::select(X, dplyr::starts_with("Dim"))
                          })
 
   set.seed(2020)
   Nword_variables <- length(xlist)
-  # Give each column specific names with indeces so that they can be handled separately in the PCAs
+  # Give each column specific names with indexes so that they can be handled separately in the PCAs
   for (i in 1:Nword_variables){
     colnames(xlist[[i]]) <- paste("V_text", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep="")
   }
@@ -85,9 +87,9 @@ textTrainMultiTexts <- function(xlist, y, preProcessThresh = 0.95, nrFolds_k = 1
   for (i in variable_index_vec) {
     df3_recipe <-
       df3_recipe %>%
-      # !! splices the current name into the `matches()` function.
+      # !! slices the current name into the `matches()` function.
       # We use a custom prefix so there are no name collisions for the
-      # results of each PCA step. (maybe maatches from another package??) help(matches)
+      # results of each PCA step.
       step_pca(dplyr::matches(!!i), threshold = preProcessThresh, prefix = paste("PCA_", i, "_"))
   }
 

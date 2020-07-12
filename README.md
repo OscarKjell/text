@@ -8,11 +8,16 @@
 <!-- badges: end -->
 
 The language that individuals use contains a wealth of psychological
-information interesting for research. *Text* analyzes and visualizes
-text, and their relation to other text or numerical variables. The
-r-package is based on state-of-the-art techniques from statistics and
-artificial intelligence, including natural language processing, deep
-learning and machine learning.
+information interesting for research. The *text*-package has two main
+objectives:
+
+  - First, to serve R-users as a *point solution* for transforming text
+    to state-of-the-art word embeddings that are ready to be used for
+    downstream tasks.
+
+  - Second, to serve as an *end-to-end solution* that provides
+    state-of-the-art AI techniques tailored for social and behavioural
+    scientists.
 
 *Text* is created through a collaboration between psychology and
 computer science to address research needs and ensure state-of-the-art
@@ -60,26 +65,26 @@ models that are based on deep learning to model word order and context.
 Multilingual language models can also represent several languages;
 multilingual BERT comprises *104 different languages*.
 
-*Table 1. Some of the available language
-models*
+*Table 1. Some of the available language models*
 
-| Models                          | References                                  | Layers | Dimensions | Language                                                                             |
-| :------------------------------ | :------------------------------------------ | :----- | ---------: | :----------------------------------------------------------------------------------- |
-| ‘bert-base-uncased’             | [Devline](https://arxiv.org/abs/1810.04805) | 12     |        768 | English                                                                              |
-| **‘bert-multilingual-uncased’** | **‘bert-multilingual-uncased’**             | **XX** |        768 | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
-| ‘xlnet-base-cased’              | ‘xlnet-base-cased’                          | XX     |          0 | XX                                                                                   |
-| ‘distilbert-base-cased’         | ‘distilbert-base-cased’                     | XX     |          0 | XX                                                                                   |
-| ‘roberta-base’                  | ‘roberta-base’                              | XX     |          0 | XX                                                                                   |
+| Models                         | References                                              | Layers | Dimensions | Language                                                                             |
+| :----------------------------- | :------------------------------------------------------ | :----- | :--------- | :----------------------------------------------------------------------------------- |
+| ‘bert-base-uncased’            | [Devline et al. 2018](https://arxiv.org/abs/1810.04805) | 12     | 768        | English                                                                              |
+| ‘roberta-base’                 | [Liu et al. 2019](https://arxiv.org/abs/1907.11692)     | 12     | 768        | English                                                                              |
+| ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)   | 6?     | 768?       | English                                                                              |
+| ‘bert-base-multilingual-cased’ | [Devline et al.2018](https://arxiv.org/abs/1810.04805)  | 12     | 768        | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
+| ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692.pdf)       | 24     | 1024       | [100 language](https://huggingface.co/transformers/multilingual.html)                |
 
 See [HuggingFace’s Github](https://github.com/huggingface/transformers)
 for a more comprehensive list of models.
 
 ### An end-to-end package
 
-Text also provides functions to analyse the word embeddings, with
-well-tested machine learning algorithms and statistics. An example is
-functions plotting statistically significant words in the word embedding
-space.
+*Text* also provides functions to analyse the word embeddings with
+well-tested machine learning algorithms and statistics. The focus is to
+analyze and visualize text, and their relation to other text or
+numerical variables. An example is functions plotting statistically
+significant words in the word embedding space.
 
 ``` r
 library(text)

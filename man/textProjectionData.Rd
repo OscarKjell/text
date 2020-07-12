@@ -22,27 +22,27 @@ textProjectionData(
 \arguments{
 \item{words}{Word or text variable to be plotted.}
 
-\item{wordembeddings}{Wordembeddings from textEmbed for the words to be plotted (i.e., the aggregated word embeddings for the "words" parameter).}
+\item{wordembeddings}{Word embeddings from textEmbed for the words to be plotted (i.e., the aggregated word embeddings for the "words" parameter).}
 
-\item{single_wordembeddings}{Wordembeddings from textEmbed for individual words (i.e., decontextualised embeddings).}
+\item{single_wordembeddings}{Word embeddings from textEmbed for individual words (i.e., decontextualized embeddings).}
 
 \item{x}{Numeric variable that the words should be plotted according to on the x-axes.}
 
 \item{y}{Numeric variable that the words should be plotted according to on the y-axes (y=NULL).}
 
 \item{pca}{Number of PCA dimensions applied to the word embeddings in the beginning of the function. A number below 1 takes out \% of variance;
-An integer specify number of components to extract (this setting has not yet been evaluated).}
+An integer specify number of components to extract. (default is NULL as this setting has not yet been evaluated).}
 
-\item{aggregation}{Method to aggregate the word embeddings (default = "mean"; see also "min", or "max").}
+\item{aggregation}{Method to aggregate the word embeddings (default = "mean"; see also "min", "max", and "[CLS]").}
 
 \item{split}{Method to split the axes (default = "quartile" involving selecting lower and upper quartile; see also "median").}
 
 \item{word_weight_power}{Compute the power of the frequency of the words and multiply
-the word embeddings with this in the computation of aggreated word embeddings for group low (1) and group high (2). This increases
+the word embeddings with this in the computation of aggregated word embeddings for group low (1) and group high (2). This increases
 the weight of more frequent words.}
 
-\item{min_freq_words}{Option to select words that have occured a specified number of times (default = 0); when creating the dot product projection
-line (i.e., single words recieve dot product projection and p-value).}
+\item{min_freq_words}{Option to select words that have occurred a specified number of times (default = 0); when creating the dot product projection
+line (i.e., single words receive dot product projection and p-value).}
 
 \item{Npermutations}{Number of permutations in the creation of the null distribution.}
 

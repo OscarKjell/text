@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_1_textTrain.R
 \name{textTrainLists}
 \alias{textTrainLists}
-\title{Trains word embeddings from several text variables to several numeric variables.}
+\title{Individually trains word embeddings from several text variables to several numeric variables.}
 \usage{
 textTrainLists(
   x,
@@ -18,22 +18,22 @@ textTrainLists(
 )
 }
 \arguments{
-\item{x}{List of lists comprising several word embeddings from textEmbed
-(NB need to remove any word embeddings from the decontextualised single words).}
+\item{x}{List of lists comprising several word embeddings from textEmbed.
+(NB need to remove any word embeddings from the decontextualized single words).}
 
 \item{y}{Tibble with numeric variables to predict.}
 
-\item{trainMethod}{Method to train wordembeddings (default "regression"; see also "randomForest").}
+\item{trainMethod}{Method to train word embeddings (default "regression"; see also "randomForest").}
 
 \item{nrFolds_k}{Number of folds to use.}
 
-\item{preProcessPCAthresh}{Preprocessing threshold for amount of variance to retain (default 0.95).}
+\item{preProcessPCAthresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
 
 \item{strata_y}{Variable to stratify according (default y; can set to NULL).}
 
 \item{methodCor}{Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").}
 
-\item{trees}{Number of trees used in random forest.}
+\item{trees}{Number of trees used in the random forest.}
 
 \item{nrFolds_k_out}{Number of outer folds (only for textTrainCVpredictions textTrainCVpredictionsRF,
 which is not yet fully implemented).}
@@ -44,7 +44,7 @@ which is not yet fully implemented).}
 Correlations between predicted and observed values.
 }
 \description{
-Trains word embeddings from several text variables to several numeric variables.
+Individually trains word embeddings from several text variables to several numeric variables.
 }
 \examples{
 wordembeddings <- wordembeddings4_10[1:2]

@@ -3,7 +3,7 @@
 
 #  devtools::document()
 #' Make x and y into same length for when we will randomly draw K-folds from them
-#' Function to add rows of NA until y and x have the same amount of rows.
+#' Function to add rows of NA until y and x have the same number of rows.
 #' @param x a variable
 #' @param y a variable
 #' @return x and y have equal length.
@@ -19,17 +19,13 @@ addEqualNrNArows <- function(x, y) {
   return(x)
 }
 
-
-
-
-# Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution help(switch)
 #  devtools::document()
+#' Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution.
 #' p_value_comparing_with_Null
-#'
-#' @param NULLresults a vector with NULL distribution of estimate (cosines)
-#' @param Observedresults a value representing the observed cosine
-#' @param Npermutations Number of permutation used in the test
-#' @param alternative "two_sided", "greater", "less"
+#' @param NULLresults a vector with a NULL distribution of estimates (cosines).
+#' @param Observedresults a value representing the observed cosine.
+#' @param Npermutations number of permutation used in the test.
+#' @param alternative type of test: "two_sided", "greater", "less".
 #' @return p_value
 #' @noRd
 p_value_comparing_with_Null <- function(Observedresults, NULLresults,  Npermutations, alternative = c("two_sided", "less", "greater")){
@@ -49,67 +45,4 @@ p_value_comparing_with_Null <- function(Observedresults, NULLresults,  Npermutat
   }
   return(p_value)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

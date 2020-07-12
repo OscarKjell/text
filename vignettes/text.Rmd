@@ -72,7 +72,7 @@ textDiff(wordembeddings4_10$harmonytexts, wordembeddings4_10$satisfactiontexts, 
 ```
 
 ## Plot statistically significant words 
-The plotting is made in two steps: First the ```textPlotData()``` function is pre-procssing the data, including computing statistics for each word to be plotted. Second, ```textPlotViz()``` is plotting the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made in the first step, the last step goes quicker so that one can try different design settings.   
+The plotting is made in two steps: First the ```textPlotData()``` function is pre-processing the data, including computing statistics for each word to be plotted. Second, ```textPlotViz()``` is plotting the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made in the first step, the last step goes quicker so that one can try different design settings.   
 
 ### textPlotData(): Pre-process data for plotting 
 ```{r, eval = FALSE, warning=FALSE, message=FALSE}
@@ -92,7 +92,7 @@ df_for_plotting
 ```
 
 
-### textPlotViz(): A two-dimensional word plot
+### textProjectionPlot(): A two-dimensional word plot
 ```{r, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
 library(text)
 # Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function
@@ -120,7 +120,7 @@ plot_projection
 
 
 ### Relevant References
-*Text* is new and has not been used in a publication yet. therefore, the below list consists of papers analysing human language in a similar fashion that is possible *text*.
+*Text* is new and has not been used in a publication yet. therefore, the below list consists of papers analyzing human language in a similar fashion that is possible *text*.
 
 ***Methods Articles***  
 [Gaining insights from social media language: Methodologies and challenges](http://www.peggykern.org/uploads/5/6/6/7/56678211/kern_2016_-_gaining_insights_from_social_media_language-_methodologies_and_challenges.pdf).  

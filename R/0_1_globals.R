@@ -1,9 +1,8 @@
 # devtools::document()
-#Global settings; this is to avoid the
-# note (warning) "no visible binding for global variable ‘token_index’
+# Global settings (these avoids the note (warning) "no visible binding for global variable ‘token_index’
 # https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-variable-note/28887
 utils::globalVariables(c(
-  "token_index", "layer_index",
+  "layer_index", "token_index",
   "SS", "p_values.x", "p_values.y", "words", "n.x", "n.y",
   "addEqualNrNArows", "applysemrep", "single_wordembeddings_df", "Ndim",
   "semanticrepresentation",
@@ -24,5 +23,6 @@ utils::globalVariables(c(
   "CTRLModel", "CTRLTokenizer", "DistilBertModel", "DistilBertTokenizer", "GPT2Model",
   "OpenAIGPTModel", "OpenAIGPTTokenizer", "RobertaModel", "RobertaTokenizer",
   "TransfoXLModel", "TransfoXLTokenizer", "XLMModel", "XLMRobertaModel",
-  "XLMRobertaTokenizer", "XLMTokenizer", "XLNetModel", "XLNetTokenizer"
+  "XLMRobertaTokenizer", "XLMTokenizer", "XLNetModel", "XLNetTokenizer",
+   "T5Model", "T5Tokenizer"
 ))

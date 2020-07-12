@@ -8,9 +8,9 @@ that represent a construct).}
 textSimilarityNorm(x, y)
 }
 \arguments{
-\item{x}{Wordembeddings from textEmbed (with several rows of text).}
+\item{x}{Word embeddings from textEmbed (with several rows of text).}
 
-\item{y}{Wordembedding from textEmbed (from only one text).}
+\item{y}{Word embedding from textEmbed (from only one text).}
 }
 \value{
 A vector comprising cosine semantic similarity scores.
@@ -29,7 +29,7 @@ satisfactionnorm <- c("satisfaction achievement")
 norms <- tibble::tibble(harmonynorm, satisfactionnorm)
 wordembeddings <- wordembeddings4_10
 wordembeddings_wordnorm <- textEmbed(norms)
-similiarty_scores <- textSimilarityNorm(
+similarity_scores <- textSimilarityNorm(
  wordembeddings$harmonytext,
  wordembeddings_wordnorm$harmonynorm
 )
