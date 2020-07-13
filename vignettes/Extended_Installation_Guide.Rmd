@@ -14,28 +14,79 @@ knitr::opts_chunk$set(
 )
 ```
 
-Text uses an r-package called [reticulate](https://rstudio.github.io/reticulate/) as an interface to [Python](https://www.python.org/) and the Python packages [torch](https://pytorch.org/) and [transformers](https://huggingface.co/transformers/). Reticulate normally installs these necessary packages automatically, however, if you receive errors indicating either of these packages are missing see below.
+*Text* uses an r-package called [reticulate](https://rstudio.github.io/reticulate/) as an interface to [Python](https://www.python.org/), and the Python packages [torch](https://pytorch.org/) and [transformers](https://huggingface.co/transformers/). Reticulate normally installs these necessary packages automatically, however, if you receive errors indicating either of these packages are missing follow the instructions below.
 
 ```{r extended_installation, eval = FALSE}
 library(text)
 
-# To manually install the python packages torch and transformers through R, run: 
+# To install the python packages torch and transformers through R, run: 
 library(reticulate)
 install_miniconda()
+
 conda_install(envname = 'r-reticulate', c('torch', 'transformers==2.4.1'), pip = TRUE)
 
 # Windows 10
-conda_install(envname = 'r-reticulate', c('PyTorch', 'transformers'))
+conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
 
 ```
 
-The exact way to install these packages may differ across systems. If the above does not work for you try installing the python packages outside of R or RStudio. Please see: 
-[Python](https://www.python.org/) 
-[torch](https://pytorch.org/)
-transformers
-[transformers](https://huggingface.co/transformers/) and [transformers installation](https://huggingface.co/transformers/installation.html)
 
-If you find a good solution please feel free to email it to [Oscar](oscar.kjell@psy.lu.se) for inclusion above. 
+##Checking your versions
+If something isn't working right, it is a good start to examine what is installed and running on your system. For example to make sure that you have R and Python versions that are up to date. 
+
+```{r extended_installation_checking_system, eval = FALSE}
+
+# First check R-version and which packages that are attached and loaded.  
+sessionInfo()
+
+# Second check out python version; and make sure you at least have version 3.6.10
+library(reticulate)
+py_config()
+```
+
+
+## Issue: RStudio craches during textEmbed
+After a new install/update of *text*, RStudio crashed (Abort session) when running functions that fetches word embeddings (i.e., ```textHuggingFace``` or ```textEmbed```). 
+
+### Solution: Reinstall reticulate and r-miniconda
+To solve the issue re-install reticulate (development version) and uninstall and install r-miniconda.  
+
+Uninstall r-miniconda by removing its entire folder (which by default [in Mac] is at ```Users/YOUR_USER_NAME/Library/r-miniconda```). 
+
+(Note that [in Mac] the Library folder is hidden, so to make it visible go to Finder and the path Users/YOUR_USER_NAME/ and press the three keys: ```COMMAND + SHIFT + .``` . Then the Library-folder should appear, and you can find and remove r-miniconda.
+
+
+```{r extended_REinstallation, eval = FALSE}
+library(text)
+
+# To re-install packages start with a fresh session by restarting R and RStudio
+
+# Install development of reticulate (might not be necessary)
+devtools::install_github("rstudio/reticulate")
+
+# After having manually removed the r-miniconda folder, install it again: 
+library(reticulate)
+install_miniconda()
+
+# Subsequently re-install torch and transformers by running: 
+conda_install(envname = 'r-reticulate', c('torch', 'transformers==2.4.1'), pip = TRUE)
+
+```
+
+
+The exact way to install these packages may differ across systems. Please see:   
+[Python](https://www.python.org/)   
+[torch](https://pytorch.org/)  
+[transformers](https://huggingface.co/transformers/)  
+[transformers installation](https://huggingface.co/transformers/installation.html)
+
+## Share advise
+*If you find a good solution please feel free to email [us](oscar.kjell@psy.lu.se) so that we can update above instructions.*
+ 
+ 
+ 
+
+
 
 
 
