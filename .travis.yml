@@ -1,18 +1,4 @@
-language: r
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: R
 cache: packages
-warnings_are_errors: false
-
-latex: false
-
-before_install:
-  - tlmgr install index
-
-r:
-  - oldrel
-  - release
-  - devel
-
-notifications:
-  email:
-  on_success: change
-  on_failure: change

@@ -29,6 +29,16 @@
 #library(rcmdcheck)
 # rcmdcheck()
 
+#ERROR: lazy loading failed for package ‘text’
+#─  removing ‘/private/var/folders/y7/wj3424xx4y3_4zsn044s7r5h0000gn/T/RtmpbqqlwA/Rinst6d2a1caa3b70/text’
+#-----------------------------------
+#  ERROR: package installation failed
+#Error in proc$get_built_file() : Build process failed
+
+
+
+
+
 #getwd()
 #reticulate::import("huggingface_Interface3")
 #help(import)
