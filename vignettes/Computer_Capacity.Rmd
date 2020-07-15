@@ -42,7 +42,7 @@ T2-T1
 ```
 
 ### Your system's capacity
-Thinking about your computer's memory capacity may become important if you have a lot of data and use multiple layers with many dimensions. For example consider that one sentence of 10 words/tokens, which are each represented by 12 layers à 768 dimensions results in 92 160 values (i.e., 10 x 12 x 768). To avoid running out of memory and get analyses to run faster, consider to:
+Thinking about your computer's memory capacity may become important if you have a lot of data and use multiple layers with many dimensions. For example consider that one sentence of 10 words/tokens, which are each represented by 12 layers a 768 dimensions results in 92 160 values (i.e., 10 x 12 x 768). To avoid running out of memory and get analyses to run faster, consider to:
 
 1. Only retrieve the layers that you plan to use (e.g., ```layers = 11:12```) rather than retrieving all layers (i.e., ```layers = 'all'```). 
 2. Only retrieve tokens if you are planing to use them; otherwise set ```return_tokens = FALSE```. 
