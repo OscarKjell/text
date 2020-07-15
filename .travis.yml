@@ -1,0 +1,13 @@
+language: r
+cache: packages
+warnings_are_errors: false
+
+r:
+  - oldrel
+  - release
+  - devel
+
+notifications:
+  email:
+  on_success: change
+  on_failure: change

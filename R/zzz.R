@@ -27,7 +27,7 @@
 
 #install.packages("rcmdcheck")
 #library(rcmdcheck)
-#rcmdcheck()
+# rcmdcheck()
 
 #getwd()
 #reticulate::import("huggingface_Interface3")
