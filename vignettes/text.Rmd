@@ -98,7 +98,7 @@ library(text)
 # Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function
 plot_projection <- textProjectionPlot(
   word_data = DP_projections_HILS_SWLS_100,
-  k_n_words_two_test = FALSE,
+  k_n_words_to_test = FALSE,
   plot_n_words_square = 5,
   plot_n_words_p = 5,
   plot_n_word_extreme = 1,

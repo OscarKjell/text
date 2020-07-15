@@ -1,5 +1,5 @@
 ---
-output: github_document #rmarkdown::html_vignette
+output: github_document #rmarkdown::html_vignette # #rmarkdown::html_vignette
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -13,16 +13,24 @@ knitr::opts_chunk$set(
 )
 ```
 
-# text
+# text <img src="man/figures/logo.png" align="right" alt="" width="120" />
 
 <!-- badges: start -->
+[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+<!-- [![CRAN Status](https://www.r-pkg.org/badges/version/pkgdown)](https://cran.r-project.org/package=pkgdown) -->
+<!-- [![R build status](https://github.com/r-lib/pkgdown/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)-->
+<!-- [![Codecov test coverage](https://codecov.io/gh/r-lib/pkgdown/branch/master/graphs/badge.svg)](https://codecov.io/gh/r-lib/pkgdown?branch=master)-->
+
+[![R build status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
 <!-- badges: end -->
 
 The language that individuals use contains a wealth of psychological information interesting for research. The *text*-package has two main objectives:
 
-* First, to serve R-users as a *point solution* for transforming text to state-of-the-art word embeddings that are ready to be used for downstream tasks.  
+* First, to serve R-users as a *point solution* for transforming text to state-of-the-art word embeddings that are ready to be used for downstream tasks. \
 
-* Second, to serve as an *end-to-end solution* that provides state-of-the-art AI techniques tailored for social and behavioral scientists.  
+* Second, to serve as an *end-to-end solution* that provides state-of-the-art AI techniques tailored for social and behavioral scientists.\
+
+![Point Solution](man/figures/point_end_solution.png){width=75%}
 
 *Text* is created through a collaboration between psychology and computer science to address research needs and ensure state-of-the-art techniques. It provides powerful functions tailored to test research hypotheses in social and behavior sciences for both relatively small and large datasets.
 

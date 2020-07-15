@@ -1,9 +1,16 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# text
+# text <img src="man/figures/logo.png" align="right" alt="" width="120" />
 
 <!-- badges: start -->
+
+[![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+<!-- [![CRAN Status](https://www.r-pkg.org/badges/version/pkgdown)](https://cran.r-project.org/package=pkgdown) -->
+[![R build
+status](https://github.com/r-lib/pkgdown/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
+<!-- [![Codecov test coverage](https://codecov.io/gh/r-lib/pkgdown/branch/master/graphs/badge.svg)](https://codecov.io/gh/r-lib/pkgdown?branch=master)-->
 
 <!-- badges: end -->
 
@@ -13,11 +20,13 @@ objectives:
 
   - First, to serve R-users as a *point solution* for transforming text
     to state-of-the-art word embeddings that are ready to be used for
-    downstream tasks.
+    downstream tasks.  
 
   - Second, to serve as an *end-to-end solution* that provides
     state-of-the-art AI techniques tailored for social and behavioral
-    scientists.
+    scientists.  
+
+![Point Solution](man/figures/point_end_solution.png)
 
 *Text* is created through a collaboration between psychology and
 computer science to address research needs and ensure state-of-the-art

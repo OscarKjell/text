@@ -356,7 +356,7 @@ textProjectionData <- function(words,
 # devtools::document()
 #' Plot words according to Dot Product Projections.
 #' @param word_data Dataframe from textProjectionData
-#' @param k_n_words_two_test Select the k most frequent words to significance test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.
+#' @param k_n_words_to_test Select the k most frequent words to significance test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.
 #' @param min_freq_words Select words to significance test that have occurred at least min_freq_words (default = 1).
 #' @param plot_n_words_square Select number of significant words in each square of the figure to plot.
 #' @param plot_n_words_p Number of significant words to plot (n per x-axes and n per y-axes, where duplicates are removed);
@@ -406,7 +406,7 @@ textProjectionData <- function(words,
 #' # Dot Product Projection Plot
 #'plot_projection <- textProjectionPlot(
 #'  word_data = DP_projections_HILS_SWLS_100,
-#'  k_n_words_two_test = FALSE,
+#'  k_n_words_to_test = FALSE,
 #'  min_freq_words = 1,
 #'  plot_n_words_square = 3,
 #'  plot_n_words_p = 3,
@@ -436,7 +436,7 @@ textProjectionData <- function(words,
 #' @importFrom purrr as_vector
 #' @export
 textProjectionPlot <- function(word_data,
-                        k_n_words_two_test = FALSE,
+                        k_n_words_to_test = FALSE,
                         min_freq_words = 1,
                         plot_n_words_square = 3,
                         plot_n_words_p = 5,
@@ -499,7 +499,7 @@ textProjectionPlot <- function(word_data,
   word_data_padjusted <- word_data[word_data$n >= min_freq_words, ]
 
   # Computing adjusted p-values with those words selected by: k = sqrt(100*N)
-  if(k_n_words_two_test == TRUE){
+  if(k_n_words_to_test == TRUE){
     words_k = sqrt(100*word_data$N_participant_responses[1])
     word_data_padjusted <- word_data_padjusted %>%
       dplyr::arrange(-n) %>%

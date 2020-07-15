@@ -8,7 +8,7 @@
 # devtools::check()
 #devtools::install_github("OscarKjell/text", auth_token = "99a9388f1ef7a1e44b94f3650d9aeb7ea0658bea")
 #?install_github
-#library(pkgdown)
+# library(pkgdown)
 # Run once to configure your package to use pkgdown
 # usethis::use_pkgdown()
 # Run to build the website
@@ -17,6 +17,12 @@
 # build_home(pkg = ".", override = list(), preview = NA, quiet = TRUE)
 # build_reference()
 # build_reference_index()
+# build_favicons()
+
+usethis::use_github_actions()
+
+usethis::use_github_actions_badge(name = "R-CMD-check")
+
 
 #getwd()
 #reticulate::import("huggingface_Interface3")
