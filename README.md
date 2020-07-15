@@ -8,10 +8,10 @@
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- [![CRAN Status](https://www.r-pkg.org/badges/version/pkgdown)](https://cran.r-project.org/package=pkgdown) -->
-[![R build
-status](https://github.com/r-lib/pkgdown/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
 <!-- [![Codecov test coverage](https://codecov.io/gh/r-lib/pkgdown/branch/master/graphs/badge.svg)](https://codecov.io/gh/r-lib/pkgdown?branch=master)-->
 
+[![R build
+status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
 <!-- badges: end -->
 
 The language that individuals use contains a wealth of psychological
