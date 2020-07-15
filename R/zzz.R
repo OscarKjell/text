@@ -19,10 +19,15 @@
 # build_reference_index()
 # build_favicons()
 
-usethis::use_github_actions()
+#usethis::use_github_actions()
+#usethis::use_github_actions_badge(name = "R-CMD-check")
 
-usethis::use_github_actions_badge(name = "R-CMD-check")
+#usethis::use_github()
 
+
+#install.packages("rcmdcheck")
+#library(rcmdcheck)
+#rcmdcheck()
 
 #getwd()
 #reticulate::import("huggingface_Interface3")
