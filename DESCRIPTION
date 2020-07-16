@@ -40,7 +40,8 @@ Imports:
     rsample,
     reticulate,
     tune,
-    workflows
+    workflows,
+    yardstick (== 0.0.7)
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,

@@ -29,6 +29,10 @@
 #library(rcmdcheck)
 # rcmdcheck()
 
+system("R CMD Rd2pdf /Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text")
+
+tools::texi2pdf("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text")
+
 #ERROR: lazy loading failed for package ‘text’
 #─  removing ‘/private/var/folders/y7/wj3424xx4y3_4zsn044s7r5h0000gn/T/RtmpbqqlwA/Rinst6d2a1caa3b70/text’
 #-----------------------------------
@@ -36,7 +40,7 @@
 #Error in proc$get_built_file() : Build process failed
 
 
-
+#usethis::use_travis()
 
 
 #getwd()
@@ -65,11 +69,13 @@
   if(!grepl(x = R.Version()$arch, pattern = "64")){
     warning("The text package requires running R on a 64-bit systems as it is dependent on torch from ptyhon; and you are not doing this.")
   }
-  packageStartupMessage(cat(paste0("\033[0;", 32, "m", "This is text (version 0.7.14.9000).","\033[0m","\n"),
-                            paste0("\033[0;", 34, "m", "Newer versions may have updated default settings to reflect current understandings of the state-of-the-art.","\033[0m")))
+  packageStartupMessage("This is text (version 0.7.14.9000). Newer versions may have updated default settings to reflect current understandings of the state-of-the-art.")
 }
 
 
+
+#cat(paste0("\033[0;", 32, "m", "This is text (version 0.7.14.9000).","\033[0m","\n"),
+#    paste0("\033[0;", 34, "m", "Newer versions may have updated default settings to reflect current understandings of the state-of-the-art.","\033[0m"))
 
 #f1 <- NULL
 #the_module <- NULL
