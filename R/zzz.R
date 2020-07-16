@@ -5,6 +5,9 @@
 #check(manual = FALSE,
 #      cran = FALSE)
 
+
+# usethis::use_travis()
+
 # library(rcmdcheck)
 # rcmdcheck::rcmdcheck()
 
@@ -49,7 +52,7 @@
 # Error in proc$get_built_file() : Build process failed
 
 
-# usethis::use_travis()
+
 
 
 # getwd()
