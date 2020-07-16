@@ -25,9 +25,9 @@ knitr::opts_chunk$set(
 
 The language that individuals use contains a wealth of psychological information interesting for research. The *text*-package has two main objectives:
 
-* First, to serve R-users as a *point solution* for transforming text to state-of-the-art word embeddings that are ready to be used for downstream tasks. \
+* First, to serve R-users as a *point solution* for transforming text to state-of-the-art word embeddings that are ready to be used for downstream tasks. 
 
-* Second, to serve as an *end-to-end solution* that provides state-of-the-art AI techniques tailored for social and behavioral scientists.\
+* Second, to serve as an *end-to-end solution* that provides state-of-the-art AI techniques tailored for social and behavioral scientists.  
 
 ![Point Solution](man/figures/point_end_solution.png){width=75%}
 

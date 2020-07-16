@@ -21,11 +21,11 @@ objectives:
 
   - First, to serve R-users as a *point solution* for transforming text
     to state-of-the-art word embeddings that are ready to be used for
-    downstream tasks.  
+    downstream tasks.
 
   - Second, to serve as an *end-to-end solution* that provides
     state-of-the-art AI techniques tailored for social and behavioral
-    scientists.  
+    scientists.
 
 ![Point Solution](man/figures/point_end_solution.png)
 
@@ -98,8 +98,6 @@ significant words in the word embedding space.
 
 ``` r
 library(text)
-#> [0;32mThis is text (version 0.7.14.9000).[0m
-#>  [0;34mNewer versions may have updated default settings to reflect current understandings of the state-of-the-art.[0m
 # Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function; the preprocessed test-data included in the package is called: DP_projections_HILS_SWLS_100
 plot_projection <- textProjectionPlot(
   word_data = DP_projections_HILS_SWLS_100,
