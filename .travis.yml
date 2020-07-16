@@ -8,3 +8,7 @@ warnings_are_errors: false
 env:
  global:
    - _R_CHECK_FORCE_SUGGESTS_: false
+
+
+install:
+ - yardstick (==0.0.5)

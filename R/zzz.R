@@ -16,7 +16,7 @@
 
 
 
-# devtools::build(manual=FALSE)
+# devtools::build()
 # text KLOK999
 # library(text)
 # help(textEmbed)
