@@ -56,27 +56,26 @@ textSimilarity <- function(x, y) {
 ########################################################################
 
 # devtools::document()
-#' Compute the semantic similarity between a text variable and a word norm (i.e., a text represented by one word embedding
-#' that represent a construct).
-#'
+#' Compute the semantic similarity between a text variable and a word norm
+#' (i.e., a text represented by one word embedding that represent a construct).
 #' @param x Word embeddings from textEmbed (with several rows of text).
 #' @param y Word embedding from textEmbed (from only one text).
 #' @return A vector comprising cosine semantic similarity scores.
 #' @examples
-#'\dontrun{
-#'library(dplyr)
-#'library(tibble)
-#'harmonynorm <- c("harmony peace ")
-#'satisfactionnorm <- c("satisfaction achievement")
+#' \dontrun{
+#' library(dplyr)
+#' library(tibble)
+#' harmonynorm <- c("harmony peace ")
+#' satisfactionnorm <- c("satisfaction achievement")
 #'
-#'norms <- tibble::tibble(harmonynorm, satisfactionnorm)
-#'wordembeddings <- wordembeddings4_10
-#'wordembeddings_wordnorm <- textEmbed(norms)
-#'similarity_scores <- textSimilarityNorm(
-#'  wordembeddings$harmonytext,
-#'  wordembeddings_wordnorm$harmonynorm
-#')
-#'}
+#' norms <- tibble::tibble(harmonynorm, satisfactionnorm)
+#' wordembeddings <- wordembeddings4_10
+#' wordembeddings_wordnorm <- textEmbed(norms)
+#' similarity_scores <- textSimilarityNorm(
+#'   wordembeddings$harmonytext,
+#'   wordembeddings_wordnorm$harmonynorm
+#' )
+#' }
 #' @seealso see \code{\link{textSimilarity}} and \code{\link{textDiff}}
 #' @importFrom dplyr row_number slice select starts_with
 #' @export
@@ -91,9 +90,3 @@ textSimilarityNorm <- function(x, y) {
   # Apply the cosines functions
   cosines(x1, y2)
 }
-
-
-
-
-
-

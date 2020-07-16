@@ -24,5 +24,5 @@ utils::globalVariables(c(
   "OpenAIGPTModel", "OpenAIGPTTokenizer", "RobertaModel", "RobertaTokenizer",
   "TransfoXLModel", "TransfoXLTokenizer", "XLMModel", "XLMRobertaModel",
   "XLMRobertaTokenizer", "XLMTokenizer", "XLNetModel", "XLNetTokenizer",
-   "T5Model", "T5Tokenizer"
+  "T5Model", "T5Tokenizer"
 ))

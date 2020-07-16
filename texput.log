@@ -1,0 +1,12 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdfetex 2020.7.16)  16 JUL 2020 07:34
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**\nonstopmode \input /Users/oscarkjell/Desktop/1
+
+! Emergency stop.
+<*> ...stopmode \input /Users/oscarkjell/Desktop/1
+                                                  
+*** (job aborted, file error in nonstop mode)
+
+!  ==> Fatal error occurred, no output PDF file produced!

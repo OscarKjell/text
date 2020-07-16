@@ -42,8 +42,9 @@
 #' The dataset is a shortened version of the data sets of Study 3-5
 #' from Kjell, Kjell, Garcia and Sikström 2018.
 #'
-#' @format A list with word embeddings for harmony words, satisfaction words, harmony text, satisfaction
-#' text and decontextualised word embeddings. BERT-base embeddings based on mean aggregation of layer 11 and 12.
+#' @format A list with word embeddings for harmony words, satisfaction words, harmony text,
+#' satisfaction text and decontextualized word embeddings. BERT-base embeddings based on
+#' mean aggregation of layer 11 and 12.
 #' \describe{
 #'   \item{words}{words}
 #'   \item{n}{word frequency}

@@ -20,11 +20,13 @@ unique_freq_words <- function(words){
 }
 
 #  devtools::document()
-#' Create cumulative distribution; Permutes randomly from within group and compute cosine to the group's aggregated embedding.
+#' Create cumulative distribution; Permutes randomly from within group and compute
+#' cosine to the group's aggregated embedding.
 #' @param words_groupX_single_wordembedding_b Each word's word embedding.
 #' @param Aggregated_word_embedding_groupX The groups aggregated word embedding.
 #' @param Npermutations Number of permutations (i.e., number of cosines to return).
-#' @param n_per_split Number of permutations that should be done in each loop (too many crashes computer/too few takes longer time).
+#' @param n_per_split Number of permutations that should be done in each loop (too many crashes
+#' computer/too few takes longer time).
 #' @return Distribution of cosines to the group's aggregated embedding
 #' @importFrom tibble as_tibble
 #' @noRd
@@ -49,23 +51,30 @@ GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembed
 # devtools::document()
 #' Compute Dot Product Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
-#' @param wordembeddings Word embeddings from textEmbed for the words to be plotted (i.e., the aggregated word embeddings for the "words" parameter).
-#' @param single_wordembeddings Word embeddings from textEmbed for individual words (i.e., decontextualized embeddings).
+#' @param wordembeddings Word embeddings from textEmbed for the words to be plotted
+#' (i.e., the aggregated word embeddings for the "words" parameter).
+#' @param single_wordembeddings Word embeddings from textEmbed for individual words
+#' (i.e., decontextualized embeddings).
 #' @param x Numeric variable that the words should be plotted according to on the x-axes.
 #' @param y Numeric variable that the words should be plotted according to on the y-axes (y=NULL).
-#' @param pca Number of PCA dimensions applied to the word embeddings in the beginning of the function. A number below 1 takes out \% of variance;
-#' An integer specify number of components to extract. (default is NULL as this setting has not yet been evaluated).
-#' @param aggregation Method to aggregate the word embeddings (default = "mean"; see also "min", "max", and "[CLS]").
-#' @param split Method to split the axes (default = "quartile" involving selecting lower and upper quartile; see also "median").
+#' @param pca Number of PCA dimensions applied to the word embeddings in the beginning of the function.
+#' A number below 1 takes out \% of variance; An integer specify number of components to extract.
+#' (default is NULL as this setting has not yet been evaluated).
+#' @param aggregation Method to aggregate the word embeddings
+#' (default = "mean"; see also "min", "max", and "[CLS]").
+#' @param split Method to split the axes
+#' (default = "quartile" involving selecting lower and upper quartile; see also "median").
 #' @param word_weight_power Compute the power of the frequency of the words and multiply
-#' the word embeddings with this in the computation of aggregated word embeddings for group low (1) and group high (2). This increases
-#' the weight of more frequent words.
-#' @param min_freq_words Option to select words that have occurred a specified number of times (default = 0); when creating the dot product projection
-#' line (i.e., single words receive dot product projection and p-value).
+#' the word embeddings with this in the computation of aggregated word embeddings for
+#' group low (1) and group high (2). This increases the weight of more frequent words.
+#' @param min_freq_words Option to select words that have occurred a specified number of
+#' times (default = 0); when creating the dot product projection line
+#' (i.e., single words receive dot product projection and p-value).
 #' @param Npermutations Number of permutations in the creation of the null distribution.
-#' @param n_per_split A setting to split Npermutations to avoid reaching computer memory limits; the higher the faster, but too high may lead to abortion.
-#' @return A dataframe with variables (e.g., including dot product projection, frequencies, p-values) for the individual words
-#' that is used for the plotting in the textProjectionPlot function.
+#' @param n_per_split A setting to split Npermutations to avoid reaching computer memory limits;
+#' the higher the faster, but too high may lead to abortion.
+#' @return A dataframe with variables (e.g., including dot product projection, frequencies, p-values)
+#' for the individual words that is used for the plotting in the textProjectionPlot function.
 #' @examples
 # Data
 #'wordembeddings <- wordembeddings4_10
@@ -356,11 +365,13 @@ textProjectionData <- function(words,
 # devtools::document()
 #' Plot words according to Dot Product Projections.
 #' @param word_data Dataframe from textProjectionData
-#' @param k_n_words_to_test Select the k most frequent words to significance test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.
-#' @param min_freq_words Select words to significance test that have occurred at least min_freq_words (default = 1).
+#' @param k_n_words_to_test Select the k most frequent words to significance
+#' test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.
+#' @param min_freq_words Select words to significance test that have occurred at least min_freq_words
+#' (default = 1).
 #' @param plot_n_words_square Select number of significant words in each square of the figure to plot.
-#' @param plot_n_words_p Number of significant words to plot (n per x-axes and n per y-axes, where duplicates are removed);
-#' selects fist according to lowest p-value and then to frequency.
+#' @param plot_n_words_p Number of significant words to plot (n per x-axes and n per y-axes,
+#' where duplicates are removed); selects fist according to lowest p-value and then to frequency.
 #' @param plot_n_word_extreme Number of words that are extreme on dot product projection per dimension.
 #' (i.e., even if not significant; per dimensions, where duplicates are removed).
 #' @param plot_n_word_frequency Number of words based on being most frequent.
@@ -370,26 +381,32 @@ textProjectionData <- function(words,
 #' @param title_top Title (default "  ")
 #' @param titles_color Color for all the titles (default: "#61605e")
 #' @param x_axes If TRUE, plotting on the x_axes.
-#' @param y_axes If TRUE, also plotting on the y-axes (default is FALSE). Also plotting on y-axes produces a two dimension 2-dimensional plot,
-#' but the textProjectionData function has to have had a variable on the y-axes.
+#' @param y_axes If TRUE, also plotting on the y-axes (default is FALSE). Also plotting on
+#' y-axes produces a two dimension 2-dimensional plot, but the textProjectionData function has to
+#' have had a variable on the y-axes.
 #' @param p_alpha Alpha (default = .05).
-#' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons (deafult = "holm"; see also "none", "hochberg",
-#' "hommel", "bonferroni", "BH", "BY",  "fdr").
+#' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons
+#' (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
 #' @param x_axes_label Label on the x-axes.
 #' @param y_axes_label Label on the y-axes.
-#' @param scale_x_axes_lim Manually set the length of the x-axes (default = NULL, which uses ggplot2::scale_x_continuous(limits = scale_x_axes_lim); change e.g., by trying c(-5, 5)).
-#' @param scale_y_axes_lim Manually set the length of the y-axes (default = NULL; which uses uses ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c(-5, 5)).
+#' @param scale_x_axes_lim Manually set the length of the x-axes (default = NULL, which uses
+#' ggplot2::scale_x_continuous(limits = scale_x_axes_lim); change e.g., by trying c(-5, 5)).
+#' @param scale_y_axes_lim Manually set the length of the y-axes (default = NULL; which uses
+#' ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c(-5, 5)).
 #' @param word_font Font type (default: NULL).
-#' @param bivariate_color_codes The different colors of the words (default: c("#398CF9", "#60A1F7", "#5dc688",
-#'                                                                          "#e07f6a", "#EAEAEA", "#40DD52",
-#'                                                                          "#FF0000", "#EA7467", "#85DB8E")).
+#' @param bivariate_color_codes The different colors of the words
+#' (default: c("#398CF9", "#60A1F7", "#5dc688",
+#' "#e07f6a", "#EAEAEA", "#40DD52",
+#' "#FF0000", "#EA7467", "#85DB8E")).
 #' @param word_size_range Vector with minimum and maximum font size (default: c(3, 8)).
 #' @param position_jitter_hight Jitter height (default: .0).
 #' @param position_jitter_width Jitter width (default: .03).
 #' @param point_size Size of the points indicating the words' position (default: 0.5).
 #' @param arrow_transparency Transparency of the lines between each word and point (default: 0.1).
-#' @param points_without_words_size Size of the points not linked with a words (default is to not show it, i.e., 0).
-#' @param points_without_words_alpha Transparency of the points not linked with a words (default is to not show it, i.e., 0).
+#' @param points_without_words_size Size of the points not linked with a words
+#' (default is to not show it, i.e., 0).
+#' @param points_without_words_alpha Transparency of the points not linked with a words
+#' (default is to not show it, i.e., 0).
 #' @param legend_title Title on the color legend (default: "(DPP)".
 #' @param legend_x_axes_label Label on the color legend (default: "(x)".
 #' @param legend_y_axes_label Label on the color legend (default: "(y)".
@@ -430,7 +447,8 @@ textProjectionData <- function(words,
 #' @importFrom tibble as_tibble tibble
 #' @importFrom dplyr row_number slice mutate mutate_if bind_rows group_by summarize left_join %>%
 #' @importFrom tidyr gather separate
-#' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme theme_void theme_minimal aes labs scale_color_identity
+#' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme
+#' theme_void theme_minimal aes labs scale_color_identity
 #' @importFrom rlang sym
 #' @importFrom cowplot ggdraw draw_plot
 #' @importFrom purrr as_vector
@@ -773,7 +791,9 @@ textProjectionPlot <- function(word_data,
   #plot
 
   # Creating legend
-  bivariate_color_data <- tibble::tibble( "1 - 3" = "#0078FF", "2 - 3" = "blue", "3 - 3" = "#49FF00", "1 - 2" = "#8700FF", "2 - 2" = "#B8B8B8", "3 - 2" = "#34AC04", "1 - 1" = "#FF1300", "2 - 1" = "#FF8300", "3 - 1" = "#04AC93")
+  bivariate_color_data <- tibble::tibble( "1 - 3" = "#0078FF", "2 - 3" = "blue", "3 - 3" = "#49FF00",
+                                          "1 - 2" = "#8700FF", "2 - 2" = "#B8B8B8", "3 - 2" = "#34AC04",
+                                          "1 - 1" = "#FF1300", "2 - 1" = "#FF8300", "3 - 1" = "#04AC93")
   bivariate_color_data <- rbind(bivariate_color_data, bivariate_color_codes)
   bivariate_color_data = bivariate_color_data[-1, ]
 
@@ -847,13 +867,17 @@ textProjectionPlot <- function(word_data,
 #' Compute cosine semantic similarity score between single words' word embeddings
 #' and the aggregated word embedding of all words.
 #' @param words Word or text variable to be plotted.
-#' @param wordembeddings Word embeddings from textEmbed for the words to be plotted (i.e., the aggregated word embeddings for the "words" variable).
-#' @param single_wordembeddings Word embeddings from textEmbed for individual words (i.e., the decontextualized word embeddings).
-#' @param aggregation Method to aggregate the word embeddings (default = "mean"; see also "min", "max" or "[CLS]").
-#' @param min_freq_words Option to  select words that have at least occurred a specified number of times (default = 0); when creating the semantic similarity
+#' @param wordembeddings Word embeddings from textEmbed for the words to be plotted
+#' (i.e., the aggregated word embeddings for the "words" variable).
+#' @param single_wordembeddings Word embeddings from textEmbed for individual words
+#' (i.e., the decontextualized word embeddings).
+#' @param aggregation Method to aggregate the word embeddings
+#' (default = "mean"; see also "min", "max" or "[CLS]").
+#' @param min_freq_words Option to  select words that have at least occurred a specified
+#' number of times (default = 0); when creating the semantic similarity
 #' scores within cosine similarity.
-#' @return A dataframe with variables (e.g., including semantic similarity, frequencies) for the individual words
-#' that are used for the plotting in the textCentralityPlot function.
+#' @return A dataframe with variables (e.g., including semantic similarity, frequencies)
+#' for the individual words that are used for the plotting in the textCentralityPlot function.
 #' @examples
 #' wordembeddings <- wordembeddings4_10
 #' data <- Language_based_assessment_data_8_10
@@ -901,8 +925,10 @@ textCentralityData <- function(words,
 # devtools::document()
 #' Plot words according to cosine semantic similarity to the aggregated word embedding.
 #' @param word_data Tibble from textPlotData.
-#' @param min_freq_words Select words to significance test that have occurred at least min_freq_words (default = 1).
-#' @param plot_n_word_extreme Number of words per dimension to plot with extreme dot product projection value.
+#' @param min_freq_words Select words to significance test that have occurred
+#' at least min_freq_words (default = 1).
+#' @param plot_n_word_extreme Number of words per dimension to plot with extreme
+#' dot product projection value.
 #' (i.e., even if not significant;  duplicates are removed).
 #' @param plot_n_word_frequency Number of words to plot according to their frequency.
 #' (i.e., even if not significant).
@@ -912,19 +938,24 @@ textCentralityData <- function(words,
 #' @param titles_color Color for all the titles (default: "#61605e").
 #' @param x_axes Variable to be plotted on the x-axes (default is "central_cosine").
 #' @param x_axes_label Label on the x-axes.
-#' @param scale_x_axes_lim Length of the x-axes (default: NULL, which uses c(min(word_data$central_cosine)-0.05, max(word_data$central_cosine)+0.05);
+#' @param scale_x_axes_lim Length of the x-axes (default: NULL, which uses
+#' c(min(word_data$central_cosine)-0.05, max(word_data$central_cosine)+0.05);
 #' change this by e.g., try c(-5, 5)).
-#' @param scale_y_axes_lim Length of the y-axes (default: NULL, which uses c(-1, 1); change e.g., by trying c(-5, 5)).
+#' @param scale_y_axes_lim Length of the y-axes (default: NULL, which uses c(-1, 1);
+#' change e.g., by trying c(-5, 5)).
 #' @param word_font Type of font (default: NULL).
-#' @param centrality_color_codes Colors of the words selected as plot_n_word_extreme (minimum values), plot_n_words_middle,
-#' plot_n_word_extreme (maximum values) and plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000"), respectively.
+#' @param centrality_color_codes Colors of the words selected as plot_n_word_extreme
+#' (minimum values), plot_n_words_middle, plot_n_word_extreme (maximum values) and
+#' plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000"), respectively.
 #' @param word_size_range Vector with minimum and maximum font size (default: c(3, 8)).
 #' @param position_jitter_hight Jitter height (default: .0).
 #' @param position_jitter_width Jitter width (default: .03).
 #' @param point_size Size of the points indicating the words' position (default: 0.5).
 #' @param arrow_transparency Transparency of the lines between each word and point (default: 0.1).
-#' @param points_without_words_size Size of the points not linked to a word (default is to not show the point; , i.e., 0).
-#' @param points_without_words_alpha Transparency of the points that are not linked to a word (default is to not show it; i.e., 0).
+#' @param points_without_words_size Size of the points not linked to a word
+#' (default is to not show the point; , i.e., 0).
+#' @param points_without_words_alpha Transparency of the points that are not linked to a word
+#' (default is to not show it; i.e., 0).
 #' @param legend_title Title of the color legend (default: "(DPP)").
 #' @param legend_x_axes_label Label on the color legend (default: "(x)".
 #' @param legend_x_position Position on the x coordinates of the color legend (default: 0.02).

@@ -28,8 +28,12 @@
 #' @importFrom tune control_grid tune_grid select_best collect_predictions control_resamples
 #' @importFrom workflows workflow add_model add_recipe
 #' @export
-textTrainRandomForest <- function(x, y, trees=500, nrFolds_k = 10, strata_y = "y", describe_model = "Describe the model further and share it with others"){
-
+textTrainRandomForest <- function(x,
+                                  y,
+                                  trees = 500,
+                                  nrFolds_k = 10,
+                                  strata_y = "y",
+                                  describe_model = "Describe the model further and share it with others") {
   set.seed(2020)
   y <- as.factor(y)
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
@@ -37,13 +41,14 @@ textTrainRandomForest <- function(x, y, trees=500, nrFolds_k = 10, strata_y = "y
   df2$id1 <- c(1:nrow(df2))
   df2_formergingNA <- tibble(df2$id1, df2$y)
   colnames(df2_formergingNA) <- c("id1", "y")
-  df3_data <- as_tibble(df2[complete.cases(df2),])
+  df3_data <- as_tibble(df2[complete.cases(df2), ])
   nrow(df3_data)
 
   # Recipe: Pre-processing by removing na and normalizing variables.
   df3_recipe <-
     recipes::recipe(y ~ .,
-                  data = df3_data) %>%
+      data = df3_data
+    ) %>%
     recipes::update_role(id1, new_role = "id variable") %>%
     recipes::update_role(-id1, new_role = "predictor") %>%
     recipes::update_role(y, new_role = "outcome") %>%
@@ -57,7 +62,7 @@ textTrainRandomForest <- function(x, y, trees=500, nrFolds_k = 10, strata_y = "y
 
   # Model: random forest
   df3_model <- parsnip::rand_forest(trees = trees, mode = "classification") %>%
-    #set_engine("ranger")
+    # set_engine("ranger")
     set_engine("randomForest")
 
   df3_workflow <-
@@ -66,26 +71,26 @@ textTrainRandomForest <- function(x, y, trees=500, nrFolds_k = 10, strata_y = "y
     workflows::add_recipe(df3_recipe)
 
   # Applying the resampling;
-  df3_easy_eval <- tune::fit_resamples(df3_workflow, resamples = df3_cv_splits,  control = tune::control_resamples(save_pred = TRUE))
+  df3_easy_eval <- tune::fit_resamples(df3_workflow, resamples = df3_cv_splits, control = tune::control_resamples(save_pred = TRUE))
   # See warning above!
 
   # Get prediction output
   df3_predictions <- tune::collect_predictions(df3_easy_eval)
   # Sort predictions and merge with the dataframe including NA (this is good for the merging of output in textTrainList)
   df3_predictions1 <- df3_predictions %>%
-    dplyr::rename(y2=y) %>%
-    dplyr::rename(id2=id) %>%
+    dplyr::rename(y2 = y) %>%
+    dplyr::rename(id2 = id) %>%
     dplyr::arrange(.row) %>%
     cbind(df3_data)
 
   df3_data_preds <- merge(df2_formergingNA, df3_predictions1, by.x = "id1", by.y = "id1", all = TRUE)
-  #Chi2 test
+  # Chi2 test
   chi2 <- stats::chisq.test(df3_data_preds$.pred_class, df3_data_preds$y.x)
-  #Getting all predictions
-  outcome_variables <- c("id1", paste(".pred_", levels(y), sep=""), ".pred_class", "y.y")
+  # Getting all predictions
+  outcome_variables <- c("id1", paste(".pred_", levels(y), sep = ""), ".pred_class", "y.y")
   df3_predictions_save <- df3_data_preds %>%
     select(outcome_variables) %>%
-    rename(y=y.y)
+    rename(y = y.y)
 
   # Describe model; adding user's-description + the name of the x and y
   # describe_model_detail <- c(describe_model, paste(names(x)), paste(names(y)))
@@ -104,6 +109,3 @@ textTrainRandomForest <- function(x, y, trees=500, nrFolds_k = 10, strata_y = "y
 # y <- sq_data_tutorial4_100$gender
 # testing_outcome<- textTrainRandomForest(x, sq_data_tutorial4_100$gender, trees=50, nrFolds_k = 10, strata_y = "y")
 # testing_outcome
-
-
-

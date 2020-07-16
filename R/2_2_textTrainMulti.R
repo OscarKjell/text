@@ -13,8 +13,9 @@
 #' @param methodCor Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").
 #' @param describe_model Text to describe your model.
 #' @return A correlation between predicted and observed values; as well as predicted values.
-#' @description Concatenate word embeddings from several text variables to predict an outcome. The word embeddings for each text variable
-#' go through separate PCAs, where the PCA components are concatenated and used in a ridge regression.
+#' @description Concatenate word embeddings from several text variables to predict an outcome.
+#' The word embeddings for each text variable go through separate PCAs, where the PCA components are
+#' concatenated and used in a ridge regression.
 #' @examples
 #' wordembeddings <- wordembeddings4_10[1:4]
 #' ratings_data <- Language_based_assessment_data_8_10$hilstotal
@@ -44,24 +45,24 @@ textTrainMultiTexts <- function(xlist,
                                 nrFolds_k = 10,
                                 strata_y = "y",
                                 methodCor = "pearson",
-                                describe_model = "Describe the model further and share it with others"){
+                                describe_model = "Describe the model further and share it with others") {
 
   # Select all variables that starts with Dim in each dataframe of the list.
   xlist <- lapply(xlist, function(X) {
-                         X <- dplyr::select(X, dplyr::starts_with("Dim"))
-                         })
+    X <- dplyr::select(X, dplyr::starts_with("Dim"))
+  })
 
   set.seed(2020)
   Nword_variables <- length(xlist)
   # Give each column specific names with indexes so that they can be handled separately in the PCAs
-  for (i in 1:Nword_variables){
-    colnames(xlist[[i]]) <- paste("V_text", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep="")
+  for (i in 1:Nword_variables) {
+    colnames(xlist[[i]]) <- paste("V_text", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep = "")
   }
 
   # Make vector with each index so that we can allocate them separately for the PCAs
   variable_index_vec <- list()
-  for (i in 1:Nword_variables){
-    variable_index_vec[i] <- paste("V_text", i, sep="")
+  for (i in 1:Nword_variables) {
+    variable_index_vec[i] <- paste("V_text", i, sep = "")
   }
 
   # Make one df rather then list.
@@ -70,15 +71,16 @@ textTrainMultiTexts <- function(xlist,
   # Get the name of the first variable; which is used to exclude NA (i.e., word embedding have NA in all columns)
   V1 <- colnames(df1)[1]
 
-  #x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
+  # x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   df2 <- cbind(df1, y)
-  df3 <- df2[complete.cases(df2),]
+  df3 <- df2[complete.cases(df2), ]
   df3 <- as_tibble(df3)
 
   df3_recipe <-
     recipes::recipe(y ~ .,
-                    data = df3) %>%
-    #recipes::step_BoxCox(all_predictors()) %>%
+      data = df3
+    ) %>%
+    # recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(V1, skip = TRUE) %>%
     recipes::step_center(all_predictors()) %>%
     recipes::step_scale(all_predictors())
@@ -99,12 +101,13 @@ textTrainMultiTexts <- function(xlist,
   # Model
   df3_model <-
     parsnip::linear_reg(penalty = tune(), mixture = tune()) %>%
-    #parsnip::logistic_reg(mode = "classification", penalty = tune(), mixture = tune()) %>%
+    # parsnip::logistic_reg(mode = "classification", penalty = tune(), mixture = tune()) %>%
     parsnip::set_engine("glmnet")
 
-  # Tuning; parameters; grid for ridge regression. https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#26
+  # Tuning; parameters; grid for ridge regression.
+  # https://rstudio-conf-2020.github.io/applied-ml/Part_5.html#26
   df3_glmn_grid <- base::expand.grid(
-    penalty = 10 ^ seq(-3, -1, length = 20),
+    penalty = 10^seq(-3, -1, length = 20),
     mixture = (0:5) / 5
   )
 
@@ -143,14 +146,9 @@ textTrainMultiTexts <- function(xlist,
 ######################
 ########### End of textTrain function
 ######################
-#solmini_1 <- read_csv("/Users/oscar/Desktop/0 Studies/13 OnlineMini/combinedSOL_SM.csv")
-#solmini_sd300_tk_mean1 <- read_rds("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/spaces/spaceDomain_solminidata_solmini_sd300_tk_mean.rds")
-#xlist <- solmini_sd300_tk_mean1[1:2]
-#y <- solmini_1$phq_tot
+# solmini_1 <- read_csv("/Users/oscar/Desktop/0 Studies/13 OnlineMini/combinedSOL_SM.csv")
+# solmini_sd300_tk_mean1 <- read_rds("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/spaces/spaceDomain_solminidata_solmini_sd300_tk_mean.rds")
+# xlist <- solmini_sd300_tk_mean1[1:2]
+# y <- solmini_1$phq_tot
 
-#testMulti <- textTrainMultiTexts(xlist, y)
-
-
-
-
-
+# testMulti <- textTrainMultiTexts(xlist, y)

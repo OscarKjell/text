@@ -18,9 +18,17 @@
 #' @importFrom dplyr select starts_with
 #' @importFrom parallel splitIndices mclapply
 #' @export
-textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative = c("two_sided", "less", "greater"), output.permutations = TRUE, N_cluster_nodes = 1) {
+textDiff <- function(x,
+                     y,
+                     Npermutations = 1000,
+                     method = "paired",
+                     alternative = c("two_sided", "less", "greater"),
+                     output.permutations = TRUE,
+                     N_cluster_nodes = 1) {
   set.seed(2020)
-  if ((nrow(x) != nrow(y))) { stop("x and y must have the same number of rows for a paired textDiff test.") }
+  if ((nrow(x) != nrow(y))) {
+    stop("x and y must have the same number of rows for a paired textDiff test.")
+  }
   alternative <- match.arg(alternative)
   results <- c("estimate" = NA, "p.value" = NA)
 
@@ -28,27 +36,27 @@ textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative 
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
 
-  if(method == "paired") {
+  if (method == "paired") {
     # Compute cosine between all pairs
     cosine_observed <- cosines(x1, y1)
     # Compute the data's mean of the cosine
     results["estimate"] <- mean(abs(cosine_observed))
-    }
+  }
 
-  if(method == "unpaired"){
+  if (method == "unpaired") {
     X_all <- textEmbeddingAggregation(x1, aggregation = "mean")
     Y_all <- textEmbeddingAggregation(y1, aggregation = "mean")
     # Compute cosine between the summed word embedding
 
     # This is to make it work with the cosines function that require several word embeddings
-    X_all <- rbind(X_all,X_all)
-    Y_all <- rbind(Y_all,Y_all)
+    X_all <- rbind(X_all, X_all)
+    Y_all <- rbind(Y_all, Y_all)
 
     cosine_observed <- cosines(X_all, Y_all)
 
     # Compute the data's mean of the cosine
     results["estimate"] <- mean(abs(cosine_observed))
-    }
+  }
 
   ### Compute comparison distribution of cosine based on randomly drawn word embeddings from both groups
   # adding groups together.
@@ -61,40 +69,40 @@ textDiff <- function(x, y, Npermutations = 1000, method = "paired", alternative 
   distribution_mean_cosine_permutated <- parallel::mclapply(splitix, function(x, xx, yy) {
     mean_cosine_permutated <- sapply(x, function(x, xx, yy) {
       # Get indixes for how to randomly split the word embeddings.
-      indices <- sample(c((rep(TRUE, nrow(x1y1)/2)), (rep(FALSE, nrow(x1y1)/2))), nrow(x1y1), replace=FALSE)
+      indices <- sample(c((rep(TRUE, nrow(x1y1) / 2)), (rep(FALSE, nrow(x1y1) / 2))), nrow(x1y1), replace = FALSE)
       # Randomly select word embeddings into two different data frames.
       rdata1 <- x1y1[indices, ]
       rdata2 <- x1y1[!indices, ]
       # Compute the cosine between randomly drawn word embeddings and compute the mean.
-      if(method == "paired") {
+      if (method == "paired") {
         rcosines <- cosines(rdata1, rdata2)
         return(mean(abs(rcosines)))
       }
-      if(method == "unpaired") {
+      if (method == "unpaired") {
         R1_all <- textEmbeddingAggregation(rdata1, aggregation = "mean")
         R2_all <- textEmbeddingAggregation(rdata2, aggregation = "mean")
         # Compute cosine between the summed word embedding
 
         # This is to make it work with the cosines function that require several word embeddings
-        R1_all <- rbind(R1_all,R1_all)
-        R2_all <- rbind(R2_all,R2_all)
+        R1_all <- rbind(R1_all, R1_all)
+        R2_all <- rbind(R2_all, R2_all)
         rcosines <- cosines(R1_all, R2_all)
 
         # Compute the data's mean of the cosine
         return(abs(rcosines))
       }
-    }, xx=xx, yy=yy)
-    return (mean_cosine_permutated)
-  }, xx=x, yy=y)
+    }, xx = xx, yy = yy)
+    return(mean_cosine_permutated)
+  }, xx = x, yy = y)
   NULLresults <- unlist(distribution_mean_cosine_permutated)
 
   # Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution
-  p_value <- p_value_comparing_with_Null(NULLresults, Observedresults=results["estimate"], Npermutations = Npermutations, alternative=alternative)
+  p_value <- p_value_comparing_with_Null(NULLresults, Observedresults = results["estimate"], Npermutations = Npermutations, alternative = alternative)
   results["p.value"] <- p_value
   results <- as.list(results)
 
   if (output.permutations) {
-  results <- c(list("random.estimates.4.null" = NULLresults, results))
-  results
+    results <- c(list("random.estimates.4.null" = NULLresults, results))
+    results
   }
 }
