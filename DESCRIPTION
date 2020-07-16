@@ -41,7 +41,7 @@ Imports:
     reticulate,
     tune,
     workflows,
-    yardstick (== 0.0.6)
+    yardstick (== 0.0.5)
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,
