@@ -1,8 +1,24 @@
 # .rs.restartR()
+#library(devtools)
+#checking data for non-ASCII characters (350ms)
 
+#check(manual = FALSE,
+#      cran = FALSE)
+
+# library(rcmdcheck)
+# rcmdcheck::rcmdcheck()
+
+#system("R CMD Rd2pdf /Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text")
+#tools::texi2pdf("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text")
+
+
+
+# devtools::build(manual=FALSE)
 # text KLOK999
 # library(text)
 # help(textEmbed)
+
+#rm(list=ls())
 
 # devtools::document()
 # devtools::check()
@@ -25,12 +41,6 @@
 # usethis::use_github()
 
 
-# library(rcmdcheck)
-# rcmdcheck()
-
-system("R CMD Rd2pdf /Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text")
-
-tools::texi2pdf("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text")
 
 # ERROR: lazy loading failed for package ‘text’
 # ─  removing ‘/private/var/folders/y7/wj3424xx4y3_4zsn044s7r5h0000gn/T/RtmpbqqlwA/Rinst6d2a1caa3b70/text’

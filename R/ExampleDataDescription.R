@@ -15,7 +15,6 @@
 #'   \item{swlstotal}{total score of the Satisfaction With Life Scale}
 #'   \item{age}{respondents age in years}
 #'   \item{gender}{respondents gender 1=male, 2=female}
-#'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
 "Language_based_assessment_data_8_10"
@@ -31,7 +30,6 @@
 #'    \item{harmonywords}{Word responses from the harmony in life word question}
 #'   \item{hilstotal}{total score of the Harmony In Life Scale}
 #'   \item{swlstotal}{total score of the Satisfaction With Life Scale}
-#'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
 "Language_based_assessment_data_3_100"
@@ -49,7 +47,6 @@
 #'   \item{words}{words}
 #'   \item{n}{word frequency}
 #'   \item{Dim1:Dim768}{Word embeddings dimensions}
-#'   ...
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
 "wordembeddings4_10"
@@ -74,8 +71,8 @@
 #'   \item{n_g2.y}{frequency of the word in group 2 on the x-axes variable}
 #'   \item{n}{overall word frequency}
 #'   \item{n.percent}{frequency in percent}
-#'   \item{N_participant_responses}{number of participants (as this is needed in the analuses)}
-#'   ...
+#'   \item{N_participant_responses}{number of participants (as this is needed
+#'    in the analyses)}
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
 "DP_projections_HILS_SWLS_100"
@@ -83,7 +80,7 @@
 
 #' Example data for plotting a Semantic Centrality Plot.
 #'
-#' The dataset is a shortened version of the data sets of Study 1
+#' Oscar The dataset is a shortened version of the data sets of Study 1
 #' from Kjell, et al., 2016.
 #'
 #' @format A data frame with 2,146 and 4 variables:
@@ -92,7 +89,6 @@
 #'   \item{n}{overall word frequency}
 #'   \item{central_cosine}{cosine semantic similarity to the aggregated word embedding}
 #'   \item{n_percent}{frequency in percent}
-#'   ...
 #' }
 #' @source \url{https://link.springer.com/article/10.1007/s11205-015-0903-z}
 "centrality_data_harmony"

@@ -50,13 +50,16 @@ The ```textTrain()``` is used to examine how well the word embeddings from a tex
 library(text)
 library(rio)
 # Load data that has already gone through textEmbed
-# The previous example only imported 10 participants; whereas below we load data from 100 participants
+# The previous example only imported 10 participants; 
+#whereas below we load data from 100 participants
 wordembeddings <- rio::import("https://r-text.org/text_data_examples/wordembeddings4_100.rda")
 # Load corresponding numeric variables
 numeric_data <-   rio::import("https://r-text.org/text_data_examples/Language_based_assessment_data_8_100.rda")
 
 # Examine the relationship between harmonytext and the corresponding rating scale
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, numeric_data$hilstotal, nrFolds_k = 10)
+model_htext_hils <- textTrain(wordembeddings$harmonytexts, 
+                              numeric_data$hilstotal, 
+                              nrFolds_k = 10)
 
 # Examine the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$correlation
@@ -68,7 +71,10 @@ The ```textDiff()``` function provides a permutation based test to examine wheth
 library(text)
 
 # Compare the meaning between individuals' harmony in life and satisfaction with life answers
-textDiff(wordembeddings4_10$harmonytexts, wordembeddings4_10$satisfactiontexts, Npermutations = 100, output.permutations = FALSE)
+textDiff(wordembeddings4_10$harmonytexts, 
+         wordembeddings4_10$satisfactiontexts, 
+         Npermutations = 100, 
+         output.permutations = FALSE)
 ```
 
 ## Plot statistically significant words 
@@ -84,7 +90,8 @@ wordembeddings_10 <- wordembeddings4_10
 data_10 <- sq_data_tutorial8_10
 
 # Pre-process data
-df_for_plotting <- textPlotData(data_10$harmonywords, wordembeddings_10$harmonywords,
+df_for_plotting <- textPlotData(data_10$harmonywords, 
+                                wordembeddings_10$harmonywords,
   wordembeddings_10$singlewords_we,
   data_10$hilstotal, data_10$swlstotal
 )
@@ -95,7 +102,8 @@ df_for_plotting
 ### textProjectionPlot(): A two-dimensional word plot
 ```{r, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
 library(text)
-# Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function
+# Used data (DP_projections_HILS_SWLS_100) has
+# been pre-processed with the textProjectionData function
 plot_projection <- textProjectionPlot(
   word_data = DP_projections_HILS_SWLS_100,
   k_n_words_to_test = FALSE,
