@@ -46,7 +46,8 @@ Suggests:
     knitr,
     rmarkdown,
     testthat,
-    rio
+    rio, 
+    glmnet
 VignetteBuilder: knitr
 Depends: R (>= 2.10)
 Config/reticulate:
