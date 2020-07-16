@@ -12,7 +12,7 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 [![R build
 status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
 [![Travis build
-status](https://travis-ci.com/oscarkjell/text.svg?branch=master)](https://travis-ci.com/oscarkjell/text)
+status](https://travis-ci.com/OscarKjell/text.svg?token=9nnh6ve7nsgaP8WiCpbC&branch=master)](https://travis-ci.com/github/OscarKjell/text)
 <!-- badges: end -->
 
 The language that individuals use contains a wealth of psychological
