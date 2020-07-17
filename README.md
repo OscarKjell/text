@@ -8,8 +8,8 @@
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- [![CRAN Status](https://www.r-pkg.org/badges/version/pkgdown)](https://cran.r-project.org/package=pkgdown) -->
-<!-- [![Codecov test coverage](https://codecov.io/gh/r-lib/pkgdown/branch/master/graphs/badge.svg)](https://codecov.io/gh/r-lib/pkgdown?branch=master)-->
-<!--[![R build status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)-->
+[![Github build
+status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
 [![Travis build
 status](https://travis-ci.com/OscarKjell/text.svg?token=9nnh6ve7nsgaP8WiCpbC&branch=master)](https://travis-ci.com/github/OscarKjell/text)
 [![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?token=IZI3IKCFYA)](https://codecov.io/gh/oscarkjell/text)
