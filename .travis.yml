@@ -18,5 +18,3 @@ after_success:
 
 
 
-# This is to make sure travis runs tests
-Rscript -e "Rcpp::compileAttributes()"
