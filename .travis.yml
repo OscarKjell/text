@@ -15,3 +15,8 @@ r_packages:
 
 after_success:
   - Rscript -e 'library(covr); codecov()'
+
+
+
+# This is to make sure travis runs tests
+Rscript -e "Rcpp::compileAttributes()"

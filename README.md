@@ -12,8 +12,7 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 <!--[![R build status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)-->
 [![Travis build
 status](https://travis-ci.com/OscarKjell/text.svg?token=9nnh6ve7nsgaP8WiCpbC&branch=master)](https://travis-ci.com/github/OscarKjell/text)
-[![Codecov test
-coverage](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg)](https://codecov.io/gh/oscarkjell/text?branch=master)
+[![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?token=IZI3IKCFYA)](https://codecov.io/gh/oscarkjell/text)
 <!-- badges: end -->
 
 The language that individuals use contains a wealth of psychological
