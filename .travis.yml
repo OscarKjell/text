@@ -17,4 +17,4 @@ after_success:
   - Rscript -e 'library(covr); codecov()'
 
 
-
+! grep -R "WARNING" "${RCHECK_DIR}/00check.log"

@@ -37,6 +37,10 @@
 # build_reference_index()
 # build_favicons()
 
+# install.packages("yardstick")
+# library(yardstick)
+# sessionInfo()
+
 # usethis::use_github_actions()
 # usethis::use_github_actions_badge(name = "R-CMD-check")
 
