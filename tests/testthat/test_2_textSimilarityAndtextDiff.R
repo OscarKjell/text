@@ -27,7 +27,6 @@ test_that("textDiff results in list with numeric output", {
 
   expect_that(test_diff_results, is_a("list"))
   expect_is(test_diff_results[[1]][[1]], 'numeric')
-
 })
 
 

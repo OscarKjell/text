@@ -2,12 +2,11 @@
 #library(devtools)
 #checking data for non-ASCII characters (350ms)
 
-#check(manual = FALSE,
-#      cran = FALSE)
-
+#check(manual = FALSE, cran = FALSE)
+#rcmdcheck::rcmdcheck()
 
 # usethis::use_travis()
-
+# usethis::use_coverage(type = c("codecov"))
 # library(rcmdcheck)
 # rcmdcheck::rcmdcheck()
 
@@ -21,7 +20,7 @@
 # library(text)
 # help(textEmbed)
 
-#rm(list=ls())
+
 
 # devtools::document()
 # devtools::check()
