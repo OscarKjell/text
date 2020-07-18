@@ -6,18 +6,19 @@ library(dplyr)
 
 context("textPlot Functions")
 
-test_that("textProjectionData MEDIAN produces a tibble with character variable and numeric variable.", {
+test_that("textProjectionData MEDIAN and PCA produces a tibble with character variable and numeric variable.", {
   #Data
   wordembeddings <- wordembeddings4_10
   data <- Language_based_assessment_data_8_10
   # Pre-processing data for plotting
-  df_for_plotting <- textProjectionData(data$harmonywords[1:3],
-                                        wordembeddings$harmonywords[1:3,],
+  df_for_plotting <- textProjectionData(data$harmonywords[1:5],
+                                        wordembeddings$harmonywords[1:5,],
                                         wordembeddings$singlewords_we,
-                                        data$hilstotal[1:3],
+                                        data$hilstotal[1:5],
                                         split = "median",
                                         Npermutations = 2,
-                                        n_per_split = 1)
+                                        n_per_split = 1,
+                                        pca = 2)
 
   expect_true(tibble::is_tibble(df_for_plotting))
   expect_is(df_for_plotting$words[1], 'character')
@@ -29,14 +30,14 @@ test_that("textProjectionData with QUARTILE, 0.9 PCA and 2-dimensions produces a
   wordembeddings <- wordembeddings4_10
   data <- Language_based_assessment_data_8_10
   # Pre-processing data for plotting
-  df_for_plotting <- textProjectionData(data$harmonywords[1:5],
-                                        wordembeddings$harmonywords[1:5,],
+  df_for_plotting <- textProjectionData(data$harmonywords[1:10],
+                                        wordembeddings$harmonywords[1:10,],
                                         wordembeddings$singlewords_we,
-                                        data$hilstotal[1:3],
-                                        data$swlstotal[1:3],
+                                        data$hilstotal[1:10],
+                                        data$swlstotal[1:10],
                                         split = "quartile",
                                         Npermutations = 2,
-                                        n_per_split = 1,
+                                        n_per_split = 3,
                                         pca = 0.9)
   #df_for_plotting
 
@@ -47,27 +48,27 @@ test_that("textProjectionData with QUARTILE, 0.9 PCA and 2-dimensions produces a
 
 
 
-test_that("textProjectionData with QUARTILE, 2 PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
-  #Data
-  wordembeddings <- wordembeddings4_10
-  data <- Language_based_assessment_data_8_10
-  # Pre-processing data for plotting
-  df_for_plotting <- textProjectionData(data$harmonywords[1:5],
-                                        wordembeddings$harmonywords[1:5,],
-                                        wordembeddings$singlewords_we,
-                                        data$hilstotal[1:3],
-                                        data$swlstotal[1:3],
-                                        split = "quartile",
-                                        Npermutations = 2,
-                                        n_per_split = 1,
-                                        pca = 2)
-  #df_for_plotting
-
-  expect_true(tibble::is_tibble(df_for_plotting))
-  expect_is(df_for_plotting$words[1], 'character')
-  expect_is(df_for_plotting$n[1], 'integer')
-})
-
+#test_that("textProjectionData with QUARTILE, 2 PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
+#  #Data
+#  wordembeddings <- wordembeddings4_10
+#  data <- Language_based_assessment_data_8_10
+#  # Pre-processing data for plotting
+#  df_for_plotting <- textProjectionData(data$harmonywords[1:5],
+#                                        wordembeddings$harmonywords[1:5,],
+#                                        wordembeddings$singlewords_we,
+#                                        data$hilstotal[1:5],
+#                                        data$swlstotal[1:5],
+#                                        split = "quartile",
+#                                        Npermutations = 2,
+#                                        n_per_split = 1,
+#                                        pca = 2)
+#  #df_for_plotting
+#
+#  expect_true(tibble::is_tibble(df_for_plotting))
+#  expect_is(df_for_plotting$words[1], 'character')
+#  expect_is(df_for_plotting$n[1], 'integer')
+#})
+#
 
 
 

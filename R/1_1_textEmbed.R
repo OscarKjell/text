@@ -444,7 +444,6 @@ textLayerAggregation <- function(word_embeddings_layers,
   if (is.character(layers)) {
     # Get the first embeddings
     x_layer_unique <- unique(grep_col_by_name_in_list(word_embeddings_layers[[1]][[1]], "layer_number"))
-    x_layer_unique
     # Get which layers
     x_layer_unique_numeric <- as.numeric(x_layer_unique)
     # Remove layer 0 because it is the input layer for the word embeddings.
