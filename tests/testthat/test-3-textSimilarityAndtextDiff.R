@@ -17,6 +17,19 @@ test_that("textSimilarity produces similarity scores", {
 
 })
 
+test_that("textSimilarity produces similarity scores", {
+  #Example norm
+  harmonynorm <- wordembeddings4_10$harmonywords[1,]
+
+  similarity_norm_scores <- textSimilarityNorm(
+    wordembeddings4_10$harmonytext[1:2,],
+     harmonynorm
+   )
+
+  expect_that(similarity_norm_scores, is_a("numeric"))
+
+})
+
 
 test_that("textDiff results in list with numeric output", {
 

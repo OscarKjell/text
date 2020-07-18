@@ -1,6 +1,8 @@
 library(testthat)
 library(text)
 
+#test_check("text")
+
 # The submission to CRAN has been rejected several times because the _total_
 # time to check the package is too long (>10 min). Most of this is attributable
 # to the install time for dependencies. However, CRAN has been very inconsistent
