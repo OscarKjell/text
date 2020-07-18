@@ -13,7 +13,6 @@ textTrainLists(
   strata_y = "y",
   methodCor = "pearson",
   trees = 500,
-  nrFolds_k_out = 10,
   ...
 )
 }
@@ -34,9 +33,6 @@ textTrainLists(
 \item{methodCor}{Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").}
 
 \item{trees}{Number of trees used in the random forest.}
-
-\item{nrFolds_k_out}{Number of outer folds (only for textTrainCVpredictions textTrainCVpredictionsRF,
-which is not yet fully implemented).}
 
 \item{...}{Arguments for the textTrain function.}
 }

@@ -127,8 +127,6 @@ textTrain <- function(x,
 #' @param y Tibble with numeric variables to predict.
 #' @param trainMethod Method to train word embeddings (default "regression"; see also "randomForest").
 #' @param nrFolds_k Number of folds to use.
-#' @param nrFolds_k_out Number of outer folds (only for textTrainCVpredictions textTrainCVpredictionsRF,
-#' which is not yet fully implemented).
 #' @param preProcessPCAthresh Pre-processing threshold for amount of variance to retain (default 0.95).
 #' @param strata_y Variable to stratify according (default y; can set to NULL).
 #' @param methodCor Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").
@@ -153,8 +151,7 @@ textTrainLists <- function(x,
                            preProcessPCAthresh = 0.95,
                            strata_y = "y",
                            methodCor = "pearson",
-                           trees = 500,
-                           nrFolds_k_out = 10, ...) {
+                           trees = 500, ...) {
   #  , trees=500 method="regression"  method= "textTrainCVpredictions";  method= "textTrainCVpredictionsRF"
 
   # Get variable names in the list of outcomes.
@@ -222,33 +219,6 @@ textTrainLists <- function(x,
     # Combine output
     results <- list(output_predscore, output_ordered_named)
     names(results) <- c("predscores", "results")
-    results
-  } else if (trainMethod == "textTrainCVpredictions") {
-    output <- mapply(textTrainCVpredictions, x, y1,
-      SIMPLIFY = FALSE,
-      MoreArgs = list(nrFolds_k = nrFolds_k, nrFolds_k_out = nrFolds_k_out, preProcessPCAthresh = preProcessPCAthresh, strata_y = strata_y)
-    )
-
-    output_predscore <- as.data.frame(lapply(output, function(output) unlist(output)))
-    output_predscore_reg <- output_predscore[rownames(output_predscore) %like% ".pred", ] # like comes from data.table
-    colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
-    results <- list(output_predscore_reg)
-    names(results) <- c("CVpredscores")
-    results
-  } else if (trainMethod == "textTrainCVpredictionsRF") {
-    output <- mapply(textTrainCVpredictionsRF, x, y1,
-      SIMPLIFY = FALSE,
-      MoreArgs = list(trees = trees, nrFolds_k_out = nrFolds_k_out, nrFolds_k = nrFolds_k, strata_y = strata_y)
-    )
-
-    # Get and sort the prediction scores
-    names(output) <- descriptions
-    output_predscore <- do.call(cbind, output) %>%
-      tibble::as_tibble() %>%
-      dplyr::arrange()
-
-    results <- list(output_predscore)
-    names(results) <- c("CVpredscores")
     results
   }
 }
