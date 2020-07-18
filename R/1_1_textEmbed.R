@@ -154,7 +154,7 @@ getUniqueWordsAndFreq <- function(x_characters) {
 #' (and is used again below for decontextualized words).
 #' @param x list of layers.
 #' @param layers the number of layers to get (setting comes from textHuggingFace).
-#' @param return_tokens bolean wether tokens have been returned (setting comes from textHuggingFace).
+#' @param return_tokens bolean whether tokens have been returned (setting comes from textHuggingFace).
 #' @return Layers in tidy tibble format with each dimension column called Dim1, Dim2 etc.
 #' @noRd
 sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
@@ -396,10 +396,18 @@ textHuggingFace <- function(x,
     )
     names(sorted_layers_All_decontexts$decontext$single_we$single_we) <- NULL
     sorted_layers_All_decontexts$decontext$single_words <- singlewords
+    sorted_layers_All_decontexts
   }
 
   # Combine previous list and word list
+  if(contexts == TRUE & decontexts == TRUE){
   word_embeddings_with_layers <- c(sorted_layers_ALL_variables, sorted_layers_All_decontexts)
+  word_embeddings_with_layers
+  } else if(contexts == TRUE & decontexts == FALSE){
+    word_embeddings_with_layers <- c(sorted_layers_ALL_variables)
+  } else if(contexts == FALSE & decontexts == TRUE){
+    word_embeddings_with_layers <- c(sorted_layers_All_decontexts)
+  }
   word_embeddings_with_layers
 }
 

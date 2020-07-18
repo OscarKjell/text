@@ -35,6 +35,23 @@
 "Language_based_assessment_data_3_100"
 
 
+#' Word embeddings from textHuggingFace function
+#'
+#' The dataset is a shortened version of the data sets of Study 3-5
+#' from Kjell, Kjell, Garcia and Sikström 2018.
+#'
+#' @format A list with word embeddings for harmony words for only contexts. BERT-base embeddings based on
+#' mean aggregation of layer 1 and 2.
+#' \describe{
+#'   \item{tokens}{words}
+#'   \item{layer_number }{layer of the transformer model}
+#'   \item{Dim1:Dim768}{Word embeddings dimensions}
+#' }
+#' @source \url{https://psyarxiv.com/er6t7/}
+"embeddings_from_huggingface2"
+
+
+
 #' Wordembeddings for 4 text variables for 10 participants
 #'
 #' The dataset is a shortened version of the data sets of Study 3-5

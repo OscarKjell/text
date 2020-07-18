@@ -38,9 +38,22 @@ library(tibble)
 #
 #})
 
-#
+
+test_that("textLayerAggregation produces aggregated word embeddings", {
+
+  #skip_on_cran()
+  aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context, layers = 1:2)
+
+  expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
+  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
+
+  })
+
+
+
+
 #test_that("textEmbed produces a list of word embeddings", {
-#
+
 #  #skip_on_cran()
 
 #  text_to_test_import1 <- c("Let's test this", "hope it works")
