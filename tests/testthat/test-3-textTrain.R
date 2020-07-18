@@ -4,7 +4,7 @@
 library(testthat)
 library(text)
 library(tibble)
-library(psych)
+#library(psych)
 library(dplyr)
 #test_check("text")
 

@@ -4,7 +4,7 @@
 library(testthat)
 library(text)
 library(tibble)
-library(psych)
+#library(psych)
 #test_check("text")
 
 context("Semantic Similiarty Functions and textDiff")
