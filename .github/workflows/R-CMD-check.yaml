@@ -19,7 +19,7 @@ jobs:
 #          - {os: macOS-latest,   r: 'devel',  old_dplyr: false}
 #          - {os: macOS-latest,   r: '4.0',  old_dplyr: false}
           - {os: macOS-latest,   r: '4.0'}
-          - {os: windows-latest, r: '4.0'}
+#          - {os: windows-latest, r: '4.0'}
 #          - {os: ubuntu-16.04,   r: '4.0', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 #          - {os: ubuntu-16.04,   r: '3.6', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 #          - {os: ubuntu-16.04,   r: '3.5', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
@@ -75,12 +75,12 @@ jobs:
 #          remotes::install_version("dplyr", "0.8.5")
 #        shell: Rscript {0}
 
-#      - name: Session info
-#        run: |
-#          options(width = 100)
-#          pkgs <- installed.packages()[, "Package"]
-#          sessioninfo::session_info(pkgs, include_base = TRUE)
-#        shell: Rscript {0}
+      - name: Session info
+        run: |
+          options(width = 100)
+          pkgs <- installed.packages()[, "Package"]
+          sessioninfo::session_info(pkgs, include_base = TRUE)
+        shell: Rscript {0}
 
       - name: Check
         env:
