@@ -24,13 +24,13 @@ test_that("textProjectionData MEDIAN produces a tibble with character variable a
   expect_is(df_for_plotting$n[1], 'integer')
 })
 
-test_that("textProjectionData with QUARTILE, PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
+test_that("textProjectionData with QUARTILE, 0.9 PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
   #Data
   wordembeddings <- wordembeddings4_10
   data <- Language_based_assessment_data_8_10
   # Pre-processing data for plotting
-  df_for_plotting <- textProjectionData(data$harmonywords[1:3],
-                                        wordembeddings$harmonywords[1:3,],
+  df_for_plotting <- textProjectionData(data$harmonywords[1:5],
+                                        wordembeddings$harmonywords[1:5,],
                                         wordembeddings$singlewords_we,
                                         data$hilstotal[1:3],
                                         data$swlstotal[1:3],
@@ -46,11 +46,38 @@ test_that("textProjectionData with QUARTILE, PCA and 2-dimensions produces a tib
 })
 
 
+
+test_that("textProjectionData with QUARTILE, 2 PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
+  #Data
+  wordembeddings <- wordembeddings4_10
+  data <- Language_based_assessment_data_8_10
+  # Pre-processing data for plotting
+  df_for_plotting <- textProjectionData(data$harmonywords[1:5],
+                                        wordembeddings$harmonywords[1:5,],
+                                        wordembeddings$singlewords_we,
+                                        data$hilstotal[1:3],
+                                        data$swlstotal[1:3],
+                                        split = "quartile",
+                                        Npermutations = 2,
+                                        n_per_split = 1,
+                                        pca = 2)
+  #df_for_plotting
+
+  expect_true(tibble::is_tibble(df_for_plotting))
+  expect_is(df_for_plotting$words[1], 'character')
+  expect_is(df_for_plotting$n[1], 'integer')
+})
+
+
+
+
+
+
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   # Dot Product Projection Plot
   p <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
-    k_n_words_to_test = FALSE,
+    k_n_words_to_test = TRUE,
     min_freq_words = 1,
     plot_n_words_square = 3,
     plot_n_words_p = 3,
@@ -93,6 +120,12 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
   expect_true(ggplot2::is.ggplot(p))
 
 })
+
+
+
+
+
+
 
 
 test_that("textCentralityData produces a tibble with character variable and numeric variable.", {

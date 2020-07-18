@@ -39,7 +39,7 @@ library(tibble)
 #})
 
 
-test_that("textLayerAggregation produces aggregated word embeddings", {
+test_that("textLayerAggregation 1:2 produces aggregated word embeddings", {
 
   #skip_on_cran()
   aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context, layers = 1:2)
@@ -49,7 +49,15 @@ test_that("textLayerAggregation produces aggregated word embeddings", {
 
   })
 
+test_that("textLayerAggregation 'all' produces aggregated word embeddings", {
 
+  #skip_on_cran()
+  aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context, layers = 'all')
+
+  expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
+  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
+
+})
 
 
 #test_that("textEmbed produces a list of word embeddings", {
