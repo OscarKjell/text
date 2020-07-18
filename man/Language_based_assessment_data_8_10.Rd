@@ -15,7 +15,6 @@ A data frame with 10 participants and 8 variables:
   \item{swlstotal}{total score of the Satisfaction With Life Scale}
   \item{age}{respondents age in years}
   \item{gender}{respondents gender 1=male, 2=female}
-  ...
 }
 }
 \source{

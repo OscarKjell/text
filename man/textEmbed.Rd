@@ -27,41 +27,57 @@ textEmbed(
 \item{x}{Tibble/dataframe with at least one character variable.}
 
 \item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
-"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".
-Can set this parameter to NULL and then manually specify pretrained_weights, tokenizer_class and model_class.}
+"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
+"roberta-base", or "xlm-roberta-base". Can set this parameter to NULL and then manually
+specify pretrained_weights, tokenizer_class and model_class.}
 
-\item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient to only extract the layers
-that you need (e.g., 12). Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
+\item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient to
+only extract the layers that you need (e.g., 12).
+Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
 These layers can then be aggregated in the textLayerAggregation function. If you want all layers then use 'all'.}
 
-\item{pretrained_weights}{advanced parameter submitted to the HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/.}
+\item{pretrained_weights}{advanced parameter submitted to the HuggingFace interface to get models not yet officially
+incorporated into text. Default = NULL. for details see https://huggingface.co/.}
 
-\item{tokenizer_class}{advanced parameter submitted to the HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/.}
+\item{tokenizer_class}{advanced parameter submitted to the HuggingFace interface to get
+models not yet officially incorporated into text.
+Default = NULL. for details see https://huggingface.co/.}
 
-\item{model_class}{advanced parameter submitted to the HuggingFace interface to get models not yet officially incorporated into *text*. Default = NULL. for details see https://huggingface.co/.}
+\item{model_class}{advanced parameter submitted to the HuggingFace interface to get models not yet officially
+incorporated into text.
+Default = NULL. for details see https://huggingface.co/.}
 
-\item{contexts}{Provide word embeddings based on word contexts (standard method; default = TRUE).}
+\item{contexts}{Provide word embeddings based on word contexts
+(standard method; default = TRUE).}
 
-\item{context_layers}{Specify the layers that should be aggregated (default 11:12). Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised not to be used.}
+\item{context_layers}{Specify the layers that should be aggregated (default 11:12).
+Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised not to be used.}
 
 \item{context_aggregation}{Method to aggregate the contextualized layers (e.g., "mean", "min" or "max).}
 
-\item{context_tokens_select}{Option to select word embeddings linked to specific tokens such as [CLS] and [SEP] for the context embeddings.}
+\item{context_tokens_select}{Option to select word embeddings linked to specific tokens
+such as [CLS] and [SEP] for the context embeddings.}
 
-\item{context_tokens_deselect}{Option to deselect embeddings linked to specific tokens such as [CLS] and [SEP] for the context embeddings.}
+\item{context_tokens_deselect}{Option to deselect embeddings linked to specific tokens
+such as [CLS] and [SEP] for the context embeddings.}
 
-\item{decontexts}{Provide word embeddings of single words as input (embeddings, e.g., used for plotting; default = TRUE).}
+\item{decontexts}{Provide word embeddings of single words as input
+(embeddings, e.g., used for plotting; default = TRUE).}
 
 \item{decontext_layers}{Layers to aggregate for the decontext embeddings.}
 
-\item{decontext_aggregation}{Method to aggregate the decontextualized layers (i.e., embeddings from single words; e.g., "mean", "min", "max or "[CLS]").}
+\item{decontext_aggregation}{Method to aggregate the decontextualized layers
+(i.e., embeddings from single words; e.g., "mean", "min", "max or "[CLS]").}
 
-\item{decontext_tokens_select}{Option to select embeddings linked to specific tokens such as [CLS] and [SEP] for the decontext embeddings.}
+\item{decontext_tokens_select}{Option to select embeddings linked to specific tokens
+such as [CLS] and [SEP] for the decontext embeddings.}
 
-\item{decontext_tokens_deselect}{option to deselect embeddings linked to specific tokens such as [CLS] and [SEP] for the decontext embeddings.}
+\item{decontext_tokens_deselect}{option to deselect embeddings linked to specific tokens
+such as [CLS] and [SEP] for the decontext embeddings.}
 }
 \value{
-A tibble with tokens, a column for layer identifier and word embeddings. Note that layer 0 is the input embedding to the transformer
+A tibble with tokens, a column for layer identifier and word embeddings.
+Note that layer 0 is the input embedding to the transformer
 }
 \description{
 Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
@@ -69,10 +85,10 @@ Extract layers and aggregate them to word embeddings, for all character variable
 \examples{
 \dontrun{
 x <- Language_based_assessment_data_8_10[1:2, 1:2]
-#Example 1
+# Example 1
 wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
-#Example 1
-wordembeddings <- textEmbed(x, layers = 'all', context_layers = 'all', decontext_layers = 'all')
+# Example 1
+wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 }
 }
 \seealso{

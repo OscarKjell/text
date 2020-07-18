@@ -25,7 +25,8 @@ textTrain(
 
 \item{strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{methodCor}{Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").}
+\item{methodCor}{Type of correlation used in evaluation (default "pearson";
+can set to "spearman" or "kendall").}
 
 \item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
 }
@@ -38,8 +39,9 @@ Train word embeddings to a numeric variable.
 \examples{
 wordembeddings <- wordembeddings4_10
 ratings_data <- Language_based_assessment_data_8_10
-wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
-nrFolds_k = 2, strata_y = NULL)
+results <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
+  nrFolds_k = 2, strata_y = NULL
+)
 }
 \seealso{
 see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}

@@ -35,13 +35,14 @@ textTrainMultiTexts(
 A correlation between predicted and observed values; as well as predicted values.
 }
 \description{
-Concatenate word embeddings from several text variables to predict an outcome. The word embeddings for each text variable
-go through separate PCAs, where the PCA components are concatenated and used in a ridge regression.
+Concatenate word embeddings from several text variables to predict an outcome.
+The word embeddings for each text variable go through separate PCAs, where the PCA components are
+concatenated and used in a ridge regression.
 }
 \examples{
 wordembeddings <- wordembeddings4_10[1:4]
 ratings_data <- Language_based_assessment_data_8_10$hilstotal
-wordembeddings <- textTrainMultiTexts(wordembeddings, ratings_data, nrFolds_k = 2)
+results <- textTrainMultiTexts(wordembeddings, ratings_data, nrFolds_k = 2)
 }
 \seealso{
 see \code{\link{textTrainLists}} \code{\link{textDiff}}

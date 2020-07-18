@@ -49,7 +49,7 @@ Individually trains word embeddings from several text variables to several numer
 \examples{
 wordembeddings <- wordembeddings4_10[1:2]
 ratings_data <- Language_based_assessment_data_8_10[5:6]
-wordembeddings <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
+results <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
 }
 \seealso{
 see \code{\link{textTrain}}

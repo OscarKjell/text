@@ -15,17 +15,23 @@ textLayerAggregation(
 \arguments{
 \item{word_embeddings_layers}{Layers outputted from textHuggingFace.}
 
-\item{layers}{The numbers of the layers to be aggregated (e.g., c(11:12) to aggregate the eleventh and twelfth).
-Note that layer 0 is the input embedding to the transformer, and should normally not be used. Selecting 'all' thus removes layer 0.}
+\item{layers}{The numbers of the layers to be aggregated
+(e.g., c(11:12) to aggregate the eleventh and twelfth).
+Note that layer 0 is the input embedding to the transformer, and should normally not be used.
+Selecting 'all' thus removes layer 0.}
 
-\item{aggregation}{Method to aggregate the dimensions of each selected layer (default "mean"; see also "min",  "max" and "CLS").}
+\item{aggregation}{Method to aggregate the dimensions of each selected layer
+(default "mean"; see also "min",  "max" and "CLS").}
 
-\item{tokens_select}{Option to only select embeddings linked to specific tokens such as [CLS] and [SEP] (default NULL).}
+\item{tokens_select}{Option to only select embeddings linked to specific tokens
+such as [CLS] and [SEP] (default NULL).}
 
-\item{tokens_deselect}{Option to deselect embeddings linked to specific tokens such as [CLS] and [SEP] (default NULL).}
+\item{tokens_deselect}{Option to deselect embeddings linked to specific tokens
+such as [CLS] and [SEP] (default NULL).}
 }
 \value{
-A tibble with word embeddings. Note that layer 0 is the input embedding to the transformer, which is normally not used.
+A tibble with word embeddings. Note that layer 0 is the input embedding to
+the transformer, which is normally not used.
 }
 \description{
 Select and aggregate layers of hidden states to form a word embeddings.

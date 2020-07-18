@@ -19,34 +19,6 @@ unique_freq_words <- function(words){
   words_groupb_freq
 }
 
-#  devtools::document()
-#' Create cumulative distribution; Permutes randomly from within group and compute
-#' cosine to the group's aggregated embedding.
-#' @param words_groupX_single_wordembedding_b Each word's word embedding.
-#' @param Aggregated_word_embedding_groupX The groups aggregated word embedding.
-#' @param Npermutations Number of permutations (i.e., number of cosines to return).
-#' @param n_per_split Number of permutations that should be done in each loop (too many crashes
-#' computer/too few takes longer time).
-#' @return Distribution of cosines to the group's aggregated embedding
-#' @importFrom tibble as_tibble
-#' @noRd
-GroupX_cummalative_distribution_cosine <- function(words_groupX_single_wordembedding_b, Aggregated_word_embedding_groupX, Npermutations, n_per_split) {
-  forloops <- ceiling(Npermutations/n_per_split)
-  cosine_null_distribution <- list()
-  for(i in 1:forloops){
-    # Select random word embeddings according to setting n_per_split = 1000
-    indice <- sample(nrow(words_groupX_single_wordembedding_b), n_per_split, replace=TRUE)
-    random_group2_embedding <- words_groupX_single_wordembedding_b[indice, ]
-
-    # Compute the cosine between randomly drawn word embeddings and compute the mean
-    group2_rcosines <- cosines(random_group2_embedding, t(replicate(nrow(random_group2_embedding), Aggregated_word_embedding_groupX)))
-    cosine_null_distribution[i] <- as_tibble(group2_rcosines)
-    cosine_null_distribution
-  }
-  cosine_null_distribution <- tibble::as_tibble(unlist(cosine_null_distribution))
-  cosine_null_distribution <- cosine_null_distribution[complete.cases(cosine_null_distribution),]
-}
-
 
 # devtools::document()
 #' Compute Dot Product Projection and related variables for plotting words.

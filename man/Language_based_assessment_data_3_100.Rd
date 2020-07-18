@@ -10,7 +10,6 @@ A data frame with 100 rows and 4 variables:
    \item{harmonywords}{Word responses from the harmony in life word question}
   \item{hilstotal}{total score of the Harmony In Life Scale}
   \item{swlstotal}{total score of the Satisfaction With Life Scale}
-  ...
 }
 }
 \source{

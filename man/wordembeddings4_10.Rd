@@ -5,13 +5,13 @@
 \alias{wordembeddings4_10}
 \title{Wordembeddings for 4 text variables for 10 participants}
 \format{
-A list with word embeddings for harmony words, satisfaction words, harmony text, satisfaction
-text and decontextualised word embeddings. BERT-base embeddings based on mean aggregation of layer 11 and 12.
+A list with word embeddings for harmony words, satisfaction words, harmony text,
+satisfaction text and decontextualized word embeddings. BERT-base embeddings based on
+mean aggregation of layer 11 and 12.
 \describe{
   \item{words}{words}
   \item{n}{word frequency}
   \item{Dim1:Dim768}{Word embeddings dimensions}
-  ...
 }
 }
 \source{

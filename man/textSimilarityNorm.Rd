@@ -2,8 +2,8 @@
 % Please edit documentation in R/3_1_textSimilarity.R
 \name{textSimilarityNorm}
 \alias{textSimilarityNorm}
-\title{Compute the semantic similarity between a text variable and a word norm (i.e., a text represented by one word embedding
-that represent a construct).}
+\title{Compute the semantic similarity between a text variable and a word norm
+(i.e., a text represented by one word embedding that represent a construct).}
 \usage{
 textSimilarityNorm(x, y)
 }
@@ -16,8 +16,8 @@ textSimilarityNorm(x, y)
 A vector comprising cosine semantic similarity scores.
 }
 \description{
-Compute the semantic similarity between a text variable and a word norm (i.e., a text represented by one word embedding
-that represent a construct).
+Compute the semantic similarity between a text variable and a word norm
+(i.e., a text represented by one word embedding that represent a construct).
 }
 \examples{
 \dontrun{
@@ -30,8 +30,8 @@ norms <- tibble::tibble(harmonynorm, satisfactionnorm)
 wordembeddings <- wordembeddings4_10
 wordembeddings_wordnorm <- textEmbed(norms)
 similarity_scores <- textSimilarityNorm(
- wordembeddings$harmonytext,
- wordembeddings_wordnorm$harmonynorm
+  wordembeddings$harmonytext,
+  wordembeddings_wordnorm$harmonynorm
 )
 }
 }

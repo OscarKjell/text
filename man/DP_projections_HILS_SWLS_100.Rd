@@ -18,8 +18,8 @@ A data frame with 583 rows and 12 variables:
   \item{n_g2.y}{frequency of the word in group 2 on the x-axes variable}
   \item{n}{overall word frequency}
   \item{n.percent}{frequency in percent}
-  \item{N_participant_responses}{number of participants (as this is needed in the analuses)}
-  ...
+  \item{N_participant_responses}{number of participants (as this is needed
+   in the analyses)}
 }
 }
 \source{

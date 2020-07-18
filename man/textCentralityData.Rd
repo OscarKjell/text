@@ -16,18 +16,22 @@ textCentralityData(
 \arguments{
 \item{words}{Word or text variable to be plotted.}
 
-\item{wordembeddings}{Word embeddings from textEmbed for the words to be plotted (i.e., the aggregated word embeddings for the "words" variable).}
+\item{wordembeddings}{Word embeddings from textEmbed for the words to be plotted
+(i.e., the aggregated word embeddings for the "words" variable).}
 
-\item{single_wordembeddings}{Word embeddings from textEmbed for individual words (i.e., the decontextualized word embeddings).}
+\item{single_wordembeddings}{Word embeddings from textEmbed for individual words
+(i.e., the decontextualized word embeddings).}
 
-\item{aggregation}{Method to aggregate the word embeddings (default = "mean"; see also "min", "max" or "[CLS]").}
+\item{aggregation}{Method to aggregate the word embeddings
+(default = "mean"; see also "min", "max" or "[CLS]").}
 
-\item{min_freq_words}{Option to  select words that have at least occurred a specified number of times (default = 0); when creating the semantic similarity
+\item{min_freq_words}{Option to  select words that have at least occurred a specified
+number of times (default = 0); when creating the semantic similarity
 scores within cosine similarity.}
 }
 \value{
-A dataframe with variables (e.g., including semantic similarity, frequencies) for the individual words
-that are used for the plotting in the textCentralityPlot function.
+A dataframe with variables (e.g., including semantic similarity, frequencies)
+for the individual words that are used for the plotting in the textCentralityPlot function.
 }
 \description{
 Compute cosine semantic similarity score between single words' word embeddings

@@ -11,7 +11,6 @@ A data frame with 2,146 and 4 variables:
   \item{n}{overall word frequency}
   \item{central_cosine}{cosine semantic similarity to the aggregated word embedding}
   \item{n_percent}{frequency in percent}
-  ...
 }
 }
 \source{
@@ -21,7 +20,7 @@ A data frame with 2,146 and 4 variables:
 centrality_data_harmony
 }
 \description{
-The dataset is a shortened version of the data sets of Study 1
+Oscar The dataset is a shortened version of the data sets of Study 1
 from Kjell, et al., 2016.
 }
 \keyword{datasets}

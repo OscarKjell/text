@@ -38,9 +38,11 @@ textCentralityPlot(
 \arguments{
 \item{word_data}{Tibble from textPlotData.}
 
-\item{min_freq_words}{Select words to significance test that have occurred at least min_freq_words (default = 1).}
+\item{min_freq_words}{Select words to significance test that have occurred
+at least min_freq_words (default = 1).}
 
-\item{plot_n_word_extreme}{Number of words per dimension to plot with extreme dot product projection value.
+\item{plot_n_word_extreme}{Number of words per dimension to plot with extreme
+dot product projection value.
 (i.e., even if not significant;  duplicates are removed).}
 
 \item{plot_n_word_frequency}{Number of words to plot according to their frequency.
@@ -57,15 +59,18 @@ textCentralityPlot(
 
 \item{x_axes_label}{Label on the x-axes.}
 
-\item{scale_x_axes_lim}{Length of the x-axes (default: NULL, which uses c(min(word_data$central_cosine)-0.05, max(word_data$central_cosine)+0.05);
+\item{scale_x_axes_lim}{Length of the x-axes (default: NULL, which uses
+c(min(word_data$central_cosine)-0.05, max(word_data$central_cosine)+0.05);
 change this by e.g., try c(-5, 5)).}
 
-\item{scale_y_axes_lim}{Length of the y-axes (default: NULL, which uses c(-1, 1); change e.g., by trying c(-5, 5)).}
+\item{scale_y_axes_lim}{Length of the y-axes (default: NULL, which uses c(-1, 1);
+change e.g., by trying c(-5, 5)).}
 
 \item{word_font}{Type of font (default: NULL).}
 
-\item{centrality_color_codes}{Colors of the words selected as plot_n_word_extreme (minimum values), plot_n_words_middle,
-plot_n_word_extreme (maximum values) and plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000"), respectively.}
+\item{centrality_color_codes}{Colors of the words selected as plot_n_word_extreme
+(minimum values), plot_n_words_middle, plot_n_word_extreme (maximum values) and
+plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000"), respectively.}
 
 \item{word_size_range}{Vector with minimum and maximum font size (default: c(3, 8)).}
 
@@ -77,9 +82,11 @@ plot_n_word_extreme (maximum values) and plot_n_word_frequency; the default is c
 
 \item{arrow_transparency}{Transparency of the lines between each word and point (default: 0.1).}
 
-\item{points_without_words_size}{Size of the points not linked to a word (default is to not show the point; , i.e., 0).}
+\item{points_without_words_size}{Size of the points not linked to a word
+(default is to not show the point; , i.e., 0).}
 
-\item{points_without_words_alpha}{Transparency of the points that are not linked to a word (default is to not show it; i.e., 0).}
+\item{points_without_words_alpha}{Transparency of the points that are not linked to a word
+(default is to not show it; i.e., 0).}
 
 \item{legend_title}{Title of the color legend (default: "(DPP)").}
 

@@ -20,7 +20,7 @@ test_that("textTrain produces list of results with prediction being numeric", {
 
 
 
-test_that("textTrainLists produces a list of results with prediction being numeric", {
+test_that("textTrainLists regression produces a list of results with prediction being numeric", {
   wordembeddings <- wordembeddings4_10[1:2]
   ratings_data <- Language_based_assessment_data_8_10[5:6]
   results <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
@@ -49,4 +49,13 @@ test_that("textTrainMultiTexts produces list of results with prediction being nu
 })
 
 
+test_that("textTrainLists randomForest produces list of results with prediction being numeric", {
+  wordembeddings <- wordembeddings4_10[1:2]
+  ratings_data1 <- factor(c("young",  "old"))
+  ratings_data2 <- factor(c("young",  "old"))
+  ratings_data <- tibble(ratings_data1, ratings_data2)
+  results <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2, trainMethod = "randomForest")
 
+  expect_that(results, is_a("list"))
+  expect_is(results$predscores$harmonywords_ratings_data1..pred_old[1][1], 'numeric')
+})
