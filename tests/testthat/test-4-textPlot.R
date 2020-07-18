@@ -11,15 +11,14 @@ test_that("textProjectionData MEDIAN produces a tibble with character variable a
   wordembeddings <- wordembeddings4_10
   data <- Language_based_assessment_data_8_10
   # Pre-processing data for plotting
-  df_for_plotting <- textProjectionData(data$harmonywords[1:2],
-                                        wordembeddings$harmonywords[1:2,],
+  df_for_plotting <- textProjectionData(data$harmonywords[1:3],
+                                        wordembeddings$harmonywords[1:3,],
                                         wordembeddings$singlewords_we,
-                                        data$hilstotal[1:2],
+                                        data$hilstotal[1:3],
                                         split = "median",
                                         Npermutations = 2,
                                         n_per_split = 1
   )
-  df_for_plotting
 
   expect_true(tibble::is_tibble(df_for_plotting))
 
