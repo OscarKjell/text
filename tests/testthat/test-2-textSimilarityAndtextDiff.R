@@ -20,7 +20,6 @@ test_that("textSimilarity produces similarity scores", {
 
 
 test_that("textDiff results in list with numeric output", {
-  library(psych)
 
   test_diff_results <- textDiff(wordembeddings4_10$harmonytexts, wordembeddings4_10$satisfactiontexts,
                                 method = "paired", Npermutations = 10, N_cluster_nodes = 1)
