@@ -48,6 +48,7 @@ Suggests:
     testthat,
     rio,
     glmnet,
+    randomForest,
     covr,
     xml2,
     spelling

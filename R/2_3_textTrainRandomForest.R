@@ -4,7 +4,6 @@
 ################
 #### Random Forest: Training Cross-validated data
 ################
-
 # devtools::document()
 #' Train word embeddings to a categorical variable using random forrest.
 #'
@@ -18,7 +17,7 @@
 #' @examples
 #' wordembeddings <- wordembeddings4_10
 #' ratings_data <- Language_based_assessment_data_8_10
-#' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal, nrFolds_k = 2)
+#' results <- textTrainRandomForest(wordembeddings$harmonytext, ratings_data$gender, nrFolds_k = 5, trees = 5)
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textDiff}}
 #' @importFrom stats cor.test na.omit chisq.test
 #' @importFrom dplyr select starts_with filter arrange rename

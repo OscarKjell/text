@@ -15,7 +15,7 @@
 #' @examples
 #' wordembeddings <- wordembeddings4_10
 #' ratings_data <- Language_based_assessment_data_8_10
-#' wordembeddings <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
+#' results <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
 #'   nrFolds_k = 2, strata_y = NULL
 #' )
 #' @seealso see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
@@ -138,7 +138,7 @@ textTrain <- function(x,
 #' @examples
 #' wordembeddings <- wordembeddings4_10[1:2]
 #' ratings_data <- Language_based_assessment_data_8_10[5:6]
-#' wordembeddings <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
+#' results <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
 #' @seealso see \code{\link{textTrain}}
 #' @importFrom stats cor.test
 #' @importFrom tibble as_tibble

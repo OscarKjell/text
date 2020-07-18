@@ -19,7 +19,7 @@
 #' @examples
 #' wordembeddings <- wordembeddings4_10[1:4]
 #' ratings_data <- Language_based_assessment_data_8_10$hilstotal
-#' wordembeddings <- textTrainMultiTexts(wordembeddings, ratings_data, nrFolds_k = 2)
+#' results <- textTrainMultiTexts(wordembeddings, ratings_data, nrFolds_k = 2)
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textDiff}}
 #' @importFrom stats cor.test na.omit
 #' @importFrom dplyr select starts_with filter bind_cols matches

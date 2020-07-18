@@ -9,7 +9,6 @@ library(tibble)
 
 context("Semantic Similiarty Functions and textDiff")
 
-
 test_that("textSimilarity produces similarity scores", {
 
   similarity_scores <- textSimilarity(wordembeddings4_10$harmonytexts,
