@@ -36,7 +36,7 @@ jobs:
 
       - name: Install miniconda
         run: |
-          install.packages(reticulate)
+          install.packages("reticulate")
           library(reticulate)
           install_miniconda()
           conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
