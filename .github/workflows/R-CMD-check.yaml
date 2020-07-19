@@ -16,7 +16,7 @@ jobs:
       matrix:
         config:
 #          - {os: windows-latest, r: 'devel'}
-          - {os: windows-latest, r: 'release'}
+#          - {os: windows-latest, r: 'release'}
 #          - {os: macOS-latest, r: 'release', old_dplyr: true,  dev_tidymodels: true}
 #          - {os: macOS-latest, r: 'release', old_dplyr: true,  dev_tidymodels: false}
 #          - {os: macOS-latest, r: 'release', old_dplyr: false, dev_tidymodels: true}
