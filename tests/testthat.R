@@ -2,29 +2,32 @@
 library(testthat)
 library(text)
 library(reticulate)
+
+install_miniconda()
 conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
 
-##sessionInfo()
-#test_check("text")
+#sessionInfo()
+test_check("text")
 
-py_ver <- tryCatch({
-  cfg <- reticulate::py_config()
-  base::numeric_version(cfg$version)
-}, error = function(e) {
-  base::numeric_version("1")
-})
 
-if (py_ver >= "3" && reticulate::py_module_available("torch") && reticulate::py_module_available("transformers")) {
-  local_torch <- reticulate::import("torch")
-  local_transformers <- reticulate::import("transformers")
-
-  if (base::numeric_version(local_transformers$`__version__`) >= "3") {
-    # All okay:
-    library(text)
-
-    test_check("text")
-  }
-}
+#py_ver <- tryCatch({
+#  cfg <- reticulate::py_config()
+#  base::numeric_version(cfg$version)
+#}, error = function(e) {
+#  base::numeric_version("1")
+#})
+#
+#if (py_ver >= "3" && reticulate::py_module_available("torch") && reticulate::py_module_available("transformers")) {
+#  local_torch <- reticulate::import("torch")
+#  local_transformers <- reticulate::import("transformers")
+#
+#  if (base::numeric_version(local_transformers$`__version__`) >= "3") {
+#    # All okay:
+#    library(text)
+#
+#    test_check("text")
+#  }
+#}
 
 
 
