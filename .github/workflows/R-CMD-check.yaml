@@ -67,6 +67,13 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
+      - name: Install dependencies
+        run: |
+          library(reticulate)
+          install_miniconda()
+          conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
+        shell: Rscript {0}
+
 
 #      - name: Install dev dependencies
 #        if: runner.os == 'macOS' && matrix.config.dev_tidymodels
