@@ -41,6 +41,14 @@ jobs:
           remotes::install_cran("covr")
         shell: Rscript {0}
 
+      - name: Install miniconda
+        run: |
+          library(reticulate)
+          install_miniconda()
+          conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
+        shell: Rscript {0}
+
+
       - name: Test coverage
         run: covr::codecov()
         shell: Rscript {0}
