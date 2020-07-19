@@ -30,13 +30,6 @@ test_that("textLayerAggregation 1:2 produces aggregated word embeddings", {
 
 })
 
-test_that("Testing sourcing python file in testthat", {
-
-  output <- f1_sourced_from_python()
-  expect_that(output, is_a("character"))
-
-})
-
 #install.packages("testthat")
 
 test_that("Embedding produces similarity scores", {
@@ -73,8 +66,13 @@ test_that("Embedding produces similarity scores", {
 
 
 
-
-
+#
+#test_that("Testing sourcing python file in testthat", {
+#
+#  output <- f1_sourced_from_python()
+#  expect_that(output, is_a("character"))
+#
+#})
 
 
 #test_that("textLayerAggregation 'all' produces aggregated word embeddings", {
