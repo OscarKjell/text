@@ -10,7 +10,7 @@ name: test-coverage
 
 jobs:
   test-coverage:
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -19,6 +19,13 @@ jobs:
       - uses: r-lib/actions/setup-r@master
 
       - uses: r-lib/actions/setup-pandoc@master
+
+      - uses: r-lib/actions/setup-pandoc@master
+
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
 
       - name: Query dependencies
         run: |
@@ -34,13 +41,13 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install miniconda
-        run: |
-          install.packages("reticulate")
-          library(reticulate)
-          install_miniconda()
-          conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
-        shell: Rscript {0}
+#      - name: Install miniconda
+#        run: |
+#          install.packages("reticulate")
+#          library(reticulate)
+#          install_miniconda()
+#          conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
+#        shell: Rscript {0}
 
       - name: Install dependencies
         run: |
