@@ -20,19 +20,49 @@ context("Embedding of text and retrieval of word embeddings")
 #    skip("torch not available for testing")
 #}
 
-test_that("textLayerAggregation 1:2 produces aggregated word embeddings", {
+test_that("textLayerAggregation 1:2 'max' produces aggregated word embeddings", {
 
   #skip_on_cran()
-  aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context, layers = 1:2)
+  aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context,
+                                                 layers = 1:2,
+                                                 aggregation = "max")
 
   expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 
 })
 
-#install.packages("testthat")
+test_that("textLayerAggregation 1:2 'CLS' produces aggregated word embeddings", {
 
-test_that("textHuggingFace", {
+  #skip_on_cran()
+  aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context,
+                                                 layers = 1:2,
+                                                 aggregation = "CLS")
+
+  expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
+  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
+
+})
+
+
+
+test_that("textLayerAggregation 1:2 produces aggregated word embeddings", {
+
+  #skip_on_cran()
+  aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context,
+                                                 layers = 1:2,
+                                                 aggregation = "min",
+                                                 tokens_select = "CLS",
+                                                 tokens_deselect = "[SEP]")
+
+  expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
+  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
+
+})
+
+help(textLayerAggregation)
+
+test_that("textHuggingFace returns a list", {
   #skip_on_cran()
   #skip_if_no_transformers()
   #skip_if_no_torch
@@ -46,6 +76,8 @@ test_that("textHuggingFace", {
   expect_that(embeddings, is_a("list"))
 
 })
+
+
 
 
 test_that("textEmbed", {
