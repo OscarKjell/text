@@ -9,6 +9,8 @@ f1_from_python <- function() {
 }
 # f1_from_python()
 
+
+
 #  devtools::document()
 #' Select all character variables and make them UTF-8 coded (BERT wants it in this format).
 #' @param tibble including both text and numeric variables.

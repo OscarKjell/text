@@ -1,43 +1,24 @@
-#Test your package with Ctrl/Cmd + Shift + T or devtools::test().
+#Test your package with Ctrl/Cmd + Shift + T or devtools::test()
 #usethis::use_testthat()
 
-#library(reticulate)
-library(testthat)
+
 library(text)
 library(tibble)
-#test_check("text")
-#help("skip_on_cran")
 
-#context("Embedding of text and retrieval of word embeddings")
-#
-## helper function to skip tests if we don't have the 'foo' module
-#skip_if_no_transformers <- function() {
-#  have_transformers <- reticulate::py_module_available("transformers")
-#  if (!have_transformers)
-#    skip("transformers not available for testing")
-#}
-#skip_if_no_torch <- function() {
-#  have_torch <- reticulate::py_module_available("torch")
-#  if (!have_torch)
-#    skip("torch not available for testing")
-#}
-#
-#
-#test_that("Embedding produces similarity scores", {
-#  skip_on_cran()
-#  skip_if_no_transformers()
-#  skip_if_no_torch
-#
-#  #x <- Language_based_assessment_data_8_10[1:2, 1:2]
-#  text_to_test_import1 <- c("Let's test this", "hope it works")
-#  text_to_test_import2 <- c("I'm happy", "Let's go")
-#  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
-#
-#  embeddings <- textEmbed(x)
-#  expect_that(embeddings, is_a("list"))
-#
-#})
 
+context("Embedding of text and retrieval of word embeddings")
+
+# helper function to skip tests if we don't have the 'foo' module
+skip_if_no_transformers <- function() {
+  have_transformers <- reticulate::py_module_available("transformers")
+  if (!have_transformers)
+    skip("transformers not available for testing")
+}
+skip_if_no_torch <- function() {
+  have_torch <- reticulate::py_module_available("torch")
+  if (!have_torch)
+    skip("torch not available for testing")
+}
 
 test_that("textLayerAggregation 1:2 produces aggregated word embeddings", {
 
@@ -47,7 +28,54 @@ test_that("textLayerAggregation 1:2 produces aggregated word embeddings", {
   expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 
-  })
+})
+
+test_that("Testing sourcing python file in testthat", {
+
+  output <- f1_sourced_from_python()
+  expect_that(output, is_a("character"))
+
+})
+
+#install.packages("testthat")
+
+test_that("Embedding produces similarity scores", {
+  #skip_on_cran()
+  skip_if_no_transformers()
+  skip_if_no_torch
+
+  #x <- Language_based_assessment_data_8_10[1:2, 1:2]
+  text_to_test_import1 <- c("test this", "hope it works")
+  text_to_test_import2 <- c("I am happy", "Let us go")
+  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
+
+  embeddings <- textHuggingFace(x, contexts=TRUE, decontexts = FALSE)
+  expect_that(embeddings, is_a("list"))
+
+})
+
+
+test_that("Embedding produces similarity scores", {
+  #skip_on_cran()
+  skip_if_no_transformers()
+  skip_if_no_torch
+
+  #x <- Language_based_assessment_data_8_10[1:2, 1:2]
+  text_to_test_import1 <- c("test this", "hope it works")
+  text_to_test_import2 <- c("I am happy", "Let us go")
+  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
+
+  embeddings <- textEmbed(x)
+  expect_that(embeddings, is_a("list"))
+
+})
+
+
+
+
+
+
+
 
 #test_that("textLayerAggregation 'all' produces aggregated word embeddings", {
 #
@@ -73,15 +101,15 @@ test_that("textLayerAggregation 1:2 produces aggregated word embeddings", {
 #  wordembeddings <- text::textHuggingFace(x, layers = 11:12)
 #  testthat::expect_that(wordembeddings, testthat::is_a("list"))
 
-  #wordembeddings_aggr_layers <- textLayerAggregation(wordembeddings,  layers = 12)
-  #testthat::expect_that(wordembeddings_aggr_layers, testthat::is_a("list"))
-  #help(textLayerAggregation)
+#wordembeddings_aggr_layers <- textLayerAggregation(wordembeddings,  layers = 12)
+#testthat::expect_that(wordembeddings_aggr_layers, testthat::is_a("list"))
+#help(textLayerAggregation)
 
-  # Is the first value there and numeric
-  #expect_that(wordembeddings_text[[1]][[1]][[1]], is.numeric)
-  #If below line fail it might be because the output in the extract_features in RBERT have changed,
-  #so that 773 needs to be something else
-  #expect_that(ncol(wordembeddings_text[[1]]), equals(768) )
+# Is the first value there and numeric
+#expect_that(wordembeddings_text[[1]][[1]][[1]], is.numeric)
+#If below line fail it might be because the output in the extract_features in RBERT have changed,
+#so that 773 needs to be something else
+#expect_that(ncol(wordembeddings_text[[1]]), equals(768) )
 #})
 
 
@@ -124,13 +152,3 @@ test_that("textLayerAggregation 1:2 produces aggregated word embeddings", {
 #  expect_that(ncol(wordembeddings_text[[1]][[1]][[1]]), equals(770) )
 #})
 #
-
-
-
-
-
-
-
-
-
-

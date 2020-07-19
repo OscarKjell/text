@@ -2,6 +2,8 @@
 #library(devtools)
 #checking data for non-ASCII characters (350ms)
 
+# https://github.com/quanteda/spacyr
+
 #check(manual = FALSE, cran = FALSE)
 #rcmdcheck::rcmdcheck()
 
