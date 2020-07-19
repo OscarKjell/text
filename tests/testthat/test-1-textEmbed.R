@@ -32,7 +32,7 @@ test_that("textLayerAggregation 1:2 produces aggregated word embeddings", {
 
 #install.packages("testthat")
 
-test_that("Embedding produces similarity scores", {
+test_that("textHuggingFace", {
   #skip_on_cran()
   #skip_if_no_transformers()
   #skip_if_no_torch
@@ -48,7 +48,7 @@ test_that("Embedding produces similarity scores", {
 })
 
 
-test_that("Embedding produces similarity scores", {
+test_that("textEmbed", {
   #skip_on_cran()
   #skip_if_no_transformers()
   #skip_if_no_torch
