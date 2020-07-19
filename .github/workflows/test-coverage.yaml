@@ -44,7 +44,6 @@ jobs:
       - name: Install miniconda
         run: |
           library(reticulate)
-          install_miniconda()
           conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
         shell: Rscript {0}
 
