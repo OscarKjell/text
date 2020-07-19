@@ -46,21 +46,33 @@ test_that("textLayerAggregation 1:2 'CLS' produces aggregated word embeddings", 
 
 
 
-test_that("textLayerAggregation 1:2 produces aggregated word embeddings", {
+test_that("textLayerAggregation 1:2 tokens_select = '[CLS]' produces aggregated word embeddings", {
 
   #skip_on_cran()
   aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context,
                                                  layers = 1:2,
                                                  aggregation = "min",
-                                                 tokens_select = "CLS",
-                                                 tokens_deselect = "[SEP]")
+                                                 tokens_select = "[CLS]")
 
   expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 
 })
 
-help(textLayerAggregation)
+
+test_that("textLayerAggregation 1:2 tokens_deselect = '[CLS]' produces aggregated word embeddings", {
+
+  #skip_on_cran()
+  aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context,
+                                                 layers = 1:2,
+                                                 aggregation = "min",
+                                                 tokens_deselect = "[CLS]")
+
+  expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
+  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
+
+})
+
 
 test_that("textHuggingFace returns a list", {
   #skip_on_cran()
