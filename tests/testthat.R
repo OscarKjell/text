@@ -2,7 +2,7 @@
 library(testthat)
 library(text)
 library(reticulate)
-
+conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
 #sessionInfo()
 test_check("text")
 
