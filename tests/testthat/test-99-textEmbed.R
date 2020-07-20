@@ -17,11 +17,11 @@ skip_if_no_torch <- function() {
     skip("torch not available for testing")
 }
 
-test_that("textLayerAggregation 1:2 'mean' produces aggregated word embeddings", {
+test_that("textLayerAggregation 'all' 'mean' produces aggregated word embeddings", {
 
   #skip_on_cran()
   aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context,
-                                                 layers = 1:2,
+                                                 layers = 'all',
                                                  aggregation = "mean")
 
   expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
