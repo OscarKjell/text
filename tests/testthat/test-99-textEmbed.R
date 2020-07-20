@@ -73,7 +73,7 @@ test_that("textHuggingFace contexts=TRUE, decontexts = FALSE returns a list", {
   expect_that(ncol(embeddings[[1]][[1]][[1]]), equals(770) )
 })
 
-test_that("textHuggingFace contexts=FALSE, decontexts = TRUE returns a list", {
+test_that("textHuggingFace bert-base-multilingual-cased contexts=FALSE, decontexts = TRUE returns a list", {
   #skip_on_cran()
   #skip_if_no_transformers()
   #skip_if_no_torch
