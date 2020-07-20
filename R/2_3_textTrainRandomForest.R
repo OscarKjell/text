@@ -13,9 +13,10 @@
 #' wordembeddings <- wordembeddings4_10
 #' ratings_data <- Language_based_assessment_data_8_10
 #' results <- textTrainRandomForest(wordembeddings$harmonytext,
-#' ratings_data$gender,
-#' nrFolds_k = 5,
-#' trees = 5)
+#'   ratings_data$gender,
+#'   nrFolds_k = 5,
+#'   trees = 5
+#' )
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textDiff}}
 #' @importFrom stats cor.test na.omit chisq.test
 #' @importFrom dplyr select starts_with filter arrange rename
@@ -97,4 +98,3 @@ textTrainRandomForest <- function(x,
   names(output_random_forest) <- c("predictions", "model description", "results")
   output_random_forest
 }
-

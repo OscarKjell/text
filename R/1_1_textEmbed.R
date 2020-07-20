@@ -31,16 +31,16 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
     max_vector <- unlist(map(x, max, na.rm = TRUE))
   } else if (aggregation == "mean") {
     mean_vector <- colMeans(x, na.rm = TRUE)
-  } #else if (aggregation == "CLS") {
-    #CLS <- x %>%
-     # dplyr::filter(token_index == 1, layer_index == 1)
-  } # else if (aggregation == "normalize1") {
-  #    norma_vector <- unlist(map(x, norma))
-  # x2 <- x[complete.cases(x), ]
-  # x3 <- colSums(x2) # BELOW NEED FIXING; REMOVED FROM CRAN
-  # x4 <- ppls::normalize.vector(x3)
-  # }
-#}
+  } # else if (aggregation == "CLS") {
+  # CLS <- x %>%
+  # dplyr::filter(token_index == 1, layer_index == 1)
+} # else if (aggregation == "normalize1") {
+#    norma_vector <- unlist(map(x, norma))
+# x2 <- x[complete.cases(x), ]
+# x3 <- colSums(x2) # BELOW NEED FIXING; REMOVED FROM CRAN
+# x4 <- ppls::normalize.vector(x3)
+# }
+# }
 
 # devtools::document()
 #' applysemrep
@@ -236,35 +236,61 @@ textHuggingFace <- function(x,
     tokenizer_class <- BertTokenizer
     model_class <- BertModel
   } else if (model == "bert-base-multilingual-uncased") {
-    pretrained_weights <- "bert-base-multilingual-uncased"; tokenizer_class <- BertTokenizer; model_class <- BertModel
+    pretrained_weights <- "bert-base-multilingual-uncased"
+    tokenizer_class <- BertTokenizer
+    model_class <- BertModel
   } else if (model == "bert-base-multilingual-cased") {
     pretrained_weights <- "bert-base-multilingual-cased"
     tokenizer_class <- BertTokenizer
     model_class <- BertModel
   } else if (model == "openai-gpt") {
-    pretrained_weights <- "openai-gpt"; tokenizer_class <- OpenAIGPTTokenizer; model_class <- OpenAIGPTModel
+    pretrained_weights <- "openai-gpt"
+    tokenizer_class <- OpenAIGPTTokenizer
+    model_class <- OpenAIGPTModel
   } else if (model == "gpt2") {
-    pretrained_weights <- "GPT2Tokenizer"; tokenizer_class <- OpenAIGPTTokenizer; model_class <- GPT2Model
+    pretrained_weights <- "GPT2Tokenizer"
+    tokenizer_class <- OpenAIGPTTokenizer
+    model_class <- GPT2Model
   } else if (model == "ctrl") {
-    pretrained_weights <- "ctrl"; tokenizer_class <- CTRLTokenizer; model_class <- CTRLModel
+    pretrained_weights <- "ctrl"
+    tokenizer_class <- CTRLTokenizer
+    model_class <- CTRLModel
   } else if (model == "transfo-xl-wt103") {
-    pretrained_weights <- "transfo-xl-wt103"; tokenizer_class <- TransfoXLTokenizer; model_class <- TransfoXLModel
+    pretrained_weights <- "transfo-xl-wt103"
+    tokenizer_class <- TransfoXLTokenizer
+    model_class <- TransfoXLModel
   } else if (model == "xlnet-base-cased") {
-    pretrained_weights <- "xlnet-base-cased"; tokenizer_class <- XLNetTokenizer; model_class <- XLNetModel
+    pretrained_weights <- "xlnet-base-cased"
+    tokenizer_class <- XLNetTokenizer
+    model_class <- XLNetModel
   } else if (model == "xlm-mlm-enfr-1024") {
-    pretrained_weights <- "xlm-mlm-enfr-1024"; tokenizer_class <- XLMTokenizer; model_class <- XLMModel
+    pretrained_weights <- "xlm-mlm-enfr-1024"
+    tokenizer_class <- XLMTokenizer
+    model_class <- XLMModel
   } else if (model == "distilbert-base-uncased") {
-    pretrained_weights <- "distilbert-base-uncased"; tokenizer_class <- DistilBertTokenizer; model_class <- DistilBertModel
+    pretrained_weights <- "distilbert-base-uncased"
+    tokenizer_class <- DistilBertTokenizer
+    model_class <- DistilBertModel
   } else if (model == "roberta-base") {
-    pretrained_weights <- "roberta-base"; tokenizer_class <- RobertaTokenizer; model_class <- RobertaModel
+    pretrained_weights <- "roberta-base"
+    tokenizer_class <- RobertaTokenizer
+    model_class <- RobertaModel
   } else if (model == "xlm-roberta-base") {
-    pretrained_weights <- "xlm-roberta-base"; tokenizer_class <- XLMRobertaTokenizer; model_class <- XLMRobertaModel
+    pretrained_weights <- "xlm-roberta-base"
+    tokenizer_class <- XLMRobertaTokenizer
+    model_class <- XLMRobertaModel
   } else if (model == "xlm-roberta-large") {
-    pretrained_weights <- "xlm-roberta-large"; tokenizer_class <- XLMRobertaTokenizer; model_class <- XLMRobertaModel
+    pretrained_weights <- "xlm-roberta-large"
+    tokenizer_class <- XLMRobertaTokenizer
+    model_class <- XLMRobertaModel
   } else if (model == "t5-small") {
-    pretrained_weights <- "t5-small"; tokenizer_class <- T5Tokenizer; model_class <- T5Model
+    pretrained_weights <- "t5-small"
+    tokenizer_class <- T5Tokenizer
+    model_class <- T5Model
   } else if (model == "new") {
-    pretrained_weights = pretrained_weights; tokenizer_class = tokenizer_class; model_class = model_class
+    pretrained_weights <- pretrained_weights
+    tokenizer_class <- tokenizer_class
+    model_class <- model_class
   }
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
@@ -326,12 +352,12 @@ textHuggingFace <- function(x,
   }
 
   # Combine previous list and word list
-  if(contexts == TRUE & decontexts == TRUE){
-  word_embeddings_with_layers <- c(sorted_layers_ALL_variables, sorted_layers_All_decontexts)
-  word_embeddings_with_layers
-  } else if(contexts == TRUE & decontexts == FALSE){
+  if (contexts == TRUE & decontexts == TRUE) {
+    word_embeddings_with_layers <- c(sorted_layers_ALL_variables, sorted_layers_All_decontexts)
+    word_embeddings_with_layers
+  } else if (contexts == TRUE & decontexts == FALSE) {
     word_embeddings_with_layers <- c(sorted_layers_ALL_variables)
-  } else if(contexts == FALSE & decontexts == TRUE){
+  } else if (contexts == FALSE & decontexts == TRUE) {
     word_embeddings_with_layers <- c(sorted_layers_All_decontexts)
   }
   word_embeddings_with_layers
