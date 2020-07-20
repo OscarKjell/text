@@ -684,7 +684,7 @@ textProjectionPlot <- function(word_data,
 
   # This solution is because it is not possible to send "0" as a parameter
   if (is.null(y_axes_1) == TRUE) {
-    #only_x_dimension <- 0
+    only_x_dimension <- 0
     y_axes_1 <- "only_x_dimension"
   }
 
@@ -1074,7 +1074,7 @@ textCentralityPlot <- function(word_data,
   }
 
   # This solution is because it is not possible to send "0" as a parameter
-  #only_x_dimension <- 0
+  only_x_dimension <- 0
   y_axes <- "only_x_dimension"
 
   # Plot
