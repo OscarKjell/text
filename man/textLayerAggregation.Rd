@@ -24,10 +24,10 @@ Selecting 'all' thus removes layer 0.}
 (default "mean"; see also "min",  "max" and "CLS").}
 
 \item{tokens_select}{Option to only select embeddings linked to specific tokens
-such as [CLS] and [SEP] (default NULL).}
+such as "[CLS]" and "[SEP]" (default NULL).}
 
 \item{tokens_deselect}{Option to deselect embeddings linked to specific tokens
-such as [CLS] and [SEP] (default NULL).}
+such as "[CLS]" and "[SEP]" (default NULL).}
 }
 \value{
 A tibble with word embeddings. Note that layer 0 is the input embedding to

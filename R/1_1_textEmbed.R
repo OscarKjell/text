@@ -424,9 +424,9 @@ textHuggingFace <- function(x,
 #' @param aggregation Method to aggregate the dimensions of each selected layer
 #' (default "mean"; see also "min",  "max" and "CLS").
 #' @param tokens_select Option to only select embeddings linked to specific tokens
-#' such as [CLS] and [SEP] (default NULL).
+#' such as "[CLS]" and "[SEP]" (default NULL).
 #' @param tokens_deselect Option to deselect embeddings linked to specific tokens
-#' such as [CLS] and [SEP] (default NULL).
+#' such as "[CLS]" and "[SEP]" (default NULL).
 #' @return A tibble with word embeddings. Note that layer 0 is the input embedding to
 #' the transformer, which is normally not used.
 #' @examples
@@ -477,7 +477,7 @@ textLayerAggregation <- function(word_embeddings_layers,
     selected_layers <- lapply(selected_layers, function(x) dplyr::select(x, dplyr::starts_with("Dim")))
 
     # Aggregate (Remove all tokens and layers; but create a cell with the information abt layers, aggregation)
-    selected_layers_aggregated <- lapply(selected_layers, textEmbeddingAggregation, aggregation = "max")
+    selected_layers_aggregated <- lapply(selected_layers, textEmbeddingAggregation, aggregation = aggregation)
 
     # Sort output
     selected_layers_aggregated_tibble[[variable_list_i]] <- dplyr::bind_rows(selected_layers_aggregated)
