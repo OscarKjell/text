@@ -40,7 +40,8 @@ Imports:
     rsample,
     reticulate,
     tune,
-    workflows
+    workflows, 
+    crayon
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,
@@ -50,8 +51,7 @@ Suggests:
     glmnet,
     randomForest,
     covr,
-    xml2,
-    spelling
+    xml2
 VignetteBuilder: knitr
 Depends: R (>= 2.10)
 Config/reticulate:

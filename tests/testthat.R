@@ -1,12 +1,7 @@
-#.rs.restartR()
+
 library(testthat)
 library(text)
-#library(reticulate)
 
-#install_miniconda()
-#conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
-
-#sessionInfo()
 test_check("text")
 
 
