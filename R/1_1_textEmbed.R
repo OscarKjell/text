@@ -277,9 +277,7 @@ textHuggingFace <- function(x,
   } else if (model == "t5-small") {
     pretrained_weights <- "t5-small"; tokenizer_class <- T5Tokenizer; model_class <- T5Model
   } else if (model == "new") {
-    pretrained_weights
-    tokenizer_class
-    model_class
+    pretrained_weights = pretrained_weights; tokenizer_class = tokenizer_class; model_class = model_class
   }
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
