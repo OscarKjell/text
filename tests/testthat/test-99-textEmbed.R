@@ -83,7 +83,7 @@ test_that("textHuggingFace bert-base-multilingual-cased contexts=FALSE, decontex
   text_to_test_import2 <- c("ön är vacker", "molnen svävar")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
-  embeddings <- textHuggingFace(x, model = "bert-base-multilingual-cased", contexts=FALSE, decontexts = TRUE, layers = 'all')
+  embeddings <- textHuggingFace(x, model = "bert-base-multilingual-uncased", contexts=FALSE, decontexts = TRUE, layers = 'all')
   expect_that(embeddings, is_a("list"))
 
   # Is the first value there and numeric
