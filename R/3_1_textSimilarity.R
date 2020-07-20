@@ -1,5 +1,4 @@
 
-#  devtools::document()
 #' Compute cosine
 #'
 #' @param x A word embedding.
@@ -31,7 +30,6 @@ textSimilarity <- function(x, y) {
   cosines(x1, y1)
 }
 
-# devtools::document()
 #' Compute the semantic similarity between a text variable and a word norm
 #' (i.e., a text represented by one word embedding that represent a construct).
 #' @param x Word embeddings from textEmbed (with several rows of text).

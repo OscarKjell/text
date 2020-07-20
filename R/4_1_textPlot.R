@@ -2,7 +2,7 @@
 # # TODO Possibility to set this one? It may be that no words comes within this textCentralitylot
 # Just want to learn why this: # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
 
-#  devtools::document()
+
 #' Takes all words as input and arrange them in column with an accompanying column with frequency.
 #' @param x Words
 #' @return Column with all words and an accompanying column with their frequency.
@@ -19,7 +19,6 @@ unique_freq_words <- function(words) {
   words_groupb_freq
 }
 
-# devtools::document()
 #' Compute Dot Product Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
 #' @param wordembeddings Word embeddings from textEmbed for the words to be plotted
@@ -119,7 +118,7 @@ textProjectionData <- function(words,
   word_data_list <- list()
 
   # For-loop for x and y input/dimensions; i.e., y if the plot has two dimensions (i_dim=1 i_dim=2)
-  for (i_dim in 1:ncol(x)) {
+  for (i_dim in seq_len(ncol(x))) {
 
     # Get the word embeddings and scale/category for the plot dimension (i.e., x or y from above)
     x1 <- tibble::tibble(words, x[i_dim])
@@ -160,13 +159,10 @@ textProjectionData <- function(words,
     words_group2_single_wordembedding_b <- dplyr::bind_rows(words_group2_single_wordembedding)
 
     # All: Group 1 & 2
-    words_group1_2_freq <- unique_freq_words(x2$words)
-    words_group1_2_freq_b <- words_group1_2_freq[words_group1_2_freq$n >= min_freq_words, ]
-    words_group1_2_freq_b <- dplyr::rename(words_group1_2_freq_b, n_all = n)
-    words_group1_2_single_wordembedding <- lapply(words_group1_2_freq_b$words, applysemrep, single_wordembeddings)
-    words_group1_2_single_wordembedding_b <- dplyr::bind_rows(words_group1_2_single_wordembedding)
-    words_group1_2_single_wordembedding_c <- cbind(words_group1_2_freq_b, words_group1_2_single_wordembedding_b)
-
+    #words_group1_2_freq <- unique_freq_words(x2$words)
+    #words_group1_2_freq_b <- words_group1_2_freq[words_group1_2_freq$n >= min_freq_words, ]
+    #words_group1_2_freq_b <- dplyr::rename(words_group1_2_freq_b, n_all = n)
+    #words_group1_2_single_wordembedding <- lapply(words_group1_2_freq_b$words, applysemrep, single_wordembeddings)
 
     ############
     ######         1 Create COMPARISON/Projection embedding: all Group 1 & Group 2 word embeddings.
@@ -274,7 +270,7 @@ textProjectionData <- function(words,
         t(replicate(nrow(random_group2_embedding), Aggregated_word_embedding_group1))) / 2)
 
       # project the embeddings using dot products
-      dot_products_null <- as_tibble(rowSums(words_positioned_embeddings_random * t(replicate(nrow(words_positioned_embeddings_random), projected_embedding_random)))) # _random to test
+      dot_products_null <- as_tibble(rowSums(words_positioned_embeddings_random * t(replicate(nrow(words_positioned_embeddings_random), projected_embedding_random))))
 
       dot_null_distribution[i] <- dot_products_null
       dot_null_distribution
@@ -325,7 +321,6 @@ textProjectionData <- function(words,
 #### End textProjectionData
 #############
 
-# devtools::document()
 #' Plot words according to Dot Product Projections.
 #' @param word_data Dataframe from textProjectionData
 #' @param k_n_words_to_test Select the k most frequent words to significance
@@ -599,12 +594,18 @@ textProjectionPlot <- function(word_data,
     dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. Perhaps point to have exact middle?
 
   word_data_x <- word_data %>%
-    dplyr::left_join(data_p_sq_all %>% dplyr::transmute(words, check_p_square = 1), by = "words") %>%
-    dplyr::left_join(data_p_x %>% dplyr::transmute(words, check_p_x = 1), by = "words") %>%
-    dplyr::left_join(word_data_extrem_max_x %>% dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
-    dplyr::left_join(word_data_extrem_min_x %>% dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
-    dplyr::left_join(word_data_frequency_x %>% dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
-    dplyr::left_join(word_data_middle_x %>% dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
+    dplyr::left_join(data_p_sq_all %>%
+      dplyr::transmute(words, check_p_square = 1), by = "words") %>%
+    dplyr::left_join(data_p_x %>%
+      dplyr::transmute(words, check_p_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_extrem_max_x %>%
+      dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_extrem_min_x %>%
+      dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_frequency_x %>%
+      dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_middle_x %>%
+      dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
     dplyr::mutate(extremes_all_x = rowSums(cbind(
       check_p_square, check_p_x, check_extreme_max_x, check_extreme_min_x,
       check_extreme_frequency_x, check_middle_x
@@ -640,11 +641,16 @@ textProjectionPlot <- function(word_data,
       dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. perhaps point to have exact middle?
 
     word_data_all <- word_data_x %>%
-      dplyr::left_join(data_p_y %>% dplyr::transmute(words, check_p_y = 1), by = "words") %>%
-      dplyr::left_join(word_data_extrem_max_y %>% dplyr::transmute(words, check_extreme_max_y = 1), by = "words") %>%
-      dplyr::left_join(word_data_extrem_min_y %>% dplyr::transmute(words, check_extreme_min_y = 1), by = "words") %>%
-      dplyr::left_join(word_data_frequency_y %>% dplyr::transmute(words, check_extreme_frequency_y = 1), by = "words") %>%
-      dplyr::left_join(word_data_middle_y %>% dplyr::transmute(words, check_middle_y = 1), by = "words") %>%
+      dplyr::left_join(data_p_y %>%
+        dplyr::transmute(words, check_p_y = 1), by = "words") %>%
+      dplyr::left_join(word_data_extrem_max_y %>%
+        dplyr::transmute(words, check_extreme_max_y = 1), by = "words") %>%
+      dplyr::left_join(word_data_extrem_min_y %>%
+        dplyr::transmute(words, check_extreme_min_y = 1), by = "words") %>%
+      dplyr::left_join(word_data_frequency_y %>%
+        dplyr::transmute(words, check_extreme_frequency_y = 1), by = "words") %>%
+      dplyr::left_join(word_data_middle_y %>%
+        dplyr::transmute(words, check_middle_y = 1), by = "words") %>%
       dplyr::mutate(extremes_all_y = rowSums(cbind(
         check_p_y, check_extreme_max_y, check_extreme_min_y,
         check_extreme_frequency_y, check_middle_y
@@ -678,7 +684,7 @@ textProjectionPlot <- function(word_data,
 
   # This solution is because it is not possible to send "0" as a parameter
   if (is.null(y_axes_1) == TRUE) {
-    only_x_dimension <- 0
+    #only_x_dimension <- 0
     y_axes_1 <- "only_x_dimension"
   }
 
@@ -854,7 +860,6 @@ textProjectionPlot <- function(word_data,
 ############
 
 
-# devtools::document()
 #' Compute cosine semantic similarity score between single words' word embeddings
 #' and the aggregated word embedding of all words.
 #' @param words Word or text variable to be plotted.
@@ -909,7 +914,6 @@ textCentralityData <- function(words,
 }
 # End Semantic Centrality Plot data
 
-# devtools::document()
 #' Plot words according to cosine semantic similarity to the aggregated word embedding.
 #' @param word_data Tibble from textPlotData.
 #' @param min_freq_words Select words to significance test that have occurred
@@ -1040,10 +1044,14 @@ textCentralityPlot <- function(word_data,
     dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. perhaps point to have exact middle?
 
   word_data_all <- word_data %>%
-    dplyr::left_join(word_data_extrem_max_x %>% dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
-    dplyr::left_join(word_data_extrem_min_x %>% dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
-    dplyr::left_join(word_data_frequency_x %>% dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
-    dplyr::left_join(word_data_middle_x %>% dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_extrem_max_x %>%
+                       dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_extrem_min_x %>%
+                       dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_frequency_x %>%
+                       dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
+    dplyr::left_join(word_data_middle_x %>%
+                       dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
     dplyr::mutate(extremes_all_x = rowSums(cbind(
       check_extreme_max_x, check_extreme_min_x,
       check_extreme_frequency_x, check_middle_x
@@ -1066,7 +1074,7 @@ textCentralityPlot <- function(word_data,
   }
 
   # This solution is because it is not possible to send "0" as a parameter
-  only_x_dimension <- 0
+  #only_x_dimension <- 0
   y_axes <- "only_x_dimension"
 
   # Plot

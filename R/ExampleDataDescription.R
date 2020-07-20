@@ -1,5 +1,4 @@
-# devtools::document()
-# usethis::use_data(/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/data/sq_data_tutorial_plotting_hilswl.rda)
+
 #' Text and numeric data for 10 participants.
 #'
 #' The dataset is a shortened version of the data sets of Study 3-5

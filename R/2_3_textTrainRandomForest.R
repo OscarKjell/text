@@ -1,5 +1,4 @@
 
-# devtools::document()
 #' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Word embeddings from textEmbed.
@@ -36,7 +35,7 @@ textTrainRandomForest <- function(x,
   y <- as.factor(y)
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   df2 <- cbind(x1, y)
-  df2$id1 <- c(1:nrow(df2))
+  df2$id1 <- c(seq_len(nrow(df2)))
   df2_formergingNA <- tibble(df2$id1, df2$y)
   colnames(df2_formergingNA) <- c("id1", "y")
   df3_data <- as_tibble(df2[complete.cases(df2), ])

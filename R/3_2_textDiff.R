@@ -1,6 +1,4 @@
-# https://rdrr.io/bioc/PharmacoGx/src/R/cosinePerm.R
 
-# devtools::document()
 #' Test whether there is a significant difference in meaning between two sets of texts
 #' (i.e., between their word embeddings).
 #' @param x Set of word embeddings from textEmbed.

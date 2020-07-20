@@ -1,5 +1,4 @@
 
-#  devtools::document()
 #' Select all character variables and make them UTF-8 coded (BERT wants it in this format).
 #' @param tibble including both text and numeric variables.
 #' @return all character variables in UTF-8 format.
@@ -15,7 +14,6 @@ select_character_v_utf8 <- function(x) {
   x_characters <- tibble::as_tibble(purrr::map(x_characters, stringi::stri_encode, "", "UTF-8"))
 }
 
-#  devtools::document()
 #' Function to take min, max, mean or the CLS
 #' (which comes from BERT models; not Static spaces) from list of vectors
 #' @param x word embeddings to be aggregated
@@ -23,7 +21,6 @@ select_character_v_utf8 <- function(x) {
 #' @return aggregated word embeddings.
 #' @importFrom stats complete.cases
 #' @noRd
-#'
 textEmbeddingAggregation <- function(x, aggregation = "min") {
   if (aggregation == "min") {
     min_vector <- unlist(map(x, min, na.rm = TRUE))
@@ -31,18 +28,9 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
     max_vector <- unlist(map(x, max, na.rm = TRUE))
   } else if (aggregation == "mean") {
     mean_vector <- colMeans(x, na.rm = TRUE)
-  } # else if (aggregation == "CLS") {
-  # CLS <- x %>%
-  # dplyr::filter(token_index == 1, layer_index == 1)
-} # else if (aggregation == "normalize1") {
-#    norma_vector <- unlist(map(x, norma))
-# x2 <- x[complete.cases(x), ]
-# x3 <- colSums(x2) # BELOW NEED FIXING; REMOVED FROM CRAN
-# x4 <- ppls::normalize.vector(x3)
-# }
-# }
+  }
+}
 
-# devtools::document()
 #' applysemrep
 #' Function to apply the semantic representation (or word embeddings)  to ONE word from
 #' a matrix of semreps; and return a vector with NA if word is not found.
@@ -64,17 +52,16 @@ applysemrep <- function(x, single_wordembeddings1) {
     # The length() refers to how many column starts with Dim (i.e., how many dimensions)
     wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>%
       dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
-    ## class(wordrep)
+
     wordrep <- as.numeric(wordrep)
   } else {
     wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>%
       dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
-    colnames(wordrep) <- paste0("Dim", sep = "", 1:length(wordrep))
+    colnames(wordrep) <- paste0("Dim", sep = "", seq_len(length(wordrep)))
     wordrep
   }
 }
 
-# devtools::document()
 #' getUniqueWordsAndFreq
 #' Function unites several text variables and rows to one,
 #' where all text is transformed to lowercase and tokenized.
@@ -84,7 +71,7 @@ applysemrep <- function(x, single_wordembeddings1) {
 #' @noRd
 getUniqueWordsAndFreq <- function(x_characters) {
   # Unite all text variables into one
-  x_characters2 <- tidyr::unite(x_characters, "x_characters2", 1:ncol(x_characters), sep = " ")
+  x_characters2 <- tidyr::unite(x_characters, "x_characters2", seq_len(ncol(x_characters)), sep = " ")
   # unite all rows in the column into one cell
   x_characters3 <- paste(x_characters2[1], collapse = " ")
   # Remove all punctuation characters
@@ -102,7 +89,6 @@ getUniqueWordsAndFreq <- function(x_characters) {
   singlewords
 }
 
-# devtools::document()
 #' This is a function that sorts out the embeddings
 #' (and is used again below for decontextualized words).
 #' @param x list of layers.
@@ -139,7 +125,7 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
 
     # Loop of the number of layers
     layers_list <- list()
-    for (i_layers in 1:length(all_layers)) {
+    for (i_layers in seq_len(length(all_layers))) {
       i_layers_for_tokens <- all_layers[i_layers]
 
       # Transpose layers and give each column a DimX names
@@ -167,7 +153,6 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
   variable_x
 }
 
-# devtools::document()
 #' grep_col_by_name_in_list
 #' This function finds a column by name independent on where in the list structure it is.
 #' @param l a list.
@@ -179,7 +164,6 @@ grep_col_by_name_in_list <- function(l, pattern) {
   u[grep(pattern, names(u))]
 }
 
-# devtools::document()
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param x Tibble/dataframe with at least one character variable.
 #' @param contexts Provide word embeddings based on word contexts
@@ -302,7 +286,7 @@ textHuggingFace <- function(x,
     sorted_layers_ALL_variables <- list()
     sorted_layers_ALL_variables$context <- list()
     # Loop over all character variables
-    for (i_variables in 1:length(data_character_variables)) {
+    for (i_variables in seq_len(length(data_character_variables))) {
 
       # Python file function to HuggingFace
       hg_embeddings <- hgTransformerGetEmbedding(
@@ -363,7 +347,6 @@ textHuggingFace <- function(x,
   word_embeddings_with_layers
 }
 
-# devtools::document()
 #' Select and aggregate layers of hidden states to form a word embeddings.
 #' @param word_embeddings_layers Layers outputted from textHuggingFace.
 #' @param layers The numbers of the layers to be aggregated
@@ -406,7 +389,7 @@ textLayerAggregation <- function(word_embeddings_layers,
 
   # Loop over the list of variables
   selected_layers_aggregated_tibble <- list()
-  for (variable_list_i in 1:length(word_embeddings_layers)) {
+  for (variable_list_i in seq_len(length(word_embeddings_layers))) {
     x <- word_embeddings_layers[[variable_list_i]]
 
     # Go over the lists and select the layers
@@ -435,7 +418,6 @@ textLayerAggregation <- function(word_embeddings_layers,
   selected_layers_aggregated_tibble
 }
 
-# devtools::document()
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param x Tibble/dataframe with at least one character variable.
 #' @param contexts Provide word embeddings based on word contexts
