@@ -1,9 +1,4 @@
 
-
-
-################
-#### Random Forest: Training Cross-validated data
-################
 # devtools::document()
 #' Train word embeddings to a categorical variable using random forrest.
 #'
@@ -103,11 +98,3 @@ textTrainRandomForest <- function(x,
   output_random_forest
 }
 
-######################
-########### END textTrainRandomForest
-######################
-# library(tidymodels)
-# x <- wordembeddings1_100$harmonytexts
-# y <- sq_data_tutorial4_100$gender
-# testing_outcome<- textTrainRandomForest(x, sq_data_tutorial4_100$gender, trees=50, nrFolds_k = 10, strata_y = "y")
-# testing_outcome

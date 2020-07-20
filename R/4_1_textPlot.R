@@ -19,7 +19,6 @@ unique_freq_words <- function(words){
   words_groupb_freq
 }
 
-
 # devtools::document()
 #' Compute Dot Product Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
@@ -48,7 +47,7 @@ unique_freq_words <- function(words){
 #' @return A dataframe with variables (e.g., including dot product projection, frequencies, p-values)
 #' for the individual words that is used for the plotting in the textProjectionPlot function.
 #' @examples
-# Data
+#'# Data
 #'wordembeddings <- wordembeddings4_10
 #'data <- Language_based_assessment_data_8_10
 #'# Pre-processing data for plotting
@@ -328,12 +327,6 @@ textProjectionData <- function(words,
 }
 #### End textProjectionData
 #############
-
-
-# Select colours: https://paletton.com/#uid=1000u0kllllaFw0g0qFqFg0w0aF  https://www.sessions.edu/color-calculator/
-# https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Colors/Color_picker_tool
-# # Build bivariate_palette; https://www.datalorax.com/post/creating-bivariate-color-palettes/
-
 
 # devtools::document()
 #' Plot words according to Dot Product Projections.
@@ -668,7 +661,6 @@ textProjectionPlot <- function(word_data,
                   adjusted_p_values.x > p_alpha  &  dot.y < 0 & adjusted_p_values.y < p_alpha ~ bivariate_color_codes[8],
       dot.x > 0 & adjusted_p_values.x < p_alpha  &  dot.y < 0 & adjusted_p_values.y < p_alpha ~ bivariate_color_codes[9]
       ))
-
   }
 
   if (is.null(y_axes_1) == TRUE) {
@@ -827,9 +819,6 @@ textProjectionPlot <- function(word_data,
 ###### End textProjectionPlot
 
 
-
-
-
 ############
 ############
 ######  Semantic Centrality Plot SC
@@ -891,11 +880,6 @@ textCentralityData <- function(words,
 }
 # End Semantic Centrality Plot data
 
-
-
-# Select colors: https://paletton.com/#uid=1000u0kllllaFw0g0qFqFg0w0aF  https://www.sessions.edu/color-calculator/
-# https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Colors/Color_picker_tool
-# # Build bivariate_palette; https://www.datalorax.com/post/creating-bivariate-color-palettes/
 # devtools::document()
 #' Plot words according to cosine semantic similarity to the aggregated word embedding.
 #' @param word_data Tibble from textPlotData.
@@ -972,7 +956,6 @@ textCentralityData <- function(words,
 #' @export
 textCentralityPlot <- function(word_data,
                        min_freq_words = 1,
-
                        plot_n_word_extreme = 10,
                        plot_n_word_frequency = 10,
                        plot_n_words_middle = 10,
@@ -980,9 +963,8 @@ textCentralityPlot <- function(word_data,
                        x_axes = "central_cosine",
                        title_top = "Semantic Centrality Plot",
                        x_axes_label = "Semantic Centrality",
-                       scale_x_axes_lim = NULL, #c(0.5, 1),
-                       scale_y_axes_lim = NULL, #c(-1, 1),
-
+                       scale_x_axes_lim = NULL,
+                       scale_y_axes_lim = NULL,
                        word_font = NULL,
                        centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9", "#000000"),
                        word_size_range = c(3, 8),
@@ -1052,7 +1034,6 @@ textCentralityPlot <- function(word_data,
   if(is.null(scale_y_axes_lim)){
     scale_y_axes_lim <- c(-1, 1)
   }
-
 
   # This solution is because it is not possible to send "0" as a parameter
   only_x_dimension <- 0

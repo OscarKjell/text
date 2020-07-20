@@ -1,16 +1,4 @@
 
-
-#  devtools::document()
-#' Testing F1 function from python
-#' @return "f one"
-#' @export
-f1_from_python <- function() {
-  f1()
-}
-# f1_from_python()
-
-
-
 #  devtools::document()
 #' Select all character variables and make them UTF-8 coded (BERT wants it in this format).
 #' @param tibble including both text and numeric variables.
@@ -191,7 +179,6 @@ grep_col_by_name_in_list <- function(l, pattern) {
   u[grep(pattern, names(u))]
 }
 
-
 # devtools::document()
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param x Tibble/dataframe with at least one character variable.
@@ -350,7 +337,6 @@ textHuggingFace <- function(x,
   word_embeddings_with_layers
 }
 
-
 # devtools::document()
 #' Select and aggregate layers of hidden states to form a word embeddings.
 #' @param word_embeddings_layers Layers outputted from textHuggingFace.
@@ -422,7 +408,6 @@ textLayerAggregation <- function(word_embeddings_layers,
   names(selected_layers_aggregated_tibble) <- names(word_embeddings_layers)
   selected_layers_aggregated_tibble
 }
-
 
 # devtools::document()
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.

@@ -39,11 +39,11 @@ Most users simply need to run below installation code. For those
 experiencing problems, please see the [Extended Installation
 Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
 
-[CRAN](https://CRAN.R-project.org) version:
+<!--[CRAN](https://CRAN.R-project.org) version:
 
 ``` r
 install.packages("text")
-```
+```-->
 
 [GitHub](https://github.com/) development version:
 

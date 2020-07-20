@@ -1,8 +1,6 @@
-#Test your package with Ctrl/Cmd + Shift + T or devtools::test().
 
 library(tibble)
 library(dplyr)
-#test_check("text")
 
 context("textPlot Functions")
 
@@ -46,34 +44,6 @@ test_that("textProjectionData with QUARTILE, 0.9 PCA and 2-dimensions produces a
   expect_is(df_for_plotting$n[1], 'integer')
 })
 
-
-
-#test_that("textProjectionData with QUARTILE, 2 PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
-#  #Data
-#  wordembeddings <- wordembeddings4_10
-#  data <- Language_based_assessment_data_8_10
-#  # Pre-processing data for plotting
-#  df_for_plotting <- textProjectionData(data$harmonywords[1:5],
-#                                        wordembeddings$harmonywords[1:5,],
-#                                        wordembeddings$singlewords_we,
-#                                        data$hilstotal[1:5],
-#                                        data$swlstotal[1:5],
-#                                        split = "quartile",
-#                                        Npermutations = 2,
-#                                        n_per_split = 1,
-#                                        pca = 2)
-#  #df_for_plotting
-#
-#  expect_true(tibble::is_tibble(df_for_plotting))
-#  expect_is(df_for_plotting$words[1], 'character')
-#  expect_is(df_for_plotting$n[1], 'integer')
-#})
-#
-
-
-
-
-
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   # Dot Product Projection Plot
   p <- textProjectionPlot(
@@ -95,7 +65,6 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
     scale_y_axes_lim = NULL)
 
   expect_true(ggplot2::is.ggplot(p))
-
  })
 
 test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
@@ -119,30 +88,20 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
     scale_y_axes_lim = NULL)
 
   expect_true(ggplot2::is.ggplot(p))
-
 })
-
-
-
-
-
-
-
 
 test_that("textCentralityData produces a tibble with character variable and numeric variable.", {
   wordembeddings <- wordembeddings4_10
   data <- Language_based_assessment_data_8_10
   df_for_plotting <- textCentralityData(data$harmonywords[1:2],
                                        wordembeddings$harmonywords[1:2,],
-                                       wordembeddings$singlewords_we
-  )
+                                       wordembeddings$singlewords_we)
 
   expect_is(df_for_plotting$words[1], 'character')
   expect_is(df_for_plotting$n[1], 'integer')
   expect_true(tibble::is_tibble(df_for_plotting))
 
 })
-
 
 test_that("textCentralityPlot produces a plot.", {
 
@@ -165,8 +124,7 @@ test_that("textCentralityPlot produces a plot.", {
     point_size = 0.5,
     arrow_transparency = 0.1,
     points_without_words_size = 0.5,
-    points_without_words_alpha = 0.5,
-  )
+    points_without_words_alpha = 0.5)
 
    expect_true(ggplot2::is.ggplot(centrality_plot))
 })

@@ -1,6 +1,4 @@
 
-####### textTrainMultiText
-
 # devtools::document()
 #' Combine several word embeddings from several text variables and train to a numeric variable.
 #' Takes several text variables; applies separate PCAs to each text's word embeddings separately;
@@ -28,17 +26,6 @@
 #' @importFrom parsnip linear_reg set_engine
 #' @importFrom tune control_grid tune_grid select_best collect_predictions
 #' @export
-
-# load("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/text_data_examples/sq_data_tutorial4_100.rda")
-# load("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/text_data_examples/wordembeddings4_100.rda")
-# y <- sq_data_tutorial4_100$hilstotal
-# xlist <- wordembeddings4_100[1:4]
-# preProcessThresh = 0.95
-# nrFolds_k = 10
-# strata_y = "y"
-# methodCor = "pearson"
-# describe_model = "Describe the model further and share it with others"
-
 textTrainMultiTexts <- function(xlist,
                                 y,
                                 preProcessThresh = 0.95,
@@ -143,12 +130,3 @@ textTrainMultiTexts <- function(xlist,
   names(output) <- c("predictions", "model description", "results")
   output
 }
-######################
-########### End of textTrain function
-######################
-# solmini_1 <- read_csv("/Users/oscar/Desktop/0 Studies/13 OnlineMini/combinedSOL_SM.csv")
-# solmini_sd300_tk_mean1 <- read_rds("/Users/oscar/Desktop/0 Studies/5 R statistical semantics package/spaces/spaceDomain_solminidata_solmini_sd300_tk_mean.rds")
-# xlist <- solmini_sd300_tk_mean1[1:2]
-# y <- solmini_1$phq_tot
-
-# testMulti <- textTrainMultiTexts(xlist, y)

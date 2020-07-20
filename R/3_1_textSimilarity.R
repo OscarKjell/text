@@ -1,11 +1,4 @@
 
-
-########################################################################
-########
-########     textSimilarity
-########
-########################################################################
-
 #  devtools::document()
 #' Compute cosine
 #'
@@ -37,12 +30,6 @@ textSimilarity <- function(x, y) {
   # Apply the cosines functions
   cosines(x1, y1)
 }
-
-########################################################################
-########
-########     semSimilarityNorm: Compute Semantic similarity between a column and a word-norm
-########
-########################################################################
 
 # devtools::document()
 #' Compute the semantic similarity between a text variable and a word norm
