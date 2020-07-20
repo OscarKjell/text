@@ -1,5 +1,4 @@
 
-# Is normalizeV function used somewhere?
 
 ########################################################################
 ########
@@ -17,16 +16,6 @@
 # Computing the cosine between two word embeddings.
 cosines <- function(x, y) {
   rowSums(x * y, na.rm = TRUE) / (sqrt(rowSums(x * x, na.rm = TRUE)) * sqrt(rowSums(y * y, na.rm = TRUE)))
-}
-
-#  devtools::document()
-#' Function to normalize the vector to one; to a unit vector.
-#'
-#' @param x a word embedding
-#' @return normalized (unit) vector/word embedding.
-#' @noRd
-normalizeV <- function(x) {
-  x / sqrt(sum(x^2, na.rm = TRUE))
 }
 
 #' Compute the cosine semantic similarity between two text variables.
