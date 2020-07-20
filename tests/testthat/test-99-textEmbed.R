@@ -1,10 +1,7 @@
 #Test your package with Ctrl/Cmd + Shift + T or devtools::test()
-#usethis::use_testthat()
-
 
 library(text)
 library(tibble)
-#library(testthat)
 
 context("Embedding of text and retrieval of word embeddings")
 
@@ -20,31 +17,19 @@ skip_if_no_torch <- function() {
     skip("torch not available for testing")
 }
 
-test_that("textLayerAggregation 1:2 'max' produces aggregated word embeddings", {
+test_that("textLayerAggregation 1:2 'mean' produces aggregated word embeddings", {
 
   #skip_on_cran()
   aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context,
                                                  layers = 1:2,
-                                                 aggregation = "max")
-
-  expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
-  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
-})
-
-test_that("textLayerAggregation 1:2 'CLS' produces aggregated word embeddings", {
-
-  #skip_on_cran()
-  aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context,
-                                                 layers = 1:2,
-                                                 aggregation = "CLS")
+                                                 aggregation = "mean")
 
   expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 })
 
 
-
-test_that("textLayerAggregation 1:2 tokens_select = '[CLS]' produces aggregated word embeddings", {
+test_that("textLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
 
   #skip_on_cran()
   aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context,
@@ -56,7 +41,7 @@ test_that("textLayerAggregation 1:2 tokens_select = '[CLS]' produces aggregated 
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 })
 
-test_that("textLayerAggregation 1:2 tokens_deselect = '[CLS]' produces aggregated word embeddings", {
+test_that("textLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
 
   #skip_on_cran()
   aggregated_embeddings <-  textLayerAggregation(embeddings_from_huggingface2$context,
@@ -67,7 +52,6 @@ test_that("textLayerAggregation 1:2 tokens_deselect = '[CLS]' produces aggregate
   expect_is(aggregated_embeddings$harmonywords[[1]][1], 'numeric')
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 })
-
 
 test_that("textHuggingFace contexts=TRUE, decontexts = FALSE returns a list", {
   #skip_on_cran()
@@ -89,7 +73,6 @@ test_that("textHuggingFace contexts=TRUE, decontexts = FALSE returns a list", {
   expect_that(ncol(embeddings[[1]][[1]][[1]]), equals(770) )
 })
 
-
 test_that("textHuggingFace contexts=FALSE, decontexts = TRUE returns a list", {
   #skip_on_cran()
   #skip_if_no_transformers()
@@ -109,7 +92,6 @@ test_that("textHuggingFace contexts=FALSE, decontexts = TRUE returns a list", {
   #so that 770 needs to be something else
   expect_that(ncol(embeddings[[1]][[1]][[1]][[1]]), equals(770) )
 })
-
 
 test_that("textEmbed", {
   #skip_on_cran()

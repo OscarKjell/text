@@ -43,16 +43,16 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
     max_vector <- unlist(map(x, max, na.rm = TRUE))
   } else if (aggregation == "mean") {
     mean_vector <- colMeans(x, na.rm = TRUE)
-  } else if (aggregation == "CLS") {
-    CLS <- x %>%
-      dplyr::filter(token_index == 1, layer_index == 1)
+  } #else if (aggregation == "CLS") {
+    #CLS <- x %>%
+     # dplyr::filter(token_index == 1, layer_index == 1)
   } # else if (aggregation == "normalize1") {
   #    norma_vector <- unlist(map(x, norma))
   # x2 <- x[complete.cases(x), ]
   # x3 <- colSums(x2) # BELOW NEED FIXING; REMOVED FROM CRAN
   # x4 <- ppls::normalize.vector(x3)
   # }
-}
+#}
 
 # devtools::document()
 #' applysemrep

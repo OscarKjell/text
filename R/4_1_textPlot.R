@@ -334,6 +334,7 @@ textProjectionData <- function(words,
 # https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Colors/Color_picker_tool
 # # Build bivariate_palette; https://www.datalorax.com/post/creating-bivariate-color-palettes/
 
+
 # devtools::document()
 #' Plot words according to Dot Product Projections.
 #' @param word_data Dataframe from textProjectionData
@@ -751,7 +752,7 @@ textProjectionPlot <- function(word_data,
     ggplot2::theme_minimal() +
     ggplot2::theme(
       legend.position = c("bottom"),
-      plot.title = element_text(hjust = 0.5),
+      plot.title = ggplot2::element_text(hjust = 0.5),
       legend.justification = c("right", "top"),
       panel.grid.major = ggplot2::element_blank(),
       panel.grid.minor = ggplot2::element_blank(),
@@ -809,19 +810,20 @@ textProjectionPlot <- function(word_data,
                       color = titles_color, size = legend_number_size)+
     ggplot2::annotate(geom="text", x=3, y=1, label = sum(word_data_all$colour_categories == bivariate_color_codes[9], na.rm=T),
                       color = titles_color, size = legend_number_size)+
-    ggplot2::theme(plot.title = element_text(hjust = 0.5, size = legend_title_size+1),
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, size = legend_title_size+1),
           title = ggplot2::element_text(color = titles_color),
           axis.title.x = ggplot2::element_text(color = titles_color),
-          axis.title = element_text(size = legend_title_size),
-          axis.title.y = element_text(angle = 90, color = titles_color)) +
+          axis.title = ggplot2::element_text(size = legend_title_size),
+          axis.title.y = ggplot2::element_text(angle = 90, color = titles_color)) +
     ggplot2::coord_fixed()
   #legend
 
   # Plot both figure and legend
-  cowplot::ggdraw() +
+  suppressWarnings(cowplot::ggdraw() +
     cowplot::draw_plot(plot, 0, 0, 1, 1) +
     cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size)
-  }
+  )
+}
 ###### End textProjectionPlot
 
 
