@@ -1,6 +1,10 @@
 comment: false
 
 coverage:
+  range: 50...90
+  round: up
+  precision: 3
+
   status:
     project:
       default:
@@ -12,9 +16,7 @@ coverage:
         target: auto
         threshold: 1%
         informational: true
-    range: 70..90
-    round: up
-    precision: 2
+
 
 codecov:
   token: 6f686015-93a7-427c-9311-a68ce9f7dfa5
