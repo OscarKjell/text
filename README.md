@@ -80,13 +80,13 @@ multilingual BERT comprises *104 different languages*.
 
 *Table 1. Some of the available language models*
 
-| Models                         | References                                              | Layers | Dimensions | Language                                                                             |
-| :----------------------------- | :------------------------------------------------------ | :----- | :--------- | :----------------------------------------------------------------------------------- |
-| ‘bert-base-uncased’            | [Devline et al. 2018](https://arxiv.org/abs/1810.04805) | 12     | 768        | English                                                                              |
-| ‘roberta-base’                 | [Liu et al. 2019](https://arxiv.org/abs/1907.11692)     | 12     | 768        | English                                                                              |
-| ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)   | 6?     | 768?       | English                                                                              |
-| ‘bert-base-multilingual-cased’ | [Devline et al.2018](https://arxiv.org/abs/1810.04805)  | 12     | 768        | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
-| ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692.pdf)       | 24     | 1024       | [100 language](https://huggingface.co/transformers/multilingual.html)                |
+| Models                         | References                                                       | Layers | Dimensions | Language                                                                             |
+| :----------------------------- | :--------------------------------------------------------------- | :----- | :--------- | :----------------------------------------------------------------------------------- |
+| ‘bert-base-uncased’            | [Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/) | 12     | 768        | English                                                                              |
+| ‘roberta-base’                 | [Liu et al. 2019](https://arxiv.org/abs/1907.11692)              | 12     | 768        | English                                                                              |
+| ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)            | 6?     | 768?       | English                                                                              |
+| ‘bert-base-multilingual-cased’ | [Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/) | 12     | 768        | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
+| ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692.pdf)                | 24     | 1024       | [100 language](https://huggingface.co/transformers/multilingual.html)                |
 
 See [HuggingFace’s Github](https://github.com/huggingface/transformers)
 for a more comprehensive list of models.
