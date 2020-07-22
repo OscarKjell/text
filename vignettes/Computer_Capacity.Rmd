@@ -1,5 +1,5 @@
 ---
-title: "Adapting to Limited Computer Capacity"
+title: "How to best manage computationally heavy analyses"
 output: github_document #rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Computer_Capacity}
@@ -14,8 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
-### Managing computationally heavy analyses
 Many NLP analyses require a lot of computational resources; but standard sized datasets in psychology can be analysed with *text* on a standard laptop. It is rather the computation of the pre-trained language models that require a huge amount of computational resources. Wolf et al., (2020) exemplify this by pointing out that the RoBERTa language model: 
 
 >"was trained on 160 GB of text using 1024 32GB V100. On Amazon-Web-Services cloud computing (AWS), such a pretraining would cost approximately 100K USD." (p. 2)  
@@ -24,7 +22,7 @@ Hence, there are a lot of computations behind the word embeddings. In *text*, th
 
 1. *Testing:* Before you run the analyses on your entire dataset, ensure that everything first runs smoothly on a small part of the data set (e.g., 20 rows of your data). Note that this should not be a process of testing different setting, but only to see that everything works.  
 2. *Timekeeping:* When running different analyses have the computer take time (see code example below), so that you get a better understanding of how long time different analyses take.
-3. *Planning:* Run those analyses that take longer time over a coffee break or over night. So for example, it might be worth retrieving all word embeddings at a separate time.  
+3. *Scheduling:* Run those analyses that take longer time over a coffee break or over night. So for example, it might be worth retrieving all word embeddings at a separate time.  
 
 ```{r timing_Computer_Capacity, eval = FALSE, warning=FALSE, message=FALSE}
 
