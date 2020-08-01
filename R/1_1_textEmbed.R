@@ -1,4 +1,8 @@
 
+# x <- Language_based_assessment_data_8_10[1:2, 1:2]
+# wordembeddings <- textHuggingFace(x, layers = "all")
+
+
 #' Select all character variables and make them UTF-8 coded (BERT wants it in this format).
 #' @param tibble including both text and numeric variables.
 #' @return all character variables in UTF-8 format.
@@ -482,6 +486,7 @@ textEmbed <- function(x,
                       decontext_aggregation = "mean",
                       decontext_tokens_select = NULL,
                       decontext_tokens_deselect = NULL) {
+
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
 
   # Get hidden states/layers for all text; both context and decontext

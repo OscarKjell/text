@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# text <img src="man/figures/logo.png" align="right" alt="" width="120" />
+# text <img src="man/figures/text_logo_animation.gif" align="right" alt="" width="330" />
 
 <!-- badges: start -->
 
@@ -30,13 +30,14 @@ objectives:
     state-of-the-art AI techniques tailored for social and behavioral
     scientists.
 
-![Point Solution](man/figures/point_end_solution.png)
+![Modular and End-to-End Solution](man/figures/modular_end_solution.png)
 
 *Text* is created through a collaboration between psychology and
 computer science to address research needs and ensure state-of-the-art
 techniques. It provides powerful functions tailored to test research
 hypotheses in social and behavior sciences for both relatively small and
-large datasets.
+large datasets. *Text* is continuously tested on Ubuntu, Mac OS and
+Windows using the latest stable R version.
 
 ### Short installation guide
 

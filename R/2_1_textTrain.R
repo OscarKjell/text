@@ -1,4 +1,13 @@
-
+#wordembeddings <- wordembeddings4_10
+#ratings_data <- Language_based_assessment_data_8_10
+#
+#x <- wordembeddings$harmonytext
+#y <- ratings_data$hilstotal
+#nrFolds_k = 10
+#preProcessPCAthresh = 0.95
+#strata_y = "y"
+#methodCor = "pearson"
+#model_description = "Consider writing a description here"
 
 # devtools::document()
 #' Train word embeddings to a numeric variable.
@@ -36,6 +45,8 @@ textTrain <- function(x,
                       model_description = "Consider writing a description here") {
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   df3 <- cbind(x1, y)
+
+  #cell_split <- rsample::initial_split(df3, strata = strata_y)
 
   # Recipe: Pre-processing with pca, see options: ls("package:recipes", pattern = "^step_")
   df3_recipe <-
