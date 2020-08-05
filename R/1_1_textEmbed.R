@@ -34,16 +34,12 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
     max_vector <- unlist(map(x, max, na.rm = TRUE))
   } else if (aggregation == "mean") {
     mean_vector <- colMeans(x, na.rm = TRUE)
-  } #else if (aggregation == "concatenate") {
-    #long_vector <- x %>% unlist()
-    #long_vector <- x %>% cbind()
-    #long_vector
-
-    #colnames(long_vector) <-
-  #}
+  } else if (aggregation == "concatenate") {
+    long_vector <- c(t(x))
+    colnames(long_vector) <- paste0("Dim", sep = "", seq_len(length(long_vector)))
+    long_vector
+  }
 }
-
-
 
 #' applysemrep
 #' Function to apply the semantic representation (or word embeddings)  to ONE word from

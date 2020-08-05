@@ -20,8 +20,9 @@ textLayerAggregation(
 Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 Selecting 'all' thus removes layer 0.}
 
-\item{aggregation}{Method to aggregate the dimensions of each selected layer
-(default "mean"; see also "min",  "max" and "CLS").}
+\item{aggregation}{Method to carry out the aggregation, including "min", "max" and "mean" which takes the
+minimum, maximum or mean across each column; or "concatenate", which links together each layer of the word embedding
+to one long row.}
 
 \item{tokens_select}{Option to only select embeddings linked to specific tokens
 such as "[CLS]" and "[SEP]" (default NULL).}

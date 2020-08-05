@@ -67,10 +67,11 @@ Compute Dot Product Projection and related variables for plotting words.
 wordembeddings <- wordembeddings4_10
 data <- Language_based_assessment_data_8_10
 # Pre-processing data for plotting
-df_for_plotting <- textProjectionData(data$harmonywords,
-  wordembeddings$harmonywords,
-  wordembeddings$singlewords_we,
-  data$hilstotal,
+df_for_plotting <- textProjectionData(
+  words = data$harmonywords,
+  wordembeddings = wordembeddings$harmonywords,
+  single_wordembeddings = wordembeddings$singlewords_we,
+  x = data$hilstotal,
   split = "median",
   Npermutations = 10,
   n_per_split = 1

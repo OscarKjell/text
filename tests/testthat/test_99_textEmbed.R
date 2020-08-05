@@ -32,6 +32,21 @@ test_that("textLayerAggregation 'all' 'mean' produces aggregated word embeddings
 })
 
 
+test_that("textLayerAggregation concatenate produces long/aggregated word embeddings", {
+
+  # skip_on_cran()
+  aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
+                                                layers = "all",
+                                                aggregation = "concatenate"
+  )
+
+  expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")
+  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
+})
+
+
+
+
 test_that("textLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
 
   # skip_on_cran()
