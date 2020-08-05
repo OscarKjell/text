@@ -40,9 +40,10 @@ and the aggregated word embedding of all words.
 \examples{
 wordembeddings <- wordembeddings4_10
 data <- Language_based_assessment_data_8_10
-df_for_plotting <- textCentralityData(data$harmonywords,
-                                      wordembeddings$harmonywords,
-                                      wordembeddings$singlewords_we
+df_for_plotting <- textCentralityData(
+  data$harmonywords,
+  wordembeddings$harmonywords,
+  wordembeddings$singlewords_we
 )
 df_for_plotting
 }

@@ -21,7 +21,9 @@ select_character_v_utf8 <- function(x) {
 #' Function to take min, max, mean or the CLS
 #' (which comes from BERT models; not Static spaces) from list of vectors
 #' @param x word embeddings to be aggregated
-#' @param aggregation method to carry out the aggregation
+#' @param aggregation method to carry out the aggregation, including "min", "max" and "mean" which takes the
+#' minimum, maximum or mean across each column; or "concatenate", which linkes together each word embedding layer
+#' to one long row.
 #' @return aggregated word embeddings.
 #' @importFrom stats complete.cases
 #' @noRd
@@ -32,8 +34,16 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
     max_vector <- unlist(map(x, max, na.rm = TRUE))
   } else if (aggregation == "mean") {
     mean_vector <- colMeans(x, na.rm = TRUE)
-  }
+  } #else if (aggregation == "concatenate") {
+    #long_vector <- x %>% unlist()
+    #long_vector <- x %>% cbind()
+    #long_vector
+
+    #colnames(long_vector) <-
+  #}
 }
+
+
 
 #' applysemrep
 #' Function to apply the semantic representation (or word embeddings)  to ONE word from
@@ -357,8 +367,9 @@ textHuggingFace <- function(x,
 #' (e.g., c(11:12) to aggregate the eleventh and twelfth).
 #' Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 #' Selecting 'all' thus removes layer 0.
-#' @param aggregation Method to aggregate the dimensions of each selected layer
-#' (default "mean"; see also "min",  "max" and "CLS").
+#' @param aggregation Method to carry out the aggregation, including "min", "max" and "mean" which takes the
+#' minimum, maximum or mean across each column; or "concatenate", which links together each layer of the word embedding
+#' to one long row.
 #' @param tokens_select Option to only select embeddings linked to specific tokens
 #' such as "[CLS]" and "[SEP]" (default NULL).
 #' @param tokens_deselect Option to deselect embeddings linked to specific tokens
@@ -446,14 +457,16 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' Default = NULL. for details see https://huggingface.co/.
 #' @param context_layers Specify the layers that should be aggregated (default 11:12).
 #' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised not to be used.
-#' @param context_aggregation Method to aggregate the contextualized layers (e.g., "mean", "min" or "max).
+#' @param context_aggregation Method to aggregate the contextualized layers (e.g., "mean", "min" or "max, which takes the
+#' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
+#' to one long row.
 #' @param context_tokens_select Option to select word embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the context embeddings.
 #' @param context_tokens_deselect Option to deselect embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the context embeddings.
 #' @param decontext_layers Layers to aggregate for the decontext embeddings.
 #' @param decontext_aggregation Method to aggregate the decontextualized layers
-#' (i.e., embeddings from single words; e.g., "mean", "min", "max or "[CLS]").
+#' (i.e., embeddings from single words; e.g., "mean", "min", "max or "concatenate", see description above on context_aggregation).
 #' @param decontext_tokens_select Option to select embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the decontext embeddings.
 #' @param decontext_tokens_deselect option to deselect embeddings linked to specific tokens

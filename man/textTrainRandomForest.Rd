@@ -7,10 +7,13 @@
 textTrainRandomForest(
   x,
   y,
-  trees = 500,
-  nrFolds_k = 10,
-  strata_y = "y",
-  describe_model = "Describe the model further and share it with others"
+  outside_strata_y = "y",
+  inside_strata_y = "y",
+  mtry = c(1, 5, 10, 15, 30, 40),
+  min_n = c(1, 5, 10, 15, 30, 40),
+  trees = 1000,
+  model_description = "Consider writing a description of your model here",
+  multi_cores = TRUE
 )
 }
 \arguments{
@@ -18,27 +21,36 @@ textTrainRandomForest(
 
 \item{y}{Categorical variable to predict.}
 
-\item{trees}{Number of trees to use (default 500).}
+\item{outside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
 
-\item{nrFolds_k}{Number of folds to use (default 10).}
+\item{inside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
 
-\item{strata_y}{Variable to stratify according (default y; can set to NULL).}
+\item{mtry}{hyper parameter that may be tuned;  default:c(1, 20, 40),}
 
-\item{describe_model}{Text to describe your model.}
+\item{min_n}{hyper parameter that may be tuned; default: c(1, 20, 40)}
+
+\item{trees}{Number of trees to use (default 1000).}
+
+\item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
+
+\item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
+make the analyses considerably faster to run).}
 }
 \value{
-A correlation between predicted and observed values; as well as predicted values.
+A chi-square result between predicted and observed values; as well as predicted and true values.
 }
 \description{
 Train word embeddings to a categorical variable using random forrest.
 }
 \examples{
 wordembeddings <- wordembeddings4_10
-ratings_data <- Language_based_assessment_data_8_10
-results <- textTrainRandomForest(wordembeddings$harmonytext,
-ratings_data$gender,
-nrFolds_k = 5,
-trees = 5)
+example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
+results <- textTrainRandomForest(wordembeddings$harmonywords,
+                                 example_categories,
+                                 mtry  = c(1),       # this is short because of testing
+                                 min_n = c(1),       # this is short because of testing
+                                 multi_cores = FALSE # This is FALSE due to CRAN testing.
+)
 }
 \seealso{
 see \code{\link{textTrainLists}} \code{\link{textDiff}}

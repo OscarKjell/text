@@ -1,275 +1,139 @@
 
-
-wordembeddings <- wordembeddings4_10
-ratings_data <- Language_based_assessment_data_8_10
-x <- wordembeddings$harmonytext
-y <- ratings_data$hilstotal
-outside_folds = 10
-outside_strata_y = "y"
-inside_folds = 10
-inside_strata_y = "y"
-preprocess_PCA_thresh = 0.95
-method_cor = "pearson"
-model_description = "Consider writing a description here"
-multi_cores = TRUE
-
-
-#results <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
-#  nrFolds_k = 2, strata_y = NULL
-
-
-textTrainRegression <- function(x,
-                      y,
-                      outside_folds = 10,
-                      outside_strata_y = "y",
-                      inside_folds = 10,
-                      inside_strata_y = "y",
-                      preprocess_PCA_thresh = 0.95,
-                      method_cor = "pearson",
-                      model_description = "Consider writing a description of your model here",
-                      multi_cores = TRUE) {
-
-  x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
-  xy <- cbind(x1, y)
-
-  results_nested_resampling <- rsample::nested_cv(xy,
-                                                  outside = rsample::vfold_cv(v = outside_folds,
-                                                                              repeats = 1,
-                                                                              strata_y = outside_strata_y),
-                                                  inside  = rsample::vfold_cv(v = inside_folds,
-                                                                              repeats = 1,
-                                                                              strata_y = inside_strata_y))
-
-  # Function to fit a model and compute RMSE
-  # object: an rsplit object (from results_nested_resampling tibble)
-  # object = results_nested_resampling$splits[[1]]
-  fit_model_rmse <- function(object, penalty = 1, mixture = 0) {
-
-    xy_recipe <- analysis(object) %>%
-      recipes::recipe(y ~ .) %>%
-      # recipes::step_BoxCox(all_predictors()) %>%
-      recipes::step_naomit(Dim1, skip = TRUE) %>%
-      recipes::step_center(all_predictors()) %>%
-      recipes::step_scale(all_predictors()) %>%
-      recipes::step_pca(all_predictors(), threshold = preprocess_PCA_thresh) %>% #  num_comp = tune()
-      prep()
-
-    # To load the prepared training data into a variable juice() is used.
-    # It extracts the data from the xy_recipe object.
-    xy_training <- recipes::juice(xy_recipe)
-
-    # Create and fit model; penalty=0.1 mixture = 0
-    mod <-
-      parsnip::linear_reg(penalty = penalty, mixture = mixture) %>%
-      parsnip::set_engine("glmnet") %>%
-      parsnip::fit(y ~ ., data = xy_training) #analysis(object)
-
-    #Prepare the test data according to the recipe
-    xy_testing <- xy_recipe %>%
-      bake(assessment(object))
-    # look at xy_testing: glimpse(xy_testing)
-
-    # Apply model on new data
-    holdout_pred <-
-      stats::predict(mod, xy_testing %>% dplyr::select(-y)) %>%
-      dplyr::bind_cols(assessment(object) %>% dplyr::select(y))
-
-    # Get RMSE
-    rmse_val <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)$.estimate
-    # Sort output of RMSE, predictions and truth (observed y)
-    output <- list(list(rmse_val), list(holdout_pred$.pred), list(holdout_pred$y))
-    names(output) <- c("rmse", "predictions", "y")
-    output
-    }
-
-  # testing
-  # fit_model_rmse(object=results_nested_resampling$inner_resamples[[2]]$splits[[1]])
-
-  # In some situations, we want to parameterize the function over the tuning parameter:
-  fit_model_rmse_wrapper <- function(penalty, mixture, object) fit_model_rmse(object, penalty, mixture)
-
-  # For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
-  # object:  an rsplit object from the INNER samples
-  # object=results_nested_resampling$inner_resamples[[5]]$splits[[1]]
-  tune_over_cost <- function(object) {
-
-    grid_inner <- base::expand.grid(
-      penalty = c(0.01, 0.1),
-      mixture = c(0, 0.5, 1))
-
-    #  grid_inner <- base::expand.grid(
-    #    penalty = 10^seq(-3, -1, length = 20),
-    #    mixture = (0:5) / 5)
-
-    # Test models with the different hyperparameters for the inner samples
-    tune_results <- purrr::map2(grid_inner$penalty,
-                           grid_inner$mixture,
-                           fit_model_rmse_wrapper,
-                           object = object)
-
-    # Sort the output to separate the rmse, predictions and truth
-    tune_outputlist <- tune_results %>%
-      dplyr::bind_rows() %>%
-      split.default(names(.)) %>%
-      purrr::map(na.omit)
-
-    # Extract the RMSE
-    tune_rmse <- unlist(tune_outputlist$rmse$rmse)
-
-    # Add RMSE to the grid
-    grid_inner_RMSE <- grid_inner %>%
-      dplyr::mutate(RMSE = tune_rmse)
-
-    grid_inner_RMSE
-  }
-  # testing
-  #tune_over_cost(object=results_nested_resampling$inner_resamples[[1]]$splits[[1]])
-
-  # object = results_nested_resampling$inner_resamples
-  # Since this will be called across the set of OUTER cross-validation splits, another wrapper is required:
-  # object: an `rsplit` object (from results$inner_resamples)
-  summarize_tune_results <- function(object) {
-
-    # Return row-bound tibble containing the INNER results
-    purrr::map_df(object$splits, tune_over_cost) %>%
-
-      # For each value of the tuning parameter, compute the
-      # average RMSE which is the INNER estimate.
-      dplyr::group_by(penalty) %>%
-      dplyr::summarize(mixture = mixture,
-                       mean_RMSE = mean(RMSE, na.rm = TRUE),
-                       n = length(RMSE))
-  }
-
-  if (multi_cores == FALSE){
-  tuning_results <- map(results_nested_resampling$inner_resamples, summarize_tune_results)
-  } else {
-  # The multisession plan uses the local cores to process the inner resampling loop.
-  future::plan(multisession)
-  # The object tuning_results is a list of data frames for each of the OUTER resamples.
-  tuning_results <- furrr::future_map(results_nested_resampling$inner_resamples, summarize_tune_results)
-  }
-
-  # Function to get the lowest mean_RMSE
-  bestParameters <- function(dat) dat[which.min(dat$mean_RMSE),]
-
-  # Determine the best parameter estimate from each INNER sample to be used
-  # for each of the outer resampling iterations:
-  hyper_parameter_vals <-
-    tuning_results %>%
-    purrr::map_df(bestParameters) %>%
-    dplyr::select(c(penalty, mixture))
-
-  # Bind best results
-  results_split_parameter <-
-    dplyr::bind_cols(results_nested_resampling, hyper_parameter_vals)
-
-  # Compute the outer resampling results for each of the
-  # splits using the corresponding tuning parameter value from results_split_parameter.
-  # fit_model_rmse(results_split_parameter$splits[[1]])
-  results_outer <- purrr::pmap(list(object=results_nested_resampling$splits,
-                           results_split_parameter$penalty,
-                           results_split_parameter$mixture),
-                      fit_model_rmse)
-
-  # Separate RMSE, predictions and observed y
-  outputlist_results_outer <- results_outer %>%
-    dplyr::bind_rows() %>%
-    split.default(names(.)) %>%
-    purrr::map(na.omit)
-
-  # Unnest predictions and y
-  predy_y <- tibble::tibble(unnest(outputlist_results_outer$predictions, cols = c(predictions)),
-                           tidyr::unnest(outputlist_results_outer$y, cols = c(y)))
-
-  # Correlate predictions and observed
-  correlation <- stats::cor.test(predy_y$predictions, predy_y$y, method = method_cor)
-
-  # Construct final model to be saved and applied on other data
-  final_predictive_model <-
-    parsnip::linear_reg(penalty = mean(results_split_parameter$penalty), mixture = mean(results_split_parameter$mixture)) %>%
-    parsnip::set_engine("glmnet") %>%
-    parsnip::fit(y ~ ., data = xy)
-
-  # Describe model; adding user's-description + the name of the x and y
-  # model_description_detail <- c(model_description, paste(names(x)), paste(names(y)))
-  model_description_detail <- c(deparse(substitute(x)), deparse(substitute(y)), model_description)
-
-
-  final_results <- list(predy_y, final_predictive_model, model_description_detail, correlation)
-  final_results
-  names(final_results) <- c("predictions", "final_model", "model_description", "correlation")
-  final_results
-  }
+#x <- wordembeddings4_10$harmonytext
+#y <- Language_based_assessment_data_8_10$gender
 #
-wordembeddings <- wordembeddings4_10
-ratings_data <- Language_based_assessment_data_8_10
+#outside_folds = 10
+#outside_strata_y = "y"
+#inside_folds = 10
+#inside_strata_y = "y"
+#trees = 5
+#model_description = "Consider writing a description of your model here"
+#multi_cores = TRUE
 
 
-test_smal <- textTrainRegression(x = wordembeddings$harmonytext,
-          y = ratings_data$hilstotal,
-          outside_folds = 10,
-          outside_strata_y = "y",
-          inside_folds = 10,
-          inside_strata_y = "y",
-          preprocess_PCA_thresh = 0.95,
-          method_cor = "pearson",
-          model_description = "Consider writing a description here",
-          multi_cores = TRUE)
+# devtools::document()
+#' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
+#'
+#' @param x Word embeddings from textEmbed (or textLayerAggregation).
+#' @param y Numeric variable to predict.
+# @param outside_folds Number of folds for the outer folds.
+#' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
+# @param inside_folds Number of folds for the inner folds.
+#' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
+#' @param preprocess_PCA_thresh Pre-processing threshold for amount of variance to retain (default 0.95).
+#' @param method_cor Type of correlation used in evaluation (default "pearson";
+#' can set to "spearman" or "kendall").
+#' @param penalty hyper parameter that is tuned
+#' @param mixture hyper parameter that is tuned default = 0 (hence a pure ridge regression).
+#' @param model_description Text to describe your model (optional; good when sharing the model with others).
+#' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
+#' make the analyses considerably faster to run).
+#' @param mtry hyper parameter that may be tuned;  default:c(1, 20, 40),
+#' @param min_n hyper parameter that may be tuned; default: c(1, 20, 40)
+#' @param trees number of trees if it is a categorical variable.
+#' @param force_train_method default is "none", so if y is a factor random_forest is used, and if y is numeric ridge regression
+#' is used. This can be overridden using "regression" or "random_forest".
+#' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
+#' @examples
+#' wordembeddings <- wordembeddings4_10
+#' ratings_data <- Language_based_assessment_data_8_10
+#' results <- textTrain(wordembeddings$harmonytext,
+#'                      ratings_data$hilstotal,
+#'                      outside_strata_y = NULL, # since there are too few rows to stratify
+#'                      inside_strata_y = NULL,
+#'                      penalty = 1, # 1 due to computational constraints for the example context
+#'                      multi_cores = FALSE
+#' )
+#' @seealso see \code{\link{textTrainRegression}} \code{\link{textTrainLists}}
+#' \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+#' @export
+textTrain <- function(x,
+                      y,
+                      #outside_folds = 10,
+                      outside_strata_y = "y",
+                      #inside_folds = 10,
+                      inside_strata_y = "y",
+                      model_description = "Consider writing a description of your model here",
+                      multi_cores = TRUE,
+                      #Regression specific
+                      preprocess_PCA_thresh = 0.95,
+                      penalty = 10^seq(-16, 16),
+                      mixture = c(0),
+                      method_cor = "pearson",
+                      #Random Forest specific
+                      mtry = c(1, 5, 10, 15, 30, 40),
+                      min_n = c(1, 5, 10, 15, 30, 40),
+                      trees = 1000,
+                      force_train_method = "none"){
 
-# Is it better having only 2 outside folds (as default)?
-# should the number of PCA be based on number of participants; perhaps it is possible to find a functions for this?
+  if (is.numeric(y) == TRUE & force_train_method == "none") {
+    train_method = "regression"
+  } else if (force_train_method == "regression"){
+    train_method = "regression"
+  } else if (is.factor(y) == TRUE & force_train_method =="none"){
+    train_method = "random_forest"
+  } else if (force_train_method == "random_forest"){
+    train_method = "random_forest"
+  }
 
-# Trying with more data
-large_data_ex <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text_data_examples/solmini_no_na_raw_600_.rda")
-large_data_ex <- large_data_ex[, c(1, 6)]
+  if (train_method == "regression"){
+    repression_output <- textTrainRegression(x=x,
+                        y=y,
+                        #outside_folds = outside_folds,
+                        outside_strata_y = outside_strata_y,
+                        #inside_folds = inside_folds,
+                        inside_strata_y = inside_strata_y,
+                        preprocess_PCA_thresh = preprocess_PCA_thresh,
+                        penalty = penalty,
+                        mixture = mixture,
+                        method_cor = method_cor,
+                        model_description = model_description,
+                        multi_cores = multi_cores)
+    repression_output
 
-#large_data_ex_embeddings <- textEmbed(large_data_ex)
+  } else if (train_method == "random_forest"){
 
-T1 <- Sys.time()
-textTrainRegression(x = large_data_ex_embeddings$harmonywords,
-          y = large_data_ex$hilstotal,
-          outside_folds = 10,
-          outside_strata_y = "y",
-          inside_folds = 10,
-          inside_strata_y = "y",
-          preprocess_PCA_thresh = 0.95,
-          method_cor = "pearson",
-          model_description = "Consider writing a description here",
-          multi_cores = TRUE)
-T2 <- Sys.time()
-T2-T1
+   random_forest_output <-  textTrainRandomForest(x=x,
+                          y=y,
+                          #outside_folds = outside_folds,
+                          outside_strata_y = outside_strata_y,
+                          #inside_folds = inside_folds,
+                          inside_strata_y = inside_strata_y,
+                          trees = trees,
+                          mtry = mtry,
+                          min_n = min_n,
+                          model_description = model_description,
+                          multi_cores = multi_cores)
+   random_forest_output
+  }
 
+  }
 
-
-final_results[[2]]
-
-
-
-
-
-
-
-
-
-library(data.table)
+# library(data.table)
 # devtools::document()
 #' Individually trains word embeddings from several text variables to several numeric/categorical variables.
-#' @param x List of lists comprising several word embeddings from textEmbed.
-#' (NB need to remove any word embeddings from the decontextualized single words).
-#' @param y Tibble with numeric variables to predict.
-#' @param trainMethod Method to train word embeddings (default "regression"; see also "randomForest").
-#' @param nrFolds_k Number of folds to use.
-#' @param preProcessPCAthresh Pre-processing threshold for amount of variance to retain (default 0.95).
-#' @param strata_y Variable to stratify according (default y; can set to NULL).
-#' @param methodCor Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").
-#' @param trees Number of trees used in the random forest.
+#' @param x Word embeddings from textEmbed (or textLayerAggregation).
+#' @param y Numeric variable to predict.
+# @param outside_folds Number of folds for the outer folds.
+#' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
+# @param inside_folds Number of folds for the inner folds.
+#' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
+#' @param preprocess_PCA_thresh Pre-processing threshold for amount of variance to retain (default 0.95).
+#' @param method_cor Type of correlation used in evaluation (default "pearson";
+#' can set to "spearman" or "kendall").
+#' @param model_description Text to describe your model (optional; good when sharing the model with others).
+#' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
+#' make the analyses considerably faster to run).
+#' @param trees number of trees if it is a categorical variable.
+#' @param force_train_method default is "regression"; see also "random_forest".
 #' @param ... Arguments for the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples
 #' wordembeddings <- wordembeddings4_10[1:2]
 #' ratings_data <- Language_based_assessment_data_8_10[5:6]
-#' results <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
+#' results <- textTrainLists(wordembeddings,
+#' ratings_data,
+#' multi_cores = FALSE)
 #' @seealso see \code{\link{textTrain}}
 #' @importFrom stats cor.test
 #' @importFrom tibble as_tibble
@@ -277,22 +141,20 @@ library(data.table)
 #' @importFrom dplyr arrange
 #' @importFrom data.table %like%
 #' @export
-textTrainLists_new <- function(x,
+textTrainLists <- function(x,
                            y,
-                           trainMethod = "regression",
+                           force_train_method = "regression",
 
-                           outside_folds = 10,
+                           #outside_folds = 10,
                            outside_strata_y = "y",
-                           inside_folds = 10,
+                           #inside_folds = 10,
                            inside_strata_y = "y",
                            preprocess_PCA_thresh = 0.95,
                            method_cor = "pearson",
                            model_description = "Consider writing a description here",
                            multi_cores = TRUE,
-
-
-                           trees = 500, ...) {
-  #  , trees=500 method="regression"  method= "textTrainCVpredictions";  method= "textTrainCVpredictionsRF"
+                           trees = 500,
+                           ...) {
 
   # Get variable names in the list of outcomes.
   variables <- names(y)
@@ -306,19 +168,20 @@ textTrainLists_new <- function(x,
   # Creating descriptions of which variables are used in training, which is  added to the output.
   descriptions <- paste(rep(names(x), length(y)), "_", names(y1), sep = "")
 
-  if (trainMethod == "regression") {
-    # Using mapply to loop over the word embeddings and the outcome variables.
+  if (force_train_method == "regression") {
+    # Using mapply to loop over the word embeddings and the outcome variables. help(mapply)
     output <- mapply(textTrainRegression, x, y1,
                      SIMPLIFY = FALSE,
                      MoreArgs = list(
-                       outside_folds = outside_folds,
+                       #outside_folds = outside_folds,
                        outside_strata_y = outside_strata_y,
-                       inside_folds = inside_folds,
+                       #inside_folds = inside_folds,
                        inside_strata_y = inside_strata_y,
                        preprocess_PCA_thresh = preprocess_PCA_thresh,
                        method_cor = method_cor,
                        model_description = model_description,
-                       multi_cores = multi_cores, ...
+                       multi_cores = multi_cores,
+                       ...
                      )
     )
 
@@ -339,16 +202,24 @@ textTrainLists_new <- function(x,
     results <- list(output_predscore_reg, output_ordered_named)
     names(results) <- c("predictions", "results")
     results
-  } else if (trainMethod == "randomForest") { #
+  } else if (force_train_method == "random_forest") { #
+
+    #y2 <- list(y1[1], y1[2], y1[1], y1[2])
+    #y2 <- y1[2]
     # Apply textTrainRandomForest function between each list element and sort outcome.
     output <- mapply(textTrainRandomForest, x, y1,
                      SIMPLIFY = FALSE,
-                     MoreArgs = list(trees = trees, nrFolds_k = nrFolds_k, strata_y = strata_y)
+                     MoreArgs = list(trees = trees,
+                                     #outside_folds = outside_folds,
+                                     outside_strata_y = outside_strata_y,
+                                     #inside_folds = inside_folds,
+                                     inside_strata_y = inside_strata_y,
+                                     multi_cores = multi_cores)
     )
-    output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[1]][[1]])))
-    output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[2]][[1]])))
-    output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[3]][[1]])))
-    output_p_r <- tibble(output_chi, output_df, output_p)
+    output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[1]][[1]])))
+    output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[2]][[1]])))
+    output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[3]][[1]])))
+    output_p_r <- tibble::tibble(output_chi, output_df, output_p)
 
     # Add Outcomes and Descriptions together; name the columns; and remove the row names.
     output_ordered_named <- data.frame(cbind(descriptions, output_p_r))
@@ -369,24 +240,49 @@ textTrainLists_new <- function(x,
   }
 }
 
-wordembeddings_list <- wordembeddings4_10[1:2]
-ratings_data_list <- Language_based_assessment_data_8_10[5:6]
-#results <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
+# Regression
+#wordembeddings_list <- wordembeddings4_10[1:2]
+#ratings_data_list <- Language_based_assessment_data_8_10[5:6]
+##results <- textTrainLists(wordembeddings, ratings_data)
+#
+#list_restuls <- textTrainLists(x = wordembeddings_list,
+#                               y = ratings_data_list,
+#                               trainMethod = "regression",
+#
+#                               outside_folds = 10,
+#                               outside_strata_y = "y",
+#                               inside_folds = 10,
+#                               inside_strata_y = "y",
+#                               preprocess_PCA_thresh = 0.95,
+#                               method_cor = "pearson",
+#                               model_description = "Consider writing a description here",
+#                               multi_cores = TRUE,
+#
+#
+#                               trees = 500)
 
-list_restuls <- textTrainLists_new(x = wordembeddings_list,
-                               y = ratings_data_list,
-                               trainMethod = "regression",
-
-                               outside_folds = 10,
-                               outside_strata_y = "y",
-                               inside_folds = 10,
-                               inside_strata_y = "y",
-                               preprocess_PCA_thresh = 0.95,
-                               method_cor = "pearson",
-                               model_description = "Consider writing a description here",
-                               multi_cores = TRUE,
-
-
-                               trees = 500)
-
-
+# Random Forest
+##wordembeddings_list <- wordembeddings4_10[1:2]
+##ratings_data_list <- Language_based_assessment_data_8_10[8]
+##ratings_data_list2 <- ratings_data_list
+##colnames(ratings_data_list2) <-  "gender2"
+##ratings_data_list <- tibble::tibble(ratings_data_list, ratings_data_list2)
+##
+###results <- textTrainLists(wordembeddings, ratings_data)
+##
+##list_restuls <- textTrainLists(x = wordembeddings_list,
+##                               y = ratings_data_list,
+##                               trainMethod = "random_forest",
+##
+##                               outside_folds = 10,
+##                               outside_strata_y = "y",
+##                               inside_folds = 10,
+##                               inside_strata_y = "y",
+##                               preprocess_PCA_thresh = 0.95,
+##                               method_cor = "pearson",
+##                               model_description = "Consider writing a description here",
+##                               multi_cores = TRUE,
+##
+##
+##                               trees = 500)
+##list_restuls

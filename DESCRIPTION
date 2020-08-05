@@ -40,8 +40,11 @@ Imports:
     rsample,
     reticulate,
     tune,
-    workflows, 
-    crayon
+    workflows,
+    yardstick, 
+    crayon, 
+    future,
+    furrr
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,

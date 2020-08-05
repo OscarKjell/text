@@ -1,7 +1,8 @@
 # # TODO Possibility to set this one? It may be that no words comes within this
 # # TODO Possibility to set this one? It may be that no words comes within this textCentralitylot
 # Just want to learn why this: # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
-
+#pca=0.9
+#y=data$hilstotal
 
 #' Takes all words as input and arrange them in column with an accompanying column with frequency.
 #' @param x Words
@@ -50,10 +51,11 @@ unique_freq_words <- function(words) {
 #' wordembeddings <- wordembeddings4_10
 #' data <- Language_based_assessment_data_8_10
 #' # Pre-processing data for plotting
-#' df_for_plotting <- textProjectionData(data$harmonywords,
-#'   wordembeddings$harmonywords,
-#'   wordembeddings$singlewords_we,
-#'   data$hilstotal,
+#' df_for_plotting <- textProjectionData(
+#'   words = data$harmonywords,
+#'   wordembeddings = wordembeddings$harmonywords,
+#'   single_wordembeddings = wordembeddings$singlewords_we,
+#'   x = data$hilstotal,
 #'   split = "median",
 #'   Npermutations = 10,
 #'   n_per_split = 1
@@ -93,7 +95,7 @@ textProjectionData <- function(words,
       recipes::step_scale(recipes::all_numeric()) %>%
       recipes::step_naomit(Dim1, skip = TRUE)
 
-    if (pca < 1) {
+    if (pca < 1) { #pca=0.9
       pca_trans <- recipes::step_pca(pca_trans, recipes::all_numeric(), threshold = pca)
     } else if (pca >= 1) {
       pca_trans <- recipes::step_pca(pca_trans, recipes::all_numeric(), num_comp = pca)
@@ -117,17 +119,24 @@ textProjectionData <- function(words,
   # Creating a list for the x and y dimensions
   word_data_list <- list()
 
-  # For-loop for x and y input/dimensions; i.e., y if the plot has two dimensions (i_dim=1 i_dim=2)
+  # For-loop for x and y input/dimensions; i.e., y if the plot has two dimensions (i_dim=1 i_dim=2) remove(i_dim)
   for (i_dim in seq_len(ncol(x))) {
 
     # Get the word embeddings and scale/category for the plot dimension (i.e., x or y from above)
-    x1 <- tibble::tibble(words, x[i_dim])
+    x0 <- x[i_dim]
+    x1 <- cbind(words, x0)
     colnames(x1) <- c("words", "value")
     x2 <- tibble::as_tibble(cbind(x1, wordembeddings))
 
     # Splitting datasets up to low versus high according to median split
-    group1 <- x2[x2[2] < stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
-    group2 <- x2[x2[2] > stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
+    #group1 <- x2[x2[2] < stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
+    #group2 <- x2[x2[2] > stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
+
+    group1 <- x2 %>%
+      dplyr::filter(value < stats::median(purrr::as_vector(value), na.rm = TRUE))
+
+    group2 <- x2 %>%
+      dplyr::filter(value > stats::median(purrr::as_vector(value), na.rm = TRUE))
 
     # Use function addEqualNrNArows from 3_1_testSimilarity
     # Function adds rows of NA until group2 and group1 have the same amount of rows.
@@ -177,8 +186,13 @@ textProjectionData <- function(words,
       # Select according to lower and upper quartile
       q1 <- summary(x1$value)[2][[1]]
       q3 <- summary(x1$value)[5][[1]]
-      group1_agg <- x2[x2[2] < q1, ]
-      group2_agg <- x2[x2[2] > q3, ]
+      #group1_agg <- x2[x2[2] < q1, ]
+      #group2_agg <- x2[x2[2] > q3, ]
+      group1_agg <- x2 %>%
+        dplyr::filter(x2$value < q1, )
+
+      group2_agg <- x2 %>%
+        dplyr::filter(x2$value > q3, )
 
       words_group1_agg_freq <- unique_freq_words(group1_agg$words)
       words_group1_agg_freq1 <- words_group1_agg_freq[words_group1_agg_freq$n >= min_freq_words, ]
@@ -250,6 +264,7 @@ textProjectionData <- function(words,
     forloops <- ceiling(Npermutations / n_per_split)
     dot_null_distribution <- list()
 
+    # i=1
     for (i in 1:forloops) {
       ### Create new Projected embedding
       # Randomly split word embeddings into two groups: words_group1_2_agg_single_wordembedding_e1
@@ -312,7 +327,7 @@ textProjectionData <- function(words,
   } else {
     word_data_tibble <- dplyr::full_join(word_data_list[[1]], word_data_list[[2]], by = "words")
     word_data_tibble$n <- word_data_tibble$n.x
-    word_data_tibble <- select(word_data_tibble, -c(n.x, n.y))
+    word_data_tibble <- dplyr::select(word_data_tibble, -c(n.x, n.y))
     word_data_tibble$n.percent <- word_data_tibble$n / sum(word_data_tibble$n)
     word_data_tibble$N_participant_responses <- c(rep(N_participant_responses, nrow(word_data_tibble)))
   }

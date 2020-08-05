@@ -28,16 +28,21 @@ test_that("textProjectionData with QUARTILE, 0.9 PCA and 2-dimensions produces a
   # Data
   wordembeddings <- wordembeddings4_10
   data <- Language_based_assessment_data_8_10
+  harmonywords <- data$harmonywords[1:10]
+  harmonywordembeddings <- wordembeddings$harmonywords[1:10, ]
+  wordembeddingssinglewords_we <- wordembeddings$singlewords_we
+  hilstotal <- data$hilstotal[1:10]
+  swlstotal <- data$swlstotal[1:10]
   # Pre-processing data for plotting
-  df_for_plotting <- textProjectionData(data$harmonywords[1:10],
-    wordembeddings$harmonywords[1:10, ],
-    wordembeddings$singlewords_we,
-    data$hilstotal[1:10],
-    data$swlstotal[1:10],
-    split = "quartile",
-    Npermutations = 2,
-    n_per_split = 3,
-    pca = 0.9
+  df_for_plotting <- textProjectionData(harmonywords,
+                                        harmonywordembeddings,
+                                        wordembeddingssinglewords_we,
+                                        hilstotal,
+                                        swlstotal,
+                                        split = "quartile",
+                                        Npermutations = 2,
+                                        n_per_split = 3,
+                                        pca = 0.9
   )
   # df_for_plotting
 

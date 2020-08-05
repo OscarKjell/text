@@ -33,7 +33,7 @@ reference:
   contents:
     - textTrain
     - textTrainLists
-    - textTrainMultiTexts
+    - textTrainRegression
     - textTrainRandomForest
 - title: Analyse Semantic Similairties
   contents:

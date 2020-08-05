@@ -144,27 +144,26 @@ Plot words according to Dot Product Projections.
 
 # Dot Product Projection Plot
 plot_projection <- textProjectionPlot(
- word_data = DP_projections_HILS_SWLS_100,
- k_n_words_to_test = FALSE,
- min_freq_words = 1,
- plot_n_words_square = 3,
- plot_n_words_p = 3,
- plot_n_word_extreme = 1,
- plot_n_word_frequency = 1,
- plot_n_words_middle = 1,
- x_axes = TRUE,
- y_axes = FALSE,
- p_alpha = 0.05,
- title_top = " Dot Product Projection (DPP)",
- x_axes_label = "Low vs. High HILS score",
- y_axes_label = "Low vs. High SWLS score",
- p_adjust_method = "bonferroni",
- scale_y_axes_lim = NULL
+  word_data = DP_projections_HILS_SWLS_100,
+  k_n_words_to_test = FALSE,
+  min_freq_words = 1,
+  plot_n_words_square = 3,
+  plot_n_words_p = 3,
+  plot_n_word_extreme = 1,
+  plot_n_word_frequency = 1,
+  plot_n_words_middle = 1,
+  x_axes = TRUE,
+  y_axes = FALSE,
+  p_alpha = 0.05,
+  title_top = " Dot Product Projection (DPP)",
+  x_axes_label = "Low vs. High HILS score",
+  y_axes_label = "Low vs. High SWLS score",
+  p_adjust_method = "bonferroni",
+  scale_y_axes_lim = NULL
 )
 plot_projection
 
 names(DP_projections_HILS_SWLS_100)
-
 }
 \seealso{
 see \code{\link{textProjectionData}}

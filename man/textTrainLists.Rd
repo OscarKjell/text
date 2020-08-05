@@ -2,37 +2,44 @@
 % Please edit documentation in R/2_1_textTrain.R
 \name{textTrainLists}
 \alias{textTrainLists}
-\title{Individually trains word embeddings from several text variables to several numeric variables.}
+\title{Individually trains word embeddings from several text variables to several numeric/categorical variables.}
 \usage{
 textTrainLists(
   x,
   y,
-  trainMethod = "regression",
-  nrFolds_k = 10,
-  preProcessPCAthresh = 0.95,
-  strata_y = "y",
-  methodCor = "pearson",
+  force_train_method = "regression",
+  outside_strata_y = "y",
+  inside_strata_y = "y",
+  preprocess_PCA_thresh = 0.95,
+  method_cor = "pearson",
+  model_description = "Consider writing a description here",
+  multi_cores = TRUE,
   trees = 500,
   ...
 )
 }
 \arguments{
-\item{x}{List of lists comprising several word embeddings from textEmbed.
-(NB need to remove any word embeddings from the decontextualized single words).}
+\item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
 
-\item{y}{Tibble with numeric variables to predict.}
+\item{y}{Numeric variable to predict.}
 
-\item{trainMethod}{Method to train word embeddings (default "regression"; see also "randomForest").}
+\item{force_train_method}{default is "regression"; see also "random_forest".}
 
-\item{nrFolds_k}{Number of folds to use.}
+\item{outside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{preProcessPCAthresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
+\item{inside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{strata_y}{Variable to stratify according (default y; can set to NULL).}
+\item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
 
-\item{methodCor}{Type of correlation used in evaluation (default "pearson"; can set to "spearman" or "kendall").}
+\item{method_cor}{Type of correlation used in evaluation (default "pearson";
+can set to "spearman" or "kendall").}
 
-\item{trees}{Number of trees used in the random forest.}
+\item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
+
+\item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
+make the analyses considerably faster to run).}
+
+\item{trees}{number of trees if it is a categorical variable.}
 
 \item{...}{Arguments for the textTrain function.}
 }
@@ -40,12 +47,14 @@ textTrainLists(
 Correlations between predicted and observed values.
 }
 \description{
-Individually trains word embeddings from several text variables to several numeric variables.
+Individually trains word embeddings from several text variables to several numeric/categorical variables.
 }
 \examples{
 wordembeddings <- wordembeddings4_10[1:2]
 ratings_data <- Language_based_assessment_data_8_10[5:6]
-results <- textTrainLists(wordembeddings, ratings_data, nrFolds_k = 2)
+results <- textTrainLists(wordembeddings,
+ratings_data,
+multi_cores = FALSE)
 }
 \seealso{
 see \code{\link{textTrain}}

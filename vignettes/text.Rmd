@@ -51,7 +51,7 @@ library(text)
 library(rio)
 # Load data that has already gone through textEmbed
 # The previous example only imported 10 participants; 
-#whereas below we load data from 100 participants
+# whereas below we load data from 100 participants
 wordembeddings <- rio::import("https://r-text.org/text_data_examples/wordembeddings4_100.rda")
 # Load corresponding numeric variables
 numeric_data <-   rio::import("https://r-text.org/text_data_examples/Language_based_assessment_data_8_100.rda")
@@ -59,7 +59,7 @@ numeric_data <-   rio::import("https://r-text.org/text_data_examples/Language_ba
 # Examine the relationship between harmonytext and the corresponding rating scale
 model_htext_hils <- textTrain(wordembeddings$harmonytexts, 
                               numeric_data$hilstotal, 
-                              nrFolds_k = 10)
+                              penalty = 1)
 
 # Examine the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$correlation

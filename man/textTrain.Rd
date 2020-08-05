@@ -2,16 +2,23 @@
 % Please edit documentation in R/2_1_textTrain.R
 \name{textTrain}
 \alias{textTrain}
-\title{Train word embeddings to a numeric variable.}
+\title{Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.}
 \usage{
 textTrain(
   x,
   y,
-  nrFolds_k = 10,
-  preProcessPCAthresh = 0.95,
-  strata_y = "y",
-  methodCor = "pearson",
-  model_description = "Consider writing a description here"
+  outside_strata_y = "y",
+  inside_strata_y = "y",
+  model_description = "Consider writing a description of your model here",
+  multi_cores = TRUE,
+  preprocess_PCA_thresh = 0.95,
+  penalty = 10^seq(-16, 16),
+  mixture = c(0),
+  method_cor = "pearson",
+  mtry = c(1, 5, 10, 15, 30, 40),
+  min_n = c(1, 5, 10, 15, 30, 40),
+  trees = 1000,
+  force_train_method = "none"
 )
 }
 \arguments{
@@ -19,31 +26,51 @@ textTrain(
 
 \item{y}{Numeric variable to predict.}
 
-\item{nrFolds_k}{Number of folds to use.}
+\item{outside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{preProcessPCAthresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
-
-\item{strata_y}{Variable to stratify according (default y; can set to NULL).}
-
-\item{methodCor}{Type of correlation used in evaluation (default "pearson";
-can set to "spearman" or "kendall").}
+\item{inside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
 \item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
+
+\item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
+make the analyses considerably faster to run).}
+
+\item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
+
+\item{penalty}{hyper parameter that is tuned}
+
+\item{mixture}{hyper parameter that is tuned default = 0 (hence a pure ridge regression).}
+
+\item{method_cor}{Type of correlation used in evaluation (default "pearson";
+can set to "spearman" or "kendall").}
+
+\item{mtry}{hyper parameter that may be tuned;  default:c(1, 20, 40),}
+
+\item{min_n}{hyper parameter that may be tuned; default: c(1, 20, 40)}
+
+\item{trees}{number of trees if it is a categorical variable.}
+
+\item{force_train_method}{default is "none", so if y is a factor random_forest is used, and if y is numeric ridge regression
+is used. This can be overridden using "regression" or "random_forest".}
 }
 \value{
 A correlation between predicted and observed values; as well as a tibble of predicted values.
 }
 \description{
-Train word embeddings to a numeric variable.
+Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 }
 \examples{
 wordembeddings <- wordembeddings4_10
 ratings_data <- Language_based_assessment_data_8_10
-results <- textTrain(wordembeddings$harmonytext, ratings_data$hilstotal,
-  nrFolds_k = 2, strata_y = NULL
+results <- textTrain(wordembeddings$harmonytext,
+                     ratings_data$hilstotal,
+                     outside_strata_y = NULL, # since there are too few rows to stratify
+                     inside_strata_y = NULL,
+                     penalty = 1, # 1 due to computational constraints for the example context
+                     multi_cores = FALSE
 )
 }
 \seealso{
-see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
-\code{\link{textTrainMultiTexts}} \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+see \code{\link{textTrainRegression}} \code{\link{textTrainLists}}
+\code{\link{textTrainRandomForest}} \code{\link{textDiff}}
 }
