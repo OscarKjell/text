@@ -25,7 +25,7 @@ select_character_v_utf8 <- function(x) {
 #' minimum, maximum or mean across each column; or "concatenate", which linkes together each word embedding layer
 #' to one long row.
 #' @return aggregated word embeddings.
-#' @importFrom stats complete.cases
+#' @importFrom tibble as_tibble_row
 #' @noRd
 textEmbeddingAggregation <- function(x, aggregation = "min") {
   if (aggregation == "min") {
@@ -35,7 +35,7 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
   } else if (aggregation == "mean") {
     mean_vector <- colMeans(x, na.rm = TRUE)
   } else if (aggregation == "concatenate") {
-    long_vector <- c(t(x)) %>% as_tibble_row(.name_repair = "minimal")
+    long_vector <- c(t(x)) %>% tibble::as_tibble_row(.name_repair = "minimal")
     colnames(long_vector) <- paste0("Dim", sep = "", seq_len(length(long_vector)))
     long_vector
   }
@@ -521,12 +521,14 @@ textEmbed <- function(x,
                       model_class = NULL,
                       contexts = TRUE,
                       context_layers = 11:12,
-                      context_aggregation = "mean",
+                      context_aggregation_layers = "concatenate",
+                      context_aggregation_tokens = "mean",
                       context_tokens_select = NULL,
                       context_tokens_deselect = NULL,
                       decontexts = TRUE,
                       decontext_layers = 11:12,
-                      decontext_aggregation = "mean",
+                      decontext_aggregation_layers = "concatenate",
+                      decontext_aggregation_tokens = "mean",
                       decontext_tokens_select = NULL,
                       decontext_tokens_deselect = NULL) {
 
@@ -548,8 +550,8 @@ textEmbed <- function(x,
   contextualised_embeddings <- textLayerAggregation(
     word_embeddings_layers = all_wanted_layers$context,
     layers = context_layers,
-    aggregation = context_aggregation,
-    tokens_select = NULL,
+    aggregate_layers = context_aggregation_layers,
+    aggregate_tokens = context_aggregation_tokens,
     tokens_deselect = NULL
   )
 
@@ -557,7 +559,8 @@ textEmbed <- function(x,
   decontextualised_embeddings <- textLayerAggregation(
     word_embeddings_layers = all_wanted_layers$decontext$single_we,
     layers = decontext_layers,
-    aggregation = decontext_aggregation,
+    aggregate_layers = decontext_aggregation_layers,
+    aggregate_tokens = decontext_aggregation_tokens,
     tokens_select = decontext_tokens_select,
     tokens_deselect = decontext_tokens_deselect
   )

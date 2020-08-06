@@ -47,7 +47,7 @@
 #' multi_cores = FALSE #this is FALSE due to CRAN testing.
 #' )
 #' @seealso see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainMultiTexts}} \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+#' \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
 #' @importFrom stats cor.test na.omit
 #' @importFrom dplyr select starts_with filter
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
