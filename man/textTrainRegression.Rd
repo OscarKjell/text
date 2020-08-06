@@ -59,5 +59,5 @@ multi_cores = FALSE #this is FALSE due to CRAN testing.
 }
 \seealso{
 see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
-\code{\link{textTrainMultiTexts}} \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+\code{\link{textTrainRandomForest}} \code{\link{textDiff}}
 }

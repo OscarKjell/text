@@ -487,7 +487,10 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' Default = NULL. for details see https://huggingface.co/.
 #' @param context_layers Specify the layers that should be aggregated (default 11:12).
 #' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised not to be used.
-#' @param context_aggregation Method to aggregate the contextualized layers (e.g., "mean", "min" or "max, which takes the
+#' @param context_aggregation_layers Method to aggregate the contextualized layers (e.g., "mean", "min" or "max, which takes the
+#' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
+#' to one long row.
+#'@param context_aggregation_tokens Method to aggregate the contextualized tokens (e.g., "mean", "min" or "max, which takes the
 #' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
 #' to one long row.
 #' @param context_tokens_select Option to select word embeddings linked to specific tokens
@@ -495,8 +498,12 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' @param context_tokens_deselect Option to deselect embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the context embeddings.
 #' @param decontext_layers Layers to aggregate for the decontext embeddings.
-#' @param decontext_aggregation Method to aggregate the decontextualized layers
-#' (i.e., embeddings from single words; e.g., "mean", "min", "max or "concatenate", see description above on context_aggregation).
+#' @param decontext_aggregation_layers Method to aggregate the decontextualized layers (e.g., "mean", "min" or "max, which takes the
+#' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
+#' to one long row.
+#' @param decontext_aggregation_tokens Method to aggregate the decontextualized tokens (e.g., "mean", "min" or "max, which takes the
+#' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
+#' to one long row.
 #' @param decontext_tokens_select Option to select embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the decontext embeddings.
 #' @param decontext_tokens_deselect option to deselect embeddings linked to specific tokens

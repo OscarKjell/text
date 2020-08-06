@@ -29,7 +29,7 @@
 #'                                  multi_cores = FALSE # This is FALSE due to CRAN testing.
 #' )
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textDiff}}
-#' @importFrom stats cor.test na.omit chisq.test fisher.test
+#' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
 #' @importFrom dplyr select starts_with filter arrange rename
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca
 #' @importFrom rsample vfold_cv
@@ -60,7 +60,7 @@ textTrainRandomForest <- function(x,
   xy$id1 <- c(seq_len(nrow(xy)))
   xy_formergingNA <- tibble::tibble(xy$id1, xy$y)
   colnames(xy_formergingNA) <- c("id1", "y")
-  xy1 <- tibble::as_tibble(xy[complete.cases(xy), ])
+  xy1 <- tibble::as_tibble(xy[stats::complete.cases(xy), ])
 
   results_nested_resampling <- rsample::nested_cv(xy1,
                                                   outside = rsample::vfold_cv(v = 5, #outside_folds,

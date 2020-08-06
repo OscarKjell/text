@@ -13,12 +13,14 @@ textEmbed(
   model_class = NULL,
   contexts = TRUE,
   context_layers = 11:12,
-  context_aggregation = "mean",
+  context_aggregation_layers = "concatenate",
+  context_aggregation_tokens = "mean",
   context_tokens_select = NULL,
   context_tokens_deselect = NULL,
   decontexts = TRUE,
   decontext_layers = 11:12,
-  decontext_aggregation = "mean",
+  decontext_aggregation_layers = "concatenate",
+  decontext_aggregation_tokens = "mean",
   decontext_tokens_select = NULL,
   decontext_tokens_deselect = NULL
 )
@@ -53,7 +55,11 @@ Default = NULL. for details see https://huggingface.co/.}
 \item{context_layers}{Specify the layers that should be aggregated (default 11:12).
 Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised not to be used.}
 
-\item{context_aggregation}{Method to aggregate the contextualized layers (e.g., "mean", "min" or "max, which takes the
+\item{context_aggregation_layers}{Method to aggregate the contextualized layers (e.g., "mean", "min" or "max, which takes the
+minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
+to one long row.}
+
+\item{context_aggregation_tokens}{Method to aggregate the contextualized tokens (e.g., "mean", "min" or "max, which takes the
 minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
 to one long row.}
 
@@ -68,8 +74,13 @@ such as [CLS] and [SEP] for the context embeddings.}
 
 \item{decontext_layers}{Layers to aggregate for the decontext embeddings.}
 
-\item{decontext_aggregation}{Method to aggregate the decontextualized layers
-(i.e., embeddings from single words; e.g., "mean", "min", "max or "concatenate", see description above on context_aggregation).}
+\item{decontext_aggregation_layers}{Method to aggregate the decontextualized layers (e.g., "mean", "min" or "max, which takes the
+minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
+to one long row.}
+
+\item{decontext_aggregation_tokens}{Method to aggregate the decontextualized tokens (e.g., "mean", "min" or "max, which takes the
+minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
+to one long row.}
 
 \item{decontext_tokens_select}{Option to select embeddings linked to specific tokens
 such as [CLS] and [SEP] for the decontext embeddings.}

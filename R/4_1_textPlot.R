@@ -66,7 +66,7 @@ unique_freq_words <- function(words) {
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake
 #' @importFrom tidyr uncount
 #' @importFrom dplyr full_join rename starts_with
-#' @importFrom stats median sd setNames
+#' @importFrom stats median sd setNames complete.cases
 #' @importFrom purrr as_vector
 #' @export
 textProjectionData <- function(words,
@@ -293,7 +293,7 @@ textProjectionData <- function(words,
     dot_null_distribution <- tibble::as_tibble(unlist(dot_null_distribution))
 
     ### Compare observed dot-product with null
-    dot_null_distribution <- dot_null_distribution[complete.cases(dot_null_distribution), ]
+    dot_null_distribution <- dot_null_distribution[stats::complete.cases(dot_null_distribution), ]
     p_values_dot_prod <- purrr::map(as.list(purrr::as_vector(dot_products_observed)), p_value_comparing_with_Null,
       dot_null_distribution,
       Npermutations = Npermutations, alternative = "two_sided"

@@ -85,6 +85,34 @@ test_that("textLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces agg
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 })
 
+
+
+
+
+test_that("textStaticEmbed with example space", {
+
+  # Create example space
+  words <- c("happy", "joy", "smile")
+  Dim1 <- c(0.1, 4, 7)
+  Dim2 <- c(2, 5, 8)
+  Dim3 <- c(3, 6, 9)
+  test_space <- tibble(words, Dim1, Dim2, Dim3)
+  test_space
+  # Create example data
+  word_response <- c("happy", "joy smile")
+  rating_response <- c(25, 30)
+  tibble_response <- tibble(word_response, rating_response)
+  tibble_response
+  #Test function
+  test_result <- textStaticEmbed(df=tibble_response, space=test_space, tk_df = "null", aggregate = "mean")
+
+
+  expect_is(test_result$word_response[[1]][1], "numeric")
+  expect_is(test_result, "list")
+})
+
+
+
 # Potentially below works on GitHUB but not on Mac?
 
 #test_that("textHuggingFace contexts=TRUE, decontexts = FALSE returns a list", {
