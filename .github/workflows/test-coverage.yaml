@@ -27,7 +27,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r@master
         with:
-          version: r-version
+          r-version: 4.0.1
 
       - uses: r-lib/actions/setup-pandoc@master
 
