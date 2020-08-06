@@ -6,8 +6,9 @@
 \usage{
 textLayerAggregation(
   word_embeddings_layers,
-  layers = 1:12,
-  aggregation = "mean",
+  layers = 11:12,
+  aggregate_layers = "concatenate",
+  aggregate_tokens = "mean",
   tokens_select = NULL,
   tokens_deselect = NULL
 )
@@ -20,9 +21,13 @@ textLayerAggregation(
 Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 Selecting 'all' thus removes layer 0.}
 
-\item{aggregation}{Method to carry out the aggregation, including "min", "max" and "mean" which takes the
-minimum, maximum or mean across each column; or "concatenate", which links together each layer of the word embedding
-to one long row.}
+\item{aggregate_layers}{Method to carry out the aggregation among the layers for each word/token,
+including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+or "concatenate", which links together each layer of the word embedding to one long row. Default is "concatenate"}
+
+\item{aggregate_tokens}{Method to carry out the aggregation among the word embeddings for the words/tokens,
+including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+or "concatenate", which links together each layer of the word embedding to one long row.}
 
 \item{tokens_select}{Option to only select embeddings linked to specific tokens
 such as "[CLS]" and "[SEP]" (default NULL).}
