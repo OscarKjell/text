@@ -26,7 +26,8 @@ jobs:
           python-version: 3.6
 
       - uses: r-lib/actions/setup-r@master
-        version: release
+        with:
+          version: release
 
       - uses: r-lib/actions/setup-pandoc@master
 
