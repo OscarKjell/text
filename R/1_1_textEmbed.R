@@ -35,7 +35,7 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
   } else if (aggregation == "mean") {
     mean_vector <- colMeans(x, na.rm = TRUE)
   } else if (aggregation == "concatenate") {
-    long_vector <- c(t(x))
+    long_vector <- c(t(x)) %>% as_tibble_row(.name_repair = "minimal")
     colnames(long_vector) <- paste0("Dim", sep = "", seq_len(length(long_vector)))
     long_vector
   }
@@ -122,18 +122,21 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
   }
 
   # Tidy-structure tokens and embeddings
-  # Loop over the cases in the variable
+  # Loop over the cases in the variable; i_in_variable = 1
   variable_x <- list()
   for (i_in_variable in 1:participants) {
     if (return_tokens) {
       tokens <- x[[2]][[i_in_variable]]
+      token_id <- seq_len(length(tokens))
       all_layers <- x[[1]][[i_in_variable]]
     } else {
       tokens <- NULL
       all_layers <- x[[i_in_variable]]
+      # Count number of embeddings within one layer
+      token_id <- seq_len(length(all_layers[[1]][[1]]))
     }
 
-    # Loop of the number of layers
+    # Loop of the number of layers; i_layers=1
     layers_list <- list()
     for (i_layers in seq_len(length(all_layers))) {
       i_layers_for_tokens <- all_layers[i_layers]
@@ -144,13 +147,13 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
       layers_4_token <- tibble::as_tibble(layers_4_token)
 
       if (return_tokens) {
-        tokens_layer_number <- tibble::tibble(tokens, rep(layers[i_layers], length(tokens)))
-        colnames(tokens_layer_number) <- c("tokens", "layer_number")
-        tokens_lnumber_layers <- bind_cols(tokens_layer_number, layers_4_token)
+        tokens_layer_number <- tibble::tibble(tokens, token_id, rep(layers[i_layers], length(tokens)))
+        colnames(tokens_layer_number) <- c("tokens", "token_id", "layer_number")
+        tokens_lnumber_layers <- dplyr::bind_cols(tokens_layer_number, layers_4_token)
       } else {
-        layer_number <- tibble::tibble(rep(layers[i_layers], nrow(layers_4_token)))
-        colnames(layer_number) <- c("layer_number")
-        tokens_lnumber_layers <- bind_cols(layer_number, layers_4_token)
+        layer_number <- tibble::tibble(token_id, rep(layers[i_layers], nrow(layers_4_token)))
+        colnames(layer_number) <- c( "token_id", "layer_number")
+        tokens_lnumber_layers <- dplyr::bind_cols(layer_number, layers_4_token)
       }
 
       layers_list[[i_layers]] <- tokens_lnumber_layers
@@ -161,6 +164,27 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
     variable_x[[i_in_variable]] <- layers_tibble
   }
   variable_x
+}
+
+#' This is a function that uses the textAggregation to aggreagate the layers
+#' @param x list of layers.
+#' @param aggregation method to aggregate the layers.
+#' @return Aggregated layers in tidy tibble format.
+#' @noRd
+layer_aggregation_helper <- function(x, aggregation=aggregation){
+  aggregated_layers_saved <- list()
+  # Loops over the number of tokens
+  for(i_token_id in seq_len(length(unique(x$token_id)))){
+    # Selects all the layers for each token/token_id
+    x1 <- x[x$token_id==i_token_id,]
+    # Select only Dimensions
+    x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
+    # Aggregate the dimensions
+    x3 <- textEmbeddingAggregation(x2, aggregation = aggregation)
+    aggregated_layers_saved[[i_token_id]] <- x3
+  }
+  aggregated_layers_saved1 <- dplyr::bind_rows(aggregated_layers_saved)
+  return(aggregated_layers_saved1)
 }
 
 #' grep_col_by_name_in_list
@@ -203,7 +227,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @examples
 #' \dontrun{
 #' x <- Language_based_assessment_data_8_10[1:2, 1:2]
-#' wordembeddings <- textHuggingFace(x, layers = "all")
+#' word_embeddings_with_layers <- textHuggingFace(x, layers = 11:12)
 #' }
 #' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python
@@ -295,7 +319,7 @@ textHuggingFace <- function(x,
     x <- data_character_variables
     sorted_layers_ALL_variables <- list()
     sorted_layers_ALL_variables$context <- list()
-    # Loop over all character variables
+    # Loop over all character variables; i_variables = 1
     for (i_variables in seq_len(length(data_character_variables))) {
 
       # Python file function to HuggingFace
@@ -311,7 +335,7 @@ textHuggingFace <- function(x,
       variable_x <- sortingLayers(x = hg_embeddings, layers = layers, return_tokens = return_tokens)
 
       sorted_layers_ALL_variables$context[[i_variables]] <- variable_x
-      names(sorted_layers_ALL_variables$context)[[i_variables]] <- names(x)[i_variables]
+      names(sorted_layers_ALL_variables$context)[[i_variables]] <- names(x)[[i_variables]]
       sorted_layers_ALL_variables
     }
   }
@@ -357,15 +381,20 @@ textHuggingFace <- function(x,
   word_embeddings_with_layers
 }
 
+# word_embeddings_layers <- word_embeddings_with_layers$context$harmonywords
+
 #' Select and aggregate layers of hidden states to form a word embeddings.
 #' @param word_embeddings_layers Layers outputted from textHuggingFace.
 #' @param layers The numbers of the layers to be aggregated
 #' (e.g., c(11:12) to aggregate the eleventh and twelfth).
 #' Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 #' Selecting 'all' thus removes layer 0.
-#' @param aggregation Method to carry out the aggregation, including "min", "max" and "mean" which takes the
-#' minimum, maximum or mean across each column; or "concatenate", which links together each layer of the word embedding
-#' to one long row.
+#' @param aggregate_layers Method to carry out the aggregation among the layers for each word/token,
+#' including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+#' or "concatenate", which links together each layer of the word embedding to one long row. Default is "concatenate"
+#' @param aggregate_tokens Method to carry out the aggregation among the word embeddings for the words/tokens,
+#' including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+#' or "concatenate", which links together each layer of the word embedding to one long row.
 #' @param tokens_select Option to only select embeddings linked to specific tokens
 #' such as "[CLS]" and "[SEP]" (default NULL).
 #' @param tokens_deselect Option to deselect embeddings linked to specific tokens
@@ -380,8 +409,9 @@ textHuggingFace <- function(x,
 #' @importFrom dplyr %>% bind_rows
 #' @export
 textLayerAggregation <- function(word_embeddings_layers,
-                                 layers = 1:12,
-                                 aggregation = "mean",
+                                 layers = 11:12,
+                                 aggregate_layers = "concatenate",
+                                 aggregate_tokens = "mean",
                                  tokens_select = NULL,
                                  tokens_deselect = NULL) {
 
@@ -398,12 +428,12 @@ textLayerAggregation <- function(word_embeddings_layers,
     layers
   }
 
-  # Loop over the list of variables
+  # Loop over the list of variables; variable_list_i = 1; variable_list_i = 2; remove(variable_list_i)
   selected_layers_aggregated_tibble <- list()
   for (variable_list_i in seq_len(length(word_embeddings_layers))) {
     x <- word_embeddings_layers[[variable_list_i]]
 
-    # Go over the lists and select the layers
+    # Go over the lists and select the layers; [[1]] ok to add below x=
     selected_layers <- lapply(x, function(x) x[x$layer_number %in% layers, ])
 
     # Go over the lists and select the tokens (e.g., CLS) (tokens_select = NULL tokens_select = "[CLS]")
@@ -416,14 +446,18 @@ textLayerAggregation <- function(word_embeddings_layers,
       selected_layers <- lapply(selected_layers, function(x) x[!x$tokens %in% tokens_deselect, ])
     }
 
+    ## Aggregate across layers; help(lapply); i_token_id=1
+    selected_layers_aggregated <- lapply(selected_layers, layer_aggregation_helper, aggregation = aggregate_layers)
+
+    ## Aggregate across words/tokens
     # Select only dimensions (i.e., remove tokens and layer_number)
-    selected_layers <- lapply(selected_layers, function(x) dplyr::select(x, dplyr::starts_with("Dim")))
+    #selected_layers <- lapply(selected_layers, function(x) dplyr::select(x, dplyr::starts_with("Dim")))
 
     # Aggregate (Remove all tokens and layers; but create a cell with the information abt layers, aggregation)
-    selected_layers_aggregated <- lapply(selected_layers, textEmbeddingAggregation, aggregation = aggregation)
+    selected_layers_tokens_aggregated <- lapply(selected_layers_aggregated, textEmbeddingAggregation, aggregation = aggregate_tokens)
 
     # Sort output
-    selected_layers_aggregated_tibble[[variable_list_i]] <- dplyr::bind_rows(selected_layers_aggregated)
+    selected_layers_aggregated_tibble[[variable_list_i]] <- dplyr::bind_rows(selected_layers_tokens_aggregated)
   }
   names(selected_layers_aggregated_tibble) <- names(word_embeddings_layers)
   selected_layers_aggregated_tibble

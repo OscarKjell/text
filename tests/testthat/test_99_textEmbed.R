@@ -19,30 +19,41 @@ skip_if_no_torch <- function() {
   }
 }
 
-test_that("textLayerAggregation 'all' 'mean' produces aggregated word embeddings", {
+test_that("textLayerAggregation 'all': layer =   aggregate_tokens = 'mean' produces aggregated word embeddings", {
 
   # skip_on_cran()
   aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
-    layers = "all",
-    aggregation = "mean"
+    layers = 0:1,
+    aggregate_layers = "mean",
+    aggregate_tokens = "mean"
   )
 
   expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
+  length_dims_mean <- length(aggregated_embeddings[[1]])
+
+  aggregated_embeddings_con <- textLayerAggregation(embeddings_from_huggingface2$context,
+                                                layers = 0:1,
+                                                aggregate_layers = "concatenate",
+                                                aggregate_tokens = "mean"
+  )
+  length_dims_con <- length(aggregated_embeddings_con[[1]])
+
+  expect_true(2*length_dims_mean == length_dims_con)
+
 })
 
-
-test_that("textLayerAggregation concatenate produces long/aggregated word embeddings", {
+#test_that("textLayerAggregation concatenate produces long/aggregated word embeddings", {
 
   # skip_on_cran()
-  aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
-                                                layers = "all",
-                                                aggregation = "concatenate"
-  )
-
-  expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")
-  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
-})
+#  aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
+#                                                layers = c(1:2),
+#                                                aggregate_tokens = "concatenate"
+#  )
+#  aggregated_embeddings
+#  expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")
+#  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
+#})
 
 
 
@@ -52,7 +63,8 @@ test_that("textLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggre
   # skip_on_cran()
   aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
     layers = 1:2,
-    aggregation = "min",
+    aggregate_layers = "concatenate",
+    aggregate_tokens = "min",
     tokens_select = "[CLS]"
   )
 
@@ -65,7 +77,7 @@ test_that("textLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces agg
   # skip_on_cran()
   aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
     layers = 1:2,
-    aggregation = "max",
+    aggregate_tokens = "max",
     tokens_deselect = "[CLS]"
   )
 
