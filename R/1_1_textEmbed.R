@@ -18,6 +18,7 @@ select_character_v_utf8 <- function(x) {
   x_characters <- tibble::as_tibble(purrr::map(x_characters, stringi::stri_encode, "", "UTF-8"))
 }
 
+
 #' Function to take min, max, mean or the CLS
 #' (which comes from BERT models; not Static spaces) from list of vectors
 #' @param x word embeddings to be aggregated

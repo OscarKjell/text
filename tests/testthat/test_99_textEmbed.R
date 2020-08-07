@@ -99,20 +99,20 @@ test_that("textStaticEmbed with example space", {
   test_space <- tibble(words, Dim1, Dim2, Dim3)
   test_space
   # Create example data
-  word_response <- c("happy", "joy smile")
-  rating_response <- c(25, 30)
+  word_response <- c("happy", "joy smile", "adfae", NA, "")
+  rating_response <- c(25, 30, 30, 2, 10)
   tibble_response <- tibble(word_response, rating_response)
   tibble_response
   #Test function
   test_result <- textStaticEmbed(df=tibble_response, space=test_space, tk_df = "null", aggregate = "mean")
+  test_result
 
-
-  expect_is(test_result$word_response[[1]][1], "numeric")
+  expect_is(test_result$word_response[[1]][[1]], "numeric")
   expect_is(test_result, "list")
 })
 
 
-
+lifecycle::last_warnings()
 # Potentially below works on GitHUB but not on Mac?
 
 #test_that("textHuggingFace contexts=TRUE, decontexts = FALSE returns a list", {
