@@ -42,63 +42,61 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
   }
 }
 
-#' applysemrep
-#' Function to apply the semantic representation (or word embeddings)  to ONE word from
-#' a matrix of semreps; and return a vector with NA if word is not found.
-#' That is, look up word embeddings for each word.
-#' @param x A word.
-#' @param single_wordembeddings Used to get number of dimensions in embedding/space
-#' @return semantic representation (word embedding) from a matrix.
-#' @noRd
-applysemrep <- function(x, single_wordembeddings1) {
-  # If semrep is found get it; if not return NA vector of dimensions
-  if (sum(single_wordembeddings1$words == x[TRUE]) %in% 1) {
-    x <- tolower(x)
-    # Get the semantic representation for a word=x
-    word1rep <- single_wordembeddings1[single_wordembeddings1$words == x, ]
-    # Only get the semantic representation as a vector without the actual word in the first column
-    wordrep <- purrr::as_vector(word1rep %>% dplyr::select(dplyr::starts_with("Dim")))
-    # If the word does not have a semrep return a vector with NAs with the same number of dimensions as columns with Dim
-  } else if (x %in% NA) {
-    # The length() refers to how many column starts with Dim (i.e., how many dimensions)
-    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>%
-      dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
+# applysemrep
+# Function to apply the semantic representation (or word embeddings)  to ONE word from
+# a matrix of semreps; and return a vector with NA if word is not found.
+# That is, look up word embeddings for each word.
+# @param x A word.
+# @param single_wordembeddings Used to get number of dimensions in embedding/space
+# @return semantic representation (word embedding) from a matrix.
+# @noRd
+#applysemrep <- function(x, single_wordembeddings1) {
+#  # If semrep is found get it; if not return NA vector of dimensions
+#  if (sum(single_wordembeddings1$words == x[TRUE]) %in% 1) {
+#    x <- tolower(x)
+#    # Get the semantic representation for a word=x
+#    word1rep <- single_wordembeddings1[single_wordembeddings1$words == x, ]
+#    # Only get the semantic representation as a vector without the actual word in the first column
+#    wordrep <- purrr::as_vector(word1rep %>% dplyr::select(dplyr::starts_with("Dim")))
+#    # If the word does not have a semrep return a vector with NAs with the same number of dimensions as columns with Dim
+#  } else if (x %in% NA) {
+#    # The length() refers to how many column starts with Dim (i.e., how many dimensions)
+#    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>%
+#      dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
+#
+#    wordrep <- as.numeric(wordrep)
+#  } else {
+#    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>%
+#      dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
+#    colnames(wordrep) <- paste0("Dim", sep = "", seq_len(length(wordrep)))
+#    wordrep
+#  }
+#}
+#
 
-    wordrep <- as.numeric(wordrep)
-  } else {
-    wordrep <- data.frame(matrix(ncol = length(single_wordembeddings1 %>%
-      dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
-    colnames(wordrep) <- paste0("Dim", sep = "", seq_len(length(wordrep)))
-    wordrep
-  }
-}
-
+# devtools::document()
 #' getUniqueWordsAndFreq
 #' Function unites several text variables and rows to one,
 #' where all text is transformed to lowercase and tokenized.
 #' Also give word frequencies.
-#' @param x A word
-#' @return dataframe with unique words and their frequency.
+#' @param x_characters A character column in a tibble.
+#' @return A tibble with a unique words column and a column with their respective frequency.
 #' @noRd
 getUniqueWordsAndFreq <- function(x_characters) {
   # Unite all text variables into one
   x_characters2 <- tidyr::unite(x_characters, "x_characters2", seq_len(ncol(x_characters)), sep = " ")
   # unite all rows in the column into one cell
-  x_characters3 <- paste(x_characters2[1], collapse = " ")
-  # Remove all punctuation characters
-  x_characters4 <- stringr::str_replace_all(x_characters3, "[[:punct:]]", " ")
-  # Remove \n
-  x_characters5 <- gsub("[\r\n]", " ", x_characters4)
-  x_characters6 <- gsub("[\n]", " ", x_characters5)
+  x_characters3 <- stringr::str_c(x_characters2$x_characters2, collapse = " ")
   # Tokenize into single words
-  x_characters7 <- tokenizers::tokenize_words(x_characters6, simplify = T)
+  x_characters4 <- tokenizers::tokenize_words(x_characters3, simplify = T)
   # Create dataframe with single words and frequency
-  x_characters8 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters7), " ")))))
-  singlewords <- tibble(x_characters8$Var1, x_characters8$Freq)
+  x_characters5 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters4), " ")))))
+  singlewords <- tibble(x_characters5$Var1, x_characters5$Freq)
   colnames(singlewords) <- c("words", "n")
   singlewords$words <- as.character(singlewords$words)
   singlewords
 }
+
 
 #' This is a function that sorts out the embeddings
 #' (and is used again below for decontextualized words).

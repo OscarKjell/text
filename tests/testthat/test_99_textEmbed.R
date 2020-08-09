@@ -106,13 +106,12 @@ test_that("textStaticEmbed with example space", {
   #Test function
   test_result <- textStaticEmbed(df=tibble_response, space=test_space, tk_df = "null", aggregate = "mean")
   test_result
-
+  # rlang::last_error()
   expect_is(test_result$word_response[[1]][[1]], "numeric")
   expect_is(test_result, "list")
 })
 
 
-lifecycle::last_warnings()
 # Potentially below works on GitHUB but not on Mac?
 
 #test_that("textHuggingFace contexts=TRUE, decontexts = FALSE returns a list", {

@@ -79,31 +79,7 @@ applysemrep <- function(x, single_wordembeddings1 = single_wordembeddings2) {
 }
 
 
-# devtools::document()
-#' getUniqueWordsAndFreq
-#'
-#' @param x_characters A word.
-#' @return A dataframe with unique words and their respective fruency.
-#' @noRd
-getUniqueWordsAndFreq <- function(x_characters) {
-  # Unite all text variables into one
-  x_characters2 <- tidyr::unite(x_characters, "x_characters2", seq_len(ncol(x_characters)), sep = " ")
-  # unite all rows in the column into one cell
-  x_characters3 <- paste(x_characters2[1], collapse = " ")
-  # Remove all punctuation characters
-  x_characters4 <- stringr::str_replace_all(x_characters3, "[[:punct:]]", " ")
-  # Remove \n
-  x_characters5 <- gsub("[\r\n]", " ", x_characters4)
-  x_characters6 <- gsub("[\n]", " ", x_characters5)
-  # Tokenize into single words
-  x_characters7 <- tokenizers::tokenize_words(x_characters6, simplify = T)
-  # Create dataframe with single words and frequency
-  x_characters8 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters7), " ")))))
-  singlewords <- tibble(x_characters8$Var1, x_characters8$Freq)
-  colnames(singlewords) <- c("words", "n")
-  singlewords$words <- as.character(singlewords$words)
-  singlewords
-}
+
 
 # insert link in the future to \code{\link{textEmbed}}
 # devtools::document()

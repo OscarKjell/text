@@ -10,7 +10,7 @@ utils::globalVariables(c(
   "textTrainRandomForest", "textTrainCVpredictions", "textTrainCVpredictionsRF",
   "textCentralityData", "textCentralityPlot", "textEmbed", "textHuggingFace",
   "textLayerAggregation", "textProjectionData", "textProjectionPlot", "textSimilarity",
-  "penalty", "mixture",
+  "penalty", "mixture", "trees",
   "id1", "y.y", "id",
   ".pred", ".", "analysis", "assessment", "df3_glmn_grid",
   ".pred_class", "RMSE", "estimate", "inside_folds", "multisession", "outside_folds",

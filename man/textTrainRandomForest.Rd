@@ -7,11 +7,11 @@
 textTrainRandomForest(
   x,
   y,
-  outside_strata_y = "y",
-  inside_strata_y = "y",
+  preprocess_PCA_thresh = c(0.75, 0.85, 0.95),
   mtry = c(1, 5, 10, 15, 30, 40),
   min_n = c(1, 5, 10, 15, 30, 40),
-  trees = 1000,
+  trees = c(1000, 1500),
+  eval_measure = "roc_auc",
   model_description = "Consider writing a description of your model here",
   multi_cores = TRUE
 )
@@ -21,15 +21,14 @@ textTrainRandomForest(
 
 \item{y}{Categorical variable to predict.}
 
-\item{outside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
-
-\item{inside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
-
 \item{mtry}{hyper parameter that may be tuned;  default:c(1, 20, 40),}
 
 \item{min_n}{hyper parameter that may be tuned; default: c(1, 20, 40)}
 
 \item{trees}{Number of trees to use (default 1000).}
+
+\item{eval_measure}{Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
+see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".}
 
 \item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
 
@@ -37,7 +36,9 @@ textTrainRandomForest(
 make the analyses considerably faster to run).}
 }
 \value{
-A chi-square result between predicted and observed values; as well as predicted and true values.
+A list with roc_curve_data, roc_curve_plot, truth and predictions, final_model, model_description
+chisq and fishers test as well as evaluation measures, e.g., including accuracy, f_meas and roc_auc (for details on
+these measures see the yardstick r-package documentation).
 }
 \description{
 Train word embeddings to a categorical variable using random forrest.
@@ -47,6 +48,7 @@ wordembeddings <- wordembeddings4_10
 example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
 results <- textTrainRandomForest(wordembeddings$harmonywords,
                                  example_categories,
+                                 trees = c(1000, 1500)
                                  mtry  = c(1),       # this is short because of testing
                                  min_n = c(1),       # this is short because of testing
                                  multi_cores = FALSE # This is FALSE due to CRAN testing.

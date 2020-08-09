@@ -17,9 +17,9 @@
 #' @param x Word embeddings from textEmbed (or textLayerAggregation).
 #' @param y Numeric variable to predict.
 # @param outside_folds Number of folds for the outer folds.
-#' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
+# @param outside_strata_y Variable to stratify according (default y; can set to NULL).
 # @param inside_folds Number of folds for the inner folds.
-#' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
+# @param inside_strata_y Variable to stratify according (default y; can set to NULL).
 #' @param preprocess_PCA_thresh Pre-processing threshold for amount of variance to retain (default 0.95).
 #' @param method_cor Type of correlation used in evaluation (default "pearson";
 #' can set to "spearman" or "kendall").
@@ -50,20 +50,20 @@
 textTrain <- function(x,
                       y,
                       #outside_folds = 10,
-                      outside_strata_y = "y",
+                      #outside_strata_y = "y",
                       #inside_folds = 10,
-                      inside_strata_y = "y",
+                      #inside_strata_y = "y",
                       model_description = "Consider writing a description of your model here",
                       multi_cores = TRUE,
                       #Regression specific
-                      preprocess_PCA_thresh = 0.95,
+                      preprocess_PCA_thresh = c(.80, 0.95),
                       penalty = 10^seq(-16, 16),
                       mixture = c(0),
                       method_cor = "pearson",
                       #Random Forest specific
                       mtry = c(1, 5, 10, 15, 30, 40),
                       min_n = c(1, 5, 10, 15, 30, 40),
-                      trees = 1000,
+                      trees = c(1000, 1500),
                       force_train_method = "none"){
 
   if (is.numeric(y) == TRUE & force_train_method == "none") {
@@ -80,9 +80,9 @@ textTrain <- function(x,
     repression_output <- textTrainRegression(x=x,
                         y=y,
                         #outside_folds = outside_folds,
-                        outside_strata_y = outside_strata_y,
+                        #outside_strata_y = outside_strata_y,
                         #inside_folds = inside_folds,
-                        inside_strata_y = inside_strata_y,
+                        #inside_strata_y = inside_strata_y,
                         preprocess_PCA_thresh = preprocess_PCA_thresh,
                         penalty = penalty,
                         mixture = mixture,
@@ -96,9 +96,9 @@ textTrain <- function(x,
    random_forest_output <-  textTrainRandomForest(x=x,
                           y=y,
                           #outside_folds = outside_folds,
-                          outside_strata_y = outside_strata_y,
+                          #outside_strata_y = outside_strata_y,
                           #inside_folds = inside_folds,
-                          inside_strata_y = inside_strata_y,
+                          #inside_strata_y = inside_strata_y,
                           trees = trees,
                           mtry = mtry,
                           min_n = min_n,
@@ -115,9 +115,9 @@ textTrain <- function(x,
 #' @param x Word embeddings from textEmbed (or textLayerAggregation).
 #' @param y Numeric variable to predict.
 # @param outside_folds Number of folds for the outer folds.
-#' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
+# @param outside_strata_y Variable to stratify according (default y; can set to NULL).
 # @param inside_folds Number of folds for the inner folds.
-#' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
+# @param inside_strata_y Variable to stratify according (default y; can set to NULL).
 #' @param preprocess_PCA_thresh Pre-processing threshold for amount of variance to retain (default 0.95).
 #' @param method_cor Type of correlation used in evaluation (default "pearson";
 #' can set to "spearman" or "kendall").
@@ -146,9 +146,9 @@ textTrainLists <- function(x,
                            force_train_method = "regression",
 
                            #outside_folds = 10,
-                           outside_strata_y = "y",
+                           #outside_strata_y = "y",
                            #inside_folds = 10,
-                           inside_strata_y = "y",
+                           #inside_strata_y = "y",
                            preprocess_PCA_thresh = 0.95,
                            method_cor = "pearson",
                            model_description = "Consider writing a description here",
@@ -174,9 +174,9 @@ textTrainLists <- function(x,
                      SIMPLIFY = FALSE,
                      MoreArgs = list(
                        #outside_folds = outside_folds,
-                       outside_strata_y = outside_strata_y,
+                       #outside_strata_y = outside_strata_y,
                        #inside_folds = inside_folds,
-                       inside_strata_y = inside_strata_y,
+                       #inside_strata_y = inside_strata_y,
                        preprocess_PCA_thresh = preprocess_PCA_thresh,
                        method_cor = method_cor,
                        model_description = model_description,
@@ -211,9 +211,9 @@ textTrainLists <- function(x,
                      SIMPLIFY = FALSE,
                      MoreArgs = list(trees = trees,
                                      #outside_folds = outside_folds,
-                                     outside_strata_y = outside_strata_y,
+                                     #outside_strata_y = outside_strata_y,
                                      #inside_folds = inside_folds,
-                                     inside_strata_y = inside_strata_y,
+                                     #inside_strata_y = inside_strata_y,
                                      multi_cores = multi_cores)
     )
     output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[1]][[1]])))

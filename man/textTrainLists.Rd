@@ -8,8 +8,6 @@ textTrainLists(
   x,
   y,
   force_train_method = "regression",
-  outside_strata_y = "y",
-  inside_strata_y = "y",
   preprocess_PCA_thresh = 0.95,
   method_cor = "pearson",
   model_description = "Consider writing a description here",
@@ -24,10 +22,6 @@ textTrainLists(
 \item{y}{Numeric variable to predict.}
 
 \item{force_train_method}{default is "regression"; see also "random_forest".}
-
-\item{outside_strata_y}{Variable to stratify according (default y; can set to NULL).}
-
-\item{inside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
 \item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
 

@@ -7,17 +7,15 @@
 textTrain(
   x,
   y,
-  outside_strata_y = "y",
-  inside_strata_y = "y",
   model_description = "Consider writing a description of your model here",
   multi_cores = TRUE,
-  preprocess_PCA_thresh = 0.95,
+  preprocess_PCA_thresh = c(0.8, 0.95),
   penalty = 10^seq(-16, 16),
   mixture = c(0),
   method_cor = "pearson",
   mtry = c(1, 5, 10, 15, 30, 40),
   min_n = c(1, 5, 10, 15, 30, 40),
-  trees = 1000,
+  trees = c(1000, 1500),
   force_train_method = "none"
 )
 }
@@ -25,10 +23,6 @@ textTrain(
 \item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
 
 \item{y}{Numeric variable to predict.}
-
-\item{outside_strata_y}{Variable to stratify according (default y; can set to NULL).}
-
-\item{inside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
 \item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
 

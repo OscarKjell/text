@@ -7,9 +7,7 @@
 textTrainRegression(
   x,
   y,
-  outside_strata_y = "y",
-  inside_strata_y = "y",
-  preprocess_PCA_thresh = 0.95,
+  preprocess_PCA_thresh = c(0.75, 0.85, 0.95),
   penalty = 10^seq(-16, 16),
   mixture = c(0),
   method_cor = "pearson",
@@ -21,10 +19,6 @@ textTrainRegression(
 \item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
 
 \item{y}{Numeric variable to predict.}
-
-\item{outside_strata_y}{Variable to stratify according (default y; can set to NULL).}
-
-\item{inside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
 \item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
 
@@ -52,6 +46,9 @@ ratings_data <- Language_based_assessment_data_8_10
 
 results <- textTrainRegression(wordembeddings$harmonytext,
 ratings_data$hilstotal,
+preprocess_PCA_thresh = c(0.85, 0.95)
+penalty = c(1, 100),
+mixture = c(0),
 outside_strata_y = NULL,
 inside_strata_y = NULL,
 multi_cores = FALSE #this is FALSE due to CRAN testing.
