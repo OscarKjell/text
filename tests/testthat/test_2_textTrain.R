@@ -16,7 +16,7 @@ test_that("textTrain produces list of results with prediction being numeric", {
                        mixture = c(0),
                        trees = c(1000),
                        preprocess_PCA_thresh = c(0.95),
-                       multi_cores = TRUE
+                       multi_cores = FALSE
   )
   #warnings()
   testthat::expect_that(trained, is_a("list"))
@@ -38,8 +38,9 @@ test_that("textTrain produces list of results with prediction being categorical"
                        min_n = c(1),
                        trees = c(1000),
                        preprocess_PCA_thresh = c(0.95),
-                       multi_cores = TRUE,
-                       eval_measure = "roc_auc") #sens bal_accuracy f_measure
+                       multi_cores = FALSE,
+                       eval_measure = "roc_auc",
+                       force_train_method = "random_forest") #sens bal_accuracy f_measure
 
   testthat::expect_that(trained, testthat::is_a("list"))
   testthat::expect_is(trained$truth_predictions$truth[1], "factor")
