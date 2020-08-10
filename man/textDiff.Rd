@@ -38,7 +38,7 @@ Test whether there is a significant difference in meaning between two sets of te
 (i.e., between their word embeddings).
 }
 \examples{
-x <- wordembeddings4_10$harmonywords
-y <- wordembeddings4_10$satisfactionwords
+x <- wordembeddings4$harmonywords
+y <- wordembeddings4$satisfactionwords
 textDiff(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1)
 }

@@ -4,7 +4,7 @@
 #' The dataset is a shortened version of the data sets of Study 3-5
 #' from Kjell et al., (2018; https://psyarxiv.com/er6t7/).
 #'
-#' @format A data frame with 10 participants and 8 variables:
+#' @format A data frame with 40 participants and 8 variables:
 #' \describe{
 #'   \item{harmonywords}{descriptive words where respondents describe their harmony in life}
 #'   \item{satisfactionwords}{descriptive words where respondents describe their satisfaction with life}
@@ -16,7 +16,7 @@
 #'   \item{gender}{respondents gender 1=male, 2=female}
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
-"Language_based_assessment_data_8_10"
+"Language_based_assessment_data_8"
 
 
 #' Example text and numeric data.
@@ -51,7 +51,7 @@
 
 
 
-#' Wordembeddings for 4 text variables for 10 participants
+#' Wordembeddings for 4 text variables for 40 participants
 #'
 #' The dataset is a shortened version of the data sets of Study 3-5
 #' from Kjell, Kjell, Garcia and Sikström 2018.
@@ -65,7 +65,7 @@
 #'   \item{Dim1:Dim768}{Word embeddings dimensions}
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
-"wordembeddings4_10"
+"wordembeddings4"
 
 
 #' Data for plotting a Dot Product Projection Plot.

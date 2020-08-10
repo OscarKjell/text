@@ -17,7 +17,7 @@ cosines <- function(x, y) {
 #' @return A vector comprising cosine semantic similarity scores.
 #' @examples
 #' library(dplyr)
-#' wordembeddings <- wordembeddings4_10
+#' wordembeddings <- wordembeddings4
 #' similiarty_scores <- textSimilarity(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 #' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textDiff}}
 #' @export
@@ -43,7 +43,7 @@ textSimilarity <- function(x, y) {
 #' satisfactionnorm <- c("satisfaction achievement")
 #'
 #' norms <- tibble::tibble(harmonynorm, satisfactionnorm)
-#' wordembeddings <- wordembeddings4_10
+#' wordembeddings <- wordembeddings4
 #' wordembeddings_wordnorm <- textEmbed(norms)
 #' similarity_scores <- textSimilarityNorm(
 #'   wordembeddings$harmonytext,

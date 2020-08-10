@@ -97,7 +97,7 @@ Extract layers and aggregate them to word embeddings, for all character variable
 }
 \examples{
 \dontrun{
-x <- Language_based_assessment_data_8_10[1:2, 1:2]
+x <- Language_based_assessment_data_8[1:2, 1:2]
 # Example 1
 wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
 # Example 1

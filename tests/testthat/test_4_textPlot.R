@@ -6,8 +6,8 @@ context("textPlot Functions")
 
 test_that("textProjectionData MEDIAN and PCA produces a tibble with character variable and numeric variable.", {
   # Data
-  wordembeddings <- wordembeddings4_10
-  data <- Language_based_assessment_data_8_10
+  wordembeddings <- wordembeddings4
+  data <- Language_based_assessment_data_8
   # Pre-processing data for plotting
   df_for_plotting <- textProjectionData(data$harmonywords[1:5],
     wordembeddings$harmonywords[1:5, ],
@@ -26,8 +26,8 @@ test_that("textProjectionData MEDIAN and PCA produces a tibble with character va
 
 test_that("textProjectionData with QUARTILE, 0.9 PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
   # Data
-  wordembeddings <- wordembeddings4_10
-  data <- Language_based_assessment_data_8_10
+  wordembeddings <- wordembeddings4
+  data <- Language_based_assessment_data_8
   harmonywords <- data$harmonywords[1:10]
   harmonywordembeddings <- wordembeddings$harmonywords[1:10, ]
   wordembeddingssinglewords_we <- wordembeddings$singlewords_we
@@ -100,8 +100,8 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
 })
 
 test_that("textCentralityData produces a tibble with character variable and numeric variable.", {
-  wordembeddings <- wordembeddings4_10
-  data <- Language_based_assessment_data_8_10
+  wordembeddings <- wordembeddings4
+  data <- Language_based_assessment_data_8
   df_for_plotting <- textCentralityData(
     data$harmonywords[1:2],
     wordembeddings$harmonywords[1:2, ],

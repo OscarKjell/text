@@ -21,6 +21,8 @@ textTrainRandomForest(
 
 \item{y}{Categorical variable to predict.}
 
+\item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
+
 \item{mtry}{hyper parameter that may be tuned;  default:c(1, 20, 40),}
 
 \item{min_n}{hyper parameter that may be tuned; default: c(1, 20, 40)}
@@ -44,11 +46,11 @@ these measures see the yardstick r-package documentation).
 Train word embeddings to a categorical variable using random forrest.
 }
 \examples{
-wordembeddings <- wordembeddings4_10
+wordembeddings <- wordembeddings4
 example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
 results <- textTrainRandomForest(wordembeddings$harmonywords,
                                  example_categories,
-                                 trees = c(1000, 1500)
+                                 trees = c(1000, 1500),
                                  mtry  = c(1),       # this is short because of testing
                                  min_n = c(1),       # this is short because of testing
                                  multi_cores = FALSE # This is FALSE due to CRAN testing.

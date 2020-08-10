@@ -27,7 +27,7 @@ The ```textEmbed()``` function automatically transforms character variables in a
 library(text)
 
 # Get example data including both text and numerical variables
-sq_data <- Language_based_assessment_data_8_10
+sq_data <- Language_based_assessment_data_8
 
 # Transform the text data to BERT word embeddings
 wordembeddings <- textEmbed(sq_data)
@@ -71,8 +71,8 @@ The ```textDiff()``` function provides a permutation based test to examine wheth
 library(text)
 
 # Compare the meaning between individuals' harmony in life and satisfaction with life answers
-textDiff(wordembeddings4_10$harmonytexts, 
-         wordembeddings4_10$satisfactiontexts, 
+textDiff(wordembeddings4$harmonytexts, 
+         wordembeddings4$satisfactiontexts, 
          Npermutations = 100, 
          output.permutations = FALSE)
 ```
@@ -85,15 +85,13 @@ The plotting is made in two steps: First the ```textPlotData()``` function is pr
 library(text)
 
 # Pre-process word data to be plotted with textPlotViz-function
-# Get example data within package
-wordembeddings_10 <- wordembeddings4_10
-data_10 <- sq_data_tutorial8_10
+# wordembeddings4 and Language_based_assessment_data_8  contain example data provided with the package.
 
 # Pre-process data
-df_for_plotting <- textPlotData(data_10$harmonywords, 
-                                wordembeddings_10$harmonywords,
-  wordembeddings_10$singlewords_we,
-  data_10$hilstotal, data_10$swlstotal
+df_for_plotting <- textPlotData(Language_based_assessment_data_8$harmonywords, 
+                                wordembeddings4$harmonywords,
+  wordembeddings4$singlewords_we,
+  Language_based_assessment_data_8$hilstotal, Language_based_assessment_data_8$swlstotal
 )
 df_for_plotting
 ```

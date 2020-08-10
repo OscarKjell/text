@@ -27,7 +27,7 @@ harmonynorm <- c("harmony peace ")
 satisfactionnorm <- c("satisfaction achievement")
 
 norms <- tibble::tibble(harmonynorm, satisfactionnorm)
-wordembeddings <- wordembeddings4_10
+wordembeddings <- wordembeddings4
 wordembeddings_wordnorm <- textEmbed(norms)
 similarity_scores <- textSimilarityNorm(
   wordembeddings$harmonytext,

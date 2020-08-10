@@ -16,6 +16,7 @@ textTrain(
   mtry = c(1, 5, 10, 15, 30, 40),
   min_n = c(1, 5, 10, 15, 30, 40),
   trees = c(1000, 1500),
+  eval_measure = "roc_auc",
   force_train_method = "none"
 )
 }
@@ -44,6 +45,9 @@ can set to "spearman" or "kendall").}
 
 \item{trees}{number of trees if it is a categorical variable.}
 
+\item{eval_measure}{Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
+see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".}
+
 \item{force_train_method}{default is "none", so if y is a factor random_forest is used, and if y is numeric ridge regression
 is used. This can be overridden using "regression" or "random_forest".}
 }
@@ -54,12 +58,10 @@ A correlation between predicted and observed values; as well as a tibble of pred
 Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 }
 \examples{
-wordembeddings <- wordembeddings4_10
-ratings_data <- Language_based_assessment_data_8_10
+wordembeddings <- wordembeddings4
+ratings_data <- Language_based_assessment_data_8
 results <- textTrain(wordembeddings$harmonytext,
                      ratings_data$hilstotal,
-                     outside_strata_y = NULL, # since there are too few rows to stratify
-                     inside_strata_y = NULL,
                      penalty = 1, # 1 due to computational constraints for the example context
                      multi_cores = FALSE
 )

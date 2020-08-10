@@ -48,8 +48,8 @@ unique_freq_words <- function(words) {
 #' for the individual words that is used for the plotting in the textProjectionPlot function.
 #' @examples
 #' # Data
-#' wordembeddings <- wordembeddings4_10
-#' data <- Language_based_assessment_data_8_10
+#' wordembeddings <- wordembeddings4
+#' data <- Language_based_assessment_data_8
 #' # Pre-processing data for plotting
 #' df_for_plotting <- textProjectionData(
 #'   words = data$harmonywords,
@@ -890,8 +890,8 @@ textProjectionPlot <- function(word_data,
 #' @return A dataframe with variables (e.g., including semantic similarity, frequencies)
 #' for the individual words that are used for the plotting in the textCentralityPlot function.
 #' @examples
-#' wordembeddings <- wordembeddings4_10
-#' data <- Language_based_assessment_data_8_10
+#' wordembeddings <- wordembeddings4
+#' data <- Language_based_assessment_data_8
 #' df_for_plotting <- textCentralityData(
 #'   data$harmonywords,
 #'   wordembeddings$harmonywords,

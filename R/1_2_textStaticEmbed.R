@@ -95,7 +95,7 @@ applysemrep <- function(x, single_wordembeddings1 = single_wordembeddings2) {
 #' columns representing the semantic representations of the text. The tibbles are called the same as the original variable.
 #' @seealso see \code{\link{textEmbed}}
 #' @importFrom tibble as_tibble
-#' @importFrom dplyr select_if
+#' @importFrom dplyr select_if bind_cols
 #' @export
 textStaticEmbed <- function(df, space, tk_df = "null", aggregate = "mean") {
 
@@ -126,7 +126,7 @@ textStaticEmbed <- function(df, space, tk_df = "null", aggregate = "mean") {
 
 
     list_semrep[[i]] <- df_output %>%
-      dplyr::mutate(across(everything(), unlist)) %>%
+      dplyr::mutate(dplyr::across(dplyr::everything(), unlist)) %>% # dplyr ok?
       tibble::as_tibble(.name_repair = "unique")
 
   }
@@ -135,11 +135,11 @@ textStaticEmbed <- function(df, space, tk_df = "null", aggregate = "mean") {
   singlewords <- getUniqueWordsAndFreq(df_characters)
   output_vectors_sw <- map(singlewords$words, applysemrep,  single_wordembeddings1)
   names(output_vectors_sw) <- singlewords$words
-  output_vectors_sw2 <- bind_cols(output_vectors_sw)
+  output_vectors_sw2 <- dplyr::bind_cols(output_vectors_sw)
   output_vectors_sw3 <- data.frame(t(output_vectors_sw2))
   colnames(output_vectors_sw3) <- paste0("Dim", sep = "", seq_len(ncol(output_vectors_sw3)))
 
-  singlewords_we <- bind_cols(singlewords, output_vectors_sw3)
+  singlewords_we <- dplyr::bind_cols(singlewords, output_vectors_sw3)
 
   # Gives the tibbles in the list the same name as the original character variables
   names(list_semrep) <- names(df_characters)

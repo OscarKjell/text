@@ -44,8 +44,8 @@ Correlations between predicted and observed values.
 Individually trains word embeddings from several text variables to several numeric/categorical variables.
 }
 \examples{
-wordembeddings <- wordembeddings4_10[1:2]
-ratings_data <- Language_based_assessment_data_8_10[5:6]
+wordembeddings <- wordembeddings4[1:2]
+ratings_data <- Language_based_assessment_data_8[5:6]
 results <- textTrainLists(wordembeddings,
 ratings_data,
 multi_cores = FALSE)

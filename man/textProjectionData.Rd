@@ -64,8 +64,8 @@ Compute Dot Product Projection and related variables for plotting words.
 }
 \examples{
 # Data
-wordembeddings <- wordembeddings4_10
-data <- Language_based_assessment_data_8_10
+wordembeddings <- wordembeddings4
+data <- Language_based_assessment_data_8
 # Pre-processing data for plotting
 df_for_plotting <- textProjectionData(
   words = data$harmonywords,

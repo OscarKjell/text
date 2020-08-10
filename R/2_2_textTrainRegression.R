@@ -1,6 +1,6 @@
 #library(text)
-#wordembeddings <- wordembeddings4_10
-#ratings_data <- Language_based_assessment_data_8_10
+#wordembeddings <- wordembeddings4
+#ratings_data <- Language_based_assessment_data_8
 #####
 #results_low <- textTrainRegression(wordembeddings$harmonytext,
 #                               ratings_data$hilstotal,
@@ -173,8 +173,8 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA_thre
 
 
 
-# x <- wordembeddings4_10$harmonytext
-# y <- Language_based_assessment_data_8_10$hilstotal
+# x <- wordembeddings4$harmonytext
+# y <- Language_based_assessment_data_8$hilstotal
 ##                                outside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
 #outside_strata_y = NULL
 ##                                inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
@@ -207,16 +207,14 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA_thre
 #' make the analyses considerably faster to run).
 #' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
 #' @examples
-#' wordembeddings <- wordembeddings4_10
-#' ratings_data <- Language_based_assessment_data_8_10
+#' wordembeddings <- wordembeddings4
+#' ratings_data <- Language_based_assessment_data_8
 #'
 #' results <- textTrainRegression(wordembeddings$harmonytext,
 #' ratings_data$hilstotal,
-#' preprocess_PCA_thresh = c(0.85, 0.95)
+#' preprocess_PCA_thresh = c(0.85, 0.95),
 #' penalty = c(1, 100),
 #' mixture = c(0),
-#' outside_strata_y = NULL,
-#' inside_strata_y = NULL,
 #' multi_cores = FALSE #this is FALSE due to CRAN testing.
 #' )
 #' @seealso see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
@@ -250,10 +248,11 @@ textTrainRegression <- function(x,
   results_nested_resampling <- rsample::nested_cv(xy,
                                                   outside = rsample::vfold_cv(v = 10, #outside_folds,
                                                                               repeats = 1,
-                                                                              strata = "y"), #outside_strata_y
+                                                                              strata = "y",
+                                                                              breaks = 2), #outside_strata_y
                                                   inside  = rsample::validation_split(prop = 3/4,
                                                                                       strata = "y", #inside_strata_y
-                                                                                      breaks=4))
+                                                                                      breaks=1))
   #results_nested_resampling$inner_resamples
   # results_nested_resampling$inner_resamples[[1]]$splits[[1]]
 

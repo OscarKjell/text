@@ -1,5 +1,5 @@
 
-# x <- Language_based_assessment_data_8_10[1:2, 1:2]
+# x <- Language_based_assessment_data_8[1:2, 1:2]
 # wordembeddings <- textHuggingFace(x, layers = "all")
 
 
@@ -98,8 +98,7 @@ getUniqueWordsAndFreq <- function(x_characters) {
 }
 
 
-#' This is a function that sorts out the embeddings
-#' (and is used again below for decontextualized words).
+#' This is a function that sorts out (i.e., tidy) the embeddings from the huggingface interface.
 #' @param x list of layers.
 #' @param layers the number of layers to get (setting comes from textHuggingFace).
 #' @param return_tokens bolean whether tokens have been returned (setting comes from textHuggingFace).
@@ -225,7 +224,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' input embedding to the transformer, and should normally not be used.
 #' @examples
 #' \dontrun{
-#' x <- Language_based_assessment_data_8_10[1:2, 1:2]
+#' x <- Language_based_assessment_data_8[1:2, 1:2]
 #' word_embeddings_with_layers <- textHuggingFace(x, layers = 11:12)
 #' }
 #' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textEmbed}}
@@ -511,7 +510,7 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' Note that layer 0 is the input embedding to the transformer
 #' @examples
 #' \dontrun{
-#' x <- Language_based_assessment_data_8_10[1:2, 1:2]
+#' x <- Language_based_assessment_data_8[1:2, 1:2]
 #' # Example 1
 #' wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
 #' # Example 1

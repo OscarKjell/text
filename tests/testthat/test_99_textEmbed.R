@@ -119,7 +119,7 @@ test_that("textStaticEmbed with example space", {
 #  # skip_if_no_transformers()
 #  # skip_if_no_torch
 #
-#  # x <- Language_based_assessment_data_8_10[1:2, 1:2]
+#  # x <- Language_based_assessment_data_8[1:2, 1:2]
 #  text_to_test_import1 <- c("test this", "hope it works")
 #  text_to_test_import2 <- c("I am happy", "Let us go")
 #  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
@@ -139,7 +139,7 @@ test_that("textStaticEmbed with example space", {
 #  # skip_if_no_transformers()
 #  # skip_if_no_torch
 #
-#  # x <- Language_based_assessment_data_8_10[1:2, 1:2]
+#  # x <- Language_based_assessment_data_8[1:2, 1:2]
 #  text_to_test_import1 <- c("jag mår bra", "vad händer")
 #  text_to_test_import2 <- c("ön är vacker", "molnen svävar")
 #  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
@@ -159,7 +159,7 @@ test_that("textStaticEmbed with example space", {
 #  # skip_if_no_transformers()
 #  # skip_if_no_torch
 #
-#  # x <- Language_based_assessment_data_8_10[1:2, 1:2]
+#  # x <- Language_based_assessment_data_8[1:2, 1:2]
 #  text_to_test_import1 <- c("test this", "hope it works")
 #  text_to_test_import2 <- c("I am happy", "Let us go")
 #  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)

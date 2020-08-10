@@ -1,6 +1,6 @@
 
-#x <- wordembeddings4_10$harmonytext
-#y <- Language_based_assessment_data_8_10$gender
+#x <- wordembeddings4$harmonytext
+#y <- Language_based_assessment_data_8$gender
 #
 #outside_folds = 10
 #outside_strata_y = "y"
@@ -31,16 +31,16 @@
 #' @param mtry hyper parameter that may be tuned;  default:c(1, 20, 40),
 #' @param min_n hyper parameter that may be tuned; default: c(1, 20, 40)
 #' @param trees number of trees if it is a categorical variable.
+#' @param eval_measure Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
+#' see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".
 #' @param force_train_method default is "none", so if y is a factor random_forest is used, and if y is numeric ridge regression
 #' is used. This can be overridden using "regression" or "random_forest".
 #' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
 #' @examples
-#' wordembeddings <- wordembeddings4_10
-#' ratings_data <- Language_based_assessment_data_8_10
+#' wordembeddings <- wordembeddings4
+#' ratings_data <- Language_based_assessment_data_8
 #' results <- textTrain(wordembeddings$harmonytext,
 #'                      ratings_data$hilstotal,
-#'                      outside_strata_y = NULL, # since there are too few rows to stratify
-#'                      inside_strata_y = NULL,
 #'                      penalty = 1, # 1 due to computational constraints for the example context
 #'                      multi_cores = FALSE
 #' )
@@ -64,6 +64,7 @@ textTrain <- function(x,
                       mtry = c(1, 5, 10, 15, 30, 40),
                       min_n = c(1, 5, 10, 15, 30, 40),
                       trees = c(1000, 1500),
+                      eval_measure = "roc_auc",
                       force_train_method = "none"){
 
   if (is.numeric(y) == TRUE & force_train_method == "none") {
@@ -103,7 +104,8 @@ textTrain <- function(x,
                           mtry = mtry,
                           min_n = min_n,
                           model_description = model_description,
-                          multi_cores = multi_cores)
+                          multi_cores = multi_cores,
+                          eval_measure = eval_measure)
    random_forest_output
   }
 
@@ -129,8 +131,8 @@ textTrain <- function(x,
 #' @param ... Arguments for the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples
-#' wordembeddings <- wordembeddings4_10[1:2]
-#' ratings_data <- Language_based_assessment_data_8_10[5:6]
+#' wordembeddings <- wordembeddings4[1:2]
+#' ratings_data <- Language_based_assessment_data_8[5:6]
 #' results <- textTrainLists(wordembeddings,
 #' ratings_data,
 #' multi_cores = FALSE)
@@ -144,7 +146,6 @@ textTrain <- function(x,
 textTrainLists <- function(x,
                            y,
                            force_train_method = "regression",
-
                            #outside_folds = 10,
                            #outside_strata_y = "y",
                            #inside_folds = 10,
@@ -214,7 +215,7 @@ textTrainLists <- function(x,
                                      #outside_strata_y = outside_strata_y,
                                      #inside_folds = inside_folds,
                                      #inside_strata_y = inside_strata_y,
-                                     multi_cores = multi_cores)
+                                     multi_cores = multi_cores, ...)
     )
     output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[1]][[1]])))
     output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[2]][[1]])))
@@ -241,8 +242,8 @@ textTrainLists <- function(x,
 }
 
 # Regression
-#wordembeddings_list <- wordembeddings4_10[1:2]
-#ratings_data_list <- Language_based_assessment_data_8_10[5:6]
+#wordembeddings_list <- wordembeddings4[1:2]
+#ratings_data_list <- Language_based_assessment_data_8[5:6]
 ##results <- textTrainLists(wordembeddings, ratings_data)
 #
 #list_restuls <- textTrainLists(x = wordembeddings_list,
@@ -262,8 +263,8 @@ textTrainLists <- function(x,
 #                               trees = 500)
 
 # Random Forest
-##wordembeddings_list <- wordembeddings4_10[1:2]
-##ratings_data_list <- Language_based_assessment_data_8_10[8]
+##wordembeddings_list <- wordembeddings4[1:2]
+##ratings_data_list <- Language_based_assessment_data_8[8]
 ##ratings_data_list2 <- ratings_data_list
 ##colnames(ratings_data_list2) <-  "gender2"
 ##ratings_data_list <- tibble::tibble(ratings_data_list, ratings_data_list2)

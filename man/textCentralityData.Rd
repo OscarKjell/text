@@ -38,8 +38,8 @@ Compute cosine semantic similarity score between single words' word embeddings
 and the aggregated word embedding of all words.
 }
 \examples{
-wordembeddings <- wordembeddings4_10
-data <- Language_based_assessment_data_8_10
+wordembeddings <- wordembeddings4
+data <- Language_based_assessment_data_8
 df_for_plotting <- textCentralityData(
   data$harmonywords,
   wordembeddings$harmonywords,

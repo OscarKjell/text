@@ -70,7 +70,7 @@ accessible through an interface to
 ``` r
 library(text)
 # Transform the text data to BERT word embeddings
-wordembeddings <- textEmbed(Language_based_assessment_data_8_10, 
+wordembeddings <- textEmbed(Language_based_assessment_data_8, 
                             model = 'bert-base-uncased')
 ```
 

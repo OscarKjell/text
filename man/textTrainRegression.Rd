@@ -41,16 +41,14 @@ A correlation between predicted and observed values; as well as a tibble of pred
 Train word embeddings to a numeric variable.
 }
 \examples{
-wordembeddings <- wordembeddings4_10
-ratings_data <- Language_based_assessment_data_8_10
+wordembeddings <- wordembeddings4
+ratings_data <- Language_based_assessment_data_8
 
 results <- textTrainRegression(wordembeddings$harmonytext,
 ratings_data$hilstotal,
-preprocess_PCA_thresh = c(0.85, 0.95)
+preprocess_PCA_thresh = c(0.85, 0.95),
 penalty = c(1, 100),
 mixture = c(0),
-outside_strata_y = NULL,
-inside_strata_y = NULL,
 multi_cores = FALSE #this is FALSE due to CRAN testing.
 )
 }

@@ -44,7 +44,8 @@ Imports:
     yardstick, 
     crayon, 
     future,
-    furrr
+    furrr, 
+    tidyselect
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,

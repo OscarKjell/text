@@ -1,17 +1,14 @@
-
-
-#example_categories <- Language_based_assessment_data_8_10[8]$gender
+#rlang::last_error()
+#rlang::last_trace()
+#example_categories <- Language_based_assessment_data_8[8]$gender
 ###
-#results2 <- textTrainRandomForest(wordembeddings4_10$harmonywords,
+#results2 <- textTrainRandomForest(wordembeddings4$harmonywords,
 #                                 example_categories,
-#                                 eval_measure = "accuracy",
-#                                 #outside_strata_y = NULL,
-#                                 #inside_strata_y = NULL,
-#                                 mtry  = c(1, 5),       # this is short because of testing
-#                                 min_n = c(1, 5),       # this is short because of testing
+#                                 eval_measure = "bal_accuracy", # f_measure bal_accuracy accuracy
+#                                 mtry  = c(1, 5),
+#                                 min_n = c(1, 5),
 #                                 trees = c(100, 1000),
-#                                 multi_cores = FALSE # This is FALSE due to CRAN testing.
-#)
+#                                 multi_cores = TRUE)
 #results2$roc_curve_plot
 # library(tidyverse)
 
@@ -32,7 +29,7 @@ fit_model_accuracy_rf <- function(object,
                                   min_n = 1,
                                   trees = 1000,
                                   preprocess_PCA_thresh = 0.95,
-                                  eval_measure = "accuracy") {
+                                  eval_measure = "f_measure") {
 
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
   xy_recipe <- rsample::analysis(object) %>%
@@ -77,7 +74,7 @@ fit_model_accuracy_rf <- function(object,
   if (eval_measure == "accuracy"){
     eval_measure_val           <- yardstick::accuracy(holdout_pred_prob, truth = y, estimate = .pred_class)
   } else if (eval_measure == "bal_accuracy"){
-    eval_measure_accuracy_val  <- yardstick::bal_accuracy(holdout_pred_prob, truth = y, estimate = .pred_class)
+    eval_measure_val  <- yardstick::bal_accuracy(holdout_pred_prob, truth = y, estimate = .pred_class)
   } else if (eval_measure == "sens"){
     eval_measure_val          <- yardstick::sens(holdout_pred_prob, truth = y, estimate = .pred_class)
   } else if (eval_measure == "spec"){
@@ -168,7 +165,7 @@ tune_over_cost_rf <- function(object,
                               grid_inner$preprocess_PCA_thresh),
                               fit_model_accuracy_wrapper_rf,
                               object = object,
-                              eval_measure = eval_measure)
+                              eval_measure = eval_measure) #
 
   # Sort the output to separate the accuracy, predictions and truth
   tune_outputlist <- tune_results %>%
@@ -227,8 +224,8 @@ summarize_tune_results_rf <- function(object,
 }
 
 
-#x <- wordembeddings4_10[1]$harmonywords
-#y <- Language_based_assessment_data_8_10[8]$gender#
+#x <- wordembeddings4[1]$harmonywords
+#y <- Language_based_assessment_data_8[8]$gender#
 #outside_strata_y = "y"#
 #inside_strata_y = "y"
 #mtry = c(1, 2)
@@ -237,7 +234,7 @@ summarize_tune_results_rf <- function(object,
 #trees = c(1000, 1550)
 #model_description = "Consider writing a description of your model here"
 #multi_cores = TRUE
-#eval_measure = "accuracy"
+#eval_measure = "bal_accuracy" # "roc_auc" #"accuracy" #
 #library(magrittr)
 
 #' Train word embeddings to a categorical variable using random forrest.
@@ -248,6 +245,7 @@ summarize_tune_results_rf <- function(object,
 # @param outside_strata_y Variable to stratify according (default "y"; can also set to NULL).
 # @param inside_folds Number of folds for the inner folds.
 # @param inside_strata_y Variable to stratify according (default "y"; can also set to NULL).
+#' @param preprocess_PCA_thresh Pre-processing threshold for amount of variance to retain (default 0.95).
 #' @param mtry hyper parameter that may be tuned;  default:c(1, 20, 40),
 #' @param min_n hyper parameter that may be tuned; default: c(1, 20, 40)
 #' @param trees Number of trees to use (default 1000).
@@ -260,11 +258,11 @@ summarize_tune_results_rf <- function(object,
 #' chisq and fishers test as well as evaluation measures, e.g., including accuracy, f_meas and roc_auc (for details on
 #' these measures see the yardstick r-package documentation).
 #' @examples
-#' wordembeddings <- wordembeddings4_10
+#' wordembeddings <- wordembeddings4
 #' example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
 #' results <- textTrainRandomForest(wordembeddings$harmonywords,
 #'                                  example_categories,
-#'                                  trees = c(1000, 1500)
+#'                                  trees = c(1000, 1500),
 #'                                  mtry  = c(1),       # this is short because of testing
 #'                                  min_n = c(1),       # this is short because of testing
 #'                                  multi_cores = FALSE # This is FALSE due to CRAN testing.
@@ -280,7 +278,8 @@ summarize_tune_results_rf <- function(object,
 #' @importFrom magrittr %>%
 #' @importFrom future plan multisession
 #' @importFrom furrr future_map
-#' @importFrom yardstick accuracy bal_accuracy sens spec precision kap
+#' @importFrom yardstick accuracy bal_accuracy sens spec precision kap f_meas
+#' @importFrom tidyselect all_of
 #' @export
 textTrainRandomForest <- function(x,
                                   y,
@@ -311,9 +310,9 @@ textTrainRandomForest <- function(x,
                                                                               strata = "y"), #outside_strata_y
                                                   inside  = rsample::validation_split(prop = 3/4,
                                                                                       strata = "y", #inside_strata_y
-                                                                                      breaks=4))
+                                                                                      breaks=1))
 
-  # Tuning inner resamples library(magrittr)
+  # Tuning inner resamples library(magrittr) warnings()
   if (multi_cores == FALSE){
     tuning_results <- purrr::map(.x = results_nested_resampling$inner_resamples,
                                  .f = summarize_tune_results_rf,
@@ -373,10 +372,12 @@ textTrainRandomForest <- function(x,
                             tidyr::unnest(outputlist_results_outer$.pred_1, cols = c(.pred_1)),
                             tidyr::unnest(outputlist_results_outer$.pred_2, cols = c(.pred_2)))
 
-  # Correlate predictions and observed
+  # Correlate predictions and observed help(all_of)
   chisq        <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
 
   fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate)
+
+
 
   accuracy     <- yardstick::accuracy(predy_y, truth, estimate)
   bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate)
@@ -387,7 +388,7 @@ textTrainRandomForest <- function(x,
   f_measure    <- yardstick::f_meas(predy_y, truth, estimate)
 
   eval_class <- colnames(predy_y[3])
-  roc_auc      <- yardstick::roc_auc(predy_y, truth, all_of(eval_class))
+  roc_auc      <- yardstick::roc_auc(predy_y, truth, tidyselect::all_of(eval_class)) # OK dplyr::
   roc_curve_data    <- yardstick::roc_curve(predy_y, truth, all_of(eval_class))
   roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, all_of(eval_class)))
 
@@ -433,10 +434,13 @@ textTrainRandomForest <- function(x,
   min_n_description = paste("min_n =", deparse(statisticalMode(results_split_parameter$min_n)))
   trees_description = paste("trees =", deparse(statisticalMode(results_split_parameter$trees)))
   preprocess_PCA_thresh_description = paste("preprocess_PCA_thresh = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA_thresh)))
+  eval_measure = paste("eval_measure = ", deparse(eval_measure))
+
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
   model_description_detail <- c(deparse(substitute(x)),
                                 deparse(substitute(y)),
                                 preprocess_PCA_thresh_description,
+                                eval_measure,
                                 mtry_description,
                                 min_n_description,
                                 trees_description,
@@ -448,8 +452,8 @@ textTrainRandomForest <- function(x,
 }
 #warnings()
 #library(text)
-#wordembeddings <- wordembeddings4_10
-#ratings_data <- Language_based_assessment_data_8_10
+#wordembeddings <- wordembeddings4
+#ratings_data <- Language_based_assessment_data_8
 #x <- wordembeddings$harmonytext
 #y = ratings_data$gender
 #t1 <- Sys.time()

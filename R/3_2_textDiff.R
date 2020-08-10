@@ -10,8 +10,8 @@
 #' @param N_cluster_nodes Number of cluster nodes to use (more makes computation faster; see parallel package).
 #' @return A list with a p-value, estimate and permuted values if output.permutations=TRUE.
 #' @examples
-#' x <- wordembeddings4_10$harmonywords
-#' y <- wordembeddings4_10$satisfactionwords
+#' x <- wordembeddings4$harmonywords
+#' y <- wordembeddings4$satisfactionwords
 #' textDiff(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1)
 #' @importFrom dplyr select starts_with
 #' @importFrom parallel splitIndices mclapply

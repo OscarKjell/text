@@ -60,7 +60,7 @@ Recent significant advances in NLP research have resulted in improved representa
 ```{r short_word_embedding_example, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 # Transform the text data to BERT word embeddings
-wordembeddings <- textEmbed(Language_based_assessment_data_8_10, 
+wordembeddings <- textEmbed(Language_based_assessment_data_8, 
                             model = 'bert-base-uncased')
 ```
 

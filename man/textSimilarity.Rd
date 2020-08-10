@@ -19,7 +19,7 @@ Compute the cosine semantic similarity between two text variables.
 }
 \examples{
 library(dplyr)
-wordembeddings <- wordembeddings4_10
+wordembeddings <- wordembeddings4
 similiarty_scores <- textSimilarity(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 }
 \seealso{
