@@ -129,10 +129,10 @@ test_that("textHuggingFace contexts=TRUE, decontexts = FALSE returns a list", {
   expect_that(embeddings, is_a("list"))
 
   # Is the first value there and numeric
-  expect_that(embeddings[[1]][[1]][[1]][[1]], is.character)
+  expect_that(embeddings[[1]][[1]][[1]][[1]][[1]], is.character)
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
-  expect_that(ncol(embeddings[[1]][[1]][[1]]), equals(770))
+  expect_that(ncol(embeddings[[1]][[1]][[1]]), equals(771))
 })
 
 test_that("textHuggingFace bert-base-multilingual-cased contexts=FALSE, decontexts = TRUE returns a list", {
