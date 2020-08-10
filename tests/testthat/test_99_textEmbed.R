@@ -2,7 +2,8 @@
 
 library(text)
 library(tibble)
-# library(testthat)
+library(testthat)
+
 context("Embedding of text and retrieval of word embeddings")
 
 # helper function to skip tests if we don't have the 'foo' module
@@ -151,7 +152,7 @@ test_that("textHuggingFace bert-base-multilingual-cased contexts=FALSE, decontex
   expect_that(embeddings[[1]][[1]][[1]][[1]][[1]], is.character)
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
-  expect_that(ncol(embeddings[[1]][[1]][[1]][[1]]), equals(770))
+  expect_that(ncol(embeddings[[1]][[1]][[1]][[1]]), equals(771))
 })
 
 test_that("textEmbed", {
