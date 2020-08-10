@@ -77,7 +77,7 @@ test_that("textLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces agg
 
   # skip_on_cran()
   aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
-    layers = 1:2,
+    layers = "all",
     aggregate_tokens = "max",
     tokens_deselect = "[CLS]"
   )
@@ -85,9 +85,6 @@ test_that("textLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces agg
   expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 })
-
-
-
 
 
 test_that("textStaticEmbed with example space", {
