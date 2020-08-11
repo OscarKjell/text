@@ -1,15 +1,38 @@
 
 # x <- Language_based_assessment_data_8[1:2, 1:2]
-# wordembeddings <- textHuggingFace(x, layers = "all") help(desparse)
-#x <- ("hello how ar you")
+# wordembeddings <- textHuggingFace(x, layers = "all")  help(eval) help(deparse) help(enc2utf8)
+
+
+#x <- c("hello how are you my fiancé")
+#Encoding(x)
+#Encoding(x)<- "latin1"
+#Encoding(x)
+#x8 <- enc2utf8(x)
+#Encoding(x8)
+
+## x is intended to be in latin1
+#x <- "fa\xE7ile"
+#Encoding(x)
+#Encoding(x) <- "latin1"
+
+#Encoding(x)
+#Encoding(x) <- Encoding(enc2utf8(x))
+#Encoding(x)
+
+
 #' Find encoding type of variable and the set it to UTF-8.
 #' @param tibble including both text and numeric variables.
 #' @return all character variables in UTF-8 format.
 #' @noRd
 get_encoding_change <- function(x) {
-  code_x_characters <- base::Encoding(x)
-  utf8_x_characters <- base::iconv(x, eval(code_x_characters), "UTF-8")
-}
+  #code_x_characters <- base::Encoding(x)
+  #utf8_x_characters <- base::iconv(x, base::deparse(code_x_characters), "UTF-8")
+  Encoding(x) <- Encoding(enc2utf8(x))
+  x
+  #Have not tried: utf8_x_characters <- enc2utf8(x)
+
+  }
+
 
 #' Select all character variables and make them UTF-8 coded (BERT wants it in this format).
 #' @param tibble including both text and numeric variables.
