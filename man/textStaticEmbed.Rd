@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_2_textStaticEmbed.R
 \name{textStaticEmbed}
 \alias{textStaticEmbed}
-\title{textStaticEmbed: Applies word embeddings from a given decontextualized static space (such as
+\title{Applies word embeddings from a given decontextualized static space (such as
 from Latent Semantic Analyses) to all character variables}
 \usage{
 textStaticEmbed(df, space, tk_df = "null", aggregate = "mean")
@@ -22,7 +22,7 @@ A list with tibbles for each character variable. Each tibble comprises a column 
 columns representing the semantic representations of the text. The tibbles are called the same as the original variable.
 }
 \description{
-textStaticEmbed: Applies word embeddings from a given decontextualized static space (such as
+Applies word embeddings from a given decontextualized static space (such as
 from Latent Semantic Analyses) to all character variables
 }
 \seealso{

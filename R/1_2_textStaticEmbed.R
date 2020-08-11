@@ -78,12 +78,9 @@ applysemrep <- function(x, single_wordembeddings1 = single_wordembeddings2) {
   }
 }
 
-
-
-
 # insert link in the future to \code{\link{textEmbed}}
 # devtools::document()
-#' textStaticEmbed: Applies word embeddings from a given decontextualized static space (such as
+#' Applies word embeddings from a given decontextualized static space (such as
 #' from Latent Semantic Analyses) to all character variables
 #'
 #' @param df dataframe that at least contains one character column.

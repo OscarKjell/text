@@ -29,13 +29,14 @@ reference:
   - textEmbed
   - textHuggingFace
   - textLayerAggregation
+  - textStaticEmbed
 - title: Train word embeddings
   contents:
     - textTrain
     - textTrainLists
     - textTrainRegression
     - textTrainRandomForest
-- title: Analyse Semantic Similairties
+- title: Semantic Similairties
   contents:
     - textSimilarity
     - textSimilarityNorm

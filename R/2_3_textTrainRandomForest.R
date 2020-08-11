@@ -223,7 +223,6 @@ summarize_tune_results_rf <- function(object,
                      .groups = "drop_last")
 }
 
-
 #x <- wordembeddings4[1]$harmonywords
 #y <- Language_based_assessment_data_8[8]$gender#
 #outside_strata_y = "y"#
@@ -279,7 +278,6 @@ summarize_tune_results_rf <- function(object,
 #' @importFrom future plan multisession
 #' @importFrom furrr future_map
 #' @importFrom yardstick accuracy bal_accuracy sens spec precision kap f_meas
-#' @importFrom tidyselect all_of
 #' @export
 textTrainRandomForest <- function(x,
                                   y,
@@ -387,10 +385,10 @@ textTrainRandomForest <- function(x,
   kappa        <- yardstick::kap(predy_y, truth, estimate)
   f_measure    <- yardstick::f_meas(predy_y, truth, estimate)
 
-  eval_class <- colnames(predy_y[3])
-  roc_auc      <- yardstick::roc_auc(predy_y, truth, tidyselect::all_of(eval_class)) # OK dplyr::
-  roc_curve_data    <- yardstick::roc_curve(predy_y, truth, all_of(eval_class))
-  roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, all_of(eval_class)))
+  #eval_class <- colnames(predy_y[3])
+  roc_auc      <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3])) # OK tidyselect::all_of(eval_class) dplyr::
+  roc_curve_data    <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[3]))
+  roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[3])))
 
   results_collected <- dplyr::bind_rows(accuracy,
                                         bal_accuracy,

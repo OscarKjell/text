@@ -2,6 +2,14 @@
 # x <- Language_based_assessment_data_8[1:2, 1:2]
 # wordembeddings <- textHuggingFace(x, layers = "all")
 
+#' Find encoding type of variable and the set it to UTF-8.
+#' @param tibble including both text and numeric variables.
+#' @return all character variables in UTF-8 format.
+#' @noRd
+get_encoding_change <- function(x) {
+  code_x_characters <- base::Encoding(x)
+  utf8_x_characters <- base::iconv(x, code_x_characters, "UTF-8")
+}
 
 #' Select all character variables and make them UTF-8 coded (BERT wants it in this format).
 #' @param tibble including both text and numeric variables.
@@ -9,15 +17,14 @@
 #' @importFrom dplyr select_if
 #' @importFrom tibble as_tibble
 #' @importFrom purrr map
-#' @importFrom stringi stri_encode
 #' @noRd
 select_character_v_utf8 <- function(x) {
   # Select all character variables
   x_characters <- dplyr::select_if(x, is.character)
   # This makes sure that all variables are UTF-8 coded
-  x_characters <- tibble::as_tibble(purrr::map(x_characters, stringi::stri_encode, "", "UTF-8"))
+  # x_characters <- tibble::as_tibble(purrr::map(x_characters, stringi::stri_encode, "", "UTF-8"))
+  x_characters <- tibble::as_tibble(purrr::map(x_characters, get_encoding_change))
 }
-
 
 #' Function to take min, max, mean or the CLS
 #' (which comes from BERT models; not Static spaces) from list of vectors
