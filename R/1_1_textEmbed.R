@@ -1,14 +1,14 @@
 
 # x <- Language_based_assessment_data_8[1:2, 1:2]
-# wordembeddings <- textHuggingFace(x, layers = "all")
-
+# wordembeddings <- textHuggingFace(x, layers = "all") help(desparse)
+#x <- ("hello how ar you")
 #' Find encoding type of variable and the set it to UTF-8.
 #' @param tibble including both text and numeric variables.
 #' @return all character variables in UTF-8 format.
 #' @noRd
 get_encoding_change <- function(x) {
   code_x_characters <- base::Encoding(x)
-  utf8_x_characters <- base::iconv(x, code_x_characters, "UTF-8")
+  utf8_x_characters <- base::iconv(x, eval(code_x_characters), "UTF-8")
 }
 
 #' Select all character variables and make them UTF-8 coded (BERT wants it in this format).
