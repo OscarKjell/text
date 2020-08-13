@@ -1,6 +1,7 @@
 
 library(tibble)
 library(dplyr)
+library(testthat)
 
 context("textPlot Functions")
 
@@ -138,4 +139,29 @@ test_that("textCentralityPlot produces a plot.", {
   )
 
   expect_true(ggplot2::is.ggplot(centrality_plot))
+})
+
+
+
+test_that("textCentralityData produces a tibble with character variable and numeric variable.", {
+
+
+  df_for_plotting2d <- text2DData(words = Language_based_assessment_data_8$harmonywords,
+                                  single_wordembeddings =  wordembeddings4$singlewords_we)
+  df_for_plotting2d
+
+
+  expect_is(df_for_plotting2d$words[1], "character")
+  expect_is(df_for_plotting2d$n[1], "integer")
+  expect_true(tibble::is_tibble(df_for_plotting2d))
+})
+
+test_that("textCentralityPlot produces a plot.", {
+
+  # Plot
+
+  principle_component_plot_projection <- text2DPlot(PC_projections_satisfactionwords_40)
+  #principle_component_plot_projection
+
+  expect_true(ggplot2::is.ggplot(principle_component_plot_projection))
 })

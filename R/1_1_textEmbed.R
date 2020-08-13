@@ -111,6 +111,9 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
 #' Also give word frequencies.
 #' @param x_characters A character column in a tibble.
 #' @return A tibble with a unique words column and a column with their respective frequency.
+#' @importFrom tibble tibble
+#' @importFrom stringr str_c
+#' @importFrom tokenizers tokenize_words
 #' @noRd
 getUniqueWordsAndFreq <- function(x_characters) {
   # Unite all text variables into one
@@ -121,7 +124,7 @@ getUniqueWordsAndFreq <- function(x_characters) {
   x_characters4 <- tokenizers::tokenize_words(x_characters3, simplify = T)
   # Create dataframe with single words and frequency
   x_characters5 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters4), " ")))))
-  singlewords <- tibble(x_characters5$Var1, x_characters5$Freq)
+  singlewords <- tibble::tibble(x_characters5$Var1, x_characters5$Freq)
   colnames(singlewords) <- c("words", "n")
   singlewords$words <- as.character(singlewords$words)
   singlewords
@@ -608,3 +611,4 @@ textEmbed <- function(x,
   all_embeddings$singlewords_we <- decontextualised_embeddings_words
   all_embeddings
 }
+

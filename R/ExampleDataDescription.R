@@ -96,7 +96,7 @@
 
 #' Example data for plotting a Semantic Centrality Plot.
 #'
-#' Oscar The dataset is a shortened version of the data sets of Study 1
+#' The dataset is a shortened version of the data sets of Study 1
 #' from Kjell, et al., 2016.
 #'
 #' @format A data frame with 2,146 and 4 variables:
@@ -108,3 +108,20 @@
 #' }
 #' @source \url{https://link.springer.com/article/10.1007/s11205-015-0903-z}
 "centrality_data_harmony"
+
+#' Example data for plotting a Principle Component Projection Plot.
+#'
+#' The dataset is a shortened version of the data sets of Study 1
+#' from Kjell, et al., 2016.
+#'
+#' @format A data frame.
+#' \describe{
+#'   \item{words}{unique words}
+#'   \item{n}{overall word frequency}
+#'   \item{Dim_PC1}{Principle component value for dimension 1}
+#'   \item{Dim_PC2}{Principle component value for dimension 2}
+#' }
+#' @source \url{https://link.springer.com/article/10.1007/s11205-015-0903-z}
+"PC_projections_satisfactionwords_40"
+
+

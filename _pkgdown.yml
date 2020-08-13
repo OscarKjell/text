@@ -47,6 +47,8 @@ reference:
     - textProjectionPlot
     - textCentralityData
     - textCentralityPlot
+    - text2DData
+    - text2DPlot
 - title: Example Data
   contents:
     - Language_based_assessment_data_8_10
