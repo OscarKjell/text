@@ -51,8 +51,8 @@ reference:
     - text2DPlot
 - title: Example Data
   contents:
-    - Language_based_assessment_data_8_10
-    - wordembeddings4_10
+    - Language_based_assessment_data_8
+    - wordembeddings4
     - Language_based_assessment_data_3_100
     - DP_projections_HILS_SWLS_100
     - centrality_data_harmony
