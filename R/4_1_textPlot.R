@@ -18,6 +18,18 @@ unique_freq_words <- function(words) {
   words_groupb_freq
 }
 
+
+
+
+####################################
+####################################
+##################
+##################   Dot Product Projection
+##################
+####################################
+####################################
+
+
 #' Compute Dot Product Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
 #' @param wordembeddings Word embeddings from textEmbed for the words to be plotted
@@ -334,6 +346,7 @@ textProjectionData <- function(words,
 #### End textProjectionData
 #############
 
+
 #' Plot words according to Dot Product Projections.
 #' @param word_data Dataframe from textProjectionData
 #' @param k_n_words_to_test Select the k most frequent words to significance
@@ -351,7 +364,7 @@ textProjectionData <- function(words,
 #' (i.e., even if not significant;  per dimensions, where duplicates are removed).
 #' @param title_top Title (default "  ")
 #' @param titles_color Color for all the titles (default: "#61605e")
-#' @param x_axes If TRUE, plotting on the x_axes.
+# @param x_axes If TRUE, plotting on the x_axes.
 #' @param y_axes If TRUE, also plotting on the y-axes (default is FALSE). Also plotting on
 #' y-axes produces a two dimension 2-dimensional plot, but the textProjectionData function has to
 #' have had a variable on the y-axes.
@@ -432,7 +445,7 @@ textProjectionPlot <- function(word_data,
                                plot_n_word_frequency = 5,
                                plot_n_words_middle = 5,
                                titles_color = "#61605e",
-                               x_axes = TRUE,
+                               #x_axes = TRUE,
                                y_axes = FALSE,
                                p_alpha = 0.05,
                                p_adjust_method = "none",
@@ -466,13 +479,13 @@ textProjectionPlot <- function(word_data,
   set.seed(2020)
 
   # Sorting out axes
-  if (x_axes == TRUE) {
+  #if (x_axes == TRUE) {
     x_axes_1 <- "dot.x"
     p_values_x <- "p_values_dot.x"
-  } else {
-    x_axes_1 <- NULL
-    p_values_x <- NULL
-  }
+  #} else {
+  #  x_axes_1 <- NULL
+  #  p_values_x <- NULL
+  #}
 
   if (y_axes == TRUE) {
     y_axes_1 <- "dot.y"
@@ -775,7 +788,7 @@ textProjectionPlot <- function(word_data,
       axis.title.x = ggplot2::element_text(color = titles_color),
       axis.title.y = ggplot2::element_text(color = titles_color)
     )
-  # plot
+   plot
 
   # Creating legend
   bivariate_color_data <- tibble::tibble(
@@ -812,18 +825,21 @@ textProjectionPlot <- function(word_data,
     ggplot2::theme_void() +
     #    ggplot2::annotate(geom="text", x=2, y=2, label="ns",
     #               color = titles_color, size=legend_number_size)+
-    ggplot2::annotate(
+    {if (y_axes_1 != "only_x_dimension" )
+      ggplot2::annotate(
       geom = "text", x = 1, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[1], na.rm = T),
       color = titles_color, size = legend_number_size
-    ) +
-    ggplot2::annotate(
+    ) } +
+    {if (y_axes_1 != "only_x_dimension" )
+      ggplot2::annotate(
       geom = "text", x = 2, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[2], na.rm = T),
       color = titles_color, size = legend_number_size
-    ) +
-    ggplot2::annotate(
+    ) }+
+    {if (y_axes_1 != "only_x_dimension" )
+      ggplot2::annotate(
       geom = "text", x = 3, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[3], na.rm = T),
       color = titles_color, size = legend_number_size
-    ) +
+    ) }+
     ggplot2::annotate(
       geom = "text", x = 1, y = 2, label = sum(word_data_all$colour_categories == bivariate_color_codes[4], na.rm = T),
       color = titles_color, size = legend_number_size
@@ -836,18 +852,21 @@ textProjectionPlot <- function(word_data,
       geom = "text", x = 3, y = 2, label = sum(word_data_all$colour_categories == bivariate_color_codes[6], na.rm = T),
       color = titles_color, size = legend_number_size
     ) +
-    ggplot2::annotate(
+    {if (y_axes_1 != "only_x_dimension" )
+      ggplot2::annotate(
       geom = "text", x = 1, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[7], na.rm = T),
       color = titles_color, size = legend_number_size
-    ) +
-    ggplot2::annotate(
+    ) }+
+    {if (y_axes_1 != "only_x_dimension" )
+      ggplot2::annotate(
       geom = "text", x = 2, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[8], na.rm = T),
       color = titles_color, size = legend_number_size
-    ) +
-    ggplot2::annotate(
+    ) } +
+    {if (y_axes_1 != "only_x_dimension" )
+      ggplot2::annotate(
       geom = "text", x = 3, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[9], na.rm = T),
       color = titles_color, size = legend_number_size
-    ) +
+    )} +
     ggplot2::theme(
       plot.title = ggplot2::element_text(hjust = 0.5, size = legend_title_size + 1),
       title = ggplot2::element_text(color = titles_color),
@@ -856,7 +875,7 @@ textProjectionPlot <- function(word_data,
       axis.title.y = ggplot2::element_text(angle = 90, color = titles_color)
     ) +
     ggplot2::coord_fixed()
-  # legend
+  legend
 
   # Plot both figure and legend
   suppressWarnings(cowplot::ggdraw() +
@@ -866,11 +885,16 @@ textProjectionPlot <- function(word_data,
 ###### End textProjectionPlot
 
 
-############
-############
-######  Semantic Centrality Plot SC
-############
-############
+
+
+####################################
+####################################
+##################
+##################   Semantic Centrality Plot SC
+##################
+####################################
+####################################
+
 
 
 #' Compute cosine semantic similarity score between single words' word embeddings
