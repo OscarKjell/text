@@ -43,7 +43,8 @@ Imports:
     yardstick, 
     crayon, 
     future,
-    furrr
+    furrr,
+    ranger
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,
