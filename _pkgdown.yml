@@ -2,7 +2,7 @@
 url: https://r-text.org
 
 development:
-  mode: devel
+  mode: release
 
 home:
   title: text

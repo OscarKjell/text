@@ -324,10 +324,6 @@ textHuggingFace <- function(x,
     pretrained_weights <- "distilbert-base-uncased"
     tokenizer_class <- DistilBertTokenizer
     model_class <- DistilBertModel
-  } else if (model == "roberta-base") {
-    pretrained_weights <- "roberta-base"
-    tokenizer_class <- RobertaTokenizer
-    model_class <- RobertaModel
   } else if (model == "xlm-roberta-base") {
     pretrained_weights <- "xlm-roberta-base"
     tokenizer_class <- XLMRobertaTokenizer
@@ -340,6 +336,10 @@ textHuggingFace <- function(x,
     pretrained_weights <- "t5-small"
     tokenizer_class <- T5Tokenizer
     model_class <- T5Model
+  } else if (model == "roberta-base") {
+    pretrained_weights <- "roberta-base"
+    tokenizer_class <- RobertaTokenizer
+    model_class <- RobertaModel
   } else if (model == "new") {
     pretrained_weights <- pretrained_weights
     tokenizer_class <- tokenizer_class
