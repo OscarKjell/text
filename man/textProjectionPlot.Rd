@@ -14,7 +14,6 @@ textProjectionPlot(
   plot_n_word_frequency = 5,
   plot_n_words_middle = 5,
   titles_color = "#61605e",
-  x_axes = TRUE,
   y_axes = FALSE,
   p_alpha = 0.05,
   p_adjust_method = "none",
@@ -68,8 +67,6 @@ where duplicates are removed); selects fist according to lowest p-value and then
 (i.e., even if not significant;  per dimensions, where duplicates are removed).}
 
 \item{titles_color}{Color for all the titles (default: "#61605e")}
-
-\item{x_axes}{If TRUE, plotting on the x_axes.}
 
 \item{y_axes}{If TRUE, also plotting on the y-axes (default is FALSE). Also plotting on
 y-axes produces a two dimension 2-dimensional plot, but the textProjectionData function has to
