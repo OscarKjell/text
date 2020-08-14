@@ -42,6 +42,10 @@ get_encoding_change <- function(x) {
 #' @importFrom purrr map
 #' @noRd
 select_character_v_utf8 <- function(x) {
+  # If a vector is submitted, make it a tibble column.
+  if(is.vector(x) == TRUE & is.list(x)==FALSE){
+    x <- tibble::as_tibble_col(x)
+  }
   # Select all character variables
   x_characters <- dplyr::select_if(x, is.character)
   # This makes sure that all variables are UTF-8 coded
