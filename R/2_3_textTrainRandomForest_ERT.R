@@ -17,6 +17,7 @@
 #'
 #' @param object An rsplit object (from results_nested_resampling tibble)
 #' object = results_nested_resampling$splits[[1]]
+#' @param extremely_randomised_splitrule default: "extratrees", see also: "gini" or "hellinger"
 #' @param mtry hyperparameter for random forest.
 #' @param min_n hyperparameter for random forest.
 #' @param trees number of trees
@@ -29,7 +30,8 @@ fit_model_accuracy_rf <- function(object,
                                   min_n = 1,
                                   trees = 1000,
                                   preprocess_PCA_thresh = 0.95,
-                                  eval_measure = "f_measure") {
+                                  eval_measure = "f_measure",
+                                  extremely_randomised_splitrule = NULL) {
 
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
   xy_recipe <- rsample::analysis(object) %>%
@@ -49,11 +51,19 @@ fit_model_accuracy_rf <- function(object,
   xy_training <- recipes::juice(xy_recipe)
 
   # Create and fit model. help(rand_forest)
+  if(is.null(extremely_randomised_splitrule)){
   mod <-
     parsnip::rand_forest(trees = trees, mode = "classification", mtry = mtry, min_n = min_n) %>%
-    # set_engine("ranger")
+    #parsnip::set_engine("ranger")
     parsnip::set_engine("randomForest") %>%
     parsnip::fit(y ~ ., data = xy_training) #analysis(object)
+  } else if(is.character(extremely_randomised_splitrule)){
+    mod <-
+      parsnip::rand_forest() %>%
+      parsnip::set_engine("ranger", splitrule = extremely_randomised_splitrule) %>% # extremely_randomised_splitrule = "extratrees" = "gini" "extratrees" "hellinger" tune()
+      parsnip::set_mode("classification") %>%
+      parsnip::fit(y ~ ., data = xy_training) # ADDED line; and: install.packages("ranger")
+  }
 
   #Prepare the test data according to the recipe
   xy_testing <- xy_recipe %>%
@@ -115,6 +125,7 @@ fit_model_accuracy_rf <- function(object,
 #'
 #' @param object An rsplit object (from results_nested_resampling tibble)
 #' object = results_nested_resampling$splits[[1]]
+#' @param extremely_randomised_splitrule default: "extratrees", see also: "gini" or "hellinger"
 #' @param mtry hyperparameter for random forest.
 #' @param min_n hyperparameter for random forest.
 #' @param trees number of trees
@@ -127,12 +138,14 @@ fit_model_accuracy_wrapper_rf <- function(mtry,
                                           object,
                                           trees,
                                           preprocess_PCA_thresh,
-                                          eval_measure) fit_model_accuracy_rf(object,
+                                          eval_measure,
+                                          extremely_randomised_splitrule) fit_model_accuracy_rf(object,
                                                                               mtry,
                                                                               min_n,
                                                                               trees,
                                                                               preprocess_PCA_thresh,
-                                                                              eval_measure)
+                                                                              eval_measure,
+                                                                              extremely_randomised_splitrule)
 
 #fit_model_accuracy_wrapper_rf(object = results_nested_resampling$splits[[1]], mtry=1, min_n=1, trees=10, preprocess_PCA_thresh=0.95, eval_measure = "roc_auc")
 
@@ -140,6 +153,7 @@ fit_model_accuracy_wrapper_rf <- function(mtry,
 #'
 #' @param object an rsplit object from the INNER samples
 #' object=results_nested_resampling$inner_resamples[[1]]$splits[[1]]
+#' @param extremely_randomised_splitrule default: "extratrees", see also: "gini" or "hellinger"
 #' @param mtry hyperparameter for random forest.
 #' @param min_n hyperparameter for random forest.
 #' @param trees number of trees
@@ -150,14 +164,16 @@ tune_over_cost_rf <- function(object,
                               min_n,
                               trees,
                               preprocess_PCA_thresh,
-                              eval_measure) {
+                              eval_measure,
+                              extremely_randomised_splitrule) {
 
-  grid_inner <- base::expand.grid(
-    mtry = mtry,
-    min_n = min_n,
-    trees = trees,
-    preprocess_PCA_thresh = preprocess_PCA_thresh)
-  #warnings()
+
+grid_inner <- base::expand.grid(
+  mtry = mtry,
+  min_n = min_n,
+  trees = trees,
+  preprocess_PCA_thresh = preprocess_PCA_thresh)
+
   # Test models with the different hyperparameters for the inner samples
   tune_results <- purrr::pmap(list(grid_inner$mtry,
                               grid_inner$min_n,
@@ -165,7 +181,8 @@ tune_over_cost_rf <- function(object,
                               grid_inner$preprocess_PCA_thresh),
                               fit_model_accuracy_wrapper_rf,
                               object = object,
-                              eval_measure = eval_measure) #
+                              eval_measure = eval_measure,
+                              extremely_randomised_splitrule)
 
   # Sort the output to separate the accuracy, predictions and truth
   tune_outputlist <- tune_results %>%
@@ -191,6 +208,7 @@ tune_over_cost_rf <- function(object,
 #'
 #' @param object An rsplit object from the INNER samples
 #' object = results_nested_resampling$inner_resamples[[1]]
+#' @param extremely_randomised_splitrule default: "extratrees", see also: "gini" or "hellinger"
 #' @param mtry hyperparameter for random forest.
 #' @param min_n hyperparameter for random forest.
 #' @param trees number of trees
@@ -201,7 +219,8 @@ summarize_tune_results_rf <- function(object,
                                       min_n,
                                       trees,
                                       preprocess_PCA_thresh,
-                                      eval_measure) {
+                                      eval_measure,
+                                      extremely_randomised_splitrule) {
 
   # Return row-bound tibble containing the INNER results
   purrr::map_df(.x = object$splits,
@@ -210,7 +229,8 @@ summarize_tune_results_rf <- function(object,
                 min_n=min_n,
                 trees = trees,
                 preprocess_PCA_thresh = preprocess_PCA_thresh,
-                eval_measure = eval_measure) %>%
+                eval_measure = eval_measure,
+                extremely_randomised_splitrule = extremely_randomised_splitrule) %>%
 
     # For each value of the tuning parameter, compute the
     # average RMSE which is the INNER estimate.
@@ -234,6 +254,7 @@ summarize_tune_results_rf <- function(object,
 #model_description = "Consider writing a description of your model here"
 #multi_cores = TRUE
 #eval_measure = "bal_accuracy" # "roc_auc" #"accuracy" #
+#extremely_randomised_splitrule = NULL
 #library(magrittr)
 
 #' Train word embeddings to a categorical variable using random forrest.
@@ -245,6 +266,9 @@ summarize_tune_results_rf <- function(object,
 # @param inside_folds Number of folds for the inner folds.
 # @param inside_strata_y Variable to stratify according (default "y"; can also set to NULL).
 #' @param preprocess_PCA_thresh Pre-processing threshold for amount of variance to retain (default 0.95).
+#' @param extremely_randomised_splitrule default: NULL, which thus implement a random forest; can also select: "extratrees", "gini" or "hellinger"; if these are selected
+#' your mtry settings will be overridden (see Geurts et al. (2006) Extremely randomized trees for details; and see the ranger r-package
+#' for details on implementations).
 #' @param mtry hyper parameter that may be tuned;  default:c(1, 20, 40),
 #' @param min_n hyper parameter that may be tuned; default: c(1, 20, 40)
 #' @param trees Number of trees to use (default 1000).
@@ -286,6 +310,7 @@ textTrainRandomForest <- function(x,
                                   #inside_folds = 10,
                                   #inside_strata_y = "y",
                                   preprocess_PCA_thresh = c(0.75, 0.85, 0.95),
+                                  extremely_randomised_splitrule = NULL,
                                   mtry = c(1, 5, 10, 15, 30, 40),
                                   min_n = c(1, 5, 10, 15, 30, 40),
                                   trees = c(1000, 1500),
@@ -318,7 +343,8 @@ textTrainRandomForest <- function(x,
                                  min_n = min_n,
                                  trees = trees,
                                  preprocess_PCA_thresh = preprocess_PCA_thresh,
-                                 eval_measure = eval_measure)
+                                 eval_measure = eval_measure,
+                                 extremely_randomised_splitrule = extremely_randomised_splitrule)
   } else {
     # The multisession plan uses the local cores to process the inner resampling loop.
     #library(future)
@@ -330,7 +356,8 @@ textTrainRandomForest <- function(x,
                                         min_n = min_n,
                                         trees = trees,
                                         preprocess_PCA_thresh = preprocess_PCA_thresh,
-                                        eval_measure = eval_measure)
+                                        eval_measure = eval_measure,
+                                        extremely_randomised_splitrule = extremely_randomised_splitrule)
   }
 
   # Function to get the lowest eval_measure_val
@@ -428,16 +455,27 @@ textTrainRandomForest <- function(x,
     parsnip::fit(y ~ ., data = xy_final) #analysis(object)
 
   # Saving the final mtry and min_n used for the final model.
-  mtry_description = paste("mtry =", deparse(statisticalMode(results_split_parameter$mtry)))
-  min_n_description = paste("min_n =", deparse(statisticalMode(results_split_parameter$min_n)))
+  if(is.null(extremely_randomised_splitrule)){
+    mtry_description = paste("mtry =", deparse(statisticalMode(results_split_parameter$mtry)))
+    min_n_description = paste("min_n =", deparse(statisticalMode(results_split_parameter$min_n)))
+  }else{
+    mtry_description <- c("-")
+    min_n_description <- c("-")
+  }
   trees_description = paste("trees =", deparse(statisticalMode(results_split_parameter$trees)))
   preprocess_PCA_thresh_description = paste("preprocess_PCA_thresh = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA_thresh)))
   eval_measure = paste("eval_measure = ", deparse(eval_measure))
 
+  if(is.character(extremely_randomised_splitrule)){
+  extremely_randomised_splitrule  = paste("extremely_randomised_splitrule = ", deparse(extremely_randomised_splitrule))
+  }else{
+  extremely_randomised_splitrule <- c("-")
+  }
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
   model_description_detail <- c(deparse(substitute(x)),
                                 deparse(substitute(y)),
                                 preprocess_PCA_thresh_description,
+                                extremely_randomised_splitrule,
                                 eval_measure,
                                 mtry_description,
                                 min_n_description,
