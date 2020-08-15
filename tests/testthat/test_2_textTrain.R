@@ -130,3 +130,8 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 #  expect_is(results$prediction$.pred_1[1], "numeric")
 #})
 
+
+
+
+
+

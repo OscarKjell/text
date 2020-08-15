@@ -20,7 +20,12 @@ textTrainRegression(
 
 \item{y}{Numeric variable to predict.}
 
-\item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
+\item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain
+(may set to 0.95 or c(0.80, 0.90) etc.). Default setting is "PCA_component_algorithm", which
+ is to compute the number of PC to use with the following algorithm:
+ round(max(min(num_features/2, num_users/1.5), min(50, num_features))).
+ num_features = number of dimensions in the word embedding that is used.
+ num_users = the number of rows/participants.}
 
 \item{penalty}{hyper parameter that is tuned}
 

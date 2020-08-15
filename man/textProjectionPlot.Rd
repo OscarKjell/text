@@ -149,7 +149,6 @@ plot_projection <- textProjectionPlot(
   plot_n_word_extreme = 1,
   plot_n_word_frequency = 1,
   plot_n_words_middle = 1,
-  x_axes = TRUE,
   y_axes = FALSE,
   p_alpha = 0.05,
   title_top = " Dot Product Projection (DPP)",

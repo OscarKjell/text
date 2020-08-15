@@ -287,3 +287,62 @@ textTrainLists <- function(x,
 ##
 ##                               trees = 500)
 ##list_restuls
+
+
+
+
+
+# devtools::document()
+#' Predict scores or classification from, e.g., textTrain.
+#'
+#' @param model_info model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
+#' @param new_data Word embeddings from new data to be predicted from.
+#' @return Predicted scores from word embeddings.
+#' @examples
+#' wordembeddings <- wordembeddings4
+#' ratings_data <- Language_based_assessment_data_8
+#'
+#' @seealso see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
+#' \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+#' @importFrom recipes prep bake
+#' @importFrom stats predict
+#' @export
+textPredict <- function(model_info = NULL, new_data=NULL){
+
+  # Load prepared_with_recipe
+  data_prepared_with_recipe <- recipes::bake(model_info$preprocessing_recipe, new_data)
+
+  # Get scores
+  predicted_scores <- stats::predict(model_info$final_model, data_prepared_with_recipe)
+  predicted_scores
+}
+
+
+
+
+## TESTING
+#trained <- textTrain(wordembeddings4$harmonytext,
+#                     Language_based_assessment_data_8$hilstotal,
+#                     #outside_strata_y = NULL,
+#                     #inside_strata_y = NULL,
+#                     penalty = c(1),
+#                     mixture = c(0),
+#                     trees = c(1000),
+#                     preprocess_PCA_thresh = c(0.95),
+#                     multi_cores = FALSE
+#)
+#
+#
+#
+#test_data <- c("happy", "sad unhappy")
+#
+#test_data_we <- textEmbed(test_data)
+#
+#hils_predicted_scores1 <- textPredict(model = trained,
+#                                     new_data = test_data_we$harmonywords)
+#hils_predicted_scores1
+
+
+
+
+
