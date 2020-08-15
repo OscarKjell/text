@@ -173,8 +173,8 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA_thre
 
 
 
-# x <- wordembeddings4$harmonytext
-# y <- Language_based_assessment_data_8$hilstotal
+#x <- wordembeddings4$harmonytext
+#y <- Language_based_assessment_data_8$hilstotal
 ##                                outside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
 #outside_strata_y = NULL
 ##                                inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
@@ -323,19 +323,25 @@ textTrainRegression <- function(x,
   correlation <- stats::cor.test(predy_y$predictions, predy_y$y, method = method_cor)
 
 #####
-  # Construct final model to be saved and applied on other data NEED THE RECiPE HERE
+  # Construct final model to be saved and applied on other data
+  is.list(xy)
+  tibble::is.tibble(xy)
+  is.data.frame(xy)
+
   final_recipe <- xy %>%
     recipes::recipe(y ~ .) %>%
     # recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
-    recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) %>%
-    recipes::prep()
+    recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
+    #recipes::prep()
+
+  preprocessing_recipe <- recipes::prep(final_recipe)
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
-  xy_final <- recipes::juice(final_recipe)
+  xy_final <- recipes::juice(preprocessing_recipe)
 
 
   final_predictive_model <-
@@ -359,10 +365,63 @@ textTrainRegression <- function(x,
                                 preprocess_PCA_thresh_description,
                                 model_description)
 
-  final_results <- list(predy_y, final_predictive_model, model_description_detail, correlation)
+  final_results <- list(predy_y, preprocessing_recipe, final_predictive_model, model_description_detail, correlation)
   final_results
-  names(final_results) <- c("predictions", "final_model", "model_description", "correlation")
+  names(final_results) <- c("predictions", "preprocessing_recipe", "final_model", "model_description", "correlation")
   final_results
 }
 ########
 # textTrainRegression
+
+
+# devtools::document()
+#' Predict scores or classification from, e.g., textTrain.
+#'
+#' @param model_info model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
+#' @param new_data Word embeddings from new data to be predicted from.
+#' @return Predicted scores from word embeddings.
+#' @examples
+#' wordembeddings <- wordembeddings4
+#' ratings_data <- Language_based_assessment_data_8
+#'
+#' @seealso see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
+#' \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+#' @importFrom recipes prep bake
+
+#' @export
+textPredict <- function(model_info = NULL, new_data=NULL){
+
+  # Load prepared_with_recipe
+  data_prepared_with_recipe <- recipes::bake(model_info$preprocessing_recipe, new_data)
+
+  # Get scores
+  predicted_scores <- predict(model_info$final_model, data_prepared_with_recipe)
+  predicted_scores
+}
+
+
+
+
+## TESTING
+#trained <- textTrain(wordembeddings4$harmonytext,
+#                     Language_based_assessment_data_8$hilstotal,
+#                     #outside_strata_y = NULL,
+#                     #inside_strata_y = NULL,
+#                     penalty = c(1),
+#                     mixture = c(0),
+#                     trees = c(1000),
+#                     preprocess_PCA_thresh = c(0.95),
+#                     multi_cores = FALSE
+#)
+#
+#
+#
+#test_data <- c("happy", "sad unhappy")
+#
+#test_data_we <- textEmbed(test_data)
+#
+#hils_predicted_scores1 <- textPredict(model = trained,
+#                                     new_data = test_data_we$harmonywords)
+#hils_predicted_scores1
+
+

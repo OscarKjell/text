@@ -19,6 +19,15 @@ test_that("textTrain produces list of results with prediction being numeric", {
                        preprocess_PCA_thresh = c(0.95),
                        multi_cores = FALSE
   )
+
+  test_data <- c("happy", "sad unhappy")
+
+  test_data_we <- textEmbed(test_data)
+
+  hils_predicted_scores <- predict(trained$final_model, test_data_we)
+
+
+
   #warnings()
   testthat::expect_that(trained, is_a("list"))
   testthat::expect_is(trained$prediction$predictions[1], "numeric")
