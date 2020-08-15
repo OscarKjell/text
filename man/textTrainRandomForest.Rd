@@ -43,7 +43,7 @@ see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_me
 make the analyses considerably faster to run).}
 }
 \value{
-A list with roc_curve_data, roc_curve_plot, truth and predictions, final_model, model_description
+A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe, final_model, model_description
 chisq and fishers test as well as evaluation measures, e.g., including accuracy, f_meas and roc_auc (for details on
 these measures see the yardstick r-package documentation).
 }

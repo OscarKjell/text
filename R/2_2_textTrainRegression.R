@@ -205,7 +205,8 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA_thre
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
 #' make the analyses considerably faster to run).
-#' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
+#' @return A correlation between predicted and observed values; tibble of predicted values, as well as information
+#' about the model (preprossing_recipe, final_model and model_description).
 #' @examples
 #' wordembeddings <- wordembeddings4
 #' ratings_data <- Language_based_assessment_data_8

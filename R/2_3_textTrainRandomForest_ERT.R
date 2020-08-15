@@ -277,7 +277,7 @@ summarize_tune_results_rf <- function(object,
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
 #' make the analyses considerably faster to run).
-#' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, final_model, model_description
+#' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe, final_model, model_description
 #' chisq and fishers test as well as evaluation measures, e.g., including accuracy, f_meas and roc_auc (for details on
 #' these measures see the yardstick r-package documentation).
 #' @examples
@@ -439,12 +439,14 @@ textTrainRandomForest <- function(x,
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
     recipes::step_BoxCox(recipes::all_predictors()) %>%
-    recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) %>%
-    recipes::prep()
+    recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
+    #recipes::prep()
+
+  preprocessing_recipe <- recipes::prep(final_recipe)
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
-  xy_final <- recipes::juice(final_recipe)
+  xy_final <- recipes::juice(preprocessing_recipe)
 
   final_predictive_model <-
     parsnip::rand_forest(trees = statisticalMode(results_split_parameter$trees), mode = "classification",
@@ -482,8 +484,8 @@ textTrainRandomForest <- function(x,
                                 trees_description,
                                 model_description)
 
-  final_results <- list(roc_curve_data, predy_y, final_predictive_model, roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
-  names(final_results) <- c("roc_curve_data", "truth_predictions", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
+  final_results <- list(roc_curve_data, predy_y, preprocessing_recipe,  final_predictive_model, roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
+  names(final_results) <- c("roc_curve_data", "truth_predictions", "preprocessing_recipe", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
   final_results
 }
 #warnings()

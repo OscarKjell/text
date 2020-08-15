@@ -35,7 +35,8 @@ can set to "spearman" or "kendall").}
 make the analyses considerably faster to run).}
 }
 \value{
-A correlation between predicted and observed values; as well as a tibble of predicted values.
+A correlation between predicted and observed values; tibble of predicted values, as well as information
+about the model (preprossing_recipe, final_model and model_description).
 }
 \description{
 Train word embeddings to a numeric variable.
