@@ -17,7 +17,7 @@ textHuggingFace(
 )
 }
 \arguments{
-\item{x}{Tibble/dataframe with at least one character variable.}
+\item{x}{A character variable or a tibble/dataframe with at least one character variable.}
 
 \item{contexts}{Provide word embeddings based on word contexts
 (standard method; default = TRUE).}

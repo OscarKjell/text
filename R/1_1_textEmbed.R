@@ -35,8 +35,8 @@ get_encoding_change <- function(x) {
 
 
 #' Select all character variables and make them UTF-8 coded (BERT wants it in this format).
-#' @param tibble including both text and numeric variables.
-#' @return all character variables in UTF-8 format.
+#' @param x A character variable or a tibble including both character and numeric variables.
+#' @return a tibble containing all character variables in UTF-8 format.
 #' @importFrom dplyr select_if
 #' @importFrom tibble as_tibble
 #' @importFrom purrr map
@@ -44,7 +44,13 @@ get_encoding_change <- function(x) {
 select_character_v_utf8 <- function(x) {
   # If a vector is submitted, make it a tibble column.
   if(is.vector(x) == TRUE & is.list(x)==FALSE){
+    #Select variable name to have as column name in the end
+    colname_x <- deparse(substitute(Language_based_assessment_data_8$harmonywords))
+    #Remove everything before a $
+    colname_x <- gsub("^.*\\$", "", colname_x) #gsub(".*_", "", colname_x)
+
     x <- tibble::as_tibble_col(x)
+    colnames(x) <- substitute(colname_x)
   }
   # Select all character variables
   x_characters <- dplyr::select_if(x, is.character)
@@ -234,7 +240,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 }
 
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
-#' @param x Tibble/dataframe with at least one character variable.
+#' @param x A character variable or a tibble/dataframe with at least one character variable.
 #' @param contexts Provide word embeddings based on word contexts
 #' (standard method; default = TRUE).
 #' @param decontexts Provide word embeddings of single words as input
@@ -499,7 +505,7 @@ textLayerAggregation <- function(word_embeddings_layers,
 }
 
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
-#' @param x Tibble/dataframe with at least one character variable.
+#' @param x A character variable or a tibble/dataframe with at least one character variable.
 #' @param contexts Provide word embeddings based on word contexts
 #' (standard method; default = TRUE).
 #' @param decontexts Provide word embeddings of single words as input

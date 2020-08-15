@@ -13,7 +13,7 @@ test_that("Testing textEmbed as well as train", {
                                        model = "bert-base-uncased",
                                        layers=11)
 
-  text_train_results <- textTrain(harmony_word_embeddings$value,
+  text_train_results <- textTrain(harmony_word_embeddings$harmonywords,
                                   Language_based_assessment_data_8$hilstotal,
                                   preprocess_PCA_thresh = c(0.20),
                                   penalty = 1e-16)

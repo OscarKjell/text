@@ -8,6 +8,7 @@ library(dplyr)
 context("Training Functions")
 
 test_that("textTrain produces list of results with prediction being numeric", {
+
   trained <- textTrain(wordembeddings4$harmonytext,
                        Language_based_assessment_data_8$hilstotal,
                        #outside_strata_y = NULL,
