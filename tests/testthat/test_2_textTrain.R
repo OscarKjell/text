@@ -15,7 +15,7 @@ test_that("textTrain produces list of results with prediction being numeric", {
                        #inside_strata_y = NULL,
                        penalty = c(1),
                        mixture = c(0),
-                       preprocess_PCA_thresh = c(0.4, 0.5),
+                       preprocess_PCA_thresh = "PCA_component_algorithm",
                        multi_cores = TRUE
   )
 
