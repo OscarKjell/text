@@ -4,40 +4,29 @@
 \alias{textTrain}
 \title{Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.}
 \usage{
-textTrain(
-  x,
-  y,
-  model_description = "Consider writing a description of your model here",
-  multi_cores = TRUE,
-  preprocess_PCA_thresh = c(0.8, 0.95),
-  penalty = 10^seq(-16, 16),
-  mixture = c(0),
-  method_cor = "pearson",
-  mtry = c(1, 5, 10, 15, 30, 40),
-  min_n = c(1, 5, 10, 15, 30, 40),
-  trees = c(1000, 1500),
-  eval_measure = "roc_auc",
-  force_train_method = "none"
-)
+textTrain(x, y, force_train_method = "automatic", ...)
 }
 \arguments{
 \item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
 
 \item{y}{Numeric variable to predict.}
 
-\item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
-
-\item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-make the analyses considerably faster to run).}
+\item{force_train_method}{default is "automatic", so if y is a factor random_forest is used, and if y is numeric ridge regression
+is used. This can be overridden using "regression" or "random_forest".}
 
 \item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
+
+\item{method_cor}{Type of correlation used in evaluation (default "pearson";
+can set to "spearman" or "kendall").}
 
 \item{penalty}{hyper parameter that is tuned}
 
 \item{mixture}{hyper parameter that is tuned default = 0 (hence a pure ridge regression).}
 
-\item{method_cor}{Type of correlation used in evaluation (default "pearson";
-can set to "spearman" or "kendall").}
+\item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
+
+\item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
+make the analyses considerably faster to run).}
 
 \item{mtry}{hyper parameter that may be tuned;  default:c(1, 20, 40),}
 
@@ -47,9 +36,6 @@ can set to "spearman" or "kendall").}
 
 \item{eval_measure}{Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
 see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".}
-
-\item{force_train_method}{default is "none", so if y is a factor random_forest is used, and if y is numeric ridge regression
-is used. This can be overridden using "regression" or "random_forest".}
 }
 \value{
 A correlation between predicted and observed values; as well as a tibble of predicted values.

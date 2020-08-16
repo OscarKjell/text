@@ -83,12 +83,6 @@ fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA_thre
   output
 }
 
-# testing
-# dev <- fit_model_rmse(object=results_nested_resampling$inner_resamples[[2]]$splits[[1]])
-# dev
-# n_cross2 <- fit_model_rmse(object=results_nested_resampling$inner_resamples[[2]]$splits[[1]])
-# n_cross2
-
 
 #' In some situations, we want to parameterize the function over the tuning parameter:
 #' Function to fit a model and compute RMSE.
@@ -118,8 +112,7 @@ tune_over_cost <- function(object, penalty, mixture, preprocess_PCA_thresh = pre
   if(preprocess_PCA_thresh == "PCA_component_algorithm"){
     num_features = length(rsample::analysis(object)) - 1
     num_users = nrow(rsample::analysis(object))
-    n_components = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
-    preprocess_PCA_thresh_value = n_components
+    preprocess_PCA_thresh_value = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
     preprocess_PCA_thresh_value
   } else if(preprocess_PCA_thresh >= 1){
     preprocess_PCA_thresh_value <- preprocess_PCA_thresh
@@ -139,12 +132,6 @@ tune_over_cost <- function(object, penalty, mixture, preprocess_PCA_thresh = pre
                               fit_model_rmse_wrapper,
                               object = object
                               )
-#  tune_results <- purrr::map2(grid_inner$penalty,
-#                              grid_inner$mixture,
-#                              fit_model_rmse_wrapper,
-#                              object = object,
-#                              preprocess_PCA_thresh = preprocess_PCA_thresh
-#                              )
 
   # Sort the output to separate the rmse, predictions and truth
   tune_outputlist <- tune_results %>%

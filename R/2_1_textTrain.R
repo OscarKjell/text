@@ -33,7 +33,7 @@
 #' @param trees number of trees if it is a categorical variable.
 #' @param eval_measure Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
 #' see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".
-#' @param force_train_method default is "none", so if y is a factor random_forest is used, and if y is numeric ridge regression
+#' @param force_train_method default is "automatic", so if y is a factor random_forest is used, and if y is numeric ridge regression
 #' is used. This can be overridden using "regression" or "random_forest".
 #' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
 #' @examples
@@ -49,29 +49,14 @@
 #' @export
 textTrain <- function(x,
                       y,
-                      #outside_folds = 10,
-                      #outside_strata_y = "y",
-                      #inside_folds = 10,
-                      #inside_strata_y = "y",
-                      model_description = "Consider writing a description of your model here",
-                      multi_cores = TRUE,
-                      #Regression specific
-                      preprocess_PCA_thresh = c(.80, 0.95),
-                      penalty = 10^seq(-16, 16),
-                      mixture = c(0),
-                      method_cor = "pearson",
-                      #Random Forest specific
-                      mtry = c(1, 5, 10, 15, 30, 40),
-                      min_n = c(1, 5, 10, 15, 30, 40),
-                      trees = c(1000, 1500),
-                      eval_measure = "roc_auc",
-                      force_train_method = "none"){
+                      force_train_method = "automatic",
+                      ...){
 
-  if (is.numeric(y) == TRUE & force_train_method == "none") {
+  if (is.numeric(y) == TRUE & force_train_method == "automatic") {
     train_method = "regression"
   } else if (force_train_method == "regression"){
     train_method = "regression"
-  } else if (is.factor(y) == TRUE & force_train_method =="none"){
+  } else if (is.factor(y) == TRUE & force_train_method =="automatic"){
     train_method = "random_forest"
   } else if (force_train_method == "random_forest"){
     train_method = "random_forest"
@@ -80,36 +65,20 @@ textTrain <- function(x,
   if (train_method == "regression"){
     repression_output <- textTrainRegression(x=x,
                         y=y,
-                        #outside_folds = outside_folds,
-                        #outside_strata_y = outside_strata_y,
-                        #inside_folds = inside_folds,
-                        #inside_strata_y = inside_strata_y,
-                        preprocess_PCA_thresh = preprocess_PCA_thresh,
-                        penalty = penalty,
-                        mixture = mixture,
-                        method_cor = method_cor,
-                        model_description = model_description,
-                        multi_cores = multi_cores)
+                        ...)
     repression_output
 
   } else if (train_method == "random_forest"){
-
    random_forest_output <-  textTrainRandomForest(x=x,
                           y=y,
-                          #outside_folds = outside_folds,
-                          #outside_strata_y = outside_strata_y,
-                          #inside_folds = inside_folds,
-                          #inside_strata_y = inside_strata_y,
-                          trees = trees,
-                          mtry = mtry,
-                          min_n = min_n,
-                          model_description = model_description,
-                          multi_cores = multi_cores,
-                          eval_measure = eval_measure)
+                          ...)
    random_forest_output
   }
-
   }
+
+
+#x <- wordembeddings4[1:2]
+#y <- ratings_data
 
 # library(data.table)
 # devtools::document()
@@ -127,7 +96,7 @@ textTrain <- function(x,
 #' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
 #' make the analyses considerably faster to run).
 #' @param trees number of trees if it is a categorical variable.
-#' @param force_train_method default is "regression"; see also "random_forest".
+#' @param force_train_method default is automatic; see also "regression" and "random_forest".
 #' @param ... Arguments for the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples
@@ -145,17 +114,20 @@ textTrain <- function(x,
 #' @export
 textTrainLists <- function(x,
                            y,
-                           force_train_method = "regression",
-                           #outside_folds = 10,
-                           #outside_strata_y = "y",
-                           #inside_folds = 10,
-                           #inside_strata_y = "y",
-                           preprocess_PCA_thresh = 0.95,
-                           method_cor = "pearson",
-                           model_description = "Consider writing a description here",
-                           multi_cores = TRUE,
-                           trees = 500,
+                           force_train_method = "automatic",
                            ...) {
+
+
+  if (is.numeric(y) == TRUE & force_train_method == "automatic") {
+    train_method = "regression"
+  } else if (force_train_method == "regression"){
+    train_method = "regression"
+  } else if (is.factor(y) == TRUE & force_train_method =="automatic"){
+    train_method = "random_forest"
+  } else if (force_train_method == "random_forest"){
+    train_method = "random_forest"
+  }
+
 
   # Get variable names in the list of outcomes.
   variables <- names(y)
@@ -171,20 +143,7 @@ textTrainLists <- function(x,
 
   if (force_train_method == "regression") {
     # Using mapply to loop over the word embeddings and the outcome variables. help(mapply)
-    output <- mapply(textTrainRegression, x, y1,
-                     SIMPLIFY = FALSE,
-                     MoreArgs = list(
-                       #outside_folds = outside_folds,
-                       #outside_strata_y = outside_strata_y,
-                       #inside_folds = inside_folds,
-                       #inside_strata_y = inside_strata_y,
-                       preprocess_PCA_thresh = preprocess_PCA_thresh,
-                       method_cor = method_cor,
-                       model_description = model_description,
-                       multi_cores = multi_cores,
-                       ...
-                     )
-    )
+    output <- mapply(textTrainRegression, x, y1, SIMPLIFY = FALSE, ...)
 
     output_t <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[1]][c(1)])))
     output_df <-t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[2]][c(1)])))
@@ -197,26 +156,20 @@ textTrainLists <- function(x,
     colnames(output_ordered_named) <- c("descriptions", "correlation", "df", "p_value", "t_statistics", "alternative")
     rownames(output_ordered_named) <- NULL
 
-    output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
-    output_predscore_reg <- output_predscore[rownames(output_predscore) %like% "predictions", ]
-    colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
-    results <- list(output_predscore_reg, output_ordered_named)
-    names(results) <- c("predictions", "results")
+    #output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
+    #output_predscore_reg <- output_predscore[rownames(output_predscore) %like% "predictions", ]
+    #colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
+
+    names(output) <- descriptions
+
+    results <- list(output, output_ordered_named) # output_predscore_reg,
+    names(results) <- c("all_output", "results") # "predictions",
     results
   } else if (force_train_method == "random_forest") { #
 
-    #y2 <- list(y1[1], y1[2], y1[1], y1[2])
-    #y2 <- y1[2]
     # Apply textTrainRandomForest function between each list element and sort outcome.
-    output <- mapply(textTrainRandomForest, x, y1,
-                     SIMPLIFY = FALSE,
-                     MoreArgs = list(trees = trees,
-                                     #outside_folds = outside_folds,
-                                     #outside_strata_y = outside_strata_y,
-                                     #inside_folds = inside_folds,
-                                     #inside_strata_y = inside_strata_y,
-                                     multi_cores = multi_cores, ...)
-    )
+    output <- mapply(textTrainRandomForest, x, y1, SIMPLIFY = FALSE, ...)
+
     output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[1]][[1]])))
     output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[2]][[1]])))
     output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[3]][[1]])))
@@ -228,15 +181,17 @@ textTrainLists <- function(x,
     output_ordered_named
 
     # Get and sort the Prediction scores
-    output_predscore1 <- lapply(output, "[[", "predictions")
-    names(output_predscore1) <- descriptions
-    output_predscore <- do.call(cbind, output_predscore1) %>%
-      tibble::as_tibble() %>%
-      dplyr::arrange()
+    #output_predscore1 <- lapply(output, "[[", "predictions")
+    #names(output_predscore1) <- descriptions
+    #output_predscore <- do.call(cbind, output_predscore1) %>%
+    #  tibble::as_tibble() %>%
+    #  dplyr::arrange()
+
+    names(output) <- descriptions
 
     # Combine output
-    results <- list(output_predscore, output_ordered_named)
-    names(results) <- c("predictions", "results")
+    results <- list(output, output_ordered_named)
+    names(results) <- c("all_output", "results")
     results
   }
 }

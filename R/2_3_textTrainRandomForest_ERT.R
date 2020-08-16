@@ -34,17 +34,31 @@ fit_model_accuracy_rf <- function(object,
                                   extremely_randomised_splitrule = NULL) {
 
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
-  xy_recipe <- rsample::analysis(object) %>%
-    recipes::recipe(y ~ .) %>%
-    recipes::update_role(id1, new_role = "id variable") %>%
-    #recipes::update_role(-id1, new_role = "predictor") %>%
-    recipes::update_role(y, new_role = "outcome") %>%
-    recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
-    recipes::step_center(recipes::all_predictors()) %>%
-    recipes::step_scale(recipes::all_predictors()) %>%
-    recipes::step_BoxCox(recipes::all_predictors()) %>%
-    recipes::step_pca(recipes::all_predictors(), threshold = preprocess_PCA_thresh) %>%
-    recipes::prep()
+  if(preprocess_PCA_thresh >= 1){
+    xy_recipe <- rsample::analysis(object) %>%
+      recipes::recipe(y ~ .) %>%
+      recipes::update_role(id1, new_role = "id variable") %>%
+      #recipes::update_role(-id1, new_role = "predictor") %>%
+      recipes::update_role(y, new_role = "outcome") %>%
+      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors()) %>%
+      recipes::step_BoxCox(recipes::all_predictors()) %>%
+      recipes::step_pca(recipes::all_predictors(), num_comp = preprocess_PCA_thresh) %>%
+      recipes::prep()
+  } else if(preprocess_PCA_thresh < 1){
+    xy_recipe <- rsample::analysis(object) %>%
+      recipes::recipe(y ~ .) %>%
+      recipes::update_role(id1, new_role = "id variable") %>%
+      #recipes::update_role(-id1, new_role = "predictor") %>%
+      recipes::update_role(y, new_role = "outcome") %>%
+      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors()) %>%
+      recipes::step_BoxCox(recipes::all_predictors()) %>%
+      recipes::step_pca(recipes::all_predictors(), threshold = preprocess_PCA_thresh) %>%
+      recipes::prep()
+  }
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -168,11 +182,23 @@ tune_over_cost_rf <- function(object,
                               extremely_randomised_splitrule) {
 
 
-grid_inner <- base::expand.grid(
-  mtry = mtry,
-  min_n = min_n,
-  trees = trees,
-  preprocess_PCA_thresh = preprocess_PCA_thresh)
+  # Number of components or percent of variance to attain; PCA_component_algorithm
+  if(preprocess_PCA_thresh == "PCA_component_algorithm"){
+    num_features = length(rsample::analysis(object)) - 1
+    num_users = nrow(rsample::analysis(object))
+    preprocess_PCA_thresh_value = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
+    preprocess_PCA_thresh_value
+  } else if(preprocess_PCA_thresh >= 1){
+    preprocess_PCA_thresh_value <- preprocess_PCA_thresh
+  } else if (preprocess_PCA_thresh < 1){
+    preprocess_PCA_thresh_value <- preprocess_PCA_thresh
+  }
+
+
+  grid_inner <- base::expand.grid(mtry = mtry,
+                                  min_n = min_n,
+                                  trees = trees,
+                                  preprocess_PCA_thresh = preprocess_PCA_thresh_value)
 
   # Test models with the different hyperparameters for the inner samples
   tune_results <- purrr::pmap(list(grid_inner$mtry,
@@ -425,22 +451,36 @@ textTrainRandomForest <- function(x,
                                         kappa,
                                         f_measure,
                                         roc_auc)
-  results_collected
 
 
   # Construct final model to be saved and applied on other data
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
-  final_recipe <- xy %>%
-    recipes::recipe(y ~ .) %>%
-    recipes::update_role(id1, new_role = "id variable") %>%
-    #recipes::update_role(-id1, new_role = "predictor") %>%
-    recipes::update_role(y, new_role = "outcome") %>%
-    recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
-    recipes::step_center(recipes::all_predictors()) %>%
-    recipes::step_scale(recipes::all_predictors()) %>%
-    recipes::step_BoxCox(recipes::all_predictors()) %>%
-    recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
+
+  if(preprocess_PCA_thresh >= 1){
+    final_recipe <- xy %>%
+      recipes::recipe(y ~ .) %>%
+      recipes::update_role(id1, new_role = "id variable") %>%
+      #recipes::update_role(-id1, new_role = "predictor") %>%
+      recipes::update_role(y, new_role = "outcome") %>%
+      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors()) %>%
+      recipes::step_BoxCox(recipes::all_predictors()) %>%
+      recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
     #recipes::prep()
+  }else if(preprocess_PCA_thresh < 1){
+    final_recipe <- xy %>%
+      recipes::recipe(y ~ .) %>%
+      recipes::update_role(id1, new_role = "id variable") %>%
+      #recipes::update_role(-id1, new_role = "predictor") %>%
+      recipes::update_role(y, new_role = "outcome") %>%
+      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors()) %>%
+      recipes::step_BoxCox(recipes::all_predictors()) %>%
+      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
+    #recipes::prep()
+  }
 
   preprocessing_recipe <- recipes::prep(final_recipe)
 

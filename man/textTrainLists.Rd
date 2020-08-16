@@ -4,24 +4,16 @@
 \alias{textTrainLists}
 \title{Individually trains word embeddings from several text variables to several numeric/categorical variables.}
 \usage{
-textTrainLists(
-  x,
-  y,
-  force_train_method = "regression",
-  preprocess_PCA_thresh = 0.95,
-  method_cor = "pearson",
-  model_description = "Consider writing a description here",
-  multi_cores = TRUE,
-  trees = 500,
-  ...
-)
+textTrainLists(x, y, force_train_method = "automatic", ...)
 }
 \arguments{
 \item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
 
 \item{y}{Numeric variable to predict.}
 
-\item{force_train_method}{default is "regression"; see also "random_forest".}
+\item{force_train_method}{default is automatic; see also "regression" and "random_forest".}
+
+\item{...}{Arguments for the textTrain function.}
 
 \item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
 
@@ -34,8 +26,6 @@ can set to "spearman" or "kendall").}
 make the analyses considerably faster to run).}
 
 \item{trees}{number of trees if it is a categorical variable.}
-
-\item{...}{Arguments for the textTrain function.}
 }
 \value{
 Correlations between predicted and observed values.
