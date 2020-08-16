@@ -15,9 +15,8 @@ test_that("textTrain produces list of results with prediction being numeric", {
                        #inside_strata_y = NULL,
                        penalty = c(1),
                        mixture = c(0),
-                       trees = c(1000),
-                       preprocess_PCA_thresh = c(0.95),
-                       multi_cores = FALSE
+                       preprocess_PCA_thresh = c(0.4, 0.5),
+                       multi_cores = TRUE
   )
 
   #warnings()
@@ -48,7 +47,7 @@ test_that("textTrain produces list of results with prediction being categorical"
   testthat::expect_is(trained$truth_predictions$truth[1], "factor")
 })
 
-
+#rlang::last_error()
 
 test_that("textTrainRandomForest with Extremely Randomized Trees produces list of results with prediction being categorical", {
 

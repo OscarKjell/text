@@ -1,3 +1,4 @@
+#library(tidyverse)
 #library(text)
 #wordembeddings <- wordembeddings4
 #ratings_data <- Language_based_assessment_data_8
@@ -29,27 +30,30 @@ statisticalMode <- function(x) {
 #' object = results_nested_resampling$splits[[1]]
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA_thresh threshold for pca
+#' @param preprocess_PCA_thresh threshold for pca; preprocess_PCA_thresh = 2
 #' @return  RMSE.
 #' @noRd
-fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA_thresh = "PCA_component_algorithm") {
+fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA_thresh = 0.9) {
 
-  if(preprocess_PCA_thresh == "PCA_component_algorithm"){
-    num_features = length(rsample::analysis(object)) - 1
-    num_users = nrow(rsample::analysis(object))
-    n_components = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
-    preprocess_PCA_thresh = n_components
-    preprocess_PCA_thresh
-  }
-
+  if(preprocess_PCA_thresh >= 1){
   xy_recipe <- rsample::analysis(object) %>%
     recipes::recipe(y ~ .) %>%
     # recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
-    recipes::step_pca(recipes::all_predictors(), threshold = preprocess_PCA_thresh) %>%
+    recipes::step_pca(recipes::all_predictors(), num_comp = preprocess_PCA_thresh) %>%
     recipes::prep()
+  } else if(preprocess_PCA_thresh < 1){
+    xy_recipe <- rsample::analysis(object) %>%
+      recipes::recipe(y ~ .) %>%
+      # recipes::step_BoxCox(all_predictors()) %>%
+      recipes::step_naomit(Dim1, skip = TRUE) %>%
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors()) %>%
+      recipes::step_pca(recipes::all_predictors(), threshold = preprocess_PCA_thresh) %>%
+      recipes::prep()
+  }
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -110,12 +114,23 @@ fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, pre
 #' @noRd
 tune_over_cost <- function(object, penalty, mixture, preprocess_PCA_thresh = preprocess_PCA_thresh) {
 
-  #preprocess_PCA_thresh = c(0.80, 0.90)
+  # Number of components or percent of variance to attain; PCA_component_algorithm
+  if(preprocess_PCA_thresh == "PCA_component_algorithm"){
+    num_features = length(rsample::analysis(object)) - 1
+    num_users = nrow(rsample::analysis(object))
+    n_components = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
+    preprocess_PCA_thresh_value = n_components
+    preprocess_PCA_thresh_value
+  } else if(preprocess_PCA_thresh >= 1){
+    preprocess_PCA_thresh_value <- preprocess_PCA_thresh
+  } else if (preprocess_PCA_thresh < 1){
+    preprocess_PCA_thresh_value <- preprocess_PCA_thresh
+  }
 
   grid_inner <- base::expand.grid(
   penalty = penalty,
   mixture = mixture,
-  preprocess_PCA_thresh = preprocess_PCA_thresh)
+  preprocess_PCA_thresh = preprocess_PCA_thresh_value)
 
   # Test models with the different hyperparameters for the inner samples help(map2)
   tune_results <- purrr::pmap(list(grid_inner$penalty,
@@ -193,7 +208,6 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA_thre
 #method_cor = "pearson"
 #model_description = "Consider writing a description of your model here"
 #multi_cores = TRUE
-
 
 
 # devtools::document()
@@ -289,7 +303,7 @@ textTrainRegression <- function(x,
                                  preprocess_PCA_thresh = preprocess_PCA_thresh)
   } else if(multi_cores == TRUE) {
     # The multisession plan uses the local cores to process the inner resampling loop. help(multisession)
-    # library(future)
+    # library(future) warnings()
     future::plan(future::multisession)
     # The object tuning_results is a list of data frames for each of the OUTER resamples.
     tuning_results <- furrr::future_map(.x = results_nested_resampling$inner_resamples,
@@ -339,17 +353,28 @@ textTrainRegression <- function(x,
 #####
   # Construct final model to be saved and applied on other data
   is.list(xy)
-  tibble::is.tibble(xy)
+  tibble::is_tibble(xy)
   is.data.frame(xy)
 
+  if(preprocess_PCA_thresh >= 1){
   final_recipe <- xy %>%
     recipes::recipe(y ~ .) %>%
     # recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
-    recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
+    recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
     #recipes::prep()
+  }else if(preprocess_PCA_thresh < 1){
+    final_recipe <- xy %>%
+      recipes::recipe(y ~ .) %>%
+      # recipes::step_BoxCox(all_predictors()) %>%
+      recipes::step_naomit(Dim1, skip = TRUE) %>%
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors()) %>%
+      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
+    #recipes::prep()
+  }
 
   preprocessing_recipe <- recipes::prep(final_recipe)
 
@@ -367,7 +392,7 @@ textTrainRegression <- function(x,
   # Saving the final mtry and min_n used for the final model.
   penalty_description = paste("penalty = ", deparse(statisticalMode(results_split_parameter$penalty)))
   mixture_description = paste("mixture = ", deparse(statisticalMode(results_split_parameter$mixture)))
-  preprocess_PCA_thresh_description = paste("preprocess_PCA_thresh = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA_thresh)))
+  preprocess_PCA_thresh_description = paste("preprocess_PCA_thresh = ", deparse(results_split_parameter$preprocess_PCA_thresh))
 
 
 
