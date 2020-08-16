@@ -14,28 +14,7 @@ textTrain(x, y, force_train_method = "automatic", ...)
 \item{force_train_method}{default is "automatic", so if y is a factor random_forest is used, and if y is numeric ridge regression
 is used. This can be overridden using "regression" or "random_forest".}
 
-\item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
-
-\item{method_cor}{Type of correlation used in evaluation (default "pearson";
-can set to "spearman" or "kendall").}
-
-\item{penalty}{hyper parameter that is tuned}
-
-\item{mixture}{hyper parameter that is tuned default = 0 (hence a pure ridge regression).}
-
-\item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
-
-\item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-make the analyses considerably faster to run).}
-
-\item{mtry}{hyper parameter that may be tuned;  default:c(1, 20, 40),}
-
-\item{min_n}{hyper parameter that may be tuned; default: c(1, 20, 40)}
-
-\item{trees}{number of trees if it is a categorical variable.}
-
-\item{eval_measure}{Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
-see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".}
+\item{...}{Arguments from textTrainRegression or textTrainRandomForest the textTrain function.}
 }
 \value{
 A correlation between predicted and observed values; as well as a tibble of predicted values.
@@ -53,6 +32,6 @@ results <- textTrain(wordembeddings$harmonytext,
 )
 }
 \seealso{
-see \code{\link{textTrainRegression}} \code{\link{textTrainLists}}
-\code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+\code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
+\code{\link{textTrainLists}} \code{\link{textDiff}}
 }

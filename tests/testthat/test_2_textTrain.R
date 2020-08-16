@@ -37,8 +37,6 @@ test_that("textTrain regression produces list of results with prediction being n
   #warnings()
   testthat::expect_that(trained, is_a("list"))
   testthat::expect_is(trained$prediction$predictions[1], "numeric")
-
-
 })
 
 
@@ -77,11 +75,9 @@ test_that("textTrain Random Forest produces list of results with prediction bein
 
   testthat::expect_that(trained2, testthat::is_a("list"))
   testthat::expect_is(trained2$truth_predictions$truth[1], "factor")
-
-
 })
 
-#rlang::last_error()
+
 
 test_that("textTrainRandomForest with Extremely Randomized Trees produces list of results with prediction being categorical", {
 

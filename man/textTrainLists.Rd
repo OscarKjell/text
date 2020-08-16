@@ -13,19 +13,7 @@ textTrainLists(x, y, force_train_method = "automatic", ...)
 
 \item{force_train_method}{default is automatic; see also "regression" and "random_forest".}
 
-\item{...}{Arguments for the textTrain function.}
-
-\item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
-
-\item{method_cor}{Type of correlation used in evaluation (default "pearson";
-can set to "spearman" or "kendall").}
-
-\item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
-
-\item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-make the analyses considerably faster to run).}
-
-\item{trees}{number of trees if it is a categorical variable.}
+\item{...}{Arguments from textTrainRegression or textTrainRandomForest the textTrain function.}
 }
 \value{
 Correlations between predicted and observed values.
@@ -41,5 +29,5 @@ ratings_data,
 multi_cores = FALSE)
 }
 \seealso{
-see \code{\link{textTrain}}
+see \code{\link{textTrain}}  \code{\link{textTrainRegression}}  \code{\link{textTrainRandomForest}}
 }

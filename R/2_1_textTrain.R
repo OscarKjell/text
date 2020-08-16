@@ -11,30 +11,23 @@
 #multi_cores = TRUE
 
 
+#wordembeddings <- wordembeddings4
+#ratings_data <- Language_based_assessment_data_8
+#
+#results <- textTrain(wordembeddings$harmonytext,
+#                      ratings_data$hilstotal,
+#                      penalty = 1, # 1 due to computational constraints for the example context
+#                      multi_cores = FALSE
+# )
+
 # devtools::document()
 #' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 #'
 #' @param x Word embeddings from textEmbed (or textLayerAggregation).
 #' @param y Numeric variable to predict.
-# @param outside_folds Number of folds for the outer folds.
-# @param outside_strata_y Variable to stratify according (default y; can set to NULL).
-# @param inside_folds Number of folds for the inner folds.
-# @param inside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param preprocess_PCA_thresh Pre-processing threshold for amount of variance to retain (default 0.95).
-#' @param method_cor Type of correlation used in evaluation (default "pearson";
-#' can set to "spearman" or "kendall").
-#' @param penalty hyper parameter that is tuned
-#' @param mixture hyper parameter that is tuned default = 0 (hence a pure ridge regression).
-#' @param model_description Text to describe your model (optional; good when sharing the model with others).
-#' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-#' make the analyses considerably faster to run).
-#' @param mtry hyper parameter that may be tuned;  default:c(1, 20, 40),
-#' @param min_n hyper parameter that may be tuned; default: c(1, 20, 40)
-#' @param trees number of trees if it is a categorical variable.
-#' @param eval_measure Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
-#' see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".
 #' @param force_train_method default is "automatic", so if y is a factor random_forest is used, and if y is numeric ridge regression
 #' is used. This can be overridden using "regression" or "random_forest".
+#' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
 #' @examples
 #' wordembeddings <- wordembeddings4
@@ -44,8 +37,8 @@
 #'                      penalty = 1, # 1 due to computational constraints for the example context
 #'                      multi_cores = FALSE
 #' )
-#' @seealso see \code{\link{textTrainRegression}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+#' @seealso \code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
+#' \code{\link{textTrainLists}} \code{\link{textDiff}}
 #' @export
 textTrain <- function(x,
                       y,
@@ -85,19 +78,8 @@ textTrain <- function(x,
 #' Individually trains word embeddings from several text variables to several numeric/categorical variables.
 #' @param x Word embeddings from textEmbed (or textLayerAggregation).
 #' @param y Numeric variable to predict.
-# @param outside_folds Number of folds for the outer folds.
-# @param outside_strata_y Variable to stratify according (default y; can set to NULL).
-# @param inside_folds Number of folds for the inner folds.
-# @param inside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param preprocess_PCA_thresh Pre-processing threshold for amount of variance to retain (default 0.95).
-#' @param method_cor Type of correlation used in evaluation (default "pearson";
-#' can set to "spearman" or "kendall").
-#' @param model_description Text to describe your model (optional; good when sharing the model with others).
-#' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-#' make the analyses considerably faster to run).
-#' @param trees number of trees if it is a categorical variable.
 #' @param force_train_method default is automatic; see also "regression" and "random_forest".
-#' @param ... Arguments for the textTrain function.
+#' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples
 #' wordembeddings <- wordembeddings4[1:2]
@@ -105,7 +87,7 @@ textTrain <- function(x,
 #' results <- textTrainLists(wordembeddings,
 #' ratings_data,
 #' multi_cores = FALSE)
-#' @seealso see \code{\link{textTrain}}
+#' @seealso see \code{\link{textTrain}}  \code{\link{textTrainRegression}}  \code{\link{textTrainRandomForest}}
 #' @importFrom stats cor.test
 #' @importFrom tibble as_tibble
 #' @importFrom magrittr %>%
@@ -117,7 +99,7 @@ textTrainLists <- function(x,
                            force_train_method = "automatic",
                            ...) {
 
-
+  # Force or decide regression or random forest.
   if (is.numeric(y) == TRUE & force_train_method == "automatic") {
     train_method = "regression"
   } else if (force_train_method == "regression"){
@@ -127,7 +109,6 @@ textTrainLists <- function(x,
   } else if (force_train_method == "random_forest"){
     train_method = "random_forest"
   }
-
 
   # Get variable names in the list of outcomes.
   variables <- names(y)

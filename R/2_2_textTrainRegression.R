@@ -108,15 +108,15 @@ fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, pre
 #' @noRd
 tune_over_cost <- function(object, penalty, mixture, preprocess_PCA_thresh = preprocess_PCA_thresh) {
 
-  # Number of components or percent of variance to attain; PCA_component_algorithm
-  if(preprocess_PCA_thresh == "PCA_component_algorithm"){
+  # Number of components or percent of variance to attain; PCA_component_algorithm; preprocess_PCA_thresh = 2
+  if(preprocess_PCA_thresh[1] == "PCA_component_algorithm"){
     num_features = length(rsample::analysis(object)) - 1
     num_users = nrow(rsample::analysis(object))
     preprocess_PCA_thresh_value = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
     preprocess_PCA_thresh_value
-  } else if(preprocess_PCA_thresh >= 1){
+  } else if(preprocess_PCA_thresh[1] >= 1){
     preprocess_PCA_thresh_value <- preprocess_PCA_thresh
-  } else if (preprocess_PCA_thresh < 1){
+  } else if (preprocess_PCA_thresh[1] < 1){
     preprocess_PCA_thresh_value <- preprocess_PCA_thresh
   }
 
@@ -343,7 +343,7 @@ textTrainRegression <- function(x,
   tibble::is_tibble(xy)
   is.data.frame(xy)
 
-  if(preprocess_PCA_thresh >= 1){
+  if(preprocess_PCA_thresh[1] >= 1){
   final_recipe <- xy %>%
     recipes::recipe(y ~ .) %>%
     # recipes::step_BoxCox(all_predictors()) %>%
@@ -352,7 +352,7 @@ textTrainRegression <- function(x,
     recipes::step_scale(recipes::all_predictors()) %>%
     recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
     #recipes::prep()
-  }else if(preprocess_PCA_thresh < 1){
+  }else if(preprocess_PCA_thresh[1] < 1){
     final_recipe <- xy %>%
       recipes::recipe(y ~ .) %>%
       # recipes::step_BoxCox(all_predictors()) %>%
