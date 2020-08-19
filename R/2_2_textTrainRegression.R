@@ -7,11 +7,12 @@
 #                               ratings_data$hilstotal,
 #                               penalty = c(1, 100),
 #                               mixture = c(0),
-#                               preprocess_PCA_thresh = c(0.4, 0.5),
+#                               preprocess_PCA = c(0.4, 0.5),
 #                               outside_strata_y = NULL,
 #                               inside_strata_y = NULL,
 #                               multi_cores = FALSE #this is FALSE due to CRAN testing.
 # )
+
 
 
 #' Function to find the mode
@@ -30,30 +31,23 @@ statisticalMode <- function(x) {
 #' object = results_nested_resampling$splits[[1]]
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA_thresh threshold for pca; preprocess_PCA_thresh = 2
+#' @param preprocess_PCA threshold for pca; preprocess_PCA = 2
 #' @return  RMSE.
 #' @noRd
-fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA_thresh = 0.9) {
+fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = NULL) {
 
-  if(preprocess_PCA_thresh >= 1){
   xy_recipe <- rsample::analysis(object) %>%
     recipes::recipe(y ~ .) %>%
-    # recipes::step_BoxCox(all_predictors()) %>%
+    # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
-    recipes::step_pca(recipes::all_predictors(), num_comp = preprocess_PCA_thresh) %>%
+    # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
+    {if(!is.null(preprocess_PCA))
+      {if(preprocess_PCA >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
+      else if(preprocess_PCA < 1) recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+      else . } else .} %>%
     recipes::prep()
-  } else if(preprocess_PCA_thresh < 1){
-    xy_recipe <- rsample::analysis(object) %>%
-      recipes::recipe(y ~ .) %>%
-      # recipes::step_BoxCox(all_predictors()) %>%
-      recipes::step_naomit(Dim1, skip = TRUE) %>%
-      recipes::step_center(recipes::all_predictors()) %>%
-      recipes::step_scale(recipes::all_predictors()) %>%
-      recipes::step_pca(recipes::all_predictors(), threshold = preprocess_PCA_thresh) %>%
-      recipes::prep()
-  }
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -78,8 +72,8 @@ fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA_thre
   # Get RMSE
   rmse_val <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)$.estimate
   # Sort output of RMSE, predictions and truth (observed y)
-  output <- list(list(rmse_val), list(holdout_pred$.pred), list(holdout_pred$y), list(preprocess_PCA_thresh))
-  names(output) <- c("rmse", "predictions", "y", "preprocess_PCA_thresh")
+  output <- list(list(rmse_val), list(holdout_pred$.pred), list(holdout_pred$y), list(preprocess_PCA))
+  names(output) <- c("rmse", "predictions", "y", "preprocess_PCA")
   output
 }
 
@@ -91,10 +85,10 @@ fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA_thre
 #' object = results_nested_resampling$splits[[1]]
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA_thresh threshold for pca
+#' @param preprocess_PCA threshold for pca
 #' @return RMSE.
 #' @noRd
-fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, preprocess_PCA_thresh = preprocess_PCA_thresh) fit_model_rmse(object, penalty, mixture, preprocess_PCA_thresh = preprocess_PCA_thresh)
+fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, preprocess_PCA = preprocess_PCA) fit_model_rmse(object, penalty, mixture, preprocess_PCA = preprocess_PCA)
 
 
 #' For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
@@ -103,32 +97,32 @@ fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, pre
 #' object=results_nested_resampling$inner_resamples[[1]]$splits[[1]]
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA_thresh threshold for pca
+#' @param preprocess_PCA threshold for pca
 #' @return RMSE.
 #' @noRd
-tune_over_cost <- function(object, penalty, mixture, preprocess_PCA_thresh = preprocess_PCA_thresh) {
+tune_over_cost <- function(object, penalty, mixture, preprocess_PCA = preprocess_PCA) {
 
-  # Number of components or percent of variance to attain; PCA_component_algorithm; preprocess_PCA_thresh = 2
-  if(preprocess_PCA_thresh[1] == "PCA_component_algorithm"){
+  # Number of components or percent of variance to attain; min_halving; preprocess_PCA = 2
+  if(preprocess_PCA[1] == "min_halving"){
     num_features = length(rsample::analysis(object)) - 1
     num_users = nrow(rsample::analysis(object))
-    preprocess_PCA_thresh_value = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
-    preprocess_PCA_thresh_value
-  } else if(preprocess_PCA_thresh[1] >= 1){
-    preprocess_PCA_thresh_value <- preprocess_PCA_thresh
-  } else if (preprocess_PCA_thresh[1] < 1){
-    preprocess_PCA_thresh_value <- preprocess_PCA_thresh
+    preprocess_PCA_value = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
+    preprocess_PCA_value
+  } else if(preprocess_PCA[1] >= 1){
+    preprocess_PCA_value <- preprocess_PCA
+  } else if (preprocess_PCA[1] < 1){
+    preprocess_PCA_value <- preprocess_PCA
   }
 
   grid_inner <- base::expand.grid(
   penalty = penalty,
   mixture = mixture,
-  preprocess_PCA_thresh = preprocess_PCA_thresh_value)
+  preprocess_PCA = preprocess_PCA_value)
 
   # Test models with the different hyperparameters for the inner samples help(map2)
   tune_results <- purrr::pmap(list(grid_inner$penalty,
                               grid_inner$mixture,
-                              grid_inner$preprocess_PCA_thresh),
+                              grid_inner$preprocess_PCA),
                               fit_model_rmse_wrapper,
                               object = object
                               )
@@ -162,20 +156,20 @@ tune_over_cost <- function(object, penalty, mixture, preprocess_PCA_thresh = pre
 #' object = results_nested_resampling$inner_resamples[[1]]
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA_thresh threshold for pca
+#' @param preprocess_PCA threshold for pca
 #' @return RMSE.
 #' @noRd
-summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA_thresh = preprocess_PCA_thresh) {
+summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = preprocess_PCA) {
 
   # Return row-bound tibble containing the INNER results
   purrr::map_df(.x = object$splits, .f = tune_over_cost,
-                penalty = penalty, mixture = mixture, preprocess_PCA_thresh = preprocess_PCA_thresh) %>%
+                penalty = penalty, mixture = mixture, preprocess_PCA = preprocess_PCA) %>%
 
     # For each value of the tuning parameter, compute the help(summarize)
     # average RMSE which is the INNER estimate.
     dplyr::group_by(penalty) %>%
     dplyr::summarize(mixture = mixture,
-                     preprocess_PCA_thresh = preprocess_PCA_thresh,
+                     preprocess_PCA = preprocess_PCA,
                      mean_RMSE = mean(RMSE, na.rm = TRUE),
                      n = length(RMSE),
                      .groups = "drop_last")
@@ -189,7 +183,7 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA_thre
 #outside_strata_y = NULL
 ##                                inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
 #inside_strata_y = NULL
-#preprocess_PCA_thresh = c(.80, 0.95)
+#preprocess_PCA = c(.80, 0.95)
 #penalty = c(1, 2) #10^seq(-16, 16)
 #mixture = c(0)
 #method_cor = "pearson"
@@ -206,12 +200,10 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA_thre
 # @param outside_strata_y Variable to stratify according (default y; can set to NULL).
 # @param inside_folds Number of folds for the inner folds.
 # @param inside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param preprocess_PCA_thresh Pre-processing threshold for amount of variance to retain
-#'  (may set to 0.95 or c(0.80, 0.90) etc.). Default setting is "PCA_component_algorithm", which
-#'   is to compute the number of PC to use with the following algorithm:
-#'   round(max(min(num_features/2, num_users/1.5), min(50, num_features))).
-#'   num_features = number of dimensions in the word embedding that is used.
-#'   num_users = the number of rows/participants.
+#' @param preprocess_PCA Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
+#' number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
+#' of participants and feature (word embedding dimensions) in the data. The formula is:
+#' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
 #' @param penalty hyper parameter that is tuned
 #' @param mixture hyper parameter that is tuned default = 0 (hence a pure ridge regression).
 #' @param method_cor Type of correlation used in evaluation (default "pearson";
@@ -227,10 +219,7 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA_thre
 #'
 #' results <- textTrainRegression(wordembeddings$harmonytext,
 #' ratings_data$hilstotal,
-#' preprocess_PCA_thresh = c(0.85, 0.95),
-#' penalty = c(1, 100),
-#' mixture = c(0),
-#' multi_cores = FALSE #this is FALSE due to CRAN testing.
+#' multi_cores = FALSE #this is set to FALSE due to CRAN testing.
 #' )
 #' @seealso see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
 #' \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
@@ -250,7 +239,7 @@ textTrainRegression <- function(x,
 #                                outside_strata_y = "y",
 #                                inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
 #                                inside_strata_y = "y",
-                                preprocess_PCA_thresh = c(0.75, 0.85, 0.95),
+                                preprocess_PCA = "min_halving",
                                 penalty = 10^seq(-16, 16),
                                 mixture = c(0),
                                 method_cor = "pearson",
@@ -287,7 +276,7 @@ textTrainRegression <- function(x,
                                  .f = summarize_tune_results,
                                  penalty = penalty,
                                  mixture = mixture,
-                                 preprocess_PCA_thresh = preprocess_PCA_thresh)
+                                 preprocess_PCA = preprocess_PCA)
   } else if(multi_cores == TRUE) {
     # The multisession plan uses the local cores to process the inner resampling loop. help(multisession)
     # library(future) warnings()
@@ -297,7 +286,7 @@ textTrainRegression <- function(x,
                                         .f = summarize_tune_results,
                                         penalty = penalty,
                                         mixture = mixture,
-                                        preprocess_PCA_thresh = preprocess_PCA_thresh)
+                                        preprocess_PCA = preprocess_PCA)
   }
 
   # Function to get the lowest mean_RMSE
@@ -308,7 +297,7 @@ textTrainRegression <- function(x,
   hyper_parameter_vals <-
     tuning_results %>%
     purrr::map_df(bestParameters) %>%
-    dplyr::select(c(penalty, mixture, preprocess_PCA_thresh))
+    dplyr::select(c(penalty, mixture, preprocess_PCA))
 
   # Bind best results
   results_split_parameter <-
@@ -320,7 +309,7 @@ textTrainRegression <- function(x,
   results_outer <- purrr::pmap(list(object  = results_nested_resampling$splits,
                                     penalty = results_split_parameter$penalty,
                                     mixture = results_split_parameter$mixture,
-                                    preprocess_PCA_thresh = results_split_parameter$preprocess_PCA_thresh),
+                                    preprocess_PCA = results_split_parameter$preprocess_PCA),
                                fit_model_rmse)
 
   # Separate RMSE, predictions and observed y
@@ -343,23 +332,23 @@ textTrainRegression <- function(x,
   tibble::is_tibble(xy)
   is.data.frame(xy)
 
-  if(preprocess_PCA_thresh[1] >= 1){
+  if(preprocess_PCA[1] >= 1){
   final_recipe <- xy %>%
     recipes::recipe(y ~ .) %>%
     # recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
-    recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
+    recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
     #recipes::prep()
-  }else if(preprocess_PCA_thresh[1] < 1){
+  }else if(preprocess_PCA[1] < 1){
     final_recipe <- xy %>%
       recipes::recipe(y ~ .) %>%
       # recipes::step_BoxCox(all_predictors()) %>%
       recipes::step_naomit(Dim1, skip = TRUE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors()) %>%
-      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
+      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
     #recipes::prep()
   }
 
@@ -379,7 +368,7 @@ textTrainRegression <- function(x,
   # Saving the final mtry and min_n used for the final model.
   penalty_description = paste("penalty = ", deparse(statisticalMode(results_split_parameter$penalty)))
   mixture_description = paste("mixture = ", deparse(statisticalMode(results_split_parameter$mixture)))
-  preprocess_PCA_thresh_description = paste("preprocess_PCA_thresh = ", deparse(results_split_parameter$preprocess_PCA_thresh))
+  preprocess_PCA_description = paste("preprocess_PCA = ", deparse(results_split_parameter$preprocess_PCA))
 
 
 
@@ -388,7 +377,7 @@ textTrainRegression <- function(x,
                                 deparse(substitute(y)),
                                 penalty_description,
                                 mixture_description,
-                                preprocess_PCA_thresh_description,
+                                preprocess_PCA_description,
                                 model_description)
 
   final_results <- list(predy_y, preprocessing_recipe, final_predictive_model, model_description_detail, correlation)

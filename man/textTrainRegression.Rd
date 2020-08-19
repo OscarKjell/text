@@ -7,7 +7,7 @@
 textTrainRegression(
   x,
   y,
-  preprocess_PCA_thresh = c(0.75, 0.85, 0.95),
+  preprocess_PCA = "min_halving",
   penalty = 10^seq(-16, 16),
   mixture = c(0),
   method_cor = "pearson",
@@ -20,12 +20,10 @@ textTrainRegression(
 
 \item{y}{Numeric variable to predict.}
 
-\item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain
-(may set to 0.95 or c(0.80, 0.90) etc.). Default setting is "PCA_component_algorithm", which
- is to compute the number of PC to use with the following algorithm:
- round(max(min(num_features/2, num_users/1.5), min(50, num_features))).
- num_features = number of dimensions in the word embedding that is used.
- num_users = the number of rows/participants.}
+\item{preprocess_PCA}{Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
+number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
+of participants and feature (word embedding dimensions) in the data. The formula is:
+preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).}
 
 \item{penalty}{hyper parameter that is tuned}
 
@@ -52,10 +50,7 @@ ratings_data <- Language_based_assessment_data_8
 
 results <- textTrainRegression(wordembeddings$harmonytext,
 ratings_data$hilstotal,
-preprocess_PCA_thresh = c(0.85, 0.95),
-penalty = c(1, 100),
-mixture = c(0),
-multi_cores = FALSE #this is FALSE due to CRAN testing.
+multi_cores = FALSE #this is set to FALSE due to CRAN testing.
 )
 }
 \seealso{

@@ -7,7 +7,7 @@
 textTrainRandomForest(
   x,
   y,
-  preprocess_PCA_thresh = c(0.75, 0.85, 0.95),
+  preprocess_PCA = "min_halving",
   extremely_randomised_splitrule = NULL,
   mtry = c(1, 5, 10, 15, 30, 40),
   min_n = c(1, 5, 10, 15, 30, 40),
@@ -22,7 +22,10 @@ textTrainRandomForest(
 
 \item{y}{Categorical variable to predict.}
 
-\item{preprocess_PCA_thresh}{Pre-processing threshold for amount of variance to retain (default 0.95).}
+\item{preprocess_PCA}{Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
+number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
+of participants and feature (word embedding dimensions) in the data. The formula is:
+preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).}
 
 \item{extremely_randomised_splitrule}{default: NULL, which thus implement a random forest; can also select: "extratrees", "gini" or "hellinger"; if these are selected
 your mtry settings will be overridden (see Geurts et al. (2006) Extremely randomized trees for details; and see the ranger r-package

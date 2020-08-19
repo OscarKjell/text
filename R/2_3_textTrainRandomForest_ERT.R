@@ -29,36 +29,53 @@ fit_model_accuracy_rf <- function(object,
                                   mtry = 1,
                                   min_n = 1,
                                   trees = 1000,
-                                  preprocess_PCA_thresh = 0.95,
+                                  preprocess_PCA = "min_halving",
                                   eval_measure = "f_measure",
                                   extremely_randomised_splitrule = NULL) {
 
+
+  xy_recipe <- rsample::analysis(object) %>%
+    recipes::recipe(y ~ .) %>%
+    recipes::update_role(id1, new_role = "id variable") %>%
+    #recipes::update_role(-id1, new_role = "predictor") %>%
+    recipes::update_role(y, new_role = "outcome") %>%
+    recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+    recipes::step_center(recipes::all_predictors()) %>%
+    recipes::step_scale(recipes::all_predictors()) %>%
+    recipes::step_BoxCox(recipes::all_predictors()) %>%
+    # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
+    {if(!is.null(preprocess_PCA))
+    {if(preprocess_PCA >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
+      else if(preprocess_PCA < 1) recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+      else . } else .} %>%
+    recipes::prep()
+
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
-  if(preprocess_PCA_thresh >= 1){
-    xy_recipe <- rsample::analysis(object) %>%
-      recipes::recipe(y ~ .) %>%
-      recipes::update_role(id1, new_role = "id variable") %>%
-      #recipes::update_role(-id1, new_role = "predictor") %>%
-      recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
-      recipes::step_center(recipes::all_predictors()) %>%
-      recipes::step_scale(recipes::all_predictors()) %>%
-      recipes::step_BoxCox(recipes::all_predictors()) %>%
-      recipes::step_pca(recipes::all_predictors(), num_comp = preprocess_PCA_thresh) %>%
-      recipes::prep()
-  } else if(preprocess_PCA_thresh < 1){
-    xy_recipe <- rsample::analysis(object) %>%
-      recipes::recipe(y ~ .) %>%
-      recipes::update_role(id1, new_role = "id variable") %>%
-      #recipes::update_role(-id1, new_role = "predictor") %>%
-      recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
-      recipes::step_center(recipes::all_predictors()) %>%
-      recipes::step_scale(recipes::all_predictors()) %>%
-      recipes::step_BoxCox(recipes::all_predictors()) %>%
-      recipes::step_pca(recipes::all_predictors(), threshold = preprocess_PCA_thresh) %>%
-      recipes::prep()
-  }
+#  if(preprocess_PCA >= 1){
+#    xy_recipe <- rsample::analysis(object) %>%
+#      recipes::recipe(y ~ .) %>%
+#      recipes::update_role(id1, new_role = "id variable") %>%
+#      #recipes::update_role(-id1, new_role = "predictor") %>%
+#      recipes::update_role(y, new_role = "outcome") %>%
+#      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+#      recipes::step_center(recipes::all_predictors()) %>%
+#      recipes::step_scale(recipes::all_predictors()) %>%
+#      recipes::step_BoxCox(recipes::all_predictors()) %>%
+#      recipes::step_pca(recipes::all_predictors(), num_comp = preprocess_PCA) %>%
+#      recipes::prep()
+#  } else if(preprocess_PCA < 1){
+#    xy_recipe <- rsample::analysis(object) %>%
+#      recipes::recipe(y ~ .) %>%
+#      recipes::update_role(id1, new_role = "id variable") %>%
+#      #recipes::update_role(-id1, new_role = "predictor") %>%
+#      recipes::update_role(y, new_role = "outcome") %>%
+#      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+#      recipes::step_center(recipes::all_predictors()) %>%
+#      recipes::step_scale(recipes::all_predictors()) %>%
+#      recipes::step_BoxCox(recipes::all_predictors()) %>%
+#      recipes::step_pca(recipes::all_predictors(), threshold = preprocess_PCA) %>%
+#      recipes::prep()
+#  }
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -119,13 +136,13 @@ fit_model_accuracy_rf <- function(object,
                  list(holdout_pred_prob$y),
                  list(holdout_pred_prob[1]),
                  list(holdout_pred_prob[2]),
-                 list(preprocess_PCA_thresh))
+                 list(preprocess_PCA))
   names(output) <- c("eval_measure_val",
                      "estimate",
                      "truth",
                      ".pred_1",
                      ".pred_2",
-                     "preprocess_PCA_thresh")
+                     "preprocess_PCA")
   output
 }
 
@@ -151,17 +168,17 @@ fit_model_accuracy_wrapper_rf <- function(mtry,
                                           min_n,
                                           object,
                                           trees,
-                                          preprocess_PCA_thresh,
+                                          preprocess_PCA,
                                           eval_measure,
                                           extremely_randomised_splitrule) fit_model_accuracy_rf(object,
                                                                               mtry,
                                                                               min_n,
                                                                               trees,
-                                                                              preprocess_PCA_thresh,
+                                                                              preprocess_PCA,
                                                                               eval_measure,
                                                                               extremely_randomised_splitrule)
 
-#fit_model_accuracy_wrapper_rf(object = results_nested_resampling$splits[[1]], mtry=1, min_n=1, trees=10, preprocess_PCA_thresh=0.95, eval_measure = "roc_auc")
+#fit_model_accuracy_wrapper_rf(object = results_nested_resampling$splits[[1]], mtry=1, min_n=1, trees=10, preprocess_PCA=0.95, eval_measure = "roc_auc")
 
 #' For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
 #'
@@ -177,34 +194,34 @@ tune_over_cost_rf <- function(object,
                               mtry,
                               min_n,
                               trees,
-                              preprocess_PCA_thresh,
+                              preprocess_PCA,
                               eval_measure,
                               extremely_randomised_splitrule) {
 
 
-  # Number of components or percent of variance to attain; PCA_component_algorithm
-  if(preprocess_PCA_thresh[1] == "PCA_component_algorithm"){
+  # Number of components or percent of variance to attain; min_halving
+  if(preprocess_PCA[1] == "min_halving"){
     num_features = length(rsample::analysis(object)) - 1
     num_users = nrow(rsample::analysis(object))
-    preprocess_PCA_thresh_value = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
-    preprocess_PCA_thresh_value
-  } else if(preprocess_PCA_thresh[1] >= 1){
-    preprocess_PCA_thresh_value <- preprocess_PCA_thresh
-  } else if (preprocess_PCA_thresh[1] < 1){
-    preprocess_PCA_thresh_value <- preprocess_PCA_thresh
+    preprocess_PCA_value = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
+    preprocess_PCA_value
+  } else if(preprocess_PCA[1] >= 1){
+    preprocess_PCA_value <- preprocess_PCA
+  } else if (preprocess_PCA[1] < 1){
+    preprocess_PCA_value <- preprocess_PCA
   }
 
 
   grid_inner <- base::expand.grid(mtry = mtry,
                                   min_n = min_n,
                                   trees = trees,
-                                  preprocess_PCA_thresh = preprocess_PCA_thresh_value)
+                                  preprocess_PCA = preprocess_PCA_value)
 
   # Test models with the different hyperparameters for the inner samples
   tune_results <- purrr::pmap(list(grid_inner$mtry,
                               grid_inner$min_n,
                               grid_inner$trees,
-                              grid_inner$preprocess_PCA_thresh),
+                              grid_inner$preprocess_PCA),
                               fit_model_accuracy_wrapper_rf,
                               object = object,
                               eval_measure = eval_measure,
@@ -244,7 +261,7 @@ summarize_tune_results_rf <- function(object,
                                       mtry,
                                       min_n,
                                       trees,
-                                      preprocess_PCA_thresh,
+                                      preprocess_PCA,
                                       eval_measure,
                                       extremely_randomised_splitrule) {
 
@@ -254,7 +271,7 @@ summarize_tune_results_rf <- function(object,
                 mtry=mtry,
                 min_n=min_n,
                 trees = trees,
-                preprocess_PCA_thresh = preprocess_PCA_thresh,
+                preprocess_PCA = preprocess_PCA,
                 eval_measure = eval_measure,
                 extremely_randomised_splitrule = extremely_randomised_splitrule) %>%
 
@@ -264,19 +281,20 @@ summarize_tune_results_rf <- function(object,
     dplyr::summarize(min_n = min_n,
                      mean_eval_measure = mean(eval_measure, na.rm = TRUE), #TODO should it be mean or mode here?
                      trees = trees,
-                     preprocess_PCA_thresh = preprocess_PCA_thresh,
+                     preprocess_PCA = preprocess_PCA,
                      n = length(eval_measure),
                      .groups = "drop_last")
 }
 
+#library(text)
 #x <- wordembeddings4[1]$harmonywords
 #y <- Language_based_assessment_data_8[8]$gender#
 #outside_strata_y = "y"#
 #inside_strata_y = "y"
 #mtry = c(1, 2)
 #min_n = c(1, 2)
-#preprocess_PCA_thresh = c(0.85, 0.95)
-#trees = c(1000, 1550)
+#preprocess_PCA = c(0.95)
+#trees = c(1550)
 #model_description = "Consider writing a description of your model here"
 #multi_cores = TRUE
 #eval_measure = "bal_accuracy" # "roc_auc" #"accuracy" #
@@ -291,7 +309,10 @@ summarize_tune_results_rf <- function(object,
 # @param outside_strata_y Variable to stratify according (default "y"; can also set to NULL).
 # @param inside_folds Number of folds for the inner folds.
 # @param inside_strata_y Variable to stratify according (default "y"; can also set to NULL).
-#' @param preprocess_PCA_thresh Pre-processing threshold for amount of variance to retain (default 0.95).
+#' @param preprocess_PCA Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
+#' number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
+#' of participants and feature (word embedding dimensions) in the data. The formula is:
+#' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
 #' @param extremely_randomised_splitrule default: NULL, which thus implement a random forest; can also select: "extratrees", "gini" or "hellinger"; if these are selected
 #' your mtry settings will be overridden (see Geurts et al. (2006) Extremely randomized trees for details; and see the ranger r-package
 #' for details on implementations).
@@ -335,7 +356,7 @@ textTrainRandomForest <- function(x,
                                   #outside_strata_y = "y",
                                   #inside_folds = 10,
                                   #inside_strata_y = "y",
-                                  preprocess_PCA_thresh = c(0.75, 0.85, 0.95),
+                                  preprocess_PCA = "min_halving",
                                   extremely_randomised_splitrule = NULL,
                                   mtry = c(1, 5, 10, 15, 30, 40),
                                   min_n = c(1, 5, 10, 15, 30, 40),
@@ -368,7 +389,7 @@ textTrainRandomForest <- function(x,
                                  mtry = mtry,
                                  min_n = min_n,
                                  trees = trees,
-                                 preprocess_PCA_thresh = preprocess_PCA_thresh,
+                                 preprocess_PCA = preprocess_PCA,
                                  eval_measure = eval_measure,
                                  extremely_randomised_splitrule = extremely_randomised_splitrule)
   } else {
@@ -381,7 +402,7 @@ textTrainRandomForest <- function(x,
                                         mtry = mtry,
                                         min_n = min_n,
                                         trees = trees,
-                                        preprocess_PCA_thresh = preprocess_PCA_thresh,
+                                        preprocess_PCA = preprocess_PCA,
                                         eval_measure = eval_measure,
                                         extremely_randomised_splitrule = extremely_randomised_splitrule)
   }
@@ -394,7 +415,7 @@ textTrainRandomForest <- function(x,
   hyper_parameter_vals <-
     tuning_results %>%
     purrr::map_df(bestParameters) #%>%
-    #dplyr::select(c(mtry, min_n, trees, preprocess_PCA_thresh))
+    #dplyr::select(c(mtry, min_n, trees, preprocess_PCA))
 
   # Bind best results
   results_split_parameter <-
@@ -407,7 +428,7 @@ textTrainRandomForest <- function(x,
                                     results_split_parameter$mtry,
                                     results_split_parameter$min_n,
                                     trees = results_split_parameter$trees,
-                                    preprocess_PCA_thresh = results_split_parameter$preprocess_PCA_thresh),
+                                    preprocess_PCA = results_split_parameter$preprocess_PCA),
                                fit_model_accuracy_rf
                                )
 
@@ -456,7 +477,7 @@ textTrainRandomForest <- function(x,
   # Construct final model to be saved and applied on other data
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
 
-  if(preprocess_PCA_thresh[1] >= 1){
+  if(preprocess_PCA[1] >= 1){
     final_recipe <- xy %>%
       recipes::recipe(y ~ .) %>%
       recipes::update_role(id1, new_role = "id variable") %>%
@@ -466,9 +487,9 @@ textTrainRandomForest <- function(x,
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors()) %>%
       recipes::step_BoxCox(recipes::all_predictors()) %>%
-      recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
+      recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
     #recipes::prep()
-  }else if(preprocess_PCA_thresh[1] < 1){
+  }else if(preprocess_PCA[1] < 1){
     final_recipe <- xy %>%
       recipes::recipe(y ~ .) %>%
       recipes::update_role(id1, new_role = "id variable") %>%
@@ -478,7 +499,7 @@ textTrainRandomForest <- function(x,
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors()) %>%
       recipes::step_BoxCox(recipes::all_predictors()) %>%
-      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA_thresh)) #%>%
+      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
     #recipes::prep()
   }
 
@@ -505,7 +526,7 @@ textTrainRandomForest <- function(x,
     min_n_description <- c("-")
   }
   trees_description = paste("trees =", deparse(statisticalMode(results_split_parameter$trees)))
-  preprocess_PCA_thresh_description = paste("preprocess_PCA_thresh = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA_thresh)))
+  preprocess_PCA_description = paste("preprocess_PCA = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA)))
   eval_measure = paste("eval_measure = ", deparse(eval_measure))
 
   if(is.character(extremely_randomised_splitrule)){
@@ -516,7 +537,7 @@ textTrainRandomForest <- function(x,
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
   model_description_detail <- c(deparse(substitute(x)),
                                 deparse(substitute(y)),
-                                preprocess_PCA_thresh_description,
+                                preprocess_PCA_description,
                                 extremely_randomised_splitrule,
                                 eval_measure,
                                 mtry_description,

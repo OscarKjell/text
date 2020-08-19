@@ -15,7 +15,7 @@ test_that("textTrain regression produces list of results with prediction being n
                        #inside_strata_y = NULL,
                        penalty = c(1),
                        mixture = c(0),
-                       preprocess_PCA_thresh = "PCA_component_algorithm",
+                       preprocess_PCA = "min_halving",
                        multi_cores = TRUE
   )
 
@@ -30,7 +30,7 @@ test_that("textTrain regression produces list of results with prediction being n
                        #inside_strata_y = NULL,
                        penalty = c(1),
                        mixture = c(0),
-                       preprocess_PCA_thresh = 2,
+                       preprocess_PCA = 2,
                        multi_cores = FALSE
   )
 
@@ -53,7 +53,7 @@ test_that("textTrain Random Forest produces list of results with prediction bein
                        mtry = c(1),
                        min_n = c(1),
                        trees = c(1000),
-                       preprocess_PCA_thresh = "PCA_component_algorithm",
+                       preprocess_PCA = "min_halving",
                        multi_cores = FALSE,
                        eval_measure = "roc_auc",
                        force_train_method = "random_forest") #sens bal_accuracy f_measure
@@ -68,7 +68,7 @@ test_that("textTrain Random Forest produces list of results with prediction bein
                        mtry = c(1),
                        min_n = c(1),
                        trees = c(1000),
-                       preprocess_PCA_thresh = 2,
+                       preprocess_PCA = 2,
                        multi_cores = FALSE,
                        eval_measure = "sens",
                        force_train_method = "random_forest") #sens bal_accuracy f_measure
@@ -92,7 +92,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                        mtry = c(1),
                        min_n = c(1),
                        trees = c(1000),
-                       preprocess_PCA_thresh = c(0.95),
+                       preprocess_PCA = c(0.95),
                        extremely_randomised_splitrule = "gini",
                        multi_cores = TRUE,
                        eval_measure = "roc_auc") #sens bal_accuracy f_measure
@@ -101,13 +101,13 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
   testthat::expect_is(trained$truth_predictions$truth[1], "factor")
 })
 
-
+#sessionInfo()
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
-  wordembeddings <- wordembeddings4[1:2]
+  wordembeddings <- wordembeddings4[1]
   ratings_data <- Language_based_assessment_data_8[5:6]
   results <- textTrainLists(wordembeddings,
                             ratings_data,
-                            preprocess_PCA_thresh = "PCA_component_algorithm",
+                            preprocess_PCA = "min_halving",
                             #outside_strata_y = NULL,
                             #inside_strata_y = NULL,
                             penalty = c(2),
@@ -119,7 +119,9 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 })
 
 test_that("textTrainLists randomForest produces list of results with prediction being numeric", {
-  x <- wordembeddings4[1:2]
+  x <- wordembeddings4[1]
+  #x <- wordembeddings4[1:2]
+
   y1 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
   y2 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
   y <- tibble::tibble(y1, y2)
@@ -128,7 +130,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
                                force_train_method = "random_forest",
                                mtry = c(1),
                                min_n = c(1),
-                               preprocess_PCA_thresh = c(0.95),
+                               preprocess_PCA = c(0.95),
                                trees = c(1000),
                                eval_measure = "accuracy")
 
