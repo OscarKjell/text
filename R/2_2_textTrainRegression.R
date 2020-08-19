@@ -31,10 +31,10 @@ statisticalMode <- function(x) {
 #' object = results_nested_resampling$splits[[1]]
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA threshold for pca; preprocess_PCA = 2
+#' @param preprocess_PCA threshold for pca; preprocess_PCA = NA
 #' @return  RMSE.
 #' @noRd
-fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = NULL) {
+fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = NA) {
 
   xy_recipe <- rsample::analysis(object) %>%
     recipes::recipe(y ~ .) %>%
@@ -43,7 +43,7 @@ fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = NU
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
     # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
-    {if(!is.null(preprocess_PCA))
+    {if(!is.na(preprocess_PCA))
       {if(preprocess_PCA >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
       else if(preprocess_PCA < 1) recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
       else . } else .} %>%
@@ -102,16 +102,21 @@ fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, pre
 #' @noRd
 tune_over_cost <- function(object, penalty, mixture, preprocess_PCA = preprocess_PCA) {
 
-  # Number of components or percent of variance to attain; min_halving; preprocess_PCA = 2
-  if(preprocess_PCA[1] == "min_halving"){
-    num_features = length(rsample::analysis(object)) - 1
-    num_users = nrow(rsample::analysis(object))
-    preprocess_PCA_value = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
-    preprocess_PCA_value
-  } else if(preprocess_PCA[1] >= 1){
-    preprocess_PCA_value <- preprocess_PCA
-  } else if (preprocess_PCA[1] < 1){
-    preprocess_PCA_value <- preprocess_PCA
+  # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
+  if(!is.na(preprocess_PCA)){
+
+    if(preprocess_PCA[1] == "min_halving"){
+      num_features = length(rsample::analysis(object)) - 1
+      num_users = nrow(rsample::analysis(object))
+      preprocess_PCA_value = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
+      preprocess_PCA_value
+    } else if(preprocess_PCA[1] >= 1){
+      preprocess_PCA_value <- preprocess_PCA
+    } else if (preprocess_PCA[1] < 1){
+      preprocess_PCA_value <- preprocess_PCA
+    }
+  } else {
+    preprocess_PCA_value = NA
   }
 
   grid_inner <- base::expand.grid(
@@ -184,6 +189,7 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = pr
 ##                                inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
 #inside_strata_y = NULL
 #preprocess_PCA = c(.80, 0.95)
+#preprocess_PCA = NA
 #penalty = c(1, 2) #10^seq(-16, 16)
 #mixture = c(0)
 #method_cor = "pearson"
@@ -200,9 +206,11 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = pr
 # @param outside_strata_y Variable to stratify according (default y; can set to NULL).
 # @param inside_folds Number of folds for the inner folds.
 # @param inside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param preprocess_PCA Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
-#' number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
-#' of participants and feature (word embedding dimensions) in the data. The formula is:
+#' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
+#' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
+#' number of components to select (e.g., 10). Default is "min_halving", which is a function
+#' that selects the number of PCA components based on number  of participants and feature (word embedding dimensions)
+#' in the data. The formula is:
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
 #' @param penalty hyper parameter that is tuned
 #' @param mixture hyper parameter that is tuned default = 0 (hence a pure ridge regression).
@@ -332,25 +340,36 @@ textTrainRegression <- function(x,
   tibble::is_tibble(xy)
   is.data.frame(xy)
 
-  if(preprocess_PCA[1] >= 1){
   final_recipe <- xy %>%
     recipes::recipe(y ~ .) %>%
     # recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
-    recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
-    #recipes::prep()
-  }else if(preprocess_PCA[1] < 1){
-    final_recipe <- xy %>%
-      recipes::recipe(y ~ .) %>%
-      # recipes::step_BoxCox(all_predictors()) %>%
-      recipes::step_naomit(Dim1, skip = TRUE) %>%
-      recipes::step_center(recipes::all_predictors()) %>%
-      recipes::step_scale(recipes::all_predictors()) %>%
-      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
-    #recipes::prep()
-  }
+    {if(!is.na(preprocess_PCA))
+    {if(preprocess_PCA >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
+      else if(preprocess_PCA < 1) recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+      else . } else .}
+
+#  if(preprocess_PCA[1] >= 1){
+#  final_recipe <- xy %>%
+#    recipes::recipe(y ~ .) %>%
+#    # recipes::step_BoxCox(all_predictors()) %>%
+#    recipes::step_naomit(Dim1, skip = TRUE) %>%
+#    recipes::step_center(recipes::all_predictors()) %>%
+#    recipes::step_scale(recipes::all_predictors()) %>%
+#    recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
+#    #recipes::prep()
+#  }else if(preprocess_PCA[1] < 1){
+#    final_recipe <- xy %>%
+#      recipes::recipe(y ~ .) %>%
+#      # recipes::step_BoxCox(all_predictors()) %>%
+#      recipes::step_naomit(Dim1, skip = TRUE) %>%
+#      recipes::step_center(recipes::all_predictors()) %>%
+#      recipes::step_scale(recipes::all_predictors()) %>%
+#      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
+#    #recipes::prep()
+#  }
 
   preprocessing_recipe <- recipes::prep(final_recipe)
 

@@ -7,9 +7,9 @@ library(dplyr)
 
 context("Training Functions")
 
-test_that("textTrain regression produces list of results with prediction being numeric", {
+test_that("textTrain Regression produces list of results with prediction being numeric", {
 
-  trained <- textTrain(wordembeddings4$harmonytext,
+  trained_min_halving <- textTrain(wordembeddings4$harmonytext,
                        Language_based_assessment_data_8$hilstotal,
                        #outside_strata_y = NULL,
                        #inside_strata_y = NULL,
@@ -20,11 +20,11 @@ test_that("textTrain regression produces list of results with prediction being n
   )
 
   #warnings()
-  testthat::expect_that(trained, is_a("list"))
-  testthat::expect_is(trained$prediction$predictions[1], "numeric")
+  testthat::expect_that(trained_min_halving, is_a("list"))
+  testthat::expect_is(trained_min_halving$prediction$predictions[1], "numeric")
 
 
-  trained <- textTrain(wordembeddings4$harmonytext,
+  trained_2 <- textTrain(wordembeddings4$harmonytext,
                        Language_based_assessment_data_8$hilstotal,
                        #outside_strata_y = NULL,
                        #inside_strata_y = NULL,
@@ -35,8 +35,24 @@ test_that("textTrain regression produces list of results with prediction being n
   )
 
   #warnings()
-  testthat::expect_that(trained, is_a("list"))
-  testthat::expect_is(trained$prediction$predictions[1], "numeric")
+  testthat::expect_that(trained_2, is_a("list"))
+  testthat::expect_is(trained_2$prediction$predictions[1], "numeric")
+
+  trained_NA <- textTrain(wordembeddings4$harmonytext,
+                       Language_based_assessment_data_8$hilstotal,
+                       #outside_strata_y = NULL,
+                       #inside_strata_y = NULL,
+                       penalty = c(1),
+                       mixture = c(0),
+                       preprocess_PCA = NA,
+                       multi_cores = TRUE
+  )
+
+  #warnings()
+  testthat::expect_that(trained_NA, is_a("list"))
+  testthat::expect_is(trained_NA$prediction$predictions[1], "numeric")
+
+
 })
 
 
@@ -75,6 +91,21 @@ test_that("textTrain Random Forest produces list of results with prediction bein
 
   testthat::expect_that(trained2, testthat::is_a("list"))
   testthat::expect_is(trained2$truth_predictions$truth[1], "factor")
+
+  trained_NA <- textTrain(wordembeddings4$harmonytext,
+                        example_categories,
+                        #outside_strata_y = NULL,
+                        #inside_strata_y = NULL,
+                        mtry = c(1),
+                        min_n = c(1),
+                        trees = c(1000),
+                        preprocess_PCA = NA,
+                        multi_cores = FALSE,
+                        eval_measure = "sens",
+                        force_train_method = "random_forest") #sens bal_accuracy f_measure
+
+  testthat::expect_that(trained_NA, testthat::is_a("list"))
+  testthat::expect_is(trained_NA$truth_predictions$truth[1], "factor")
 })
 
 

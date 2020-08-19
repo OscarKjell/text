@@ -20,9 +20,11 @@ textTrainRegression(
 
 \item{y}{Numeric variable to predict.}
 
-\item{preprocess_PCA}{Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
-number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
-of participants and feature (word embedding dimensions) in the data. The formula is:
+\item{preprocess_PCA}{Pre-processing threshold for PCA (to skip this step set it to NA).
+Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
+number of components to select (e.g., 10). Default is "min_halving", which is a function
+that selects the number of PCA components based on number  of participants and feature (word embedding dimensions)
+in the data. The formula is:
 preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).}
 
 \item{penalty}{hyper parameter that is tuned}

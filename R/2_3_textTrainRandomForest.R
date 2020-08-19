@@ -44,7 +44,7 @@ fit_model_accuracy_rf <- function(object,
     recipes::step_scale(recipes::all_predictors()) %>%
     recipes::step_BoxCox(recipes::all_predictors()) %>%
     # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
-    {if(!is.null(preprocess_PCA))
+    {if(!is.na(preprocess_PCA))
     {if(preprocess_PCA >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
       else if(preprocess_PCA < 1) recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
       else . } else .} %>%
@@ -198,6 +198,7 @@ tune_over_cost_rf <- function(object,
                               eval_measure,
                               extremely_randomised_splitrule) {
 
+  if(!is.na(preprocess_PCA)){
 
   # Number of components or percent of variance to attain; min_halving
   if(preprocess_PCA[1] == "min_halving"){
@@ -209,6 +210,9 @@ tune_over_cost_rf <- function(object,
     preprocess_PCA_value <- preprocess_PCA
   } else if (preprocess_PCA[1] < 1){
     preprocess_PCA_value <- preprocess_PCA
+  }
+  } else {
+    preprocess_PCA_value = NA
   }
 
 
@@ -477,31 +481,45 @@ textTrainRandomForest <- function(x,
   # Construct final model to be saved and applied on other data
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
 
-  if(preprocess_PCA[1] >= 1){
-    final_recipe <- xy %>%
-      recipes::recipe(y ~ .) %>%
-      recipes::update_role(id1, new_role = "id variable") %>%
-      #recipes::update_role(-id1, new_role = "predictor") %>%
-      recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
-      recipes::step_center(recipes::all_predictors()) %>%
-      recipes::step_scale(recipes::all_predictors()) %>%
-      recipes::step_BoxCox(recipes::all_predictors()) %>%
-      recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
-    #recipes::prep()
-  }else if(preprocess_PCA[1] < 1){
-    final_recipe <- xy %>%
-      recipes::recipe(y ~ .) %>%
-      recipes::update_role(id1, new_role = "id variable") %>%
-      #recipes::update_role(-id1, new_role = "predictor") %>%
-      recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
-      recipes::step_center(recipes::all_predictors()) %>%
-      recipes::step_scale(recipes::all_predictors()) %>%
-      recipes::step_BoxCox(recipes::all_predictors()) %>%
-      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
-    #recipes::prep()
-  }
+  final_recipe <- xy %>%
+    recipes::recipe(y ~ .) %>%
+    recipes::update_role(id1, new_role = "id variable") %>%
+    #recipes::update_role(-id1, new_role = "predictor") %>%
+    recipes::update_role(y, new_role = "outcome") %>%
+    recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+    recipes::step_center(recipes::all_predictors()) %>%
+    recipes::step_scale(recipes::all_predictors()) %>%
+    recipes::step_BoxCox(recipes::all_predictors()) %>%
+    {if(!is.na(preprocess_PCA))
+    {if(preprocess_PCA >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
+      else if(preprocess_PCA < 1) recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+      else . } else .}
+
+#  if(preprocess_PCA[1] >= 1){
+#    final_recipe <- xy %>%
+#      recipes::recipe(y ~ .) %>%
+#      recipes::update_role(id1, new_role = "id variable") %>%
+#      #recipes::update_role(-id1, new_role = "predictor") %>%
+#      recipes::update_role(y, new_role = "outcome") %>%
+#      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+#      recipes::step_center(recipes::all_predictors()) %>%
+#      recipes::step_scale(recipes::all_predictors()) %>%
+#      recipes::step_BoxCox(recipes::all_predictors()) %>%
+#      recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
+#    #recipes::prep()
+#  }else if(preprocess_PCA[1] < 1){
+#    final_recipe <- xy %>%
+#      recipes::recipe(y ~ .) %>%
+#      recipes::update_role(id1, new_role = "id variable") %>%
+#      #recipes::update_role(-id1, new_role = "predictor") %>%
+#      recipes::update_role(y, new_role = "outcome") %>%
+#      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+#      recipes::step_center(recipes::all_predictors()) %>%
+#      recipes::step_scale(recipes::all_predictors()) %>%
+#      recipes::step_BoxCox(recipes::all_predictors()) %>%
+#      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
+#    #recipes::prep()
+#  }
 
   preprocessing_recipe <- recipes::prep(final_recipe)
 
