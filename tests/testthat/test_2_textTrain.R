@@ -77,23 +77,6 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
   testthat::expect_that(trained, testthat::is_a("list"))
   testthat::expect_is(trained$truth_predictions$truth[1], "factor")
 
-  trained_reg <- textTrainRandomForest(wordembeddings4$harmonytext,
-                                       Language_based_assessment_data_8$hilstotal,
-                                       #outside_strata_y = NULL,
-                                       #inside_strata_y = NULL,
-                                       mode_rf = "regression",
-                                       mtry = c(1),
-                                       min_n = c(1),
-                                       trees = c(1000),
-                                       preprocess_PCA = c(0.95),
-                                       extremely_randomised_splitrule = NULL,
-                                       multi_cores = TRUE,
-                                       eval_measure = "roc_auc") #sens bal_accuracy f_measure
-
-  testthat::expect_that(trained_reg, testthat::is_a("list"))
-  testthat::expect_is(trained_reg$truth_predictions$truth[1], "factor")
-
-
   example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
