@@ -92,7 +92,6 @@ textTrain <- function(x,
 #' @importFrom tibble as_tibble
 #' @importFrom magrittr %>%
 #' @importFrom dplyr arrange
-#' @importFrom data.table %like%
 #' @export
 textTrainLists <- function(x,
                            y,

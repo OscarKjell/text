@@ -239,7 +239,7 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = pr
 #' )
 #' @seealso see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
 #' \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
-#' @importFrom stats cor.test na.omit
+#' @importFrom stats cor.test na.omit lm
 #' @importFrom dplyr select starts_with filter
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
 #' @importFrom rsample vfold_cv
@@ -251,10 +251,10 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = pr
 #' @export
 textTrainRegression <- function(x,
                                 y,
-#                                outside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
-#                                outside_strata_y = "y",
-#                                inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
-#                                inside_strata_y = "y",
+#                               outside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
+#                               outside_strata_y = "y",
+#                               inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
+#                               inside_strata_y = "y",
                                 preprocess_PCA = "min_halving",
                                 penalty = 10^seq(-16, 16),
                                 mixture = c(0),

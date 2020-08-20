@@ -41,10 +41,9 @@ Imports:
     tune,
     workflows,
     yardstick, 
-    crayon, 
+    crayon,
     future,
-    furrr,
-    ranger
+    furrr
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,
@@ -52,10 +51,10 @@ Suggests:
     testthat,
     rio,
     glmnet,
-    lm,
     randomForest,
     covr,
-    xml2
+    xml2,
+    ranger
 VignetteBuilder: knitr
 Depends: R (>= 2.10)
 Config/reticulate:

@@ -35,8 +35,8 @@ test_that("textTrain Regression produces list of results with prediction being n
   )
 
   #warnings()
-  testthat::expect_that(trained_2, is_a("list"))
-  testthat::expect_is(trained_2$prediction$predictions[1], "numeric")
+  testthat::expect_that(trained_1, is_a("list"))
+  testthat::expect_is(trained_1$prediction$predictions[1], "numeric")
 
   trained_NA <- textTrain(wordembeddings4$harmonytext,
                        Language_based_assessment_data_8$hilstotal,

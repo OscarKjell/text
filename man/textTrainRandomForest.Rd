@@ -23,7 +23,7 @@ textTrainRandomForest(
 
 \item{y}{Categorical variable to predict.}
 
-\item{mode_rf}{Default is "classification"; see also "regression."}
+\item{mode_rf}{Default is "classification" ("regression" is not supported yet).}
 
 \item{preprocess_PCA}{Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
