@@ -17,6 +17,7 @@
 #'
 #' @param object An rsplit object (from results_nested_resampling tibble)
 #' object = results_nested_resampling$splits[[1]]
+#' @param mode_rf default "classification"; see also "unknown" and "regression".
 #' @param extremely_randomised_splitrule default: "extratrees", see also: "gini" or "hellinger"
 #' @param mtry hyperparameter for random forest.
 #' @param min_n hyperparameter for random forest.
@@ -26,6 +27,7 @@
 #' @return  Accuracy
 #' @noRd
 fit_model_accuracy_rf <- function(object,
+                                  mode_rf = "classification",
                                   mtry = 1,
                                   min_n = 1,
                                   trees = 1000,
@@ -84,15 +86,15 @@ fit_model_accuracy_rf <- function(object,
   # Create and fit model. help(rand_forest)
   if(is.null(extremely_randomised_splitrule)){
   mod <-
-    parsnip::rand_forest(trees = trees, mode = "classification", mtry = mtry, min_n = min_n) %>%
+    parsnip::rand_forest(mode = mode_rf, trees = trees, mtry = mtry, min_n = min_n) %>%
     #parsnip::set_engine("ranger")
     parsnip::set_engine("randomForest") %>%
     parsnip::fit(y ~ ., data = xy_training) #analysis(object)
   } else if(is.character(extremely_randomised_splitrule)){
     mod <-
-      parsnip::rand_forest() %>%
+      parsnip::rand_forest(mode = mode_rf) %>%
       parsnip::set_engine("ranger", splitrule = extremely_randomised_splitrule) %>% # extremely_randomised_splitrule = "extratrees" = "gini" "extratrees" "hellinger" tune()
-      parsnip::set_mode("classification") %>%
+      #parsnip::set_mode("classification") %>%
       parsnip::fit(y ~ ., data = xy_training) # ADDED line; and: install.packages("ranger")
   }
 
@@ -167,16 +169,18 @@ fit_model_accuracy_rf <- function(object,
 fit_model_accuracy_wrapper_rf <- function(mtry,
                                           min_n,
                                           object,
+                                          mode_rf,
                                           trees,
                                           preprocess_PCA,
                                           eval_measure,
                                           extremely_randomised_splitrule) fit_model_accuracy_rf(object,
-                                                                              mtry,
-                                                                              min_n,
-                                                                              trees,
-                                                                              preprocess_PCA,
-                                                                              eval_measure,
-                                                                              extremely_randomised_splitrule)
+                                                                                                mode_rf,
+                                                                                                mtry,
+                                                                                                min_n,
+                                                                                                trees,
+                                                                                                preprocess_PCA,
+                                                                                                eval_measure,
+                                                                                                extremely_randomised_splitrule)
 
 #fit_model_accuracy_wrapper_rf(object = results_nested_resampling$splits[[1]], mtry=1, min_n=1, trees=10, preprocess_PCA=0.95, eval_measure = "roc_auc")
 
@@ -191,6 +195,7 @@ fit_model_accuracy_wrapper_rf <- function(mtry,
 #' @return Accuracy
 #' @noRd
 tune_over_cost_rf <- function(object,
+                              mode_rf,
                               mtry,
                               min_n,
                               trees,
@@ -228,6 +233,7 @@ tune_over_cost_rf <- function(object,
                               grid_inner$preprocess_PCA),
                               fit_model_accuracy_wrapper_rf,
                               object = object,
+                              mode_rf = mode_rf,
                               eval_measure = eval_measure,
                               extremely_randomised_splitrule)
 
@@ -262,6 +268,7 @@ tune_over_cost_rf <- function(object,
 #' @return Accuracy
 #' @noRd
 summarize_tune_results_rf <- function(object,
+                                      mode_rf,
                                       mtry,
                                       min_n,
                                       trees,
@@ -272,6 +279,7 @@ summarize_tune_results_rf <- function(object,
   # Return row-bound tibble containing the INNER results
   purrr::map_df(.x = object$splits,
                 .f = tune_over_cost_rf,
+                mode_rf = mode_rf,
                 mtry=mtry,
                 min_n=min_n,
                 trees = trees,
@@ -313,6 +321,7 @@ summarize_tune_results_rf <- function(object,
 # @param outside_strata_y Variable to stratify according (default "y"; can also set to NULL).
 # @param inside_folds Number of folds for the inner folds.
 # @param inside_strata_y Variable to stratify according (default "y"; can also set to NULL).
+#' @param mode_rf Default is "classification" ("regression" is not supported yet).
 #' @param preprocess_PCA Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
 #' of participants and feature (word embedding dimensions) in the data. The formula is:
@@ -360,6 +369,7 @@ textTrainRandomForest <- function(x,
                                   #outside_strata_y = "y",
                                   #inside_folds = 10,
                                   #inside_strata_y = "y",
+                                  mode_rf = "classification",
                                   preprocess_PCA = "min_halving",
                                   extremely_randomised_splitrule = NULL,
                                   mtry = c(1, 5, 10, 15, 30, 40),
@@ -370,7 +380,10 @@ textTrainRandomForest <- function(x,
                                   multi_cores = TRUE) {
 
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
-  y <- as.factor(y)
+
+  if(!mode_rf== "regression"){
+    y <- as.factor(y)
+  }
   xy <- cbind(x1, y)
 
   xy$id1 <- c(seq_len(nrow(xy)))
@@ -390,6 +403,7 @@ textTrainRandomForest <- function(x,
   if (multi_cores == FALSE){
     tuning_results <- purrr::map(.x = results_nested_resampling$inner_resamples,
                                  .f = summarize_tune_results_rf,
+                                 mode_rf = mode_rf,
                                  mtry = mtry,
                                  min_n = min_n,
                                  trees = trees,
@@ -403,6 +417,7 @@ textTrainRandomForest <- function(x,
     # The object tuning_results is a list of data frames for each of the OUTER resamples.
     tuning_results <- furrr::future_map(.x = results_nested_resampling$inner_resamples,
                                         .f = summarize_tune_results_rf,
+                                        mode_rf = mode_rf,
                                         mtry = mtry,
                                         min_n = min_n,
                                         trees = trees,
@@ -429,6 +444,7 @@ textTrainRandomForest <- function(x,
   # splits using the corresponding tuning parameter value from results_split_parameter.
   # fit_model_rmse(results_split_parameter$splits[[1]])
   results_outer <- purrr::pmap(list(object=results_nested_resampling$splits,
+                                    mode_rf = mode_rf,
                                     results_split_parameter$mtry,
                                     results_split_parameter$min_n,
                                     trees = results_split_parameter$trees,
@@ -528,9 +544,11 @@ textTrainRandomForest <- function(x,
   xy_final <- recipes::juice(preprocessing_recipe)
 
   final_predictive_model <-
-    parsnip::rand_forest(trees = statisticalMode(results_split_parameter$trees), mode = "classification",
-                         mtry = statisticalMode(results_split_parameter$mtry),
-                         min_n = statisticalMode(results_split_parameter$min_n)) %>%
+    parsnip::rand_forest(
+      mode = mode_rf,
+      trees = statisticalMode(results_split_parameter$trees),
+      mtry = statisticalMode(results_split_parameter$mtry),
+      min_n = statisticalMode(results_split_parameter$min_n)) %>%
     # set_engine("ranger")
     parsnip::set_engine("randomForest") %>%
     parsnip::fit(y ~ ., data = xy_final) #analysis(object)
@@ -543,6 +561,7 @@ textTrainRandomForest <- function(x,
     mtry_description <- c("-")
     min_n_description <- c("-")
   }
+  mode_rf_description = paste("mode =", deparse(mode_rf))
   trees_description = paste("trees =", deparse(statisticalMode(results_split_parameter$trees)))
   preprocess_PCA_description = paste("preprocess_PCA = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA)))
   eval_measure = paste("eval_measure = ", deparse(eval_measure))
@@ -555,6 +574,7 @@ textTrainRandomForest <- function(x,
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
   model_description_detail <- c(deparse(substitute(x)),
                                 deparse(substitute(y)),
+                                mode_rf_description,
                                 preprocess_PCA_description,
                                 extremely_randomised_splitrule,
                                 eval_measure,

@@ -14,7 +14,6 @@
 # )
 
 
-
 #' Function to find the mode
 #' @param x vector with numbers
 #' @return  Mode value
@@ -34,7 +33,7 @@ statisticalMode <- function(x) {
 #' @param preprocess_PCA threshold for pca; preprocess_PCA = NA
 #' @return  RMSE.
 #' @noRd
-fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = NA) {
+fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = 1) {
 
   xy_recipe <- rsample::analysis(object) %>%
     recipes::recipe(y ~ .) %>%
@@ -53,12 +52,21 @@ fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = NA
   # It extracts the data from the xy_recipe object.
   xy_training <- recipes::juice(xy_recipe)
 
-  # Create and fit model; penalty=0.1 mixture = 0
+  # Ridge and/or Lasso
+  if(length(xy_training)>2){
+  # Create and fit model; penalty=NULL mixture = NULL
   mod <-
     parsnip::linear_reg(penalty = penalty, mixture = mixture) %>%
     parsnip::set_engine("glmnet") %>%
-    parsnip::fit(y ~ ., data = xy_training) #analysis(object)
+    parsnip::fit(y ~ ., data = xy_training)
 
+  # Standard regression
+  } else if (length(xy_training) == 2) {
+    mod <-
+      parsnip::linear_reg(mode = "regression") %>%
+      parsnip::set_engine("lm") %>%
+      parsnip::fit(y ~ ., data = xy_training) #analysis(object)
+  }
   #Prepare the test data according to the recipe
   xy_testing <- xy_recipe %>%
     recipes::bake(rsample::assessment(object))
@@ -378,10 +386,26 @@ textTrainRegression <- function(x,
   xy_final <- recipes::juice(preprocessing_recipe)
 
 
-  final_predictive_model <-
-    parsnip::linear_reg(penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture)) %>%
-    parsnip::set_engine("glmnet") %>%
-    parsnip::fit(y ~ ., data = xy_final)
+
+  if(length(xy_final)>2){
+    # Create and fit model; penalty=NULL mixture = NULL
+    final_predictive_model <-
+      parsnip::linear_reg(penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture)) %>%
+      parsnip::set_engine("glmnet") %>%
+      parsnip::fit(y ~ ., data = xy_final)
+
+    # Standard regression
+  } else if (length(xy_final) == 2) {
+    final_predictive_model <-
+      parsnip::linear_reg(mode = "regression") %>%
+      parsnip::set_engine("lm") %>%
+      parsnip::fit(y ~ ., data = xy_final)
+  }
+
+#  final_predictive_model <-
+#    parsnip::linear_reg(penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture)) %>%
+#    parsnip::set_engine("glmnet") %>%
+#    parsnip::fit(y ~ ., data = xy_final)
 #####
 
   # Saving the final mtry and min_n used for the final model.
