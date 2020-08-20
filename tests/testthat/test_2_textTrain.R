@@ -91,7 +91,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    preprocess_PCA = c(0.95),
                                    extremely_randomised_splitrule = "gini",
                                    multi_cores = TRUE,
-                                   eval_measure = "roc_auc") #sens bal_accuracy f_measure
+                                   eval_measure = "bal_accuracy") #sens bal_accuracy f_measure
 
   testthat::expect_that(trained, testthat::is_a("list"))
   testthat::expect_is(trained$truth_predictions$truth[1], "factor")
@@ -142,7 +142,7 @@ test_that("textTrain Random Forest produces list of results with prediction bein
                         trees = c(1000),
                         preprocess_PCA = NA,
                         multi_cores = FALSE,
-                        eval_measure = "sens",
+                        eval_measure = "spec",
                         force_train_method = "random_forest") #sens bal_accuracy f_measure
 
   testthat::expect_that(trained_NA, testthat::is_a("list"))
@@ -156,7 +156,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   ratings_data <- Language_based_assessment_data_8[5:6]
   results <- textTrainLists(wordembeddings,
                             ratings_data,
-                            preprocess_PCA = "min_halving",
+                            preprocess_PCA = c(0.90),
                             #outside_strata_y = NULL,
                             #inside_strata_y = NULL,
                             penalty = c(2),
