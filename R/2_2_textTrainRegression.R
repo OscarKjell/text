@@ -11,8 +11,7 @@
 #                               outside_strata_y = NULL,
 #                               inside_strata_y = NULL,
 #                               multi_cores = FALSE #this is FALSE due to CRAN testing.
-# )
-
+#)
 
 #' Function to find the mode
 #' @param x vector with numbers
@@ -85,7 +84,6 @@ fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = 1)
   output
 }
 
-
 #' In some situations, we want to parameterize the function over the tuning parameter:
 #' Function to fit a model and compute RMSE.
 #'
@@ -97,7 +95,6 @@ fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = 1)
 #' @return RMSE.
 #' @noRd
 fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, preprocess_PCA = preprocess_PCA) fit_model_rmse(object, penalty, mixture, preprocess_PCA = preprocess_PCA)
-
 
 #' For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
 #'
@@ -111,7 +108,7 @@ fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, pre
 tune_over_cost <- function(object, penalty, mixture, preprocess_PCA = preprocess_PCA) {
 
   # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
-  if(!is.na(preprocess_PCA)){
+  if(!is.na(preprocess_PCA[1])){
 
     if(preprocess_PCA[1] == "min_halving"){
       num_features = length(rsample::analysis(object)) - 1
@@ -122,10 +119,10 @@ tune_over_cost <- function(object, penalty, mixture, preprocess_PCA = preprocess
       preprocess_PCA_value <- preprocess_PCA
     } else if (preprocess_PCA[1] < 1){
       preprocess_PCA_value <- preprocess_PCA
-    }
-  } else {
+    }else {
     preprocess_PCA_value = NA
-  }
+    }
+    }
 
   grid_inner <- base::expand.grid(
   penalty = penalty,
@@ -170,24 +167,24 @@ tune_over_cost <- function(object, penalty, mixture, preprocess_PCA = preprocess
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
 #' @param preprocess_PCA threshold for pca
-#' @return RMSE.
+#' @return RMSE with corresponding penalty, mixture and preprocess_PCA.
 #' @noRd
 summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = preprocess_PCA) {
 
   # Return row-bound tibble containing the INNER results
   purrr::map_df(.x = object$splits, .f = tune_over_cost,
-                penalty = penalty, mixture = mixture, preprocess_PCA = preprocess_PCA) %>%
+                penalty = penalty, mixture = mixture, preprocess_PCA = preprocess_PCA) #%>%
 
-    # For each value of the tuning parameter, compute the help(summarize)
+    # For each value of the tuning parameter, compute the
     # average RMSE which is the INNER estimate.
-    dplyr::group_by(penalty) %>%
-    dplyr::summarize(mixture = mixture,
-                     preprocess_PCA = preprocess_PCA,
-                     mean_RMSE = mean(RMSE, na.rm = TRUE),
-                     n = length(RMSE),
-                     .groups = "drop_last")
+#   dplyr::group_by(penalty) %>%
+#   dplyr::summarize(mixture = mixture,
+#                    preprocess_PCA = preprocess_PCA,
+#                    #mean_RMSE = mean(RMSE, na.rm = TRUE),
+#                    RMSE = RMSE,
+#                    n = length(RMSE),
+#                    .groups = "drop_last")
 }
-
 
 
 #x <- wordembeddings4$harmonytext
@@ -196,14 +193,14 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = pr
 #outside_strata_y = NULL
 ##                                inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
 #inside_strata_y = NULL
-#preprocess_PCA = c(.80, 0.95)
-#preprocess_PCA = NA
+#preprocess_PCA = c(.94, 0.95, .96)
+##preprocess_PCA = NA
 #penalty = c(1, 2) #10^seq(-16, 16)
 #mixture = c(0)
 #method_cor = "pearson"
 #model_description = "Consider writing a description of your model here"
 #multi_cores = TRUE
-
+#
 
 # devtools::document()
 #' Train word embeddings to a numeric variable.
@@ -306,7 +303,7 @@ textTrainRegression <- function(x,
   }
 
   # Function to get the lowest mean_RMSE
-  bestParameters <- function(dat) dat[which.min(dat$mean_RMSE),]
+  bestParameters <- function(dat) dat[which.min(dat$RMSE),]
 
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
@@ -354,9 +351,9 @@ textTrainRegression <- function(x,
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
-    {if(!is.na(preprocess_PCA))
-    {if(preprocess_PCA >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
-      else if(preprocess_PCA < 1) recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+    {if(!is.na(preprocess_PCA[1]))
+    {if(preprocess_PCA[1] >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
+      else if(preprocess_PCA[1] < 1) recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
       else . } else .}
 
 #  if(preprocess_PCA[1] >= 1){
@@ -410,8 +407,13 @@ textTrainRegression <- function(x,
 
   # Saving the final mtry and min_n used for the final model.
   penalty_description = paste("penalty = ", deparse(statisticalMode(results_split_parameter$penalty)))
+  penalty_fold_description = paste("penalty in each fold = ", deparse(results_split_parameter$penalty))
+
   mixture_description = paste("mixture = ", deparse(statisticalMode(results_split_parameter$mixture)))
-  preprocess_PCA_description = paste("preprocess_PCA = ", deparse(results_split_parameter$preprocess_PCA))
+  mixture_fold_description = paste("mixture in each fold = ", deparse(results_split_parameter$mixture))
+
+  preprocess_PCA_description = paste("preprocess_PCA = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA)))
+  preprocess_PCA_fold_description = paste("preprocess_PCA in each fold = ", deparse(results_split_parameter$preprocess_PCA))
 
 
 
@@ -419,8 +421,11 @@ textTrainRegression <- function(x,
   model_description_detail <- c(deparse(substitute(x)),
                                 deparse(substitute(y)),
                                 penalty_description,
+                                penalty_fold_description,
                                 mixture_description,
+                                mixture_fold_description,
                                 preprocess_PCA_description,
+                                preprocess_PCA_fold_description,
                                 model_description)
 
   final_results <- list(predy_y, preprocessing_recipe, final_predictive_model, model_description_detail, correlation)

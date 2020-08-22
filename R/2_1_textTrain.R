@@ -71,7 +71,10 @@ textTrain <- function(x,
 
 
 #x <- wordembeddings4[1:2]
-#y <- ratings_data
+##y <- ratings_data
+#y1 <- Language_based_assessment_data_8[8]$gender
+#y2 <- Language_based_assessment_data_8[8]$gender
+#y <- tibble(y1, y2)
 
 # library(data.table)
 # devtools::document()
@@ -136,14 +139,17 @@ textTrainLists <- function(x,
     colnames(output_ordered_named) <- c("descriptions", "correlation", "df", "p_value", "t_statistics", "alternative")
     rownames(output_ordered_named) <- NULL
 
-    #output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
-    #output_predscore_reg <- output_predscore[rownames(output_predscore) %like% "predictions", ]
-    #colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
+    output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
+    output_predscore_reg <- output_predscore[grep("predictions", rownames(output_predscore)), ]
+    colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
 
     names(output) <- descriptions
+    #Remove predictions from output since they are saved together
+    output1 <- purrr::map(output, ~purrr::discard(.x, names(.x) == 'predictions'))
 
-    results <- list(output, output_ordered_named) # output_predscore_reg,
-    names(results) <- c("all_output", "results") # "predictions",
+
+    results <- list(output1, output_predscore_reg, output_ordered_named) #
+    names(results) <- c("all_output", "predictions", "results") #
     results
   } else if (force_train_method == "random_forest") { #
 
@@ -160,19 +166,28 @@ textTrainLists <- function(x,
     colnames(output_ordered_named) <- c("descriptions", "chi2", "df", "p_value")
     output_ordered_named
 
+    output_eval_measures <- t(as.data.frame(lapply(output, function(output) unlist(output$results$.estimate))))
+    output_eval_measures_names <- t(as.data.frame(lapply(output, function(output) unlist(output$results$.metric))))
+    colnames(output_eval_measures) <- c(output_eval_measures_names[1,])
+    output_eval_measures
+
+    output_ordered_named1 <- cbind(output_ordered_named, output_eval_measures)
+    rownames(output_ordered_named1) <- NULL
+
     # Get and sort the Prediction scores
-    #output_predscore1 <- lapply(output, "[[", "predictions")
-    #names(output_predscore1) <- descriptions
-    #output_predscore <- do.call(cbind, output_predscore1) %>%
-    #  tibble::as_tibble() %>%
-    #  dplyr::arrange()
+    output_predscore1 <- lapply(output, "[[", "truth_predictions")
+    names(output_predscore1) <- descriptions
+    output_predscore <- do.call(cbind, output_predscore1) %>%
+      tibble::as_tibble() %>%
+      dplyr::arrange()
 
     names(output) <- descriptions
+    output1 <- purrr::map(output, ~purrr::discard(.x, names(.x) == 'predictions'))
 
     # Combine output
-    results <- list(output, output_ordered_named)
-    names(results) <- c("all_output", "results")
-    results
+    results <- list(output1, output_predscore, output_ordered_named1)
+    names(results) <- c("all_output", "predictions", "results")
+    results # results$all_output$satisfactionwords_y2$model_description[3]
   }
 }
 

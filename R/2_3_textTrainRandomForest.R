@@ -203,9 +203,9 @@ tune_over_cost_rf <- function(object,
                               eval_measure,
                               extremely_randomised_splitrule) {
 
-  if(!is.na(preprocess_PCA)){
+  if(!is.na(preprocess_PCA[1])){
 
-  # Number of components or percent of variance to attain; min_halving
+  # Number of components or percent of variance to attain; min_halving; preprocess_PCA = c(0.9, 0.3)
   if(preprocess_PCA[1] == "min_halving"){
     num_features = length(rsample::analysis(object)) - 1
     num_users = nrow(rsample::analysis(object))
@@ -215,11 +215,10 @@ tune_over_cost_rf <- function(object,
     preprocess_PCA_value <- preprocess_PCA
   } else if (preprocess_PCA[1] < 1){
     preprocess_PCA_value <- preprocess_PCA
-  }
   } else {
     preprocess_PCA_value = NA
   }
-
+    }
 
   grid_inner <- base::expand.grid(mtry = mtry,
                                   min_n = min_n,
@@ -285,28 +284,29 @@ summarize_tune_results_rf <- function(object,
                 trees = trees,
                 preprocess_PCA = preprocess_PCA,
                 eval_measure = eval_measure,
-                extremely_randomised_splitrule = extremely_randomised_splitrule) %>%
+                extremely_randomised_splitrule = extremely_randomised_splitrule) #%>%
 
     # For each value of the tuning parameter, compute the
     # average RMSE which is the INNER estimate.
-    dplyr::group_by(mtry) %>%
-    dplyr::summarize(min_n = min_n,
-                     mean_eval_measure = mean(eval_measure, na.rm = TRUE), #TODO should it be mean or mode here?
-                     trees = trees,
-                     preprocess_PCA = preprocess_PCA,
-                     n = length(eval_measure),
-                     .groups = "drop_last")
+    #dplyr::group_by(mtry) %>%
+    #dplyr::summarize(min_n = min_n,
+    #                 mean_eval_measure = mean(eval_measure, na.rm = TRUE), #TODO should it be mean or mode here?
+    #                 trees = trees,
+    #                 preprocess_PCA = preprocess_PCA,
+    #                 n = length(eval_measure),
+    #                 .groups = "drop_last")
 }
 
 #library(text)
 #x <- wordembeddings4[1]$harmonywords
-#y <- Language_based_assessment_data_8[8]$gender#
+#y <- Language_based_assessment_data_8[8]$gender #
 #outside_strata_y = "y"#
 #inside_strata_y = "y"
+#mode_rf = "classification"
 #mtry = c(1, 2)
 #min_n = c(1, 2)
-#preprocess_PCA = c(0.95)
-#trees = c(1550)
+#preprocess_PCA = c(0.94, 0.95)
+#trees = c(1000)
 #model_description = "Consider writing a description of your model here"
 #multi_cores = TRUE
 #eval_measure = "bal_accuracy" # "roc_auc" #"accuracy" #
@@ -372,9 +372,9 @@ textTrainRandomForest <- function(x,
                                   mode_rf = "classification",
                                   preprocess_PCA = "min_halving",
                                   extremely_randomised_splitrule = NULL,
-                                  mtry = c(1, 5, 10, 15, 30, 40),
-                                  min_n = c(1, 5, 10, 15, 30, 40),
-                                  trees = c(1000, 1500),
+                                  mtry = c(1,  10, 15, 40),
+                                  min_n = c(1, 10, 15, 40),
+                                  trees = c(1000),
                                   eval_measure = "roc_auc",
                                   model_description = "Consider writing a description of your model here",
                                   multi_cores = TRUE) {
@@ -427,7 +427,7 @@ textTrainRandomForest <- function(x,
   }
 
   # Function to get the lowest eval_measure_val
-  bestParameters <- function(dat) dat[which.min(dat$mean_eval_measure),]
+  bestParameters <- function(dat) dat[which.min(dat$eval_measure),]
 
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
@@ -506,9 +506,9 @@ textTrainRandomForest <- function(x,
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
     recipes::step_BoxCox(recipes::all_predictors()) %>%
-    {if(!is.na(preprocess_PCA))
-    {if(preprocess_PCA >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
-      else if(preprocess_PCA < 1) recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+    {if(!is.na(preprocess_PCA[1]))
+    {if(preprocess_PCA[1] >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
+      else if(preprocess_PCA[1] < 1) recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
       else . } else .}
 
 #  if(preprocess_PCA[1] >= 1){
@@ -556,32 +556,47 @@ textTrainRandomForest <- function(x,
   # Saving the final mtry and min_n used for the final model.
   if(is.null(extremely_randomised_splitrule)){
     mtry_description = paste("mtry =", deparse(statisticalMode(results_split_parameter$mtry)))
+    mtry_fold_description = paste("mtry in each fold =", deparse(results_split_parameter$mtry))
+
     min_n_description = paste("min_n =", deparse(statisticalMode(results_split_parameter$min_n)))
+    min_n_fold_description = paste("min_n in each fold =", deparse(results_split_parameter$min_n))
   }else{
     mtry_description <- c("-")
+    mtry_fold_description <- c("-")
     min_n_description <- c("-")
+    min_n_fold_description <- c("-")
   }
-  mode_rf_description = paste("mode =", deparse(mode_rf))
-  trees_description = paste("trees =", deparse(statisticalMode(results_split_parameter$trees)))
-  preprocess_PCA_description = paste("preprocess_PCA = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA)))
-  eval_measure = paste("eval_measure = ", deparse(eval_measure))
+  mode_rf_description  <-  paste("mode =", mode_rf)
+  trees_description <- paste("trees =",statisticalMode(results_split_parameter$trees))
+  trees_fold_description <- paste("trees in each fold =", deparse(results_split_parameter$trees))
+  preprocess_PCA_description <- paste("preprocess_PCA = ", statisticalMode(results_split_parameter$preprocess_PCA))
+  preprocess_PCA_fold_description <- paste("preprocess_PCA = ", deparse(results_split_parameter$preprocess_PCA))
+  eval_measure <- paste("eval_measure = ", eval_measure)
+
 
   if(is.character(extremely_randomised_splitrule)){
-  extremely_randomised_splitrule  = paste("extremely_randomised_splitrule = ", deparse(extremely_randomised_splitrule))
+  extremely_randomised_splitrule  = paste("extremely_randomised_splitrule = ", extremely_randomised_splitrule)
   }else{
   extremely_randomised_splitrule <- c("-")
   }
+
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
   model_description_detail <- c(deparse(substitute(x)),
                                 deparse(substitute(y)),
                                 mode_rf_description,
                                 preprocess_PCA_description,
+                                preprocess_PCA_fold_description,
                                 extremely_randomised_splitrule,
                                 eval_measure,
                                 mtry_description,
+                                mtry_fold_description,
                                 min_n_description,
+                                min_n_fold_description,
                                 trees_description,
+                                trees_fold_description,
                                 model_description)
+
+
 
   final_results <- list(roc_curve_data, predy_y, preprocessing_recipe,  final_predictive_model, roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
   names(final_results) <- c("roc_curve_data", "truth_predictions", "preprocessing_recipe", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
