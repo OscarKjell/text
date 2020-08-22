@@ -204,8 +204,7 @@ tune_over_cost_rf <- function(object,
                               extremely_randomised_splitrule) {
 
   if(!is.na(preprocess_PCA[1])){
-
-  # Number of components or percent of variance to attain; min_halving; preprocess_PCA = c(0.9, 0.3)
+  # Number of components or percent of variance to attain; min_halving; preprocess_PCA = c(0.9, 0.3); preprocess_PCA = NA
   if(preprocess_PCA[1] == "min_halving"){
     num_features = length(rsample::analysis(object)) - 1
     num_users = nrow(rsample::analysis(object))
@@ -218,7 +217,11 @@ tune_over_cost_rf <- function(object,
   } else {
     preprocess_PCA_value = NA
   }
-    }
+  }
+
+  if(is.na(preprocess_PCA[1])){
+    preprocess_PCA_value = NA
+  }
 
   grid_inner <- base::expand.grid(mtry = mtry,
                                   min_n = min_n,

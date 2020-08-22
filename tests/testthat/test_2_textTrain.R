@@ -22,7 +22,6 @@ test_that("textTrain Regression produces list of results with prediction being n
   #warnings()
   testthat::expect_that(trained_min_halving, is_a("list"))
   testthat::expect_is(trained_min_halving$prediction$predictions[1], "numeric")
-  rlang::last_trace()
 
   trained_1 <- textTrain(wordembeddings4$harmonytext,
                        Language_based_assessment_data_8$hilstotal,
@@ -87,8 +86,23 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    #inside_strata_y = NULL,
                                    mtry = c(1),
                                    min_n = c(1),
-                                   trees = c(1000, 1001, 999),
-                                   preprocess_PCA = c(3, 4),
+                                   trees = c(1000),
+                                   preprocess_PCA = c(3),
+                                   extremely_randomised_splitrule = "gini",
+                                   multi_cores = TRUE,
+                                   eval_measure = "bal_accuracy") #sens bal_accuracy f_measure
+
+  testthat::expect_that(trained, testthat::is_a("list"))
+  testthat::expect_is(trained$truth_predictions$truth[1], "factor")
+
+  trained <- textTrainRandomForest(wordembeddings4$harmonytext,
+                                   example_categories,
+                                   #outside_strata_y = NULL,
+                                   #inside_strata_y = NULL,
+                                   mtry = c(1),
+                                   min_n = c(1),
+                                   trees = c(1000),
+                                   preprocess_PCA = NA,
                                    extremely_randomised_splitrule = "gini",
                                    multi_cores = TRUE,
                                    eval_measure = "bal_accuracy") #sens bal_accuracy f_measure
