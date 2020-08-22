@@ -122,7 +122,11 @@ tune_over_cost <- function(object, penalty, mixture, preprocess_PCA = preprocess
     }else {
     preprocess_PCA_value = NA
     }
-    }
+  }
+
+  if(is.na(preprocess_PCA[1])){
+    preprocess_PCA_value = NA
+  }
 
   grid_inner <- base::expand.grid(
   penalty = penalty,
