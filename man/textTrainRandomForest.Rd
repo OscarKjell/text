@@ -10,9 +10,9 @@ textTrainRandomForest(
   mode_rf = "classification",
   preprocess_PCA = "min_halving",
   extremely_randomised_splitrule = NULL,
-  mtry = c(1, 5, 10, 15, 30, 40),
-  min_n = c(1, 5, 10, 15, 30, 40),
-  trees = c(1000, 1500),
+  mtry = c(1, 10, 15, 40),
+  min_n = c(1, 10, 15, 40),
+  trees = c(1000),
   eval_measure = "roc_auc",
   model_description = "Consider writing a description of your model here",
   multi_cores = TRUE
