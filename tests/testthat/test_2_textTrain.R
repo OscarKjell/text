@@ -34,7 +34,7 @@ test_that("textTrain Regression produces list of results with prediction being n
                        mixture = c(0),
                        preprocess_PCA = c(1), #, 3
                        multi_cores = FALSE,
-                       save_output == "only_results_predictions"
+                       save_output = "only_results_predictions"
   )
 
   #warnings()
@@ -76,7 +76,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    extremely_randomised_splitrule = NULL,
                                    multi_cores = TRUE,
                                    eval_measure = "roc_auc", #sens bal_accuracy f_measure
-                                   save_output == "only_results"
+                                   save_output = "only_results"
                                    )
 
   testthat::expect_that(trained, testthat::is_a("list"))
@@ -97,7 +97,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    extremely_randomised_splitrule = "gini",
                                    multi_cores = TRUE,
                                    eval_measure = "bal_accuracy",
-                                   save_output == "only_results_predictions") #sens bal_accuracy f_measure
+                                   save_output = "only_results_predictions") #sens bal_accuracy f_measure
 
   testthat::expect_that(trained, testthat::is_a("list"))
   testthat::expect_is(trained$truth_predictions$truth[1], "factor")
