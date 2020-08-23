@@ -262,7 +262,8 @@ textTrainRegression <- function(x,
                                 mixture = c(0),
                                 method_cor = "pearson",
                                 model_description = "Consider writing a description of your model here",
-                                multi_cores = TRUE) {
+                                multi_cores = TRUE,
+                                save_output = "all") {
   set.seed(2020)
 
   # In case the embedding is in list form get the tibble form
