@@ -382,7 +382,27 @@ textTrainRandomForest <- function(x,
                                   model_description = "Consider writing a description of your model here",
                                   multi_cores = TRUE) {
 
-  x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
+  set.seed(2020)
+
+  # In case the embedding is in list form get the tibble form
+  if(!tibble::is_tibble(x)){
+    x1 <- x[[1]]
+    x_name <- names(x)
+  } else {
+    x1 <- x
+    x_name <- deparse(substitute(x))
+  }
+
+  if(tibble::is_tibble(y)|is.data.frame(y)){
+    y_name <- colnames(y)
+    y <- y[[1]]
+
+  } else {
+    y_name <- deparse(substitute(y))
+    y <- y
+  }
+
+  x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
 
   if(!mode_rf== "regression"){
     y <- as.factor(y)
@@ -500,8 +520,8 @@ textTrainRandomForest <- function(x,
   # Construct final model to be saved and applied on other data
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
 
-  final_recipe <- xy %>%
-    recipes::recipe(y ~ .) %>%
+  final_recipe <- #xy %>%
+    recipes::recipe(y ~., xy[0,]) %>%
     recipes::update_role(id1, new_role = "id variable") %>%
     #recipes::update_role(-id1, new_role = "predictor") %>%
     recipes::update_role(y, new_role = "outcome") %>%
@@ -539,12 +559,14 @@ textTrainRandomForest <- function(x,
 #      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
 #    #recipes::prep()
 #  }
+  preprocessing_recipe_save <- recipes::prep(final_recipe, xy, retain = FALSE)
+  preprocessing_recipe_use  <- recipes::prep(final_recipe, xy)
 
-  preprocessing_recipe <- recipes::prep(final_recipe)
+  #preprocessing_recipe <- recipes::prep(final_recipe)
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
-  xy_final <- recipes::juice(preprocessing_recipe)
+  xy_final <- recipes::juice(preprocessing_recipe_use)
 
   final_predictive_model <-
     parsnip::rand_forest(
@@ -584,8 +606,8 @@ textTrainRandomForest <- function(x,
   }
 
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
-  model_description_detail <- c(deparse(substitute(x)),
-                                deparse(substitute(y)),
+  model_description_detail <- c(x_name,
+                                y_name,
                                 mode_rf_description,
                                 preprocess_PCA_description,
                                 preprocess_PCA_fold_description,
@@ -601,8 +623,8 @@ textTrainRandomForest <- function(x,
 
 
 
-  final_results <- list(roc_curve_data, predy_y, preprocessing_recipe,  final_predictive_model, roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
-  names(final_results) <- c("roc_curve_data", "truth_predictions", "preprocessing_recipe", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
+  final_results <- list(roc_curve_data, predy_y, preprocessing_recipe_save,  final_predictive_model, roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
+  names(final_results) <- c("roc_curve_data", "truth_predictions", "final_recipe", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
   final_results
 }
 #warnings()

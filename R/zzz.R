@@ -4,12 +4,9 @@
   if (!grepl(x = R.Version()$arch, pattern = "64")) {
     warning("The text package requires running R on a 64-bit systems as it is dependent on torch from ptyhon; and you're system is not 64-bit.")
   }
-#  packageStartupMessage(
-#    crayon::green("This is text (version 0.8.90). \n"),
-#    crayon::blue("Newer versions may have updated default settings to reflect current understandings of the state-of-the-art.")
-#  )
+
   packageStartupMessage(colourise(
-    "This is text (version 0.8.70). \n Newer versions may have updated default settings to reflect current understandings of the state-of-the-art."
+    "This is text (version 0.8.82). \n Newer versions may have updated default settings to reflect current understandings of the state-of-the-art."
     ,  fg = "blue", bg = NULL)
   )
 }
@@ -72,30 +69,30 @@ colourise <- function(text, fg = "black", bg = NULL) {
 .fg_colours <- c(
   "black" = "0;30",
   "blue" = "0;34",
-  "green" = "0;32",
-  "cyan" = "0;36",
-  "red" = "0;31",
-  "purple" = "0;35",
-  "brown" = "0;33",
-  "light gray" = "0;37",
-  "dark gray" = "1;30",
-  "light blue" = "1;34",
-  "light green" = "1;32",
-  "light cyan" = "1;36",
-  "light red" = "1;31",
-  "light purple" = "1;35",
-  "yellow" = "1;33",
-  "white" = "1;37"
+  "green" = "0;32"
+#  "cyan" = "0;36",
+#  "red" = "0;31",
+#  "purple" = "0;35",
+#  "brown" = "0;33",
+#  "light gray" = "0;37",
+#  "dark gray" = "1;30",
+#  "light blue" = "1;34",
+#  "light green" = "1;32",
+#  "light cyan" = "1;36",
+#  "light red" = "1;31",
+#  "light purple" = "1;35",
+#  "yellow" = "1;33",
+#  "white" = "1;37"
 )
 
 .bg_colours <- c(
-  "black" = "40",
-  "red" = "41",
-  "green" = "42",
-  "brown" = "43",
-  "blue" = "44",
-  "purple" = "45",
-  "cyan" = "46",
+#  "black" = "40",
+#  "red" = "41",
+#  "green" = "42",
+#  "brown" = "43",
+#  "blue" = "44",
+#  "purple" = "45",
+#  "cyan" = "46",
   "light gray" = "47"
 )
 

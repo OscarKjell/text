@@ -1,4 +1,11 @@
-
+#x <- wordembeddings4
+#y <- Language_based_assessment_data_8
+#
+#
+#
+## textTrainLists x
+#is.list(wordembeddings4) & length(wordembeddings4)>1
+#
 #x <- wordembeddings4$harmonytext
 #y <- Language_based_assessment_data_8$gender
 #
@@ -11,6 +18,12 @@
 #multi_cores = TRUE
 
 
+# If first is numeric, select all numeric and go with it.
+# If first is categorical, select all categorical and go with it.
+
+
+
+
 #wordembeddings <- wordembeddings4
 #ratings_data <- Language_based_assessment_data_8
 #
@@ -20,11 +33,61 @@
 #                      multi_cores = FALSE
 # )
 
+#if(is.list(x)){
+#  x <- x[[1]]
+#}
+#x = wordembeddings4$harmonywords
+#x
+#
+#x <- wordembeddings4[1]
+#x
+#
+#x <- wordembeddings4[1:2]
+#x
+#
+#
+#y1 <- tibble::as_tibble_col(factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4)))
+#colnames(y1) <- "age"
+#y2 <- tibble::as_tibble_col(factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4)))
+#colnames(y2) <- "age2"
+#
+#
+#y <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
+#y
+#y <- Language_based_assessment_data_8[5]
+#y
+#y <- Language_based_assessment_data_8$hilstotal
+#y
+#library(text)
+##y <- Language_based_assessment_data_8[8] <- as.factor(Language_based_assessment_data_8$gender)
+#
+#y <- Language_based_assessment_data_8$hilstotal
+#y
+#
+#
+#y <- Language_based_assessment_data_8[5:6]
+#y
+#
+#y <- tibble::tibble(y1, y3, y4)
+#y
+#
+#y <- tibble::tibble(y1, y2, y3)
+#y
+#
+#y <- tibble::tibble(y1, y2, y3, y4)
+#y
+#
+#force_train_method = "automatic"
+#
+#textTrain(x, y)
+
 # devtools::document()
 #' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 #'
-#' @param x Word embeddings from textEmbed (or textLayerAggregation).
-#' @param y Numeric variable to predict.
+#' @param x Word embeddings from textEmbed (or textLayerAggregation). Can analyze several variables at the same time; but if training to several
+#' outcomes at the same time use a tibble within the list as input rather than just a tibble input (i.e., keep the name of the wordembedding).
+#' @param y Numeric variable to predict. Can be several; although then make sure to have them within a tibble (this is required
+#' even if it is only one outcome but several word embeddings variables).
 #' @param force_train_method default is "automatic", so if y is a factor random_forest is used, and if y is numeric ridge regression
 #' is used. This can be overridden using "regression" or "random_forest".
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
@@ -53,34 +116,86 @@ textTrain <- function(x,
     train_method = "random_forest"
   } else if (force_train_method == "random_forest"){
     train_method = "random_forest"
+  } else if ((tibble::is_tibble(y)|is.data.frame(y) & length(y) > 1) & force_train_method =="automatic"){
+
+    # Create a dataframe only depending numeric or categorical depending on most frequent type
+    # Select all numeric variables
+    y_n <- dplyr::select_if(y, is.numeric)
+    # Select all categorical variables
+    y_f <- dplyr::select_if(y, is.factor)
+    # Select most frequent type as y
+    if(length(y_n) >= length(y_f)){
+      y <- y_n
+      train_method = "regression"
+    }else if(length(y_n)<length(y_f)){
+      y <- y_f
+      train_method = "random_forest"
+    }
+  } else if ((tibble::is_tibble(y)|is.data.frame(y) & length(y) > 1) & force_train_method =="regression"){
+    y <- dplyr::select_if(y, is.numeric)
+    train_method = "regression"
+  } else if ((tibble::is_tibble(y)|is.data.frame(y) & length(y) > 1) & force_train_method =="random_forest"){
+    y <- dplyr::select_if(y, is.factor)
+    train_method = "random_forest"
   }
 
   if (train_method == "regression"){
-    repression_output <- textTrainRegression(x=x,
-                        y=y,
-                        ...)
-    repression_output
+
+    # textTrainLists x; if more than one wordembedding list; or more than one column of numeric/categorical variable
+    if((!tibble::is_tibble(x) & length(x)>1) | ((tibble::is_tibble(y)|is.data.frame(y)) & length(y)>1)){
+
+      repression_output <- textTrainLists(x=x,
+                                          y=y,
+                                          force_train_method = "regression") #,
+                                          #...)
+      repression_output
+
+    } else {
+
+
+      repression_output <- textTrainRegression(x=x,
+                                               y=y)#,
+                                              # ...)
+      repression_output
+
+    }
+
 
   } else if (train_method == "random_forest"){
-   random_forest_output <-  textTrainRandomForest(x=x,
-                          y=y,
-                          ...)
-   random_forest_output
+
+    if((!tibble::is_tibble(x) & length(x)>1) | (tibble::is_tibble(y)|is.data.frame(y) & length(y)>1)){
+
+      random_forest_output <- textTrainLists(x=x,
+                                          y=y,
+                                          force_train_method = "random_forest") #,
+                                          #...)
+      random_forest_output
+
+    } else {
+      random_forest_output <-  textTrainRandomForest(x=x,
+                                                     y=y) #,
+                                                     #...)
+      random_forest_output
   }
   }
+}
 
-
-#x <- wordembeddings4[1:2]
-##y <- ratings_data
-#y1 <- Language_based_assessment_data_8[8]$gender
+#x <- wordembeddings4[1]
+#y <- ratings_data[c(5:6, 8)]
+#
+#
+#y1 <- as_factor(Language_based_assessment_data_8[8]$gender)
 #y2 <- Language_based_assessment_data_8[8]$gender
 #y <- tibble(y1, y2)
 
 # library(data.table)
 # devtools::document()
-#' Individually trains word embeddings from several text variables to several numeric/categorical variables.
+#' Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
+#' to have  word embeddings from one text variable and several numeric/categprical variables; or vice verse, word embeddings from
+#' several text variables to one numeric/categorical variable. It is not possible to mix numeric and categorical variables.
 #' @param x Word embeddings from textEmbed (or textLayerAggregation).
-#' @param y Numeric variable to predict.
+#' @param y Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
+#' categorical variables.
 #' @param force_train_method default is automatic; see also "regression" and "random_forest".
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return Correlations between predicted and observed values.
@@ -101,7 +216,7 @@ textTrainLists <- function(x,
                            force_train_method = "automatic",
                            ...) {
 
-  # Force or decide regression or random forest.
+  # Force or decide regression or random forest (and select only categorical or numeric variables for multiple input).
   if (is.numeric(y) == TRUE & force_train_method == "automatic") {
     train_method = "regression"
   } else if (force_train_method == "regression"){
@@ -109,6 +224,27 @@ textTrainLists <- function(x,
   } else if (is.factor(y) == TRUE & force_train_method =="automatic"){
     train_method = "random_forest"
   } else if (force_train_method == "random_forest"){
+    train_method = "random_forest"
+  } else if ((tibble::is_tibble(y)|is.data.frame(y) & length(y) > 1) & force_train_method =="automatic"){
+
+    # Create a dataframe only depending numeric or categorical depending on most frequent type
+    # Select all numeric variables
+    y_n <- dplyr::select_if(y, is.numeric)
+    # Select all categorical variables
+    y_f <- dplyr::select_if(y, is.factor)
+    # Select most frequent type as y
+    if(length(y_n)>length(y_f)){
+      y <- y_n
+      train_method = "regression"
+    }else if(length(y_n)<length(y_f)){
+      y <- y_f
+      train_method = "random_forest"
+    }
+  } else if ((tibble::is_tibble(y)|is.data.frame(y) & length(y) > 1) & force_train_method =="regression"){
+    y <- dplyr::select_if(y, is.numeric)
+    train_method = "regression"
+  } else if ((tibble::is_tibble(y)|is.data.frame(y) & length(y) > 1) & force_train_method =="random_forest"){
+    y <- dplyr::select_if(y, is.factor)
     train_method = "random_forest"
   }
 
@@ -260,11 +396,12 @@ textTrainLists <- function(x,
 textPredict <- function(model_info = NULL, new_data=NULL){
 
   # Load prepared_with_recipe
-  data_prepared_with_recipe <- recipes::bake(model_info$preprocessing_recipe, new_data)
+  data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data)
 
   # Get scores
   predicted_scores <- stats::predict(model_info$final_model, data_prepared_with_recipe)
   predicted_scores
+
 }
 
 

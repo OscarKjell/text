@@ -263,8 +263,28 @@ textTrainRegression <- function(x,
                                 model_description = "Consider writing a description of your model here",
                                 multi_cores = TRUE) {
   set.seed(2020)
-  x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
-  xy <- cbind(x1, y)
+
+  # In case the embedding is in list form get the tibble form
+  if(!tibble::is_tibble(x)){
+    x1 <- x[[1]]
+    x_name <- names(x)
+  } else {
+    x1 <- x
+    x_name <- deparse(substitute(x))
+  }
+
+  if(tibble::is_tibble(y)|is.data.frame(y)){
+    y_name <- colnames(y)
+    y <- y[[1]]
+
+  } else {
+    y_name <- deparse(substitute(y))
+    y <- y
+  }
+
+
+  x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
+  xy <- cbind(x2, y)
 
   results_nested_resampling <- rsample::nested_cv(xy,
                                                   outside = rsample::vfold_cv(v = 10, #outside_folds,
@@ -345,12 +365,13 @@ textTrainRegression <- function(x,
 
 #####
   # Construct final model to be saved and applied on other data
-  is.list(xy)
-  tibble::is_tibble(xy)
-  is.data.frame(xy)
+  #is.list(xy)
+  #tibble::is_tibble(xy)
+  #is.data.frame(xy)
 
-  final_recipe <- xy %>%
-    recipes::recipe(y ~ .) %>%
+  # [0,] is added to just get the col names (and avoid saving all the data with the receipt)
+  final_recipe <- #xy %>%
+    recipes::recipe(y ~ ., xy[0,]) %>%
     # recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
@@ -380,11 +401,12 @@ textTrainRegression <- function(x,
 #    #recipes::prep()
 #  }
 
-  preprocessing_recipe <- recipes::prep(final_recipe)
-
+  # help(prep)
+  preprocessing_recipe_save <- recipes::prep(final_recipe, xy, retain = FALSE)
+  preprocessing_recipe_use  <- recipes::prep(final_recipe, xy)
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
-  xy_final <- recipes::juice(preprocessing_recipe)
+  xy_final <- recipes::juice(preprocessing_recipe_use)
 
 
 
@@ -422,8 +444,8 @@ textTrainRegression <- function(x,
 
 
   # Describe model; adding user's-description + the name of the x and y
-  model_description_detail <- c(deparse(substitute(x)),
-                                deparse(substitute(y)),
+  model_description_detail <- c(x_name,
+                                y_name,
                                 penalty_description,
                                 penalty_fold_description,
                                 mixture_description,
@@ -432,9 +454,9 @@ textTrainRegression <- function(x,
                                 preprocess_PCA_fold_description,
                                 model_description)
 
-  final_results <- list(predy_y, preprocessing_recipe, final_predictive_model, model_description_detail, correlation)
+  final_results <- list(predy_y, preprocessing_recipe_save, final_predictive_model, model_description_detail, correlation)
   final_results
-  names(final_results) <- c("predictions", "preprocessing_recipe", "final_model", "model_description", "correlation")
+  names(final_results) <- c("predictions", "final_recipe", "final_model", "model_description", "correlation")
   final_results
 }
 ########

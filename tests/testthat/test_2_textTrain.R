@@ -18,6 +18,8 @@ test_that("textTrain Regression produces list of results with prediction being n
                        preprocess_PCA = "min_halving",
                        multi_cores = TRUE
   )
+  # print(object.size(trained_min_halving), units = "b")              # 177 136 bytes; 152 168 bytes; 173 752 bytes
+  # print(object.size(trained_min_halving$final_recipe), units = "b") # 45 384  bytes;  20 432 bytes;  42 016  bytes
 
   #warnings()
   testthat::expect_that(trained_min_halving, is_a("list"))
@@ -164,7 +166,6 @@ test_that("textTrain Random Forest produces list of results with prediction bein
 })
 
 
-#sessionInfo()
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
   wordembeddings <- wordembeddings4[1]
   ratings_data <- Language_based_assessment_data_8[5:6]
@@ -181,24 +182,47 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   testthat::expect_is(results$results$correlation[1], "character")
 })
 
+
+
+
 test_that("textTrainLists randomForest produces list of results with prediction being numeric", {
   x <- wordembeddings4[1]
+  #x <- wordembeddings4$harmonywords
   #x <- wordembeddings4[1:2]
 
   y1 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
   y2 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
+  y2 <- Language_based_assessment_data_8[5]
   y <- tibble::tibble(y1, y2)
-  results_rf <- textTrainLists(x,
-                               y,
-                               force_train_method = "random_forest",
-                               mtry = c(1),
-                               min_n = c(1),
-                               preprocess_PCA = c(0.95),
-                               trees = c(1000),
-                               eval_measure = "accuracy")
+
+  results_rf <- textTrain(x,
+                          y$hilstotal,
+                          force_train_method = "automatic",
+                          #mtry = c(1),
+                          #min_n = c(1),
+                          preprocess_PCA = c(0.95),
+                          penalty = 1
+                          #trees = c(1000),
+                          #eval_measure = "accuracy"
+                          )
 
   testthat::expect_that(results_rf, testthat::is_a("list"))
   testthat::expect_is(results_rf$results$p_value[1], "character")
+
+
+  results_rf <- textTrain(x,
+                          y,
+                          #force_train_method = "random_forest",
+                          mtry = c(1),
+                          min_n = c(1),
+                          preprocess_PCA = c(0.95),
+                          trees = c(1000),
+                          eval_measure = "accuracy")
+
+  testthat::expect_that(results_rf, testthat::is_a("list"))
+  testthat::expect_is(results_rf$results$p_value[1], "character")
+
+
 })
 
 

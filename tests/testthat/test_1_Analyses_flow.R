@@ -18,16 +18,14 @@ test_that("Testing textEmbed as well as train", {
                                   preprocess_PCA = c(0.20),
                                   penalty = 1e-16)
 
-  text_train_results$correlation$estimate[1]
   expect_that(text_train_results$correlation$estimate[1], is_a("numeric"))
   expect_gt(text_train_results$correlation$estimate[1], 0.5)
 
 
-
   # Predict
-  hils_predicted_scores1 <- textPredict(model = text_train_results,
+  hils_predicted_scores1 <- textPredict(model_info = text_train_results,
                                        new_data = harmony_word_embeddings$harmonywords)
-  hils_predicted_scores1
+  #hils_predicted_scores1
 
   expect_that(hils_predicted_scores1$.pred[1], is_a("numeric"))
 })
