@@ -24,7 +24,7 @@ test_that("textTrain Regression produces list of results with prediction being n
 
   #warnings()
   testthat::expect_that(trained_min_halving, is_a("list"))
-  testthat::expect_is(trained_min_halving$prediction$predictions[1], "numeric")
+  testthat::expect_is(trained_min_halving$correlation$statistic[[1]], "numeric")
 
   trained_1 <- textTrain(wordembeddings4$harmonytext,
                        Language_based_assessment_data_8$hilstotal,
@@ -80,7 +80,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    )
 
   testthat::expect_that(trained, testthat::is_a("list"))
-  testthat::expect_is(trained$truth_predictions$truth[1], "factor")
+  testthat::expect_is(trained$results$.estimate[1], "numeric")
 
   example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
