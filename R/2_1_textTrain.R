@@ -146,16 +146,16 @@ textTrain <- function(x,
 
       repression_output <- textTrainLists(x=x,
                                           y=y,
-                                          force_train_method = "regression") #,
-                                          #...)
+                                          force_train_method = "regression",
+                                          ...)
       repression_output
 
     } else {
 
 
       repression_output <- textTrainRegression(x=x,
-                                               y=y)#,
-                                              # ...)
+                                               y=y,
+                                               ...)
       repression_output
 
     }
@@ -167,14 +167,14 @@ textTrain <- function(x,
 
       random_forest_output <- textTrainLists(x=x,
                                           y=y,
-                                          force_train_method = "random_forest") #,
-                                          #...)
+                                          force_train_method = "random_forest",
+                                          ...)
       random_forest_output
 
     } else {
       random_forest_output <-  textTrainRandomForest(x=x,
-                                                     y=y) #,
-                                                     #...)
+                                                     y=y,
+                                                     ...)
       random_forest_output
   }
   }
