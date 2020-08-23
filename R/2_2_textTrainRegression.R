@@ -228,6 +228,7 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = pr
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
 #' make the analyses considerably faster to run).
+#' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
 #' @return A correlation between predicted and observed values; tibble of predicted values, as well as information
 #' about the model (preprossing_recipe, final_model and model_description).
 #' @examples
@@ -454,9 +455,28 @@ textTrainRegression <- function(x,
                                 preprocess_PCA_fold_description,
                                 model_description)
 
-  final_results <- list(predy_y, preprocessing_recipe_save, final_predictive_model, model_description_detail, correlation)
-  final_results
-  names(final_results) <- c("predictions", "final_recipe", "final_model", "model_description", "correlation")
+
+
+  if(save_output == "all"){
+
+    final_results <- list(predy_y, preprocessing_recipe_save, final_predictive_model, model_description_detail, correlation)
+    names(final_results) <- c("predictions", "final_recipe", "final_model", "model_description", "correlation")
+
+  } else if (save_output == "only_results_predictions"){
+    final_results <- list(predy_y, model_description_detail, correlation)
+    names(final_results) <- c("predictions", "model_description", "correlation")
+
+  } else if (save_output == "only_results"){
+
+    final_results <- list( model_description_detail, correlation)
+    names(final_results) <- c("model_description", "correlation")
+
+  }
+
+
+
+
+
   final_results
 }
 ########

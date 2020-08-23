@@ -7,9 +7,11 @@
 textTrain(x, y, force_train_method = "automatic", ...)
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
+\item{x}{Word embeddings from textEmbed (or textLayerAggregation). Can analyze several variables at the same time; but if training to several
+outcomes at the same time use a tibble within the list as input rather than just a tibble input (i.e., keep the name of the wordembedding).}
 
-\item{y}{Numeric variable to predict.}
+\item{y}{Numeric variable to predict. Can be several; although then make sure to have them within a tibble (this is required
+even if it is only one outcome but several word embeddings variables).}
 
 \item{force_train_method}{default is "automatic", so if y is a factor random_forest is used, and if y is numeric ridge regression
 is used. This can be overridden using "regression" or "random_forest".}

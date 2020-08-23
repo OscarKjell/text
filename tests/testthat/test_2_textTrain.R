@@ -16,7 +16,8 @@ test_that("textTrain Regression produces list of results with prediction being n
                        penalty = c(1),
                        mixture = c(0),
                        preprocess_PCA = "min_halving",
-                       multi_cores = TRUE
+                       multi_cores = TRUE,
+                       save_output = "only_results"
   )
   # print(object.size(trained_min_halving), units = "b")              # 177 136 bytes; 152 168 bytes; 173 752 bytes
   # print(object.size(trained_min_halving$final_recipe), units = "b") # 45 384  bytes;  20 432 bytes;  42 016  bytes
@@ -32,7 +33,8 @@ test_that("textTrain Regression produces list of results with prediction being n
                        penalty = c(1),
                        mixture = c(0),
                        preprocess_PCA = c(1), #, 3
-                       multi_cores = FALSE
+                       multi_cores = FALSE,
+                       save_output == "only_results_predictions"
   )
 
   #warnings()
@@ -73,7 +75,9 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    preprocess_PCA = c(0.95),
                                    extremely_randomised_splitrule = NULL,
                                    multi_cores = TRUE,
-                                   eval_measure = "roc_auc") #sens bal_accuracy f_measure
+                                   eval_measure = "roc_auc", #sens bal_accuracy f_measure
+                                   save_output == "only_results"
+                                   )
 
   testthat::expect_that(trained, testthat::is_a("list"))
   testthat::expect_is(trained$truth_predictions$truth[1], "factor")
@@ -92,7 +96,8 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    preprocess_PCA = c(3),
                                    extremely_randomised_splitrule = "gini",
                                    multi_cores = TRUE,
-                                   eval_measure = "bal_accuracy") #sens bal_accuracy f_measure
+                                   eval_measure = "bal_accuracy",
+                                   save_output == "only_results_predictions") #sens bal_accuracy f_measure
 
   testthat::expect_that(trained, testthat::is_a("list"))
   testthat::expect_is(trained$truth_predictions$truth[1], "factor")
@@ -106,8 +111,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    trees = c(1000),
                                    preprocess_PCA = NA,
                                    extremely_randomised_splitrule = "gini",
-                                   multi_cores = TRUE,
-                                   eval_measure = "bal_accuracy") #sens bal_accuracy f_measure
+                                   multi_cores = TRUE) #sens bal_accuracy f_measure
 
   testthat::expect_that(trained, testthat::is_a("list"))
   testthat::expect_is(trained$truth_predictions$truth[1], "factor")
@@ -128,7 +132,7 @@ test_that("textTrain Random Forest produces list of results with prediction bein
                        trees = c(1000),
                        preprocess_PCA = "min_halving",
                        multi_cores = FALSE,
-                       eval_measure = "roc_auc",
+                       eval_measure = "f_measure",
                        force_train_method = "random_forest") #sens bal_accuracy f_measure
 
   testthat::expect_that(trained, testthat::is_a("list"))
@@ -192,23 +196,20 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
   y1 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
   y2 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
-  y2 <- Language_based_assessment_data_8[5]
   y <- tibble::tibble(y1, y2)
 
   results_rf <- textTrain(x,
-                          y$hilstotal,
+                          y,
                           force_train_method = "automatic",
-                          #mtry = c(1),
-                          #min_n = c(1),
+                          mtry = c(1),
+                          min_n = c(1),
                           preprocess_PCA = c(0.95),
-                          penalty = 1
-                          #trees = c(1000),
-                          #eval_measure = "accuracy"
+                          trees = c(1000),
+                          eval_measure = "accuracy"
                           )
 
   testthat::expect_that(results_rf, testthat::is_a("list"))
   testthat::expect_is(results_rf$results$p_value[1], "character")
-
 
   results_rf <- textTrain(x,
                           y,
@@ -217,33 +218,13 @@ test_that("textTrainLists randomForest produces list of results with prediction 
                           min_n = c(1),
                           preprocess_PCA = c(0.95),
                           trees = c(1000),
-                          eval_measure = "accuracy")
+                          eval_measure = "precision")
 
   testthat::expect_that(results_rf, testthat::is_a("list"))
   testthat::expect_is(results_rf$results$p_value[1], "character")
 
-
 })
 
-
-
-#test_that("textTrainMultiTexts produces list of results with prediction being numeric", {
-#  wordembeddings <- wordembeddings4[1:2]
-#  ratings_data <- Language_based_assessment_data_8$hilstotal
-#  results <- textTrainMultiTexts(wordembeddings,
-#                                 ratings_data)
-
-#  expect_that(results, is_a("list"))
-#  expect_is(results$prediction$.pred[1], "numeric")
-#})
-
-#test_that("textTrainMultiTexts produces list of results with prediction being numeric", {
-#  wordembeddings <- wordembeddings4
-#  ratings_data <- Language_based_assessment_data_8
-#  results <- textTrainRandomForest(wordembeddings$harmonytext, ratings_data$gender, nrFolds_k = 5, trees = 5)
-#  expect_that(results, is_a("list"))
-#  expect_is(results$prediction$.pred_1[1], "numeric")
-#})
 
 
 

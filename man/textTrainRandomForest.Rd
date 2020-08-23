@@ -15,7 +15,8 @@ textTrainRandomForest(
   trees = c(1000),
   eval_measure = "roc_auc",
   model_description = "Consider writing a description of your model here",
-  multi_cores = TRUE
+  multi_cores = TRUE,
+  save_output = "all"
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_me
 
 \item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
 make the analyses considerably faster to run).}
+
+\item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
 }
 \value{
 A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe, final_model, model_description

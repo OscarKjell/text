@@ -2,14 +2,17 @@
 % Please edit documentation in R/2_1_textTrain.R
 \name{textTrainLists}
 \alias{textTrainLists}
-\title{Individually trains word embeddings from several text variables to several numeric/categorical variables.}
+\title{Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
+to have  word embeddings from one text variable and several numeric/categprical variables; or vice verse, word embeddings from
+several text variables to one numeric/categorical variable. It is not possible to mix numeric and categorical variables.}
 \usage{
 textTrainLists(x, y, force_train_method = "automatic", ...)
 }
 \arguments{
 \item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
 
-\item{y}{Numeric variable to predict.}
+\item{y}{Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
+categorical variables.}
 
 \item{force_train_method}{default is automatic; see also "regression" and "random_forest".}
 
@@ -19,7 +22,9 @@ textTrainLists(x, y, force_train_method = "automatic", ...)
 Correlations between predicted and observed values.
 }
 \description{
-Individually trains word embeddings from several text variables to several numeric/categorical variables.
+Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
+to have  word embeddings from one text variable and several numeric/categprical variables; or vice verse, word embeddings from
+several text variables to one numeric/categorical variable. It is not possible to mix numeric and categorical variables.
 }
 \examples{
 wordembeddings <- wordembeddings4[1:2]

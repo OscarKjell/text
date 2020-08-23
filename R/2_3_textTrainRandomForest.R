@@ -340,6 +340,7 @@ summarize_tune_results_rf <- function(object,
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
 #' make the analyses considerably faster to run).
+#' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
 #' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe, final_model, model_description
 #' chisq and fishers test as well as evaluation measures, e.g., including accuracy, f_meas and roc_auc (for details on
 #' these measures see the yardstick r-package documentation).
@@ -380,7 +381,8 @@ textTrainRandomForest <- function(x,
                                   trees = c(1000),
                                   eval_measure = "roc_auc",
                                   model_description = "Consider writing a description of your model here",
-                                  multi_cores = TRUE) {
+                                  multi_cores = TRUE,
+                                  save_output = "all") {
 
   set.seed(2020)
 
@@ -621,10 +623,21 @@ textTrainRandomForest <- function(x,
                                 trees_fold_description,
                                 model_description)
 
+  if(save_output == "all"){
+    final_results <- list(roc_curve_data, predy_y, preprocessing_recipe_save,  final_predictive_model, roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
+    names(final_results) <- c("roc_curve_data", "truth_predictions", "final_recipe", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
 
+  } else if (save_output == "only_results_predictions"){
 
-  final_results <- list(roc_curve_data, predy_y, preprocessing_recipe_save,  final_predictive_model, roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
-  names(final_results) <- c("roc_curve_data", "truth_predictions", "final_recipe", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
+    final_results <- list(roc_curve_data, predy_y,  roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
+    names(final_results) <- c("roc_curve_data", "truth_predictions", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
+
+  } else if (save_output == "only_results"){
+
+    final_results <- list(roc_curve_data, roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
+    names(final_results) <- c("roc_curve_data", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
+  }
+
   final_results
 }
 #warnings()
