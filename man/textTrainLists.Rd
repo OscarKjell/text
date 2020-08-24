@@ -6,7 +6,13 @@
 to have  word embeddings from one text variable and several numeric/categprical variables; or vice verse, word embeddings from
 several text variables to one numeric/categorical variable. It is not possible to mix numeric and categorical variables.}
 \usage{
-textTrainLists(x, y, force_train_method = "automatic", ...)
+textTrainLists(
+  x,
+  y,
+  force_train_method = "automatic",
+  save_output = "all",
+  ...
+)
 }
 \arguments{
 \item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
@@ -15,6 +21,8 @@ textTrainLists(x, y, force_train_method = "automatic", ...)
 categorical variables.}
 
 \item{force_train_method}{default is automatic; see also "regression" and "random_forest".}
+
+\item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
 
 \item{...}{Arguments from textTrainRegression or textTrainRandomForest the textTrain function.}
 }

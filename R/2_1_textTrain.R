@@ -197,6 +197,7 @@ textTrain <- function(x,
 #' @param y Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
 #' categorical variables.
 #' @param force_train_method default is automatic; see also "regression" and "random_forest".
+#' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples
@@ -214,6 +215,7 @@ textTrain <- function(x,
 textTrainLists <- function(x,
                            y,
                            force_train_method = "automatic",
+                           save_output = "all",
                            ...) {
 
   # Force or decide regression or random forest (and select only categorical or numeric variables for multiple input).
@@ -261,23 +263,42 @@ textTrainLists <- function(x,
   descriptions <- paste(rep(names(x), length(y)), "_", names(y1), sep = "")
 
   if (force_train_method == "regression") {
-    # Using mapply to loop over the word embeddings and the outcome variables. help(mapply)
+    # Using mapply to loop over the word embeddings and the outcome variables to train the different combinations
     output <- mapply(textTrainRegression, x, y1, SIMPLIFY = FALSE, ...)
 
-    output_t <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[1]][c(1)])))
-    output_df <-t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[2]][c(1)])))
-    output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[3]][c(1)])))
-    output_r <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[4]][c(1)])))
-    output_a <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[6]][c(1)])))
+    # Sort out the summary results depending on type of correlation method used
+     if(method_cor == "pearson"){
+     output_t <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[1]][c(1)])))
+     output_df <-t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[2]][c(1)])))
+     output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[3]][c(1)])))
+     output_r <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[4]][c(1)])))
+     output_a <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[6]][c(1)])))
+
+     # Add Outcomes and Descriptions together; name the columns; and remove the row names.
+     output_ordered_named <- data.frame(cbind(descriptions, output_r, output_df, output_p, output_t, output_a))
+     colnames(output_ordered_named) <- c("descriptions", "correlation", "df", "p_value", "t_statistics", "alternative")
+     rownames(output_ordered_named) <- NULL
+
+     } else if (method_cor == "spearman" | method_cor == "kendall"){
+    output_S <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[1]][c(1)])))
+    output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[2]][c(1)])))
+    output_r <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[3]][c(1)])))
+    output_a <- t(as.data.frame(lapply(output, function(output) unlist(output$correlation)[[5]][c(1)])))
 
     # Add Outcomes and Descriptions together; name the columns; and remove the row names.
-    output_ordered_named <- data.frame(cbind(descriptions, output_r, output_df, output_p, output_t, output_a))
-    colnames(output_ordered_named) <- c("descriptions", "correlation", "df", "p_value", "t_statistics", "alternative")
+    output_ordered_named <- data.frame(cbind(descriptions, output_r, output_p, output_S, output_a))
+    if(method_cor == "spearman"){
+      colnames(output_ordered_named) <- c("descriptions", "rho_correlation", "p_value", "S_statistics", "alternative")
+    }else if (method_cor == "kendall")
+    colnames(output_ordered_named) <- c("descriptions", "tau_correlation", "p_value", "z_statistics", "alternative")
     rownames(output_ordered_named) <- NULL
+    }
 
-    output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
-    output_predscore_reg <- output_predscore[grep("predictions", rownames(output_predscore)), ]
-    colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
+    if(save_output == "all" | save_output == "only_results_predictions"){
+      output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
+      output_predscore_reg <- output_predscore[grep("predictions", rownames(output_predscore)), ]
+      colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
+    }
 
     names(output) <- descriptions
     #Remove predictions from output since they are saved together
@@ -311,11 +332,13 @@ textTrainLists <- function(x,
     rownames(output_ordered_named1) <- NULL
 
     # Get and sort the Prediction scores
-    output_predscore1 <- lapply(output, "[[", "truth_predictions")
-    names(output_predscore1) <- descriptions
-    output_predscore <- do.call(cbind, output_predscore1) %>%
-      tibble::as_tibble() %>%
-      dplyr::arrange()
+    if(save_output == "all" | save_output == "only_results_predictions"){
+      output_predscore1 <- lapply(output, "[[", "truth_predictions")
+      names(output_predscore1) <- descriptions
+      output_predscore <- do.call(cbind, output_predscore1) %>%
+        tibble::as_tibble() %>%
+        dplyr::arrange()
+    }
 
     names(output) <- descriptions
     output1 <- purrr::map(output, ~purrr::discard(.x, names(.x) == 'predictions'))
