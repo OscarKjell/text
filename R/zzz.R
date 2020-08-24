@@ -39,11 +39,11 @@
 #' @param text character vector
 #' @param fg foreground colour, defaults to white
 #' @param bg background colour, defaults to transparent
-#' @export
 #' @examples
-#' print(colourise("Red", "red"))
-#' cat(colourise("Red", "red"), "\n")
-#' cat(colourise("White on red", "white", "red"), "\n")
+# print(colourise("Red", "red"))
+# cat(colourise("Red", "red"), "\n")
+# cat(colourise("White on red", "white", "red"), "\n")
+#' @noRd
 colourise <- function(text, fg = "black", bg = NULL) {
   term <- Sys.getenv()["TERM"]
   colour_terms <- c("xterm-color","xterm-256color", "screen", "screen-256color")

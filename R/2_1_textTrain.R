@@ -216,6 +216,7 @@ textTrainLists <- function(x,
                            y,
                            force_train_method = "automatic",
                            save_output = "all",
+                           method_cor = "pearson",
                            ...) {
 
   # Force or decide regression or random forest (and select only categorical or numeric variables for multiple input).
