@@ -184,7 +184,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
                             method_cor = "spearman")
 
   testthat::expect_that(results, testthat::is_a("list"))
-  testthat::expect_is(results$results$correlation[1], "character")
+  testthat::expect_is(results$results$rho_correlation[1], "character")
 
 
   results_or <- textTrainLists(wordembeddings,
@@ -199,7 +199,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
                             method_cor = "kendall")
 
   testthat::expect_that(results_or, testthat::is_a("list"))
-  testthat::expect_is(results_or$results$correlation[1], "character")
+  testthat::expect_is(results_or$results$tau_correlation[1], "character")
 
   results_or_p <- textTrainLists(wordembeddings,
                                ratings_data,
@@ -269,8 +269,8 @@ test_that("textTrainLists randomForest produces list of results with prediction 
                                eval_measure = "precision",
                                save_output = "only_results_predictions")
 
-  testthat::expect_that(results_rf_or, testthat::is_a("list"))
-  testthat::expect_is(results_rf_or$results$p_value[1], "character")
+  testthat::expect_that(results_rf_or_p, testthat::is_a("list"))
+  testthat::expect_is(results_rf_or_p$results$p_value[1], "character")
 
 
   results_rf_or <- textTrain(x,
