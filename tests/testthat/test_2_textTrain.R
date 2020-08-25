@@ -64,7 +64,7 @@ test_that("textTrain Regression produces list of results with prediction being n
 
 test_that("textTrainRandomForest with Extremely Randomized Trees produces list of results with prediction being categorical", {
 
-  example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+  example_categories <- as.factor(c(1, NA, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
