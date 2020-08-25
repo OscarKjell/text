@@ -73,7 +73,6 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    #outside_strata_y = NULL,
                                    #inside_strata_y = NULL,
                                    mode_rf = "classification",
-                                   force_train_method = "automatic",
                                    mtry = c(1),
                                    min_n = c(1),
                                    trees = c(1000),
@@ -99,7 +98,6 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    min_n = c(1),
                                    trees = c(1000),
                                    preprocess_PCA = c(3),
-                                   force_train_method = "random_forest",
                                    extremely_randomised_splitrule = "gini",
                                    multi_cores = TRUE,
                                    eval_measure = "bal_accuracy",
@@ -163,13 +161,13 @@ test_that("textTrain Random Forest produces list of results with prediction bein
                         example_categories,
                         #outside_strata_y = NULL,
                         #inside_strata_y = NULL,
+                        force_train_method = "random_forest",
                         mtry = c(1),
                         min_n = c(1),
                         trees = c(1000),
                         preprocess_PCA = NA,
                         multi_cores = FALSE,
-                        eval_measure = "spec",
-                        force_train_method = "random_forest") #sens bal_accuracy f_measure
+                        eval_measure = "spec") #sens bal_accuracy f_measure
 
   testthat::expect_that(trained_NA, testthat::is_a("list"))
   testthat::expect_is(trained_NA$truth_predictions$truth[1], "factor")

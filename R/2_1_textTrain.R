@@ -182,9 +182,10 @@ textTrain <- function(x,
 #x <- wordembeddings4[1]
 #y <- Language_based_assessment_data_8[c(5:6)]
 #
-#
+#library(tidyverse)
 #y1 <- as_factor(Language_based_assessment_data_8[8]$gender)
-#y2 <- Language_based_assessment_data_8[8]$gender
+#y2 <- as_factor(Language_based_assessment_data_8[8]$gender)
+#y3 <- Language_based_assessment_data_8[6]$swlstotal
 #y <- tibble(y1, y2)
 
 # library(data.table)
@@ -214,7 +215,7 @@ textTrain <- function(x,
 textTrainLists <- function(x,
                            y,
                            force_train_method = "automatic",
-                           save_output = "only_results",
+                           save_output = "all",
                            method_cor = "pearson",
                            ...) {
 
@@ -235,10 +236,10 @@ textTrainLists <- function(x,
     # Select all categorical variables
     y_f <- dplyr::select_if(y, is.factor)
     # Select most frequent type as y
-    if(length(y_n)>length(y_f)){
+    if(length(y_n) >= length(y_f)){
       y <- y_n
       train_method = "regression"
-    }else if(length(y_n)<length(y_f)){
+    }else if(length(y_n) < length(y_f)){
       y <- y_f
       train_method = "random_forest"
     }
@@ -264,7 +265,7 @@ textTrainLists <- function(x,
 
   if (train_method == "regression") {
     # Using mapply to loop over the word embeddings and the outcome variables to train the different combinations
-    output <- mapply(textTrainRegression, x, y1, SIMPLIFY = FALSE, ...)
+    output <- mapply(textTrainRegression, x, y1, SIMPLIFY = FALSE, method_cor = method_cor, save_output = save_output, ...)
 
     # Sort out the summary results depending on type of correlation method used
      if(method_cor == "pearson"){
@@ -317,7 +318,7 @@ textTrainLists <- function(x,
   } else if (train_method == "random_forest") { #
 
     # Apply textTrainRandomForest function between each list element and sort outcome.
-    output <- mapply(textTrainRandomForest, x, y1, SIMPLIFY = FALSE, ...)
+    output <- mapply(textTrainRandomForest, x, y1, SIMPLIFY = FALSE, save_output = save_output, ...)
 
     output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[1]][[1]])))
     output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[2]][[1]])))

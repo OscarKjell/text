@@ -204,7 +204,7 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = pr
 #method_cor = "pearson"
 #model_description = "Consider writing a description of your model here"
 #multi_cores = TRUE
-#
+
 
 # devtools::document()
 #' Train word embeddings to a numeric variable.
@@ -291,10 +291,10 @@ textTrainRegression <- function(x,
   results_nested_resampling <- rsample::nested_cv(xy,
                                                   outside = rsample::vfold_cv(v = 10, #outside_folds,
                                                                               repeats = 1,
-                                                                              strata = "y",
+                                                                              strata = NULL,
                                                                               breaks = 2), #outside_strata_y
                                                   inside  = rsample::validation_split(prop = 3/4,
-                                                                                      strata = "y", #inside_strata_y
+                                                                                      strata = NULL, #inside_strata_y
                                                                                       breaks=1))
   #results_nested_resampling$inner_resamples
   # results_nested_resampling$inner_resamples[[1]]$splits[[1]]
@@ -404,7 +404,7 @@ textTrainRegression <- function(x,
 #  }
 
   # help(prep)
-  preprocessing_recipe_save <- recipes::prep(final_recipe, xy, retain = FALSE)
+  preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe, xy, retain = FALSE))
   preprocessing_recipe_use  <- recipes::prep(final_recipe, xy)
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
