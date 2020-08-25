@@ -37,7 +37,7 @@ test_that("textTrain Regression produces list of results with prediction being n
                        mixture = c(0),
                        preprocess_PCA = c(1), #, 3
                        multi_cores = FALSE,
-                       force_train_method == "regression",
+                       force_train_method = "regression",
                        save_output = "only_results_predictions"
   )
 
@@ -73,7 +73,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    #outside_strata_y = NULL,
                                    #inside_strata_y = NULL,
                                    mode_rf = "classification",
-                                   force_train_method == "automatic",
+                                   force_train_method = "automatic",
                                    mtry = c(1),
                                    min_n = c(1),
                                    trees = c(1000),
