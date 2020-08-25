@@ -9,17 +9,30 @@ context("Training Functions")
 
 test_that("textTrain Regression produces list of results with prediction being numeric", {
 
-  trained_min_halving <- textTrain(wordembeddings4$harmonytext,
-                       Language_based_assessment_data_8$hilstotal,
-                       #outside_strata_y = NULL,
-                       #inside_strata_y = NULL,
-                       penalty = c(1),
-                       mixture = c(0),
-                       preprocess_PCA = "min_halving",
-                       multi_cores = TRUE,
-                       force_train_method = "automatic",
-                       save_output = "only_results"
+
+  trained_min_halving <- textTrainRegression(wordembeddings4[1],
+                                   Language_based_assessment_data_8[6],
+                                   #outside_strata_y = NULL,
+                                   #inside_strata_y = NULL,
+                                   penalty = c(1),
+                                   mixture = c(0),
+                                   preprocess_PCA = "min_halving",
+                                   multi_cores = TRUE,
+                                   #force_train_method = "automatic",
+                                   save_output = "only_results"
   )
+
+#  trained_min_halving <- textTrain(wordembeddings4$harmonytext,
+#                       Language_based_assessment_data_8$hilstotal,
+#                       #outside_strata_y = NULL,
+#                       #inside_strata_y = NULL,
+#                       penalty = c(1),
+#                       mixture = c(0),
+#                       preprocess_PCA = "min_halving",
+#                       multi_cores = TRUE,
+#                       force_train_method = "automatic",
+#                       save_output = "only_results"
+#  )
   # print(object.size(trained_min_halving), units = "b")              # 177 136 bytes; 152 168 bytes; 173 752 bytes
   # print(object.size(trained_min_halving$final_recipe), units = "b") # 45 384  bytes;  20 432 bytes;  42 016  bytes
 

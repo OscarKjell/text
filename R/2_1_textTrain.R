@@ -265,7 +265,7 @@ textTrainLists <- function(x,
 
   if (train_method == "regression") {
     # Using mapply to loop over the word embeddings and the outcome variables to train the different combinations
-    output <- mapply(textTrainRegression, x, y1, SIMPLIFY = FALSE, method_cor = method_cor, save_output = save_output, ...)
+    output <- mapply(textTrainRegression, x, y1, MoreArgs = list(method_cor = method_cor, save_output = save_output), SIMPLIFY = FALSE, ...)
 
     # Sort out the summary results depending on type of correlation method used
      if(method_cor == "pearson"){
@@ -293,7 +293,7 @@ textTrainLists <- function(x,
     }else if (method_cor == "kendall")
     colnames(output_ordered_named) <- c("descriptions", "tau_correlation", "p_value", "z_statistics", "alternative")
     rownames(output_ordered_named) <- NULL
-    }
+     }
 
     names(output) <- descriptions
     #Remove predictions from output since they are saved together
@@ -318,7 +318,7 @@ textTrainLists <- function(x,
   } else if (train_method == "random_forest") { #
 
     # Apply textTrainRandomForest function between each list element and sort outcome.
-    output <- mapply(textTrainRandomForest, x, y1, SIMPLIFY = FALSE, save_output = save_output, ...)
+    output <- mapply(textTrainRandomForest, x, y1, MoreArgs = list(save_output = save_output), SIMPLIFY = FALSE, ...)
 
     output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[1]][[1]])))
     output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[2]][[1]])))
