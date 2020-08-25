@@ -6,7 +6,7 @@
   }
 
   packageStartupMessage(colourise(
-    "This is text (version 0.8.84). \n",  fg = "green", bg = NULL), colourise("Newer versions may have updated default settings to reflect current understandings of the state-of-the-art."
+    "This is text (version 0.8.9). \n",  fg = "green", bg = NULL), colourise("Newer versions may have updated default settings to reflect current understandings of the state-of-the-art."
     ,  fg = "blue", bg = NULL)
   )
 }
@@ -39,7 +39,7 @@
 #' @param text character vector
 #' @param fg foreground colour, defaults to white
 #' @param bg background colour, defaults to transparent
-#' @examples
+# @examples
 # print(colourise("Red", "red"))
 # cat(colourise("Red", "red"), "\n")
 # cat(colourise("White on red", "white", "red"), "\n")

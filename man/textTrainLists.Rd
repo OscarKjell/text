@@ -10,7 +10,7 @@ textTrainLists(
   x,
   y,
   force_train_method = "automatic",
-  save_output = "all",
+  save_output = "only_results",
   method_cor = "pearson",
   ...
 )
