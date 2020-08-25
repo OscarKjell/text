@@ -17,7 +17,7 @@ test_that("textTrain Regression produces list of results with prediction being n
                        mixture = c(0),
                        preprocess_PCA = "min_halving",
                        multi_cores = TRUE,
-                       force_train_method == "automatic",
+                       force_train_method = "automatic",
                        save_output = "only_results"
   )
   # print(object.size(trained_min_halving), units = "b")              # 177 136 bytes; 152 168 bytes; 173 752 bytes
@@ -99,7 +99,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    min_n = c(1),
                                    trees = c(1000),
                                    preprocess_PCA = c(3),
-                                   force_train_method == "random_forest",
+                                   force_train_method = "random_forest",
                                    extremely_randomised_splitrule = "gini",
                                    multi_cores = TRUE,
                                    eval_measure = "bal_accuracy",
