@@ -180,7 +180,7 @@ textTrain <- function(x,
 }
 
 #x <- wordembeddings4[1]
-#y <- ratings_data[c(5:6, 8)]
+#y <- Language_based_assessment_data_8[c(5:6)]
 #
 #
 #y1 <- as_factor(Language_based_assessment_data_8[8]$gender)
@@ -214,7 +214,7 @@ textTrain <- function(x,
 textTrainLists <- function(x,
                            y,
                            force_train_method = "automatic",
-                           save_output = "all",
+                           save_output = "only_results",
                            method_cor = "pearson",
                            ...) {
 
@@ -262,7 +262,7 @@ textTrainLists <- function(x,
   # Creating descriptions of which variables are used in training, which is  added to the output.
   descriptions <- paste(rep(names(x), length(y)), "_", names(y1), sep = "")
 
-  if (force_train_method == "regression") {
+  if (train_method == "regression") {
     # Using mapply to loop over the word embeddings and the outcome variables to train the different combinations
     output <- mapply(textTrainRegression, x, y1, SIMPLIFY = FALSE, ...)
 
@@ -294,21 +294,27 @@ textTrainLists <- function(x,
     rownames(output_ordered_named) <- NULL
     }
 
-    if(save_output == "all" | save_output == "only_results_predictions"){
-      output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
-      output_predscore_reg <- output_predscore[grep("predictions", rownames(output_predscore)), ]
-      colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
-    }
-
     names(output) <- descriptions
     #Remove predictions from output since they are saved together
     output1 <- purrr::map(output, ~purrr::discard(.x, names(.x) == 'predictions'))
 
+    if(save_output == "all" | save_output == "only_results_predictions"){
+      output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
+      output_predscore_reg <- output_predscore[grep("predictions", rownames(output_predscore)), ]
+      colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
 
-    results <- list(output1, output_predscore_reg, output_ordered_named) #
-    names(results) <- c("all_output", "predictions", "results") #
+      results <- list(output1, output_predscore_reg, output_ordered_named) #
+      names(results) <- c("all_output", "predictions", "results") #
+
+    }else if (save_output == "only_results" ) {
+      results <- list(output1,  output_ordered_named) #
+      names(results) <- c("all_output", "results") #
+    }
+
     results
-  } else if (force_train_method == "random_forest") { #
+
+
+  } else if (train_method == "random_forest") { #
 
     # Apply textTrainRandomForest function between each list element and sort outcome.
     output <- mapply(textTrainRandomForest, x, y1, SIMPLIFY = FALSE, ...)
@@ -331,6 +337,11 @@ textTrainLists <- function(x,
     output_ordered_named1 <- cbind(output_ordered_named, output_eval_measures)
     rownames(output_ordered_named1) <- NULL
 
+    # Remove predictions since it will be collated together
+    names(output) <- descriptions
+    output1 <- purrr::map(output, ~purrr::discard(.x, names(.x) == 'predictions'))
+
+
     # Get and sort the Prediction scores
     if(save_output == "all" | save_output == "only_results_predictions"){
       output_predscore1 <- lapply(output, "[[", "truth_predictions")
@@ -338,15 +349,19 @@ textTrainLists <- function(x,
       output_predscore <- do.call(cbind, output_predscore1) %>%
         tibble::as_tibble() %>%
         dplyr::arrange()
+
+      results <- list(output1, output_predscore, output_ordered_named1)
+      names(results) <- c("all_output", "predictions", "results")
+
+    } else if (save_output == "only_results" ) {
+
+      results <- list(output1,  output_ordered_named1) #
+      names(results) <- c("all_output", "results") #
     }
 
-    names(output) <- descriptions
-    output1 <- purrr::map(output, ~purrr::discard(.x, names(.x) == 'predictions'))
-
     # Combine output
-    results <- list(output1, output_predscore, output_ordered_named1)
-    names(results) <- c("all_output", "predictions", "results")
     results # results$all_output$satisfactionwords_y2$model_description[3]
+
   }
 }
 

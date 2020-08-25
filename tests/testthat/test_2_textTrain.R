@@ -101,9 +101,9 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
 
   testthat::expect_that(trained, testthat::is_a("list"))
   testthat::expect_is(trained$truth_predictions$truth[1], "factor")
-
-  trained <- textTrainRandomForest(wordembeddings4$harmonytext,
-                                   example_categories,
+  example_categories_tibble <- tibble::as_tibble_col(example_categories)
+  trained <- textTrainRandomForest(wordembeddings4[1],
+                                   example_categories_tibble,
                                    #outside_strata_y = NULL,
                                    #inside_strata_y = NULL,
                                    mtry = c(1),
@@ -180,12 +180,41 @@ test_that("textTrainLists Regression produces a list of results with prediction 
                             #inside_strata_y = NULL,
                             penalty = c(2),
                             mixture = c(0),
-                            force_train_method = "regression")
+                            force_train_method = "regression",
+                            method_cor = "spearman")
 
   testthat::expect_that(results, testthat::is_a("list"))
   testthat::expect_is(results$results$correlation[1], "character")
-})
 
+
+  results_or <- textTrainLists(wordembeddings,
+                            ratings_data,
+                            preprocess_PCA = c(0.90),
+                            #outside_strata_y = NULL,
+                            #inside_strata_y = NULL,
+                            penalty = c(2),
+                            mixture = c(0),
+                            force_train_method = "regression",
+                            save_output = "only_results",
+                            method_cor = "kendall")
+
+  testthat::expect_that(results_or, testthat::is_a("list"))
+  testthat::expect_is(results_or$results$correlation[1], "character")
+
+  results_or_p <- textTrainLists(wordembeddings,
+                               ratings_data,
+                               preprocess_PCA = c(0.90),
+                               #outside_strata_y = NULL,
+                               #inside_strata_y = NULL,
+                               penalty = c(2),
+                               mixture = c(0),
+                               force_train_method = "regression",
+                               save_output = "only_results_predictions")
+
+  testthat::expect_that(results_or_p, testthat::is_a("list"))
+  testthat::expect_is(results_or_p$results$correlation[1], "character")
+
+})
 
 
 
@@ -197,31 +226,66 @@ test_that("textTrainLists randomForest produces list of results with prediction 
   y1 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
   y2 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
   y <- tibble::tibble(y1, y2)
+  y <- tibble::as_tibble_col(y1)
 
-  results_rf <- textTrain(x,
+
+  results_rf_et <- textTrain(x,
                           y,
                           force_train_method = "automatic",
                           mtry = c(1),
                           min_n = c(1),
                           preprocess_PCA = c(0.95),
                           trees = c(1000),
-                          eval_measure = "accuracy"
+                          eval_measure = "accuracy",
+                          extremely_randomised_splitrule = "extratrees",
+                          save_output = "all"
+  )
+
+  testthat::expect_that(results_rf_et, testthat::is_a("list"))
+  testthat::expect_is(results_rf_et$results$p_value[1], "character")
+
+
+  results_rf <- textTrain(x,
+                          y,
+                          force_train_method = "automatic",
+                          mtry = c(1),
+                          min_n = c(1),
+                          preprocess_PCA = NA,
+                          trees = c(1000),
+                          eval_measure = "kappa",
+                          save_output = "all"
                           )
 
   testthat::expect_that(results_rf, testthat::is_a("list"))
   testthat::expect_is(results_rf$results$p_value[1], "character")
 
-  results_rf <- textTrain(x,
+  results_rf_or_p <- textTrain(x,
+                               y,
+                               #force_train_method = "random_forest",
+                               mtry = c(1),
+                               min_n = c(1),
+                               preprocess_PCA = c(0.95),
+                               trees = c(1000),
+                               eval_measure = "precision",
+                               save_output = "only_results_predictions")
+
+  testthat::expect_that(results_rf_or, testthat::is_a("list"))
+  testthat::expect_is(results_rf_or$results$p_value[1], "character")
+
+
+  results_rf_or <- textTrain(x,
                           y,
                           #force_train_method = "random_forest",
                           mtry = c(1),
                           min_n = c(1),
                           preprocess_PCA = c(0.95),
                           trees = c(1000),
-                          eval_measure = "precision")
+                          eval_measure = "precision",
+                          save_output = "only_results")
 
-  testthat::expect_that(results_rf, testthat::is_a("list"))
-  testthat::expect_is(results_rf$results$p_value[1], "character")
+  testthat::expect_that(results_rf_or, testthat::is_a("list"))
+  testthat::expect_is(results_rf_or$results$p_value[1], "character")
+
 
 })
 
