@@ -6,7 +6,7 @@
   }
 
   packageStartupMessage(colourise(
-    "This is text (version 0.8.82). \n",  fg = "green", bg = NULL), colourise("Newer versions may have updated default settings to reflect current understandings of the state-of-the-art."
+    "This is text (version 0.8.83). \n",  fg = "green", bg = NULL), colourise("Newer versions may have updated default settings to reflect current understandings of the state-of-the-art."
     ,  fg = "blue", bg = NULL)
   )
 }

@@ -152,7 +152,6 @@ textTrain <- function(x,
 
     } else {
 
-
       repression_output <- textTrainRegression(x=x,
                                                y=y,
                                                ...)
