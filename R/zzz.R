@@ -92,11 +92,13 @@ colourise <- function(text, fg = "black", bg = NULL) {
 #  "brown" = "43",
 #  "blue" = "44",
 #  "purple" = "45",
-#  "cyan" = "46",
+  "cyan" = "46",
   "light gray" = "47"
 )
 
 rcmd_running <- function() {
   nchar(Sys.getenv('R_TESTS')) != 0
 }
+
+
 

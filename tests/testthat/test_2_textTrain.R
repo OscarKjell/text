@@ -17,10 +17,13 @@ test_that("textTrain Regression produces list of results with prediction being n
                        mixture = c(0),
                        preprocess_PCA = "min_halving",
                        multi_cores = TRUE,
+                       force_train_method == "automatic",
                        save_output = "only_results"
   )
   # print(object.size(trained_min_halving), units = "b")              # 177 136 bytes; 152 168 bytes; 173 752 bytes
   # print(object.size(trained_min_halving$final_recipe), units = "b") # 45 384  bytes;  20 432 bytes;  42 016  bytes
+
+  cat(text:::colourise("text", fg = "blue", bg = "light gray"))
 
   #warnings()
   testthat::expect_that(trained_min_halving, is_a("list"))
@@ -34,6 +37,7 @@ test_that("textTrain Regression produces list of results with prediction being n
                        mixture = c(0),
                        preprocess_PCA = c(1), #, 3
                        multi_cores = FALSE,
+                       force_train_method == "regression",
                        save_output = "only_results_predictions"
   )
 
@@ -69,6 +73,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    #outside_strata_y = NULL,
                                    #inside_strata_y = NULL,
                                    mode_rf = "classification",
+                                   force_train_method == "automatic",
                                    mtry = c(1),
                                    min_n = c(1),
                                    trees = c(1000),
@@ -94,6 +99,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    min_n = c(1),
                                    trees = c(1000),
                                    preprocess_PCA = c(3),
+                                   force_train_method == "random_forest",
                                    extremely_randomised_splitrule = "gini",
                                    multi_cores = TRUE,
                                    eval_measure = "bal_accuracy",
@@ -226,7 +232,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
   y1 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
   y2 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
   y <- tibble::tibble(y1, y2)
-  y <- tibble::as_tibble_col(y1)
+  #y <- tibble::as_tibble_col(y1)
 
 
   results_rf_et <- textTrain(x,
