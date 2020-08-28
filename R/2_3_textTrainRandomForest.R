@@ -12,6 +12,92 @@
 #results2$roc_curve_plot
 # library(tidyverse)
 
+
+
+#  devtools::document()
+#' Select evaluation measure and compute it (also used in logistic regression)
+#'
+#' @param eval_measure Measure used to evaluate and select models default: "roc_auc", see also
+#' "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".
+#' @param holdout_pred data with observed (truth) and predicted
+#' @param truth name of the truth column
+#' @param estimate name of the predicted estimate
+#' @return  tibble with .metric column (i.e., type of evaluation measure), .estimator (e.g., binary)
+#' and .estimate (i.e., the resulting value).
+#' @noRd
+select_eval_measure_val <- function(eval_measure = "bal_accuracy", holdout_pred = NULL, truth = y, estimate = .pred_class, class){
+  # Get accuracy
+  if (eval_measure == "accuracy"){
+    eval_measure_val           <- yardstick::accuracy(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "bal_accuracy"){
+    eval_measure_val  <- yardstick::bal_accuracy(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "sens"){
+    eval_measure_val          <- yardstick::sens(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "spec"){
+    eval_measure_val          <- yardstick::spec(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "precision"){
+    eval_measure_val          <- yardstick::precision(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "kappa"){
+    eval_measure_val          <- yardstick::kap(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "f_measure"){
+    eval_measure_val          <- yardstick::f_meas(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "roc_auc"){
+    class1_name <- eval(class)
+    eval_measure_val          <- yardstick::roc_auc(holdout_pred, truth = y, all_of(class1_name)) #
+  } else if (eval_measure == "rmse"){
+    eval_measure_val          <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)
+  }
+  eval_measure_val
+}
+
+
+#  devtools::document()
+#' Select evaluation measure and compute it (also used in logistic regression)
+#'
+#' @param outputlist_results_outer Results from outer predictions.
+#' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
+#' @noRd
+classification_results <- function(outputlist_results_outer){
+  # Unnest predictions and y
+  predy_y <- tibble::tibble(tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
+                            tidyr::unnest(outputlist_results_outer$estimate, cols = c(estimate)),
+                            tidyr::unnest(outputlist_results_outer$.pred_1, cols = c(.pred_1)),
+                            tidyr::unnest(outputlist_results_outer$.pred_2, cols = c(.pred_2)))
+
+  # Correlate predictions and observed help(all_of)
+  chisq        <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
+
+  fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate)
+
+
+
+  accuracy     <- yardstick::accuracy(predy_y, truth, estimate)
+  bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate)
+  sens         <- yardstick::sens(predy_y, truth, estimate)
+  spec         <- yardstick::spec(predy_y, truth, estimate)
+  precision    <- yardstick::precision(predy_y, truth, estimate)
+  kappa        <- yardstick::kap(predy_y, truth, estimate)
+  f_measure    <- yardstick::f_meas(predy_y, truth, estimate)
+
+  #eval_class <- colnames(predy_y[3])
+  roc_auc      <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3])) # OK tidyselect::all_of(eval_class) dplyr::
+  roc_curve_data    <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[3]))
+  roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[3])))
+
+  results_collected <- dplyr::bind_rows(accuracy,
+                                        bal_accuracy,
+                                        sens,
+                                        spec,
+                                        precision,
+                                        kappa,
+                                        f_measure,
+                                        roc_auc)
+
+  output        <- list(predy_y, roc_curve_data, roc_curve_plot, fisher, chisq, results_collected)
+  names(output) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
+  output
+}
+
 #  devtools::document()
 #' Function to fit a model and compute accuracy
 #'
@@ -32,7 +118,7 @@ fit_model_accuracy_rf <- function(object,
                                   min_n = 1,
                                   trees = 1000,
                                   preprocess_PCA = "min_halving",
-                                  eval_measure = "f_measure",
+                                  eval_measure = "bal_accuracy",
                                   extremely_randomised_splitrule = NULL) {
 
 
@@ -41,7 +127,7 @@ fit_model_accuracy_rf <- function(object,
     recipes::update_role(id1, new_role = "id variable") %>%
     #recipes::update_role(-id1, new_role = "predictor") %>%
     recipes::update_role(y, new_role = "outcome") %>%
-    recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+    recipes::step_naomit(Dim1, skip = FALSE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
     recipes::step_BoxCox(recipes::all_predictors()) %>%
@@ -51,33 +137,6 @@ fit_model_accuracy_rf <- function(object,
       else if(preprocess_PCA < 1) recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
       else . } else .} %>%
     recipes::prep()
-
-  # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
-#  if(preprocess_PCA >= 1){
-#    xy_recipe <- rsample::analysis(object) %>%
-#      recipes::recipe(y ~ .) %>%
-#      recipes::update_role(id1, new_role = "id variable") %>%
-#      #recipes::update_role(-id1, new_role = "predictor") %>%
-#      recipes::update_role(y, new_role = "outcome") %>%
-#      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
-#      recipes::step_center(recipes::all_predictors()) %>%
-#      recipes::step_scale(recipes::all_predictors()) %>%
-#      recipes::step_BoxCox(recipes::all_predictors()) %>%
-#      recipes::step_pca(recipes::all_predictors(), num_comp = preprocess_PCA) %>%
-#      recipes::prep()
-#  } else if(preprocess_PCA < 1){
-#    xy_recipe <- rsample::analysis(object) %>%
-#      recipes::recipe(y ~ .) %>%
-#      recipes::update_role(id1, new_role = "id variable") %>%
-#      #recipes::update_role(-id1, new_role = "predictor") %>%
-#      recipes::update_role(y, new_role = "outcome") %>%
-#      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
-#      recipes::step_center(recipes::all_predictors()) %>%
-#      recipes::step_scale(recipes::all_predictors()) %>%
-#      recipes::step_BoxCox(recipes::all_predictors()) %>%
-#      recipes::step_pca(recipes::all_predictors(), threshold = preprocess_PCA) %>%
-#      recipes::prep()
-#  }
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -107,37 +166,21 @@ fit_model_accuracy_rf <- function(object,
   holdout_pred_class <-
     stats::predict(mod, xy_testing %>% dplyr::select(-y), type= c("class")) %>%
     dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
-  holdout_pred_prob <-
+  holdout_pred <-
     stats::predict(mod, xy_testing %>% dplyr::select(-y), type= c("prob")) %>%
     dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
 
-  holdout_pred_prob$.pred_class <- holdout_pred_class$.pred_class
-  class <- colnames(holdout_pred_prob[1])
-  # Get accuracy help(accuracy)
-  if (eval_measure == "accuracy"){
-    eval_measure_val           <- yardstick::accuracy(holdout_pred_prob, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "bal_accuracy"){
-    eval_measure_val  <- yardstick::bal_accuracy(holdout_pred_prob, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "sens"){
-    eval_measure_val          <- yardstick::sens(holdout_pred_prob, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "spec"){
-    eval_measure_val          <- yardstick::spec(holdout_pred_prob, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "precision"){
-    eval_measure_val          <- yardstick::precision(holdout_pred_prob, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "kappa"){
-    eval_measure_val          <- yardstick::kap(holdout_pred_prob, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "f_measure"){
-    eval_measure_val          <- yardstick::f_meas(holdout_pred_prob, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "roc_auc"){
-    eval_measure_val          <- yardstick::roc_auc(holdout_pred_prob, truth = y, eval(class)) #
-  }
+  holdout_pred$.pred_class <- holdout_pred_class$.pred_class
+  class <- colnames(holdout_pred[1])
+
+  eval_measure_val <- select_eval_measure_val(eval_measure = eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred_class, class=class)
 
   # Sort output of RMSE, predictions and truth (observed y) help(accuracy)
   output <- list(list(eval_measure_val),
-                 list(holdout_pred_prob$.pred_class),
-                 list(holdout_pred_prob$y),
-                 list(holdout_pred_prob[1]),
-                 list(holdout_pred_prob[2]),
+                 list(holdout_pred$.pred_class),
+                 list(holdout_pred$y),
+                 list(holdout_pred[1]),
+                 list(holdout_pred[2]),
                  list(preprocess_PCA))
   names(output) <- c("eval_measure_val",
                      "estimate",
@@ -314,6 +357,7 @@ summarize_tune_results_rf <- function(object,
 #multi_cores = TRUE
 #eval_measure = "bal_accuracy" # "roc_auc" #"accuracy" #
 #extremely_randomised_splitrule = NULL
+#save_output = "all"
 #library(magrittr)
 
 #' Train word embeddings to a categorical variable using random forrest.
@@ -423,7 +467,7 @@ textTrainRandomForest <- function(x,
                                                   inside  = rsample::validation_split(prop = 3/4,
                                                                                       strata = "y", #inside_strata_y
                                                                                       breaks=1))
-
+  #rlang::last_error()
   # Tuning inner resamples library(magrittr) warnings()
   if (multi_cores == FALSE){
     tuning_results <- purrr::map(.x = results_nested_resampling$inner_resamples,
@@ -433,7 +477,7 @@ textTrainRandomForest <- function(x,
                                  min_n = min_n,
                                  trees = trees,
                                  preprocess_PCA = preprocess_PCA,
-                                 eval_measure = eval_measure,
+                                 eval_measure = eval_measure, # eval_measure = "bal_accuracy"; eval_measure = "roc_auc"
                                  extremely_randomised_splitrule = extremely_randomised_splitrule)
   } else {
     # The multisession plan uses the local cores to process the inner resampling loop.
@@ -483,40 +527,9 @@ textTrainRandomForest <- function(x,
     split.default(names(.)) %>%
     purrr::map(na.omit)
 
-  # Unnest predictions and y
-  predy_y <- tibble::tibble(tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
-                            tidyr::unnest(outputlist_results_outer$estimate, cols = c(estimate)),
-                            tidyr::unnest(outputlist_results_outer$.pred_1, cols = c(.pred_1)),
-                            tidyr::unnest(outputlist_results_outer$.pred_2, cols = c(.pred_2)))
-
-  # Correlate predictions and observed help(all_of)
-  chisq        <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
-
-  fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate)
-
-
-
-  accuracy     <- yardstick::accuracy(predy_y, truth, estimate)
-  bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate)
-  sens         <- yardstick::sens(predy_y, truth, estimate)
-  spec         <- yardstick::spec(predy_y, truth, estimate)
-  precision    <- yardstick::precision(predy_y, truth, estimate)
-  kappa        <- yardstick::kap(predy_y, truth, estimate)
-  f_measure    <- yardstick::f_meas(predy_y, truth, estimate)
-
-  #eval_class <- colnames(predy_y[3])
-  roc_auc      <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3])) # OK tidyselect::all_of(eval_class) dplyr::
-  roc_curve_data    <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[3]))
-  roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[3])))
-
-  results_collected <- dplyr::bind_rows(accuracy,
-                                        bal_accuracy,
-                                        sens,
-                                        spec,
-                                        precision,
-                                        kappa,
-                                        f_measure,
-                                        roc_auc)
+  # Get  predictions and evaluation results
+  results_collected <- classification_results(outputlist_results_outer = outputlist_results_outer)
+  names(results_collected) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
 
 
   # Construct final model to be saved and applied on other data
@@ -536,31 +549,6 @@ textTrainRandomForest <- function(x,
       else if(preprocess_PCA[1] < 1) recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
       else . } else .}
 
-#  if(preprocess_PCA[1] >= 1){
-#    final_recipe <- xy %>%
-#      recipes::recipe(y ~ .) %>%
-#      recipes::update_role(id1, new_role = "id variable") %>%
-#      #recipes::update_role(-id1, new_role = "predictor") %>%
-#      recipes::update_role(y, new_role = "outcome") %>%
-#      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
-#      recipes::step_center(recipes::all_predictors()) %>%
-#      recipes::step_scale(recipes::all_predictors()) %>%
-#      recipes::step_BoxCox(recipes::all_predictors()) %>%
-#      recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
-#    #recipes::prep()
-#  }else if(preprocess_PCA[1] < 1){
-#    final_recipe <- xy %>%
-#      recipes::recipe(y ~ .) %>%
-#      recipes::update_role(id1, new_role = "id variable") %>%
-#      #recipes::update_role(-id1, new_role = "predictor") %>%
-#      recipes::update_role(y, new_role = "outcome") %>%
-#      recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
-#      recipes::step_center(recipes::all_predictors()) %>%
-#      recipes::step_scale(recipes::all_predictors()) %>%
-#      recipes::step_BoxCox(recipes::all_predictors()) %>%
-#      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
-#    #recipes::prep()
-#  }
   preprocessing_recipe_save <- recipes::prep(final_recipe, xy, retain = FALSE)
   preprocessing_recipe_use  <- recipes::prep(final_recipe, xy)
 
@@ -624,17 +612,17 @@ textTrainRandomForest <- function(x,
                                 model_description)
 
   if(save_output == "all"){
-    final_results <- list(roc_curve_data, predy_y, preprocessing_recipe_save,  final_predictive_model, roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
+    final_results <- list(results_collected$roc_curve_data, results_collected$predy_y, preprocessing_recipe_save,  final_predictive_model, results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
     names(final_results) <- c("roc_curve_data", "truth_predictions", "final_recipe", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
 
   } else if (save_output == "only_results_predictions"){
 
-    final_results <- list(roc_curve_data, predy_y,  roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
+    final_results <- list(results_collected$roc_curve_data, results_collected$predy_y,  results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
     names(final_results) <- c("roc_curve_data", "truth_predictions", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
 
   } else if (save_output == "only_results"){
 
-    final_results <- list(roc_curve_data, roc_curve_plot, model_description_detail, fisher, chisq, results_collected)
+    final_results <- list(results_collected$roc_curve_data, results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
     names(final_results) <- c("roc_curve_data", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
   }
 

@@ -12,6 +12,8 @@ textTrainLists(
   force_train_method = "automatic",
   save_output = "all",
   method_cor = "pearson",
+  model = "regression",
+  eval_measure = "rmse",
   ...
 )
 }

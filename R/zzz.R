@@ -86,12 +86,12 @@ colourise <- function(text, fg = "black", bg = NULL) {
 )
 
 .bg_colours <- c(
-#  "black" = "40",
-#  "red" = "41",
-#  "green" = "42",
-#  "brown" = "43",
-#  "blue" = "44",
-#  "purple" = "45",
+  "black" = "40",
+  "red" = "41",
+  "green" = "42",
+  "brown" = "43",
+  "blue" = "44",
+  "purple" = "45",
   "cyan" = "46",
   "light gray" = "47"
 )

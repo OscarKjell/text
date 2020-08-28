@@ -1,4 +1,5 @@
 #library(tidyverse)
+#library(magrittr)
 #library(text)
 #wordembeddings <- wordembeddings4
 #ratings_data <- Language_based_assessment_data_8
@@ -32,7 +33,7 @@ statisticalMode <- function(x) {
 #' @param preprocess_PCA threshold for pca; preprocess_PCA = NA
 #' @return  RMSE.
 #' @noRd
-fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = 1) {
+fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", penalty = 1, mixture = 0, preprocess_PCA = 0.90) {
 
   xy_recipe <- rsample::analysis(object) %>%
     recipes::recipe(y ~ .) %>%
@@ -55,32 +56,67 @@ fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = 1)
   if(length(xy_training)>2){
   # Create and fit model; penalty=NULL mixture = NULL
   mod <-
-    parsnip::linear_reg(penalty = penalty, mixture = mixture) %>%
+    {if(model == "regression") parsnip::linear_reg(penalty = penalty, mixture = mixture)
+    else if(model == "logistic") parsnip::logistic_reg(mode = "classification", penalty = penalty, mixture = mixture)} %>%
     parsnip::set_engine("glmnet") %>%
     parsnip::fit(y ~ ., data = xy_training)
 
   # Standard regression
   } else if (length(xy_training) == 2) {
     mod <-
-      parsnip::linear_reg(mode = "regression") %>%
-      parsnip::set_engine("lm") %>%
-      parsnip::fit(y ~ ., data = xy_training) #analysis(object)
+      {if(model == "regression") parsnip::linear_reg(mode = "regression")  %>%
+          parsnip::set_engine("lm")
+        else if(model == "logistic") parsnip::logistic_reg(mode = "classification") %>%
+      parsnip::set_engine("glm")} %>%
+      parsnip::fit(y ~ ., data = xy_training)
   }
   #Prepare the test data according to the recipe
   xy_testing <- xy_recipe %>%
     recipes::bake(rsample::assessment(object))
   # look at xy_testing: glimpse(xy_testing)
 
-  # Apply model on new data
-  holdout_pred <-
-    stats::predict(mod, xy_testing %>% dplyr::select(-y)) %>%
-    dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
+  if(model == "regression"){
+    # Apply model on new data; penalty
+    holdout_pred <-
+      stats::predict(mod, xy_testing %>% dplyr::select(-y)) %>%
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
 
-  # Get RMSE
-  rmse_val <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)$.estimate
-  # Sort output of RMSE, predictions and truth (observed y)
-  output <- list(list(rmse_val), list(holdout_pred$.pred), list(holdout_pred$y), list(preprocess_PCA))
-  names(output) <- c("rmse", "predictions", "y", "preprocess_PCA")
+    # Get RMSE; eval_measure = "rmse"
+    eval_result <- select_eval_measure_val(eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred)$.estimate
+    # Sort output of RMSE, predictions and truth (observed y)
+    output <- list(list(eval_result), list(holdout_pred$.pred), list(holdout_pred$y), list(preprocess_PCA))
+    names(output) <- c("eval_result", "predictions", "y", "preprocess_PCA")
+  } else if(model == "logistic"){
+
+    holdout_pred_class <-
+      stats::predict(mod, xy_testing %>% dplyr::select(-y), type= c("class")) %>%
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
+    holdout_pred <-
+      stats::predict(mod, xy_testing %>% dplyr::select(-y), type= c("prob")) %>%
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
+
+    holdout_pred$.pred_class <- holdout_pred_class$.pred_class
+    class <- colnames(holdout_pred[1])
+
+    # Get RMSE; eval_measure = "rmse"
+    eval_result <- select_eval_measure_val(eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred_class)$.estimate
+    # Sort output of RMSE, predictions and truth (observed y)
+    # Sort output of RMSE, predictions and truth (observed y) help(accuracy)
+    output <- list(list(eval_result),
+                   list(holdout_pred$.pred_class),
+                   list(holdout_pred$y),
+                   list(holdout_pred[1]),
+                   list(holdout_pred[2]),
+                   list(preprocess_PCA))
+    names(output) <- c("eval_result",
+                       "estimate",
+                       "truth",
+                       ".pred_1",
+                       ".pred_2",
+                       "preprocess_PCA")
+
+    #output <- list(list(eval_result), list(holdout_pred$.pred_class), list(holdout_pred$y), list(preprocess_PCA))
+  }
   output
 }
 
@@ -94,7 +130,7 @@ fit_model_rmse <- function(object, penalty = 1, mixture = 0, preprocess_PCA = 1)
 #' @param preprocess_PCA threshold for pca
 #' @return RMSE.
 #' @noRd
-fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, preprocess_PCA = preprocess_PCA) fit_model_rmse(object, penalty, mixture, preprocess_PCA = preprocess_PCA)
+fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, model, eval_measure, preprocess_PCA = preprocess_PCA) fit_model_rmse(object, model, eval_measure, penalty, mixture, preprocess_PCA = preprocess_PCA)
 
 #' For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
 #'
@@ -105,7 +141,7 @@ fit_model_rmse_wrapper <- function(penalty=penalty, mixture=mixture, object, pre
 #' @param preprocess_PCA threshold for pca
 #' @return RMSE.
 #' @noRd
-tune_over_cost <- function(object, penalty, mixture, preprocess_PCA = preprocess_PCA) {
+tune_over_cost <- function(object, model, eval_measure, penalty, mixture, preprocess_PCA = preprocess_PCA) {
 
   # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
   if(!is.na(preprocess_PCA[1])){
@@ -138,7 +174,9 @@ tune_over_cost <- function(object, penalty, mixture, preprocess_PCA = preprocess
                               grid_inner$mixture,
                               grid_inner$preprocess_PCA),
                               fit_model_rmse_wrapper,
-                              object = object
+                              object = object,
+                              model = model,
+                              eval_measure = eval_measure
                               )
 
   # Sort the output to separate the rmse, predictions and truth
@@ -148,13 +186,13 @@ tune_over_cost <- function(object, penalty, mixture, preprocess_PCA = preprocess
     purrr::map(na.omit)
 
   # Extract the RMSE
-  tune_rmse <- unlist(tune_outputlist$rmse$rmse)
+  tune_eval_result <- unlist(tune_outputlist$eval_result$eval_result)
 
   # Add RMSE to the grid
-  grid_inner_RMSE <- grid_inner %>%
-    dplyr::mutate(RMSE = tune_rmse)
+  grid_inner_eval_result <- grid_inner %>%
+    dplyr::mutate(eval_result = tune_eval_result)
 
-  grid_inner_RMSE
+  grid_inner_eval_result
 }
 
 # testing
@@ -173,11 +211,11 @@ tune_over_cost <- function(object, penalty, mixture, preprocess_PCA = preprocess
 #' @param preprocess_PCA threshold for pca
 #' @return RMSE with corresponding penalty, mixture and preprocess_PCA.
 #' @noRd
-summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = preprocess_PCA) {
+summarize_tune_results <- function(object, model, eval_measure, penalty, mixture, preprocess_PCA = preprocess_PCA) {
 
   # Return row-bound tibble containing the INNER results
   purrr::map_df(.x = object$splits, .f = tune_over_cost,
-                penalty = penalty, mixture = mixture, preprocess_PCA = preprocess_PCA) #%>%
+                penalty = penalty, mixture = mixture, preprocess_PCA = preprocess_PCA, model = model, eval_measure = eval_measure) #%>%
 
     # For each value of the tuning parameter, compute the
     # average RMSE which is the INNER estimate.
@@ -192,25 +230,31 @@ summarize_tune_results <- function(object, penalty, mixture, preprocess_PCA = pr
 
 
 #x <- wordembeddings4$harmonytext
+#
 #y <- Language_based_assessment_data_8$hilstotal
-##                                outside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
-#outside_strata_y = NULL
-##                                inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
-#inside_strata_y = NULL
-#preprocess_PCA = c(.94, 0.95, .96)
+#model = "regression"
+#eval_measure = "rmse"
+#
+#y <- as.factor(Language_based_assessment_data_8$gender)
+#model = "logistic"
+#eval_measure = "bal_accuracy"
+#
+#preprocess_PCA = c(.94)
 ##preprocess_PCA = NA
-#penalty = c(1, 2) #10^seq(-16, 16)
+#penalty = c(1) #10^seq(-16, 16)
 #mixture = c(0)
 #method_cor = "pearson"
 #model_description = "Consider writing a description of your model here"
-#multi_cores = TRUE
-
+#multi_cores = FALSE
+#save_output = "all"
+#library(magrittr)
 
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
 #' @param x Word embeddings from textEmbed (or textLayerAggregation).
 #' @param y Numeric variable to predict.
+#' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 # @param outside_folds Number of folds for the outer folds.
 # @param outside_strata_y Variable to stratify according (default y; can set to NULL).
 # @param inside_folds Number of folds for the inner folds.
@@ -257,6 +301,8 @@ textTrainRegression <- function(x,
 #                               outside_strata_y = "y",
 #                               inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
 #                               inside_strata_y = "y",
+                                model = "regression", # "logistic"
+                                eval_measure = "rmse",
                                 preprocess_PCA = "min_halving",
                                 penalty = 10^seq(-16, 16),
                                 mixture = c(0),
@@ -287,7 +333,7 @@ textTrainRegression <- function(x,
 
   x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
   xy <- cbind(x2, y)
-
+  xy <- tibble::as_tibble(xy)
   results_nested_resampling <- rsample::nested_cv(xy,
                                                   outside = rsample::vfold_cv(v = 10, #outside_folds,
                                                                               repeats = 1,
@@ -296,23 +342,13 @@ textTrainRegression <- function(x,
                                                   inside  = rsample::validation_split(prop = 3/4,
                                                                                       strata = NULL, #inside_strata_y
                                                                                       breaks=1))
-  #results_nested_resampling$inner_resamples
-  # results_nested_resampling$inner_resamples[[1]]$splits[[1]]
-
-   #dev_fit <- fit_model_rmse(object=results_nested_resampling$inner_resamples[[1]]$splits[[1]])
-   #dev_fit
-   #n_cross2_fit <- fit_model_rmse(object=results_nested_resampling$inner_resamples[[1]]$splits[[1]])
-   #n_cross2_fit
-
-   #dev_tune <- tune_over_cost(object=results_nested_resampling$inner_resamples[[1]]$splits[[1]])
-   #dev_tune
-   #n_cross2_tune <- tune_over_cost(object=results_nested_resampling$inner_resamples[[1]]$splits[[1]])
-   #n_cross2_tune
 
 
   if (multi_cores == FALSE){
     tuning_results <- purrr::map(.x = results_nested_resampling$inner_resamples,
                                  .f = summarize_tune_results,
+                                 model = model,
+                                 eval_measure = eval_measure,
                                  penalty = penalty,
                                  mixture = mixture,
                                  preprocess_PCA = preprocess_PCA)
@@ -323,13 +359,15 @@ textTrainRegression <- function(x,
     # The object tuning_results is a list of data frames for each of the OUTER resamples.
     tuning_results <- furrr::future_map(.x = results_nested_resampling$inner_resamples,
                                         .f = summarize_tune_results,
+                                        model = model,
+                                        eval_measure = eval_measure,
                                         penalty = penalty,
                                         mixture = mixture,
                                         preprocess_PCA = preprocess_PCA)
   }
 
-  # Function to get the lowest mean_RMSE
-  bestParameters <- function(dat) dat[which.min(dat$RMSE),]
+  # Function to get the lowest mean_RMSE mixture=0.5
+  bestParameters <- function(dat) dat[which.min(dat$eval_result),]
 
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
@@ -348,7 +386,9 @@ textTrainRegression <- function(x,
   results_outer <- purrr::pmap(list(object  = results_nested_resampling$splits,
                                     penalty = results_split_parameter$penalty,
                                     mixture = results_split_parameter$mixture,
-                                    preprocess_PCA = results_split_parameter$preprocess_PCA),
+                                    preprocess_PCA = results_split_parameter$preprocess_PCA,
+                                    model = model,
+                                    eval_measure = eval_measure),
                                fit_model_rmse)
 
   # Separate RMSE, predictions and observed y
@@ -358,18 +398,28 @@ textTrainRegression <- function(x,
     purrr::map(na.omit)
 
 
-  # Unnest predictions and y
-  predy_y <- tibble::tibble(tidyr::unnest(outputlist_results_outer$predictions, cols = c(predictions)),
-                            tidyr::unnest(outputlist_results_outer$y, cols = c(y)))
+  # Get overall evaluation measure between predicted and observed values
+  if(model=="regression") {
+    # Unnest predictions and y
+    predy_y <- tibble::tibble(tidyr::unnest(outputlist_results_outer$predictions, cols = c(predictions)),
+                              tidyr::unnest(outputlist_results_outer$y, cols = c(y)))
 
-  # Correlate predictions and observed
-  correlation <- stats::cor.test(predy_y$predictions, predy_y$y, method = method_cor)
+    # Correlate predictions and observed correlation
+    collected_results <- stats::cor.test(predy_y$predictions, predy_y$y, method = method_cor)
+
+    collected_results <- list(predy_y, collected_results)
+  } else if(model == "logistic"){
+    collected_results <- classification_results(outputlist_results_outer = outputlist_results_outer)
+
+    #  Save predictions outside list to make similar structure as model == regression output.
+    predy_y <- collected_results$predy_y
+    # Remove the predictions from list
+    collected_results[[1]] <- NULL
+  }
 
 #####
   # Construct final model to be saved and applied on other data
-  #is.list(xy)
-  #tibble::is_tibble(xy)
-  #is.data.frame(xy)
+
 
   # [0,] is added to just get the col names (and avoid saving all the data with the receipt)
   final_recipe <- #xy %>%
@@ -383,27 +433,7 @@ textTrainRegression <- function(x,
       else if(preprocess_PCA[1] < 1) recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
       else . } else .}
 
-#  if(preprocess_PCA[1] >= 1){
-#  final_recipe <- xy %>%
-#    recipes::recipe(y ~ .) %>%
-#    # recipes::step_BoxCox(all_predictors()) %>%
-#    recipes::step_naomit(Dim1, skip = TRUE) %>%
-#    recipes::step_center(recipes::all_predictors()) %>%
-#    recipes::step_scale(recipes::all_predictors()) %>%
-#    recipes::step_pca(recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
-#    #recipes::prep()
-#  }else if(preprocess_PCA[1] < 1){
-#    final_recipe <- xy %>%
-#      recipes::recipe(y ~ .) %>%
-#      # recipes::step_BoxCox(all_predictors()) %>%
-#      recipes::step_naomit(Dim1, skip = TRUE) %>%
-#      recipes::step_center(recipes::all_predictors()) %>%
-#      recipes::step_scale(recipes::all_predictors()) %>%
-#      recipes::step_pca(recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA)) #%>%
-#    #recipes::prep()
-#  }
-
-  # help(prep)
+  #
   preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe, xy, retain = FALSE))
   preprocessing_recipe_use  <- recipes::prep(final_recipe, xy)
   # To load the prepared training data into a variable juice() is used.
@@ -411,26 +441,25 @@ textTrainRegression <- function(x,
   xy_final <- recipes::juice(preprocessing_recipe_use)
 
 
-
   if(length(xy_final)>2){
     # Create and fit model; penalty=NULL mixture = NULL
     final_predictive_model <-
-      parsnip::linear_reg(penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture)) %>%
+      {if(model == "regression") parsnip::linear_reg(penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture))
+        else if(model == "logistic") parsnip::logistic_reg(mode = "classification", penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture))} %>%
       parsnip::set_engine("glmnet") %>%
       parsnip::fit(y ~ ., data = xy_final)
 
     # Standard regression
   } else if (length(xy_final) == 2) {
     final_predictive_model <-
-      parsnip::linear_reg(mode = "regression") %>%
-      parsnip::set_engine("lm") %>%
+      {if(model == "regression") parsnip::linear_reg(mode = "regression") %>%
+      parsnip::set_engine("lm")
+        else if (model == "logistic") parsnip::logistic_reg(mode = "classification") %>%
+        parsnip::set_engine("glm")} %>%
       parsnip::fit(y ~ ., data = xy_final)
   }
 
-#  final_predictive_model <-
-#    parsnip::linear_reg(penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture)) %>%
-#    parsnip::set_engine("glmnet") %>%
-#    parsnip::fit(y ~ ., data = xy_final)
+
 #####
 
   # Saving the final mtry and min_n used for the final model.
@@ -456,30 +485,60 @@ textTrainRegression <- function(x,
                                 preprocess_PCA_fold_description,
                                 model_description)
 
+  if(model == "regression") {
 
+    if(save_output == "all"){
 
-  if(save_output == "all"){
+      final_results <-       list(predy_y, preprocessing_recipe_save, final_predictive_model, model_description_detail,
+                              collected_results[[2]])
+      names(final_results) <- c("predictions", "final_recipe", "final_model", "model_description",
+                                "results")
 
-    final_results <- list(predy_y, preprocessing_recipe_save, final_predictive_model, model_description_detail, correlation)
-    names(final_results) <- c("predictions", "final_recipe", "final_model", "model_description", "correlation")
+    } else if (save_output == "only_results_predictions"){
+      final_results <- list(predy_y, model_description_detail,
+                            collected_results[[2]])
+      names(final_results) <- c("predictions", "model_description",  "results")
+
+    } else if (save_output == "only_results"){
+
+      final_results <- list(model_description_detail,
+                            collected_results[[2]])
+      names(final_results) <- c("model_description", "results")
+      }
+  } else if(model == "logistic"){
+
+    if(save_output == "all"){
+
+    final_results <-       list(predy_y, preprocessing_recipe_save, final_predictive_model, model_description_detail,
+                                collected_results$roc_curve_data, collected_results$roc_curve_plot, collected_results$fisher,
+                                collected_results$chisq, collected_results$results_collected)
+    names(final_results) <- c("predictions", "final_recipe", "final_model", "model_description",
+                              "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_metrics")
+    final_results
 
   } else if (save_output == "only_results_predictions"){
-    final_results <- list(predy_y, model_description_detail, correlation)
-    names(final_results) <- c("predictions", "model_description", "correlation")
+    final_results <- list(predy_y, model_description_detail,
+                          collected_results$roc_curve_data, collected_results$roc_curve_plot, collected_results$fisher,
+                          collected_results$chisq, collected_results$results_collected)
+    names(final_results) <- c("predictions", "model_description",
+                              "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_metrics")
+    final_results
 
   } else if (save_output == "only_results"){
 
-    final_results <- list( model_description_detail, correlation)
-    names(final_results) <- c("model_description", "correlation")
+    final_results <- list(model_description_detail,
+                          collected_results$roc_curve_data, collected_results$roc_curve_plot, collected_results$fisher,
+                          collected_results$chisq, collected_results$results_collected)
+    names(final_results) <- c("model_description",
+                              "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_metrics")
+    final_results
 
   }
+    final_results
+  }
+    final_results
+  }
 
-
-
-
-
-  final_results
-}
 ########
 # textTrainRegression
 

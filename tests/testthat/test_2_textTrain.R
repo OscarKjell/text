@@ -14,6 +14,8 @@ test_that("textTrain Regression produces list of results with prediction being n
                                    Language_based_assessment_data_8[6],
                                    #outside_strata_y = NULL,
                                    #inside_strata_y = NULL,
+                                   model = "regression", # "logistic"
+                                   eval_measure = "rmse",
                                    penalty = c(1),
                                    mixture = c(0),
                                    preprocess_PCA = "min_halving",
@@ -21,26 +23,42 @@ test_that("textTrain Regression produces list of results with prediction being n
                                    #force_train_method = "automatic",
                                    save_output = "only_results"
   )
-
-#  trained_min_halving <- textTrain(wordembeddings4$harmonytext,
-#                       Language_based_assessment_data_8$hilstotal,
-#                       #outside_strata_y = NULL,
-#                       #inside_strata_y = NULL,
-#                       penalty = c(1),
-#                       mixture = c(0),
-#                       preprocess_PCA = "min_halving",
-#                       multi_cores = TRUE,
-#                       force_train_method = "automatic",
-#                       save_output = "only_results"
-#  )
-  # print(object.size(trained_min_halving), units = "b")              # 177 136 bytes; 152 168 bytes; 173 752 bytes
-  # print(object.size(trained_min_halving$final_recipe), units = "b") # 45 384  bytes;  20 432 bytes;  42 016  bytes
-
-  cat(text:::colourise("text", fg = "blue", bg = "light gray"))
-
   #warnings()
   testthat::expect_that(trained_min_halving, is_a("list"))
-  testthat::expect_is(trained_min_halving$correlation$statistic[[1]], "numeric")
+  testthat::expect_is(trained_min_halving$results$statistic[[1]], "numeric")
+
+  trained_logistic <- textTrainRegression(x=wordembeddings4[1],
+                                            y= as.factor(Language_based_assessment_data_8$gender),
+                                             model = "logistic",
+                                             eval_measure = "bal_accuracy",
+                                             penalty = c(1),
+                                             mixture = c(0),
+                                             preprocess_PCA = "min_halving",
+                                             multi_cores = TRUE,
+                                             save_output = "only_results"
+  )
+  testthat::expect_that(trained_logistic, is_a("list"))
+  testthat::expect_is(trained_logistic$results_metrics$.estimate[[1]], "numeric")
+
+
+  # testing with one component; and thus a standard logistic.
+  trained_logistic_PCA1 <- textTrainRegression(wordembeddings4[1],
+                                          as.factor(Language_based_assessment_data_8$gender),
+                                          #outside_strata_y = NULL,
+                                          #inside_strata_y = NULL,
+                                          model = "logistic", # "logistic"
+                                          eval_measure = "bal_accuracy",
+                                          penalty = c(1),
+                                          mixture = c(0),
+                                          preprocess_PCA = 1,
+                                          multi_cores = TRUE,
+                                          #force_train_method = "automatic",
+                                          save_output = "only_results"
+  )
+  testthat::expect_that(trained_logistic_PCA1, is_a("list"))
+  testthat::expect_is(trained_logistic_PCA1$results_metrics$.estimate[[1]], "numeric")
+
+  #cat(text:::colourise("text", fg = "blue", bg = "light gray"))
 
   trained_1 <- textTrain(wordembeddings4$harmonytext,
                        Language_based_assessment_data_8$hilstotal,
@@ -54,7 +72,7 @@ test_that("textTrain Regression produces list of results with prediction being n
                        save_output = "only_results_predictions"
   )
 
-  #warnings()
+  #
   testthat::expect_that(trained_1, is_a("list"))
   testthat::expect_is(trained_1$prediction$predictions[1], "numeric")
 
@@ -68,12 +86,80 @@ test_that("textTrain Regression produces list of results with prediction being n
                        multi_cores = TRUE
   )
 
-  #warnings()
   testthat::expect_that(trained_NA, is_a("list"))
   testthat::expect_is(trained_NA$prediction$predictions[1], "numeric")
 
 
 })
+
+
+
+
+
+
+
+
+
+test_that("textTrain Random Forest produces list of results with prediction being categorical", {
+
+  example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+                                    1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+                                    1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+                                    1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
+  trained1 <- textTrain(wordembeddings4$harmonytext,
+                        example_categories,
+                        #outside_strata_y = NULL,
+                        #inside_strata_y = NULL,
+                        mtry = c(1),
+                        min_n = c(1),
+                        trees = c(1000),
+                        preprocess_PCA = "min_halving",
+                        multi_cores = FALSE,
+                        eval_measure = "f_measure",
+                        force_train_method = "random_forest") #sens bal_accuracy f_measure
+
+  testthat::expect_that(trained1, testthat::is_a("list"))
+  testthat::expect_is(trained1$truth_predictions$truth[1], "factor")
+
+  trained2 <- textTrain(wordembeddings4$harmonytext,
+                        example_categories,
+                        #outside_strata_y = NULL,
+                        #inside_strata_y = NULL,
+                        mtry = c(1),
+                        min_n = c(1),
+                        trees = c(1000),
+                        preprocess_PCA = 2,
+                        multi_cores = FALSE,
+                        eval_measure = "sens",
+                        force_train_method = "random_forest") #sens bal_accuracy f_measure
+
+  testthat::expect_that(trained2, testthat::is_a("list"))
+  testthat::expect_is(trained2$truth_predictions$truth[1], "factor")
+
+  trained_NA <- textTrain(wordembeddings4$harmonytext,
+                          example_categories,
+                          #outside_strata_y = NULL,
+                          #inside_strata_y = NULL,
+                          force_train_method = "random_forest",
+                          mtry = c(1),
+                          min_n = c(1),
+                          trees = c(1000),
+                          preprocess_PCA = NA,
+                          multi_cores = FALSE,
+                          eval_measure = "spec") #sens bal_accuracy f_measure
+
+  testthat::expect_that(trained_NA, testthat::is_a("list"))
+  testthat::expect_is(trained_NA$truth_predictions$truth[1], "factor")
+})
+
+
+
+
+
+
+
+
+
 
 test_that("textTrainRandomForest with Extremely Randomized Trees produces list of results with prediction being categorical", {
 
@@ -81,8 +167,8 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
-  trained <- textTrainRandomForest(wordembeddings4$harmonytext,
-                                   example_categories,
+  trained_rf_95 <- textTrainRandomForest(x = wordembeddings4$harmonytext,
+                                   y = example_categories,
                                    #outside_strata_y = NULL,
                                    #inside_strata_y = NULL,
                                    mode_rf = "classification",
@@ -91,19 +177,19 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    trees = c(1000),
                                    preprocess_PCA = c(0.95),
                                    extremely_randomised_splitrule = NULL,
-                                   multi_cores = TRUE,
+                                   multi_cores = FALSE,
                                    eval_measure = "roc_auc", #sens bal_accuracy f_measure
                                    save_output = "only_results"
                                    )
 
-  testthat::expect_that(trained, testthat::is_a("list"))
-  testthat::expect_is(trained$results$.estimate[1], "numeric")
+  testthat::expect_that(trained_rf_95, testthat::is_a("list"))
+  testthat::expect_is(trained_rf_95$results$.estimate[1], "numeric")
 
   example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
                                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
-  trained <- textTrainRandomForest(wordembeddings4$harmonytext,
+  trained_rf_3 <- textTrainRandomForest(wordembeddings4$harmonytext,
                                    example_categories,
                                    #outside_strata_y = NULL,
                                    #inside_strata_y = NULL,
@@ -116,10 +202,11 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    eval_measure = "bal_accuracy",
                                    save_output = "only_results_predictions") #sens bal_accuracy f_measure
 
-  testthat::expect_that(trained, testthat::is_a("list"))
-  testthat::expect_is(trained$truth_predictions$truth[1], "factor")
+  testthat::expect_that(trained_rf_3, testthat::is_a("list"))
+  testthat::expect_is(trained_rf_3$truth_predictions$truth[1], "factor")
+
   example_categories_tibble <- tibble::as_tibble_col(example_categories)
-  trained <- textTrainRandomForest(wordembeddings4[1],
+  trained_rf_NA <- textTrainRandomForest(wordembeddings4[1],
                                    example_categories_tibble,
                                    #outside_strata_y = NULL,
                                    #inside_strata_y = NULL,
@@ -130,71 +217,20 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    extremely_randomised_splitrule = "gini",
                                    multi_cores = TRUE) #sens bal_accuracy f_measure
 
-  testthat::expect_that(trained, testthat::is_a("list"))
-  testthat::expect_is(trained$truth_predictions$truth[1], "factor")
+  testthat::expect_that(trained_rf_NA, testthat::is_a("list"))
+  testthat::expect_is(trained_rf_NA$truth_predictions$truth[1], "factor")
 })
 
-test_that("textTrain Random Forest produces list of results with prediction being categorical", {
-
-  example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-                                    1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-                                    1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-                                    1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
-  trained <- textTrain(wordembeddings4$harmonytext,
-                       example_categories,
-                       #outside_strata_y = NULL,
-                       #inside_strata_y = NULL,
-                       mtry = c(1),
-                       min_n = c(1),
-                       trees = c(1000),
-                       preprocess_PCA = "min_halving",
-                       multi_cores = FALSE,
-                       eval_measure = "f_measure",
-                       force_train_method = "random_forest") #sens bal_accuracy f_measure
-
-  testthat::expect_that(trained, testthat::is_a("list"))
-  testthat::expect_is(trained$truth_predictions$truth[1], "factor")
-
-  trained2 <- textTrain(wordembeddings4$harmonytext,
-                       example_categories,
-                       #outside_strata_y = NULL,
-                       #inside_strata_y = NULL,
-                       mtry = c(1),
-                       min_n = c(1),
-                       trees = c(1000),
-                       preprocess_PCA = 2,
-                       multi_cores = FALSE,
-                       eval_measure = "sens",
-                       force_train_method = "random_forest") #sens bal_accuracy f_measure
-
-  testthat::expect_that(trained2, testthat::is_a("list"))
-  testthat::expect_is(trained2$truth_predictions$truth[1], "factor")
-
-  trained_NA <- textTrain(wordembeddings4$harmonytext,
-                        example_categories,
-                        #outside_strata_y = NULL,
-                        #inside_strata_y = NULL,
-                        force_train_method = "random_forest",
-                        mtry = c(1),
-                        min_n = c(1),
-                        trees = c(1000),
-                        preprocess_PCA = NA,
-                        multi_cores = FALSE,
-                        eval_measure = "spec") #sens bal_accuracy f_measure
-
-  testthat::expect_that(trained_NA, testthat::is_a("list"))
-  testthat::expect_is(trained_NA$truth_predictions$truth[1], "factor")
-})
 
 
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
+
   wordembeddings <- wordembeddings4[1]
   ratings_data <- Language_based_assessment_data_8[5:6]
   results <- textTrainLists(wordembeddings,
                             ratings_data,
                             preprocess_PCA = c(0.90),
-                            #outside_strata_y = NULL,
-                            #inside_strata_y = NULL,
+                            model = "regression",
                             penalty = c(2),
                             mixture = c(0),
                             force_train_method = "regression",
@@ -205,20 +241,6 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
 
   results_or <- textTrainLists(wordembeddings,
-                            ratings_data,
-                            preprocess_PCA = c(0.90),
-                            #outside_strata_y = NULL,
-                            #inside_strata_y = NULL,
-                            penalty = c(2),
-                            mixture = c(0),
-                            force_train_method = "regression",
-                            save_output = "only_results",
-                            method_cor = "kendall")
-
-  testthat::expect_that(results_or, testthat::is_a("list"))
-  testthat::expect_is(results_or$results$tau_correlation[1], "character")
-
-  results_or_p <- textTrainLists(wordembeddings,
                                ratings_data,
                                preprocess_PCA = c(0.90),
                                #outside_strata_y = NULL,
@@ -226,7 +248,42 @@ test_that("textTrainLists Regression produces a list of results with prediction 
                                penalty = c(2),
                                mixture = c(0),
                                force_train_method = "regression",
-                               save_output = "only_results_predictions")
+                               save_output = "only_results",
+                               method_cor = "kendall")
+
+  testthat::expect_that(results_or, testthat::is_a("list"))
+  testthat::expect_is(results_or$results$tau_correlation[1], "character")
+
+  results_or_p <- textTrainLists(wordembeddings,
+                                 ratings_data,
+                                 preprocess_PCA = c(0.90),
+                                 #outside_strata_y = NULL,
+                                 #inside_strata_y = NULL,
+                                 penalty = c(2),
+                                 mixture = c(0),
+                                 force_train_method = "regression",
+                                 save_output = "only_results_predictions")
+
+
+  testthat::expect_that(results_or_p, testthat::is_a("list"))
+  testthat::expect_is(results_or_p$results$correlation[1], "character")
+
+  factors1 <- as.factor(Language_based_assessment_data_8$gender)
+  factors2 <- as.factor(Language_based_assessment_data_8$gender)
+  ratings_data_factors <- tibble(factors1, factors2)
+
+  # Logistic
+  results_list_logistic <- textTrainLists(wordembeddings,
+                                          ratings_data_factors,
+                                          preprocess_PCA = c(0.90),
+                                          #outside_strata_y = NULL,
+                                          #inside_strata_y = NULL,
+                                          penalty = c(2),
+                                          mixture = c(0),
+                                          force_train_method = "regression",
+                                          model = "logistic",
+                                          eval_measure = "bal_accuracy",
+                                          save_output = "only_results_predictions")
 
   testthat::expect_that(results_or_p, testthat::is_a("list"))
   testthat::expect_is(results_or_p$results$correlation[1], "character")

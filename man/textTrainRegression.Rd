@@ -7,6 +7,8 @@
 textTrainRegression(
   x,
   y,
+  model = "regression",
+  eval_measure = "rmse",
   preprocess_PCA = "min_halving",
   penalty = 10^seq(-16, 16),
   mixture = c(0),
@@ -20,6 +22,8 @@ textTrainRegression(
 \item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
 
 \item{y}{Numeric variable to predict.}
+
+\item{model}{Type of model. Default is "regression"; see also "logistic" for classification.}
 
 \item{preprocess_PCA}{Pre-processing threshold for PCA (to skip this step set it to NA).
 Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
