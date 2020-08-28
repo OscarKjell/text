@@ -18,8 +18,8 @@ test_that("Testing textEmbed as well as train", {
                                   preprocess_PCA = c(0.20),
                                   penalty = 1e-16)
 
-  expect_that(text_train_results$correlation$estimate[1], is_a("numeric"))
-  expect_gt(text_train_results$correlation$estimate[1], 0.3)
+  expect_that(text_train_results$results$estimate[1], is_a("numeric"))
+  expect_gt(text_train_results$results$estimate[1], 0.3)
 
 
   # Predict
