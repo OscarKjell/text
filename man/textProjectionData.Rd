@@ -40,7 +40,8 @@ A number below 1 takes out \% of variance; An integer specify number of componen
 (default = "mean"; see also "min", "max", and "[CLS]").}
 
 \item{split}{Method to split the axes
-(default = "quartile" involving selecting lower and upper quartile; see also "median").}
+(default = "quartile" involving selecting lower and upper quartile; see also "mean"). However, if the variable is
+only containing two different values (i.e., being dichotomous) mean split is used.}
 
 \item{word_weight_power}{Compute the power of the frequency of the words and multiply
 the word embeddings with this in the computation of aggregated word embeddings for

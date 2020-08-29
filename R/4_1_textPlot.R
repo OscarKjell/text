@@ -44,7 +44,8 @@ unique_freq_words <- function(words) {
 #' @param aggregation Method to aggregate the word embeddings
 #' (default = "mean"; see also "min", "max", and "[CLS]").
 #' @param split Method to split the axes
-#' (default = "quartile" involving selecting lower and upper quartile; see also "median").
+#' (default = "quartile" involving selecting lower and upper quartile; see also "mean"). However, if the variable is
+#' only containing two different values (i.e., being dichotomous) mean split is used.
 #' @param word_weight_power Compute the power of the frequency of the words and multiply
 #' the word embeddings with this in the computation of aggregated word embeddings for
 #' group low (1) and group high (2). This increases the weight of more frequent words.
@@ -141,12 +142,11 @@ textProjectionData <- function(words,
     # Splitting datasets up to low versus high according to median split
     #group1 <- x2[x2[2] < stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
     #group2 <- x2[x2[2] > stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
-
     group1 <- x2 %>%
-      dplyr::filter(value < stats::median(purrr::as_vector(value), na.rm = TRUE))
+      dplyr::filter(value < mean(purrr::as_vector(value), na.rm = TRUE))
 
     group2 <- x2 %>%
-      dplyr::filter(value > stats::median(purrr::as_vector(value), na.rm = TRUE))
+      dplyr::filter(value > mean(purrr::as_vector(value), na.rm = TRUE))
 
     # Use function addEqualNrNArows from 3_1_testSimilarity
     # Function adds rows of NA until group2 and group1 have the same amount of rows.
@@ -189,15 +189,20 @@ textProjectionData <- function(words,
     ### Sum all word embeddings in one column
 
     # split="median" split = "quartile"
-    if (split == "median") {
+    if (split == "mean") {
       words_group1_agg_single_wordembedding_c <- cbind(words_group1b_freq, words_group1_single_wordembedding_b)
       words_group2_agg_single_wordembedding_c <- cbind(words_group2b_freq, words_group2_single_wordembedding_b)
     } else if (split == "quartile") {
       # Select according to lower and upper quartile
+      # However, if it is a dichotomous variable use mean
+      if(length(unique(x1$value)) == 2){
+        q1 <- summary(x1$value)[4][[1]]
+        q3 <- summary(x1$value)[4][[1]]
+      }else if(length(unique(x1$value)) > 2){
       q1 <- summary(x1$value)[2][[1]]
       q3 <- summary(x1$value)[5][[1]]
-      #group1_agg <- x2[x2[2] < q1, ]
-      #group2_agg <- x2[x2[2] > q3, ]
+      }
+
       group1_agg <- x2 %>%
         dplyr::filter(x2$value < q1, )
 
