@@ -2,8 +2,11 @@
 # # TODO Possibility to set this one? It may be that no words comes within this textCentralitylot
 # Just want to learn why this: # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
 
+words <- c("words", "text", "hello", "-", "-")
+#help(as_tibble)
+
 #' Takes all words as input and arrange them in column with an accompanying column with frequency.
-#' @param x Words
+#' @param words Words
 #' @return Column with all words and an accompanying column with their frequency.
 #' @importFrom tibble as_tibble
 #' @noRd
@@ -11,9 +14,11 @@ unique_freq_words <- function(words) {
   words_group1 <- data.frame(unlist(strsplit(tolower(words), " ")))
   # Remove empty cells (otherwise all words are put within " ", which create problems in getUniqueWordsAndFreq or textCentralityData)
   words_group <- words_group1[words_group1 != ""]
-  words_groupb <- tibble::as_tibble(as.character(words_group))
+  words_group <- as.character(words_group)
+  words_groupb <- tibble::as_tibble(words_group)
   sort(words_groupb$value)
-  words_groupb_freq <- tibble::as_tibble(table(words_groupb))
+  words_groupb <- table(words_groupb)
+  words_groupb_freq <- tibble::as_tibble(words_groupb, .name_repair = make.names)
   colnames(words_groupb_freq) <- c("words", "n")
   words_groupb_freq
 }
@@ -204,10 +209,10 @@ textProjectionData <- function(words,
       }
 
       group1_agg <- x2 %>%
-        dplyr::filter(x2$value < q1, )
+        dplyr::filter(x2$value <= q1, )
 
       group2_agg <- x2 %>%
-        dplyr::filter(x2$value > q3, )
+        dplyr::filter(x2$value >= q3, )
 
       words_group1_agg_freq <- unique_freq_words(group1_agg$words)
       words_group1_agg_freq1 <- words_group1_agg_freq[words_group1_agg_freq$n >= min_freq_words, ]

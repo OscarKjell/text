@@ -5,7 +5,7 @@ library(testthat)
 
 context("textPlot Functions")
 
-test_that("textProjectionData MEDIAN and PCA produces a tibble with character variable and numeric variable.", {
+test_that("textProjectionData MEAN and PCA produces a tibble with character variable and numeric variable.", {
   # Data
   wordembeddings <- wordembeddings4
   data <- Language_based_assessment_data_8
@@ -14,7 +14,7 @@ test_that("textProjectionData MEDIAN and PCA produces a tibble with character va
     wordembeddings$harmonywords[1:5, ],
     wordembeddings$singlewords_we,
     data$hilstotal[1:5],
-    split = "median",
+    split = "mean",
     Npermutations = 2,
     n_per_split = 1,
     pca = 2
