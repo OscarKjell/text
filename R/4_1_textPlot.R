@@ -356,6 +356,48 @@ textProjectionData <- function(words,
 #### End textProjectionData
 #############
 
+#library(tidyverse)
+#word_data <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/15 Response Formats/1 Data/gen_all_minidep.rds")
+#
+#k_n_words_to_test = FALSE
+#min_freq_words = 1
+#plot_n_words_square = 0
+#plot_n_words_p = 0
+#plot_n_word_extreme = 0
+#plot_n_word_frequency = 6
+#plot_n_words_middle = 0
+#titles_color = "#61605e"
+##x_axes = TRUE
+#y_axes = FALSE
+#p_alpha = 0.05
+#p_adjust_method = "none"
+#title_top = "Dot Product Projection"
+#x_axes_label = "Dot product projection (DPP)"
+#y_axes_label = "Dot product projection (DPP)"
+#scale_x_axes_lim = NULL
+#scale_y_axes_lim = NULL
+#word_font = NULL
+#bivariate_color_codes = c(
+#  "#398CF9", "#60A1F7", "#5dc688",
+#  "#e07f6a", "#EAEAEA", "#40DD52",
+#  "#FF0000", "#EA7467", "#85DB8E"
+#)
+#word_size_range = c(3, 8)
+#position_jitter_hight = .0
+#position_jitter_width = .03
+#point_size = 0.5
+#arrow_transparency = 0.1
+#points_without_words_size = 0.2
+#points_without_words_alpha = 0.2
+#legend_title = "DPP"
+#legend_x_axes_label = "x"
+#legend_y_axes_label = "y"
+#legend_x_position = 0.02
+#legend_y_position = 0.02
+#legend_h_size = 0.2
+#legend_w_size = 0.2
+#legend_title_size = 7
+#legend_number_size = 2
 
 #' Plot words according to Dot Product Projections.
 #' @param word_data Dataframe from textProjectionData
@@ -363,9 +405,11 @@ textProjectionData <- function(words,
 #' test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.
 #' @param min_freq_words Select words to significance test that have occurred at least min_freq_words
 #' (default = 1).
-#' @param plot_n_words_square Select number of significant words in each square of the figure to plot.
-#' @param plot_n_words_p Number of significant words to plot (n per x-axes and n per y-axes,
-#' where duplicates are removed); selects fist according to lowest p-value and then to frequency.
+#' @param plot_n_words_square Select number of significant words in each square of the figure to plot. The significant
+#' words, in each square is selected according to most frequent words.
+#' @param plot_n_words_p Number of significant words to plot on each(positive and negative) side of the x-axes and y-axes,
+#' (where duplicates are removed); selects first according to lowest p-value and then according to frequency. Hence, on a two
+#' dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.
 #' @param plot_n_word_extreme Number of words that are extreme on dot product projection per dimension.
 #' (i.e., even if not significant; per dimensions, where duplicates are removed).
 #' @param plot_n_word_frequency Number of words based on being most frequent.
@@ -410,7 +454,7 @@ textProjectionData <- function(words,
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size (default: 7).
 #' @param legend_number_size Font size of the values in the legend (default: 2).
-#' @return A 1- or 2-dimensional word plot.
+#' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
 #' @examples
 #' # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 #'
@@ -540,9 +584,7 @@ textProjectionPlot <- function(word_data,
     data_p_sq1 <- word_data[word_data$square_categories == 1, ] %>%
       dplyr::arrange(-n) %>%
       dplyr::slice(0:plot_n_words_square)
-    #    data_p_sq2 <- word_data[word_data$square_categories==2, ] %>%
-    #      dplyr::arrange(-n) %>%
-    #      dplyr::slice(0:plot_n_words_square)
+
     data_p_sq3 <- word_data[word_data$square_categories == 3, ] %>%
       dplyr::arrange(-n) %>%
       dplyr::slice(0:plot_n_words_square)
@@ -602,7 +644,12 @@ textProjectionPlot <- function(word_data,
 
 
   # Select only words below alpha; and then top dot.x
-  data_p_x <- word_data %>%
+  data_p_x_neg <- word_data %>%
+    dplyr::filter(adjusted_p_values.x < p_alpha) %>%
+    dplyr::arrange(dot.x) %>%
+    dplyr::slice(0:plot_n_words_p)
+
+  data_p_x_pos <- word_data %>%
     dplyr::filter(adjusted_p_values.x < p_alpha) %>%
     dplyr::arrange(-dot.x) %>%
     dplyr::slice(0:plot_n_words_p)
@@ -631,8 +678,10 @@ textProjectionPlot <- function(word_data,
   word_data_x <- word_data %>%
     dplyr::left_join(data_p_sq_all %>%
       dplyr::transmute(words, check_p_square = 1), by = "words") %>%
-    dplyr::left_join(data_p_x %>%
-      dplyr::transmute(words, check_p_x = 1), by = "words") %>%
+    dplyr::left_join(data_p_x_neg %>%
+      dplyr::transmute(words, check_p_x_neg = 1), by = "words") %>%
+    dplyr::left_join(data_p_x_pos %>%
+      dplyr::transmute(words, check_p_x_pos = 1), by = "words") %>%
     dplyr::left_join(word_data_extrem_max_x %>%
       dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
     dplyr::left_join(word_data_extrem_min_x %>%
@@ -642,14 +691,20 @@ textProjectionPlot <- function(word_data,
     dplyr::left_join(word_data_middle_x %>%
       dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
     dplyr::mutate(extremes_all_x = rowSums(cbind(
-      check_p_square, check_p_x, check_extreme_max_x, check_extreme_min_x,
+      check_p_square, check_p_x_neg, check_p_x_pos, check_extreme_max_x, check_extreme_min_x,
       check_extreme_frequency_x, check_middle_x
     ), na.rm = T))
+  #table(word_data_x$extremes_all_x)
 
   if (is.null(y_axes_1) == FALSE) {
     # Computing adjusted p-values
     # Select only words below alpha; and then top dot.x
-    data_p_y <- word_data %>%
+    data_p_y_neg <- word_data %>%
+      dplyr::filter(adjusted_p_values.y < p_alpha) %>%
+      dplyr::arrange(dot.y) %>%
+      dplyr::slice(0:plot_n_words_p)
+
+    data_p_y_pos <- word_data %>%
       dplyr::filter(adjusted_p_values.y < p_alpha) %>%
       dplyr::arrange(-dot.y) %>%
       dplyr::slice(0:plot_n_words_p)
@@ -676,8 +731,10 @@ textProjectionPlot <- function(word_data,
       dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. perhaps point to have exact middle?
 
     word_data_all <- word_data_x %>%
-      dplyr::left_join(data_p_y %>%
-        dplyr::transmute(words, check_p_y = 1), by = "words") %>%
+      dplyr::left_join(data_p_y_pos %>%
+        dplyr::transmute(words, check_p_y_pos = 1), by = "words") %>%
+      dplyr::left_join(data_p_y_neg %>%
+        dplyr::transmute(words, check_p_y_neg = 1), by = "words") %>%
       dplyr::left_join(word_data_extrem_max_y %>%
         dplyr::transmute(words, check_extreme_max_y = 1), by = "words") %>%
       dplyr::left_join(word_data_extrem_min_y %>%
@@ -687,7 +744,7 @@ textProjectionPlot <- function(word_data,
       dplyr::left_join(word_data_middle_y %>%
         dplyr::transmute(words, check_middle_y = 1), by = "words") %>%
       dplyr::mutate(extremes_all_y = rowSums(cbind(
-        check_p_y, check_extreme_max_y, check_extreme_min_y,
+        check_p_y_neg, check_p_y_pos, check_extreme_max_y, check_extreme_min_y,
         check_extreme_frequency_y, check_middle_y
       ), na.rm = T)) %>%
       dplyr::mutate(extremes_all = rowSums(cbind(extremes_all_x, extremes_all_y), na.rm = T))
@@ -712,7 +769,8 @@ textProjectionPlot <- function(word_data,
     word_data_all <- word_data_x %>%
       dplyr::mutate(colour_categories = dplyr::case_when(
         dot.x < 0 & adjusted_p_values.x < p_alpha ~ bivariate_color_codes[4],
-        dot.x < 0 & adjusted_p_values.x > p_alpha ~ bivariate_color_codes[5],
+        #dot.x < 0 & adjusted_p_values.x > p_alpha ~ bivariate_color_codes[5],
+        adjusted_p_values.x > p_alpha ~ bivariate_color_codes[5],
         dot.x > 0 & adjusted_p_values.x < p_alpha ~ bivariate_color_codes[6]
       ))
   }
@@ -887,14 +945,33 @@ textProjectionPlot <- function(word_data,
   legend
 
   # Plot both figure and legend
-  suppressWarnings(cowplot::ggdraw() +
+  final_plot <- suppressWarnings(cowplot::ggdraw() +
     cowplot::draw_plot(plot, 0, 0, 1, 1) +
     cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
-}
-###### End textProjectionPlot
+
+
+  output_plot_data <- list(final_plot, word_data_all)
+  names(output_plot_data) <- c("final_plot", "processed_word_data")
+  output_plot_data
+  }
 
 
 
+
+###### End textProjectionPlot(word_data)
+#word_data <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/15 Response Formats/1 Data/gen_all_minidep.rds")
+#
+#
+#
+#textProjectionPlot(word_data,
+#                   k_n_words_to_test = FALSE,
+#                   min_freq_words = 1,
+#                   plot_n_words_square = 0,
+#                   plot_n_words_p = 0,
+#                   plot_n_word_extreme = 0,
+#                   plot_n_word_frequency = 6,
+#                   plot_n_words_middle = 0)
+#
 
 ####################################
 ####################################
