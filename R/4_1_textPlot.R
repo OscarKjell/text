@@ -1397,8 +1397,8 @@ text2DData <- function(words,
 
 
 
-#' Plot words according to Dot Product Projections.
-#' @param word_data Dataframe from textProjectionData
+#' Plot words according to 2-D plot from 2 PCA components.
+#' @param word_data Dataframe from text2DData
 #' @param min_freq_words_test Select words to significance test that have occurred at least min_freq_words_test
 #' (default = 1).
 #' @param plot_n_word_extreme Number of words that are extreme on dot product projection per dimension.

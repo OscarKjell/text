@@ -166,7 +166,7 @@ test_that("textCentralityPlot produces a plot.", {
     points_without_words_alpha = 0.5
   )
 
-  expect_true(ggplot2::is.ggplot(centrality_plot))
+  expect_true(ggplot2::is.ggplot(centrality_plot$final_plot))
 })
 
 
@@ -191,5 +191,5 @@ test_that("textCentralityPlot produces a plot.", {
   principle_component_plot_projection <- text2DPlot(PC_projections_satisfactionwords_40)
   #principle_component_plot_projection
 
-  expect_true(ggplot2::is.ggplot(principle_component_plot_projection))
+  expect_true(ggplot2::is.ggplot(principle_component_plot_projection$final_plot))
 })
