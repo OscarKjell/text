@@ -57,7 +57,7 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   p <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
     k_n_words_to_test = TRUE,
-    min_freq_words = 1,
+    min_freq_words_test = 1,
     plot_n_words_square = 3,
     plot_n_words_p = 3,
     plot_n_word_extreme = 1,
@@ -73,7 +73,7 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
     scale_y_axes_lim = NULL
   )
 
-  expect_true(ggplot2::is.ggplot(p))
+  expect_true(ggplot2::is.ggplot(p$final_plot))
 })
 
 
@@ -82,7 +82,7 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   p <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
     k_n_words_to_test = TRUE,
-    min_freq_words = 1,
+    min_freq_words_test = 1,
     plot_n_words_square = 3,
     plot_n_words_p = 3,
     plot_n_word_extreme = 1,
@@ -98,7 +98,7 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
     scale_y_axes_lim = NULL
   )
 
-  expect_true(ggplot2::is.ggplot(p))
+  expect_true(ggplot2::is.ggplot(p$final_plot))
 })
 
 
@@ -109,7 +109,7 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
   p <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
     k_n_words_to_test = FALSE,
-    min_freq_words = 1,
+    min_freq_words_test = 1,
     plot_n_words_square = 3,
     plot_n_words_p = 3,
     plot_n_word_extreme = 1,
@@ -125,7 +125,7 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
     scale_y_axes_lim = NULL
   )
 
-  expect_true(ggplot2::is.ggplot(p))
+  expect_true(ggplot2::is.ggplot(p$final_plot))
 })
 
 test_that("textCentralityData produces a tibble with character variable and numeric variable.", {
@@ -147,7 +147,7 @@ test_that("textCentralityPlot produces a plot.", {
   # Plot
   centrality_plot <- textCentralityPlot(
     word_data = centrality_data_harmony,
-    min_freq_words = 10,
+    min_freq_words_test = 10,
     plot_n_word_extreme = 10,
     plot_n_word_frequency = 10,
     plot_n_words_middle = 10,

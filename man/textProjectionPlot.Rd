@@ -7,7 +7,8 @@
 textProjectionPlot(
   word_data,
   k_n_words_to_test = FALSE,
-  min_freq_words = 1,
+  min_freq_words_test = 1,
+  min_freq_words_plot = 1,
   plot_n_words_square = 3,
   plot_n_words_p = 5,
   plot_n_word_extreme = 5,
@@ -49,8 +50,10 @@ textProjectionPlot(
 \item{k_n_words_to_test}{Select the k most frequent words to significance
 test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.}
 
-\item{min_freq_words}{Select words to significance test that have occurred at least min_freq_words
+\item{min_freq_words_test}{Select words to significance test that have occurred at least min_freq_words_test
 (default = 1).}
+
+\item{min_freq_words_plot}{Select words to plot that has occurred at least min_freq_words_plot times.}
 
 \item{plot_n_words_square}{Select number of significant words in each square of the figure to plot. The significant
 words, in each square is selected according to most frequent words.}
@@ -145,7 +148,7 @@ Plot words according to Dot Product Projections.
 plot_projection <- textProjectionPlot(
   word_data = DP_projections_HILS_SWLS_100,
   k_n_words_to_test = FALSE,
-  min_freq_words = 1,
+  min_freq_words_test = 1,
   plot_n_words_square = 3,
   plot_n_words_p = 3,
   plot_n_word_extreme = 1,

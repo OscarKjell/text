@@ -6,7 +6,7 @@
 \usage{
 textCentralityPlot(
   word_data,
-  min_freq_words = 1,
+  min_freq_words_test = 1,
   plot_n_word_extreme = 10,
   plot_n_word_frequency = 10,
   plot_n_words_middle = 10,
@@ -38,8 +38,8 @@ textCentralityPlot(
 \arguments{
 \item{word_data}{Tibble from textPlotData.}
 
-\item{min_freq_words}{Select words to significance test that have occurred
-at least min_freq_words (default = 1).}
+\item{min_freq_words_test}{Select words to significance test that have occurred
+at least min_freq_words_test (default = 1).}
 
 \item{plot_n_word_extreme}{Number of words per dimension to plot with extreme
 dot product projection value.
@@ -105,7 +105,8 @@ plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000
 \item{legend_number_size}{Font size of the values in the legend (default = 2).}
 }
 \value{
-A 1-dimensional word plot based on cosine similarity to the aggregated word embedding.
+A 1-dimensional word plot based on cosine similarity to the aggregated word embedding,
+as well as tibble with processed data used to plot..
 }
 \description{
 Plot words according to cosine semantic similarity to the aggregated word embedding.
@@ -116,7 +117,7 @@ names(centrality_data_harmony)
 # Plot
 # centrality_plot <- textCentralityPlot(
 #  word_data = centrality_data_harmony,
-#  min_freq_words = 10,
+#  min_freq_words_test = 10,
 #  plot_n_word_extreme = 10,
 #  plot_n_word_frequency = 10,
 #  plot_n_words_middle = 10,

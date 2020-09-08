@@ -14,7 +14,7 @@ textProjectionData(
   aggregation = "mean",
   split = "quartile",
   word_weight_power = 1,
-  min_freq_words = 0,
+  min_freq_words_test = 0,
   Npermutations = 10000,
   n_per_split = 50000
 )
@@ -47,7 +47,7 @@ only containing two different values (i.e., being dichotomous) mean split is use
 the word embeddings with this in the computation of aggregated word embeddings for
 group low (1) and group high (2). This increases the weight of more frequent words.}
 
-\item{min_freq_words}{Option to select words that have occurred a specified number of
+\item{min_freq_words_test}{Option to select words that have occurred a specified number of
 times (default = 0); when creating the dot product projection line
 (i.e., single words receive dot product projection and p-value).}
 

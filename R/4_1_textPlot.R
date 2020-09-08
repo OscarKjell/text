@@ -54,7 +54,7 @@ unique_freq_words <- function(words) {
 #' @param word_weight_power Compute the power of the frequency of the words and multiply
 #' the word embeddings with this in the computation of aggregated word embeddings for
 #' group low (1) and group high (2). This increases the weight of more frequent words.
-#' @param min_freq_words Option to select words that have occurred a specified number of
+#' @param min_freq_words_test Option to select words that have occurred a specified number of
 #' times (default = 0); when creating the dot product projection line
 #' (i.e., single words receive dot product projection and p-value).
 #' @param Npermutations Number of permutations in the creation of the null distribution.
@@ -94,7 +94,7 @@ textProjectionData <- function(words,
                                aggregation = "mean",
                                split = "quartile",
                                word_weight_power = 1,
-                               min_freq_words = 0,
+                               min_freq_words_test = 0,
                                Npermutations = 10000,
                                n_per_split = 50000) {
   set.seed(2020)
@@ -169,7 +169,7 @@ textProjectionData <- function(words,
     ##########
     # Group 1: getting unique words and their frequency
     words_group1b_freq <- unique_freq_words(group1$words)
-    words_group1b_freq <- words_group1b_freq[words_group1b_freq$n >= min_freq_words, ]
+    words_group1b_freq <- words_group1b_freq[words_group1b_freq$n >= min_freq_words_test, ]
     words_group1b_freq$n_g1_g2 <- words_group1b_freq$n * -1
     # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
     words_group1_single_wordembedding <- lapply(words_group1b_freq$words, applysemrep, single_wordembeddings)
@@ -177,14 +177,14 @@ textProjectionData <- function(words,
 
     # Group 2
     words_group2b_freq <- unique_freq_words(group2$words)
-    words_group2b_freq <- words_group2b_freq[words_group2b_freq$n >= min_freq_words, ]
+    words_group2b_freq <- words_group2b_freq[words_group2b_freq$n >= min_freq_words_test, ]
     words_group2b_freq$n_g1_g2 <- words_group2b_freq$n * 1
     words_group2_single_wordembedding <- lapply(words_group2b_freq$words, applysemrep, single_wordembeddings)
     words_group2_single_wordembedding_b <- dplyr::bind_rows(words_group2_single_wordembedding)
 
     # All: Group 1 & 2
     #words_group1_2_freq <- unique_freq_words(x2$words)
-    #words_group1_2_freq_b <- words_group1_2_freq[words_group1_2_freq$n >= min_freq_words, ]
+    #words_group1_2_freq_b <- words_group1_2_freq[words_group1_2_freq$n >= min_freq_words_test, ]
     #words_group1_2_freq_b <- dplyr::rename(words_group1_2_freq_b, n_all = n)
     #words_group1_2_single_wordembedding <- lapply(words_group1_2_freq_b$words, applysemrep, single_wordembeddings)
 
@@ -215,13 +215,13 @@ textProjectionData <- function(words,
         dplyr::filter(x2$value >= q3, )
 
       words_group1_agg_freq <- unique_freq_words(group1_agg$words)
-      words_group1_agg_freq1 <- words_group1_agg_freq[words_group1_agg_freq$n >= min_freq_words, ]
+      words_group1_agg_freq1 <- words_group1_agg_freq[words_group1_agg_freq$n >= min_freq_words_test, ]
       words_group1_agg_single_wordembedding <- lapply(words_group1_agg_freq1$words, applysemrep, single_wordembeddings)
       words_group1_agg_single_wordembedding_b <- dplyr::bind_rows(words_group1_agg_single_wordembedding)
       words_group1_agg_single_wordembedding_c <- cbind(words_group1_agg_freq1, words_group1_agg_single_wordembedding_b)
 
       words_group2_agg_freq <- unique_freq_words(group2_agg$words)
-      words_group2_agg_freq1 <- words_group2_agg_freq[words_group2_agg_freq$n >= min_freq_words, ]
+      words_group2_agg_freq1 <- words_group2_agg_freq[words_group2_agg_freq$n >= min_freq_words_test, ]
       words_group2_agg_single_wordembedding <- lapply(words_group2_agg_freq1$words, applysemrep, single_wordembeddings)
       words_group2_agg_single_wordembedding_b <- dplyr::bind_rows(words_group2_agg_single_wordembedding)
       words_group2_agg_single_wordembedding_c <- cbind(words_group2_agg_freq1, words_group2_agg_single_wordembedding_b)
@@ -358,14 +358,16 @@ textProjectionData <- function(words,
 
 #library(tidyverse)
 #word_data <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/15 Response Formats/1 Data/gen_all_minidep.rds")
-#
+#colnames(word_data)
 #k_n_words_to_test = FALSE
-#min_freq_words = 1
+#min_freq_words_test = 1
+#min_freq_words_plot = 5
 #plot_n_words_square = 0
 #plot_n_words_p = 0
-#plot_n_word_extreme = 0
-#plot_n_word_frequency = 6
-#plot_n_words_middle = 0
+#plot_n_word_extreme = 15
+#plot_n_word_frequency = 0
+#plot_n_words_middle = 4
+#
 #titles_color = "#61605e"
 ##x_axes = TRUE
 #y_axes = FALSE
@@ -403,8 +405,9 @@ textProjectionData <- function(words,
 #' @param word_data Dataframe from textProjectionData
 #' @param k_n_words_to_test Select the k most frequent words to significance
 #' test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.
-#' @param min_freq_words Select words to significance test that have occurred at least min_freq_words
+#' @param min_freq_words_test Select words to significance test that have occurred at least min_freq_words_test
 #' (default = 1).
+#' @param min_freq_words_plot Select words to plot that has occurred at least min_freq_words_plot times.
 #' @param plot_n_words_square Select number of significant words in each square of the figure to plot. The significant
 #' words, in each square is selected according to most frequent words.
 #' @param plot_n_words_p Number of significant words to plot on each(positive and negative) side of the x-axes and y-axes,
@@ -462,7 +465,7 @@ textProjectionData <- function(words,
 #' plot_projection <- textProjectionPlot(
 #'   word_data = DP_projections_HILS_SWLS_100,
 #'   k_n_words_to_test = FALSE,
-#'   min_freq_words = 1,
+#'   min_freq_words_test = 1,
 #'   plot_n_words_square = 3,
 #'   plot_n_words_p = 3,
 #'   plot_n_word_extreme = 1,
@@ -491,7 +494,8 @@ textProjectionData <- function(words,
 #' @export
 textProjectionPlot <- function(word_data,
                                k_n_words_to_test = FALSE,
-                               min_freq_words = 1,
+                               min_freq_words_test = 1,
+                               min_freq_words_plot = 1,
                                plot_n_words_square = 3,
                                plot_n_words_p = 5,
                                plot_n_word_extreme = 5,
@@ -551,8 +555,8 @@ textProjectionPlot <- function(word_data,
   }
 
   ### Selecting words to plot
-  # Computing adjusted p-values with those words selected by min_freq_words
-  word_data_padjusted <- word_data[word_data$n >= min_freq_words, ]
+  # Computing adjusted p-values with those words selected by min_freq_words_test
+  word_data_padjusted <- word_data[word_data$n >= min_freq_words_test, ]
 
   # Computing adjusted p-values with those words selected by: k = sqrt(100*N)
   if (k_n_words_to_test == TRUE) {
@@ -561,16 +565,20 @@ textProjectionPlot <- function(word_data,
       dplyr::arrange(-n) %>%
       dplyr::slice(0:words_k)
   }
-
-  word_data_padjusted$adjusted_p_values.x <- stats::p.adjust(purrr::as_vector(word_data_padjusted[, p_values_x]), method = p_adjust_method)
+ # word_data_padjusted$p_values_dot.x
+  word_data_padjusted$adjusted_p_values.x <- stats::p.adjust(purrr::as_vector(word_data_padjusted[, "p_values_dot.x"]), method = p_adjust_method)
   word_data <- dplyr::left_join(word_data, word_data_padjusted[, c("words", "adjusted_p_values.x")], by = "words")
+  #word_data$adjusted_p_values.x
 
   if (is.null(y_axes_1) == FALSE) {
     # Computing adjusted p-values
-    word_data_padjusted_y <- word_data[word_data$n >= min_freq_words, ]
-    word_data_padjusted_y$adjusted_p_values.y <- stats::p.adjust(purrr::as_vector(word_data_padjusted_y[, p_values_y]), method = p_adjust_method)
+    word_data_padjusted_y <- word_data[word_data$n >= min_freq_words_test, ]
+    word_data_padjusted_y$adjusted_p_values.y <- stats::p.adjust(purrr::as_vector(word_data_padjusted_y[, "p_values_dot.y"]), method = p_adjust_method)
     word_data <- left_join(word_data, word_data_padjusted_y[, c("words", "adjusted_p_values.y")], by = "words")
   }
+
+  # Select only min_freq_words_plot to plot (i.e., after correction of multiple comparison for sig. test)
+  word_data <- word_data[word_data$n >= min_freq_words_plot, ]
 
   # Select only words based on square-position; and then top frequency in each "square" (see legend) plot_n_words_square
   if (is.null(y_axes_1) == TRUE) {
@@ -764,13 +772,16 @@ textProjectionPlot <- function(word_data,
         dot.x > 0 & adjusted_p_values.x < p_alpha & dot.y < 0 & adjusted_p_values.y < p_alpha ~ bivariate_color_codes[9]
       ))
   }
-
+  # table(word_data_x$extremes_all_x)
+  #View(word_data_x[word_data_x$extremes_all_x==1,])
+  #View(word_data_all[word_data_all$extremes_all_x==1,])
   if (is.null(y_axes_1) == TRUE) {
     word_data_all <- word_data_x %>%
       dplyr::mutate(colour_categories = dplyr::case_when(
         dot.x < 0 & adjusted_p_values.x < p_alpha ~ bivariate_color_codes[4],
         #dot.x < 0 & adjusted_p_values.x > p_alpha ~ bivariate_color_codes[5],
-        adjusted_p_values.x > p_alpha ~ bivariate_color_codes[5],
+        # Some adjusted_p_values.x has NA becasue they where not tested as multiple input (this is because min_frequency selects out before)
+        adjusted_p_values.x > p_alpha | is.na(adjusted_p_values.x) ~ bivariate_color_codes[5],
         dot.x > 0 & adjusted_p_values.x < p_alpha ~ bivariate_color_codes[6]
       ))
   }
@@ -795,6 +806,7 @@ textProjectionPlot <- function(word_data,
     word_data_all_yadjusted <- word_data_all[word_data_all$extremes_all_x == 1, ]
   }
 
+  #word_data_all_yadjusted$colour_categories
   # Plot
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
@@ -965,7 +977,7 @@ textProjectionPlot <- function(word_data,
 #
 #textProjectionPlot(word_data,
 #                   k_n_words_to_test = FALSE,
-#                   min_freq_words = 1,
+#                   min_freq_words_test = 1,
 #                   plot_n_words_square = 0,
 #                   plot_n_words_p = 0,
 #                   plot_n_word_extreme = 0,
@@ -992,7 +1004,7 @@ textProjectionPlot <- function(word_data,
 #' (i.e., the decontextualized word embeddings).
 #' @param aggregation Method to aggregate the word embeddings
 #' (default = "mean"; see also "min", "max" or "[CLS]").
-#' @param min_freq_words Option to  select words that have at least occurred a specified
+#' @param min_freq_words_test Option to  select words that have at least occurred a specified
 #' number of times (default = 0); when creating the semantic similarity
 #' scores within cosine similarity.
 #' @return A dataframe with variables (e.g., including semantic similarity, frequencies)
@@ -1015,15 +1027,15 @@ textCentralityData <- function(words,
                                single_wordembeddings = single_wordembeddings_df,
                                aggregation = "mean",
                                # word_weight_power = 1,
-                               min_freq_words = 0) {
+                               min_freq_words_test = 0) {
 
   # Create Central Point by aggregating all word embeddings
   Central_Point <- textEmbeddingAggregation(wordembeddings, aggregation = "mean")
 
   # Select embeddings for unique words
-  # Group 1: getting unique words and their frequency min_freq_words=3
+  # Group 1: getting unique words and their frequency min_freq_words_test=3
   all_unique_freq_words <- unique_freq_words(words)
-  all_unique_freq_words_min_freq <- all_unique_freq_words[all_unique_freq_words$n >= min_freq_words, ]
+  all_unique_freq_words_min_freq <- all_unique_freq_words[all_unique_freq_words$n >= min_freq_words_test, ]
 
   # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
   all_single_wordembedding_a <- lapply(all_unique_freq_words_min_freq$words, applysemrep, single_wordembeddings)
@@ -1039,8 +1051,8 @@ textCentralityData <- function(words,
 
 #' Plot words according to cosine semantic similarity to the aggregated word embedding.
 #' @param word_data Tibble from textPlotData.
-#' @param min_freq_words Select words to significance test that have occurred
-#' at least min_freq_words (default = 1).
+#' @param min_freq_words_test Select words to significance test that have occurred
+#' at least min_freq_words_test (default = 1).
 #' @param plot_n_word_extreme Number of words per dimension to plot with extreme
 #' dot product projection value.
 #' (i.e., even if not significant;  duplicates are removed).
@@ -1078,7 +1090,8 @@ textCentralityData <- function(words,
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size of the title (default = 7).
 #' @param legend_number_size Font size of the values in the legend (default = 2).
-#' @return A 1-dimensional word plot based on cosine similarity to the aggregated word embedding.
+#' @return A 1-dimensional word plot based on cosine similarity to the aggregated word embedding,
+#'as well as tibble with processed data used to plot..
 #' @seealso see \code{\link{textCentralityData}} and \code{\link{textProjectionData}}
 #' @examples
 #' # The test-data included in the package is called: centrality_data_harmony
@@ -1086,7 +1099,7 @@ textCentralityData <- function(words,
 #' # Plot
 #' # centrality_plot <- textCentralityPlot(
 #' #  word_data = centrality_data_harmony,
-#' #  min_freq_words = 10,
+#' #  min_freq_words_test = 10,
 #' #  plot_n_word_extreme = 10,
 #' #  plot_n_word_frequency = 10,
 #' #  plot_n_words_middle = 10,
@@ -1110,7 +1123,7 @@ textCentralityData <- function(words,
 #' @importFrom rlang sym
 #' @export
 textCentralityPlot <- function(word_data,
-                               min_freq_words = 1,
+                               min_freq_words_test = 1,
                                plot_n_word_extreme = 10,
                                plot_n_word_frequency = 10,
                                plot_n_words_middle = 10,
@@ -1141,8 +1154,8 @@ textCentralityPlot <- function(word_data,
   y_axes_label <- NULL
   y_axes_values <- element_blank()
 
-  # Selected min_freq_words
-  word_data <- word_data[word_data$n >= min_freq_words, ]
+  # Selected min_freq_words_test
+  word_data <- word_data[word_data$n >= min_freq_words_test, ]
 
   # Select plot_n_word_extreme and Select plot_n_word_frequency
   word_data_extrem_max_x <- word_data %>%
@@ -1260,7 +1273,12 @@ textCentralityPlot <- function(word_data,
       axis.title.x = ggplot2::element_text(color = titles_color),
       axis.title.y = ggplot2::element_text(color = titles_color)
     )
-  plot
+  final_plot <- plot
+
+  output_plot_data <- list(final_plot, word_data_all)
+  names(output_plot_data) <- c("final_plot", "processed_word_data")
+  output_plot_data
+
 }
 ###### End textCentralityPlot
 
@@ -1343,7 +1361,7 @@ text2DData <- function(words,
 # Example data
 #word_data = df_for_plotting2d[complete.cases(df_for_plotting2d),]
 #word_data = harmonywordsdata #df_for_plotting2d
-#min_freq_words = 2
+#min_freq_words_test = 2
 ##plot_n_words_square = 1
 ##plot_n_words_p = 1
 #plot_n_word_extreme = 10
@@ -1381,7 +1399,7 @@ text2DData <- function(words,
 
 #' Plot words according to Dot Product Projections.
 #' @param word_data Dataframe from textProjectionData
-#' @param min_freq_words Select words to significance test that have occurred at least min_freq_words
+#' @param min_freq_words_test Select words to significance test that have occurred at least min_freq_words_test
 #' (default = 1).
 #' @param plot_n_word_extreme Number of words that are extreme on dot product projection per dimension.
 #' (i.e., even if not significant; per dimensions, where duplicates are removed).
@@ -1420,7 +1438,7 @@ text2DData <- function(words,
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size (default: 7).
 #' @param legend_number_size Font size of the values in the legend (default: 2).
-#' @return A 1- or 2-dimensional word plot.
+#' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot..
 #' @examples
 #' # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 #'
@@ -1440,7 +1458,7 @@ text2DData <- function(words,
 #' @importFrom purrr as_vector
 #' @export
 text2DPlot <- function(word_data,
-                       min_freq_words = 1,
+                       min_freq_words_test = 1,
                        plot_n_word_extreme = 5,
                        plot_n_word_frequency = 5,
                        plot_n_words_middle = 5,
@@ -1480,9 +1498,9 @@ text2DPlot <- function(word_data,
   y_axes_values_hide <- FALSE
 
   ### Selecting words to plot
-  # Select min_freq_words
+  # Select min_freq_words_test
   word_data_original <- word_data
-  word_data <- word_data[word_data$n >= min_freq_words, ]
+  word_data <- word_data[word_data$n >= min_freq_words_test, ]
 
   # Select plot_n_word_extreme and Select plot_n_word_frequency; plot_n_word_extreme=5
   word_data_extrem_max_PC1 <- word_data %>%
@@ -1715,9 +1733,14 @@ text2DPlot <- function(word_data,
   # legend
 
   # Plot both figure and legend together
-  suppressWarnings(cowplot::ggdraw() +
+  final_plot <- suppressWarnings(cowplot::ggdraw() +
                      cowplot::draw_plot(plot, 0, 0, 1, 1) +
                      cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
+
+  output_plot_data <- list(final_plot, word_data_all)
+  names(output_plot_data) <- c("final_plot", "processed_word_data")
+  output_plot_data
+
 }
 
 ###### End textProjectionPlot
@@ -1726,7 +1749,7 @@ text2DPlot <- function(word_data,
 
 
 #text2DPlot(word_data = harmonywordsdata, #df_for_plotting2d, #harmonywordsdata, #df_for_plotting2d,
-#           min_freq_words = 2,
+#           min_freq_words_test = 2,
 #           plot_n_word_extreme = 5,
 #           plot_n_word_frequency = 5,
 #           plot_n_words_middle = 5,

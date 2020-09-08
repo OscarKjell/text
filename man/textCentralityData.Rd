@@ -10,7 +10,7 @@ textCentralityData(
   wordembeddings,
   single_wordembeddings = single_wordembeddings_df,
   aggregation = "mean",
-  min_freq_words = 0
+  min_freq_words_test = 0
 )
 }
 \arguments{
@@ -25,7 +25,7 @@ textCentralityData(
 \item{aggregation}{Method to aggregate the word embeddings
 (default = "mean"; see also "min", "max" or "[CLS]").}
 
-\item{min_freq_words}{Option to  select words that have at least occurred a specified
+\item{min_freq_words_test}{Option to  select words that have at least occurred a specified
 number of times (default = 0); when creating the semantic similarity
 scores within cosine similarity.}
 }
