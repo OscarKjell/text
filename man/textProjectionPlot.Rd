@@ -52,10 +52,12 @@ test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.}
 \item{min_freq_words}{Select words to significance test that have occurred at least min_freq_words
 (default = 1).}
 
-\item{plot_n_words_square}{Select number of significant words in each square of the figure to plot.}
+\item{plot_n_words_square}{Select number of significant words in each square of the figure to plot. The significant
+words, in each square is selected according to most frequent words.}
 
-\item{plot_n_words_p}{Number of significant words to plot (n per x-axes and n per y-axes,
-where duplicates are removed); selects fist according to lowest p-value and then to frequency.}
+\item{plot_n_words_p}{Number of significant words to plot on each(positive and negative) side of the x-axes and y-axes,
+(where duplicates are removed); selects first according to lowest p-value and then according to frequency. Hence, on a two
+dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.}
 
 \item{plot_n_word_extreme}{Number of words that are extreme on dot product projection per dimension.
 (i.e., even if not significant; per dimensions, where duplicates are removed).}
@@ -131,7 +133,7 @@ ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c
 \item{legend_number_size}{Font size of the values in the legend (default: 2).}
 }
 \value{
-A 1- or 2-dimensional word plot.
+A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
 }
 \description{
 Plot words according to Dot Product Projections.

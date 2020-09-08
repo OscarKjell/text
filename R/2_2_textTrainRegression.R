@@ -259,6 +259,8 @@ summarize_tune_results <- function(object, model, eval_measure, penalty, mixture
 # @param outside_strata_y Variable to stratify according (default y; can set to NULL).
 # @param inside_folds Number of folds for the inner folds.
 # @param inside_strata_y Variable to stratify according (default y; can set to NULL).
+#' @param eval_measure Type of evaluative measure to select models from; default "rmse"; at this stage
+#' no other measure is implemented for regression.
 #' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
 #' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function

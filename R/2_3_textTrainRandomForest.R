@@ -43,14 +43,14 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy", holdout_pred 
     eval_measure_val          <- yardstick::f_meas(holdout_pred, truth = y, estimate = .pred_class)
   } else if (eval_measure == "roc_auc"){
     class1_name <- eval(class)
-    eval_measure_val          <- yardstick::roc_auc(holdout_pred, truth = y, all_of(class1_name)) #
+    eval_measure_val          <- yardstick::roc_auc(holdout_pred, truth = y, class1_name) #all_of(class1_name)
   } else if (eval_measure == "rmse"){
     eval_measure_val          <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)
   }
   eval_measure_val
 }
 
-
+help(all_of)
 #  devtools::document()
 #' Select evaluation measure and compute it (also used in logistic regression)
 #'

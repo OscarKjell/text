@@ -18,8 +18,8 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-<!-- [![CRAN Status](https://www.r-pkg.org/badges/version/text)](https://cran.r-project.org/package=text) -->
-[![Github build status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
+<!-- [![CRAN Status](https://www.r-pkg.org/badges/version/text)](https://cran.r-project.org/package=text) 
+[![Github build status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)-->
 [![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?token=IZI3IKCFYA)](https://codecov.io/gh/oscarkjell/text)
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -86,7 +86,7 @@ References <- c("[Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/
 
 Layers <- c("12",
             "12", 
-            "6?",
+            "6",
             "12",
             "24")
 
@@ -98,7 +98,7 @@ Language <- c("English",
 
 Dimensions <- c("768", 
                 "768", 
-                "768?", 
+                "768", 
                 "768", 
                 "1024")
 
@@ -113,11 +113,10 @@ See [HuggingFace's Github](https://github.com/huggingface/transformers) for a mo
 *Text* also provides functions to analyse the word embeddings with well-tested machine learning algorithms and statistics. The focus is to analyze and visualize text, and their relation to other text or numerical variables. An example is functions plotting statistically significant words in the word embedding space.  
 
 ```{r DPP_plot, message=FALSE, warning=FALSE}
-library(text)
+library(text) 
 # Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function; the preprocessed test-data included in the package is called: DP_projections_HILS_SWLS_100
 plot_projection <- textProjectionPlot(
   word_data = DP_projections_HILS_SWLS_100,
-  x_axes = TRUE,
   y_axes = TRUE,
   title_top = " Dot Product Projection (DPP) of Harmony in life words",
   x_axes_label = "Low vs. High HILS score",

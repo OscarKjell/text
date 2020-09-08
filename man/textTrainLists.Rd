@@ -27,6 +27,13 @@ categorical variables.}
 
 \item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
 
+\item{method_cor}{"pearson",}
+
+\item{model}{type of model to use in regression; default is "regression"; see also "logistic".
+(To set different random forest algorithms see extremely_randomised_splitrule parameter in textTrainRandomForest)}
+
+\item{eval_measure}{Type of evaluative measure to assess models on.}
+
 \item{...}{Arguments from textTrainRegression or textTrainRandomForest the textTrain function.}
 }
 \value{

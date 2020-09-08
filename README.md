@@ -7,9 +7,8 @@
 
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-<!-- [![CRAN Status](https://www.r-pkg.org/badges/version/text)](https://cran.r-project.org/package=text) -->
-[![Github build
-status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
+<!-- [![CRAN Status](https://www.r-pkg.org/badges/version/text)](https://cran.r-project.org/package=text) 
+[![Github build status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)-->
 [![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?token=IZI3IKCFYA)](https://codecov.io/gh/oscarkjell/text)
 
 [![Project Status: Active – The project has reached a stable, usable
@@ -85,7 +84,7 @@ multilingual BERT comprises *104 different languages*.
 | :----------------------------- | :--------------------------------------------------------------- | :----- | :--------- | :----------------------------------------------------------------------------------- |
 | ‘bert-base-uncased’            | [Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/) | 12     | 768        | English                                                                              |
 | ‘roberta-base’                 | [Liu et al. 2019](https://arxiv.org/abs/1907.11692)              | 12     | 768        | English                                                                              |
-| ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)            | 6?     | 768?       | English                                                                              |
+| ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)            | 6      | 768        | English                                                                              |
 | ‘bert-base-multilingual-cased’ | [Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/) | 12     | 768        | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
 | ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692.pdf)                | 24     | 1024       | [100 language](https://huggingface.co/transformers/multilingual.html)                |
 
@@ -101,11 +100,10 @@ numerical variables. An example is functions plotting statistically
 significant words in the word embedding space.
 
 ``` r
-library(text)
+library(text) 
 # Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function; the preprocessed test-data included in the package is called: DP_projections_HILS_SWLS_100
 plot_projection <- textProjectionPlot(
   word_data = DP_projections_HILS_SWLS_100,
-  x_axes = TRUE,
   y_axes = TRUE,
   title_top = " Dot Product Projection (DPP) of Harmony in life words",
   x_axes_label = "Low vs. High HILS score",
@@ -114,6 +112,32 @@ plot_projection <- textProjectionPlot(
   position_jitter_width = 0.8
 )
 plot_projection
+#> $final_plot
 ```
 
 <img src="man/figures/README-DPP_plot-1.png" width="100%" />
+
+    #> 
+    #> $processed_word_data
+    #> # A tibble: 583 x 32
+    #>    words    dot.x p_values_dot.x n_g1.x n_g2.x  dot.y p_values_dot.y n_g1.y
+    #>    <chr>    <dbl>          <dbl>  <dbl>  <dbl>  <dbl>          <dbl>  <dbl>
+    #>  1 able   6.86e-1     0.194          NA      1  2.31      0.0123         NA
+    #>  2 acce…  1.52e+0     0.0272         -1      2  1.15      0.0620         -1
+    #>  3 acco…  2.14e+0     0.00856        NA      1  3.51      0.00273        NA
+    #>  4 acti…  1.23e+0     0.0503         NA      1  1.56      0.0361         NA
+    #>  5 adap… -3.87e-4     0.969          -1     NA  0.331     0.476          -1
+    #>  6 admi…  5.14e-1     0.315          NA      1  1.52      0.0398         NA
+    #>  7 adri… -3.79e+0     0.00000100     -1     NA -3.60      0.00000100     -1
+    #>  8 affi…  7.49e-1     0.150          NA      1  2.04      0.0184         NA
+    #>  9 agre…  2.23e+0     0.00626        NA      1  1.69      0.0312         NA
+    #> 10 alco… -5.51e-1     0.318          -1     NA -1.07      0.0605         -1
+    #> # … with 573 more rows, and 24 more variables: n_g2.y <dbl>, n <int>,
+    #> #   n.percent <dbl>, N_participant_responses <int>, adjusted_p_values.x <dbl>,
+    #> #   adjusted_p_values.y <dbl>, square_categories <dbl>, check_p_square <dbl>,
+    #> #   check_p_x_neg <dbl>, check_p_x_pos <dbl>, check_extreme_max_x <dbl>,
+    #> #   check_extreme_min_x <dbl>, check_extreme_frequency_x <dbl>,
+    #> #   check_middle_x <dbl>, extremes_all_x <dbl>, check_p_y_pos <dbl>,
+    #> #   check_p_y_neg <dbl>, check_extreme_max_y <dbl>, check_extreme_min_y <dbl>,
+    #> #   check_extreme_frequency_y <dbl>, check_middle_y <dbl>,
+    #> #   extremes_all_y <dbl>, extremes_all <dbl>, colour_categories <chr>

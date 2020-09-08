@@ -316,6 +316,10 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' categorical variables.
 #' @param force_train_method default is automatic; see also "regression" and "random_forest".
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
+#' @param method_cor  "pearson",
+#' @param model  type of model to use in regression; default is "regression"; see also "logistic".
+#' (To set different random forest algorithms see extremely_randomised_splitrule parameter in textTrainRandomForest)
+#' @param eval_measure  Type of evaluative measure to assess models on.
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples

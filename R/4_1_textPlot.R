@@ -2,7 +2,7 @@
 # # TODO Possibility to set this one? It may be that no words comes within this textCentralitylot
 # Just want to learn why this: # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
 
-words <- c("words", "text", "hello", "-", "-")
+#words <- c("words", "text", "hello", "-", "-")
 #help(as_tibble)
 
 #' Takes all words as input and arrange them in column with an accompanying column with frequency.
@@ -65,19 +65,19 @@ unique_freq_words <- function(words) {
 #' @examples
 #' # Data
 #' wordembeddings <- wordembeddings4
-#' data <- Language_based_assessment_data_8
+#' raw_data <- Language_based_assessment_data_8
 #' # Pre-processing data for plotting
 #' df_for_plotting <- textProjectionData(
-#'   words = data$harmonywords,
+#'   words = raw_data$harmonywords,
 #'   wordembeddings = wordembeddings$harmonywords,
 #'   single_wordembeddings = wordembeddings$singlewords_we,
-#'   x = data$hilstotal,
-#'   split = "median",
+#'   x = raw_data$hilstotal,
+#'   split = "mean",
 #'   Npermutations = 10,
 #'   n_per_split = 1
 #' )
 #' df_for_plotting
-#' @seealso see \code{\link{textProjectionPlot}}
+#'#' @seealso see \code{\link{textProjectionPlot}}
 #' @importFrom tibble as_tibble
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake
 #' @importFrom tidyr uncount

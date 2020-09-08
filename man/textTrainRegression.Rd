@@ -25,6 +25,9 @@ textTrainRegression(
 
 \item{model}{Type of model. Default is "regression"; see also "logistic" for classification.}
 
+\item{eval_measure}{Type of evaluative measure to select models from; default "rmse"; at this stage
+no other measure is implemented for regression.}
+
 \item{preprocess_PCA}{Pre-processing threshold for PCA (to skip this step set it to NA).
 Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 number of components to select (e.g., 10). Default is "min_halving", which is a function
