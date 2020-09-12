@@ -292,12 +292,12 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 
 #x <- wordembeddings4[1]
 #y <- Language_based_assessment_data_8[c(5:6)]
-
+#
 #wordembeddings_list <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/A mindset for Sustainability/Studies/Study 1/1 Sus 1 Analyses/wordembeddings_sus.rda")
 #ratingscales <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/A mindset for Sustainability/Studies/Study 1/1 Sus 1 Analyses/ratingscales.rda")
 #x = wordembeddings_list[1]
 #y = ratingscales
-
+#
 #
 #library(tidyverse)
 #y1 <- as_factor(Language_based_assessment_data_8[8]$gender)
@@ -307,8 +307,10 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #force_train_method = "regression"
 #save_output = "all"
 #method_cor = "pearson"
+#model = "logistic"
 #model = "regression"
 #eval_measure = "rmse"
+#p_adjust_method = "holm"
 #
 #penalty = c(2, 3) #10^seq(-16, 16)
 #rm(penalty)
@@ -361,6 +363,7 @@ textTrainLists <- function(x,
                            method_cor = "pearson",
                            model = "regression",
                            eval_measure = "rmse",
+                           p_adjust_method = "holm",
                            ...) {
 
   # Force or decide regression or random forest (and select only categorical or numeric variables for multiple input).
@@ -416,14 +419,15 @@ textTrainLists <- function(x,
     output <- mapply(textTrainRegression, x, y1, MoreArgs = list(method_cor = method_cor,
                                                                  save_output = save_output,
                                                                  model = model,
-                                                                 eval_measure = eval_measure,
                                                                  ...), SIMPLIFY = FALSE)
      if(model == "regression") {
        results <- sort_regression_output_list(output, method_cor = method_cor, save_output = save_output, descriptions = descriptions)
+
      }else if(model == "logistic"){
        results <- sort_classification_output_list(output=output, save_output = save_output, descriptions = descriptions)
+
      }
-    results
+
 
   } else if (train_method == "random_forest") { #
 
@@ -431,10 +435,13 @@ textTrainLists <- function(x,
     output <- mapply(textTrainRandomForest, x, y1, MoreArgs = list(save_output = save_output, ...), SIMPLIFY = FALSE)
 
     results <- sort_classification_output_list(output=output, save_output = save_output, descriptions = descriptions)
+    results$results$p_value_corrected <- stats::p.adjust(as.numeric(results$results$p_value), method = p_adjust_method)
     # Combine output
-    results #
+     #
 
   }
+  results$results$p_value_corrected <- stats::p.adjust(results$results$p_value, method = p_adjust_method)
+  results
 }
 
 # Regression

@@ -259,8 +259,8 @@ summarize_tune_results <- function(object, model, eval_measure, penalty, mixture
 # @param outside_strata_y Variable to stratify according (default y; can set to NULL).
 # @param inside_folds Number of folds for the inner folds.
 # @param inside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param eval_measure Type of evaluative measure to select models from; default "rmse"; at this stage
-#' no other measure is implemented for regression.
+#' @param eval_measure Type of evaluative measure to select models from; default =  "rmse" for regression and "bal_accuracy"
+#' for logistic.
 #' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
 #' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function
@@ -304,7 +304,7 @@ textTrainRegression <- function(x,
 #                               inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
 #                               inside_strata_y = "y",
                                 model = "regression", # "logistic"
-                                eval_measure = "rmse",
+                                eval_measure = "default",
                                 preprocess_PCA = "min_halving",
                                 penalty = 10^seq(-16, 16),
                                 mixture = c(0),
@@ -313,7 +313,11 @@ textTrainRegression <- function(x,
                                 multi_cores = TRUE,
                                 save_output = "all") {
   set.seed(2020)
-
+  if(model == "regression" & eval_measure == "default"){
+    eval_measure = "rmse"
+  } else if (model == "logistic" & eval_measure == "default"){
+    eval_measure = "bal_accuracy"
+  }
   # In case the embedding is in list form get the tibble form
   if(!tibble::is_tibble(x)){
     x1 <- x[[1]]

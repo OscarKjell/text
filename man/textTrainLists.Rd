@@ -14,6 +14,7 @@ textTrainLists(
   method_cor = "pearson",
   model = "regression",
   eval_measure = "rmse",
+  p_adjust_method = "holm",
   ...
 )
 }

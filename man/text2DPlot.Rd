@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlot.R
 \name{text2DPlot}
 \alias{text2DPlot}
-\title{Plot words according to Dot Product Projections.}
+\title{Plot words according to 2-D plot from 2 PCA components.}
 \usage{
 text2DPlot(
   word_data,
@@ -38,7 +38,7 @@ text2DPlot(
 )
 }
 \arguments{
-\item{word_data}{Dataframe from textProjectionData}
+\item{word_data}{Dataframe from text2DData}
 
 \item{min_freq_words_test}{Select words to significance test that have occurred at least min_freq_words_test
 (default = 1).}
@@ -111,7 +111,7 @@ ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c
 A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot..
 }
 \description{
-Plot words according to Dot Product Projections.
+Plot words according to 2-D plot from 2 PCA components.
 }
 \examples{
 # The test-data included in the package is called: DP_projections_HILS_SWLS_100

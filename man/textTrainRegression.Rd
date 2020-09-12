@@ -8,7 +8,7 @@ textTrainRegression(
   x,
   y,
   model = "regression",
-  eval_measure = "rmse",
+  eval_measure = "default",
   preprocess_PCA = "min_halving",
   penalty = 10^seq(-16, 16),
   mixture = c(0),
@@ -25,8 +25,8 @@ textTrainRegression(
 
 \item{model}{Type of model. Default is "regression"; see also "logistic" for classification.}
 
-\item{eval_measure}{Type of evaluative measure to select models from; default "rmse"; at this stage
-no other measure is implemented for regression.}
+\item{eval_measure}{Type of evaluative measure to select models from; default =  "rmse" for regression and "bal_accuracy"
+for logistic.}
 
 \item{preprocess_PCA}{Pre-processing threshold for PCA (to skip this step set it to NA).
 Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
