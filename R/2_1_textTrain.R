@@ -292,6 +292,12 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 
 #x <- wordembeddings4[1]
 #y <- Language_based_assessment_data_8[c(5:6)]
+
+#wordembeddings_list <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/A mindset for Sustainability/Studies/Study 1/1 Sus 1 Analyses/wordembeddings_sus.rda")
+#ratingscales <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/A mindset for Sustainability/Studies/Study 1/1 Sus 1 Analyses/ratingscales.rda")
+#x = wordembeddings_list[1]
+#y = ratingscales
+
 #
 #library(tidyverse)
 #y1 <- as_factor(Language_based_assessment_data_8[8]$gender)
@@ -301,10 +307,24 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #force_train_method = "regression"
 #save_output = "all"
 #method_cor = "pearson"
-#model = "logistic"
-#eval_measure = "bal_accuracy"
-
-
+#model = "regression"
+#eval_measure = "rmse"
+#
+#penalty = c(2, 3) #10^seq(-16, 16)
+#rm(penalty)
+#
+#
+#output <- textTrainLists(x = wordembeddings4[1],
+#                         y = Language_based_assessment_data_8[c(5:6)],
+#                         model = "regression",
+#                         eval_measure = "rmse",
+#                         preprocess_PCA = "min_halving",
+#                         penalty = 10^seq(-16, 16),
+#                         mixture = c(0),
+#                         method_cor = "pearson",
+#                         model_description = "Consider writing a description of your model here",
+#                         multi_cores = TRUE,
+#                         save_output = "all")
 
 # library(data.table)
 # devtools::document()
@@ -354,7 +374,7 @@ textTrainLists <- function(x,
     train_method = "random_forest"
   } else if ((tibble::is_tibble(y)|is.data.frame(y) & length(y) > 1) & force_train_method == "automatic"){
 
-    # Create a dataframe only depending numeric or categorical depending on most frequent type
+    # Create a dataframe only comprising numeric or categorical depending on most frequent type
     # Select all numeric variables
     y_n <- dplyr::select_if(y, is.numeric)
     # Select all categorical variables
@@ -374,7 +394,7 @@ textTrainLists <- function(x,
     y <- dplyr::select_if(y, is.factor)
     train_method = "random_forest"
   }
-
+  # length(y)
   # Get variable names in the list of outcomes.
   variables <- names(y)
   # Duplicate variable names to as many different word embeddings there are in x.
@@ -389,11 +409,15 @@ textTrainLists <- function(x,
 
   if (train_method == "regression") {
     # Using mapply to loop over the word embeddings and the outcome variables to train the different combinations
+    #output <- mapply(textTrainRegression, x, y1, MoreArgs = list(method_cor = method_cor,
+    #                                                             save_output = save_output,
+    #                                                             model = model,
+    #                                                             eval_measure = eval_measure), SIMPLIFY = FALSE, ...)
     output <- mapply(textTrainRegression, x, y1, MoreArgs = list(method_cor = method_cor,
                                                                  save_output = save_output,
                                                                  model = model,
-                                                                 eval_measure = eval_measure), SIMPLIFY = FALSE, ...)
-
+                                                                 eval_measure = eval_measure,
+                                                                 ...), SIMPLIFY = FALSE)
      if(model == "regression") {
        results <- sort_regression_output_list(output, method_cor = method_cor, save_output = save_output, descriptions = descriptions)
      }else if(model == "logistic"){
@@ -404,7 +428,7 @@ textTrainLists <- function(x,
   } else if (train_method == "random_forest") { #
 
     # Apply textTrainRandomForest function between each list element and sort outcome.
-    output <- mapply(textTrainRandomForest, x, y1, MoreArgs = list(save_output = save_output), SIMPLIFY = FALSE, ...)
+    output <- mapply(textTrainRandomForest, x, y1, MoreArgs = list(save_output = save_output, ...), SIMPLIFY = FALSE)
 
     results <- sort_classification_output_list(output=output, save_output = save_output, descriptions = descriptions)
     # Combine output
@@ -414,26 +438,21 @@ textTrainLists <- function(x,
 }
 
 # Regression
+#wordembeddings_list <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/A mindset for Sustainability/Studies/Study 1/1 Sus 1 Analyses/wordembeddings_sus.rda")
+#ratingscales <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/A mindset for Sustainability/Studies/Study 1/1 Sus 1 Analyses/ratingscales.rda")
+#
 #wordembeddings_list <- wordembeddings4[1:2]
 #ratings_data_list <- Language_based_assessment_data_8[5:6]
-##results <- textTrainLists(wordembeddings, ratings_data)
-#
-#list_restuls <- textTrainLists(x = wordembeddings_list,
-#                               y = ratings_data_list,
-#                               trainMethod = "regression",
-#
-#                               outside_folds = 10,
-#                               outside_strata_y = "y",
-#                               inside_folds = 10,
-#                               inside_strata_y = "y",
-#                               preprocess_PCA = 0.95,
-#                               method_cor = "pearson",
-#                               model_description = "Consider writing a description here",
-#                               multi_cores = TRUE,
-#
-#
-#                               trees = 500)
-
+###results <- textTrainLists(wordembeddings, ratings_data)
+##
+#testing_number_output <- textTrainLists(x = wordembeddings_list[1],
+#                                        y = ratingscales,
+#                                        force_train_method = "automatic",
+#                                        save_output = "all",
+#                                        method_cor = "pearson",
+#                                        model = "regression",
+#                                        eval_measure = "rmse")
+#testing_number_output
 # Random Forest
 ##wordembeddings_list <- wordembeddings4[1:2]
 ##ratings_data_list <- Language_based_assessment_data_8[8]
