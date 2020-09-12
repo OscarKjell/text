@@ -342,6 +342,8 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' @param model  type of model to use in regression; default is "regression"; see also "logistic".
 #' (To set different random forest algorithms see extremely_randomised_splitrule parameter in textTrainRandomForest)
 #' @param eval_measure  Type of evaluative measure to assess models on.
+#' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons
+#' (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples

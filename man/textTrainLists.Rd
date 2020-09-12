@@ -35,6 +35,9 @@ categorical variables.}
 
 \item{eval_measure}{Type of evaluative measure to assess models on.}
 
+\item{p_adjust_method}{Method to adjust/correct p-values for multiple comparisons
+(default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").}
+
 \item{...}{Arguments from textTrainRegression or textTrainRandomForest the textTrain function.}
 }
 \value{
