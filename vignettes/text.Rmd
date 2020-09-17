@@ -78,9 +78,9 @@ textSimilarityTest(wordembeddings4$harmonytexts,
 ```
 
 ## Plot statistically significant words 
-The plotting is made in two steps: First the ```textPlotData()``` function is pre-processing the data, including computing statistics for each word to be plotted. Second, ```textPlotViz()``` is plotting the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made in the first step, the last step goes quicker so that one can try different design settings.   
+The plotting is made in two steps: First the ```textProjection``` function is pre-processing the data, including computing statistics for each word to be plotted. Second, ```textProjectionPlot()``` is visualizing the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made in the first step, the last step goes quicker so that one can try different design settings.   
 
-### textPlotData(): Pre-process data for plotting 
+### textProjection(): Pre-process data for plotting 
 ```{r, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 
@@ -88,7 +88,7 @@ library(text)
 # wordembeddings4 and Language_based_assessment_data_8  contain example data provided with the package.
 
 # Pre-process data
-df_for_plotting <- textPlotData(Language_based_assessment_data_8$harmonywords, 
+df_for_plotting <- textProjection(Language_based_assessment_data_8$harmonywords, 
                                 wordembeddings4$harmonywords,
   wordembeddings4$singlewords_we,
   Language_based_assessment_data_8$hilstotal, Language_based_assessment_data_8$swlstotal
