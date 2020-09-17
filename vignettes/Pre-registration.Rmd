@@ -40,7 +40,7 @@ This is not an exhaustive list; rather think through your analyses as carefully 
 
 * Criteria for plotting (e.g., number of words to significance test, plots etc.)
 
-* Number of permutations (e.g., in textDiff, textProjectionData)  
+* Number of permutations (e.g., in textSimilarityTest, textProjection)  
 
 * Not(ing) change of random seed. In computer science literature it has recently been discussed that different random seeds can give very different results (e.g., see Mosbach et al., 2020). So perhaps even consider pointing out that seeds will not be changed or commit to a specific seed 
 

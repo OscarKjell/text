@@ -95,10 +95,10 @@ wordembeddings <- textEmbed(x = Language_based_assessment_data_8,
 wordembeddings
 ```
 
-The ```textEmbed()``` function is suitable when you are just interested in getting good word embeddings to test some research hypothesis with. That is, the defaults are based on general experience of what works. Under the hood ```textEmbed``` uses one function for retrieving the layers (```textHuggingFace```) and another function for aggregating them (```textLayerAggregation```). So, if you are interested in examining different layers and different aggregation methods it is better to split up the work flow so that you first retrieve all layers (which takes most time) and then test different aggregation methods. 
+The ```textEmbed()``` function is suitable when you are just interested in getting good word embeddings to test some research hypothesis with. That is, the defaults are based on general experience of what works. Under the hood ```textEmbed``` uses one function for retrieving the layers (```textEmbedLayersOutput```) and another function for aggregating them (```textEmbedLayerAggreation```). So, if you are interested in examining different layers and different aggregation methods it is better to split up the work flow so that you first retrieve all layers (which takes most time) and then test different aggregation methods. 
 
-## textHuggingFace: Get tokens and all the layers
-The ```textHuggingFace``` function is used to retrieve the layers of hidden states. 
+## textEmbedLayersOutput: Get tokens and all the layers
+The ```textEmbedLayersOutput``` function is used to retrieve the layers of hidden states. 
 
 ```{r word_embedding_tutorial_b2, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
@@ -107,7 +107,7 @@ library(text)
 
 x <- Language_based_assessment_data_8[1:2, 1:2]
  
-wordembeddings_tokens_layers <- textHuggingFace(x,
+wordembeddings_tokens_layers <- textEmbedLayersOutput(x,
                                                 contexts = TRUE,
                                                 decontexts = FALSE,
                                                 model = 'bert-base-uncased',
@@ -116,24 +116,24 @@ wordembeddings_tokens_layers <- textHuggingFace(x,
 wordembeddings_tokens_layers
 ```
 
-## textLayerAggregation: Testing different layers 
-The output from the ```textLayerAggregation()``` function is the same as that of ```textEmbed()```; but, now you have the possibility to test different ways to aggregate the layers without having to retrieve them from the language model. In ```textLayerAggregation()```, you can select any combination of the layers that you want to aggregate; and then you can select to aggregate them using the mean of the dimensions, the minimum or maximum value.  
+## textEmbedLayerAggreation: Testing different layers 
+The output from the ```textEmbedLayerAggreation()``` function is the same as that of ```textEmbed()```; but, now you have the possibility to test different ways to aggregate the layers without having to retrieve them from the language model. In ```textEmbedLayerAggreation()```, you can select any combination of the layers that you want to aggregate; and then you can select to aggregate them using the mean of the dimensions, the minimum or maximum value.  
 
 ```{r word_embedding_tutorial_b3, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 
 # Aggregating layer 11 and 12 by taking the mean of each dimension. 
-we_11_12_mean <- textLayerAggregation(word_embeddings_layers = wordembeddings_tokens_layers,
+we_11_12_mean <- textEmbedLayerAggreation(word_embeddings_layers = wordembeddings_tokens_layers,
                                       layers = 11:12,
                                       aggregation = "mean")
 
 # Aggregating layer 11 and 12 by taking the minimum of each dimension accross the two layers.
-we_11_12_min <- textLayerAggregation(word_embeddings_layers = wordembeddings_tokens_layers,
+we_11_12_min <- textEmbedLayerAggreation(word_embeddings_layers = wordembeddings_tokens_layers,
                                      layers = 11:12,
                                      aggregation = "min")
 
 # Aggregating layer 1 to 12 by taking the max value of each dimension accross the 12 layers.
-we_1_12_min <- textLayerAggregation(word_embeddings_layers = wordembeddings_tokens_layers,
+we_1_12_min <- textEmbedLayerAggreation(word_embeddings_layers = wordembeddings_tokens_layers,
                                     layers = 1:12,
                                     aggregation = "max")
 we_1_12_min

@@ -18,7 +18,7 @@ Many NLP analyses require a lot of computational resources; but standard sized d
 
 >"was trained on 160 GB of text using 1024 32GB V100. On Amazon-Web-Services cloud computing (AWS), such a pretraining would cost approximately 100K USD." (p. 2)  
 
-Hence, there are a lot of computations behind the word embeddings. In *text*, the most computationally heavy and time consuming elements are the process of retrieving word embeddings using ```textHuggingFace``` (which is also used in ```textEmbed```). Retrieving word embeddings for a standard dataset with a few hundred participants may take between 15 minutes to an hour. Hence, it is worth planning analyses. A few time and resource management advice include: 
+Hence, there are a lot of computations behind the word embeddings. In *text*, the most computationally heavy and time consuming elements are the process of retrieving word embeddings using ```textEmbedLayersOutput``` (which is also used in ```textEmbed```). Retrieving word embeddings for a standard dataset with a few hundred participants may take between 15 minutes to an hour. Hence, it is worth planning analyses. A few time and resource management advice include: 
 
 1. *Testing:* Before you run the analyses on your entire dataset, ensure that everything first runs smoothly on a small part of the data set (e.g., 20 rows of your data). Note that this should not be a process of testing different setting, but only to see that everything works.  
 2. *Timekeeping:* When running different analyses have the computer take time (see code example below), so that you get a better understanding of how long time different analyses take.

@@ -46,7 +46,7 @@ py_config()
 
 
 ## Issue: RStudio craches during textEmbed
-After a new install/update of *text*, RStudio crashed (Abort session) when running functions that fetches word embeddings (i.e., ```textHuggingFace``` or ```textEmbed```). 
+After a new install/update of *text*, RStudio crashed (Abort session) when running functions that fetches word embeddings (i.e., ```textEmbedLayersOutput``` or ```textEmbed```). 
 
 ### Solution: Reinstall reticulate and r-miniconda
 To solve the issue re-install reticulate (development version) and uninstall and install r-miniconda.  
