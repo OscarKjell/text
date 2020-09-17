@@ -20,10 +20,10 @@ skip_if_no_torch <- function() {
   }
 }
 
-test_that("textLayerAggregation 'all': layer =   aggregate_tokens = 'mean' produces aggregated word embeddings", {
+test_that("textEmbedLayerAggreation 'all': layer =   aggregate_tokens = 'mean' produces aggregated word embeddings", {
 
   # skip_on_cran()
-  aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
+  aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
     layers = 0:1,
     aggregate_layers = "mean",
     aggregate_tokens = "mean"
@@ -33,7 +33,7 @@ test_that("textLayerAggregation 'all': layer =   aggregate_tokens = 'mean' produ
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
   length_dims_mean <- length(aggregated_embeddings[[1]])
 
-  aggregated_embeddings_con <- textLayerAggregation(embeddings_from_huggingface2$context,
+  aggregated_embeddings_con <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
                                                 layers = 0:1,
                                                 aggregate_layers = "concatenate",
                                                 aggregate_tokens = "mean"
@@ -44,10 +44,10 @@ test_that("textLayerAggregation 'all': layer =   aggregate_tokens = 'mean' produ
 
 })
 
-#test_that("textLayerAggregation concatenate produces long/aggregated word embeddings", {
+#test_that("textEmbedLayerAggreation concatenate produces long/aggregated word embeddings", {
 
   # skip_on_cran()
-#  aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
+#  aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
 #                                                layers = c(1:2),
 #                                                aggregate_tokens = "concatenate"
 #  )
@@ -59,10 +59,10 @@ test_that("textLayerAggregation 'all': layer =   aggregate_tokens = 'mean' produ
 
 
 
-test_that("textLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
+test_that("textEmbedLayerAggreation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
 
   # skip_on_cran()
-  aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
+  aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
     layers = 1:2,
     aggregate_layers = "concatenate",
     aggregate_tokens = "min",
@@ -73,10 +73,10 @@ test_that("textLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggre
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 })
 
-test_that("textLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
+test_that("textEmbedLayerAggreation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
 
   # skip_on_cran()
-  aggregated_embeddings <- textLayerAggregation(embeddings_from_huggingface2$context,
+  aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
     layers = "all",
     aggregate_tokens = "max",
     tokens_deselect = "[CLS]"
@@ -87,7 +87,7 @@ test_that("textLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces agg
 })
 
 
-test_that("textStaticEmbed with example space", {
+test_that("textEmbedStatic with example space", {
 
   # Create example space
   words <- c("happy", "joy", "smile")
@@ -102,7 +102,7 @@ test_that("textStaticEmbed with example space", {
   tibble_response <- tibble(word_response, rating_response)
   tibble_response
   #Test function
-  test_result <- textStaticEmbed(df=tibble_response, space=test_space, tk_df = "null", aggregate = "mean")
+  test_result <- textEmbedStatic(df=tibble_response, space=test_space, tk_df = "null", aggregate = "mean")
   test_result
   # rlang::last_error()
   expect_is(test_result$word_response[[1]][[1]], "numeric")
@@ -112,7 +112,7 @@ test_that("textStaticEmbed with example space", {
 
 # Potentially below works on GitHUB but not on Mac?
 
-test_that("textHuggingFace contexts=TRUE, decontexts = FALSE returns a list", {
+test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a list", {
   # skip_on_cran()
   # skip_if_no_transformers()
   # skip_if_no_torch
@@ -122,7 +122,7 @@ test_that("textHuggingFace contexts=TRUE, decontexts = FALSE returns a list", {
   text_to_test_import2 <- c("I am happy", "Let us go")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
-  embeddings <- textHuggingFace(x,
+  embeddings <- textEmbedLayersOutput(x,
                                 model="bert-base-multilingual-cased",
                                 contexts = TRUE,
                                 decontexts = FALSE,
@@ -136,7 +136,7 @@ test_that("textHuggingFace contexts=TRUE, decontexts = FALSE returns a list", {
   expect_that(ncol(embeddings[[1]][[1]][[1]]), equals(771))
 })
 
-test_that("textHuggingFace bert-base-multilingual-cased contexts=FALSE, decontexts = TRUE returns a list", {
+test_that("textEmbedLayersOutput bert-base-multilingual-cased contexts=FALSE, decontexts = TRUE returns a list", {
   # skip_on_cran()
   # skip_if_no_transformers()
   # skip_if_no_torch
@@ -146,7 +146,7 @@ test_that("textHuggingFace bert-base-multilingual-cased contexts=FALSE, decontex
   text_to_test_import2 <- c("ön är vacker", "molnen svävar")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
-  embeddings <- textHuggingFace(x,
+  embeddings <- textEmbedLayersOutput(x,
                                 model = "bert-base-multilingual-uncased",
                                 contexts = FALSE,
                                 decontexts = TRUE,

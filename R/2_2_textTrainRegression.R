@@ -252,7 +252,7 @@ summarize_tune_results <- function(object, model, eval_measure, penalty, mixture
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
-#' @param x Word embeddings from textEmbed (or textLayerAggregation).
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation).
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 # @param outside_folds Number of folds for the outer folds.
@@ -285,8 +285,8 @@ summarize_tune_results <- function(object, model, eval_measure, penalty, mixture
 #' ratings_data$hilstotal,
 #' multi_cores = FALSE #this is set to FALSE due to CRAN testing.
 #' )
-#' @seealso see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+#' @seealso see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}
+#' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 #' @importFrom stats cor.test na.omit lm
 #' @importFrom dplyr select starts_with filter
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors

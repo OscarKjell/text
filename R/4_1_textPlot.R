@@ -12,7 +12,7 @@
 #' @noRd
 unique_freq_words <- function(words) {
   words_group1 <- data.frame(unlist(strsplit(tolower(words), " ")))
-  # Remove empty cells (otherwise all words are put within " ", which create problems in getUniqueWordsAndFreq or textCentralityData)
+  # Remove empty cells (otherwise all words are put within " ", which create problems in getUniqueWordsAndFreq or textCentrality)
   words_group <- words_group1[words_group1 != ""]
   words_group <- as.character(words_group)
   words_groupb <- tibble::as_tibble(words_group)
@@ -67,7 +67,7 @@ unique_freq_words <- function(words) {
 #' wordembeddings <- wordembeddings4
 #' raw_data <- Language_based_assessment_data_8
 #' # Pre-processing data for plotting
-#' df_for_plotting <- textProjectionData(
+#' df_for_plotting <- textProjection(
 #'   words = raw_data$harmonywords,
 #'   wordembeddings = wordembeddings$harmonywords,
 #'   single_wordembeddings = wordembeddings$singlewords_we,
@@ -85,7 +85,7 @@ unique_freq_words <- function(words) {
 #' @importFrom stats median sd setNames complete.cases
 #' @importFrom purrr as_vector
 #' @export
-textProjectionData <- function(words,
+textProjection <- function(words,
                                wordembeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
                                single_wordembeddings = single_wordembeddings_df,
                                x,
@@ -353,7 +353,7 @@ textProjectionData <- function(words,
   }
   return(word_data_tibble)
 }
-#### End textProjectionData
+#### End textProjection
 #############
 
 #library(tidyverse)
@@ -402,7 +402,7 @@ textProjectionData <- function(words,
 #legend_number_size = 2
 
 #' Plot words according to Dot Product Projections.
-#' @param word_data Dataframe from textProjectionData
+#' @param word_data Dataframe from textProjection
 #' @param k_n_words_to_test Select the k most frequent words to significance
 #' test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.
 #' @param min_freq_words_test Select words to significance test that have occurred at least min_freq_words_test
@@ -423,7 +423,7 @@ textProjectionData <- function(words,
 #' @param titles_color Color for all the titles (default: "#61605e")
 # @param x_axes If TRUE, plotting on the x_axes.
 #' @param y_axes If TRUE, also plotting on the y-axes (default is FALSE). Also plotting on
-#' y-axes produces a two dimension 2-dimensional plot, but the textProjectionData function has to
+#' y-axes produces a two dimension 2-dimensional plot, but the textProjection function has to
 #' have had a variable on the y-axes.
 #' @param p_alpha Alpha (default = .05).
 #' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons
@@ -482,7 +482,7 @@ textProjectionData <- function(words,
 #' plot_projection
 #'
 #' names(DP_projections_HILS_SWLS_100)
-#' @seealso see \code{\link{textProjectionData}}
+#' @seealso see \code{\link{textProjection}}
 #' @importFrom tibble as_tibble tibble
 #' @importFrom dplyr row_number slice mutate mutate_if bind_rows group_by summarize left_join %>%
 #' @importFrom tidyr gather separate
@@ -1012,17 +1012,17 @@ textProjectionPlot <- function(word_data,
 #' @examples
 #' wordembeddings <- wordembeddings4
 #' data <- Language_based_assessment_data_8
-#' df_for_plotting <- textCentralityData(
+#' df_for_plotting <- textCentrality(
 #'   data$harmonywords,
 #'   wordembeddings$harmonywords,
 #'   wordembeddings$singlewords_we
 #' )
 #' df_for_plotting
-#' @seealso see \code{\link{textCentralityPlot}}  \code{\link{textProjectionData}}
+#' @seealso see \code{\link{textCentralityPlot}}  \code{\link{textProjection}}
 #' @importFrom dplyr bind_rows
 #' @importFrom tibble tibble
 #' @export
-textCentralityData <- function(words,
+textCentrality <- function(words,
                                wordembeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
                                single_wordembeddings = single_wordembeddings_df,
                                aggregation = "mean",
@@ -1092,7 +1092,7 @@ textCentralityData <- function(words,
 #' @param legend_number_size Font size of the values in the legend (default = 2).
 #' @return A 1-dimensional word plot based on cosine similarity to the aggregated word embedding,
 #'as well as tibble with processed data used to plot..
-#' @seealso see \code{\link{textCentralityData}} and \code{\link{textProjectionData}}
+#' @seealso see \code{\link{textCentrality}} and \code{\link{textProjection}}
 #' @examples
 #' # The test-data included in the package is called: centrality_data_harmony
 #' names(centrality_data_harmony)
@@ -1134,7 +1134,7 @@ textCentralityPlot <- function(word_data,
                                scale_x_axes_lim = NULL,
                                scale_y_axes_lim = NULL,
                                word_font = NULL,
-                               centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#000000"),
+                               centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d"),
                                word_size_range = c(3, 8),
                                position_jitter_hight = .0,
                                position_jitter_width = .03,
@@ -1288,7 +1288,7 @@ textCentralityPlot <- function(word_data,
 ####################################
 ####################################
 ##################
-##################   text2DData and text2DPlot
+##################   textPCA and text2DPlot
 ##################
 ####################################
 ####################################
@@ -1300,7 +1300,7 @@ textCentralityPlot <- function(word_data,
 #words <- Language_based_assessment_data_8$harmonywords
 #
 #
-#df_for_plotting2d <- text2dData(words = Language_based_assessment_data_8$harmonywords,
+#df_for_plotting2d <- textPCA(words = Language_based_assessment_data_8$harmonywords,
 #                              single_wordembeddings =  wordembeddings4$singlewords_we)
 
 
@@ -1312,14 +1312,14 @@ textCentralityPlot <- function(word_data,
 #' for the individual words that is used for the plotting in the text2dPlot function.
 #' @examples
 #' # Data
-#' df_for_plotting2d <- text2DData(words = Language_based_assessment_data_8$harmonywords,
+#' df_for_plotting2d <- textPCA(words = Language_based_assessment_data_8$harmonywords,
 #'                                 single_wordembeddings =  wordembeddings4$singlewords_we)
 #' df_for_plotting2d
 #' @seealso see \code{\link{textProjectionPlot}}
 #' @importFrom tibble as_tibble
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake
 #' @export
-text2DData <- function(words,
+textPCA <- function(words,
                        single_wordembeddings = single_wordembeddings_df) {
   set.seed(2020)
   # PCA on single_wordembeddings
@@ -1346,7 +1346,7 @@ text2DData <- function(words,
   outpudata
 }
 
-#df_for_plotting2d <- text2DData(words = Language_based_assessment_data_8$harmonywords,
+#df_for_plotting2d <- textPCA(words = Language_based_assessment_data_8$harmonywords,
 #                                single_wordembeddings =  wordembeddings4$singlewords_we)
 
 
@@ -1354,7 +1354,7 @@ text2DData <- function(words,
 #satisfactionwords <- tibble::as_tibble_col(Language_based_assessment_data_8$satisfactionwords)
 #wordembeddings_satisfactionwords <- textEmbed(satisfactionwords)
 ##
-#satisfactionwords <- text2DData(words = Language_based_assessment_data_8$satisfactionwords,
+#satisfactionwords <- textPCA(words = Language_based_assessment_data_8$satisfactionwords,
 #                               single_wordembeddings = wordembeddings_satisfactionwords$singlewords_we)
 #satisfactionwords
 
@@ -1398,7 +1398,7 @@ text2DData <- function(words,
 
 
 #' Plot words according to 2-D plot from 2 PCA components.
-#' @param word_data Dataframe from text2DData
+#' @param word_data Dataframe from textPCA
 #' @param min_freq_words_test Select words to significance test that have occurred at least min_freq_words_test
 #' (default = 1).
 #' @param plot_n_word_extreme Number of words that are extreme on dot product projection per dimension.
@@ -1447,7 +1447,7 @@ text2DData <- function(words,
 #' principle_component_plot_projection
 #'
 #' names(DP_projections_HILS_SWLS_100)
-#' @seealso see \code{\link{textProjectionData}}
+#' @seealso see \code{\link{textProjection}}
 #' @importFrom tibble as_tibble tibble
 #' @importFrom dplyr row_number slice mutate mutate_if bind_rows group_by summarize left_join %>%
 #' @importFrom tidyr gather separate
@@ -1660,7 +1660,7 @@ text2DPlot <- function(word_data,
     )
   plot
 
-  # Creating legend
+  # Creating legend DONT HARD CODE COLOURS!!! TODO
   bivariate_color_data <- tibble::tibble(
     "1 - 3" = "#0078FF", "2 - 3" = "blue",    "3 - 3" = "#49FF00",
     "1 - 2" = "#8700FF", "2 - 2" = "#B8B8B8", "3 - 2" = "#34AC04",

@@ -398,7 +398,7 @@ summarize_tune_results_rf <- function(object,
 #'                                  min_n = c(1),       # this is short because of testing
 #'                                  multi_cores = FALSE # This is FALSE due to CRAN testing.
 #' )
-#' @seealso see \code{\link{textTrainLists}} \code{\link{textDiff}}
+#' @seealso see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
 #' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
 #' @importFrom dplyr select starts_with filter arrange rename
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca

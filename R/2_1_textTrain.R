@@ -84,7 +84,7 @@
 # devtools::document()
 #' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 #'
-#' @param x Word embeddings from textEmbed (or textLayerAggregation). Can analyze several variables at the same time; but if training to several
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation). Can analyze several variables at the same time; but if training to several
 #' outcomes at the same time use a tibble within the list as input rather than just a tibble input (i.e., keep the name of the wordembedding).
 #' @param y Numeric variable to predict. Can be several; although then make sure to have them within a tibble (this is required
 #' even if it is only one outcome but several word embeddings variables).
@@ -101,7 +101,7 @@
 #'                      multi_cores = FALSE
 #' )
 #' @seealso \code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
-#' \code{\link{textTrainLists}} \code{\link{textDiff}}
+#' \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
 #' @export
 textTrain <- function(x,
                       y,
@@ -333,7 +333,7 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
 #' to have  word embeddings from one text variable and several numeric/categprical variables; or vice verse, word embeddings from
 #' several text variables to one numeric/categorical variable. It is not possible to mix numeric and categorical variables.
-#' @param x Word embeddings from textEmbed (or textLayerAggregation).
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation).
 #' @param y Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
 #' categorical variables.
 #' @param force_train_method default is automatic; see also "regression" and "random_forest".
@@ -502,8 +502,8 @@ textTrainLists <- function(x,
 #' wordembeddings <- wordembeddings4
 #' ratings_data <- Language_based_assessment_data_8
 #'
-#' @seealso see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+#' @seealso see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}
+#' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 #' @importFrom recipes prep bake
 #' @importFrom stats predict
 #' @export

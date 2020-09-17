@@ -34,7 +34,7 @@
 "Language_based_assessment_data_3_100"
 
 
-#' Word embeddings from textHuggingFace function
+#' Word embeddings from textEmbedLayersOutput function
 #'
 #' The dataset is a shortened version of the data sets of Study 3-5
 #' from Kjell, Kjell, Garcia and Sikström 2018.
@@ -70,7 +70,7 @@
 
 #' Data for plotting a Dot Product Projection Plot.
 #'
-#' Tibble is the output from textProjectionData.
+#' Tibble is the output from textProjection.
 #' The dataset is a shortened version of the data sets of Study 3-5
 #' from Kjell, Kjell, Garcia and Sikström 2018.
 #'

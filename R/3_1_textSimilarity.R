@@ -19,7 +19,7 @@ cosines <- function(x, y) {
 #' library(dplyr)
 #' wordembeddings <- wordembeddings4
 #' similiarty_scores <- textSimilarity(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
-#' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textDiff}}
+#' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 #' @export
 textSimilarity <- function(x, y) {
   # Select necessary columns
@@ -50,7 +50,7 @@ textSimilarity <- function(x, y) {
 #'   wordembeddings_wordnorm$harmonynorm
 #' )
 #' }
-#' @seealso see \code{\link{textSimilarity}} and \code{\link{textDiff}}
+#' @seealso see \code{\link{textSimilarity}} and \code{\link{textSimilarityTest}}
 #' @importFrom dplyr row_number slice select starts_with
 #' @export
 textSimilarityNorm <- function(x, y) {

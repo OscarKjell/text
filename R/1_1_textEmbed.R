@@ -1,6 +1,6 @@
 
 # x <- Language_based_assessment_data_8[1:2, 1:2]
-# wordembeddings <- textHuggingFace(x, layers = "all")  help(eval) help(deparse) help(enc2utf8)
+# wordembeddings <- textEmbedLayersOutput(x, layers = "all")  help(eval) help(deparse) help(enc2utf8)
 
 
 #x <- c("hello how are you my fiancé")
@@ -45,7 +45,7 @@ select_character_v_utf8 <- function(x) {
   # If a vector is submitted, make it a tibble column.
   if(is.vector(x) == TRUE & is.list(x)==FALSE){
     #Select variable name to have as column name in the end
-    colname_x <- deparse(substitute(Language_based_assessment_data_8$harmonywords))
+    colname_x <- deparse(substitute(x)) #Language_based_assessment_data_8$harmonywords
     #Remove everything before a $
     colname_x <- gsub("^.*\\$", "", colname_x) #gsub(".*_", "", colname_x)
 
@@ -143,8 +143,8 @@ getUniqueWordsAndFreq <- function(x_characters) {
 
 #' This is a function that sorts out (i.e., tidy) the embeddings from the huggingface interface.
 #' @param x list of layers.
-#' @param layers the number of layers to get (setting comes from textHuggingFace).
-#' @param return_tokens bolean whether tokens have been returned (setting comes from textHuggingFace).
+#' @param layers the number of layers to get (setting comes from textEmbedLayersOutput).
+#' @param return_tokens bolean whether tokens have been returned (setting comes from textEmbedLayersOutput).
 #' @return Layers in tidy tibble format with each dimension column called Dim1, Dim2 etc.
 #' @noRd
 sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
@@ -261,22 +261,22 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient
 #' to only extract the layers that you need (e.g., 11:12). You can also extract all by setting this
 #' parameter to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
-#' and thus should normally not be used. These layers can then be aggregated in the textLayerAggregation function.
+#' and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggreation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
 #' @return A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
 #' input embedding to the transformer, and should normally not be used.
 #' @examples
 #' \dontrun{
 #' x <- Language_based_assessment_data_8[1:2, 1:2]
-#' word_embeddings_with_layers <- textHuggingFace(x, layers = 11:12)
+#' word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
 #' }
-#' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textEmbed}}
+#' @seealso see \code{\link{textEmbedLayerAggreation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python
 #' @importFrom dplyr %>% bind_rows
 #' @importFrom tibble tibble as_tibble
 #' @importFrom magrittr set_colnames
 #' @export
-textHuggingFace <- function(x,
+textEmbedLayersOutput <- function(x,
                             contexts = TRUE,
                             decontexts = TRUE,
                             model = "bert-base-uncased",
@@ -425,7 +425,7 @@ textHuggingFace <- function(x,
 # word_embeddings_layers <- word_embeddings_with_layers$context$harmonywords
 
 #' Select and aggregate layers of hidden states to form a word embeddings.
-#' @param word_embeddings_layers Layers outputted from textHuggingFace.
+#' @param word_embeddings_layers Layers outputted from textEmbedLayersOutput.
 #' @param layers The numbers of the layers to be aggregated
 #' (e.g., c(11:12) to aggregate the eleventh and twelfth).
 #' Note that layer 0 is the input embedding to the transformer, and should normally not be used.
@@ -444,12 +444,12 @@ textHuggingFace <- function(x,
 #' the transformer, which is normally not used.
 #' @examples
 #' \dontrun{
-#' wordembeddings <- textLayerAggregation(word_embeddings_layers)
+#' wordembeddings <- textEmbedLayerAggreation(word_embeddings_layers)
 #' }
-#' @seealso see \code{\link{textHuggingFace}} and \code{\link{textEmbed}}
+#' @seealso see \code{\link{textEmbedLayersOutput}} and \code{\link{textEmbed}}
 #' @importFrom dplyr %>% bind_rows
 #' @export
-textLayerAggregation <- function(word_embeddings_layers,
+textEmbedLayerAggreation <- function(word_embeddings_layers,
                                  layers = 11:12,
                                  aggregate_layers = "concatenate",
                                  aggregate_tokens = "mean",
@@ -517,7 +517,7 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient to
 #' only extract the layers that you need (e.g., 12).
 #' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
-#' These layers can then be aggregated in the textLayerAggregation function. If you want all layers then use 'all'.
+#' These layers can then be aggregated in the textEmbedLayerAggreation function. If you want all layers then use 'all'.
 #' @param pretrained_weights advanced parameter submitted to the HuggingFace interface to get models not yet officially
 #' incorporated into text. Default = NULL. for details see https://huggingface.co/.
 #' @param tokenizer_class advanced parameter submitted to the HuggingFace interface to get
@@ -559,7 +559,7 @@ textLayerAggregation <- function(word_embeddings_layers,
 #' # Example 1
 #' wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 #' }
-#' @seealso see \code{\link{textLayerAggregation}} and \code{\link{textHuggingFace}}
+#' @seealso see \code{\link{textEmbedLayerAggreation}} and \code{\link{textEmbedLayersOutput}}
 #' @export
 textEmbed <- function(x,
                       model = "bert-base-uncased",
@@ -583,7 +583,7 @@ textEmbed <- function(x,
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
 
   # Get hidden states/layers for all text; both context and decontext
-  all_wanted_layers <- textHuggingFace(x,
+  all_wanted_layers <- textEmbedLayersOutput(x,
     contexts = contexts,
     decontexts = decontexts,
     model = model,
@@ -595,7 +595,7 @@ textEmbed <- function(x,
   )
 
   # Aggregate context layers
-  contextualised_embeddings <- textLayerAggregation(
+  contextualised_embeddings <- textEmbedLayerAggreation(
     word_embeddings_layers = all_wanted_layers$context,
     layers = context_layers,
     aggregate_layers = context_aggregation_layers,
@@ -604,7 +604,7 @@ textEmbed <- function(x,
   )
 
   # Aggregate DEcontext layers (in case they should be added differently from context)
-  decontextualised_embeddings <- textLayerAggregation(
+  decontextualised_embeddings <- textEmbedLayerAggreation(
     word_embeddings_layers = all_wanted_layers$decontext$single_we,
     layers = decontext_layers,
     aggregate_layers = decontext_aggregation_layers,

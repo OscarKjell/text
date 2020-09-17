@@ -94,7 +94,7 @@ applysemrep <- function(x, single_wordembeddings1 = single_wordembeddings2) {
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr select_if bind_cols
 #' @export
-textStaticEmbed <- function(df, space, tk_df = "null", aggregate = "mean") {
+textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean") {
 
   # Select the tk or dk matrrix derived from the lsa (svd)
   if(tk_df == "tk") {

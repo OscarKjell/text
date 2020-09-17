@@ -12,11 +12,11 @@
 #' @examples
 #' x <- wordembeddings4$harmonywords
 #' y <- wordembeddings4$satisfactionwords
-#' textDiff(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1)
+#' textSimilarityTest(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1)
 #' @importFrom dplyr select starts_with
 #' @importFrom parallel splitIndices mclapply
 #' @export
-textDiff <- function(x,
+textSimilarityTest <- function(x,
                      y,
                      Npermutations = 1000,
                      method = "paired",
@@ -25,7 +25,7 @@ textDiff <- function(x,
                      N_cluster_nodes = 1) {
   set.seed(2020)
   if ((nrow(x) != nrow(y))) {
-    stop("x and y must have the same number of rows for a paired textDiff test.")
+    stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
   }
   alternative <- match.arg(alternative)
   results <- c("estimate" = NA, "p.value" = NA)
