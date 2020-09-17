@@ -9,7 +9,7 @@ context("Big analyses flow")
 
 test_that("Testing textEmbed as well as train", {
 
-  harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8$harmonywords,
+  harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1],
                                        model = "bert-base-uncased",
                                        layers=11)
 
