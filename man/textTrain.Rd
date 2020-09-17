@@ -7,7 +7,7 @@
 textTrain(x, y, force_train_method = "automatic", ...)
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textLayerAggregation). Can analyze several variables at the same time; but if training to several
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation). Can analyze several variables at the same time; but if training to several
 outcomes at the same time use a tibble within the list as input rather than just a tibble input (i.e., keep the name of the wordembedding).}
 
 \item{y}{Numeric variable to predict. Can be several; although then make sure to have them within a tibble (this is required
@@ -35,5 +35,5 @@ results <- textTrain(wordembeddings$harmonytext,
 }
 \seealso{
 \code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
-\code{\link{textTrainLists}} \code{\link{textDiff}}
+\code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
 }

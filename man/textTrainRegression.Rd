@@ -19,7 +19,7 @@ textTrainRegression(
 )
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textLayerAggregation).}
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation).}
 
 \item{y}{Numeric variable to predict.}
 
@@ -66,6 +66,6 @@ multi_cores = FALSE #this is set to FALSE due to CRAN testing.
 )
 }
 \seealso{
-see \code{\link{textLayerAggregation}} \code{\link{textTrainLists}}
-\code{\link{textTrainRandomForest}} \code{\link{textDiff}}
+see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}
+\code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 }

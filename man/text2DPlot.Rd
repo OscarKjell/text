@@ -38,7 +38,7 @@ text2DPlot(
 )
 }
 \arguments{
-\item{word_data}{Dataframe from text2DData}
+\item{word_data}{Dataframe from textPCA}
 
 \item{min_freq_words_test}{Select words to significance test that have occurred at least min_freq_words_test
 (default = 1).}
@@ -123,5 +123,5 @@ principle_component_plot_projection
 names(DP_projections_HILS_SWLS_100)
 }
 \seealso{
-see \code{\link{textProjectionData}}
+see \code{\link{textProjection}}
 }

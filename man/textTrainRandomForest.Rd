@@ -71,5 +71,5 @@ results <- textTrainRandomForest(wordembeddings$harmonywords,
 )
 }
 \seealso{
-see \code{\link{textTrainLists}} \code{\link{textDiff}}
+see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
 }

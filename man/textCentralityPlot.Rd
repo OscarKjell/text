@@ -17,7 +17,7 @@ textCentralityPlot(
   scale_x_axes_lim = NULL,
   scale_y_axes_lim = NULL,
   word_font = NULL,
-  centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#000000"),
+  centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d"),
   word_size_range = c(3, 8),
   position_jitter_hight = 0,
   position_jitter_width = 0.03,
@@ -138,5 +138,5 @@ names(centrality_data_harmony)
 # centrality_plot
 }
 \seealso{
-see \code{\link{textCentralityData}} and \code{\link{textProjectionData}}
+see \code{\link{textCentrality}} and \code{\link{textProjection}}
 }

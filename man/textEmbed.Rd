@@ -36,7 +36,7 @@ specify pretrained_weights, tokenizer_class and model_class.}
 \item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient to
 only extract the layers that you need (e.g., 12).
 Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
-These layers can then be aggregated in the textLayerAggregation function. If you want all layers then use 'all'.}
+These layers can then be aggregated in the textEmbedLayerAggreation function. If you want all layers then use 'all'.}
 
 \item{pretrained_weights}{advanced parameter submitted to the HuggingFace interface to get models not yet officially
 incorporated into text. Default = NULL. for details see https://huggingface.co/.}
@@ -105,5 +105,5 @@ wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext
 }
 }
 \seealso{
-see \code{\link{textLayerAggregation}} and \code{\link{textHuggingFace}}
+see \code{\link{textEmbedLayerAggreation}} and \code{\link{textEmbedLayersOutput}}
 }

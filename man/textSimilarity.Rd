@@ -23,5 +23,5 @@ wordembeddings <- wordembeddings4
 similiarty_scores <- textSimilarity(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
 }
 \seealso{
-see \code{\link{textSimilarityNorm}} and \code{\link{textDiff}}
+see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 }

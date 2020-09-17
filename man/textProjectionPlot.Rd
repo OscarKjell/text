@@ -45,7 +45,7 @@ textProjectionPlot(
 )
 }
 \arguments{
-\item{word_data}{Dataframe from textProjectionData}
+\item{word_data}{Dataframe from textProjection}
 
 \item{k_n_words_to_test}{Select the k most frequent words to significance
 test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.}
@@ -74,7 +74,7 @@ dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.}
 \item{titles_color}{Color for all the titles (default: "#61605e")}
 
 \item{y_axes}{If TRUE, also plotting on the y-axes (default is FALSE). Also plotting on
-y-axes produces a two dimension 2-dimensional plot, but the textProjectionData function has to
+y-axes produces a two dimension 2-dimensional plot, but the textProjection function has to
 have had a variable on the y-axes.}
 
 \item{p_alpha}{Alpha (default = .05).}
@@ -167,5 +167,5 @@ plot_projection
 names(DP_projections_HILS_SWLS_100)
 }
 \seealso{
-see \code{\link{textProjectionData}}
+see \code{\link{textProjection}}
 }

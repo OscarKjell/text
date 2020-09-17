@@ -3,7 +3,7 @@
 \docType{data}
 \name{embeddings_from_huggingface2}
 \alias{embeddings_from_huggingface2}
-\title{Word embeddings from textHuggingFace function}
+\title{Word embeddings from textEmbedLayersOutput function}
 \format{
 A list with word embeddings for harmony words for only contexts. BERT-base embeddings based on
 mean aggregation of layer 1 and 2.

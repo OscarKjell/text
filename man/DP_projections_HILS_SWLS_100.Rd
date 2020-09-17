@@ -29,7 +29,7 @@ A data frame with 583 rows and 12 variables:
 DP_projections_HILS_SWLS_100
 }
 \description{
-Tibble is the output from textProjectionData.
+Tibble is the output from textProjection.
 The dataset is a shortened version of the data sets of Study 3-5
 from Kjell, Kjell, Garcia and Sikström 2018.
 }
