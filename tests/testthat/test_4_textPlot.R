@@ -188,7 +188,7 @@ test_that("textCentralityPlot produces a plot.", {
 
   # Plot
 
-  principle_component_plot_projection <- text2DPlot(PC_projections_satisfactionwords_40)
+  principle_component_plot_projection <- textPCAPlot(PC_projections_satisfactionwords_40)
   #principle_component_plot_projection
 
   expect_true(ggplot2::is.ggplot(principle_component_plot_projection$final_plot))
