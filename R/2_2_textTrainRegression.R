@@ -305,7 +305,7 @@ textTrainRegression <- function(x,
 #                               inside_strata_y = "y",
                                 model = "regression", # "logistic"
                                 eval_measure = "default",
-                                preprocess_PCA = "min_halving",
+                                preprocess_PCA = NA,
                                 penalty = 10^seq(-16, 16),
                                 mixture = c(0),
                                 method_cor = "pearson",
@@ -341,7 +341,7 @@ textTrainRegression <- function(x,
   xy <- cbind(x2, y)
   xy <- tibble::as_tibble(xy)
   results_nested_resampling <- rsample::nested_cv(xy,
-                                                  outside = rsample::vfold_cv(v = 10, #outside_folds,
+                                                  outside = rsample::vfold_cv(v = 2, #outside_folds,
                                                                               repeats = 1,
                                                                               strata = NULL,
                                                                               breaks = 2), #outside_strata_y

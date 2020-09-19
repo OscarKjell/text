@@ -8,11 +8,11 @@
 #' @param alternative Use a two or one-sided test (select one of: "two_sided", "less", "greater").
 #' @param output.permutations If TRUE, returns permuted values in output.
 #' @param N_cluster_nodes Number of cluster nodes to use (more makes computation faster; see parallel package).
-#' @return A list with a p-value, estimate and permuted values if output.permutations=TRUE.
+#' @return A list with a p-value, cosine_estimate and permuted values if output.permutations=TRUE.
 #' @examples
 #' x <- wordembeddings4$harmonywords
 #' y <- wordembeddings4$satisfactionwords
-#' textSimilarityTest(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1)
+#' textSimilarityTest(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1, alternative = "two_sided")
 #' @importFrom dplyr select starts_with
 #' @importFrom parallel splitIndices mclapply
 #' @export
@@ -28,7 +28,7 @@ textSimilarityTest <- function(x,
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
   }
   alternative <- match.arg(alternative)
-  results <- c("estimate" = NA, "p.value" = NA)
+  results <- c("cosine_estimate" = NA, "p.value" = NA)
 
   # Select variables beginning with V
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
@@ -38,7 +38,7 @@ textSimilarityTest <- function(x,
     # Compute cosine between all pairs
     cosine_observed <- cosines(x1, y1)
     # Compute the data's mean of the cosine
-    results["estimate"] <- mean(abs(cosine_observed))
+    results["cosine_estimate"] <- mean(abs(cosine_observed))
   }
 
   if (method == "unpaired") {
@@ -53,7 +53,7 @@ textSimilarityTest <- function(x,
     cosine_observed <- cosines(X_all, Y_all)
 
     # Compute the data's mean of the cosine
-    results["estimate"] <- mean(abs(cosine_observed))
+    results["cosine_estimate"] <- mean(abs(cosine_observed))
   }
 
   ### Compute comparison distribution of cosine based on randomly drawn word embeddings from both groups
@@ -95,12 +95,14 @@ textSimilarityTest <- function(x,
   NULLresults <- unlist(distribution_mean_cosine_permutated)
 
   # Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution
-  p_value <- p_value_comparing_with_Null(NULLresults, Observedresults = results["estimate"], Npermutations = Npermutations, alternative = alternative)
+  p_value <- p_value_comparing_with_Null(NULLresults, Observedresults = results["cosine_estimate"], Npermutations = Npermutations, alternative = alternative)
   results["p.value"] <- p_value
   results <- as.list(results)
 
   if (output.permutations) {
-    results <- c(list("random.estimates.4.null" = NULLresults, results))
-    results
+    random.estimates.4.null <- list(NULLresults)
+    names(random.estimates.4.null) <- "random.estimates.4.null"
+    results <- c(random.estimates.4.null, results)
   }
+  results
 }

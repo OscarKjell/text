@@ -31,7 +31,7 @@ textSimilarityTest(
 \item{N_cluster_nodes}{Number of cluster nodes to use (more makes computation faster; see parallel package).}
 }
 \value{
-A list with a p-value, estimate and permuted values if output.permutations=TRUE.
+A list with a p-value, cosine_estimate and permuted values if output.permutations=TRUE.
 }
 \description{
 Test whether there is a significant difference in meaning between two sets of texts
@@ -40,5 +40,5 @@ Test whether there is a significant difference in meaning between two sets of te
 \examples{
 x <- wordembeddings4$harmonywords
 y <- wordembeddings4$satisfactionwords
-textSimilarityTest(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1)
+textSimilarityTest(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1, alternative = "two_sided")
 }

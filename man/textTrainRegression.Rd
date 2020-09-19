@@ -9,7 +9,7 @@ textTrainRegression(
   y,
   model = "regression",
   eval_measure = "default",
-  preprocess_PCA = "min_halving",
+  preprocess_PCA = NA,
   penalty = 10^seq(-16, 16),
   mixture = c(0),
   method_cor = "pearson",

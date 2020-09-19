@@ -81,6 +81,10 @@
 #
 #textTrain(x, y)
 
+#x <- wordembeddings$satisfactiontexts
+#y <- Language_based_assessment_data_8$swlstotal
+
+
 # devtools::document()
 #' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 #'

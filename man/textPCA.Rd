@@ -14,7 +14,7 @@ textPCA(words, single_wordembeddings = single_wordembeddings_df)
 }
 \value{
 A dataframe with words, their frquency and two PCA dimensions from the wordembeddings
-for the individual words that is used for the plotting in the text2dPlot function.
+for the individual words that is used for the plotting in the textPCAPlot function.
 }
 \description{
 Compute 2 PCA dimensions of the word embeddings for individual words.
@@ -26,5 +26,5 @@ df_for_plotting2d <- textPCA(words = Language_based_assessment_data_8$harmonywor
 df_for_plotting2d
 }
 \seealso{
-see \code{\link{textProjectionPlot}}
+see \code{\link{textPCAPlot}}
 }

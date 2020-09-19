@@ -1288,7 +1288,7 @@ textCentralityPlot <- function(word_data,
 ####################################
 ####################################
 ##################
-##################   textPCA and text2DPlot
+##################   textPCA and textPCAPlot
 ##################
 ####################################
 ####################################
@@ -1309,13 +1309,13 @@ textCentralityPlot <- function(word_data,
 #' @param single_wordembeddings Word embeddings from textEmbed for individual words
 #' (i.e., decontextualized embeddings).
 #' @return A dataframe with words, their frquency and two PCA dimensions from the wordembeddings
-#' for the individual words that is used for the plotting in the text2dPlot function.
+#' for the individual words that is used for the plotting in the textPCAPlot function.
 #' @examples
 #' # Data
 #' df_for_plotting2d <- textPCA(words = Language_based_assessment_data_8$harmonywords,
 #'                                 single_wordembeddings =  wordembeddings4$singlewords_we)
 #' df_for_plotting2d
-#' @seealso see \code{\link{textProjectionPlot}}
+#' @seealso see \code{\link{textPCAPlot}}
 #' @importFrom tibble as_tibble
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake
 #' @export
@@ -1443,11 +1443,11 @@ textPCA <- function(words,
 #' # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 #'
 #' # Dot Product Projection Plot
-#' principle_component_plot_projection <- text2DPlot(PC_projections_satisfactionwords_40)
+#' principle_component_plot_projection <- textPCAPlot(PC_projections_satisfactionwords_40)
 #' principle_component_plot_projection
 #'
 #' names(DP_projections_HILS_SWLS_100)
-#' @seealso see \code{\link{textProjection}}
+#' @seealso see \code{\link{textPCA}}
 #' @importFrom tibble as_tibble tibble
 #' @importFrom dplyr row_number slice mutate mutate_if bind_rows group_by summarize left_join %>%
 #' @importFrom tidyr gather separate
@@ -1457,15 +1457,15 @@ textPCA <- function(words,
 #' @importFrom cowplot ggdraw draw_plot
 #' @importFrom purrr as_vector
 #' @export
-text2DPlot <- function(word_data,
+textPCAPlot <- function(word_data,
                        min_freq_words_test = 1,
                        plot_n_word_extreme = 5,
                        plot_n_word_frequency = 5,
                        plot_n_words_middle = 5,
                        titles_color = "#61605e",
-                       title_top = "Principal Component Projection",
-                       x_axes_label = "Principal Component 1 (PC1)",
-                       y_axes_label = "Principal Component 2 (PC2)",
+                       title_top = "Principal Component (PC) Plot",
+                       x_axes_label = "PC1",
+                       y_axes_label = "PC2",
                        scale_x_axes_lim = NULL,
                        scale_y_axes_lim = NULL,
                        word_font = NULL,
@@ -1748,7 +1748,7 @@ text2DPlot <- function(word_data,
 
 
 
-#text2DPlot(word_data = harmonywordsdata, #df_for_plotting2d, #harmonywordsdata, #df_for_plotting2d,
+#textPCAPlot(word_data = harmonywordsdata, #df_for_plotting2d, #harmonywordsdata, #df_for_plotting2d,
 #           min_freq_words_test = 2,
 #           plot_n_word_extreme = 5,
 #           plot_n_word_frequency = 5,
