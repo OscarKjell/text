@@ -3,7 +3,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
-from transformers import *
+from transformers import AutoConfig, AutoModel, AutoTokenizer
 import numpy as np
 
 
@@ -11,13 +11,12 @@ import numpy as np
 #TODO:#dictionary of pretrained weights to models
 def hgTransformerGetEmbedding(text_strings, #list of strings
                               pretrained_weights = 'bert-base-uncased',
-                              tokenizer_class = BertTokenizer,
-                              model_class = BertModel,
                               layers = 'all',  #all or a list of layers to keep
                               return_tokens=True):
 
-    tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
-    transformer_model = model_class.from_pretrained(pretrained_weights, output_hidden_states=True)
+    config = AutoConfig.from_pretrained(pretrained_weights, output_hidden_states=True)
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_weights)
+    transformer_model = AutoModel.from_pretrained(pretrained_weights, config=config)
 
     ##Check and Adjust Input Typs
     if not isinstance(text_strings, list):

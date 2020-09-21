@@ -25,9 +25,4 @@ utils::globalVariables(c(
   "Dim_PC1", "Dim_PC2", "check_extreme_frequency", "check_extreme_max_PC1",
   "check_extreme_max_PC2", "check_extreme_min_PC1", "check_extreme_min_PC2",
   "check_middle_PC1", "check_middle_PC2",
-  "CTRLModel", "CTRLTokenizer", "DistilBertModel", "DistilBertTokenizer", "GPT2Model",
-  "OpenAIGPTModel", "OpenAIGPTTokenizer", "RobertaModel", "RobertaTokenizer",
-  "TransfoXLModel", "TransfoXLTokenizer", "XLMModel", "XLMRobertaModel",
-  "XLMRobertaTokenizer", "XLMTokenizer", "XLNetModel", "XLNetTokenizer",
-  "T5Model", "T5Tokenizer"
 ))

@@ -250,14 +250,9 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased",
 #' "roberta-base", "xlm-roberta-base", "xlm-roberta-large", or "T5Model". See
 #' also https://www.r-text.org/articles/Word_embeddings.html.
-#' If specified as NULL, set parameters pretrained_weights, tokenizer_class and model_class.
+#' If specified as NULL, set parameters pretrained_weights.
 #' @param pretrained_weights Advanced parameter submitted to HuggingFace interface to get models not yet
 #' officially incorporated into text. Default = NULL. For alternatives see https://huggingface.co/.
-#' @param tokenizer_class Advanced parameter submitted to HuggingFace interface to get models not yet
-#' officially incorporated into text. Default = NULL. for alternatives see https://huggingface.co/.
-#' @param model_class Advanced parameter submitted to HuggingFace interface to get models not yet officially
-#' incorporated into text.
-#' Default = NULL. for alternatives see https://huggingface.co/.
 #' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient
 #' to only extract the layers that you need (e.g., 11:12). You can also extract all by setting this
 #' parameter to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
@@ -282,75 +277,10 @@ textEmbedLayersOutput <- function(x,
                             model = "bert-base-uncased",
                             layers = 11:12,
                             return_tokens = TRUE,
-                            pretrained_weights = NULL,
-                            tokenizer_class = NULL,
-                            model_class = NULL) {
+                            pretrained_weights = NULL) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
-
-  # Setting up the specifics of the models; the parameters for HuggingFace.
-  if (model == "bert-base-uncased") {
-    pretrained_weights <- "bert-base-uncased"
-    tokenizer_class <- BertTokenizer
-    model_class <- BertModel
-  } else if (model == "bert-base-multilingual-uncased") {
-    pretrained_weights <- "bert-base-multilingual-uncased"
-    tokenizer_class <- BertTokenizer
-    model_class <- BertModel
-  } else if (model == "bert-base-multilingual-cased") {
-    pretrained_weights <- "bert-base-multilingual-cased"
-    tokenizer_class <- BertTokenizer
-    model_class <- BertModel
-  } else if (model == "openai-gpt") {
-    pretrained_weights <- "openai-gpt"
-    tokenizer_class <- OpenAIGPTTokenizer
-    model_class <- OpenAIGPTModel
-  } else if (model == "gpt2") {
-    pretrained_weights <- "GPT2Tokenizer"
-    tokenizer_class <- OpenAIGPTTokenizer
-    model_class <- GPT2Model
-  } else if (model == "ctrl") {
-    pretrained_weights <- "ctrl"
-    tokenizer_class <- CTRLTokenizer
-    model_class <- CTRLModel
-  } else if (model == "transfo-xl-wt103") {
-    pretrained_weights <- "transfo-xl-wt103"
-    tokenizer_class <- TransfoXLTokenizer
-    model_class <- TransfoXLModel
-  } else if (model == "xlnet-base-cased") {
-    pretrained_weights <- "xlnet-base-cased"
-    tokenizer_class <- XLNetTokenizer
-    model_class <- XLNetModel
-  } else if (model == "xlm-mlm-enfr-1024") {
-    pretrained_weights <- "xlm-mlm-enfr-1024"
-    tokenizer_class <- XLMTokenizer
-    model_class <- XLMModel
-  } else if (model == "distilbert-base-uncased") {
-    pretrained_weights <- "distilbert-base-uncased"
-    tokenizer_class <- DistilBertTokenizer
-    model_class <- DistilBertModel
-  } else if (model == "xlm-roberta-base") {
-    pretrained_weights <- "xlm-roberta-base"
-    tokenizer_class <- XLMRobertaTokenizer
-    model_class <- XLMRobertaModel
-  } else if (model == "xlm-roberta-large") {
-    pretrained_weights <- "xlm-roberta-large"
-    tokenizer_class <- XLMRobertaTokenizer
-    model_class <- XLMRobertaModel
-  } else if (model == "t5-small") {
-    pretrained_weights <- "t5-small"
-    tokenizer_class <- T5Tokenizer
-    model_class <- T5Model
-  } else if (model == "roberta-base") {
-    pretrained_weights <- "roberta-base"
-    tokenizer_class <- RobertaTokenizer
-    model_class <- RobertaModel
-  } else if (model == "new") {
-    pretrained_weights <- pretrained_weights
-    tokenizer_class <- tokenizer_class
-    model_class <- model_class
-  }
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(x)
@@ -367,8 +297,6 @@ textEmbedLayersOutput <- function(x,
       hg_embeddings <- hgTransformerGetEmbedding(
         text_strings = x[[i_variables]],
         pretrained_weights = pretrained_weights,
-        tokenizer_class = tokenizer_class,
-        model_class = model_class,
         layers = layers,
         return_tokens = return_tokens
       )
@@ -393,8 +321,6 @@ textEmbedLayersOutput <- function(x,
     hg_decontexts_embeddings <- hgTransformerGetEmbedding(
       text_strings = list_words,
       pretrained_weights = pretrained_weights,
-      tokenizer_class = tokenizer_class,
-      model_class = model_class,
       layers = layers,
       return_tokens = return_tokens
     )
@@ -513,19 +439,13 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base". Can set this parameter to NULL and then manually
-#' specify pretrained_weights, tokenizer_class and model_class.
+#' specify pretrained_weights.
 #' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient to
 #' only extract the layers that you need (e.g., 12).
 #' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
 #' These layers can then be aggregated in the textEmbedLayerAggreation function. If you want all layers then use 'all'.
 #' @param pretrained_weights advanced parameter submitted to the HuggingFace interface to get models not yet officially
 #' incorporated into text. Default = NULL. for details see https://huggingface.co/.
-#' @param tokenizer_class advanced parameter submitted to the HuggingFace interface to get
-#' models not yet officially incorporated into text.
-#' Default = NULL. for details see https://huggingface.co/.
-#' @param model_class advanced parameter submitted to the HuggingFace interface to get models not yet officially
-#' incorporated into text.
-#' Default = NULL. for details see https://huggingface.co/.
 #' @param context_layers Specify the layers that should be aggregated (default 11:12).
 #' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised not to be used.
 #' @param context_aggregation_layers Method to aggregate the contextualized layers (e.g., "mean", "min" or "max, which takes the
@@ -565,8 +485,6 @@ textEmbed <- function(x,
                       model = "bert-base-uncased",
                       layers = 11:12,
                       pretrained_weights = NULL,
-                      tokenizer_class = NULL,
-                      model_class = NULL,
                       contexts = TRUE,
                       context_layers = 11:12,
                       context_aggregation_layers = "concatenate",
@@ -590,8 +508,6 @@ textEmbed <- function(x,
     layers = layers,
     return_tokens = FALSE,
     pretrained_weights = pretrained_weights,
-    tokenizer_class = tokenizer_class,
-    model_class = model_class
   )
 
   # Aggregate context layers
