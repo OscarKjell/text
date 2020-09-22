@@ -123,7 +123,7 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
   embeddings <- textEmbedLayersOutput(x,
-                                model="bert-base-multilingual-cased",
+                                      model="bert-base-multilingual-cased",
                                 contexts = TRUE,
                                 decontexts = FALSE,
                                 layers = "all")

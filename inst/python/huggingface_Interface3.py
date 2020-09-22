@@ -10,13 +10,13 @@ import numpy as np
 
 #TODO:#dictionary of pretrained weights to models
 def hgTransformerGetEmbedding(text_strings, #list of strings
-                              pretrained_weights = 'bert-base-uncased',
+                              model = 'bert-base-uncased',
                               layers = 'all',  #all or a list of layers to keep
                               return_tokens=True):
 
-    config = AutoConfig.from_pretrained(pretrained_weights, output_hidden_states=True)
-    tokenizer = AutoTokenizer.from_pretrained(pretrained_weights)
-    transformer_model = AutoModel.from_pretrained(pretrained_weights, config=config)
+    config = AutoConfig.from_pretrained(model, output_hidden_states=True)
+    tokenizer = AutoTokenizer.from_pretrained(model)
+    transformer_model = AutoModel.from_pretrained(model, config=config)
 
     ##Check and Adjust Input Typs
     if not isinstance(text_strings, list):

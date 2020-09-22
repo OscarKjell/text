@@ -10,10 +10,7 @@ textEmbedLayersOutput(
   decontexts = TRUE,
   model = "bert-base-uncased",
   layers = 11:12,
-  return_tokens = TRUE,
-  pretrained_weights = NULL,
-  tokenizer_class = NULL,
-  model_class = NULL
+  return_tokens = TRUE
 )
 }
 \arguments{
@@ -25,29 +22,12 @@ textEmbedLayersOutput(
 \item{decontexts}{Provide word embeddings of single words as input
 (embeddings used for plotting; default = TRUE).}
 
-\item{model}{Character string specifying pre-trained language model.
-Default 'bert-base-uncased'; options "bert-base-multilingual-uncased", "bert-base-multilingual-cased", "openai-gpt",
-"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased",
-"roberta-base", "xlm-roberta-base", "xlm-roberta-large", or "T5Model". See
-also https://www.r-text.org/articles/Word_embeddings.html.
-If specified as NULL, set parameters pretrained_weights, tokenizer_class and model_class.}
-
 \item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient
 to only extract the layers that you need (e.g., 11:12). You can also extract all by setting this
 parameter to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
 and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggreation function.}
 
 \item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
-
-\item{pretrained_weights}{Advanced parameter submitted to HuggingFace interface to get models not yet
-officially incorporated into text. Default = NULL. For alternatives see https://huggingface.co/.}
-
-\item{tokenizer_class}{Advanced parameter submitted to HuggingFace interface to get models not yet
-officially incorporated into text. Default = NULL. for alternatives see https://huggingface.co/.}
-
-\item{model_class}{Advanced parameter submitted to HuggingFace interface to get models not yet officially
-incorporated into text.
-Default = NULL. for alternatives see https://huggingface.co/.}
 }
 \value{
 A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the

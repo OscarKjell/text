@@ -20,9 +20,8 @@ utils::globalVariables(c(
   "n_all.y", "colour_categories", "scale_color_identity", "group", "x", "y", "fill",
   "check_p_square", "check_p_x_neg", "check_p_x_pos", "check_extreme_max_x", "check_extreme_min_x", "check_extreme_frequency_x",
   "check_middle_x", "check_p_y_neg", "check_p_y_pos", "check_extreme_max_y", "check_extreme_min_y", "check_extreme_frequency_y",
-  "check_middle_y", "extremes_all_x", "extremes_all_y", "BertTokenizer", "BertModel",
+  "check_middle_y", "extremes_all_x", "extremes_all_y",
   "hgTransformerGetEmbedding", "central_cosine",
   "Dim_PC1", "Dim_PC2", "check_extreme_frequency", "check_extreme_max_PC1",
   "check_extreme_max_PC2", "check_extreme_min_PC1", "check_extreme_min_PC2",
-  "check_middle_PC1", "check_middle_PC2",
-))
+  "check_middle_PC1", "check_middle_PC2", "BertTokenizer", "BertModel"))

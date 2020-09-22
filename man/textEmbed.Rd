@@ -8,9 +8,6 @@ textEmbed(
   x,
   model = "bert-base-uncased",
   layers = 11:12,
-  pretrained_weights = NULL,
-  tokenizer_class = NULL,
-  model_class = NULL,
   contexts = TRUE,
   context_layers = 11:12,
   context_aggregation_layers = "concatenate",
@@ -30,24 +27,12 @@ textEmbed(
 
 \item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
-"roberta-base", or "xlm-roberta-base". Can set this parameter to NULL and then manually
-specify pretrained_weights, tokenizer_class and model_class.}
+"roberta-base", or "xlm-roberta-base".}
 
 \item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient to
 only extract the layers that you need (e.g., 12).
 Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
 These layers can then be aggregated in the textEmbedLayerAggreation function. If you want all layers then use 'all'.}
-
-\item{pretrained_weights}{advanced parameter submitted to the HuggingFace interface to get models not yet officially
-incorporated into text. Default = NULL. for details see https://huggingface.co/.}
-
-\item{tokenizer_class}{advanced parameter submitted to the HuggingFace interface to get
-models not yet officially incorporated into text.
-Default = NULL. for details see https://huggingface.co/.}
-
-\item{model_class}{advanced parameter submitted to the HuggingFace interface to get models not yet officially
-incorporated into text.
-Default = NULL. for details see https://huggingface.co/.}
 
 \item{contexts}{Provide word embeddings based on word contexts
 (standard method; default = TRUE).}
