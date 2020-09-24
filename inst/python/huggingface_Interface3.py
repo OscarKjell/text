@@ -6,7 +6,7 @@ import torch
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 import numpy as np
 
-
+from nltk.tokenize import sent_tokenize
 
 #TODO:#dictionary of pretrained weights to models
 def hgTransformerGetEmbedding(text_strings, #list of strings
