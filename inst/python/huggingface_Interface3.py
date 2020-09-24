@@ -6,6 +6,12 @@ import torch
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 import numpy as np
 
+import nltk
+try:
+    nltk.data.find('tokenizers/punkt/PY3/english.pickle')
+except:
+    nltk.download("punkt")
+
 from nltk.tokenize import sent_tokenize
 
 #TODO:#dictionary of pretrained weights to models
