@@ -275,7 +275,7 @@ summarize_tune_results <- function(object, model, eval_measure, penalty, mixture
 #' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
 #' make the analyses considerably faster to run).
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
-#' @return A correlation between predicted and observed values; tibble of predicted values, as well as information
+#' @return A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information
 #' about the model (preprossing_recipe, final_model and model_description).
 #' @examples
 #' wordembeddings <- wordembeddings4
@@ -411,7 +411,7 @@ textTrainRegression <- function(x,
                               tidyr::unnest(outputlist_results_outer$y, cols = c(y)))
 
     # Correlate predictions and observed correlation
-    collected_results <- stats::cor.test(predy_y$predictions, predy_y$y, method = method_cor)
+    collected_results <- stats::cor.test(predy_y$predictions, predy_y$y, method = method_cor, alternative = "greater")
 
     collected_results <- list(predy_y, collected_results)
   } else if(model == "logistic"){
