@@ -15,10 +15,34 @@ except:
 from nltk.tokenize import sent_tokenize
 
 #TODO:#dictionary of pretrained weights to models
-def hgTransformerGetEmbedding(text_strings, #list of strings
+def hgTransformerGetEmbedding(text_strings,
                               model = 'bert-base-uncased',
-                              layers = 'all',  #all or a list of layers to keep
-                              return_tokens=True):
+                              layers = 'all',  
+                              return_tokens = True):
+    """
+    Summary line.
+
+    Parameters
+    ----------
+    text_strings : list
+        list of strings, each is embedded separately
+    model : str
+        shortcut name for Hugging Face pretained model
+        Full list https://huggingface.co/transformers/pretrained_models.html
+    layers : str or list
+        'all' or an integer list of layers to keep
+    return_tokens : boolean
+        return tokenized version of text_strings
+
+
+    Returns
+    -------
+    all_embs : list
+        embeddings for each item in text_strings
+    all_toks : list, optional
+        tokenized version of text_strings
+
+    """
 
     config = AutoConfig.from_pretrained(model, output_hidden_states=True)
     tokenizer = AutoTokenizer.from_pretrained(model)
@@ -43,6 +67,8 @@ def hgTransformerGetEmbedding(text_strings, #list of strings
         if return_tokens:
             tokens = tokenizer.convert_ids_to_tokens(input_ids)
         
+        # if number of tokens greater than the model can handle
+        # embedd each sentence separately
         if len(input_ids) > maxTokensPerSeg:
             this_embs, this_toks = [], []
             for sent_str in sent_tokenize(text_string):
