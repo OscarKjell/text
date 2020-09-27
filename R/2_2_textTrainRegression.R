@@ -22,7 +22,7 @@ statisticalMode <- function(x) {
   ux <- unique(x)
   ux[which.max(tabulate(match(x, ux)))]
 }
-
+# results_nested_resampling$splits[[1]][[1]]
 #  devtools::document()
 #' Function to fit a model and compute RMSE.
 #'
@@ -38,6 +38,9 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
   xy_recipe <- rsample::analysis(object) %>%
     recipes::recipe(y ~ .) %>%
     # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
+    recipes::update_role(id_nr, new_role = "id variable") %>% #New
+    recipes::update_role(-id_nr, new_role = "predictor") %>%  #New
+    recipes::update_role(y, new_role = "outcome") %>%         #New
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
@@ -79,21 +82,21 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     # Apply model on new data; penalty
     holdout_pred <-
       stats::predict(mod, xy_testing %>% dplyr::select(-y)) %>%
-      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr)) #New
 
     # Get RMSE; eval_measure = "rmse"
     eval_result <- select_eval_measure_val(eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred)$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
-    output <- list(list(eval_result), list(holdout_pred$.pred), list(holdout_pred$y), list(preprocess_PCA))
-    names(output) <- c("eval_result", "predictions", "y", "preprocess_PCA")
+    output <- list(list(eval_result), list(holdout_pred$.pred), list(holdout_pred$y), list(preprocess_PCA), list(holdout_pred$id_nr))
+    names(output) <- c("eval_result", "predictions", "y", "preprocess_PCA", "id_nr")
   } else if(model == "logistic"){
 
     holdout_pred_class <-
       stats::predict(mod, xy_testing %>% dplyr::select(-y), type= c("class")) %>%
-      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr)) #New
     holdout_pred <-
       stats::predict(mod, xy_testing %>% dplyr::select(-y), type= c("prob")) %>%
-      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr)) #New
 
     holdout_pred$.pred_class <- holdout_pred_class$.pred_class
     class <- colnames(holdout_pred[1])
@@ -107,13 +110,15 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
                    list(holdout_pred$y),
                    list(holdout_pred[1]),
                    list(holdout_pred[2]),
-                   list(preprocess_PCA))
+                   list(preprocess_PCA),
+                   list(holdout_pred$id_nr)) #New
     names(output) <- c("eval_result",
                        "estimate",
                        "truth",
                        ".pred_1",
                        ".pred_2",
-                       "preprocess_PCA")
+                       "preprocess_PCA",
+                       "id_nr") #New
 
     #output <- list(list(eval_result), list(holdout_pred$.pred_class), list(holdout_pred$y), list(preprocess_PCA))
   }
@@ -340,6 +345,7 @@ textTrainRegression <- function(x,
   x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
   xy <- cbind(x2, y)
   xy <- tibble::as_tibble(xy)
+  xy$id_nr <- c(seq_len(nrow(xy))) #New
   results_nested_resampling <- rsample::nested_cv(xy,
                                                   outside = rsample::vfold_cv(v = 2, #outside_folds,
                                                                               repeats = 1,
@@ -408,10 +414,12 @@ textTrainRegression <- function(x,
   if(model=="regression") {
     # Unnest predictions and y
     predy_y <- tibble::tibble(tidyr::unnest(outputlist_results_outer$predictions, cols = c(predictions)),
-                              tidyr::unnest(outputlist_results_outer$y, cols = c(y)))
-
+                              tidyr::unnest(outputlist_results_outer$y, cols = c(y)),
+                              tidyr::unnest(outputlist_results_outer$id_nr, cols = c(id_nr)))
+    predy_y <- predy_y %>% dplyr::arrange(id_nr)
     # Correlate predictions and observed correlation
     collected_results <- stats::cor.test(predy_y$predictions, predy_y$y, method = method_cor, alternative = "greater")
+
 
     collected_results <- list(predy_y, collected_results)
   } else if(model == "logistic"){

@@ -50,7 +50,7 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy", holdout_pred 
   eval_measure_val
 }
 
-help(all_of)
+
 #  devtools::document()
 #' Select evaluation measure and compute it (also used in logistic regression)
 #'
@@ -62,8 +62,9 @@ classification_results <- function(outputlist_results_outer){
   predy_y <- tibble::tibble(tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
                             tidyr::unnest(outputlist_results_outer$estimate, cols = c(estimate)),
                             tidyr::unnest(outputlist_results_outer$.pred_1, cols = c(.pred_1)),
-                            tidyr::unnest(outputlist_results_outer$.pred_2, cols = c(.pred_2)))
-
+                            tidyr::unnest(outputlist_results_outer$.pred_2, cols = c(.pred_2)),
+                            tidyr::unnest(outputlist_results_outer$id_nr, cols = c(id_nr)))
+  predy_y <- predy_y %>% dplyr::arrange(id_nr)
   # Correlate predictions and observed help(all_of)
   chisq        <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
 
@@ -124,9 +125,12 @@ fit_model_accuracy_rf <- function(object,
 
   xy_recipe <- rsample::analysis(object) %>%
     recipes::recipe(y ~ .) %>%
-    recipes::update_role(id1, new_role = "id variable") %>%
-    #recipes::update_role(-id1, new_role = "predictor") %>%
-    recipes::update_role(y, new_role = "outcome") %>%
+#    recipes::update_role(id1, new_role = "id variable") %>%
+#    #recipes::update_role(-id1, new_role = "predictor") %>%
+#    recipes::update_role(y, new_role = "outcome") %>%
+    recipes::update_role(id_nr, new_role = "id variable") %>% #New
+    recipes::update_role(-id_nr, new_role = "predictor") %>%  #New
+    recipes::update_role(y, new_role = "outcome") %>%         #New
     recipes::step_naomit(Dim1, skip = FALSE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
@@ -165,10 +169,11 @@ fit_model_accuracy_rf <- function(object,
   # Apply model on new data help(predict)
   holdout_pred_class <-
     stats::predict(mod, xy_testing %>% dplyr::select(-y), type= c("class")) %>%
-    dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
+    dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
+
   holdout_pred <-
     stats::predict(mod, xy_testing %>% dplyr::select(-y), type= c("prob")) %>%
-    dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y))
+    dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
   holdout_pred$.pred_class <- holdout_pred_class$.pred_class
   class <- colnames(holdout_pred[1])
@@ -181,13 +186,15 @@ fit_model_accuracy_rf <- function(object,
                  list(holdout_pred$y),
                  list(holdout_pred[1]),
                  list(holdout_pred[2]),
-                 list(preprocess_PCA))
+                 list(preprocess_PCA),
+                 list(holdout_pred$id_nr)) #New
   names(output) <- c("eval_measure_val",
                      "estimate",
                      "truth",
                      ".pred_1",
                      ".pred_2",
-                     "preprocess_PCA")
+                     "preprocess_PCA",
+                     "id_nr") #New
   output
 }
 
@@ -455,7 +462,8 @@ textTrainRandomForest <- function(x,
   }
   xy <- cbind(x1, y)
 
-  xy$id1 <- c(seq_len(nrow(xy)))
+#  xy$id1 <- c(seq_len(nrow(xy)))
+  xy$id_nr <- c(seq_len(nrow(xy))) #New
   #xy_formergingNA <- tibble::tibble(xy$id1, xy$y)
   #colnames(xy_formergingNA) <- c("id1", "y")
   xy1 <- tibble::as_tibble(xy[stats::complete.cases(xy), ])
@@ -537,8 +545,8 @@ textTrainRandomForest <- function(x,
 
   final_recipe <- #xy %>%
     recipes::recipe(y ~., xy[0,]) %>%
-    recipes::update_role(id1, new_role = "id variable") %>%
-    #recipes::update_role(-id1, new_role = "predictor") %>%
+    recipes::update_role(id_nr, new_role = "id variable") %>%
+    recipes::update_role(id_nr, new_role = "predictor") %>%
     recipes::update_role(y, new_role = "outcome") %>%
     recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
     recipes::step_center(recipes::all_predictors()) %>%
