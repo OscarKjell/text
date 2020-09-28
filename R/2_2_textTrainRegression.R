@@ -347,7 +347,7 @@ textTrainRegression <- function(x,
   xy <- tibble::as_tibble(xy)
   xy$id_nr <- c(seq_len(nrow(xy))) #New
   results_nested_resampling <- rsample::nested_cv(xy,
-                                                  outside = rsample::vfold_cv(v = 2, #outside_folds,
+                                                  outside = rsample::vfold_cv(v = 5, #outside_folds,
                                                                               repeats = 1,
                                                                               strata = NULL,
                                                                               breaks = 2), #outside_strata_y
