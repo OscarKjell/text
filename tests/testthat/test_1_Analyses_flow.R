@@ -3,7 +3,7 @@
 #library(reticulate)
 #install_miniconda(update = TRUE)
 #help(conda_install)
-conda_install(envname = 'r-reticulate', c('torch==1.5.0'), pip = TRUE, force=TRUE)
+#conda_install(envname = 'r-reticulate', c('torch==1.5.0'), pip = TRUE, force=TRUE)
 #$ conda update -n base -c defaults conda
 #miniconda_update()
 

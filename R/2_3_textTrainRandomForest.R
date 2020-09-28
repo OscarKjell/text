@@ -542,9 +542,9 @@ textTrainRandomForest <- function(x,
 
   # Construct final model to be saved and applied on other data
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
-
+  xy_short <- xy %>% dplyr::select(-id_nr)
   final_recipe <- #xy %>%
-    recipes::recipe(y ~., xy[0,]) %>%
+    recipes::recipe(y ~., xy_short[0,]) %>%
     recipes::update_role(id_nr, new_role = "id variable") %>%
     recipes::update_role(id_nr, new_role = "predictor") %>%
     recipes::update_role(y, new_role = "outcome") %>%
@@ -557,8 +557,8 @@ textTrainRandomForest <- function(x,
       else if(preprocess_PCA[1] < 1) recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
       else . } else .}
 
-  preprocessing_recipe_save <- recipes::prep(final_recipe, xy, retain = FALSE)
-  preprocessing_recipe_use  <- recipes::prep(final_recipe, xy)
+  preprocessing_recipe_save <- recipes::prep(final_recipe, xy_short, retain = FALSE)
+  preprocessing_recipe_use  <- recipes::prep(final_recipe, xy_short)
 
   #preprocessing_recipe <- recipes::prep(final_recipe)
 

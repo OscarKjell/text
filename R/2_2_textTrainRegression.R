@@ -434,10 +434,11 @@ textTrainRegression <- function(x,
 #####
   # Construct final model to be saved and applied on other data
 
+  xy_short <- xy %>% dplyr::select(-id_nr)
 
   # [0,] is added to just get the col names (and avoid saving all the data with the receipt)
   final_recipe <- #xy %>%
-    recipes::recipe(y ~ ., xy[0,]) %>%
+    recipes::recipe(y ~ ., xy_short[0,]) %>%
     # recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
@@ -448,8 +449,8 @@ textTrainRegression <- function(x,
       else . } else .}
 
   #
-  preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe, xy, retain = FALSE))
-  preprocessing_recipe_use  <- recipes::prep(final_recipe, xy)
+  preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe, xy_short, retain = FALSE))
+  preprocessing_recipe_use  <- recipes::prep(final_recipe, xy_short)
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
   xy_final <- recipes::juice(preprocessing_recipe_use)
