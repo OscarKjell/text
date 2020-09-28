@@ -20,7 +20,7 @@ def hgTransformerGetEmbedding(text_strings,
                               layers = 'all',  
                               return_tokens = True):
     """
-    Summary line.
+    Simple Python method for embedding text with pretained Hugging Face models
 
     Parameters
     ----------
