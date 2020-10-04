@@ -306,7 +306,15 @@ textEmbedLayersOutput <- function(x,
 
       sorted_layers_ALL_variables$context[[i_variables]] <- variable_x
       names(sorted_layers_ALL_variables$context)[[i_variables]] <- names(x)[[i_variables]]
-      sorted_layers_ALL_variables
+
+      # Adding informative comment
+      layers_string <- paste(as.character(layers), sep = " ", collapse =" ")
+      comment(sorted_layers_ALL_variables$context) <- c(paste("Information about the embeddings.
+                                                              textEmbedLayersOutput: ",
+                                                              model, "layers:",
+                                                              layers_string, ".",
+                                                              collapse ="; "))
+      #comment(sorted_layers_ALL_variables$context[[i_variables]])
     }
   }
 
@@ -334,6 +342,15 @@ textEmbedLayersOutput <- function(x,
     )
     names(sorted_layers_All_decontexts$decontext$single_we$single_we) <- NULL
     sorted_layers_All_decontexts$decontext$single_words <- singlewords
+
+    #Adding informative data
+    layers_string <- paste(as.character(layers), sep = " ", collapse =" ")
+    comment(sorted_layers_All_decontexts$decontext) <- c(paste("Information about the embeddings.
+                                                              textEmbedLayersOutput: ",
+                                                               model, "layers:",
+                                                               layers_string, ".",
+                                                               collapse ="; "))
+
     sorted_layers_All_decontexts
   }
 
@@ -346,14 +363,13 @@ textEmbedLayersOutput <- function(x,
   } else if (contexts == FALSE & decontexts == TRUE) {
     word_embeddings_with_layers <- c(sorted_layers_All_decontexts)
   }
-  # Get number of layers to save to comment
-  layers_string <- paste(as.character(layers), sep = " ", collapse =" ")
-
-  comment(word_embeddings_with_layers) <- c(paste(model, "layers:", layers_string, collapse ="; "))
-  word_embeddings_with_layers
 }
+#word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
+#comment(word_embeddings_with_layers$context$harmonywords)
+#comment(word_embeddings_with_layers$decontext)
 
-# word_embeddings_layers <- word_embeddings_with_layers$context$harmonywords
+
+#word_embeddings_layers <- word_embeddings_with_layers$context
 
 #' Select and aggregate layers of hidden states to form a word embeddings.
 #' @param word_embeddings_layers Layers outputted from textEmbedLayersOutput.
@@ -430,6 +446,18 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 
     # Sort output
     selected_layers_aggregated_tibble[[variable_list_i]] <- dplyr::bind_rows(selected_layers_tokens_aggregated)
+    # Add informative comments
+    original_comment <- comment(word_embeddings_layers)
+    layers_string <- paste(as.character(layers), sep = " ", collapse =" ")
+    comment(selected_layers_aggregated_tibble[[variable_list_i]]) <- paste(original_comment,
+                                                        "textEmbedLayerAggreation: layers = ",
+                                                        layers_string,
+                                                        "aggregate_layers = ",
+                                                        aggregate_layers,
+                                                        "aggregate_tokens = ",
+                                                        aggregate_tokens,
+                                                        collapse = ";")
+
   }
   names(selected_layers_aggregated_tibble) <- names(word_embeddings_layers)
   selected_layers_aggregated_tibble
@@ -480,7 +508,10 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 #' x <- Language_based_assessment_data_8[1:2, 1:2]
 #' # Example 1
 #' wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
-#' # Example 1
+#' # Show information that have been saved with the embeddings about how they were constructed
+#' comment(wordembeddings$satisfactionwords)
+#' comment(wordembeddings$singlewords_we)
+#' # Example 2
 #' wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggreation}} and \code{\link{textEmbedLayersOutput}}
@@ -521,6 +552,7 @@ textEmbed <- function(x,
     aggregate_tokens = context_aggregation_tokens,
     tokens_deselect = NULL
   )
+  #comment(contextualised_embeddings[[1]])
 
   # Aggregate DEcontext layers (in case they should be added differently from context)
   decontextualised_embeddings <- textEmbedLayerAggreation(
@@ -531,10 +563,10 @@ textEmbed <- function(x,
     tokens_select = decontext_tokens_select,
     tokens_deselect = decontext_tokens_deselect
   )
-
+  #comment(decontextualised_embeddings[[1]])
   # Combine the words for each decontextualized embedding
   decontextualised_embeddings_words <- dplyr::bind_cols(all_wanted_layers$decontext$single_words, decontextualised_embeddings)
-
+  comment(decontextualised_embeddings_words) <- comment(decontextualised_embeddings[[1]])
   # Adding embeddings to one list
   all_embeddings <- contextualised_embeddings
   all_embeddings$singlewords_we <- decontextualised_embeddings_words
