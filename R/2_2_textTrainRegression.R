@@ -490,6 +490,7 @@ textTrainRegression <- function(x,
 
 
   # Describe model; adding user's-description + the name of the x and y
+  embedding_description <- comment(x)
   model_description_detail <- c(x_name,
                                 y_name,
                                 penalty_description,
@@ -498,6 +499,7 @@ textTrainRegression <- function(x,
                                 mixture_fold_description,
                                 preprocess_PCA_description,
                                 preprocess_PCA_fold_description,
+                                embedding_description,
                                 model_description)
 
   if(model == "regression") {

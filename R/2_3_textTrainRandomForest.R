@@ -601,6 +601,7 @@ textTrainRandomForest <- function(x,
   }
 
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
+  embedding_description <- comment(x)
   model_description_detail <- c(x_name,
                                 y_name,
                                 mode_rf_description,
@@ -614,6 +615,7 @@ textTrainRandomForest <- function(x,
                                 min_n_fold_description,
                                 trees_description,
                                 trees_fold_description,
+                                embedding_description,
                                 model_description)
 
   if(save_output == "all"){

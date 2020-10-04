@@ -102,7 +102,18 @@ textSimilarityTest <- function(x,
   if (output.permutations) {
     random.estimates.4.null <- list(NULLresults)
     names(random.estimates.4.null) <- "random.estimates.4.null"
-    results <- c(random.estimates.4.null, results)
+
+    embedding_descriptions_x <- comment(x)
+    embedding_descriptions_y <- comment(y)
+    test_description <- paste("permutations = ", Npermutations,
+                              "method = ", method,
+                              "alternative = ", alternative,
+                              collapse = " ")
+    results <- c(random.estimates.4.null,
+                 embedding_descriptions_x,
+                 embedding_descriptions_y,
+                 test_description,
+                 results)
   }
   results
 }

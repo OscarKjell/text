@@ -19,6 +19,7 @@ cosines <- function(x, y) {
 #' library(dplyr)
 #' wordembeddings <- wordembeddings4
 #' similiarty_scores <- textSimilarity(wordembeddings$harmonytext, wordembeddings$satisfactiontext)
+#' comment(similiarty_scores)
 #' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 #' @export
 textSimilarity <- function(x, y) {
@@ -27,7 +28,13 @@ textSimilarity <- function(x, y) {
   y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
 
   # Apply the cosines functions
-  cosines(x1, y1)
+  ss <- cosines(x1, y1)
+  # Add information about the used embeddings
+  embedding_descriptions_x <- comment(x)
+  embedding_descriptions_y <- comment(y)
+  comment(ss) <- paste("x embedding = ", embedding_descriptions_x,
+                       "y embedding = ", embedding_descriptions_y, sep = ".", collapse = " ")
+  ss
 }
 
 #' Compute the semantic similarity between a text variable and a word norm
@@ -62,5 +69,11 @@ textSimilarityNorm <- function(x, y) {
     dplyr::slice(rep(row_number(), nrow(x1)))
 
   # Apply the cosines functions
-  cosines(x1, y2)
+  ss <- cosines(x1, y2)
+  # Add information about the used embeddings
+  embedding_descriptions_x <- comment(x)
+  embedding_descriptions_y <- comment(y)
+  comment(ss) <- paste("x embedding = ", embedding_descriptions_x,
+                       "y embedding = ", embedding_descriptions_y, sep = ".", collapse = " ")
+
 }
