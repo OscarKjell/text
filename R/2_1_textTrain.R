@@ -512,7 +512,7 @@ textTrainLists <- function(x,
 #' @importFrom recipes prep bake
 #' @importFrom stats predict
 #' @export
-textPredict <- function(model_info = NULL, new_data=NULL){
+textPredict <- function(model_info = NULL, new_data=NULL, ...){
 
   # Load prepared_with_recipe
   data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data)
