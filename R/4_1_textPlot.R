@@ -86,17 +86,17 @@ unique_freq_words <- function(words) {
 #' @importFrom purrr as_vector
 #' @export
 textProjection <- function(words,
-                               wordembeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
-                               single_wordembeddings = single_wordembeddings_df,
-                               x,
-                               y = NULL,
-                               pca = NULL,
-                               aggregation = "mean",
-                               split = "quartile",
-                               word_weight_power = 1,
-                               min_freq_words_test = 0,
-                               Npermutations = 10000,
-                               n_per_split = 50000) {
+                           wordembeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
+                           single_wordembeddings = single_wordembeddings_df,
+                           x,
+                           y = NULL,
+                           pca = NULL,
+                           aggregation = "mean",
+                           split = "quartile",
+                           word_weight_power = 1,
+                           min_freq_words_test = 0,
+                           Npermutations = 10000,
+                           n_per_split = 50000) {
   set.seed(2020)
   # PCA on single_wordembeddings
   if (is.numeric(pca)) {

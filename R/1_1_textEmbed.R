@@ -346,6 +346,10 @@ textEmbedLayersOutput <- function(x,
   } else if (contexts == FALSE & decontexts == TRUE) {
     word_embeddings_with_layers <- c(sorted_layers_All_decontexts)
   }
+  # Get number of layers to save to comment
+  layers_string <- paste(as.character(layers), sep = " ", collapse =" ")
+
+  comment(word_embeddings_with_layers) <- c(paste(model, "layers:", layers_string, collapse ="; "))
   word_embeddings_with_layers
 }
 
