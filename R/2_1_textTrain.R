@@ -499,8 +499,9 @@ textTrainLists <- function(x,
 # devtools::document()
 #' Predict scores or classification from, e.g., textTrain.
 #'
-#' @param model_info model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
+#' @param model_info Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
 #' @param new_data Word embeddings from new data to be predicted from.
+#' @param ... From predict
 #' @return Predicted scores from word embeddings.
 #' @examples
 #' wordembeddings <- wordembeddings4
@@ -517,7 +518,7 @@ textPredict <- function(model_info = NULL, new_data=NULL){
   data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data)
 
   # Get scores
-  predicted_scores <- stats::predict(model_info$final_model, data_prepared_with_recipe)
+  predicted_scores <- stats::predict(model_info$final_model, data_prepared_with_recipe, ...)
   predicted_scores
 
 }
