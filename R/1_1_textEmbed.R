@@ -424,6 +424,18 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
     x <- word_embeddings_layers[[variable_list_i]]
 
     # Go over the lists and select the layers; [[1]] ok to add below x=
+    if((length(setdiff(layers, unique(x[[1]]$layer_number))) > 0) == TRUE) {
+      stop("You are trying to aggregate layers that were not extracted. For example, in textEmbed the layers option needs to include all the layers used in context_layers.")
+    }
+
+    #layers = 0:3
+    #existing_layers = 0:3
+    #setdiff(layers, existing_layers)
+    #if(is.numeric(setdiff(layers, unique(x[[1]]$layer_number))) == FALSE) {
+    #  stop("You are trying to aggregate layers that were not extracted. For example, in textEmbed the layer option need to include all the layers used in context_layers.")
+    #}
+
+
     selected_layers <- lapply(x, function(x) x[x$layer_number %in% layers, ])
 
     # Go over the lists and select the tokens (e.g., CLS) (tokens_select = NULL tokens_select = "[CLS]")

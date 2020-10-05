@@ -34,7 +34,13 @@ test_that("Testing textEmbed as well as train", {
 #
   harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1],
                                        model = "bert-base-uncased",
-                                       layers=11)
+                                       layers= c(0, 12),
+                                       context_layers = 12,
+                                       decontext_layers = 0)
+#comment(harmony_word_embeddings$harmonywords)
+#comment(harmony_word_embeddings$satisfactionwords)
+#comment(harmony_word_embeddings$singlewords_we)
+#comment(harmony_word_embeddings$singlewords_we[1])
 
   text_train_results <- textTrain(x = harmony_word_embeddings$harmonywords,
                                   y = Language_based_assessment_data_8$hilstotal,
