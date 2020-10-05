@@ -45,7 +45,7 @@ test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tib
                                         n_per_split = 3,
                                         pca = 0.9
   )
-  # df_for_plotting
+  # comment(df_for_plotting)
 
   expect_true(tibble::is_tibble(df_for_plotting))
   expect_is(df_for_plotting$words[1], "character")
@@ -121,10 +121,10 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
     title_top = " Dot Product Projection (DPP)",
     x_axes_label = "Low vs. High HILS score",
     y_axes_label = "Low vs. High SWLS score",
-    p_adjust_method = "bonferroni",
+    p_adjust_method = "fdr",
     scale_y_axes_lim = NULL
   )
-
+  #p
   expect_true(ggplot2::is.ggplot(p$final_plot))
 })
 
@@ -136,7 +136,7 @@ test_that("textCentrality produces a tibble with character variable and numeric 
     wordembeddings$harmonywords[1:2, ],
     wordembeddings$singlewords_we
   )
-
+  #comment(df_for_plotting)
   expect_is(df_for_plotting$words[1], "character")
   expect_is(df_for_plotting$n[1], "integer")
   expect_true(tibble::is_tibble(df_for_plotting))
