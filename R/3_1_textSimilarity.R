@@ -75,5 +75,5 @@ textSimilarityNorm <- function(x, y) {
   embedding_descriptions_y <- comment(y)
   comment(ss) <- paste("x embedding = ", embedding_descriptions_x,
                        "y embedding = ", embedding_descriptions_y, sep = ".", collapse = " ")
-
+  ss
 }
