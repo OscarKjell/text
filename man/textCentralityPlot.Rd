@@ -42,13 +42,13 @@ textCentralityPlot(
 at least min_freq_words_test (default = 1).}
 
 \item{plot_n_word_extreme}{Number of words per dimension to plot with extreme
-dot product projection value.
+Supervised Centroid Projection value.
 (i.e., even if not significant;  duplicates are removed).}
 
 \item{plot_n_word_frequency}{Number of words to plot according to their frequency.
 (i.e., even if not significant).}
 
-\item{plot_n_words_middle}{Number of words to plot that are in the middle in dot product projection score
+\item{plot_n_words_middle}{Number of words to plot that are in the middle in Supervised Centroid Projection score
 (i.e., even if not significant; duplicates are removed).}
 
 \item{titles_color}{Color for all the titles (default: "#61605e").}
@@ -88,7 +88,7 @@ plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000
 \item{points_without_words_alpha}{Transparency of the points that are not linked to a word
 (default is to not show it; i.e., 0).}
 
-\item{legend_title}{Title of the color legend (default: "(DPP)").}
+\item{legend_title}{Title of the color legend (default: "(SCP)").}
 
 \item{legend_x_axes_label}{Label on the color legend (default: "(x)".}
 

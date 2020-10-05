@@ -12,7 +12,12 @@
 #' @examples
 #' x <- wordembeddings4$harmonywords
 #' y <- wordembeddings4$satisfactionwords
-#' textSimilarityTest(x, y, method = "paired", Npermutations = 10, N_cluster_nodes = 1, alternative = "two_sided")
+#' textSimilarityTest(x,
+#' y,
+#' method = "paired",
+#' Npermutations = 10,
+#' N_cluster_nodes = 1,
+#' alternative = "two_sided")
 #' @importFrom dplyr select starts_with
 #' @importFrom parallel splitIndices mclapply
 #' @export

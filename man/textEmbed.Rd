@@ -9,13 +9,13 @@ textEmbed(
   model = "bert-base-uncased",
   layers = 11:12,
   contexts = TRUE,
-  context_layers = 11:12,
+  context_layers = layers,
   context_aggregation_layers = "concatenate",
   context_aggregation_tokens = "mean",
   context_tokens_select = NULL,
   context_tokens_deselect = NULL,
   decontexts = TRUE,
-  decontext_layers = 11:12,
+  decontext_layers = layers,
   decontext_aggregation_layers = "concatenate",
   decontext_aggregation_tokens = "mean",
   decontext_tokens_select = NULL,
@@ -37,7 +37,7 @@ These layers can then be aggregated in the textEmbedLayerAggreation function. If
 \item{contexts}{Provide word embeddings based on word contexts
 (standard method; default = TRUE).}
 
-\item{context_layers}{Specify the layers that should be aggregated (default 11:12).
+\item{context_layers}{Specify the layers that should be aggregated (default the number of layers extracted above).
 Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised not to be used.}
 
 \item{context_aggregation_layers}{Method to aggregate the contextualized layers (e.g., "mean", "min" or "max, which takes the
@@ -57,7 +57,7 @@ such as [CLS] and [SEP] for the context embeddings.}
 \item{decontexts}{Provide word embeddings of single words as input
 (embeddings, e.g., used for plotting; default = TRUE).}
 
-\item{decontext_layers}{Layers to aggregate for the decontext embeddings.}
+\item{decontext_layers}{Layers to aggregate for the decontext embeddings  the number of layers extracted above.}
 
 \item{decontext_aggregation_layers}{Method to aggregate the decontextualized layers (e.g., "mean", "min" or "max, which takes the
 minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
@@ -85,7 +85,10 @@ Extract layers and aggregate them to word embeddings, for all character variable
 x <- Language_based_assessment_data_8[1:2, 1:2]
 # Example 1
 wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
-# Example 1
+# Show information that have been saved with the embeddings about how they were constructed
+comment(wordembeddings$satisfactionwords)
+comment(wordembeddings$singlewords_we)
+# Example 2
 wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 }
 }

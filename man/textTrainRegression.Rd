@@ -50,7 +50,7 @@ make the analyses considerably faster to run).}
 \item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
 }
 \value{
-A correlation between predicted and observed values; tibble of predicted values, as well as information
+A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information
 about the model (preprossing_recipe, final_model and model_description).
 }
 \description{

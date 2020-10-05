@@ -4,12 +4,14 @@
 \alias{textPredict}
 \title{Predict scores or classification from, e.g., textTrain.}
 \usage{
-textPredict(model_info = NULL, new_data = NULL)
+textPredict(model_info, new_data, ...)
 }
 \arguments{
-\item{model_info}{model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).}
+\item{model_info}{Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).}
 
 \item{new_data}{Word embeddings from new data to be predicted from.}
+
+\item{...}{From predict}
 }
 \value{
 Predicted scores from word embeddings.

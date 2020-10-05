@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlot.R
 \name{textProjection}
 \alias{textProjection}
-\title{Compute Dot Product Projection and related variables for plotting words.}
+\title{Compute Supervised Centroid Projection and related variables for plotting words.}
 \usage{
 textProjection(
   words,
@@ -48,8 +48,8 @@ the word embeddings with this in the computation of aggregated word embeddings f
 group low (1) and group high (2). This increases the weight of more frequent words.}
 
 \item{min_freq_words_test}{Option to select words that have occurred a specified number of
-times (default = 0); when creating the dot product projection line
-(i.e., single words receive dot product projection and p-value).}
+times (default = 0); when creating the Supervised Centroid Projection line
+(i.e., single words receive Supervised Centroid Projection and p-value).}
 
 \item{Npermutations}{Number of permutations in the creation of the null distribution.}
 
@@ -57,11 +57,11 @@ times (default = 0); when creating the dot product projection line
 the higher the faster, but too high may lead to abortion.}
 }
 \value{
-A dataframe with variables (e.g., including dot product projection, frequencies, p-values)
+A dataframe with variables (e.g., including Supervised Centroid Projection, frequencies, p-values)
 for the individual words that is used for the plotting in the textProjectionPlot function.
 }
 \description{
-Compute Dot Product Projection and related variables for plotting words.
+Compute Supervised Centroid Projection and related variables for plotting words.
 }
 \examples{
 # Data

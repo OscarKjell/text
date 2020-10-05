@@ -8,7 +8,7 @@ utils::globalVariables(c(
   "semanticrepresentation", "single_wordembeddings2",
   "guide_legend", "Dim1",
   "textTrainRandomForest", "textTrainCVpredictions", "textTrainCVpredictionsRF",
-  "textCentrality", "textCentralityPlot", "textEmbed", "textEmbedLayersOutput",
+  "textCentrality", "textCentralityPlot", "textEmbed", "textEmbedLayersOutput", "id_nr",
   "textEmbedLayerAggreation", "textProjection", "textProjectionPlot", "textSimilarity",
   "penalty", "mixture", "trees",
   "id1", "y.y", "id",
@@ -24,4 +24,4 @@ utils::globalVariables(c(
   "hgTransformerGetEmbedding", "central_cosine",
   "Dim_PC1", "Dim_PC2", "check_extreme_frequency", "check_extreme_max_PC1",
   "check_extreme_max_PC2", "check_extreme_min_PC1", "check_extreme_min_PC2",
-  "check_middle_PC1", "check_middle_PC2", "BertTokenizer", "BertModel"))
+  "check_middle_PC1", "check_middle_PC2"))

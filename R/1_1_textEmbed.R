@@ -245,12 +245,12 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' (standard method; default = TRUE).
 #' @param decontexts Provide word embeddings of single words as input
 #' (embeddings used for plotting; default = TRUE).
-# @param model Character string specifying pre-trained language model.
-# Default 'bert-base-uncased'; options "bert-base-multilingual-uncased", "bert-base-multilingual-cased", "openai-gpt",
-# "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased",
-# "roberta-base", "xlm-roberta-base", "xlm-roberta-large", or "T5Model". See
-# also https://www.r-text.org/articles/Word_embeddings.html.
-# If specified as NULL, set parameters pretrained_weights.
+#' @param model Character string specifying pre-trained language model.
+#' Default 'bert-base-uncased'; options "bert-base-multilingual-uncased", "bert-base-multilingual-cased", "openai-gpt",
+#' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased",
+#' "roberta-base", "xlm-roberta-base", "xlm-roberta-large", or "T5Model". See
+#' also https://www.r-text.org/articles/Word_embeddings.html.
+#' If specified as NULL, set parameters pretrained_weights.
 # @param pretrained_weights Advanced parameter submitted to HuggingFace interface to get models not yet
 # officially incorporated into text. Default = NULL. For alternatives see https://huggingface.co/.
 #' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient
@@ -488,10 +488,6 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
-#' @param contexts Provide word embeddings based on word contexts
-#' (standard method; default = TRUE).
-#' @param decontexts Provide word embeddings of single words as input
-#' (embeddings, e.g., used for plotting; default = TRUE).
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base".
@@ -499,6 +495,10 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 #' only extract the layers that you need (e.g., 12).
 #' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
 #' These layers can then be aggregated in the textEmbedLayerAggreation function. If you want all layers then use 'all'.
+#' @param contexts Provide word embeddings based on word contexts
+#' (standard method; default = TRUE).
+#' @param decontexts Provide word embeddings of single words as input
+#' (embeddings, e.g., used for plotting; default = TRUE).
 # @param pretrained_weights advanced parameter submitted to the HuggingFace interface to get models not yet officially
 # incorporated into text. Default = NULL. for details see https://huggingface.co/.
 #' @param context_layers Specify the layers that should be aggregated (default the number of layers extracted above).

@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlot.R
 \name{textProjectionPlot}
 \alias{textProjectionPlot}
-\title{Plot words according to Dot Product Projections.}
+\title{Plot words according to Supervised Centroid Projections.}
 \usage{
 textProjectionPlot(
   word_data,
@@ -18,9 +18,9 @@ textProjectionPlot(
   y_axes = FALSE,
   p_alpha = 0.05,
   p_adjust_method = "none",
-  title_top = "Dot Product Projection",
-  x_axes_label = "Dot product projection (DPP)",
-  y_axes_label = "Dot product projection (DPP)",
+  title_top = "Supervised Centroid Projection",
+  x_axes_label = "Supervised Centroid Projection (SCP)",
+  y_axes_label = "Supervised Centroid Projection (SCP)",
   scale_x_axes_lim = NULL,
   scale_y_axes_lim = NULL,
   word_font = NULL,
@@ -62,13 +62,13 @@ words, in each square is selected according to most frequent words.}
 (where duplicates are removed); selects first according to lowest p-value and then according to frequency. Hence, on a two
 dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.}
 
-\item{plot_n_word_extreme}{Number of words that are extreme on dot product projection per dimension.
+\item{plot_n_word_extreme}{Number of words that are extreme on Supervised Centroid Projection per dimension.
 (i.e., even if not significant; per dimensions, where duplicates are removed).}
 
 \item{plot_n_word_frequency}{Number of words based on being most frequent.
 (i.e., even if not significant).}
 
-\item{plot_n_words_middle}{Number of words plotted that are in the middle in dot product projection score
+\item{plot_n_words_middle}{Number of words plotted that are in the middle in Supervised Centroid Projection score
 (i.e., even if not significant;  per dimensions, where duplicates are removed).}
 
 \item{titles_color}{Color for all the titles (default: "#61605e")}
@@ -96,7 +96,8 @@ ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c
 
 \item{word_font}{Font type (default: NULL).}
 
-\item{bivariate_color_codes}{The different colors of the words
+\item{bivariate_color_codes}{The different colors of the words. Note that, at the moment, two squares should not have the
+exact same colour-code because the numbers within the squares of the legend will then be aggregated (and show the same, incorrect  value).
 (default: c("#398CF9", "#60A1F7", "#5dc688",
 "#e07f6a", "#EAEAEA", "#40DD52",
 "#FF0000", "#EA7467", "#85DB8E")).}
@@ -117,7 +118,7 @@ ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c
 \item{points_without_words_alpha}{Transparency of the points not linked with a words
 (default is to not show it, i.e., 0).}
 
-\item{legend_title}{Title on the color legend (default: "(DPP)".}
+\item{legend_title}{Title on the color legend (default: "(SCP)".}
 
 \item{legend_x_axes_label}{Label on the color legend (default: "(x)".}
 
@@ -139,12 +140,12 @@ ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c
 A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
 }
 \description{
-Plot words according to Dot Product Projections.
+Plot words according to Supervised Centroid Projections.
 }
 \examples{
 # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 
-# Dot Product Projection Plot
+# Supervised Centroid Projection Plot
 plot_projection <- textProjectionPlot(
   word_data = DP_projections_HILS_SWLS_100,
   k_n_words_to_test = FALSE,
@@ -156,7 +157,7 @@ plot_projection <- textProjectionPlot(
   plot_n_words_middle = 1,
   y_axes = FALSE,
   p_alpha = 0.05,
-  title_top = " Dot Product Projection (DPP)",
+  title_top = " Supervised Centroid Projection (SCP)",
   x_axes_label = "Low vs. High HILS score",
   y_axes_label = "Low vs. High SWLS score",
   p_adjust_method = "bonferroni",

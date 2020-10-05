@@ -43,13 +43,13 @@ textPCAPlot(
 \item{min_freq_words_test}{Select words to significance test that have occurred at least min_freq_words_test
 (default = 1).}
 
-\item{plot_n_word_extreme}{Number of words that are extreme on dot product projection per dimension.
+\item{plot_n_word_extreme}{Number of words that are extreme on Supervised Centroid Projection per dimension.
 (i.e., even if not significant; per dimensions, where duplicates are removed).}
 
 \item{plot_n_word_frequency}{Number of words based on being most frequent.
 (i.e., even if not significant).}
 
-\item{plot_n_words_middle}{Number of words plotted that are in the middle in dot product projection score
+\item{plot_n_words_middle}{Number of words plotted that are in the middle in Supervised Centroid Projection score
 (i.e., even if not significant;  per dimensions, where duplicates are removed).}
 
 \item{titles_color}{Color for all the titles (default: "#61605e")}
@@ -89,7 +89,7 @@ ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c
 \item{points_without_words_alpha}{Transparency of the points not linked with a words
 (default is to not show it, i.e., 0).}
 
-\item{legend_title}{Title on the color legend (default: "(DPP)".}
+\item{legend_title}{Title on the color legend (default: "(SCP)".}
 
 \item{legend_x_axes_label}{Label on the color legend (default: "(x)".}
 
@@ -116,7 +116,7 @@ Plot words according to 2-D plot from 2 PCA components.
 \examples{
 # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 
-# Dot Product Projection Plot
+# Supervised Centroid Projection Plot
 principle_component_plot_projection <- textPCAPlot(PC_projections_satisfactionwords_40)
 principle_component_plot_projection
 
