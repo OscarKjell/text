@@ -276,8 +276,7 @@ textEmbedLayersOutput <- function(x,
                             decontexts = TRUE,
                             model = "bert-base-uncased",
                             layers = 11:12,
-                            return_tokens = TRUE #,
-                            # pretrained_weights = NULL
+                            return_tokens = TRUE
                             ) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
@@ -309,12 +308,11 @@ textEmbedLayersOutput <- function(x,
 
       # Adding informative comment
       layers_string <- paste(as.character(layers), sep = " ", collapse =" ")
-      comment(sorted_layers_ALL_variables$context) <- c(paste("Information about the embeddings.
-                                                              textEmbedLayersOutput: ",
+      comment(sorted_layers_ALL_variables$context) <- c(paste("Information about the embeddings. textEmbedLayersOutput: ",
                                                               model, "layers:",
                                                               layers_string, ".",
                                                               collapse ="; "))
-      #comment(sorted_layers_ALL_variables$context[[i_variables]])
+      #comment(sorted_layers_ALL_variables$context)
     }
   }
 
@@ -345,19 +343,21 @@ textEmbedLayersOutput <- function(x,
 
     #Adding informative data
     layers_string <- paste(as.character(layers), sep = " ", collapse =" ")
-    comment(sorted_layers_All_decontexts$decontext) <- c(paste("Information about the embeddings.
-                                                              textEmbedLayersOutput: ",
+    comment(sorted_layers_All_decontexts$decontext$single_we) <- c(paste("Information about the embeddings. textEmbedLayersOutput: ",
+                                                               model, "layers:",
+                                                               layers_string, ".",
+                                                               collapse ="; "))
+
+    comment(sorted_layers_All_decontexts$decontext$single_words) <- c(paste("Information about the embeddings. textEmbedLayersOutput: ",
                                                                model, "layers:",
                                                                layers_string, ".",
                                                                collapse ="; "))
 
     sorted_layers_All_decontexts
   }
-
   # Combine previous list and word list
   if (contexts == TRUE & decontexts == TRUE) {
     word_embeddings_with_layers <- c(sorted_layers_ALL_variables, sorted_layers_All_decontexts)
-    word_embeddings_with_layers
   } else if (contexts == TRUE & decontexts == FALSE) {
     word_embeddings_with_layers <- c(sorted_layers_ALL_variables)
   } else if (contexts == FALSE & decontexts == TRUE) {
@@ -365,11 +365,13 @@ textEmbedLayersOutput <- function(x,
   }
 }
 #word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
-#comment(word_embeddings_with_layers$context$harmonywords)
-#comment(word_embeddings_with_layers$decontext)
-
-
+#comment(word_embeddings_with_layers$context)
+#comment(word_embeddings_with_layers$decontext$single_we)
+#
+#
 #word_embeddings_layers <- word_embeddings_with_layers$context
+#word_embeddings_layers <- word_embeddings_with_layers$decontext
+#word_embeddings_layers <- word_embeddings_with_layers$decontext$single_we
 
 #' Select and aggregate layers of hidden states to form a word embeddings.
 #' @param word_embeddings_layers Layers outputted from textEmbedLayersOutput.
@@ -456,12 +458,21 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
                                                         aggregate_layers,
                                                         "aggregate_tokens = ",
                                                         aggregate_tokens,
+                                                        "tokens_select = ",
+                                                        tokens_select,
+                                                        "tokens_deselect = ",
+                                                        tokens_deselect,
                                                         collapse = ";")
 
   }
   names(selected_layers_aggregated_tibble) <- names(word_embeddings_layers)
   selected_layers_aggregated_tibble
 }
+#comment(selected_layers_aggregated_tibble$harmonywords)
+#comment(selected_layers_aggregated_tibble$satisfactionwords)
+#
+#
+#comment(selected_layers_aggregated_tibble$single_we)
 
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
@@ -478,7 +489,7 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 #' These layers can then be aggregated in the textEmbedLayerAggreation function. If you want all layers then use 'all'.
 # @param pretrained_weights advanced parameter submitted to the HuggingFace interface to get models not yet officially
 # incorporated into text. Default = NULL. for details see https://huggingface.co/.
-#' @param context_layers Specify the layers that should be aggregated (default 11:12).
+#' @param context_layers Specify the layers that should be aggregated (default the number of layers extracted above).
 #' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised not to be used.
 #' @param context_aggregation_layers Method to aggregate the contextualized layers (e.g., "mean", "min" or "max, which takes the
 #' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
@@ -490,7 +501,7 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 #' such as [CLS] and [SEP] for the context embeddings.
 #' @param context_tokens_deselect Option to deselect embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the context embeddings.
-#' @param decontext_layers Layers to aggregate for the decontext embeddings.
+#' @param decontext_layers Layers to aggregate for the decontext embeddings  the number of layers extracted above.
 #' @param decontext_aggregation_layers Method to aggregate the decontextualized layers (e.g., "mean", "min" or "max, which takes the
 #' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
 #' to one long row.
@@ -521,13 +532,13 @@ textEmbed <- function(x,
                       layers = 11:12,
                       #pretrained_weights = NULL,
                       contexts = TRUE,
-                      context_layers = 11:12,
+                      context_layers = layers,
                       context_aggregation_layers = "concatenate",
                       context_aggregation_tokens = "mean",
                       context_tokens_select = NULL,
                       context_tokens_deselect = NULL,
                       decontexts = TRUE,
-                      decontext_layers = 11:12,
+                      decontext_layers = layers,
                       decontext_aggregation_layers = "concatenate",
                       decontext_aggregation_tokens = "mean",
                       decontext_tokens_select = NULL,
@@ -563,6 +574,8 @@ textEmbed <- function(x,
     tokens_select = decontext_tokens_select,
     tokens_deselect = decontext_tokens_deselect
   )
+  #comment(decontextualised_embeddings$single_we)
+  #comment(all_wanted_layers$decontext$single_we)
   #comment(decontextualised_embeddings[[1]])
   # Combine the words for each decontextualized embedding
   decontextualised_embeddings_words <- dplyr::bind_cols(all_wanted_layers$decontext$single_words, decontextualised_embeddings)
