@@ -488,7 +488,7 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
-#' @param model Character string specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
+#' @param model Character string specifying pre-trained language model (default 'bert-base-uncased'; options "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base".
 #' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient to
@@ -549,7 +549,7 @@ textEmbed <- function(x,
                       context_aggregation_tokens = "mean",
                       context_tokens_select = NULL,
                       context_tokens_deselect = NULL,
-                      decontexts = TRUE,
+                      decontexts = TRUE, #decontexts = FALSE
                       decontext_layers = layers,
                       decontext_aggregation_layers = "concatenate",
                       decontext_aggregation_tokens = "mean",
@@ -591,7 +591,11 @@ textEmbed <- function(x,
   #comment(decontextualised_embeddings[[1]])
   # Combine the words for each decontextualized embedding
   decontextualised_embeddings_words <- dplyr::bind_cols(all_wanted_layers$decontext$single_words, decontextualised_embeddings)
-  comment(decontextualised_embeddings_words) <- comment(decontextualised_embeddings[[1]])
+
+  if(decontexts == TRUE){
+    comment(decontextualised_embeddings_words) <- comment(decontextualised_embeddings[[1]])
+  }
+
   # Adding embeddings to one list
   all_embeddings <- contextualised_embeddings
   all_embeddings$singlewords_we <- decontextualised_embeddings_words

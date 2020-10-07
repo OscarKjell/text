@@ -127,6 +127,7 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
                                 contexts = TRUE,
                                 decontexts = FALSE,
                                 layers = "all")
+
   expect_that(embeddings, is_a("list"))
 
   # Is the first value there and numeric
@@ -170,9 +171,18 @@ test_that("textEmbed", {
   text_to_test_import2 <- c("I am happy", "Let us go")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
-  embeddings <- textEmbed(x,
-                          model = "roberta-base")
-  expect_that(embeddings, is_a("list"))
+  embeddings_decontextsT <- textEmbed(x,
+                          model = "roberta-base",
+                          decontexts = TRUE)
+
+  embeddings_decontextsF <- textEmbed(x,
+                          model = "roberta-base",
+                          decontexts = FALSE)
+
+  expect_that(embeddings_decontextsT, is_a("list"))
+  expect_that(embeddings_decontextsF, is_a("list"))
+
+
 })
 
 #
