@@ -38,9 +38,9 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
   xy_recipe <- rsample::analysis(object) %>%
     recipes::recipe(y ~ .) %>%
     # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
-    recipes::update_role(id_nr, new_role = "id variable") %>% #New
-    recipes::update_role(-id_nr, new_role = "predictor") %>%  #New
-    recipes::update_role(y, new_role = "outcome") %>%         #New
+    recipes::update_role(id_nr, new_role = "id variable") %>%
+    recipes::update_role(-id_nr, new_role = "predictor") %>%
+    recipes::update_role(y, new_role = "outcome") %>%
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
