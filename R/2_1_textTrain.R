@@ -122,7 +122,7 @@ textTrain <- function(x,
     train_method = "random_forest"
   } else if ((tibble::is_tibble(y)|is.data.frame(y) & length(y) > 1) & force_train_method =="automatic"){
 
-    # Create a dataframe only depending numeric or categorical depending on most frequent type
+    # Create a dataframe with only one type (numeric or categorical) depending on most frequent type
     # Select all numeric variables
     y_n <- dplyr::select_if(y, is.numeric)
     # Select all categorical variables
@@ -371,6 +371,17 @@ textTrainLists <- function(x,
                            eval_measure = "rmse",
                            p_adjust_method = "holm",
                            ...) {
+  # If y is a vector make it into a tibble format
+  if(is.vector(y) == TRUE){
+    y <- tibble::as_tibble_col(y)
+  }
+
+  # If x is a tibble (and not a list with tibble(s)), make it into a list with tibble format
+  if(tibble::is_tibble(x) == TRUE){
+    x_name <- deparse(substitute(x))
+    x <- list(x)
+    names(x) <- x_name
+  }
 
   # Force or decide regression or random forest (and select only categorical or numeric variables for multiple input).
   if (is.numeric(y) == TRUE & force_train_method == "automatic") {
@@ -410,6 +421,7 @@ textTrainLists <- function(x,
   variables <- rep(variables, length(x))
   # Create data frame with duplicated variables.
   y1 <- y[c(variables)]
+
   # Order columns alphabetically.
   y1 <- y1[, order(colnames(y1))]
 

@@ -225,10 +225,9 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
 
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
 
-  wordembeddings <- wordembeddings4[1]
-  ratings_data <- Language_based_assessment_data_8[5:6]
-  results <- textTrainLists(wordembeddings,
-                            ratings_data,
+  # Two word embeddings and one vector
+  results <- textTrainLists(wordembeddings4[1:2],
+                            Language_based_assessment_data_8$hilstotal,
                             preprocess_PCA = c(0.90),
                             model = "regression",
                             penalty = c(2),
@@ -239,9 +238,9 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   testthat::expect_that(results, testthat::is_a("list"))
   testthat::expect_is(results$results$rho_correlation[1], "character")
 
-
-  results_or <- textTrainLists(wordembeddings,
-                               ratings_data,
+  # One word embedding and two rating scales
+  results_or <- textTrainLists(wordembeddings4$harmonywords,
+                               Language_based_assessment_data_8[5:6],
                                preprocess_PCA = c(0.90),
                                #outside_strata_y = NULL,
                                #inside_strata_y = NULL,
@@ -253,6 +252,9 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
   testthat::expect_that(results_or, testthat::is_a("list"))
   testthat::expect_is(results_or$results$tau_correlation[1], "character")
+
+  wordembeddings <- wordembeddings4[1]
+  ratings_data <- Language_based_assessment_data_8[5:6]
 
   results_or_p <- textTrainLists(wordembeddings,
                                  ratings_data,
