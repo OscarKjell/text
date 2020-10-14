@@ -25,7 +25,7 @@ textEmbed(
 \arguments{
 \item{x}{A character variable or a tibble/dataframe with at least one character variable.}
 
-\item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased'; options "openai-gpt",
+\item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased'; options "bert-base-multilingual-cased", "openai-gpt",
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 "roberta-base", or "xlm-roberta-base".}
 

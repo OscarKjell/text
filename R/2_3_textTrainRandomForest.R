@@ -57,7 +57,7 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy", holdout_pred 
 #' @param outputlist_results_outer Results from outer predictions.
 #' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
 #' @noRd
-classification_results <- function(outputlist_results_outer){
+classification_results <- function(outputlist_results_outer, ...){
   # Unnest predictions and y
   predy_y <- tibble::tibble(tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
                             tidyr::unnest(outputlist_results_outer$estimate, cols = c(estimate)),
@@ -71,14 +71,14 @@ classification_results <- function(outputlist_results_outer){
   fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate)
 
 
-
-  accuracy     <- yardstick::accuracy(predy_y, truth, estimate)
-  bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate)
-  sens         <- yardstick::sens(predy_y, truth, estimate)
-  spec         <- yardstick::spec(predy_y, truth, estimate)
-  precision    <- yardstick::precision(predy_y, truth, estimate)
-  kappa        <- yardstick::kap(predy_y, truth, estimate)
-  f_measure    <- yardstick::f_meas(predy_y, truth, estimate)
+help(sens)
+  accuracy     <- yardstick::accuracy(predy_y, truth, estimate, ...)
+  bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate, ...)
+  sens         <- yardstick::sens(predy_y, truth, estimate, ...)
+  spec         <- yardstick::spec(predy_y, truth, estimate, ...)
+  precision    <- yardstick::precision(predy_y, truth, estimate, ...)
+  kappa        <- yardstick::kap(predy_y, truth, estimate, ...)
+  f_measure    <- yardstick::f_meas(predy_y, truth, estimate, ...)
 
   #eval_class <- colnames(predy_y[3])
   roc_auc      <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3])) # OK tidyselect::all_of(eval_class) dplyr::
@@ -433,7 +433,8 @@ textTrainRandomForest <- function(x,
                                   eval_measure = "bal_accuracy",
                                   model_description = "Consider writing a description of your model here",
                                   multi_cores = TRUE,
-                                  save_output = "all") {
+                                  save_output = "all",
+                                  ...) {
 
   set.seed(2020)
 
@@ -536,7 +537,7 @@ textTrainRandomForest <- function(x,
     purrr::map(na.omit)
 
   # Get  predictions and evaluation results
-  results_collected <- classification_results(outputlist_results_outer = outputlist_results_outer)
+  results_collected <- classification_results(outputlist_results_outer = outputlist_results_outer, ...)
   names(results_collected) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
 
 
