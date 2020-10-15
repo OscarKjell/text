@@ -88,12 +88,13 @@ def hgTransformerGetEmbedding(text_strings,
                     hidden_states = [hidden_states[l] for l in layers]
                 hidden_states = [h.tolist() for h in hidden_states]
             
+            sent_embedding = []
             for l in range(len(hidden_states)): # iterate over layers
                 layer_embedding = []
                 for m in range(len(hidden_states[l])): # iterate over sentences
                     layer_embedding.extend([tok for ii, tok in enumerate(hidden_states[l][m]) if attention_mask[m][ii]>0])
-                all_embs.append(layer_embedding)
-            all_embs = [[l] for l in all_embs]
+                sent_embedding.append(layer_embedding)
+            all_embs.append([[l] for l in sent_embedding])
 
         else:
             input_ids = tokenizer.encode(text_string, add_special_tokens=True)
