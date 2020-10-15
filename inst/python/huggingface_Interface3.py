@@ -96,7 +96,6 @@ def hgTransformerGetEmbedding(text_strings,
             all_embs = [[l] for l in all_embs]
 
         else:
-            print("A")
             input_ids = tokenizer.encode(text_string, add_special_tokens=True)
             if return_tokens:
                 tokens = tokenizer.convert_ids_to_tokens(input_ids)
