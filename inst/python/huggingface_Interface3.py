@@ -18,7 +18,8 @@ from nltk.tokenize import sent_tokenize
 def hgTransformerGetEmbedding(text_strings,
                               model = 'bert-base-uncased',
                               layers = 'all',  
-                              return_tokens = True):
+                              return_tokens = True,
+                              max_token_to_sentence = 4):
     """
     Simple Python method for embedding text with pretained Hugging Face models
 
@@ -33,6 +34,9 @@ def hgTransformerGetEmbedding(text_strings,
         'all' or an integer list of layers to keep
     return_tokens : boolean
         return tokenized version of text_strings
+    max_token_to_sentence : int
+        maximum number of tokens in a string to handle before switching to embedding text
+        sentence by sentence
 
 
     Returns
@@ -47,8 +51,8 @@ def hgTransformerGetEmbedding(text_strings,
     config = AutoConfig.from_pretrained(model, output_hidden_states=True)
     tokenizer = AutoTokenizer.from_pretrained(model)
     transformer_model = AutoModel.from_pretrained(model, config=config)
-    
-    maxTokensPerSeg = tokenizer.max_len_sentences_pair//2
+
+    max_tokens = tokenizer.max_len_sentences_pair
 
     ##Check and Adjust Input Typs
     if not isinstance(text_strings, list):
@@ -62,32 +66,40 @@ def hgTransformerGetEmbedding(text_strings,
     all_toks = []
 
     for text_string in text_strings:
-
-        input_ids = tokenizer.encode(text_string, add_special_tokens=True)
-        if return_tokens:
-            tokens = tokenizer.convert_ids_to_tokens(input_ids)
         
-        # if number of tokens greater than the model can handle
+        # if length of text_string is > max_token_to_sentence*4
         # embedd each sentence separately
-        if len(input_ids) > maxTokensPerSeg:
-            this_embs, this_toks = [], []
-            for sent_str in sent_tokenize(text_string):
-                input_ids = tokenizer.encode(sent_str, add_special_tokens=True)
-                if return_tokens:
-                    tokens = tokenizer.convert_ids_to_tokens(input_ids)
-                
-                with torch.no_grad():
-                    hidden_states = transformer_model(torch.tensor([input_ids]))[2]
-                    if layers != 'all': 
-                        hidden_states = [hidden_states[l] for l in layers]
-                    hidden_states = [h.tolist() for h in hidden_states]
-                    this_embs.extend(hidden_states)
-                    if return_tokens:
-                        this_toks.extend(tokens)
-            all_embs.append(this_embs)
-            all_toks.append(this_toks)
+        if len(text_string) > max_token_to_sentence*4:
+            
+            sentence_batch = [s for s in sent_tokenize(text_string)]
+            batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True)
+            input_ids = batch["input_ids"]
+            attention_mask = batch['attention_mask']
+            
+            if return_tokens:
+                tokens = []
+                for ids in input_ids:
+                    tokens.extend([token for token in tokenizer.convert_ids_to_tokens(ids) if token != '[PAD]'])
+                all_toks.append(tokens)
+            
+            with torch.no_grad():
+                hidden_states = transformer_model(torch.tensor(input_ids),attention_mask=torch.tensor(attention_mask))[2]
+                if layers != 'all': 
+                    hidden_states = [hidden_states[l] for l in layers]
+                hidden_states = [h.tolist() for h in hidden_states]
+            
+            for l in range(len(hidden_states)): # iterate over layers
+                layer_embedding = []
+                for m in range(len(hidden_states[l])): # iterate over sentences
+                    layer_embedding.extend([tok for ii, tok in enumerate(hidden_states[l][m]) if attention_mask[m][ii]>0])
+                all_embs.append(layer_embedding)
+            all_embs = [[l] for l in all_embs]
 
         else:
+            print("A")
+            input_ids = tokenizer.encode(text_string, add_special_tokens=True)
+            if return_tokens:
+                tokens = tokenizer.convert_ids_to_tokens(input_ids)
             with torch.no_grad():
                 hidden_states = transformer_model(torch.tensor([input_ids]))[2]
                 if layers != 'all': 
@@ -102,7 +114,7 @@ def hgTransformerGetEmbedding(text_strings,
     else:
         return all_embs
 
-	
+    
 #EXAMPLE TEST CODE:
 #if __name__   == '__main__':
 #    embeddings, tokens = hgTransformerGetEmbedding("Here is one sentence.", layers=[0,10])
