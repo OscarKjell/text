@@ -7,7 +7,7 @@
 
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-<!-- [![CRAN Status](https://www.r-pkg.org/badges/version/text)](https://cran.r-project.org/package=text) 
+<!--    [![CRAN Status](https://www.r-pkg.org/badges/version/text)](https://cran.r-project.org/package=text) 
 [![Github build status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)-->
 [![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?token=IZI3IKCFYA)](https://codecov.io/gh/oscarkjell/text)
 
@@ -117,6 +117,9 @@ plot_projection
 
 <img src="man/figures/README-DPP_plot-1.png" width="100%" />
 
+    #> 
+    #> $description
+    #> [1] "INFORMATION ABOUT THE PROJECTION  INFORMATION ABOUT THE PLOT word_data = DP_projections_HILS_SWLS_100 k_n_words_to_test = FALSE min_freq_words_test = 1 min_freq_words_plot = 1 plot_n_words_square = 3 plot_n_words_p = 5 plot_n_word_extreme = 5 plot_n_word_frequency = 5 plot_n_words_middle = 5 y_axes = TRUE p_alpha = 0.05 p_adjust_method = none bivariate_color_codes = #398CF9 #60A1F7 #5dc688 #e07f6a #EAEAEA #40DD52 #FF0000 #EA7467 #85DB8E word_size_range = 3 - 8 position_jitter_hight = 0.5 position_jitter_width = 0.8 point_size = 0.5 arrow_transparency = 0.5 points_without_words_size = 0.2 points_without_words_alpha = 0.2 legend_x_position = 0.02 legend_y_position = 0.02 legend_h_size = 0.2 legend_w_size = 0.2 legend_title_size = 7 legend_number_size = 2"
     #> 
     #> $processed_word_data
     #> # A tibble: 583 x 32
