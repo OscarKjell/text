@@ -179,9 +179,9 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
                                    extremely_randomised_splitrule = NULL,
                                    multi_cores = FALSE,
                                    eval_measure = "roc_auc", #sens bal_accuracy f_measure
-                                   save_output = "only_results"
-                                   )
-
+                                   save_output = "only_results",
+                                   event_level = "second")
+  trained_rf_95$results
   testthat::expect_that(trained_rf_95, testthat::is_a("list"))
   testthat::expect_is(trained_rf_95$results$.estimate[1], "numeric")
 

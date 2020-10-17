@@ -71,7 +71,6 @@ classification_results <- function(outputlist_results_outer, ...){
   fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate)
 
 
-help(sens)
   accuracy     <- yardstick::accuracy(predy_y, truth, estimate, ...)
   bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate, ...)
   sens         <- yardstick::sens(predy_y, truth, estimate, ...)
@@ -180,7 +179,7 @@ fit_model_accuracy_rf <- function(object,
 
   eval_measure_val <- select_eval_measure_val(eval_measure = eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred_class, class=class)
 
-  # Sort output of RMSE, predictions and truth (observed y) help(accuracy)
+  # Sort output of RMSE, predictions and truth (observed y) help(sens)
   output <- list(list(eval_measure_val),
                  list(holdout_pred$.pred_class),
                  list(holdout_pred$y),
@@ -392,6 +391,7 @@ summarize_tune_results_rf <- function(object,
 #' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
 #' make the analyses considerably faster to run).
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
+#' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe, final_model, model_description
 #' chisq and fishers test as well as evaluation measures, e.g., including accuracy, f_meas and roc_auc (for details on
 #' these measures see the yardstick r-package documentation).
@@ -425,7 +425,7 @@ textTrainRandomForest <- function(x,
                                   #inside_folds = 10,
                                   #inside_strata_y = "y",
                                   mode_rf = "classification",
-                                  preprocess_PCA = "min_halving",
+                                  preprocess_PCA = NA,
                                   extremely_randomised_splitrule = NULL,
                                   mtry = c(1,  10, 20, 40),
                                   min_n = c(1, 10, 20, 40),

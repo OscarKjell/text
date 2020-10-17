@@ -8,7 +8,7 @@ textTrainRandomForest(
   x,
   y,
   mode_rf = "classification",
-  preprocess_PCA = "min_halving",
+  preprocess_PCA = NA,
   extremely_randomised_splitrule = NULL,
   mtry = c(1, 10, 20, 40),
   min_n = c(1, 10, 20, 40),
@@ -16,7 +16,8 @@ textTrainRandomForest(
   eval_measure = "bal_accuracy",
   model_description = "Consider writing a description of your model here",
   multi_cores = TRUE,
-  save_output = "all"
+  save_output = "all",
+  ...
 )
 }
 \arguments{
@@ -50,6 +51,8 @@ see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_me
 make the analyses considerably faster to run).}
 
 \item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
+
+\item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
 \value{
 A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe, final_model, model_description
