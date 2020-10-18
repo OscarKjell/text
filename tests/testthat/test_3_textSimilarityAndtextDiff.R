@@ -3,7 +3,7 @@ library(testthat)
 library(text)
 library(tibble)
 
-context("Semantic Similiarty Functions and textDiff")
+context("Semantic Similiarty Functions and textSimilarityTest")
 
 test_that("textSimilarity produces similarity scores", {
   similarity_scores <- textSimilarity(
@@ -25,8 +25,8 @@ test_that("textSimilarity produces similarity scores", {
   expect_that(similarity_norm_scores, is_a("numeric"))
 })
 
-test_that("textDiff paired results in list with numeric output", {
-  test_diff_results <- textDiff(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts,
+test_that("textSimilarityTest paired results in list with numeric output", {
+  test_diff_results <- textSimilarityTest(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts,
     method = "paired", Npermutations = 10, N_cluster_nodes = 1
   )
 
@@ -34,14 +34,14 @@ test_that("textDiff paired results in list with numeric output", {
   expect_is(test_diff_results[[1]][[1]], "numeric")
 })
 
-test_that("textDiff paired results in list with numeric output", {
-  expect_error(textDiff(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts[1:39, ],
+test_that("textSimilarityTest paired results in list with numeric output", {
+  expect_error(textSimilarityTest(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts[1:39, ],
     method = "paired", Npermutations = 10, N_cluster_nodes = 1
   ))
 })
 
-test_that("textDiff unpaired results in list with numeric output", {
-  test_diff_results <- textDiff(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts,
+test_that("textSimilarityTest unpaired results in list with numeric output", {
+  test_diff_results <- textSimilarityTest(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts,
     method = "unpaired", Npermutations = 10, N_cluster_nodes = 1
   )
 
