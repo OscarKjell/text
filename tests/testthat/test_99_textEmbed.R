@@ -1,5 +1,3 @@
-# Test your package with Ctrl/Cmd + Shift + T or devtools::test()
-
 library(text)
 library(tibble)
 library(testthat)
@@ -34,29 +32,14 @@ test_that("textEmbedLayerAggreation 'all': layer =   aggregate_tokens = 'mean' p
   length_dims_mean <- length(aggregated_embeddings[[1]])
 
   aggregated_embeddings_con <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
-                                                layers = 0:1,
-                                                aggregate_layers = "concatenate",
-                                                aggregate_tokens = "mean"
+    layers = 0:1,
+    aggregate_layers = "concatenate",
+    aggregate_tokens = "mean"
   )
   length_dims_con <- length(aggregated_embeddings_con[[1]])
 
-  expect_true(2*length_dims_mean == length_dims_con)
-
+  expect_true(2 * length_dims_mean == length_dims_con)
 })
-
-#test_that("textEmbedLayerAggreation concatenate produces long/aggregated word embeddings", {
-
-  # skip_on_cran()
-#  aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
-#                                                layers = c(1:2),
-#                                                aggregate_tokens = "concatenate"
-#  )
-#  aggregated_embeddings
-#  expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")
-#  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
-#})
-
-
 
 
 test_that("textEmbedLayerAggreation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
@@ -101,8 +84,8 @@ test_that("textEmbedStatic with example space", {
   rating_response <- c(25, 30, 30, 2, 10)
   tibble_response <- tibble(word_response, rating_response)
   tibble_response
-  #Test function
-  test_result <- textEmbedStatic(df=tibble_response, space=test_space, tk_df = "null", aggregate = "mean")
+  # Test function
+  test_result <- textEmbedStatic(df = tibble_response, space = test_space, tk_df = "null", aggregate = "mean")
   test_result
   # rlang::last_error()
   expect_is(test_result$word_response[[1]][[1]], "numeric")
@@ -123,10 +106,11 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
   embeddings <- textEmbedLayersOutput(x,
-                                      model="bert-base-multilingual-cased",
-                                contexts = TRUE,
-                                decontexts = FALSE,
-                                layers = "all")
+    model = "bert-base-multilingual-cased",
+    contexts = TRUE,
+    decontexts = FALSE,
+    layers = "all"
+  )
 
   expect_that(embeddings, is_a("list"))
 
@@ -148,10 +132,11 @@ test_that("textEmbedLayersOutput bert-base-multilingual-cased contexts=FALSE, de
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
   embeddings <- textEmbedLayersOutput(x,
-                                model = "bert-base-multilingual-uncased",
-                                contexts = FALSE,
-                                decontexts = TRUE,
-                                layers = "all")
+    model = "bert-base-multilingual-uncased",
+    contexts = FALSE,
+    decontexts = TRUE,
+    layers = "all"
+  )
   expect_that(embeddings, is_a("list"))
 
   # Is the first value there and numeric
@@ -172,31 +157,30 @@ test_that("textEmbed", {
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
   embeddings_decontextsT <- textEmbed(x,
-                          model = "roberta-base",
-                          decontexts = TRUE)
+    model = "roberta-base",
+    decontexts = TRUE
+  )
 
   embeddings_decontextsF <- textEmbed(x,
-                          model = "roberta-base",
-                          decontexts = FALSE)
+    model = "roberta-base",
+    decontexts = FALSE
+  )
 
   expect_that(embeddings_decontextsT, is_a("list"))
   expect_that(embeddings_decontextsF, is_a("list"))
 
 
 
-   long_text_test <- c("Humour (British English) or humor (American English; see spelling differences) is the tendency of experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
+  long_text_test <- c("Humour (British English) or humor (American English; see spelling differences) is the tendency of experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
  People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.
  Humour (British English) or humor (American English; see spelling differences) is the tendency of experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
  People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.
  Humour (British English) or humor (American English; see spelling differences) is the tendency of experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
  People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.
  ")
-   long_text_embedding <- textEmbed(long_text_test,
-             model = "roberta-base")
+  long_text_embedding <- textEmbed(long_text_test,
+    model = "roberta-base"
+  )
 
-   expect_that(long_text_embedding, is_a("list"))
-
-
+  expect_that(long_text_embedding, is_a("list"))
 })
-
-#

@@ -123,5 +123,3 @@
 #' }
 #' @source \url{https://link.springer.com/article/10.1007/s11205-015-0903-z}
 "PC_projections_satisfactionwords_40"
-
-

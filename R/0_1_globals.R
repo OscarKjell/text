@@ -1,4 +1,4 @@
-# devtools::document()
+
 # Global settings (these avoids the note (warning) "no visible binding for global variable ‘token_index’
 # https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-variable-note/28887
 utils::globalVariables(c(
@@ -24,4 +24,5 @@ utils::globalVariables(c(
   "hgTransformerGetEmbedding", "central_cosine",
   "Dim_PC1", "Dim_PC2", "check_extreme_frequency", "check_extreme_max_PC1",
   "check_extreme_max_PC2", "check_extreme_min_PC1", "check_extreme_min_PC2",
-  "check_middle_PC1", "check_middle_PC2"))
+  "check_middle_PC1", "check_middle_PC2"
+))

@@ -13,21 +13,22 @@
 #' x <- wordembeddings4$harmonywords
 #' y <- wordembeddings4$satisfactionwords
 #' textSimilarityTest(x,
-#' y,
-#' method = "paired",
-#' Npermutations = 10,
-#' N_cluster_nodes = 1,
-#' alternative = "two_sided")
+#'   y,
+#'   method = "paired",
+#'   Npermutations = 10,
+#'   N_cluster_nodes = 1,
+#'   alternative = "two_sided"
+#' )
 #' @importFrom dplyr select starts_with
 #' @importFrom parallel splitIndices mclapply
 #' @export
 textSimilarityTest <- function(x,
-                     y,
-                     Npermutations = 1000,
-                     method = "paired",
-                     alternative = c("two_sided", "less", "greater"),
-                     output.permutations = TRUE,
-                     N_cluster_nodes = 1) {
+                               y,
+                               Npermutations = 1000,
+                               method = "paired",
+                               alternative = c("two_sided", "less", "greater"),
+                               output.permutations = TRUE,
+                               N_cluster_nodes = 1) {
   set.seed(2020)
   if ((nrow(x) != nrow(y))) {
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
@@ -111,14 +112,17 @@ textSimilarityTest <- function(x,
     embedding_descriptions_x <- comment(x)
     embedding_descriptions_y <- comment(y)
     test_description <- paste("permutations = ", Npermutations,
-                              "method = ", method,
-                              "alternative = ", alternative,
-                              collapse = " ")
-    results <- c(random.estimates.4.null,
-                 embedding_descriptions_x,
-                 embedding_descriptions_y,
-                 test_description,
-                 results)
+      "method = ", method,
+      "alternative = ", alternative,
+      collapse = " "
+    )
+    results <- c(
+      random.estimates.4.null,
+      embedding_descriptions_x,
+      embedding_descriptions_y,
+      test_description,
+      results
+    )
   }
   results
 }

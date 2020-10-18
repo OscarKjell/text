@@ -1,17 +1,3 @@
-#rlang::last_error()
-#rlang::last_trace()
-#example_categories <- Language_based_assessment_data_8[8]$gender
-###
-#results2 <- textTrainRandomForest(wordembeddings4$harmonywords,
-#                                 example_categories,
-#                                 eval_measure = "bal_accuracy", # f_measure bal_accuracy accuracy
-#                                 mtry  = c(1, 5),
-#                                 min_n = c(1, 5),
-#                                 trees = c(100, 1000),
-#                                 multi_cores = TRUE)
-#results2$roc_curve_plot
-# library(tidyverse)
-
 
 
 #  devtools::document()
@@ -25,27 +11,27 @@
 #' @return  tibble with .metric column (i.e., type of evaluation measure), .estimator (e.g., binary)
 #' and .estimate (i.e., the resulting value).
 #' @noRd
-select_eval_measure_val <- function(eval_measure = "bal_accuracy", holdout_pred = NULL, truth = y, estimate = .pred_class, class){
+select_eval_measure_val <- function(eval_measure = "bal_accuracy", holdout_pred = NULL, truth = y, estimate = .pred_class, class) {
   # Get accuracy
-  if (eval_measure == "accuracy"){
-    eval_measure_val           <- yardstick::accuracy(holdout_pred, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "bal_accuracy"){
-    eval_measure_val  <- yardstick::bal_accuracy(holdout_pred, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "sens"){
-    eval_measure_val          <- yardstick::sens(holdout_pred, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "spec"){
-    eval_measure_val          <- yardstick::spec(holdout_pred, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "precision"){
-    eval_measure_val          <- yardstick::precision(holdout_pred, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "kappa"){
-    eval_measure_val          <- yardstick::kap(holdout_pred, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "f_measure"){
-    eval_measure_val          <- yardstick::f_meas(holdout_pred, truth = y, estimate = .pred_class)
-  } else if (eval_measure == "roc_auc"){
+  if (eval_measure == "accuracy") {
+    eval_measure_val <- yardstick::accuracy(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "bal_accuracy") {
+    eval_measure_val <- yardstick::bal_accuracy(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "sens") {
+    eval_measure_val <- yardstick::sens(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "spec") {
+    eval_measure_val <- yardstick::spec(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "precision") {
+    eval_measure_val <- yardstick::precision(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "kappa") {
+    eval_measure_val <- yardstick::kap(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "f_measure") {
+    eval_measure_val <- yardstick::f_meas(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "roc_auc") {
     class1_name <- eval(class)
-    eval_measure_val          <- yardstick::roc_auc(holdout_pred, truth = y, class1_name) #all_of(class1_name)
-  } else if (eval_measure == "rmse"){
-    eval_measure_val          <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)
+    eval_measure_val <- yardstick::roc_auc(holdout_pred, truth = y, class1_name) # all_of(class1_name)
+  } else if (eval_measure == "rmse") {
+    eval_measure_val <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)
   }
   eval_measure_val
 }
@@ -57,43 +43,47 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy", holdout_pred 
 #' @param outputlist_results_outer Results from outer predictions.
 #' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
 #' @noRd
-classification_results <- function(outputlist_results_outer, ...){
+classification_results <- function(outputlist_results_outer, ...) {
   # Unnest predictions and y
-  predy_y <- tibble::tibble(tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
-                            tidyr::unnest(outputlist_results_outer$estimate, cols = c(estimate)),
-                            tidyr::unnest(outputlist_results_outer$.pred_1, cols = c(.pred_1)),
-                            tidyr::unnest(outputlist_results_outer$.pred_2, cols = c(.pred_2)),
-                            tidyr::unnest(outputlist_results_outer$id_nr, cols = c(id_nr)))
+  predy_y <- tibble::tibble(
+    tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
+    tidyr::unnest(outputlist_results_outer$estimate, cols = c(estimate)),
+    tidyr::unnest(outputlist_results_outer$.pred_1, cols = c(.pred_1)),
+    tidyr::unnest(outputlist_results_outer$.pred_2, cols = c(.pred_2)),
+    tidyr::unnest(outputlist_results_outer$id_nr, cols = c(id_nr))
+  )
   predy_y <- predy_y %>% dplyr::arrange(id_nr)
   # Correlate predictions and observed help(all_of)
-  chisq        <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
+  chisq <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
 
   fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate)
 
 
-  accuracy     <- yardstick::accuracy(predy_y, truth, estimate, ...)
+  accuracy <- yardstick::accuracy(predy_y, truth, estimate, ...)
   bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate, ...)
-  sens         <- yardstick::sens(predy_y, truth, estimate, ...)
-  spec         <- yardstick::spec(predy_y, truth, estimate, ...)
-  precision    <- yardstick::precision(predy_y, truth, estimate, ...)
-  kappa        <- yardstick::kap(predy_y, truth, estimate, ...)
-  f_measure    <- yardstick::f_meas(predy_y, truth, estimate, ...)
+  sens <- yardstick::sens(predy_y, truth, estimate, ...)
+  spec <- yardstick::spec(predy_y, truth, estimate, ...)
+  precision <- yardstick::precision(predy_y, truth, estimate, ...)
+  kappa <- yardstick::kap(predy_y, truth, estimate, ...)
+  f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...)
 
-  #eval_class <- colnames(predy_y[3])
-  roc_auc      <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3])) # OK tidyselect::all_of(eval_class) dplyr::
-  roc_curve_data    <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[3]))
+  # eval_class <- colnames(predy_y[3])
+  roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3])) # OK tidyselect::all_of(eval_class) dplyr::
+  roc_curve_data <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[3]))
   roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[3])))
 
-  results_collected <- dplyr::bind_rows(accuracy,
-                                        bal_accuracy,
-                                        sens,
-                                        spec,
-                                        precision,
-                                        kappa,
-                                        f_measure,
-                                        roc_auc)
+  results_collected <- dplyr::bind_rows(
+    accuracy,
+    bal_accuracy,
+    sens,
+    spec,
+    precision,
+    kappa,
+    f_measure,
+    roc_auc
+  )
 
-  output        <- list(predy_y, roc_curve_data, roc_curve_plot, fisher, chisq, results_collected)
+  output <- list(predy_y, roc_curve_data, roc_curve_plot, fisher, chisq, results_collected)
   names(output) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
   output
 }
@@ -120,25 +110,32 @@ fit_model_accuracy_rf <- function(object,
                                   preprocess_PCA = "min_halving",
                                   eval_measure = "bal_accuracy",
                                   extremely_randomised_splitrule = NULL) {
-
-
   xy_recipe <- rsample::analysis(object) %>%
     recipes::recipe(y ~ .) %>%
-#    recipes::update_role(id1, new_role = "id variable") %>%
-#    #recipes::update_role(-id1, new_role = "predictor") %>%
-#    recipes::update_role(y, new_role = "outcome") %>%
-    recipes::update_role(id_nr, new_role = "id variable") %>% #New
-    recipes::update_role(-id_nr, new_role = "predictor") %>%  #New
-    recipes::update_role(y, new_role = "outcome") %>%         #New
+    #    recipes::update_role(id1, new_role = "id variable") %>%
+    #    #recipes::update_role(-id1, new_role = "predictor") %>%
+    #    recipes::update_role(y, new_role = "outcome") %>%
+    recipes::update_role(id_nr, new_role = "id variable") %>% # New
+    recipes::update_role(-id_nr, new_role = "predictor") %>% # New
+    recipes::update_role(y, new_role = "outcome") %>% # New
     recipes::step_naomit(Dim1, skip = FALSE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
     recipes::step_BoxCox(recipes::all_predictors()) %>%
     # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
-    {if(!is.na(preprocess_PCA))
-    {if(preprocess_PCA >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
-      else if(preprocess_PCA < 1) recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
-      else . } else .} %>%
+    {
+      if (!is.na(preprocess_PCA)) {
+        if (preprocess_PCA >= 1) {
+          recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
+        } else if (preprocess_PCA < 1) {
+          recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+        } else {
+          .
+        }
+      } else {
+        .
+      }
+    } %>%
     recipes::prep()
 
   # To load the prepared training data into a variable juice() is used.
@@ -146,61 +143,65 @@ fit_model_accuracy_rf <- function(object,
   xy_training <- recipes::juice(xy_recipe)
 
   # Create and fit model. help(rand_forest)
-  if(is.null(extremely_randomised_splitrule)){
-  mod <-
-    parsnip::rand_forest(mode = mode_rf, trees = trees, mtry = mtry, min_n = min_n) %>%
-    #parsnip::set_engine("ranger")
-    parsnip::set_engine("randomForest") %>%
-    parsnip::fit(y ~ ., data = xy_training) #analysis(object)
-  } else if(is.character(extremely_randomised_splitrule)){
+  if (is.null(extremely_randomised_splitrule)) {
+    mod <-
+      parsnip::rand_forest(mode = mode_rf, trees = trees, mtry = mtry, min_n = min_n) %>%
+      # parsnip::set_engine("ranger")
+      parsnip::set_engine("randomForest") %>%
+      parsnip::fit(y ~ ., data = xy_training) # analysis(object)
+  } else if (is.character(extremely_randomised_splitrule)) {
     mod <-
       parsnip::rand_forest(mode = mode_rf) %>%
       parsnip::set_engine("ranger", splitrule = extremely_randomised_splitrule) %>% # extremely_randomised_splitrule = "extratrees" = "gini" "extratrees" "hellinger" tune()
-      #parsnip::set_mode("classification") %>%
+      # parsnip::set_mode("classification") %>%
       parsnip::fit(y ~ ., data = xy_training) # ADDED line; and: install.packages("ranger")
   }
 
-  #Prepare the test data according to the recipe
+  # Prepare the test data according to the recipe
   xy_testing <- xy_recipe %>%
     recipes::bake(rsample::assessment(object))
   # look at xy_testing: glimpse(xy_testing)
 
   # Apply model on new data help(predict)
   holdout_pred_class <-
-    stats::predict(mod, xy_testing %>% dplyr::select(-y), type= c("class")) %>%
+    stats::predict(mod, xy_testing %>% dplyr::select(-y), type = c("class")) %>%
     dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
   holdout_pred <-
-    stats::predict(mod, xy_testing %>% dplyr::select(-y), type= c("prob")) %>%
+    stats::predict(mod, xy_testing %>% dplyr::select(-y), type = c("prob")) %>%
     dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
   holdout_pred$.pred_class <- holdout_pred_class$.pred_class
   class <- colnames(holdout_pred[1])
 
-  eval_measure_val <- select_eval_measure_val(eval_measure = eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred_class, class=class)
+  eval_measure_val <- select_eval_measure_val(eval_measure = eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred_class, class = class)
 
   # Sort output of RMSE, predictions and truth (observed y) help(sens)
-  output <- list(list(eval_measure_val),
-                 list(holdout_pred$.pred_class),
-                 list(holdout_pred$y),
-                 list(holdout_pred[1]),
-                 list(holdout_pred[2]),
-                 list(preprocess_PCA),
-                 list(holdout_pred$id_nr)) #New
-  names(output) <- c("eval_measure_val",
-                     "estimate",
-                     "truth",
-                     ".pred_1",
-                     ".pred_2",
-                     "preprocess_PCA",
-                     "id_nr") #New
+  output <- list(
+    list(eval_measure_val),
+    list(holdout_pred$.pred_class),
+    list(holdout_pred$y),
+    list(holdout_pred[1]),
+    list(holdout_pred[2]),
+    list(preprocess_PCA),
+    list(holdout_pred$id_nr)
+  ) # New
+  names(output) <- c(
+    "eval_measure_val",
+    "estimate",
+    "truth",
+    ".pred_1",
+    ".pred_2",
+    "preprocess_PCA",
+    "id_nr"
+  ) # New
   output
 }
 
 # object: an rsplit object (from results_nested_resampling tibble)
 # object = results_nested_resampling$splits[[5]]; mtry = 1  min_n = 1
 # testing
-#fit_model_accuracy_rf(object = results_nested_resampling$splits[[2]], mtry = 1, min_n = 1, eval_measure="roc_auc")
+# fit_model_accuracy_rf(object = results_nested_resampling$splits[[2]], mtry = 1, min_n = 1, eval_measure="roc_auc")
 
 # In some situations, we want to parameterize the function over the tuning parameter:
 #' Function to fit a model and compute RMSE.
@@ -222,16 +223,20 @@ fit_model_accuracy_wrapper_rf <- function(mtry,
                                           trees,
                                           preprocess_PCA,
                                           eval_measure,
-                                          extremely_randomised_splitrule) fit_model_accuracy_rf(object,
-                                                                                                mode_rf,
-                                                                                                mtry,
-                                                                                                min_n,
-                                                                                                trees,
-                                                                                                preprocess_PCA,
-                                                                                                eval_measure,
-                                                                                                extremely_randomised_splitrule)
+                                          extremely_randomised_splitrule) {
+  fit_model_accuracy_rf(
+    object,
+    mode_rf,
+    mtry,
+    min_n,
+    trees,
+    preprocess_PCA,
+    eval_measure,
+    extremely_randomised_splitrule
+  )
+}
 
-#fit_model_accuracy_wrapper_rf(object = results_nested_resampling$splits[[1]], mtry=1, min_n=1, trees=10, preprocess_PCA=0.95, eval_measure = "roc_auc")
+# fit_model_accuracy_wrapper_rf(object = results_nested_resampling$splits[[1]], mtry=1, min_n=1, trees=10, preprocess_PCA=0.95, eval_measure = "roc_auc")
 
 #' For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
 #'
@@ -251,42 +256,46 @@ tune_over_cost_rf <- function(object,
                               preprocess_PCA,
                               eval_measure,
                               extremely_randomised_splitrule) {
-
-  if(!is.na(preprocess_PCA[1])){
-  # Number of components or percent of variance to attain; min_halving; preprocess_PCA = c(0.9, 0.3); preprocess_PCA = NA
-  if(preprocess_PCA[1] == "min_halving"){
-    num_features = length(rsample::analysis(object)) - 1
-    num_users = nrow(rsample::analysis(object))
-    preprocess_PCA_value = round(max(min(num_features/2, num_users/1.5), min(50, num_features)))
-    preprocess_PCA_value
-  } else if(preprocess_PCA[1] >= 1){
-    preprocess_PCA_value <- preprocess_PCA
-  } else if (preprocess_PCA[1] < 1){
-    preprocess_PCA_value <- preprocess_PCA
-  } else {
-    preprocess_PCA_value = NA
-  }
-  }
-
-  if(is.na(preprocess_PCA[1])){
-    preprocess_PCA_value = NA
+  if (!is.na(preprocess_PCA[1])) {
+    # Number of components or percent of variance to attain; min_halving; preprocess_PCA = c(0.9, 0.3); preprocess_PCA = NA
+    if (preprocess_PCA[1] == "min_halving") {
+      num_features <- length(rsample::analysis(object)) - 1
+      num_users <- nrow(rsample::analysis(object))
+      preprocess_PCA_value <- round(max(min(num_features / 2, num_users / 1.5), min(50, num_features)))
+      preprocess_PCA_value
+    } else if (preprocess_PCA[1] >= 1) {
+      preprocess_PCA_value <- preprocess_PCA
+    } else if (preprocess_PCA[1] < 1) {
+      preprocess_PCA_value <- preprocess_PCA
+    } else {
+      preprocess_PCA_value <- NA
+    }
   }
 
-  grid_inner <- base::expand.grid(mtry = mtry,
-                                  min_n = min_n,
-                                  trees = trees,
-                                  preprocess_PCA = preprocess_PCA_value)
+  if (is.na(preprocess_PCA[1])) {
+    preprocess_PCA_value <- NA
+  }
+
+  grid_inner <- base::expand.grid(
+    mtry = mtry,
+    min_n = min_n,
+    trees = trees,
+    preprocess_PCA = preprocess_PCA_value
+  )
 
   # Test models with the different hyperparameters for the inner samples
-  tune_results <- purrr::pmap(list(grid_inner$mtry,
-                              grid_inner$min_n,
-                              grid_inner$trees,
-                              grid_inner$preprocess_PCA),
-                              fit_model_accuracy_wrapper_rf,
-                              object = object,
-                              mode_rf = mode_rf,
-                              eval_measure = eval_measure,
-                              extremely_randomised_splitrule)
+  tune_results <- purrr::pmap(list(
+    grid_inner$mtry,
+    grid_inner$min_n,
+    grid_inner$trees,
+    grid_inner$preprocess_PCA
+  ),
+  fit_model_accuracy_wrapper_rf,
+  object = object,
+  mode_rf = mode_rf,
+  eval_measure = eval_measure,
+  extremely_randomised_splitrule
+  )
 
   # Sort the output to separate the accuracy, predictions and truth
   tune_outputlist <- tune_results %>%
@@ -303,7 +312,7 @@ tune_over_cost_rf <- function(object,
   grid_inner_accuracy
 }
 # testing help(yardstick)
-#tune_over_cost_rf(object=results_nested_resampling$inner_resamples[[1]]$splits[[1]])
+# tune_over_cost_rf(object=results_nested_resampling$inner_resamples[[1]]$splits[[1]])
 
 # object = results_nested_resampling$inner_resamples[[1]]
 # Since this will be called across the set of OUTER cross-validation splits, another wrapper is required:
@@ -328,43 +337,19 @@ summarize_tune_results_rf <- function(object,
                                       extremely_randomised_splitrule) {
 
   # Return row-bound tibble containing the INNER results
-  purrr::map_df(.x = object$splits,
-                .f = tune_over_cost_rf,
-                mode_rf = mode_rf,
-                mtry=mtry,
-                min_n=min_n,
-                trees = trees,
-                preprocess_PCA = preprocess_PCA,
-                eval_measure = eval_measure,
-                extremely_randomised_splitrule = extremely_randomised_splitrule) #%>%
-
-    # For each value of the tuning parameter, compute the
-    # average RMSE which is the INNER estimate.
-    #dplyr::group_by(mtry) %>%
-    #dplyr::summarize(min_n = min_n,
-    #                 mean_eval_measure = mean(eval_measure, na.rm = TRUE), #TODO should it be mean or mode here?
-    #                 trees = trees,
-    #                 preprocess_PCA = preprocess_PCA,
-    #                 n = length(eval_measure),
-    #                 .groups = "drop_last")
+  purrr::map_df(
+    .x = object$splits,
+    .f = tune_over_cost_rf,
+    mode_rf = mode_rf,
+    mtry = mtry,
+    min_n = min_n,
+    trees = trees,
+    preprocess_PCA = preprocess_PCA,
+    eval_measure = eval_measure,
+    extremely_randomised_splitrule = extremely_randomised_splitrule
+  )
 }
 
-#library(text)
-#x <- wordembeddings4[1]$harmonywords
-#y <- Language_based_assessment_data_8[8]$gender #
-#outside_strata_y = "y"#
-#inside_strata_y = "y"
-#mode_rf = "classification"
-#mtry = c(1, 2)
-#min_n = c(1, 2)
-#preprocess_PCA = c(0.94, 0.95)
-#trees = c(1000)
-#model_description = "Consider writing a description of your model here"
-#multi_cores = TRUE
-#eval_measure = "bal_accuracy" # "roc_auc" #"accuracy" #
-#extremely_randomised_splitrule = NULL
-#save_output = "all"
-#library(magrittr)
 
 #' Train word embeddings to a categorical variable using random forrest.
 #'
@@ -399,11 +384,11 @@ summarize_tune_results_rf <- function(object,
 #' wordembeddings <- wordembeddings4
 #' example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
 #' results <- textTrainRandomForest(wordembeddings$harmonywords,
-#'                                  example_categories,
-#'                                  trees = c(1000, 1500),
-#'                                  mtry  = c(1),       # this is short because of testing
-#'                                  min_n = c(1),       # this is short because of testing
-#'                                  multi_cores = FALSE # This is FALSE due to CRAN testing.
+#'   example_categories,
+#'   trees = c(1000, 1500),
+#'   mtry  = c(1), # this is short because of testing
+#'   min_n = c(1), # this is short because of testing
+#'   multi_cores = FALSE # This is FALSE due to CRAN testing.
 #' )
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
 #' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
@@ -420,14 +405,14 @@ summarize_tune_results_rf <- function(object,
 #' @export
 textTrainRandomForest <- function(x,
                                   y,
-                                  #outside_folds = 10,
-                                  #outside_strata_y = "y",
-                                  #inside_folds = 10,
-                                  #inside_strata_y = "y",
+                                  # outside_folds = 10,
+                                  # outside_strata_y = "y",
+                                  # inside_folds = 10,
+                                  # inside_strata_y = "y",
                                   mode_rf = "classification",
                                   preprocess_PCA = NA,
                                   extremely_randomised_splitrule = NULL,
-                                  mtry = c(1,  10, 20, 40),
+                                  mtry = c(1, 10, 20, 40),
                                   min_n = c(1, 10, 20, 40),
                                   trees = c(1000),
                                   eval_measure = "bal_accuracy",
@@ -435,11 +420,10 @@ textTrainRandomForest <- function(x,
                                   multi_cores = TRUE,
                                   save_output = "all",
                                   ...) {
-
   set.seed(2020)
 
   # In case the embedding is in list form get the tibble form
-  if(!tibble::is_tibble(x)){
+  if (!tibble::is_tibble(x)) {
     x1 <- x[[1]]
     x_name <- names(x)
   } else {
@@ -447,10 +431,9 @@ textTrainRandomForest <- function(x,
     x_name <- deparse(substitute(x))
   }
 
-  if(tibble::is_tibble(y)|is.data.frame(y)){
+  if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
     y <- y[[1]]
-
   } else {
     y_name <- deparse(substitute(y))
     y <- y
@@ -458,61 +441,70 @@ textTrainRandomForest <- function(x,
 
   x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
 
-  if(!mode_rf== "regression"){
+  if (!mode_rf == "regression") {
     y <- as.factor(y)
   }
   xy <- cbind(x1, y)
 
-#  xy$id1 <- c(seq_len(nrow(xy)))
-  xy$id_nr <- c(seq_len(nrow(xy))) #New
-  #xy_formergingNA <- tibble::tibble(xy$id1, xy$y)
-  #colnames(xy_formergingNA) <- c("id1", "y")
+  #  xy$id1 <- c(seq_len(nrow(xy)))
+  xy$id_nr <- c(seq_len(nrow(xy))) # New
+  # xy_formergingNA <- tibble::tibble(xy$id1, xy$y)
+  # colnames(xy_formergingNA) <- c("id1", "y")
   xy1 <- tibble::as_tibble(xy[stats::complete.cases(xy), ])
 
   results_nested_resampling <- rsample::nested_cv(xy1,
-                                                  outside = rsample::vfold_cv(v = 5, #outside_folds,
-                                                                              repeats = 1,
-                                                                              strata = "y"), #outside_strata_y
-                                                  inside  = rsample::validation_split(prop = 3/4,
-                                                                                      strata = "y", #inside_strata_y
-                                                                                      breaks=1))
-  #rlang::last_error()
+    outside = rsample::vfold_cv(
+      v = 5, # outside_folds,
+      repeats = 1,
+      strata = "y"
+    ), # outside_strata_y
+    inside = rsample::validation_split(
+      prop = 3 / 4,
+      strata = "y", # inside_strata_y
+      breaks = 1
+    )
+  )
+  # rlang::last_error()
   # Tuning inner resamples library(magrittr) warnings()
-  if (multi_cores == FALSE){
-    tuning_results <- purrr::map(.x = results_nested_resampling$inner_resamples,
-                                 .f = summarize_tune_results_rf,
-                                 mode_rf = mode_rf,
-                                 mtry = mtry,
-                                 min_n = min_n,
-                                 trees = trees,
-                                 preprocess_PCA = preprocess_PCA,
-                                 eval_measure = eval_measure, # eval_measure = "bal_accuracy"; eval_measure = "roc_auc"
-                                 extremely_randomised_splitrule = extremely_randomised_splitrule)
+  if (multi_cores == FALSE) {
+    tuning_results <- purrr::map(
+      .x = results_nested_resampling$inner_resamples,
+      .f = summarize_tune_results_rf,
+      mode_rf = mode_rf,
+      mtry = mtry,
+      min_n = min_n,
+      trees = trees,
+      preprocess_PCA = preprocess_PCA,
+      eval_measure = eval_measure, # eval_measure = "bal_accuracy"; eval_measure = "roc_auc"
+      extremely_randomised_splitrule = extremely_randomised_splitrule
+    )
   } else {
     # The multisession plan uses the local cores to process the inner resampling loop.
-    #library(future)
+    # library(future)
     future::plan(future::multisession)
     # The object tuning_results is a list of data frames for each of the OUTER resamples.
-    tuning_results <- furrr::future_map(.x = results_nested_resampling$inner_resamples,
-                                        .f = summarize_tune_results_rf,
-                                        mode_rf = mode_rf,
-                                        mtry = mtry,
-                                        min_n = min_n,
-                                        trees = trees,
-                                        preprocess_PCA = preprocess_PCA,
-                                        eval_measure = eval_measure,
-                                        extremely_randomised_splitrule = extremely_randomised_splitrule)
+    tuning_results <- furrr::future_map(
+      .x = results_nested_resampling$inner_resamples,
+      .f = summarize_tune_results_rf,
+      mode_rf = mode_rf,
+      mtry = mtry,
+      min_n = min_n,
+      trees = trees,
+      preprocess_PCA = preprocess_PCA,
+      eval_measure = eval_measure,
+      extremely_randomised_splitrule = extremely_randomised_splitrule
+    )
   }
 
   # Function to get the lowest eval_measure_val
-  bestParameters <- function(dat) dat[which.min(dat$eval_measure),]
+  bestParameters <- function(dat) dat[which.min(dat$eval_measure), ]
 
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
   hyper_parameter_vals <-
     tuning_results %>%
-    purrr::map_df(bestParameters) #%>%
-    #dplyr::select(c(mtry, min_n, trees, preprocess_PCA))
+    purrr::map_df(bestParameters) # %>%
+  # dplyr::select(c(mtry, min_n, trees, preprocess_PCA))
 
   # Bind best results
   results_split_parameter <-
@@ -521,14 +513,17 @@ textTrainRandomForest <- function(x,
   # Compute the outer resampling results for each of the
   # splits using the corresponding tuning parameter value from results_split_parameter.
   # fit_model_rmse(results_split_parameter$splits[[1]])
-  results_outer <- purrr::pmap(list(object=results_nested_resampling$splits,
-                                    mode_rf = mode_rf,
-                                    results_split_parameter$mtry,
-                                    results_split_parameter$min_n,
-                                    trees = results_split_parameter$trees,
-                                    preprocess_PCA = results_split_parameter$preprocess_PCA),
-                               fit_model_accuracy_rf
-                               )
+  results_outer <- purrr::pmap(
+    list(
+      object = results_nested_resampling$splits,
+      mode_rf = mode_rf,
+      results_split_parameter$mtry,
+      results_split_parameter$min_n,
+      trees = results_split_parameter$trees,
+      preprocess_PCA = results_split_parameter$preprocess_PCA
+    ),
+    fit_model_accuracy_rf
+  )
 
   # Separate RMSE, predictions and observed y
   outputlist_results_outer <- results_outer %>%
@@ -544,21 +539,30 @@ textTrainRandomForest <- function(x,
   # Construct final model to be saved and applied on other data
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
   xy_short <- xy %>% dplyr::select(-id_nr)
-  final_recipe <- #xy %>%
-    recipes::recipe(y ~., xy_short[0,]) %>%
+  final_recipe <- # xy %>%
+    recipes::recipe(y ~ ., xy_short[0, ]) %>%
     recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
     recipes::step_BoxCox(recipes::all_predictors()) %>%
-    {if(!is.na(preprocess_PCA[1]))
-    {if(preprocess_PCA[1] >= 1) recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
-      else if(preprocess_PCA[1] < 1) recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
-      else . } else .}
+    {
+      if (!is.na(preprocess_PCA[1])) {
+        if (preprocess_PCA[1] >= 1) {
+          recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
+        } else if (preprocess_PCA[1] < 1) {
+          recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+        } else {
+          .
+        }
+      } else {
+        .
+      }
+    }
 
   preprocessing_recipe_save <- recipes::prep(final_recipe, xy_short, retain = FALSE)
-  preprocessing_recipe_use  <- recipes::prep(final_recipe, xy_short)
+  preprocessing_recipe_use <- recipes::prep(final_recipe, xy_short)
 
-  #preprocessing_recipe <- recipes::prep(final_recipe)
+  # preprocessing_recipe <- recipes::prep(final_recipe)
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -569,87 +573,69 @@ textTrainRandomForest <- function(x,
       mode = mode_rf,
       trees = statisticalMode(results_split_parameter$trees),
       mtry = statisticalMode(results_split_parameter$mtry),
-      min_n = statisticalMode(results_split_parameter$min_n)) %>%
+      min_n = statisticalMode(results_split_parameter$min_n)
+    ) %>%
     # set_engine("ranger")
     parsnip::set_engine("randomForest") %>%
-    parsnip::fit(y ~ ., data = xy_final) #analysis(object)
+    parsnip::fit(y ~ ., data = xy_final) # analysis(object)
 
   # Saving the final mtry and min_n used for the final model.
-  if(is.null(extremely_randomised_splitrule)){
-    mtry_description = paste("mtry =", deparse(statisticalMode(results_split_parameter$mtry)))
-    mtry_fold_description = paste("mtry in each fold =", deparse(results_split_parameter$mtry))
+  if (is.null(extremely_randomised_splitrule)) {
+    mtry_description <- paste("mtry =", deparse(statisticalMode(results_split_parameter$mtry)))
+    mtry_fold_description <- paste("mtry in each fold =", deparse(results_split_parameter$mtry))
 
-    min_n_description = paste("min_n =", deparse(statisticalMode(results_split_parameter$min_n)))
-    min_n_fold_description = paste("min_n in each fold =", deparse(results_split_parameter$min_n))
-  }else{
+    min_n_description <- paste("min_n =", deparse(statisticalMode(results_split_parameter$min_n)))
+    min_n_fold_description <- paste("min_n in each fold =", deparse(results_split_parameter$min_n))
+  } else {
     mtry_description <- c("-")
     mtry_fold_description <- c("-")
     min_n_description <- c("-")
     min_n_fold_description <- c("-")
   }
-  mode_rf_description  <-  paste("mode =", mode_rf)
-  trees_description <- paste("trees =",statisticalMode(results_split_parameter$trees))
+  mode_rf_description <- paste("mode =", mode_rf)
+  trees_description <- paste("trees =", statisticalMode(results_split_parameter$trees))
   trees_fold_description <- paste("trees in each fold =", deparse(results_split_parameter$trees))
   preprocess_PCA_description <- paste("preprocess_PCA = ", statisticalMode(results_split_parameter$preprocess_PCA))
   preprocess_PCA_fold_description <- paste("preprocess_PCA = ", deparse(results_split_parameter$preprocess_PCA))
   eval_measure <- paste("eval_measure = ", eval_measure)
 
 
-  if(is.character(extremely_randomised_splitrule)){
-  extremely_randomised_splitrule  = paste("extremely_randomised_splitrule = ", extremely_randomised_splitrule)
-  }else{
-  extremely_randomised_splitrule <- c("-")
+  if (is.character(extremely_randomised_splitrule)) {
+    extremely_randomised_splitrule <- paste("extremely_randomised_splitrule = ", extremely_randomised_splitrule)
+  } else {
+    extremely_randomised_splitrule <- c("-")
   }
 
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
   embedding_description <- comment(x)
-  model_description_detail <- c(x_name,
-                                y_name,
-                                mode_rf_description,
-                                preprocess_PCA_description,
-                                preprocess_PCA_fold_description,
-                                extremely_randomised_splitrule,
-                                eval_measure,
-                                mtry_description,
-                                mtry_fold_description,
-                                min_n_description,
-                                min_n_fold_description,
-                                trees_description,
-                                trees_fold_description,
-                                embedding_description,
-                                model_description)
+  model_description_detail <- c(
+    x_name,
+    y_name,
+    mode_rf_description,
+    preprocess_PCA_description,
+    preprocess_PCA_fold_description,
+    extremely_randomised_splitrule,
+    eval_measure,
+    mtry_description,
+    mtry_fold_description,
+    min_n_description,
+    min_n_fold_description,
+    trees_description,
+    trees_fold_description,
+    embedding_description,
+    model_description
+  )
 
-  if(save_output == "all"){
-    final_results <- list(results_collected$roc_curve_data, results_collected$predy_y, preprocessing_recipe_save,  final_predictive_model, results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
+  if (save_output == "all") {
+    final_results <- list(results_collected$roc_curve_data, results_collected$predy_y, preprocessing_recipe_save, final_predictive_model, results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
     names(final_results) <- c("roc_curve_data", "truth_predictions", "final_recipe", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
-
-  } else if (save_output == "only_results_predictions"){
-
-    final_results <- list(results_collected$roc_curve_data, results_collected$predy_y,  results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
+  } else if (save_output == "only_results_predictions") {
+    final_results <- list(results_collected$roc_curve_data, results_collected$predy_y, results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
     names(final_results) <- c("roc_curve_data", "truth_predictions", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
-
-  } else if (save_output == "only_results"){
-
+  } else if (save_output == "only_results") {
     final_results <- list(results_collected$roc_curve_data, results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
     names(final_results) <- c("roc_curve_data", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
   }
 
   final_results
 }
-#warnings()
-#library(text)
-#wordembeddings <- wordembeddings4
-#ratings_data <- Language_based_assessment_data_8
-#x <- wordembeddings$harmonytext
-#y = ratings_data$gender
-#t1 <- Sys.time()
-#results <- textTrainRandomForest(wordembeddings$harmonytext,
-#  ratings_data$gender,
-#outside_folds = 10,
-#outside_strata_y = "y",
-#inside_folds = 10,
-#inside_strata_y = "y"
-#)
-#results
-#t2 <- Sys.time()
-#t2-t1

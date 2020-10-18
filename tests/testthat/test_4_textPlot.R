@@ -36,16 +36,15 @@ test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tib
   swlstotal <- data$swlstotal[1:10]
   # Pre-processing data for plotting
   df_for_plotting <- textProjection(harmonywords,
-                                        harmonywordembeddings,
-                                        wordembeddingssinglewords_we,
-                                        hilstotal,
-                                        swlstotal,
-                                        split = "quartile",
-                                        Npermutations = 2,
-                                        n_per_split = 3,
-                                        pca = 0.9
+    harmonywordembeddings,
+    wordembeddingssinglewords_we,
+    hilstotal,
+    swlstotal,
+    split = "quartile",
+    Npermutations = 2,
+    n_per_split = 3,
+    pca = 0.9
   )
-  # comment(df_for_plotting)
 
   expect_true(tibble::is_tibble(df_for_plotting))
   expect_is(df_for_plotting$words[1], "character")
@@ -53,6 +52,7 @@ test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tib
 })
 
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
+
   # Dot Product Projection Plot
   p <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
@@ -63,7 +63,7 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
     plot_n_word_extreme = 1,
     plot_n_word_frequency = 1,
     plot_n_words_middle = 1,
-    #x_axes = TRUE,
+    # x_axes = TRUE,
     y_axes = FALSE,
     p_alpha = 0.05,
     title_top = " Dot Product Projection (DPP)",
@@ -88,7 +88,7 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
     plot_n_word_extreme = 1,
     plot_n_word_frequency = 1,
     plot_n_words_middle = 1,
-    #x_axes = FALSE,
+    # x_axes = FALSE,
     y_axes = TRUE,
     p_alpha = 0.05,
     title_top = " Dot Product Projection (DPP)",
@@ -102,8 +102,6 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
 })
 
 
-
-
 test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
   # Dot Product Projection Plot
   p <- textProjectionPlot(
@@ -115,7 +113,7 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
     plot_n_word_extreme = 1,
     plot_n_word_frequency = 1,
     plot_n_words_middle = 1,
-    #x_axes = TRUE,
+    # x_axes = TRUE,
     y_axes = TRUE,
     p_alpha = 0.05,
     title_top = " Dot Product Projection (DPP)",
@@ -124,9 +122,10 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
     p_adjust_method = "fdr",
     scale_y_axes_lim = NULL
   )
-  #p
+
   expect_true(ggplot2::is.ggplot(p$final_plot))
 })
+
 
 test_that("textCentrality produces a tibble with character variable and numeric variable.", {
   wordembeddings <- wordembeddings4
@@ -136,7 +135,8 @@ test_that("textCentrality produces a tibble with character variable and numeric 
     wordembeddings$harmonywords[1:2, ],
     wordembeddings$singlewords_we
   )
-  #comment(df_for_plotting)
+
+
   expect_is(df_for_plotting$words[1], "character")
   expect_is(df_for_plotting$n[1], "integer")
   expect_true(tibble::is_tibble(df_for_plotting))
@@ -172,10 +172,10 @@ test_that("textCentralityPlot produces a plot.", {
 
 
 test_that("textCentrality produces a tibble with character variable and numeric variable.", {
-
-
-  df_for_plotting2d <- textPCA(words = Language_based_assessment_data_8$harmonywords,
-                                  single_wordembeddings =  wordembeddings4$singlewords_we)
+  df_for_plotting2d <- textPCA(
+    words = Language_based_assessment_data_8$harmonywords,
+    single_wordembeddings = wordembeddings4$singlewords_we
+  )
   df_for_plotting2d
 
 
@@ -187,9 +187,8 @@ test_that("textCentrality produces a tibble with character variable and numeric 
 test_that("textCentralityPlot produces a plot.", {
 
   # Plot
-
   principle_component_plot_projection <- textPCAPlot(PC_projections_satisfactionwords_40)
-  #principle_component_plot_projection
+  # principle_component_plot_projection
 
   expect_true(ggplot2::is.ggplot(principle_component_plot_projection$final_plot))
 })

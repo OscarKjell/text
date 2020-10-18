@@ -1,9 +1,4 @@
-# # TODO Possibility to set this one? It may be that no words comes within this
-# # TODO Possibility to set this one? It may be that no words comes within this textCentralitylot
-# Just want to learn why this: # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
 
-#words <- c("words", "text", "hello", "-", "-")
-#help(as_tibble)
 
 #' Takes all words as input and arrange them in column with an accompanying column with frequency.
 #' @param words Words
@@ -77,7 +72,7 @@ unique_freq_words <- function(words) {
 #'   n_per_split = 1
 #' )
 #' df_for_plotting
-#'#' @seealso see \code{\link{textProjectionPlot}}
+#' #' @seealso see \code{\link{textProjectionPlot}}
 #' @importFrom tibble as_tibble
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake
 #' @importFrom tidyr uncount
@@ -100,17 +95,19 @@ textProjection <- function(words,
 
   # Description to include as a comment in the end of function
   textProjection_descriptions <- paste("words =", substitute(words),
-  "wordembeddings =", comment(wordembeddings),
-  "single_wordembeddings =", comment(single_wordembeddings),
-  "x =", substitute(x),
-  "y =", substitute(y),
-  "pca =" , as.character(pca),
-  "aggregation = ", aggregation,
-  "split = ", split,
-  "word_weight_power =", word_weight_power,
-  "min_freq_words_test =", min_freq_words_test,
-  "Npermutations =", Npermutations,
-  "n_per_split =", n_per_split, sep =" ", collapse = " ")
+    "wordembeddings =", comment(wordembeddings),
+    "single_wordembeddings =", comment(single_wordembeddings),
+    "x =", substitute(x),
+    "y =", substitute(y),
+    "pca =", as.character(pca),
+    "aggregation = ", aggregation,
+    "split = ", split,
+    "word_weight_power =", word_weight_power,
+    "min_freq_words_test =", min_freq_words_test,
+    "Npermutations =", Npermutations,
+    "n_per_split =", n_per_split,
+    sep = " ", collapse = " "
+  )
 
   set.seed(2020)
   # PCA on single_wordembeddings
@@ -126,7 +123,7 @@ textProjection <- function(words,
       recipes::step_scale(recipes::all_numeric()) %>%
       recipes::step_naomit(Dim1, skip = TRUE)
 
-    if (pca < 1) { #pca=0.9
+    if (pca < 1) { # pca=0.9
       pca_trans <- recipes::step_pca(pca_trans, recipes::all_numeric(), threshold = pca)
     } else if (pca >= 1) {
       pca_trans <- recipes::step_pca(pca_trans, recipes::all_numeric(), num_comp = pca)
@@ -160,8 +157,8 @@ textProjection <- function(words,
     x2 <- tibble::as_tibble(cbind(x1, wordembeddings))
 
     # Splitting datasets up to low versus high according to median split
-    #group1 <- x2[x2[2] < stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
-    #group2 <- x2[x2[2] > stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
+    # group1 <- x2[x2[2] < stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
+    # group2 <- x2[x2[2] > stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
     group1 <- x2 %>%
       dplyr::filter(value < mean(purrr::as_vector(value), na.rm = TRUE))
 
@@ -198,10 +195,10 @@ textProjection <- function(words,
     words_group2_single_wordembedding_b <- dplyr::bind_rows(words_group2_single_wordembedding)
 
     # All: Group 1 & 2
-    #words_group1_2_freq <- unique_freq_words(x2$words)
-    #words_group1_2_freq_b <- words_group1_2_freq[words_group1_2_freq$n >= min_freq_words_test, ]
-    #words_group1_2_freq_b <- dplyr::rename(words_group1_2_freq_b, n_all = n)
-    #words_group1_2_single_wordembedding <- lapply(words_group1_2_freq_b$words, applysemrep, single_wordembeddings)
+    # words_group1_2_freq <- unique_freq_words(x2$words)
+    # words_group1_2_freq_b <- words_group1_2_freq[words_group1_2_freq$n >= min_freq_words_test, ]
+    # words_group1_2_freq_b <- dplyr::rename(words_group1_2_freq_b, n_all = n)
+    # words_group1_2_single_wordembedding <- lapply(words_group1_2_freq_b$words, applysemrep, single_wordembeddings)
 
     ############
     ######         1 Create COMPARISON/Projection embedding: all Group 1 & Group 2 word embeddings.
@@ -215,12 +212,12 @@ textProjection <- function(words,
     } else if (split == "quartile") {
       # Select according to lower and upper quartile
       # However, if it is a dichotomous variable use mean
-      if(length(unique(x1$value)) == 2){
+      if (length(unique(x1$value)) == 2) {
         q1 <- summary(x1$value)[4][[1]]
         q3 <- summary(x1$value)[4][[1]]
-      }else if(length(unique(x1$value)) > 2){
-      q1 <- summary(x1$value)[2][[1]]
-      q3 <- summary(x1$value)[5][[1]]
+      } else if (length(unique(x1$value)) > 2) {
+        q1 <- summary(x1$value)[2][[1]]
+        q3 <- summary(x1$value)[5][[1]]
       }
 
       group1_agg <- x2 %>%
@@ -373,53 +370,6 @@ textProjection <- function(words,
 #### End textProjection
 #############
 
-#library(tidyverse)
-#word_data <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/15 Response Formats/1 Data/gen_all_minidep.rds")
-#colnames(word_data)
-
-#word_data = personal_sus_data_swls_hils_2yx
-#k_n_words_to_test = FALSE
-#min_freq_words_test = 1
-#min_freq_words_plot = 1
-#plot_n_words_square = 3
-#plot_n_words_p = 5
-#plot_n_word_extreme = 5
-#plot_n_word_frequency = 5
-#plot_n_words_middle = 5
-#titles_color = "#61605e"
-##x_axes = TRUE
-#y_axes = FALSE
-#p_alpha = 0.05
-#p_adjust_method = "none"
-#title_top = "Supervised Centroid Projection"
-#x_axes_label = "Supervised Centroid Projection (SCP)"
-#y_axes_label = "Supervised Centroid Projection (SCP)"
-#scale_x_axes_lim = NULL
-#scale_y_axes_lim = NULL
-#word_font = NULL
-#bivariate_color_codes = c(
-#  "#398CF9", "#60A1F7", "#5dc688",
-#  "#e07f6a", "#EAEAEA", "#40DD52",
-#  "#FF0000", "#EA7467", "#85DB8E"
-#)
-#word_size_range = c(3, 8)
-#position_jitter_hight = .0
-#position_jitter_width = .03
-#point_size = 0.5
-#arrow_transparency = 0.1
-#points_without_words_size = 0.2
-#points_without_words_alpha = 0.2
-#legend_title = "DPP"
-#legend_x_axes_label = "x"
-#legend_y_axes_label = "y"
-#legend_x_position = 0.02
-#legend_y_position = 0.02
-#legend_h_size = 0.2
-#legend_w_size = 0.2
-#legend_title_size = 7
-#legend_number_size = 2
-
-
 
 #' Plot words according to Supervised Centroid Projections.
 #' @param word_data Dataframe from textProjection
@@ -523,7 +473,7 @@ textProjectionPlot <- function(word_data,
                                plot_n_word_frequency = 5,
                                plot_n_words_middle = 5,
                                titles_color = "#61605e",
-                               #x_axes = TRUE,
+                               # x_axes = TRUE,
                                y_axes = FALSE,
                                p_alpha = 0.05,
                                p_adjust_method = "none",
@@ -555,48 +505,49 @@ textProjectionPlot <- function(word_data,
                                legend_title_size = 7,
                                legend_number_size = 2) {
 
-  #Comment to be saved
+  # Comment to be saved
   textProjectionPlot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",
     comment(word_data),
     "INFORMATION ABOUT THE PLOT",
     "word_data =", substitute(word_data),
-  "k_n_words_to_test =", k_n_words_to_test,
-  "min_freq_words_test =", min_freq_words_test,
-  "min_freq_words_plot =", min_freq_words_plot,
-  "plot_n_words_square =", plot_n_words_square,
-  "plot_n_words_p =", plot_n_words_p,
-  "plot_n_word_extreme =", plot_n_word_extreme,
-  "plot_n_word_frequency =", plot_n_word_frequency,
-  "plot_n_words_middle =", plot_n_words_middle,
-  "y_axes =", y_axes,
-  "p_alpha =", p_alpha,
-  "p_adjust_method =", p_adjust_method,
-  "bivariate_color_codes =", paste(bivariate_color_codes, collapse = " "),
-  "word_size_range =", paste(word_size_range, sep="-", collapse = " - "),
-  "position_jitter_hight =", position_jitter_hight,
-  "position_jitter_width =", position_jitter_width,
-  "point_size =", point_size,
-  "arrow_transparency =", point_size,
-  "points_without_words_size =", points_without_words_size,
-  "points_without_words_alpha =", points_without_words_alpha,
-  "legend_x_position =", legend_x_position,
-  "legend_y_position =", legend_y_position,
-  "legend_h_size =", legend_h_size,
-  "legend_w_size =", legend_w_size,
-  "legend_title_size =", legend_title_size,
-  "legend_number_size =", legend_number_size)
+    "k_n_words_to_test =", k_n_words_to_test,
+    "min_freq_words_test =", min_freq_words_test,
+    "min_freq_words_plot =", min_freq_words_plot,
+    "plot_n_words_square =", plot_n_words_square,
+    "plot_n_words_p =", plot_n_words_p,
+    "plot_n_word_extreme =", plot_n_word_extreme,
+    "plot_n_word_frequency =", plot_n_word_frequency,
+    "plot_n_words_middle =", plot_n_words_middle,
+    "y_axes =", y_axes,
+    "p_alpha =", p_alpha,
+    "p_adjust_method =", p_adjust_method,
+    "bivariate_color_codes =", paste(bivariate_color_codes, collapse = " "),
+    "word_size_range =", paste(word_size_range, sep = "-", collapse = " - "),
+    "position_jitter_hight =", position_jitter_hight,
+    "position_jitter_width =", position_jitter_width,
+    "point_size =", point_size,
+    "arrow_transparency =", point_size,
+    "points_without_words_size =", points_without_words_size,
+    "points_without_words_alpha =", points_without_words_alpha,
+    "legend_x_position =", legend_x_position,
+    "legend_y_position =", legend_y_position,
+    "legend_h_size =", legend_h_size,
+    "legend_w_size =", legend_w_size,
+    "legend_title_size =", legend_title_size,
+    "legend_number_size =", legend_number_size
+  )
 
   set.seed(2020)
 
   # Sorting out axes
-  #if (x_axes == TRUE) {
-    x_axes_1 <- "dot.x"
-    p_values_x <- "p_values_dot.x"
-  #} else {
+  # if (x_axes == TRUE) {
+  x_axes_1 <- "dot.x"
+  p_values_x <- "p_values_dot.x"
+  # } else {
   #  x_axes_1 <- NULL
   #  p_values_x <- NULL
-  #}
+  # }
 
   if (y_axes == TRUE) {
     y_axes_1 <- "dot.y"
@@ -619,10 +570,10 @@ textProjectionPlot <- function(word_data,
       dplyr::arrange(-n) %>%
       dplyr::slice(0:words_k)
   }
- # word_data_padjusted$p_values_dot.x
+  # word_data_padjusted$p_values_dot.x
   word_data_padjusted$adjusted_p_values.x <- stats::p.adjust(purrr::as_vector(word_data_padjusted[, "p_values_dot.x"]), method = p_adjust_method)
   word_data <- dplyr::left_join(word_data, word_data_padjusted[, c("words", "adjusted_p_values.x")], by = "words")
-  #word_data$adjusted_p_values.x
+  # word_data$adjusted_p_values.x
 
   if (is.null(y_axes_1) == FALSE) {
     # Computing adjusted p-values
@@ -756,7 +707,7 @@ textProjectionPlot <- function(word_data,
       check_p_square, check_p_x_neg, check_p_x_pos, check_extreme_max_x, check_extreme_min_x,
       check_extreme_frequency_x, check_middle_x
     ), na.rm = T))
-  #table(word_data_x$extremes_all_x)
+  # table(word_data_x$extremes_all_x)
 
   if (is.null(y_axes_1) == FALSE) {
     # Computing adjusted p-values
@@ -827,13 +778,13 @@ textProjectionPlot <- function(word_data,
       ))
   }
   # table(word_data_x$extremes_all_x)
-  #View(word_data_x[word_data_x$extremes_all_x==1,])
-  #View(word_data_all[word_data_all$extremes_all_x==1,])
+  # View(word_data_x[word_data_x$extremes_all_x==1,])
+  # View(word_data_all[word_data_all$extremes_all_x==1,])
   if (is.null(y_axes_1) == TRUE) {
     word_data_all <- word_data_x %>%
       dplyr::mutate(colour_categories = dplyr::case_when(
         dot.x < 0 & adjusted_p_values.x < p_alpha ~ bivariate_color_codes[4],
-        #dot.x < 0 & adjusted_p_values.x > p_alpha ~ bivariate_color_codes[5],
+        # dot.x < 0 & adjusted_p_values.x > p_alpha ~ bivariate_color_codes[5],
         # Some adjusted_p_values.x has NA becasue they where not tested as multiple input (this is because min_frequency selects out before)
         adjusted_p_values.x > p_alpha | is.na(adjusted_p_values.x) ~ bivariate_color_codes[5],
         dot.x > 0 & adjusted_p_values.x < p_alpha ~ bivariate_color_codes[6]
@@ -860,7 +811,7 @@ textProjectionPlot <- function(word_data,
     word_data_all_yadjusted <- word_data_all[word_data_all$extremes_all_x == 1, ]
   }
 
-  #word_data_all_yadjusted$colour_categories
+  # word_data_all_yadjusted$colour_categories
   # Plot
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
@@ -921,7 +872,7 @@ textProjectionPlot <- function(word_data,
       axis.title.x = ggplot2::element_text(color = titles_color),
       axis.title.y = ggplot2::element_text(color = titles_color)
     )
-   plot
+  plot
 
   # Creating legend
   bivariate_color_data <- tibble::tibble(
@@ -958,21 +909,30 @@ textProjectionPlot <- function(word_data,
     ggplot2::theme_void() +
     #    ggplot2::annotate(geom="text", x=2, y=2, label="ns",
     #               color = titles_color, size=legend_number_size)+
-    {if (y_axes_1 != "only_x_dimension" )
-      ggplot2::annotate(
-      geom = "text", x = 1, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[1], na.rm = T),
-      color = titles_color, size = legend_number_size
-    ) } +
-    {if (y_axes_1 != "only_x_dimension" )
-      ggplot2::annotate(
-      geom = "text", x = 2, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[2], na.rm = T),
-      color = titles_color, size = legend_number_size
-    ) }+
-    {if (y_axes_1 != "only_x_dimension" )
-      ggplot2::annotate(
-      geom = "text", x = 3, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[3], na.rm = T),
-      color = titles_color, size = legend_number_size
-    ) }+
+    {
+      if (y_axes_1 != "only_x_dimension") {
+        ggplot2::annotate(
+          geom = "text", x = 1, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[1], na.rm = T),
+          color = titles_color, size = legend_number_size
+        )
+      }
+    } +
+    {
+      if (y_axes_1 != "only_x_dimension") {
+        ggplot2::annotate(
+          geom = "text", x = 2, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[2], na.rm = T),
+          color = titles_color, size = legend_number_size
+        )
+      }
+    } +
+    {
+      if (y_axes_1 != "only_x_dimension") {
+        ggplot2::annotate(
+          geom = "text", x = 3, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[3], na.rm = T),
+          color = titles_color, size = legend_number_size
+        )
+      }
+    } +
     ggplot2::annotate(
       geom = "text", x = 1, y = 2, label = sum(word_data_all$colour_categories == bivariate_color_codes[4], na.rm = T),
       color = titles_color, size = legend_number_size
@@ -985,21 +945,30 @@ textProjectionPlot <- function(word_data,
       geom = "text", x = 3, y = 2, label = sum(word_data_all$colour_categories == bivariate_color_codes[6], na.rm = T),
       color = titles_color, size = legend_number_size
     ) +
-    {if (y_axes_1 != "only_x_dimension" )
-      ggplot2::annotate(
-      geom = "text", x = 1, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[7], na.rm = T),
-      color = titles_color, size = legend_number_size
-    ) }+
-    {if (y_axes_1 != "only_x_dimension" )
-      ggplot2::annotate(
-      geom = "text", x = 2, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[8], na.rm = T),
-      color = titles_color, size = legend_number_size
-    ) } +
-    {if (y_axes_1 != "only_x_dimension" )
-      ggplot2::annotate(
-      geom = "text", x = 3, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[9], na.rm = T),
-      color = titles_color, size = legend_number_size
-    )} +
+    {
+      if (y_axes_1 != "only_x_dimension") {
+        ggplot2::annotate(
+          geom = "text", x = 1, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[7], na.rm = T),
+          color = titles_color, size = legend_number_size
+        )
+      }
+    } +
+    {
+      if (y_axes_1 != "only_x_dimension") {
+        ggplot2::annotate(
+          geom = "text", x = 2, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[8], na.rm = T),
+          color = titles_color, size = legend_number_size
+        )
+      }
+    } +
+    {
+      if (y_axes_1 != "only_x_dimension") {
+        ggplot2::annotate(
+          geom = "text", x = 3, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[9], na.rm = T),
+          color = titles_color, size = legend_number_size
+        )
+      }
+    } +
     ggplot2::theme(
       plot.title = ggplot2::element_text(hjust = 0.5, size = legend_title_size + 1),
       title = ggplot2::element_text(color = titles_color),
@@ -1019,25 +988,9 @@ textProjectionPlot <- function(word_data,
   output_plot_data <- list(final_plot, textProjectionPlot_comment, word_data_all)
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")
   output_plot_data
-  }
-
-
-
-
+}
 ###### End textProjectionPlot(word_data)
-#word_data <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/15 Response Formats/1 Data/gen_all_minidep.rds")
-#
-#
-#
-#textProjectionPlot(word_data,
-#                   k_n_words_to_test = FALSE,
-#                   min_freq_words_test = 1,
-#                   plot_n_words_square = 0,
-#                   plot_n_words_p = 0,
-#                   plot_n_word_extreme = 0,
-#                   plot_n_word_frequency = 6,
-#                   plot_n_words_middle = 0)
-#
+
 
 ####################################
 ####################################
@@ -1076,18 +1029,18 @@ textProjectionPlot <- function(word_data,
 #' @importFrom tibble tibble
 #' @export
 textCentrality <- function(words,
-                               wordembeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
-                               single_wordembeddings = single_wordembeddings_df,
-                               aggregation = "mean",
-                               # word_weight_power = 1,
-                               min_freq_words_test = 0) {
-
-  textCentrality_description <- paste( "words =", substitute(words),
-                                       "wordembeddings =", comment(wordembeddings),
-                                       "single_wordembeddings =", comment(single_wordembeddings),
-                                       "aggregation =", aggregation,
-                                       "min_freq_words_test =", min_freq_words_test,
-                                       collapse = " ")
+                           wordembeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
+                           single_wordembeddings = single_wordembeddings_df,
+                           aggregation = "mean",
+                           # word_weight_power = 1,
+                           min_freq_words_test = 0) {
+  textCentrality_description <- paste("words =", substitute(words),
+    "wordembeddings =", comment(wordembeddings),
+    "single_wordembeddings =", comment(single_wordembeddings),
+    "aggregation =", aggregation,
+    "min_freq_words_test =", min_freq_words_test,
+    collapse = " "
+  )
 
   # Create Central Point by aggregating all word embeddings
   Central_Point <- textEmbeddingAggregation(wordembeddings, aggregation = "mean")
@@ -1152,7 +1105,7 @@ textCentrality <- function(words,
 #' @param legend_title_size Font size of the title (default = 7).
 #' @param legend_number_size Font size of the values in the legend (default = 2).
 #' @return A 1-dimensional word plot based on cosine similarity to the aggregated word embedding,
-#'as well as tibble with processed data used to plot..
+#' as well as tibble with processed data used to plot..
 #' @seealso see \code{\link{textCentrality}} and \code{\link{textProjection}}
 #' @examples
 #' # The test-data included in the package is called: centrality_data_harmony
@@ -1211,8 +1164,6 @@ textCentralityPlot <- function(word_data,
                                legend_w_size = 0.2,
                                legend_title_size = 7,
                                legend_number_size = 2) {
-
-
   textCentralityPlot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",
     comment(word_data),
@@ -1223,7 +1174,7 @@ textCentralityPlot <- function(word_data,
     "plot_n_word_frequency =", plot_n_word_frequency,
     "plot_n_words_middle =", plot_n_words_middle,
     "centrality_color_codes =", paste(centrality_color_codes, collapse = " "),
-    "word_size_range =", paste(word_size_range, sep="-", collapse = " - "),
+    "word_size_range =", paste(word_size_range, sep = "-", collapse = " - "),
     "position_jitter_hight =", position_jitter_hight,
     "position_jitter_width =", position_jitter_width,
     "point_size =", point_size,
@@ -1235,7 +1186,8 @@ textCentralityPlot <- function(word_data,
     "legend_h_size =", legend_h_size,
     "legend_w_size =", legend_w_size,
     "legend_title_size =", legend_title_size,
-    "legend_number_size =", legend_number_size)
+    "legend_number_size =", legend_number_size
+  )
 
 
 
@@ -1272,13 +1224,13 @@ textCentralityPlot <- function(word_data,
 
   word_data_all <- word_data %>%
     dplyr::left_join(word_data_extrem_max_x %>%
-                       dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
     dplyr::left_join(word_data_extrem_min_x %>%
-                       dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
     dplyr::left_join(word_data_frequency_x %>%
-                       dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
     dplyr::left_join(word_data_middle_x %>%
-                       dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
     dplyr::mutate(extremes_all_x = rowSums(cbind(
       check_extreme_max_x, check_extreme_min_x,
       check_extreme_frequency_x, check_middle_x
@@ -1369,7 +1321,6 @@ textCentralityPlot <- function(word_data,
   output_plot_data <- list(final_plot, textCentralityPlot_comment, word_data_all)
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")
   output_plot_data
-
 }
 ###### End textCentralityPlot
 
@@ -1385,16 +1336,6 @@ textCentralityPlot <- function(word_data,
 ####################################
 
 
-## # Data
-#wordembeddings <- wordembeddings4$harmonywords
-#single_wordembeddings <- wordembeddings4$singlewords_we
-#words <- Language_based_assessment_data_8$harmonywords
-#
-#
-#df_for_plotting2d <- textPCA(words = Language_based_assessment_data_8$harmonywords,
-#                              single_wordembeddings =  wordembeddings4$singlewords_we)
-
-
 #' Compute 2 PCA dimensions of the word embeddings for individual words.
 #' @param words Word or text variable to be plotted.
 #' @param single_wordembeddings Word embeddings from textEmbed for individual words
@@ -1403,18 +1344,21 @@ textCentralityPlot <- function(word_data,
 #' for the individual words that is used for the plotting in the textPCAPlot function.
 #' @examples
 #' # Data
-#' df_for_plotting2d <- textPCA(words = Language_based_assessment_data_8$harmonywords,
-#'                                 single_wordembeddings =  wordembeddings4$singlewords_we)
+#' df_for_plotting2d <- textPCA(
+#'   words = Language_based_assessment_data_8$harmonywords,
+#'   single_wordembeddings = wordembeddings4$singlewords_we
+#' )
 #' df_for_plotting2d
 #' @seealso see \code{\link{textPCAPlot}}
 #' @importFrom tibble as_tibble
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake
 #' @export
 textPCA <- function(words,
-                       single_wordembeddings = single_wordembeddings_df) {
-
-  textPCA_comment <- paste( "words =", substitute(words),
-                            "single_wordembeddings =", comment(single_wordembeddings))
+                    single_wordembeddings = single_wordembeddings_df) {
+  textPCA_comment <- paste(
+    "words =", substitute(words),
+    "single_wordembeddings =", comment(single_wordembeddings)
+  )
 
 
   set.seed(2020)
@@ -1442,57 +1386,6 @@ textPCA <- function(words,
   comment(outputdata) <- textPCA_comment
   outputdata
 }
-
-#df_for_plotting2d <- textPCA(words = Language_based_assessment_data_8$harmonywords,
-#                                single_wordembeddings =  wordembeddings4$singlewords_we)
-
-
-#library(tidyverse)
-#satisfactionwords <- tibble::as_tibble_col(Language_based_assessment_data_8$satisfactionwords)
-#wordembeddings_satisfactionwords <- textEmbed(satisfactionwords)
-##
-#satisfactionwords <- textPCA(words = Language_based_assessment_data_8$satisfactionwords,
-#                               single_wordembeddings = wordembeddings_satisfactionwords$singlewords_we)
-#satisfactionwords
-
-# Example data
-#word_data = df_for_plotting2d[complete.cases(df_for_plotting2d),]
-#word_data = harmonywordsdata #df_for_plotting2d
-#min_freq_words_test = 2
-##plot_n_words_square = 1
-##plot_n_words_p = 1
-#plot_n_word_extreme = 10
-#plot_n_word_frequency = 5
-#plot_n_words_middle = 3
-#titles_color = "#61605e"
-#title_top = "PC"
-#x_axes_label = "PC1"
-#y_axes_label = "PC2"
-#scale_x_axes_lim = NULL # c(-6, 6)
-#scale_y_axes_lim = NULL # c(-6, 6)
-#word_font = NULL
-#bivariate_color_codes = c(
-#  "#398CF9", "#60A1F7", "#5dc688",
-#  "#e07f6a", "#808080", "#40DD52",
-#  "#FF0000", "#EA7467", "#85DB8E", "#398CF9")
-#word_size_range = c(3, 8)
-#position_jitter_hight = .0
-#position_jitter_width = .03
-#point_size = 0.7
-#arrow_transparency = 0.6
-#points_without_words_size = 0.7
-#points_without_words_alpha = 0.5
-#legend_title = "PC"
-#legend_x_axes_label = "PC1"
-#legend_y_axes_label = "PC2"
-#legend_x_position = 0.02
-#legend_y_position = 0.02
-#legend_h_size = 0.2
-#legend_w_size = 0.2
-#legend_title_size = 7
-#legend_number_size = 2
-
-
 
 #' Plot words according to 2-D plot from 2 PCA components.
 #' @param word_data Dataframe from textPCA
@@ -1555,39 +1448,38 @@ textPCA <- function(words,
 #' @importFrom purrr as_vector
 #' @export
 textPCAPlot <- function(word_data,
-                       min_freq_words_test = 1,
-                       plot_n_word_extreme = 5,
-                       plot_n_word_frequency = 5,
-                       plot_n_words_middle = 5,
-                       titles_color = "#61605e",
-                       title_top = "Principal Component (PC) Plot",
-                       x_axes_label = "PC1",
-                       y_axes_label = "PC2",
-                       scale_x_axes_lim = NULL,
-                       scale_y_axes_lim = NULL,
-                       word_font = NULL,
-                       bivariate_color_codes = c(
-                         "#398CF9", "#60A1F7", "#5dc688",
-                         "#e07f6a", "#EAEAEA", "#40DD52",
-                         "#FF0000", "#EA7467", "#85DB8E"
-                       ),
-                       word_size_range = c(3, 8),
-                       position_jitter_hight = .0,
-                       position_jitter_width = .03,
-                       point_size = 0.5,
-                       arrow_transparency = 0.1,
-                       points_without_words_size = 0.2,
-                       points_without_words_alpha = 0.2,
-                       legend_title = "PC",
-                       legend_x_axes_label = "PC1",
-                       legend_y_axes_label = "PC2",
-                       legend_x_position = 0.02,
-                       legend_y_position = 0.02,
-                       legend_h_size = 0.2,
-                       legend_w_size = 0.2,
-                       legend_title_size = 7,
-                       legend_number_size = 2) {
-
+                        min_freq_words_test = 1,
+                        plot_n_word_extreme = 5,
+                        plot_n_word_frequency = 5,
+                        plot_n_words_middle = 5,
+                        titles_color = "#61605e",
+                        title_top = "Principal Component (PC) Plot",
+                        x_axes_label = "PC1",
+                        y_axes_label = "PC2",
+                        scale_x_axes_lim = NULL,
+                        scale_y_axes_lim = NULL,
+                        word_font = NULL,
+                        bivariate_color_codes = c(
+                          "#398CF9", "#60A1F7", "#5dc688",
+                          "#e07f6a", "#EAEAEA", "#40DD52",
+                          "#FF0000", "#EA7467", "#85DB8E"
+                        ),
+                        word_size_range = c(3, 8),
+                        position_jitter_hight = .0,
+                        position_jitter_width = .03,
+                        point_size = 0.5,
+                        arrow_transparency = 0.1,
+                        points_without_words_size = 0.2,
+                        points_without_words_alpha = 0.2,
+                        legend_title = "PC",
+                        legend_x_axes_label = "PC1",
+                        legend_y_axes_label = "PC2",
+                        legend_x_position = 0.02,
+                        legend_y_position = 0.02,
+                        legend_h_size = 0.2,
+                        legend_w_size = 0.2,
+                        legend_title_size = 7,
+                        legend_number_size = 2) {
   textPCAPlot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",
     comment(word_data),
@@ -1598,7 +1490,7 @@ textPCAPlot <- function(word_data,
     "plot_n_word_frequency =", plot_n_word_frequency,
     "plot_n_words_middle =", plot_n_words_middle,
     "bivariate_color_codes =", paste(bivariate_color_codes, collapse = " "),
-    "word_size_range =", paste(word_size_range, sep="-", collapse = " - "),
+    "word_size_range =", paste(word_size_range, sep = "-", collapse = " - "),
     "position_jitter_hight =", position_jitter_hight,
     "position_jitter_width =", position_jitter_width,
     "point_size =", point_size,
@@ -1610,7 +1502,8 @@ textPCAPlot <- function(word_data,
     "legend_h_size =", legend_h_size,
     "legend_w_size =", legend_w_size,
     "legend_title_size =", legend_title_size,
-    "legend_number_size =", legend_number_size)
+    "legend_number_size =", legend_number_size
+  )
 
 
 
@@ -1644,13 +1537,13 @@ textPCAPlot <- function(word_data,
     dplyr::arrange(Dim_PC2) %>%
     dplyr::slice(0:plot_n_word_extreme)
 
-  #Select word frequency; plot_n_word_frequency = 5
+  # Select word frequency; plot_n_word_frequency = 5
   word_data_frequency <- word_data %>%
     dplyr::arrange(-n) %>%
     dplyr::slice(0:plot_n_word_frequency)
 
   # Select the middle range, order according to frequency and then select the plot_n_words_middle = 5
-  #PC1
+  # PC1
   mean_m_sd_PC1 <- mean(word_data$Dim_PC1, na.rm = TRUE) - (sd(word_data$Dim_PC1, na.rm = TRUE) / 2) # TODO Possibility to set this one? It may be that no words comes within this
   mean_p_sd_PC1 <- mean(word_data$Dim_PC1, na.rm = TRUE) + (sd(word_data$Dim_PC1, na.rm = TRUE) / 2)
 
@@ -1671,19 +1564,19 @@ textPCAPlot <- function(word_data,
   # Combine selected words
   word_data_all <- word_data %>%
     dplyr::left_join(word_data_extrem_max_PC1 %>%
-                       dplyr::transmute(words, check_extreme_max_PC1 = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_max_PC1 = 1), by = "words") %>%
     dplyr::left_join(word_data_extrem_max_PC2 %>%
-                       dplyr::transmute(words, check_extreme_max_PC2 = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_max_PC2 = 1), by = "words") %>%
     dplyr::left_join(word_data_extrem_min_PC1 %>%
-                       dplyr::transmute(words, check_extreme_min_PC1 = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_min_PC1 = 1), by = "words") %>%
     dplyr::left_join(word_data_extrem_min_PC2 %>%
-                       dplyr::transmute(words, check_extreme_min_PC2 = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_min_PC2 = 1), by = "words") %>%
     dplyr::left_join(word_data_frequency %>%
-                       dplyr::transmute(words, check_extreme_frequency = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_frequency = 1), by = "words") %>%
     dplyr::left_join(word_data_middle_PC1 %>%
-                       dplyr::transmute(words, check_middle_PC1 = 1), by = "words") %>%
+      dplyr::transmute(words, check_middle_PC1 = 1), by = "words") %>%
     dplyr::left_join(word_data_middle_PC2 %>%
-                       dplyr::transmute(words, check_middle_PC2 = 1), by = "words") %>%
+      dplyr::transmute(words, check_middle_PC2 = 1), by = "words") %>%
     dplyr::mutate(extremes_all = rowSums(cbind(
       check_extreme_max_PC1, check_extreme_max_PC2,
       check_extreme_min_PC1, check_extreme_min_PC2,
@@ -1786,7 +1679,7 @@ textPCAPlot <- function(word_data,
 
   # Creating legend DONT HARD CODE COLOURS!!! TODO
   bivariate_color_data <- tibble::tibble(
-    "1 - 3" = "#0078FF", "2 - 3" = "blue",    "3 - 3" = "#49FF00",
+    "1 - 3" = "#0078FF", "2 - 3" = "blue", "3 - 3" = "#49FF00",
     "1 - 2" = "#8700FF", "2 - 2" = "#B8B8B8", "3 - 2" = "#34AC04",
     "1 - 1" = "#FF1300", "2 - 1" = "#FF8300", "3 - 1" = "#04AC93"
   )
@@ -1809,7 +1702,6 @@ textPCAPlot <- function(word_data,
       y = legend_y_axes_label
     ) +
     ggplot2::theme_void() +
-
     ggplot2::annotate(
       geom = "text", x = 1, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[1], na.rm = T),
       color = titles_color, size = legend_number_size
@@ -1858,64 +1750,12 @@ textPCAPlot <- function(word_data,
 
   # Plot both figure and legend together
   final_plot <- suppressWarnings(cowplot::ggdraw() +
-                     cowplot::draw_plot(plot, 0, 0, 1, 1) +
-                     cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
+    cowplot::draw_plot(plot, 0, 0, 1, 1) +
+    cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
 
   output_plot_data <- list(final_plot, textPCAPlot_comment, word_data_all)
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")
   output_plot_data
-
 }
 
 ###### End textProjectionPlot
-
-
-
-
-#textPCAPlot(word_data = harmonywordsdata, #df_for_plotting2d, #harmonywordsdata, #df_for_plotting2d,
-#           min_freq_words_test = 2,
-#           plot_n_word_extreme = 5,
-#           plot_n_word_frequency = 5,
-#           plot_n_words_middle = 5,
-#           titles_color = "#61605e",
-#           title_top = "Principal Component Projection",
-#           x_axes_label = "Principal Component 1 (PC1)",
-#           y_axes_label = "Principal Component 2 (PC2)",
-#           scale_x_axes_lim = NULL,
-#           scale_y_axes_lim = NULL,
-#           word_font = NULL,
-#           bivariate_color_codes = c(
-#             "#398CF9", "#60A1F7", "#5dc688",
-#             "#e07f6a", "#EAEAEA", "#40DD52",
-#             "#FF0000", "#EA7467", "#85DB8E",
-#             "#398CF9"
-#           ),
-#           word_size_range = c(3, 8),
-#           position_jitter_hight = .0,
-#           position_jitter_width = .03,
-#           point_size = 0.5,
-#           arrow_transparency = 0.1,
-#           points_without_words_size = 0.2,
-#           points_without_words_alpha = 0.2,
-#           legend_title = "PC",
-#           legend_x_axes_label = "PC1",
-#           legend_y_axes_label = "PC2",
-#           legend_x_position = 0.02,
-#           legend_y_position = 0.02,
-#           legend_h_size = 0.2,
-#           legend_w_size = 0.2,
-#           legend_title_size = 7,
-#           legend_number_size = 2)
-#
-
-
-
-
-
-
-
-
-
-
-
-
