@@ -392,6 +392,7 @@ test_that("textTrainRegression adding wordembeddings together", {
 
 test_that("textTrainRandomForest adding wordembeddings together", {
 
+  y <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
 
   multi_we_RF_PCA_09<- textTrainRandomForest(wordembeddings4[1:2],
                                               y,
