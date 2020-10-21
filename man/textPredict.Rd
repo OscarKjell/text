@@ -22,7 +22,6 @@ Predict scores or classification from, e.g., textTrain.
 \examples{
 wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
-
 }
 \seealso{
 see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}

@@ -352,3 +352,46 @@ test_that("textTrainLists randomForest produces list of results with prediction 
   testthat::expect_that(results_rf_or, testthat::is_a("list"))
   testthat::expect_is(results_rf_or$results$p_value[1], "character")
 })
+
+
+
+
+
+
+
+test_that("textTrain adding wordembeddings together", {
+
+  multi_we_PCA_09 <- textTrainRegression(wordembeddings4[1:2],
+                                         Language_based_assessment_data_8$hilstotal,
+                                         preprocess_PCA = c(0.9)
+                                         )
+
+  testthat::expect_that(multi_we_PCA_09, testthat::is_a("list"))
+  testthat::expect_is(multi_we_PCA_09$results[[1]][[1]], "numeric")
+
+
+  multi_we_PCA_3 <- textTrainRegression(wordembeddings4[1:2],
+                                         Language_based_assessment_data_8$hilstotal,
+                                         preprocess_PCA = 3
+  )
+
+  testthat::expect_that(multi_we_PCA_3, testthat::is_a("list"))
+  testthat::expect_is(multi_we_PCA_3$results[[1]][[1]], "numeric")
+
+
+  multi_we_PCA_NA <- textTrainRegression(wordembeddings4[1:2],
+                                         Language_based_assessment_data_8$hilstotal,
+                                         preprocess_PCA = NA
+  )
+
+  testthat::expect_that(multi_we_PCA_NA, testthat::is_a("list"))
+  testthat::expect_is(multi_we_PCA_NA$results[[1]][[1]], "numeric")
+
+})
+
+
+
+
+
+
+

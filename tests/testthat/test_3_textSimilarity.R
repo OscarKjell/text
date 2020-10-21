@@ -35,11 +35,9 @@ test_that("textSimilarityTest paired results in list with numeric output", {
 })
 
 test_that("textSimilarityTest paired results in list with numeric output", {
-
-  expect_error(textSimilarityTest(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts[1:39,],
-                                method = "paired", Npermutations = 10, N_cluster_nodes = 1
+  expect_error(textSimilarityTest(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts[1:39, ],
+    method = "paired", Npermutations = 10, N_cluster_nodes = 1
   ))
-
 })
 
 test_that("textSimilarityTest unpaired results in list with numeric output", {

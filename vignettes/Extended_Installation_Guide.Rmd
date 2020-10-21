@@ -19,11 +19,11 @@ knitr::opts_chunk$set(
 ```{r extended_installation, eval = FALSE}
 library(text)
 
-# To install the python packages torch and transformers through R, run: 
+# To install the python packages torch, transformers, numpy and nltk through R, run: 
 library(reticulate)
 install_miniconda()
 
-conda_install(envname = 'r-reticulate', c('torch', 'transformers==2.4.1', 'numpy', 'nltk'), pip = TRUE)
+conda_install(envname = 'r-reticulate', c('torch', 'transformers', 'numpy', 'nltk'), pip = TRUE)
 
 # Windows 10
 conda_install(envname = 'r-reticulate', c('torch', 'transformers', 'numpy', 'nltk'))
@@ -68,8 +68,8 @@ devtools::install_github("rstudio/reticulate")
 library(reticulate)
 install_miniconda()
 
-# Subsequently re-install torch and transformers by running: 
-conda_install(envname = 'r-reticulate', c('torch', 'transformers==2.4.1'), pip = TRUE)
+# Subsequently re-install torch, transformers, numpy and nltk by running: 
+conda_install(envname = 'r-reticulate', c('torch', 'transformers', 'numpy', 'nltk'), pip = TRUE)
 
 ```
 

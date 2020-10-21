@@ -26,6 +26,8 @@ textTrain <- function(x,
                       y,
                       force_train_method = "automatic",
                       ...) {
+
+  # Figure out which train_method to use (textTrainRegression or textTrainRandomForest)
   if (is.numeric(y) == TRUE & force_train_method == "automatic") {
     train_method <- "regression"
   } else if (force_train_method == "regression") {
@@ -57,8 +59,9 @@ textTrain <- function(x,
     train_method <- "random_forest"
   }
 
-  if (train_method == "regression") {
 
+  # Analyze according to train_method decided above.
+  if (train_method == "regression") {
     # textTrainLists x; if more than one wordembedding list; or more than one column of numeric/categorical variable
     if ((!tibble::is_tibble(x) & length(x) > 1) | ((tibble::is_tibble(y) | is.data.frame(y)) & length(y) > 1)) {
       repression_output <- textTrainLists(

@@ -66,11 +66,11 @@ Train word embeddings to a categorical variable using random forrest.
 wordembeddings <- wordembeddings4
 example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
 results <- textTrainRandomForest(wordembeddings$harmonywords,
-                                 example_categories,
-                                 trees = c(1000, 1500),
-                                 mtry  = c(1),       # this is short because of testing
-                                 min_n = c(1),       # this is short because of testing
-                                 multi_cores = FALSE # This is FALSE due to CRAN testing.
+  example_categories,
+  trees = c(1000, 1500),
+  mtry  = c(1), # this is short because of testing
+  min_n = c(1), # this is short because of testing
+  multi_cores = FALSE # This is FALSE due to CRAN testing.
 )
 }
 \seealso{

@@ -28,9 +28,9 @@ Train word embeddings to a numeric (ridge regression) or categorical (random for
 wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
 results <- textTrain(wordembeddings$harmonytext,
-                     ratings_data$hilstotal,
-                     penalty = 1, # 1 due to computational constraints for the example context
-                     multi_cores = FALSE
+  ratings_data$hilstotal,
+  penalty = 1, # 1 due to computational constraints for the example context
+  multi_cores = FALSE
 )
 }
 \seealso{

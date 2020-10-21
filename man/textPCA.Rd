@@ -21,8 +21,10 @@ Compute 2 PCA dimensions of the word embeddings for individual words.
 }
 \examples{
 # Data
-df_for_plotting2d <- textPCA(words = Language_based_assessment_data_8$harmonywords,
-                                single_wordembeddings =  wordembeddings4$singlewords_we)
+df_for_plotting2d <- textPCA(
+  words = Language_based_assessment_data_8$harmonywords,
+  single_wordembeddings = wordembeddings4$singlewords_we
+)
 df_for_plotting2d
 }
 \seealso{

@@ -537,3 +537,5 @@ textEmbed <- function(x,
   all_embeddings$singlewords_we <- decontextualised_embeddings_words
   all_embeddings
 }
+
+
