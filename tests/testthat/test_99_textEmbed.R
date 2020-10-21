@@ -84,6 +84,7 @@ test_that("textEmbedStatic with example space", {
   rating_response <- c(25, 30, 30, 2, 10)
   tibble_response <- tibble(word_response, rating_response)
   tibble_response
+
   # Test function
   test_result <- textEmbedStatic(df = tibble_response, space = test_space, tk_df = "null", aggregate = "mean")
   test_result
@@ -106,7 +107,7 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
   embeddings <- textEmbedLayersOutput(x,
-    model = "bert-base-multilingual-cased",
+    model = "roberta-base",
     contexts = TRUE,
     decontexts = FALSE,
     layers = "all"
@@ -121,7 +122,7 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   expect_that(ncol(embeddings[[1]][[1]][[1]]), equals(771))
 })
 
-test_that("textEmbedLayersOutput bert-base-multilingual-cased contexts=FALSE, decontexts = TRUE returns a list", {
+test_that("textEmbedLayersOutput roberta-base contexts=FALSE, decontexts = TRUE returns a list", {
   # skip_on_cran()
   # skip_if_no_transformers()
   # skip_if_no_torch
@@ -132,7 +133,7 @@ test_that("textEmbedLayersOutput bert-base-multilingual-cased contexts=FALSE, de
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
   embeddings <- textEmbedLayersOutput(x,
-    model = "bert-base-multilingual-uncased",
+    model = "roberta-base",
     contexts = FALSE,
     decontexts = TRUE,
     layers = "all"
