@@ -359,7 +359,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
 
 
-test_that("textTrain adding wordembeddings together", {
+test_that("textTrainRegression adding wordembeddings together", {
 
   multi_we_PCA_09 <- textTrainRegression(wordembeddings4[1:2],
                                          Language_based_assessment_data_8$hilstotal,
@@ -388,6 +388,38 @@ test_that("textTrain adding wordembeddings together", {
   testthat::expect_is(multi_we_PCA_NA$results[[1]][[1]], "numeric")
 
 })
+
+
+test_that("textTrainRandomForest adding wordembeddings together", {
+
+
+  multi_we_RF_PCA_09<- textTrainRandomForest(wordembeddings4[1:2],
+                                              y,
+                                              preprocess_PCA = 0.9)
+
+
+  testthat::expect_that(multi_we_RF_PCA_09, testthat::is_a("list"))
+  testthat::expect_is(multi_we_RF_PCA_09$results$.estimate[[1]], "numeric")
+
+  multi_we_RF_PCA_3<- textTrainRandomForest(wordembeddings4[1:2],
+                                             y,
+                                             preprocess_PCA = 3)
+
+
+  testthat::expect_that(multi_we_RF_PCA_3, testthat::is_a("list"))
+  testthat::expect_is(multi_we_RF_PCA_3$results$.estimate[[1]], "numeric")
+
+  multi_we_RF_PCA_NA<- textTrainRandomForest(wordembeddings4[1:2],
+                                             y,
+                                             preprocess_PCA = NA)
+
+
+  testthat::expect_that(multi_we_RF_PCA_NA, testthat::is_a("list"))
+  testthat::expect_is(multi_we_RF_PCA_NA$results$.estimate[[1]], "numeric")
+
+})
+
+
 
 
 

@@ -107,10 +107,15 @@ fit_model_accuracy_rf <- function(object,
                                   mtry = 1,
                                   min_n = 1,
                                   trees = 1000,
-                                  preprocess_PCA = "min_halving",
+                                  preprocess_PCA = NA,
+                                  variable_name_index_pca = NA,
                                   eval_measure = "bal_accuracy",
                                   extremely_randomised_splitrule = NULL) {
-  xy_recipe <- rsample::analysis(object) %>%
+
+  # Recipe for one embedding input
+  if(colnames(rsample::analysis(object)[1]) == "Dim1"){
+
+    xy_recipe <- rsample::analysis(object) %>%
     recipes::recipe(y ~ .) %>%
     #    recipes::update_role(id1, new_role = "id variable") %>%
     #    #recipes::update_role(-id1, new_role = "predictor") %>%
@@ -137,6 +142,45 @@ fit_model_accuracy_rf <- function(object,
       }
     } %>%
     recipes::prep()
+
+     # Recipe for multiple word embedding input (with possibility of separate PCAs)
+     } else {
+
+       V1 <- colnames(rsample::analysis(object)[1])
+       xy_recipe <- rsample::analysis(object) %>%
+         recipes::recipe(y ~ .) %>%
+         # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
+         recipes::update_role(id_nr, new_role = "id variable") %>%
+         recipes::update_role(-id_nr, new_role = "predictor") %>%
+         recipes::update_role(y, new_role = "outcome") %>%
+         recipes::step_naomit(all_of(V1), skip = TRUE) %>%
+         recipes::step_center(recipes::all_predictors()) %>%
+         recipes::step_scale(recipes::all_predictors())
+
+       # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
+       if (!is.na(preprocess_PCA)) {
+
+         if (preprocess_PCA >= 1) {
+           for (i in variable_name_index_pca) {
+             xy_recipe <-
+               xy_recipe %>%
+               # !! slices the current name into the `matches()` function.
+               # We use a custom prefix so there are no name collisions for the
+               # results of each PCA step.
+               recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+           }
+         } else if (preprocess_PCA < 1) {
+           for (i in variable_name_index_pca) {
+             xy_recipe <-
+               xy_recipe %>%
+               #recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+               recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+           }
+         }
+       }
+       xy_recipe <- recipes::prep(xy_recipe)
+     }
+
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -222,6 +266,7 @@ fit_model_accuracy_wrapper_rf <- function(mtry,
                                           mode_rf,
                                           trees,
                                           preprocess_PCA,
+                                          variable_name_index_pca,
                                           eval_measure,
                                           extremely_randomised_splitrule) {
   fit_model_accuracy_rf(
@@ -231,6 +276,7 @@ fit_model_accuracy_wrapper_rf <- function(mtry,
     min_n,
     trees,
     preprocess_PCA,
+    variable_name_index_pca,
     eval_measure,
     extremely_randomised_splitrule
   )
@@ -254,6 +300,7 @@ tune_over_cost_rf <- function(object,
                               min_n,
                               trees,
                               preprocess_PCA,
+                              variable_name_index_pca,
                               eval_measure,
                               extremely_randomised_splitrule) {
   if (!is.na(preprocess_PCA[1])) {
@@ -293,6 +340,7 @@ tune_over_cost_rf <- function(object,
   fit_model_accuracy_wrapper_rf,
   object = object,
   mode_rf = mode_rf,
+  variable_name_index_pca = variable_name_index_pca,
   eval_measure = eval_measure,
   extremely_randomised_splitrule
   )
@@ -333,6 +381,7 @@ summarize_tune_results_rf <- function(object,
                                       min_n,
                                       trees,
                                       preprocess_PCA,
+                                      variable_name_index_pca,
                                       eval_measure,
                                       extremely_randomised_splitrule) {
 
@@ -345,11 +394,37 @@ summarize_tune_results_rf <- function(object,
     min_n = min_n,
     trees = trees,
     preprocess_PCA = preprocess_PCA,
+    variable_name_index_pca = variable_name_index_pca,
     eval_measure = eval_measure,
     extremely_randomised_splitrule = extremely_randomised_splitrule
   )
 }
 
+
+
+
+#x <- wordembeddings4[1:2]
+#y <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
+#
+#mode_rf = "classification"
+#preprocess_PCA = NA
+#preprocess_PCA = 0.9
+#preprocess_PCA = 3
+#extremely_randomised_splitrule = NULL
+#mtry = c(1)
+#min_n = c(1)
+#trees = c(1000)
+#eval_measure = "bal_accuracy"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = TRUE
+#save_output = "all"
+#
+#textTrainRandomForest(wordembeddings4[1:2],
+#                      y,
+#                     # preprocess_PCA = NA
+#                      preprocess_PCA = 0.9
+#                     #preprocess_PCA = 3
+#                      )
 
 #' Train word embeddings to a categorical variable using random forrest.
 #'
@@ -422,14 +497,32 @@ textTrainRandomForest <- function(x,
                                   ...) {
   set.seed(2020)
 
+  variable_name_index_pca <- NA
+
+#  # In case the embedding is in list form get the tibble form
+#  if (!tibble::is_tibble(x)) {
+#    x1 <- x[[1]]
+#    x_name <- names(x)
+#  } else {
+#    x1 <- x
+#    x_name <- deparse(substitute(x))
+#  }
+
+
   # In case the embedding is in list form get the tibble form
-  if (!tibble::is_tibble(x)) {
+  if (!tibble::is_tibble(x) & length(x) == 1) {
     x1 <- x[[1]]
+    # Get names for description
     x_name <- names(x)
+  } else if (!tibble::is_tibble(x) & length(x) > 1) {
+    x_name <- names(x)
+    x_name <- paste(x_name, sep=" ", collapse = " & ")
+    x_name <- paste("input:", x_name, sep=" ", collapse = " ")
   } else {
     x1 <- x
     x_name <- deparse(substitute(x))
   }
+
 
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
@@ -438,6 +531,40 @@ textTrainRandomForest <- function(x,
     y_name <- deparse(substitute(y))
     y <- y
   }
+
+  ############ Arranging word embeddings to be concatenated from different texts ############
+  ##################################################
+
+  if(!tibble::is_tibble(x) & length(x)>1){
+
+    # Select all variables that starts with Dim in each dataframe of the list.
+    xlist <- lapply(x, function(X) {
+      X <- dplyr::select(X, dplyr::starts_with("Dim"))
+    })
+
+    Nword_variables <- length(xlist)
+    # Give each column specific names with indexes so that they can be handled separately in the PCAs
+    for (i in 1:Nword_variables) {
+      colnames(xlist[[i]]) <- paste("Dim_we", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep = "")
+    }
+
+    # Make vector with each index so that we can allocate them separately for the PCAs
+    variable_name_index_pca <- list()
+    for (i in 1:Nword_variables) {
+      variable_name_index_pca[i] <- paste("Dim_we", i, sep = "")
+    }
+
+    # Make one df rather then list.
+    x1 <- dplyr::bind_cols(xlist)
+
+    # Get the name of the first variable; which is used to exclude NA (i.e., word embedding have NA in all columns)
+    #V1 <- colnames(x)[1]
+
+  }
+
+  ############ End for multiple word embeddings ############
+  ##########################################################
+
 
   x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
 
@@ -475,6 +602,7 @@ textTrainRandomForest <- function(x,
       min_n = min_n,
       trees = trees,
       preprocess_PCA = preprocess_PCA,
+      variable_name_index_pca = variable_name_index_pca,
       eval_measure = eval_measure, # eval_measure = "bal_accuracy"; eval_measure = "roc_auc"
       extremely_randomised_splitrule = extremely_randomised_splitrule
     )
@@ -491,6 +619,7 @@ textTrainRandomForest <- function(x,
       min_n = min_n,
       trees = trees,
       preprocess_PCA = preprocess_PCA,
+      variable_name_index_pca = variable_name_index_pca,
       eval_measure = eval_measure,
       extremely_randomised_splitrule = extremely_randomised_splitrule
     )
@@ -520,7 +649,8 @@ textTrainRandomForest <- function(x,
       results_split_parameter$mtry,
       results_split_parameter$min_n,
       trees = results_split_parameter$trees,
-      preprocess_PCA = results_split_parameter$preprocess_PCA
+      preprocess_PCA = results_split_parameter$preprocess_PCA,
+      variable_name_index_pca = list(variable_name_index_pca)
     ),
     fit_model_accuracy_rf
   )
@@ -539,6 +669,10 @@ textTrainRandomForest <- function(x,
   # Construct final model to be saved and applied on other data
   # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
   xy_short <- xy %>% dplyr::select(-id_nr)
+
+
+  ######### One word embedding as input
+  if(colnames(xy_short[1]) == "Dim1"){
   final_recipe <- # xy %>%
     recipes::recipe(y ~ ., xy_short[0, ]) %>%
     recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
@@ -558,6 +692,41 @@ textTrainRandomForest <- function(x,
         .
       }
     }
+  ######### More than one word embeddings as input
+  } else {
+
+    V1 <- colnames(xy_short[1])
+
+    final_recipe <- recipes::recipe(y ~ ., xy_short[0, ]) %>%
+      recipes::update_role(y, new_role = "outcome") %>%
+      recipes::step_naomit(all_of(V1), skip = TRUE) %>%
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors())
+
+    # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
+    if (!is.na(preprocess_PCA)) {
+
+      if (preprocess_PCA >= 1) {
+        for (i in variable_name_index_pca) {
+          final_recipe <-
+            final_recipe %>%
+            # !! slices the current name into the `matches()` function.
+            # We use a custom prefix so there are no name collisions for the
+            # results of each PCA step.
+            recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+        }
+        # }
+      } else if (preprocess_PCA < 1) {
+        for (i in variable_name_index_pca) {
+          final_recipe <-
+            final_recipe %>%
+            #recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+            recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+        }
+      }
+    }
+  }
+
 
   preprocessing_recipe_save <- recipes::prep(final_recipe, xy_short, retain = FALSE)
   preprocessing_recipe_use <- recipes::prep(final_recipe, xy_short)

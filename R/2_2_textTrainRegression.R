@@ -190,7 +190,19 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
 #' from same word embedding together in separate pcas.
 #' @return RMSE.
 #' @noRd
-fit_model_rmse_wrapper <- function(penalty = penalty, mixture = mixture, object, model, eval_measure, preprocess_PCA = preprocess_PCA, variable_name_index_pca = variable_name_index_pca) fit_model_rmse(object, model, eval_measure, penalty, mixture, preprocess_PCA = preprocess_PCA, variable_name_index_pca = variable_name_index_pca)
+fit_model_rmse_wrapper <- function(penalty = penalty,
+                                   mixture = mixture,
+                                   object,
+                                   model,
+                                   eval_measure,
+                                   preprocess_PCA = preprocess_PCA,
+                                   variable_name_index_pca = variable_name_index_pca) fit_model_rmse(object,
+                                                                                                     model,
+                                                                                                     eval_measure,
+                                                                                                     penalty,
+                                                                                                     mixture,
+                                                                                                     preprocess_PCA = preprocess_PCA,
+                                                                                                     variable_name_index_pca = variable_name_index_pca)
 
 #' For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
 #'
@@ -272,7 +284,13 @@ tune_over_cost <- function(object, model, eval_measure, penalty, mixture, prepro
 #' from same word embedding together in separate pcas
 #' @return RMSE with corresponding penalty, mixture and preprocess_PCA.
 #' @noRd
-summarize_tune_results <- function(object, model, eval_measure, penalty, mixture, preprocess_PCA = preprocess_PCA, variable_name_index_pca = variable_name_index_pca) {
+summarize_tune_results <- function(object,
+                                   model,
+                                   eval_measure,
+                                   penalty,
+                                   mixture,
+                                   preprocess_PCA = preprocess_PCA,
+                                   variable_name_index_pca = variable_name_index_pca) {
 
   # Return row-bound tibble containing the INNER results
   purrr::map_df(
