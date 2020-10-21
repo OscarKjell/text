@@ -15,7 +15,7 @@ test_that("textTrain Regression produces list of results with prediction being n
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = "min_halving",
-    multi_cores = TRUE,
+    multi_cores = FALSE,
     # force_train_method = "automatic",
     save_output = "only_results"
   )
@@ -31,7 +31,7 @@ test_that("textTrain Regression produces list of results with prediction being n
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = "min_halving",
-    multi_cores = TRUE,
+    multi_cores = FALSE,
     save_output = "only_results"
   )
   testthat::expect_that(trained_logistic, is_a("list"))
@@ -48,7 +48,7 @@ test_that("textTrain Regression produces list of results with prediction being n
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = 1,
-    multi_cores = TRUE,
+    multi_cores = FALSE,
     # force_train_method = "automatic",
     save_output = "only_results"
   )
@@ -77,7 +77,7 @@ test_that("textTrain Regression produces list of results with prediction being n
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = NA,
-    multi_cores = TRUE
+    multi_cores = FALSE
   )
 
   testthat::expect_that(trained_NA, is_a("list"))
@@ -186,7 +186,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
     trees = c(1000),
     preprocess_PCA = c(3),
     extremely_randomised_splitrule = "gini",
-    multi_cores = TRUE,
+    multi_cores = FALSE,
     eval_measure = "bal_accuracy",
     save_output = "only_results_predictions"
   )

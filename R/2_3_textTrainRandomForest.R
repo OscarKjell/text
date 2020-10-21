@@ -153,7 +153,7 @@ fit_model_accuracy_rf <- function(object,
          recipes::update_role(id_nr, new_role = "id variable") %>%
          recipes::update_role(-id_nr, new_role = "predictor") %>%
          recipes::update_role(y, new_role = "outcome") %>%
-         recipes::step_naomit(all_of(V1), skip = TRUE) %>%
+         recipes::step_naomit(dplyr::all_of(V1), skip = TRUE) %>%
          recipes::step_center(recipes::all_predictors()) %>%
          recipes::step_scale(recipes::all_predictors())
 
@@ -699,7 +699,7 @@ textTrainRandomForest <- function(x,
 
     final_recipe <- recipes::recipe(y ~ ., xy_short[0, ]) %>%
       recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(all_of(V1), skip = TRUE) %>%
+      recipes::step_naomit(dplyr::all_of(V1), skip = TRUE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors())
 

@@ -62,7 +62,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(all_of(V1), skip = TRUE) %>%
+      recipes::step_naomit(dplyr::all_of(V1), skip = TRUE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors())
 
@@ -346,7 +346,7 @@ summarize_tune_results <- function(object,
 #' @seealso see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}
 #' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 #' @importFrom stats cor.test na.omit lm
-#' @importFrom dplyr select starts_with filter
+#' @importFrom dplyr select starts_with filter all_of
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
 #' @importFrom rsample vfold_cv
 #' @importFrom parsnip linear_reg set_engine
@@ -408,7 +408,7 @@ textTrainRegression <- function(x,
   ############ Arranging word embeddings to be concatenated from different texts ############
   ##################################################
 
-  if(!is_tibble(x) & length(x)>1){
+  if(!tibble::is_tibble(x) & length(x)>1){
 
     # Select all variables that starts with Dim in each dataframe of the list.
     xlist <- lapply(x, function(X) {
@@ -573,14 +573,14 @@ textTrainRegression <- function(x,
       }
     }
 
-  ######### More than one word embeddings as input
+  ######### More than one word embeddings as input help(all_of)
   } else {
 
     V1 <- colnames(xy_short[1])
 
     final_recipe <- recipes::recipe(y ~ ., xy_short[0, ]) %>%
       recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(all_of(V1), skip = TRUE) %>%
+      recipes::step_naomit(dplyr::all_of(V1), skip = TRUE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors())
 
