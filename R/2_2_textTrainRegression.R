@@ -354,6 +354,7 @@ textTrainRegression <- function(x,
                                 save_output = "all") {
   set.seed(2020)
 
+  variable_name_index_pca <- NA
 
   # Select correct eval_measure depending on model when default
   if (model == "regression" & eval_measure == "default") {
