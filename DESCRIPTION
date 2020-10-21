@@ -54,7 +54,7 @@ Suggests:
     xml2,
     ranger
 VignetteBuilder: knitr
-Depends: R (>= 4.00)
+Depends: R (>= 4.0)
 Config/reticulate:
   list(
     packages = list(
