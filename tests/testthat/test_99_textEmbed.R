@@ -107,7 +107,7 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
   embeddings <- textEmbedLayersOutput(x,
-    model = "roberta-base",
+    model = "bert-base-uncased",
     contexts = TRUE,
     decontexts = FALSE,
     layers = "all"
@@ -122,7 +122,7 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   expect_that(ncol(embeddings[[1]][[1]][[1]]), equals(771))
 })
 
-test_that("textEmbedLayersOutput roberta-base contexts=FALSE, decontexts = TRUE returns a list", {
+test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {
   # skip_on_cran()
   # skip_if_no_transformers()
   # skip_if_no_torch
@@ -133,7 +133,7 @@ test_that("textEmbedLayersOutput roberta-base contexts=FALSE, decontexts = TRUE 
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
   embeddings <- textEmbedLayersOutput(x,
-    model = "roberta-base",
+    model = "bert-base-uncased",
     contexts = FALSE,
     decontexts = TRUE,
     layers = "all"
@@ -158,12 +158,12 @@ test_that("textEmbed", {
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
   embeddings_decontextsT <- textEmbed(x,
-    model = "roberta-base",
+    model = "bert-base-uncased",
     decontexts = TRUE
   )
 
   embeddings_decontextsF <- textEmbed(x,
-    model = "roberta-base",
+    model = "bert-base-uncased",
     decontexts = FALSE
   )
 
@@ -180,7 +180,7 @@ test_that("textEmbed", {
  People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.
  ")
   long_text_embedding <- textEmbed(long_text_test,
-    model = "roberta-base"
+    model = "bert-base-uncased"
   )
 
   expect_that(long_text_embedding, is_a("list"))

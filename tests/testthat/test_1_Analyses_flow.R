@@ -5,10 +5,10 @@ library(text)
 library(tibble)
 
 context("Big analyses flow")
-
+# help(textEmbed)
 test_that("Testing textEmbed as well as train", {
   harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1],
-    model = "roberta-base",
+    model = "bert-base-uncased",
     layers = c(0, 12),
     context_layers = 12,
     decontext_layers = 0
