@@ -36,7 +36,7 @@ Imports:
     parsnip,
     recipes,
     rsample,
-    reticulate,
+    reticulate (<= 1.16),
     tune,
     workflows,
     yardstick,
