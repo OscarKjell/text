@@ -15,7 +15,7 @@ test_that("textTrain Regression produces list of results with prediction being n
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = "min_halving",
-    multi_cores = FALSE,
+    multi_cores = "multi_cores_sys_default",
     # force_train_method = "automatic",
     save_output = "only_results"
   )

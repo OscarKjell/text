@@ -330,8 +330,8 @@ summarize_tune_results <- function(object,
 #' @param method_cor Type of correlation used in evaluation (default "pearson";
 #' can set to "spearman" or "kendall").
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
-#' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-#' make the analyses considerably faster to run; does not work on Windows).
+#' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it (i.e., only on unix, not windows). Hence it
+#' makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
 #' @return A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information
 #' about the model (preprossing_recipe, final_model and model_description).
@@ -368,7 +368,7 @@ textTrainRegression <- function(x,
                                 mixture = c(0),
                                 method_cor = "pearson",
                                 model_description = "Consider writing a description of your model here",
-                                multi_cores = FALSE,
+                                multi_cores = "multi_cores_sys_default",
                                 save_output = "all") {
   set.seed(2020)
 
@@ -456,8 +456,22 @@ textTrainRegression <- function(x,
     )
   )
 
+  # Deciding whether to use multicorese depending on system and settings.
+  if (multi_cores == "multi_cores_sys_default"){
+    if (.Platform$OS.type == "unix"){
+      multi_cores_use <- TRUE
+    } else if (.Platform$OS.type == "windows"){
+      multi_cores_use <- FALSE
+    }
+  } else if (multi_cores == TRUE) {
+    multi_cores_use <- TRUE
+  } else if (multi_cores == FALSE){
+    multi_cores_use <- FALSE
+  }
 
-  if (multi_cores == FALSE) {
+
+
+  if (multi_cores_use == FALSE) {
     tuning_results <- purrr::map(
       .x = results_nested_resampling$inner_resamples,
       .f = summarize_tune_results,
@@ -468,7 +482,7 @@ textTrainRegression <- function(x,
       preprocess_PCA = preprocess_PCA,
       variable_name_index_pca = variable_name_index_pca
     )
-  } else if (multi_cores == TRUE) {
+  } else if (multi_cores_use == TRUE) {
     # The multisession plan uses the local cores to process the inner resampling loop. help(multisession)
     # library(future)
     future::plan(future::multisession)

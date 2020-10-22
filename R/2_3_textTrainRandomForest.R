@@ -448,8 +448,8 @@ summarize_tune_results_rf <- function(object,
 #' @param eval_measure Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
 #' see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
-#' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-#' make the analyses considerably faster to run; does not work on Windows).
+#' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it (i.e., only on unix, not windows). Hence it
+#' makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe, final_model, model_description
@@ -492,7 +492,7 @@ textTrainRandomForest <- function(x,
                                   trees = c(1000),
                                   eval_measure = "bal_accuracy",
                                   model_description = "Consider writing a description of your model here",
-                                  multi_cores = FALSE,
+                                  multi_cores = "multi_cores_sys_default",
                                   save_output = "all",
                                   ...) {
   set.seed(2020)
@@ -591,9 +591,24 @@ textTrainRandomForest <- function(x,
       breaks = 1
     )
   )
-  # rlang::last_error()
+
+
+  # Deciding whether to use multicorese depending on system and settings.
+  if (multi_cores == "multi_cores_sys_default"){
+    if (.Platform$OS.type == "unix"){
+      multi_cores_use <- TRUE
+    } else if (.Platform$OS.type == "windows"){
+      multi_cores_use <- FALSE
+    }
+  } else if (multi_cores == TRUE) {
+    multi_cores_use <- TRUE
+  } else if (multi_cores == FALSE){
+    multi_cores_use <- FALSE
+  }
+
+
   # Tuning inner resamples library(magrittr) warnings()
-  if (multi_cores == FALSE) {
+  if (multi_cores_use == FALSE) {
     tuning_results <- purrr::map(
       .x = results_nested_resampling$inner_resamples,
       .f = summarize_tune_results_rf,
@@ -606,7 +621,7 @@ textTrainRandomForest <- function(x,
       eval_measure = eval_measure, # eval_measure = "bal_accuracy"; eval_measure = "roc_auc"
       extremely_randomised_splitrule = extremely_randomised_splitrule
     )
-  } else {
+  } else if (multi_cores_use == TRUE){
     # The multisession plan uses the local cores to process the inner resampling loop.
     # library(future)
     future::plan(future::multisession)

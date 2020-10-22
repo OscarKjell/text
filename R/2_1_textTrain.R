@@ -102,6 +102,7 @@ textTrain <- function(x,
 }
 
 
+
 # devtools::document()
 #' Sorts out the output from a regression model for the list format.
 #'

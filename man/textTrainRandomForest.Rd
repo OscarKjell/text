@@ -15,7 +15,7 @@ textTrainRandomForest(
   trees = c(1000),
   eval_measure = "bal_accuracy",
   model_description = "Consider writing a description of your model here",
-  multi_cores = TRUE,
+  multi_cores = FALSE,
   save_output = "all",
   ...
 )
@@ -48,7 +48,7 @@ see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_me
 \item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
 
 \item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-make the analyses considerably faster to run).}
+make the analyses considerably faster to run; does not work on Windows).}
 
 \item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
 
@@ -70,7 +70,7 @@ results <- textTrainRandomForest(wordembeddings$harmonywords,
   trees = c(1000, 1500),
   mtry  = c(1), # this is short because of testing
   min_n = c(1), # this is short because of testing
-  multi_cores = FALSE # This is FALSE due to CRAN testing.
+  multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 )
 }
 \seealso{

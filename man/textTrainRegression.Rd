@@ -14,7 +14,7 @@ textTrainRegression(
   mixture = c(0),
   method_cor = "pearson",
   model_description = "Consider writing a description of your model here",
-  multi_cores = TRUE,
+  multi_cores = FALSE,
   save_output = "all"
 )
 }
@@ -45,7 +45,7 @@ can set to "spearman" or "kendall").}
 \item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
 
 \item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-make the analyses considerably faster to run).}
+make the analyses considerably faster to run; does not work on Windows).}
 
 \item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
 }
@@ -62,7 +62,7 @@ ratings_data <- Language_based_assessment_data_8
 
 results <- textTrainRegression(wordembeddings$harmonytext,
   ratings_data$hilstotal,
-  multi_cores = FALSE # this is set to FALSE due to CRAN testing.
+  multi_cores = FALSE # this is set to FALSE due to CRAN testing, and Windows machines.
 )
 }
 \seealso{
