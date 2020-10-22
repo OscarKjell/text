@@ -381,18 +381,24 @@ textTrainRegression <- function(x,
     eval_measure <- "bal_accuracy"
   }
 
-  # In case the embedding is in list form get the tibble form
+  # In case one embedding is in list form get the tibble form
   if (!tibble::is_tibble(x) & length(x) == 1) {
     x1 <- x[[1]]
     # Get names for description
     x_name <- names(x)
+    embedding_description <- comment(x[[1]])
+    # In case there are several embeddings in list form get the x_names and embedding description for model description
   } else if (!tibble::is_tibble(x) & length(x) > 1) {
     x_name <- names(x)
     x_name <- paste(x_name, sep=" ", collapse = " & ")
     x_name <- paste("input:", x_name, sep=" ", collapse = " ")
+
+    embedding_description <- comment(x[[1]])
+    # In case it is just ane word embedding as tibble
   } else {
     x1 <- x
     x_name <- deparse(substitute(x))
+    embedding_description <- comment(x)
   }
 
 
@@ -672,7 +678,6 @@ textTrainRegression <- function(x,
 
 
   # Describe model; adding user's-description + the name of the x and y
-  embedding_description <- comment(x)
   model_description_detail <- c(
     x_name,
     y_name,
