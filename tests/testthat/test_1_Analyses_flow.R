@@ -18,7 +18,8 @@ test_that("Testing textEmbed as well as train", {
     x = harmony_word_embeddings$harmonywords,
     y = Language_based_assessment_data_8$hilstotal,
     preprocess_PCA = c(0.20),
-    penalty = 1e-16
+    penalty = 1e-16,
+    multi_cores = FALSE
   )
 
   expect_that(text_train_results$results$estimate[1], is_a("numeric"))

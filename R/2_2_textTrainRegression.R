@@ -331,7 +331,7 @@ summarize_tune_results <- function(object,
 #' can set to "spearman" or "kendall").
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-#' make the analyses considerably faster to run).
+#' make the analyses considerably faster to run; does not work on Windows).
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
 #' @return A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information
 #' about the model (preprossing_recipe, final_model and model_description).
@@ -341,7 +341,7 @@ summarize_tune_results <- function(object,
 #'
 #' results <- textTrainRegression(wordembeddings$harmonytext,
 #'   ratings_data$hilstotal,
-#'   multi_cores = FALSE # this is set to FALSE due to CRAN testing.
+#'   multi_cores = FALSE # this is set to FALSE due to CRAN testing, and Windows machines.
 #' )
 #' @seealso see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}
 #' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
@@ -368,7 +368,7 @@ textTrainRegression <- function(x,
                                 mixture = c(0),
                                 method_cor = "pearson",
                                 model_description = "Consider writing a description of your model here",
-                                multi_cores = TRUE,
+                                multi_cores = FALSE,
                                 save_output = "all") {
   set.seed(2020)
 

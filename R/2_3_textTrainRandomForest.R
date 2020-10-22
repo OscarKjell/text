@@ -449,7 +449,7 @@ summarize_tune_results_rf <- function(object,
 #' see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-#' make the analyses considerably faster to run).
+#' make the analyses considerably faster to run; does not work on Windows).
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe, final_model, model_description
@@ -463,7 +463,7 @@ summarize_tune_results_rf <- function(object,
 #'   trees = c(1000, 1500),
 #'   mtry  = c(1), # this is short because of testing
 #'   min_n = c(1), # this is short because of testing
-#'   multi_cores = FALSE # This is FALSE due to CRAN testing.
+#'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
 #' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
@@ -492,7 +492,7 @@ textTrainRandomForest <- function(x,
                                   trees = c(1000),
                                   eval_measure = "bal_accuracy",
                                   model_description = "Consider writing a description of your model here",
-                                  multi_cores = TRUE,
+                                  multi_cores = FALSE,
                                   save_output = "all",
                                   ...) {
   set.seed(2020)

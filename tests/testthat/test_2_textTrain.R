@@ -204,7 +204,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
     trees = c(1000),
     preprocess_PCA = NA,
     extremely_randomised_splitrule = "gini",
-    multi_cores = TRUE
+    multi_cores = FALSE
   )
 
   testthat::expect_that(trained_rf_NA, testthat::is_a("list"))
@@ -223,7 +223,8 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     penalty = c(2),
     mixture = c(0),
     force_train_method = "regression",
-    method_cor = "spearman"
+    method_cor = "spearman",
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results, testthat::is_a("list"))
@@ -239,7 +240,8 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     mixture = c(0),
     force_train_method = "regression",
     save_output = "only_results",
-    method_cor = "kendall"
+    method_cor = "kendall",
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_or, testthat::is_a("list"))
@@ -256,7 +258,8 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     penalty = c(2),
     mixture = c(0),
     force_train_method = "regression",
-    save_output = "only_results_predictions"
+    save_output = "only_results_predictions",
+    multi_cores = FALSE
   )
 
 
@@ -278,7 +281,8 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     force_train_method = "regression",
     model = "logistic",
     eval_measure = "bal_accuracy",
-    save_output = "only_results_predictions"
+    save_output = "only_results_predictions",
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_or_p, testthat::is_a("list"))
@@ -303,7 +307,8 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     trees = c(1000),
     eval_measure = "accuracy",
     extremely_randomised_splitrule = "extratrees",
-    save_output = "all"
+    save_output = "all",
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_rf_et, testthat::is_a("list"))
@@ -317,7 +322,8 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     preprocess_PCA = NA,
     trees = c(1000),
     eval_measure = "kappa",
-    save_output = "all"
+    save_output = "all",
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_rf, testthat::is_a("list"))
@@ -331,7 +337,8 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     preprocess_PCA = c(0.95),
     trees = c(1000),
     eval_measure = "precision",
-    save_output = "only_results_predictions"
+    save_output = "only_results_predictions",
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_rf_or_p, testthat::is_a("list"))
@@ -346,7 +353,8 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     preprocess_PCA = c(0.95),
     trees = c(1000),
     eval_measure = "precision",
-    save_output = "only_results"
+    save_output = "only_results",
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_rf_or, testthat::is_a("list"))
@@ -363,7 +371,8 @@ test_that("textTrainRegression adding wordembeddings together", {
 
   multi_we_PCA_09 <- textTrainRegression(wordembeddings4[1:2],
                                          Language_based_assessment_data_8$hilstotal,
-                                         preprocess_PCA = c(0.9)
+                                         preprocess_PCA = c(0.9),
+                                         multi_cores = FALSE
                                          )
 
   testthat::expect_that(multi_we_PCA_09, testthat::is_a("list"))
@@ -372,7 +381,8 @@ test_that("textTrainRegression adding wordembeddings together", {
 
   multi_we_PCA_3 <- textTrainRegression(wordembeddings4[1:2],
                                          Language_based_assessment_data_8$hilstotal,
-                                         preprocess_PCA = 3
+                                         preprocess_PCA = 3,
+                                        multi_cores = FALSE
   )
 
   testthat::expect_that(multi_we_PCA_3, testthat::is_a("list"))
@@ -381,7 +391,8 @@ test_that("textTrainRegression adding wordembeddings together", {
 
   multi_we_PCA_NA <- textTrainRegression(wordembeddings4[1:2],
                                          Language_based_assessment_data_8$hilstotal,
-                                         preprocess_PCA = NA
+                                         preprocess_PCA = NA,
+                                         multi_cores = FALSE
   )
 
   testthat::expect_that(multi_we_PCA_NA, testthat::is_a("list"))
@@ -396,7 +407,8 @@ test_that("textTrainRandomForest adding wordembeddings together", {
 
   multi_we_RF_PCA_09<- textTrainRandomForest(wordembeddings4[1:2],
                                               y,
-                                              preprocess_PCA = 0.9)
+                                              preprocess_PCA = 0.9,
+                                             multi_cores = FALSE)
 
 
   testthat::expect_that(multi_we_RF_PCA_09, testthat::is_a("list"))
@@ -404,7 +416,8 @@ test_that("textTrainRandomForest adding wordembeddings together", {
 
   multi_we_RF_PCA_3<- textTrainRandomForest(wordembeddings4[1:2],
                                              y,
-                                             preprocess_PCA = 3)
+                                             preprocess_PCA = 3,
+                                            multi_cores = FALSE)
 
 
   testthat::expect_that(multi_we_RF_PCA_3, testthat::is_a("list"))
@@ -412,7 +425,8 @@ test_that("textTrainRandomForest adding wordembeddings together", {
 
   multi_we_RF_PCA_NA<- textTrainRandomForest(wordembeddings4[1:2],
                                              y,
-                                             preprocess_PCA = NA)
+                                             preprocess_PCA = NA,
+                                             multi_cores = FALSE)
 
 
   testthat::expect_that(multi_we_RF_PCA_NA, testthat::is_a("list"))
