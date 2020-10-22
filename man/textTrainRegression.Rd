@@ -14,7 +14,7 @@ textTrainRegression(
   mixture = c(0),
   method_cor = "pearson",
   model_description = "Consider writing a description of your model here",
-  multi_cores = FALSE,
+  multi_cores = "multi_cores_sys_default",
   save_output = "all"
 )
 }
@@ -44,8 +44,8 @@ can set to "spearman" or "kendall").}
 
 \item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
 
-\item{multi_cores}{If TRUE enables the use of multiple cores if computer/system allows for it (hence it can
-make the analyses considerably faster to run; does not work on Windows).}
+\item{multi_cores}{If TRUE it enables the use of multiple cores if the computer system allows for it (i.e., only on unix, not windows). Hence it
+makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.}
 
 \item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
 }
