@@ -472,6 +472,7 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 #' # Show information that have been saved with the embeddings about how they were constructed
 #' comment(wordembeddings$satisfactionwords)
 #' comment(wordembeddings$singlewords_we)
+#' comment(wordembeddings)
 #' # Example 2
 #' wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 #' }
@@ -493,6 +494,9 @@ textEmbed <- function(x,
                       decontext_aggregation_tokens = "mean",
                       decontext_tokens_select = NULL,
                       decontext_tokens_deselect = NULL) {
+
+  T1_textEmbed <- Sys.time()
+
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
 
   # Get hidden states/layers for all text; both context and decontext
@@ -532,10 +536,23 @@ textEmbed <- function(x,
     comment(decontextualised_embeddings_words) <- comment(decontextualised_embeddings[[1]])
   }
 
+  T2_textEmbed <- Sys.time()
+  Time_textEmbed <- T2_textEmbed-T1_textEmbed
+  Time_textEmbed <- sprintf('Duration to embed text: %f %s', Time_textEmbed, units(Time_textEmbed))
+  Date_textEmbed <- Sys.time()
   # Adding embeddings to one list
   all_embeddings <- contextualised_embeddings
   all_embeddings$singlewords_we <- decontextualised_embeddings_words
+
+  comment(all_embeddings) <- paste(Time_textEmbed,
+                                   "; Date created: ", Date_textEmbed,
+                                   sep = "",
+                                   collapse = " ")
   all_embeddings
 }
+
+
+
+
 
 

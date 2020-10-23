@@ -370,6 +370,8 @@ textTrainRegression <- function(x,
                                 model_description = "Consider writing a description of your model here",
                                 multi_cores = "multi_cores_sys_default",
                                 save_output = "all") {
+  T1_textTrainRegression <- Sys.time()
+
   set.seed(2020)
 
   variable_name_index_pca <- NA
@@ -675,7 +677,15 @@ textTrainRegression <- function(x,
   preprocess_PCA_description <- paste("preprocess_PCA = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA)))
   preprocess_PCA_fold_description <- paste("preprocess_PCA in each fold = ", deparse(results_split_parameter$preprocess_PCA))
 
-
+  # Getting time and date
+  T2_textTrainRegression <- Sys.time()
+  Time_textTrainRegression <- T2_textTrainRegression-T1_textTrainRegression
+  Time_textTrainRegression <- sprintf('Duration to train text: %f %s', Time_textTrainRegression, units(Time_textTrainRegression))
+  Date_textTrainRegression <- Sys.time()
+  time_date <- paste(Time_textTrainRegression,
+                     "; Date created: ", Date_textTrainRegression,
+                     sep = "",
+                     collapse = " ")
 
   # Describe model; adding user's-description + the name of the x and y
   model_description_detail <- c(
@@ -688,7 +698,8 @@ textTrainRegression <- function(x,
     preprocess_PCA_description,
     preprocess_PCA_fold_description,
     embedding_description,
-    model_description
+    model_description,
+    time_date
   )
 
   if (model == "regression") {

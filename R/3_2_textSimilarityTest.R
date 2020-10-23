@@ -29,6 +29,8 @@ textSimilarityTest <- function(x,
                                alternative = c("two_sided", "less", "greater"),
                                output.permutations = TRUE,
                                N_cluster_nodes = 1) {
+  T1_textSimilarityTest <- Sys.time()
+
   set.seed(2020)
   if ((nrow(x) != nrow(y))) {
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
@@ -108,21 +110,42 @@ textSimilarityTest <- function(x,
   if (output.permutations) {
     random.estimates.4.null <- list(NULLresults)
     names(random.estimates.4.null) <- "random.estimates.4.null"
+  } else {
+    random.estimates.4.null <- NULL
+  }
 
-    embedding_descriptions_x <- comment(x)
-    embedding_descriptions_y <- comment(y)
+  x_name <- deparse(substitute(x))
+  y_name <- deparse(substitute(y))
+    embedding_descriptions_x <- paste(x_name, ":", comment(x), col = "")
+    embedding_descriptions_y <- paste(y_name, ":", comment(y), col = "")
+
+    #Time
+    T2_textSimilarityTest <- Sys.time()
+    Time_textSimilarityTest <- T2_textSimilarityTest-T1_textSimilarityTest
+    Time_textSimilarityTest <- sprintf('Duration to run the test: %f %s', Time_textSimilarityTest, units(Time_textSimilarityTest))
+    Date_textSimilarityTest <- Sys.time()
+    time_date <- paste(Time_textSimilarityTest,
+                       "; Date created: ", Date_textSimilarityTest,
+                       sep = "",
+                       collapse = " ")
+
     test_description <- paste("permutations = ", Npermutations,
       "method = ", method,
       "alternative = ", alternative,
       collapse = " "
     )
+
+    descriptions <- c(embedding_descriptions_x,
+                      embedding_descriptions_y,
+                      test_description,
+                      time_date)
+    names(descriptions) <- c("embedding_x", "embedding_y", "test_description", "time_date")
+
     results <- c(
       random.estimates.4.null,
-      embedding_descriptions_x,
-      embedding_descriptions_y,
-      test_description,
+      descriptions,
       results
     )
-  }
+
   results
 }

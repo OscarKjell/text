@@ -233,8 +233,10 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' ratings_data <- Language_based_assessment_data_8[5:6]
 #' results <- textTrainLists(wordembeddings,
 #'   ratings_data,
-#'   multi_cores = FALSE
+#'   multi_cores = FALSE # set to FALSE due to CRAN testing
 #' )
+#' results
+#' comment(results)
 #' @seealso see \code{\link{textTrain}}  \code{\link{textTrainRegression}}  \code{\link{textTrainRandomForest}}
 #' @importFrom stats cor.test
 #' @importFrom tibble as_tibble
@@ -250,6 +252,9 @@ textTrainLists <- function(x,
                            eval_measure = "rmse",
                            p_adjust_method = "holm",
                            ...) {
+
+  T1_textTrainLists <- Sys.time()
+
   # If y is a vector make it into a tibble format
   if (is.vector(y) == TRUE) {
     y <- tibble::as_tibble_col(y)
@@ -331,7 +336,18 @@ textTrainLists <- function(x,
     # Combine output
     #
   }
+
+  #Time
+  T2_textTrainLists <- Sys.time()
+  Time_textTrainLists <- T2_textTrainLists-T1_textTrainLists
+  Time_textTrainLists <- sprintf('Duration to train text: %f %s', Time_textTrainLists, units(Time_textTrainLists))
+  Date_textTrainLists <- Sys.time()
+  time_date <- paste(Time_textTrainLists,
+                     "; Date created: ", Date_textTrainLists,
+                     sep = "",
+                     collapse = " ")
   results$results$p_value_corrected <- stats::p.adjust(results$results$p_value, method = p_adjust_method)
+  comment(results) <- time_date
   results
 }
 

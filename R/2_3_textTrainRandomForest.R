@@ -495,6 +495,7 @@ textTrainRandomForest <- function(x,
                                   multi_cores = "multi_cores_sys_default",
                                   save_output = "all",
                                   ...) {
+  T1_textTrainRandomForest <- Sys.time()
   set.seed(2020)
 
   variable_name_index_pca <- NA
@@ -787,6 +788,18 @@ textTrainRandomForest <- function(x,
     extremely_randomised_splitrule <- c("-")
   }
 
+
+  # Getting time and date
+  T2_textTrainRandomForest <- Sys.time()
+  Time_textTrainRandomForest <- T2_textTrainRandomForest-T1_textTrainRandomForest
+  Time_textTrainRandomForest <- sprintf('Duration to train text: %f %s', Time_textTrainRandomForest, units(Time_textTrainRandomForest))
+  Date_textTrainRandomForest <- Sys.time()
+  time_date <- paste(Time_textTrainRandomForest,
+                     "; Date created: ", Date_textTrainRandomForest,
+                     sep = "",
+                     collapse = " ")
+
+
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
   model_description_detail <- c(
     x_name,
@@ -803,7 +816,8 @@ textTrainRandomForest <- function(x,
     trees_description,
     trees_fold_description,
     embedding_description,
-    model_description
+    model_description,
+    time_date
   )
 
   if (save_output == "all") {
