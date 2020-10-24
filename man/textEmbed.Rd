@@ -25,7 +25,9 @@ textEmbed(
 \arguments{
 \item{x}{A character variable or a tibble/dataframe with at least one character variable.}
 
-\item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased'; options "bert-base-multilingual-cased", "openai-gpt",
+\item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased').
+ For full list of options see https://huggingface.co/transformers/pretrained_models.html
+ For example use "bert-base-multilingual-cased", "openai-gpt",
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 "roberta-base", or "xlm-roberta-base".}
 
@@ -88,6 +90,7 @@ wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_lay
 # Show information that have been saved with the embeddings about how they were constructed
 comment(wordembeddings$satisfactionwords)
 comment(wordembeddings$singlewords_we)
+comment(wordembeddings)
 # Example 2
 wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 }

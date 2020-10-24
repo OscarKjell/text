@@ -192,14 +192,11 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' (standard method; default = TRUE).
 #' @param decontexts Provide word embeddings of single words as input
 #' (embeddings used for plotting; default = TRUE).
-#' @param model Character string specifying pre-trained language model.
-#' Default 'bert-base-uncased'; options "bert-base-multilingual-uncased", "bert-base-multilingual-cased", "openai-gpt",
-#' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased",
-#' "roberta-base", "xlm-roberta-base", "xlm-roberta-large", or "T5Model". See
-#' also https://www.r-text.org/articles/Word_embeddings.html.
-#' If specified as NULL, set parameters pretrained_weights.
-# @param pretrained_weights Advanced parameter submitted to HuggingFace interface to get models not yet
-# officially incorporated into text. Default = NULL. For alternatives see https://huggingface.co/.
+#' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
+#'  For full list of options see https://huggingface.co/transformers/pretrained_models.html
+#'  For example use "bert-base-multilingual-cased", "openai-gpt",
+#' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
+#' "roberta-base", or "xlm-roberta-base".
 #' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient
 #' to only extract the layers that you need (e.g., 11:12). You can also extract all by setting this
 #' parameter to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
@@ -426,7 +423,9 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
-#' @param model Character string specifying pre-trained language model (default 'bert-base-uncased'; options "bert-base-multilingual-cased", "openai-gpt",
+#' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
+#'  For full list of options see https://huggingface.co/transformers/pretrained_models.html
+#'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base".
 #' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient to
