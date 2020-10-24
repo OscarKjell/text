@@ -20,10 +20,10 @@ jobs:
         with:
            python-version: 3.6
 
-##      - uses: goanpeca/setup-miniconda@v1
-##        with:
-##          auto-update-conda: true
-##          python-version: 3.6
+      - uses: goanpeca/setup-miniconda@v1
+        with:
+          auto-update-conda: true
+          python-version: 3.6
 
       - uses: r-lib/actions/setup-r@master
         with:
@@ -39,7 +39,6 @@ jobs:
           pip install transformers
           pip install nltk
           pip install numpy
-
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -57,7 +56,7 @@ jobs:
       - name: Install dependencies
         run: |
           install.packages(c("remotes"))
-          remotes::install_deps(dependencies = TRUE, type = "binary")
+          remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("covr")
         shell: Rscript {0}
 
