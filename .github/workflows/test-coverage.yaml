@@ -39,6 +39,7 @@ jobs:
           pip install transformers
           pip install nltk
           pip install numpy
+
      - name: Query dependencies
        run: |
          install.packages('remotes')
