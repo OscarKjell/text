@@ -579,7 +579,7 @@ textTrainRandomForest <- function(x,
 
   results_nested_resampling <- rsample::nested_cv(xy1,
     outside = rsample::vfold_cv(
-      v = 5, # outside_folds,
+      v = 10, # outside_folds,
       repeats = 1,
       strata = "y"
     ), # outside_strata_y
