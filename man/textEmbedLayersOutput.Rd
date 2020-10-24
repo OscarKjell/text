@@ -22,12 +22,11 @@ textEmbedLayersOutput(
 \item{decontexts}{Provide word embeddings of single words as input
 (embeddings used for plotting; default = TRUE).}
 
-\item{model}{Character string specifying pre-trained language model.
-Default 'bert-base-uncased'; options "bert-base-multilingual-uncased", "bert-base-multilingual-cased", "openai-gpt",
-"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-uncased",
-"roberta-base", "xlm-roberta-base", "xlm-roberta-large", or "T5Model". See
-also https://www.r-text.org/articles/Word_embeddings.html.
-If specified as NULL, set parameters pretrained_weights.}
+\item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased').
+ For full list of options see https://huggingface.co/transformers/pretrained_models.html
+ For example use "bert-base-multilingual-cased", "openai-gpt",
+"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
+"roberta-base", or "xlm-roberta-base".}
 
 \item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient
 to only extract the layers that you need (e.g., 11:12). You can also extract all by setting this

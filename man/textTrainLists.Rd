@@ -53,8 +53,10 @@ wordembeddings <- wordembeddings4[1:2]
 ratings_data <- Language_based_assessment_data_8[5:6]
 results <- textTrainLists(wordembeddings,
   ratings_data,
-  multi_cores = FALSE
+  multi_cores = FALSE # set to FALSE due to CRAN testing
 )
+results
+comment(results)
 }
 \seealso{
 see \code{\link{textTrain}}  \code{\link{textTrainRegression}}  \code{\link{textTrainRandomForest}}
