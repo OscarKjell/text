@@ -15,6 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
+#          - {os: windows-latest, r: 'devel'}
 #          - {os: windows-latest, r: 'release'}
 #          - {os: macOS-latest, r: 'release', old_dplyr: true,  dev_tidymodels: true}
 #          - {os: macOS-latest, r: 'release', old_dplyr: true,  dev_tidymodels: false}
@@ -59,19 +60,18 @@ jobs:
           Rscript -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
-
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-#      - name: Install miniconda
-#        run: |
-#          library(reticulate)
-#          install_miniconda()
-#          conda_install(envname = 'r-reticulate', c('torch', 'transformers'))
-#        shell: Rscript {0}
+      - name: Install miniconda
+        run: |
+          library(reticulate)
+          install_miniconda()
+          conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'nltk', 'numpy'), pip = TRUE)
+        shell: Rscript {0}
 
 
 #      - name: Install dev dependencies
