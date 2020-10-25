@@ -430,10 +430,10 @@ summarize_tune_results_rf <- function(object,
 #'
 #' @param x Word embeddings from textEmbed.
 #' @param y Categorical variable to predict.
-# @param outside_folds Number of folds for the outer folds.
-# @param outside_strata_y Variable to stratify according (default "y"; can also set to NULL).
-# @param inside_folds Number of folds for the inner folds.
-# @param inside_strata_y Variable to stratify according (default "y"; can also set to NULL).
+#' @param outside_folds_v Number of folds for the outer folds (default = 10).
+#' @param outside_strata_y Variable to stratify according (default "y"; can also set to NULL).
+#' @param inside_folds_prop Number of folds for the inner folds (default = 3/4).
+#' @param inside_strata_y Variable to stratify according (default "y"; can also set to NULL).
 #' @param mode_rf Default is "classification" ("regression" is not supported yet).
 #' @param preprocess_PCA Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
@@ -480,10 +480,10 @@ summarize_tune_results_rf <- function(object,
 #' @export
 textTrainRandomForest <- function(x,
                                   y,
-                                  # outside_folds = 10,
-                                  # outside_strata_y = "y",
-                                  # inside_folds = 10,
-                                  # inside_strata_y = "y",
+                                  outside_folds_v = 10,
+                                  outside_strata_y = "y",
+                                  inside_folds_prop = 3/4,
+                                  inside_strata_y = "y",
                                   mode_rf = "classification",
                                   preprocess_PCA = NA,
                                   extremely_randomised_splitrule = NULL,
@@ -577,19 +577,21 @@ textTrainRandomForest <- function(x,
   # colnames(xy_formergingNA) <- c("id1", "y")
   xy1 <- tibble::as_tibble(xy[stats::complete.cases(xy), ])
 
-  results_nested_resampling <- rsample::nested_cv(xy1,
+  results_nested_resampling <- rlang::expr(rsample::nested_cv(xy1,
     outside = rsample::vfold_cv(
-      v = 10, # outside_folds,
+      v = !!outside_folds_v,
       repeats = 1,
-      strata = "y"
-    ), # outside_strata_y
+      strata = !!outside_strata_y
+    ), #
     inside = rsample::validation_split(
-      prop = 3 / 4,
-      strata = "y", # inside_strata_y
+      prop = !!inside_folds_prop,
+      strata = !!inside_strata_y,
       breaks = 1
     )
   )
+  )
 
+  results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
 
   # Deciding whether to use multicorese depending on system and settings.
   if (multi_cores == "multi_cores_sys_default"){

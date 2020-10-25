@@ -313,10 +313,10 @@ summarize_tune_results <- function(object,
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation).
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
-# @param outside_folds Number of folds for the outer folds.
-# @param outside_strata_y Variable to stratify according (default y; can set to NULL).
-# @param inside_folds Number of folds for the inner folds.
-# @param inside_strata_y Variable to stratify according (default y; can set to NULL).
+#' @param outside_folds_v Number of folds for the outer folds (default = 10).
+#' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
+#' @param inside_folds_prop Number of folds for the inner folds (default proportion = 3/4).
+#' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
 #' @param eval_measure Type of evaluative measure to select models from; default =  "rmse" for regression and "bal_accuracy"
 #' for logistic.
 #' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
@@ -357,10 +357,10 @@ summarize_tune_results <- function(object,
 #' @export
 textTrainRegression <- function(x,
                                 y,
-                                #                               outside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
-                                #                               outside_strata_y = "y",
-                                #                               inside_folds = 10, # is commented out due to a bug in rsample; when bug is resolved these will work.
-                                #                               inside_strata_y = "y",
+                                outside_folds_v = 10, # is commented out due to a bug in rsample; when bug is resolved these will work. https://github.com/tidymodels/rsample/issues/81
+                                outside_strata_y = "y",
+                                inside_folds_prop = 3/4, # is commented out due to a bug in rsample; when bug is resolved these will work.
+                                inside_strata_y = "y",
                                 model = "regression", # "logistic"
                                 eval_measure = "default",
                                 preprocess_PCA = NA,
@@ -449,20 +449,23 @@ textTrainRegression <- function(x,
   x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
   xy <- cbind(x2, y)
   xy <- tibble::as_tibble(xy)
-  xy$id_nr <- c(seq_len(nrow(xy))) # New
-  results_nested_resampling <- rsample::nested_cv(xy,
+  xy$id_nr <- c(seq_len(nrow(xy)))
+
+  results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
     outside = rsample::vfold_cv(
-      v = 10, # outside_folds,
+      v = !!outside_folds_v, # outside_folds, setting a variable here does not work due to a bug in rsample (see https://github.com/tidymodels/rsample/issues/81)
       repeats = 1,
-      strata = NULL,
+      strata = !!outside_strata_y,
       breaks = 2
-    ), # outside_strata_y
+    ), #
     inside = rsample::validation_split(
-      prop = 3 / 4,
-      strata = NULL, # inside_strata_y
+      prop = !!inside_folds_prop,
+      strata = !!inside_strata_y, #
       breaks = 1
     )
   )
+  )
+  results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
 
   # Deciding whether to use multicorese depending on system and settings.
   if (multi_cores == "multi_cores_sys_default"){

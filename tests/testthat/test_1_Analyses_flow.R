@@ -21,6 +21,10 @@ test_that("Testing textEmbed as well as train", {
   text_train_results <- textTrain(
     x = harmony_word_embeddings$harmonywords,
     y = Language_based_assessment_data_8$hilstotal,
+    outside_folds_v = 2,
+    inside_folds_prop = 3/4,
+    outside_strata_y = NULL,
+    inside_strata_y = NULL,
     preprocess_PCA = c(0.20),
     penalty = 1e-16,
     multi_cores = FALSE

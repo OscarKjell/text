@@ -7,6 +7,10 @@
 textTrainRandomForest(
   x,
   y,
+  outside_folds_v = 10,
+  outside_strata_y = "y",
+  inside_folds_prop = 10,
+  inside_strata_y = "y",
   mode_rf = "classification",
   preprocess_PCA = NA,
   extremely_randomised_splitrule = NULL,
@@ -24,6 +28,14 @@ textTrainRandomForest(
 \item{x}{Word embeddings from textEmbed.}
 
 \item{y}{Categorical variable to predict.}
+
+\item{outside_folds_v}{Number of folds for the outer folds (default = 10).}
+
+\item{outside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
+
+\item{inside_folds_prop}{Number of folds for the inner folds (default = 3/4).}
+
+\item{inside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
 
 \item{mode_rf}{Default is "classification" ("regression" is not supported yet).}
 

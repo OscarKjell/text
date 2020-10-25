@@ -7,6 +7,10 @@
 textTrainRegression(
   x,
   y,
+  outside_folds_v = 10,
+  outside_strata_y = "y",
+  inside_folds_prop = 3/4,
+  inside_strata_y = "y",
   model = "regression",
   eval_measure = "default",
   preprocess_PCA = NA,
@@ -22,6 +26,14 @@ textTrainRegression(
 \item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation).}
 
 \item{y}{Numeric variable to predict.}
+
+\item{outside_folds_v}{Number of folds for the outer folds (default = 10).}
+
+\item{outside_strata_y}{Variable to stratify according (default y; can set to NULL).}
+
+\item{inside_folds_prop}{Number of folds for the inner folds (default proportion = 3/4).}
+
+\item{inside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
 \item{model}{Type of model. Default is "regression"; see also "logistic" for classification.}
 
