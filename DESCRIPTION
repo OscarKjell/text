@@ -60,6 +60,7 @@ Config/reticulate:
     packages = list(
       list(package = "torch", pip = TRUE),
       list(package = "transformers", version = "3.3.1", pip = TRUE),
-      list(package = "nltk", pip = TRUE)
+      list(package = "nltk", pip = TRUE), 
+      list(package = "numpy", pip = TRUE)
     )
   )
