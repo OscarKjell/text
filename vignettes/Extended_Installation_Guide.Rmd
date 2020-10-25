@@ -17,16 +17,16 @@ knitr::opts_chunk$set(
 *Text* uses an r-package called [reticulate](https://rstudio.github.io/reticulate/) as an interface to [Python](https://www.python.org/), and the Python packages [torch](https://pytorch.org/) and [transformers](https://huggingface.co/transformers/). Reticulate normally installs these necessary packages automatically, however, if you receive errors indicating either of these packages are missing follow the instructions below.
 
 ```{r extended_installation, eval = FALSE}
-##library(text)
-##
-### To install the python packages torch, transformers, numpy and nltk through R, run: 
-##library(reticulate)
-##install_miniconda()
-##
-##conda_install(envname = 'r-reticulate', c('torch', 'transformers', 'numpy', 'nltk'), pip = TRUE)
-##
-### Windows 10
-##conda_install(envname = 'r-reticulate', c('torch', 'transformers', 'numpy', 'nltk'))
+library(text)
+
+# To install the python packages torch, transformers, numpy and nltk through R, run: 
+library(reticulate)
+install_miniconda()
+
+conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'), pip = TRUE)
+
+# Windows 10
+conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'))
 
 ```
 
@@ -35,13 +35,13 @@ knitr::opts_chunk$set(
 If something isn't working right, it is a good start to examine what is installed and running on your system. For example to make sure that you have R and Python versions that are up to date. 
 
 ```{r extended_installation_checking_system, eval = FALSE}
-##
-### First check R-version and which packages that are attached and loaded.  
-##sessionInfo()
-##
-### Second check out python version; and make sure you at least have version 3.6.10
-##library(reticulate)
-##py_config()
+
+# First check R-version and which packages that are attached and loaded.  
+sessionInfo()
+
+# Second check out python version; and make sure you at least have version 3.6.10
+library(reticulate)
+py_config()
 ```
 
 
@@ -57,20 +57,20 @@ Uninstall r-miniconda by removing its entire folder (which by default [in Mac] i
 
 
 ```{r extended_REinstallation, eval = FALSE}
-##library(text)
-##
-### To re-install packages start with a fresh session by restarting R and RStudio
-##
-### Install development of reticulate (might not be necessary)
-##devtools::install_github("rstudio/reticulate")
-##
-### After having manually removed the r-miniconda folder, install it again: 
-##library(reticulate)
-##install_miniconda()
-##
-### Subsequently re-install torch, transformers, numpy and nltk by running: 
-##conda_install(envname = 'r-reticulate', c('torch', 'transformers', 'numpy', 'nltk'), pip = TRUE)
-##
+library(text)
+
+# To re-install packages start with a fresh session by restarting R and RStudio
+
+# Install development of reticulate (might not be necessary)
+devtools::install_github("rstudio/reticulate")
+
+# After having manually removed the r-miniconda folder, install it again: 
+library(reticulate)
+install_miniconda()
+
+# Subsequently re-install torch, transformers, numpy and nltk by running: 
+conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'), pip = TRUE)
+
 ```
 
 
