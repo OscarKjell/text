@@ -9,7 +9,7 @@ textTrainRandomForest(
   y,
   outside_folds_v = 10,
   outside_strata_y = "y",
-  inside_folds_prop = 10,
+  inside_folds_prop = 3/4,
   inside_strata_y = "y",
   mode_rf = "classification",
   preprocess_PCA = NA,

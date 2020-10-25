@@ -765,10 +765,10 @@ textTrainRandomForest <- function(x,
 
   # Saving the final mtry and min_n used for the final model.
   if (is.null(extremely_randomised_splitrule)) {
-    mtry_description <- paste("mtry =", deparse(statisticalMode(results_split_parameter$mtry)))
+    mtry_description <- paste("mtry  in final model =", deparse(statisticalMode(results_split_parameter$mtry)))
     mtry_fold_description <- paste("mtry in each fold =", deparse(results_split_parameter$mtry))
 
-    min_n_description <- paste("min_n =", deparse(statisticalMode(results_split_parameter$min_n)))
+    min_n_description <- paste("min_n  in final model =", deparse(statisticalMode(results_split_parameter$min_n)))
     min_n_fold_description <- paste("min_n in each fold =", deparse(results_split_parameter$min_n))
   } else {
     mtry_description <- c("-")
@@ -777,10 +777,10 @@ textTrainRandomForest <- function(x,
     min_n_fold_description <- c("-")
   }
   mode_rf_description <- paste("mode =", mode_rf)
-  trees_description <- paste("trees =", statisticalMode(results_split_parameter$trees))
+  trees_description <- paste("trees in final model =", statisticalMode(results_split_parameter$trees))
   trees_fold_description <- paste("trees in each fold =", deparse(results_split_parameter$trees))
-  preprocess_PCA_description <- paste("preprocess_PCA = ", statisticalMode(results_split_parameter$preprocess_PCA))
-  preprocess_PCA_fold_description <- paste("preprocess_PCA = ", deparse(results_split_parameter$preprocess_PCA))
+  preprocess_PCA_description <- paste("preprocess_PCA in final model = ", statisticalMode(results_split_parameter$preprocess_PCA))
+  preprocess_PCA_fold_description <- paste("preprocess_PCA in each fold = ", deparse(results_split_parameter$preprocess_PCA))
   eval_measure <- paste("eval_measure = ", eval_measure)
 
 
@@ -790,6 +790,18 @@ textTrainRandomForest <- function(x,
     extremely_randomised_splitrule <- c("-")
   }
 
+
+
+  outside_folds_v_description  <-  paste("outside_folds_v = ", deparse(outside_folds_v))
+  outside_strata_y_description  <-  paste("outside_strata_y = ", deparse(outside_strata_y))
+  inside_folds_prop_description  <-  paste("inside_folds_prop = ", deparse(inside_folds_prop))
+  inside_strata_y_description  <-  paste("inside_strata_y = ", deparse(inside_strata_y))
+
+  preprocess_PCA_setting <- paste("preprocess_PCA_setting = ", deparse(preprocess_PCA))
+
+  mtry_setting  <-  paste("mtry_setting = ", deparse(mtry))
+  min_n_setting <-  paste("min_n_setting = ", deparse(min_n))
+  trees_setting <-  paste("trees_setting = ", deparse(trees))
 
   # Getting time and date
   T2_textTrainRandomForest <- Sys.time()
@@ -806,15 +818,23 @@ textTrainRandomForest <- function(x,
   model_description_detail <- c(
     x_name,
     y_name,
+    outside_folds_v_description,
+    outside_strata_y_description,
+    inside_folds_prop_description,
+    inside_strata_y_description,
     mode_rf_description,
+    preprocess_PCA_setting,
     preprocess_PCA_description,
     preprocess_PCA_fold_description,
     extremely_randomised_splitrule,
     eval_measure,
+    mtry_setting,
     mtry_description,
     mtry_fold_description,
+    min_n_setting,
     min_n_description,
     min_n_fold_description,
+    trees_setting,
     trees_description,
     trees_fold_description,
     embedding_description,

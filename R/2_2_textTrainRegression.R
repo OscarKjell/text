@@ -357,11 +357,11 @@ summarize_tune_results <- function(object,
 #' @export
 textTrainRegression <- function(x,
                                 y,
-                                outside_folds_v = 10, # is commented out due to a bug in rsample; when bug is resolved these will work. https://github.com/tidymodels/rsample/issues/81
+                                outside_folds_v = 10,
                                 outside_strata_y = "y",
-                                inside_folds_prop = 3/4, # is commented out due to a bug in rsample; when bug is resolved these will work.
+                                inside_folds_prop = 3/4,
                                 inside_strata_y = "y",
-                                model = "regression", # "logistic"
+                                model = "regression",
                                 eval_measure = "default",
                                 preprocess_PCA = NA,
                                 penalty = 10^seq(-16, 16),
@@ -670,14 +670,23 @@ textTrainRegression <- function(x,
 
   #####
 
+  outside_folds_v_description  <-  paste("outside_folds_v = ", deparse(outside_folds_v))
+  outside_strata_y_description  <-  paste("outside_strata_y = ", deparse(outside_strata_y))
+  inside_folds_prop_description  <-  paste("inside_folds_prop = ", deparse(inside_folds_prop))
+  inside_strata_y_description  <-  paste("inside_strata_y = ", deparse(inside_strata_y))
+
+  penalty_setting  <-  paste("penalty_setting = ", deparse(penalty))
+  mixture_setting <-  paste("mixture_setting = ", deparse(mixture))
+  preprocess_PCA_setting <- paste("preprocess_PCA_setting = ", deparse(preprocess_PCA))
+
   # Saving the final mtry and min_n used for the final model.
-  penalty_description <- paste("penalty = ", deparse(statisticalMode(results_split_parameter$penalty)))
+  penalty_description <- paste("penalty in final model = ", deparse(statisticalMode(results_split_parameter$penalty)))
   penalty_fold_description <- paste("penalty in each fold = ", deparse(results_split_parameter$penalty))
 
-  mixture_description <- paste("mixture = ", deparse(statisticalMode(results_split_parameter$mixture)))
+  mixture_description <- paste("mixture in final model = ", deparse(statisticalMode(results_split_parameter$mixture)))
   mixture_fold_description <- paste("mixture in each fold = ", deparse(results_split_parameter$mixture))
 
-  preprocess_PCA_description <- paste("preprocess_PCA = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA)))
+  preprocess_PCA_description <- paste("preprocess_PCA in final model = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA)))
   preprocess_PCA_fold_description <- paste("preprocess_PCA in each fold = ", deparse(results_split_parameter$preprocess_PCA))
 
   # Getting time and date
@@ -694,10 +703,17 @@ textTrainRegression <- function(x,
   model_description_detail <- c(
     x_name,
     y_name,
+    outside_folds_v_description,
+    outside_strata_y_description,
+    inside_folds_prop_description,
+    inside_strata_y_description,
+    penalty_setting,
     penalty_description,
     penalty_fold_description,
+    mixture_setting,
     mixture_description,
     mixture_fold_description,
+    preprocess_PCA_setting,
     preprocess_PCA_description,
     preprocess_PCA_fold_description,
     embedding_description,
