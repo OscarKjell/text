@@ -18,7 +18,7 @@ skip_if_no_torch <- function() {
   }
 }
 
-test_that("textEmbedLayerAggreation 'all': layer =   aggregate_tokens = 'mean' produces aggregated word embeddings", {
+test_that("textEmbedLayerAggreation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
 
   # skip_on_cran()
   aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,

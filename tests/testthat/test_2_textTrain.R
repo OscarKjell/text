@@ -10,7 +10,7 @@ test_that("textTrain Regression produces list of results with prediction being n
     Language_based_assessment_data_8[6],
     # outside_strata_y = NULL,
     # inside_strata_y = NULL,
-    model = "regression", # "logistic"
+    model = "regression",
     eval_measure = "rmse",
     penalty = c(1),
     mixture = c(0),
@@ -19,7 +19,7 @@ test_that("textTrain Regression produces list of results with prediction being n
     # force_train_method = "automatic",
     save_output = "only_results"
   )
-  # warnings()
+
   testthat::expect_that(trained_min_halving, is_a("list"))
   testthat::expect_is(trained_min_halving$results$statistic[[1]], "numeric")
 
@@ -43,14 +43,14 @@ test_that("textTrain Regression produces list of results with prediction being n
     as.factor(Language_based_assessment_data_8$gender),
     # outside_strata_y = NULL,
     # inside_strata_y = NULL,
-    model = "logistic", # "logistic"
+    model = "logistic",
     eval_measure = "bal_accuracy",
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = 1,
     multi_cores = FALSE,
     # force_train_method = "automatic",
-    save_output = "only_results"
+    save_output = "all"
   )
   testthat::expect_that(trained_logistic_PCA1, is_a("list"))
   testthat::expect_is(trained_logistic_PCA1$results_metrics$.estimate[[1]], "numeric")
@@ -61,7 +61,7 @@ test_that("textTrain Regression produces list of results with prediction being n
     # inside_strata_y = NULL,
     penalty = c(1),
     mixture = c(0),
-    preprocess_PCA = c(1), # , 3
+    preprocess_PCA = c(1),
     multi_cores = FALSE,
     force_train_method = "regression",
     save_output = "only_results_predictions"
@@ -216,7 +216,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
 
   # Two word embeddings and one vector
-  results <- textTrainLists(wordembeddings4[1:2],
+  results <- textTrain(wordembeddings4[1:2],
     Language_based_assessment_data_8$hilstotal,
     preprocess_PCA = c(0.90),
     model = "regression",
@@ -248,7 +248,11 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   testthat::expect_is(results_or$results$tau_correlation[1], "character")
 
   wordembeddings <- wordembeddings4[1]
-  ratings_data <- Language_based_assessment_data_8[5:6]
+  ratings_data1 <- Language_based_assessment_data_8[5]
+  ratings_data2 <- Language_based_assessment_data_8[6]
+  factors1 <- tibble::as_tibble_col(as.factor(Language_based_assessment_data_8$gender))
+  ratings_data <- cbind(ratings_data1, ratings_data2, factors1)
+
 
   results_or_p <- textTrainLists(wordembeddings,
     ratings_data,
@@ -257,7 +261,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     # inside_strata_y = NULL,
     penalty = c(2),
     mixture = c(0),
-    force_train_method = "regression",
+    force_train_method = "automatic",
     save_output = "only_results_predictions",
     multi_cores = FALSE
   )
@@ -268,7 +272,9 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
   factors1 <- as.factor(Language_based_assessment_data_8$gender)
   factors2 <- as.factor(Language_based_assessment_data_8$gender)
-  ratings_data_factors <- tibble(factors1, factors2)
+  rating1 <- Language_based_assessment_data_8$hilstotal
+
+  ratings_data_factors <- tibble::tibble(factors1, factors2, rating1)
 
   # Logistic
   results_list_logistic <- textTrainLists(wordembeddings,
@@ -278,7 +284,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     # inside_strata_y = NULL,
     penalty = c(2),
     mixture = c(0),
-    force_train_method = "regression",
+    force_train_method = "automatic",
     model = "logistic",
     eval_measure = "bal_accuracy",
     save_output = "only_results_predictions",
@@ -288,7 +294,6 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   testthat::expect_that(results_or_p, testthat::is_a("list"))
   testthat::expect_is(results_or_p$results$correlation[1], "character")
 })
-
 
 
 test_that("textTrainLists randomForest produces list of results with prediction being numeric", {
@@ -364,14 +369,12 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
 
 
-
-
-
 test_that("textTrainRegression adding wordembeddings together", {
 
   multi_we_PCA_09 <- textTrainRegression(wordembeddings4[1:2],
                                          Language_based_assessment_data_8$hilstotal,
                                          preprocess_PCA = c(0.9),
+                                         penalty = 1,
                                          multi_cores = FALSE
                                          )
 
@@ -380,8 +383,9 @@ test_that("textTrainRegression adding wordembeddings together", {
 
 
   multi_we_PCA_3 <- textTrainRegression(wordembeddings4[1:2],
-                                         Language_based_assessment_data_8$hilstotal,
-                                         preprocess_PCA = 3,
+                                        Language_based_assessment_data_8$hilstotal,
+                                        preprocess_PCA = 3,
+                                        penalty = 1,
                                         multi_cores = FALSE
   )
 
@@ -392,6 +396,7 @@ test_that("textTrainRegression adding wordembeddings together", {
   multi_we_PCA_NA <- textTrainRegression(wordembeddings4[1:2],
                                          Language_based_assessment_data_8$hilstotal,
                                          preprocess_PCA = NA,
+                                         penalty = 1,
                                          multi_cores = FALSE
   )
 
@@ -408,6 +413,8 @@ test_that("textTrainRandomForest adding wordembeddings together", {
   multi_we_RF_PCA_09<- textTrainRandomForest(wordembeddings4[1:2],
                                               y,
                                               preprocess_PCA = 0.9,
+                                             mtry = c(1),
+                                             min_n = c(1),
                                              multi_cores = FALSE)
 
 
@@ -417,6 +424,8 @@ test_that("textTrainRandomForest adding wordembeddings together", {
   multi_we_RF_PCA_3<- textTrainRandomForest(wordembeddings4[1:2],
                                              y,
                                              preprocess_PCA = 3,
+                                            mtry = c(1),
+                                            min_n = c(1),
                                             multi_cores = FALSE)
 
 
@@ -426,6 +435,8 @@ test_that("textTrainRandomForest adding wordembeddings together", {
   multi_we_RF_PCA_NA<- textTrainRandomForest(wordembeddings4[1:2],
                                              y,
                                              preprocess_PCA = NA,
+                                             mtry = c(1),
+                                             min_n = c(1),
                                              multi_cores = FALSE)
 
 
