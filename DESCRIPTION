@@ -36,7 +36,7 @@ Imports:
     parsnip,
     recipes,
     rsample,
-    reticulate (<= 1.16),
+    reticulate,
     tune,
     workflows,
     yardstick,
@@ -54,13 +54,12 @@ Suggests:
     xml2,
     ranger
 VignetteBuilder: knitr
-Depends: R (>= 4.00)
+Depends: R (>= 2.10)
 Config/reticulate:
   list(
     packages = list(
       list(package = "torch", pip = TRUE),
       list(package = "transformers", version = "3.3.1", pip = TRUE),
-      list(package = "nltk", pip = TRUE),
-      ist(package = "numpy", pip = TRUE)
+      list(package = "nltk", pip = TRUE)
     )
   )
