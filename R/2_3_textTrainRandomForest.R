@@ -426,6 +426,51 @@ summarize_tune_results_rf <- function(object,
 #                     #preprocess_PCA = 3
 #                      )
 
+
+
+
+#text1 <- tibble(Dim1=c(1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 1, 3, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3),
+#                Dim2=c(2, 1, 2, 2, 2, 2, 2, 3, 2, 2, 1, 2, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3),
+#                Dim3=c(4, 1, 1, 2, 2, 2, 2, 3, 2, 2, 1, 2, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3))
+#text2 <- tibble(Dim1=c(3, 2, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim2=c(1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim3=c(3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
+#x <- list(text1, text2)
+#names(x) <- c("text1", "text2")
+#x
+#
+#y <- as_tibble_col(as_factor(c(1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1)))
+#help("textTrainRegression")
+#train_text_StudiesAll_diagnose_dep <- textTrainRandomForest(x = embedings_test[1],
+#                                                            y= text_diagnose,
+#                                                            #model = "logistic",
+#                                                            preprocess_PCA = NA)
+#
+
+
+
+#outside_folds_v = 2
+#outside_strata_y = "y"
+#inside_folds_prop = 3/4
+#inside_strata_y = "y"
+#mode_rf = "classification"
+#preprocess_PCA = NA
+#extremely_randomised_splitrule = NULL
+#mtry = c(1, 10, 20, 40)
+#min_n = c(1, 10, 20, 40)
+#trees = c(1000)
+#eval_measure = "bal_accuracy"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+
+
+
+
+
+
+
+
 #' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Word embeddings from textEmbed.
@@ -690,7 +735,7 @@ textTrainRandomForest <- function(x,
   if(colnames(xy_short[1]) == "Dim1"){
   final_recipe <- # xy %>%
     recipes::recipe(y ~ ., xy_short[0, ]) %>%
-    recipes::step_naomit(Dim1, skip = FALSE) %>% # Does this not work here?
+    recipes::step_naomit(Dim1, skip = FALSE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
     recipes::step_BoxCox(recipes::all_predictors()) %>%
@@ -742,11 +787,9 @@ textTrainRandomForest <- function(x,
     }
   }
 
-
   preprocessing_recipe_save <- recipes::prep(final_recipe, xy_short, retain = FALSE)
   preprocessing_recipe_use <- recipes::prep(final_recipe, xy_short)
 
-  # preprocessing_recipe <- recipes::prep(final_recipe)
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -783,13 +826,11 @@ textTrainRandomForest <- function(x,
   preprocess_PCA_fold_description <- paste("preprocess_PCA in each fold = ", deparse(results_split_parameter$preprocess_PCA))
   eval_measure <- paste("eval_measure = ", eval_measure)
 
-
   if (is.character(extremely_randomised_splitrule)) {
     extremely_randomised_splitrule <- paste("extremely_randomised_splitrule = ", extremely_randomised_splitrule)
   } else {
     extremely_randomised_splitrule <- c("-")
   }
-
 
 
   outside_folds_v_description  <-  paste("outside_folds_v = ", deparse(outside_folds_v))

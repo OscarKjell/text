@@ -307,6 +307,62 @@ summarize_tune_results <- function(object,
 
 
 
+
+
+
+
+#text1[18,]
+#text2 <- tibble(Dim1=c(3, 2, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim2=c(1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim3=c(3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
+#x <- list(text1, text2)
+#
+#
+#
+#library(tidyverse)
+#text1 <- tibble(Dim1=c(1, 1, 3, 1, 2, 3, 1, 3, 3, 1,
+#                       1, 3, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3),
+#                Dim2=c(2, 1, 2, 2, 2, 2, 2, 3, 2, 2, 1, 2, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3),
+#                Dim3=c(4, 1, 1, 2, 2, 2, 2, 3, 2, 2, 1, 2, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3))
+#
+#text1[18,]
+#text2 <- tibble(Dim1=c(3, 2, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim2=c(1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim3=c(3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
+#x <- list(text1, text2)
+#names(x) <- c("text1", "text2")
+#x
+#y <- as_tibble_col(c(1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1))
+#colnames(y) <- "y_ok_reg"
+#
+#help("textTrainRegression")
+#train_text_StudiesAll_diagnose_dep <- textTrain(x = x[1],
+#                                                y= y,
+#                                                #model = "logistic",
+#                                                preprocess_PCA = NA)
+#
+#
+#train_text_StudiesAll_diagnose_dep
+#
+#y <- as_tibble_col(as_factor(c(1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1)))
+#colnames(y) <- "y_ok_factor"
+#train_text_StudiesAll_diagnose_dep_rf <- textTrain(x = x[1],
+#                                                y= y,
+#                                                #model = "logistic",
+#                                                preprocess_PCA = NA)
+#
+#
+#train_text_StudiesAll_diagnose_dep_rf
+#
+#
+
+
+
+
+
+
+
+
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
@@ -467,7 +523,7 @@ textTrainRegression <- function(x,
   )
   results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
 
-  # Deciding whether to use multicorese depending on system and settings.
+  # Deciding whether to use multicores depending on system and settings.
   if (multi_cores == "multi_cores_sys_default"){
     if (.Platform$OS.type == "unix"){
       multi_cores_use <- TRUE
@@ -640,7 +696,6 @@ textTrainRegression <- function(x,
   # It extracts the data from the xy_recipe object.
   xy_final <- recipes::juice(preprocessing_recipe_use)
 
-
   if (length(xy_final) > 2) {
     # Create and fit model; penalty=NULL mixture = NULL
     final_predictive_model <-
@@ -668,7 +723,9 @@ textTrainRegression <- function(x,
   }
 
 
-  #####
+  ##########
+  ##########  DESCRIBING THE MODEL
+  ##########
 
   outside_folds_v_description  <-  paste("outside_folds_v = ", deparse(outside_folds_v))
   outside_strata_y_description  <-  paste("outside_strata_y = ", deparse(outside_strata_y))

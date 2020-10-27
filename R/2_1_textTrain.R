@@ -151,6 +151,8 @@ sort_regression_output_list <- function(output, method_cor, save_output, descrip
     output_predscore_reg <- output_predscore[grep("predictions", rownames(output_predscore)), ]
     colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
 
+    output_predscore_reg$id_nr <- output[[1]]$predictions$id_nr
+
     results <- list(output1, output_predscore_reg, output_ordered_named) #
     names(results) <- c("all_output", "predictions", "results") #
   } else if (save_output == "only_results") {
@@ -197,12 +199,19 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 
   # Get and sort the Prediction scores
   if (save_output == "all" | save_output == "only_results_predictions") {
-    output_predscore1 <- lapply(output, "[[", "truth_predictions")
+    output_predscore <- lapply(output, "[[", "truth_predictions")
 
+    # Append dataframe name to each of its columns within a list of dataframes
+    output_predscore <- purrr::imap(output_predscore,~dplyr::rename_with(.x, function(x) paste(.y, x, sep = '_')))
 
-    output_predscore <- output_predscore1 %>%
+    # Renaming the last column of each dataframe to id_nr so that they can be joint later.
+    output_predscore <- lapply(output_predscore, function(x) {names(x)[ncol(x)] <- "id_nr";x})
+
+    output_predscore <- output_predscore %>%
       purrr::reduce(dplyr::full_join, "id_nr") %>%
       dplyr::arrange(id_nr)
+
+    #colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
 
    # output_predscore1 <- lapply(output, "[[", "truth_predictions")
    #
@@ -210,7 +219,7 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
    # output_predscore <- do.call(cbind, output_predscore1) %>%
    #   tibble::as_tibble() %>%
    #   dplyr::arrange()
-   #
+
   results <- list(output1, output_predscore, output_ordered_named1)
   names(results) <- c("all_output", "predictions", "results")
 
@@ -333,6 +342,7 @@ textTrainLists <- function(x,
       model = model,
       ...
     ), SIMPLIFY = FALSE)
+
     if (model == "regression") {
       results <- sort_regression_output_list(output, method_cor = method_cor, save_output = save_output, descriptions = descriptions)
     } else if (model == "logistic") {
