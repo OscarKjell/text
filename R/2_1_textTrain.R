@@ -1,4 +1,6 @@
 
+extremely_randomised_splitrule= "extratrees"
+
 
 # devtools::document()
 #' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
@@ -155,7 +157,6 @@ sort_regression_output_list <- function(output, method_cor, save_output, descrip
     results <- list(output1, output_ordered_named) #
     names(results) <- c("all_output", "results") #
   }
-
   results
 }
 
@@ -167,6 +168,8 @@ sort_regression_output_list <- function(output, method_cor, save_output, descrip
 #' @param output output from mapply of textTrainRegression or textTrainRandomForest
 #' @param save_output including "all", "only_restuls_predictions" or "only_results".
 #' @return A list with result output depending on save_output setting.
+#' @importFrom purrr reduce
+#' @importFrom dplyr full_join
 #' @noRd
 sort_classification_output_list <- function(output, save_output, descriptions, ...) {
   output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[1]][[1]])))
@@ -195,13 +198,22 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
   # Get and sort the Prediction scores
   if (save_output == "all" | save_output == "only_results_predictions") {
     output_predscore1 <- lapply(output, "[[", "truth_predictions")
-    names(output_predscore1) <- descriptions
-    output_predscore <- do.call(cbind, output_predscore1) %>%
-      tibble::as_tibble() %>%
-      dplyr::arrange()
 
-    results <- list(output1, output_predscore, output_ordered_named1)
-    names(results) <- c("all_output", "predictions", "results")
+
+    output_predscore <- output_predscore1 %>%
+      purrr::reduce(dplyr::full_join, "id_nr") %>%
+      dplyr::arrange(id_nr)
+
+   # output_predscore1 <- lapply(output, "[[", "truth_predictions")
+   #
+   # help(do.call)
+   # output_predscore <- do.call(cbind, output_predscore1) %>%
+   #   tibble::as_tibble() %>%
+   #   dplyr::arrange()
+   #
+  results <- list(output1, output_predscore, output_ordered_named1)
+  names(results) <- c("all_output", "predictions", "results")
+
   } else if (save_output == "only_results") {
     results <- list(output1, output_ordered_named1) #
     names(results) <- c("all_output", "results") #
@@ -376,3 +388,4 @@ textPredict <- function(model_info, new_data, ...) {
   predicted_scores <- stats::predict(model_info$final_model, data_prepared_with_recipe, ...)
   predicted_scores
 }
+
