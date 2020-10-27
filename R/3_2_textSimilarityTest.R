@@ -8,6 +8,7 @@
 #' @param alternative Use a two or one-sided test (select one of: "two_sided", "less", "greater").
 #' @param output.permutations If TRUE, returns permuted values in output.
 #' @param N_cluster_nodes Number of cluster nodes to use (more makes computation faster; see parallel package).
+#' @param seed Set different seed.
 #' @return A list with a p-value, cosine_estimate and permuted values if output.permutations=TRUE.
 #' @examples
 #' x <- wordembeddings4$harmonywords
@@ -28,10 +29,11 @@ textSimilarityTest <- function(x,
                                method = "paired",
                                alternative = c("two_sided", "less", "greater"),
                                output.permutations = TRUE,
-                               N_cluster_nodes = 1) {
+                               N_cluster_nodes = 1,
+                               seed = 1001) {
   T1_textSimilarityTest <- Sys.time()
 
-  set.seed(2020)
+  set.seed(seed)
   if ((nrow(x) != nrow(y))) {
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
   }

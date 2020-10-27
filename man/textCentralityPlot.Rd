@@ -32,7 +32,8 @@ textCentralityPlot(
   legend_h_size = 0.2,
   legend_w_size = 0.2,
   legend_title_size = 7,
-  legend_number_size = 2
+  legend_number_size = 2,
+  seed = 1007
 )
 }
 \arguments{
@@ -42,13 +43,13 @@ textCentralityPlot(
 at least min_freq_words_test (default = 1).}
 
 \item{plot_n_word_extreme}{Number of words per dimension to plot with extreme
-Supervised Centroid Projection value.
+Supervised Bicentroid Projection value.
 (i.e., even if not significant;  duplicates are removed).}
 
 \item{plot_n_word_frequency}{Number of words to plot according to their frequency.
 (i.e., even if not significant).}
 
-\item{plot_n_words_middle}{Number of words to plot that are in the middle in Supervised Centroid Projection score
+\item{plot_n_words_middle}{Number of words to plot that are in the middle in Supervised Bicentroid Projection score
 (i.e., even if not significant; duplicates are removed).}
 
 \item{titles_color}{Color for all the titles (default: "#61605e").}
@@ -103,6 +104,8 @@ plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000
 \item{legend_title_size}{Font size of the title (default = 7).}
 
 \item{legend_number_size}{Font size of the values in the legend (default = 2).}
+
+\item{seed}{Set different seed.}
 }
 \value{
 A 1-dimensional word plot based on cosine similarity to the aggregated word embedding,

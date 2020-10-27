@@ -197,8 +197,8 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base".
-#' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient
-#' to only extract the layers that you need (e.g., 11:12). You can also extract all by setting this
+#' @param layers Specify the layers that should be extracted (default 11). It is more efficient
+#' to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this
 #' parameter to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
 #' and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggreation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
@@ -219,7 +219,7 @@ textEmbedLayersOutput <- function(x,
                                   contexts = TRUE,
                                   decontexts = TRUE,
                                   model = "bert-base-uncased",
-                                  layers = 11:12,
+                                  layers = 11,
                                   return_tokens = TRUE) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers

@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlot.R
 \name{textProjection}
 \alias{textProjection}
-\title{Compute Supervised Centroid Projection and related variables for plotting words.}
+\title{Compute Supervised Bicentroid Projection and related variables for plotting words.}
 \usage{
 textProjection(
   words,
@@ -16,7 +16,8 @@ textProjection(
   word_weight_power = 1,
   min_freq_words_test = 0,
   Npermutations = 10000,
-  n_per_split = 50000
+  n_per_split = 50000,
+  seed = 1003
 )
 }
 \arguments{
@@ -48,20 +49,22 @@ the word embeddings with this in the computation of aggregated word embeddings f
 group low (1) and group high (2). This increases the weight of more frequent words.}
 
 \item{min_freq_words_test}{Option to select words that have occurred a specified number of
-times (default = 0); when creating the Supervised Centroid Projection line
-(i.e., single words receive Supervised Centroid Projection and p-value).}
+times (default = 0); when creating the Supervised Bicentroid Projection line
+(i.e., single words receive Supervised Bicentroid Projection and p-value).}
 
 \item{Npermutations}{Number of permutations in the creation of the null distribution.}
 
 \item{n_per_split}{A setting to split Npermutations to avoid reaching computer memory limits;
 the higher the faster, but too high may lead to abortion.}
+
+\item{seed}{Set different seed.}
 }
 \value{
-A dataframe with variables (e.g., including Supervised Centroid Projection, frequencies, p-values)
+A dataframe with variables (e.g., including Supervised Bicentroid Projection, frequencies, p-values)
 for the individual words that is used for the plotting in the textProjectionPlot function.
 }
 \description{
-Compute Supervised Centroid Projection and related variables for plotting words.
+Compute Supervised Bicentroid Projection and related variables for plotting words.
 }
 \examples{
 # Data

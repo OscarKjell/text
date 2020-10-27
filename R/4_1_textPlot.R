@@ -24,13 +24,13 @@ unique_freq_words <- function(words) {
 ####################################
 ####################################
 ##################
-##################   Supervised Centroid Projection
+##################   Supervised Bicentroid Projection
 ##################
 ####################################
 ####################################
 
 
-#' Compute Supervised Centroid Projection and related variables for plotting words.
+#' Compute Supervised Bicentroid Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
 #' @param wordembeddings Word embeddings from textEmbed for the words to be plotted
 #' (i.e., the aggregated word embeddings for the "words" parameter).
@@ -50,12 +50,13 @@ unique_freq_words <- function(words) {
 #' the word embeddings with this in the computation of aggregated word embeddings for
 #' group low (1) and group high (2). This increases the weight of more frequent words.
 #' @param min_freq_words_test Option to select words that have occurred a specified number of
-#' times (default = 0); when creating the Supervised Centroid Projection line
-#' (i.e., single words receive Supervised Centroid Projection and p-value).
+#' times (default = 0); when creating the Supervised Bicentroid Projection line
+#' (i.e., single words receive Supervised Bicentroid Projection and p-value).
 #' @param Npermutations Number of permutations in the creation of the null distribution.
 #' @param n_per_split A setting to split Npermutations to avoid reaching computer memory limits;
 #' the higher the faster, but too high may lead to abortion.
-#' @return A dataframe with variables (e.g., including Supervised Centroid Projection, frequencies, p-values)
+#' @param seed Set different seed.
+#' @return A dataframe with variables (e.g., including Supervised Bicentroid Projection, frequencies, p-values)
 #' for the individual words that is used for the plotting in the textProjectionPlot function.
 #' @examples
 #' # Data
@@ -91,7 +92,8 @@ textProjection <- function(words,
                            word_weight_power = 1,
                            min_freq_words_test = 0,
                            Npermutations = 10000,
-                           n_per_split = 50000) {
+                           n_per_split = 50000,
+                           seed = 1003) {
 
   # Description to include as a comment in the end of function
   textProjection_descriptions <- paste("words =", substitute(words),
@@ -109,7 +111,7 @@ textProjection <- function(words,
     sep = " ", collapse = " "
   )
 
-  set.seed(2020)
+  set.seed(seed)
   # PCA on single_wordembeddings
   if (is.numeric(pca)) {
     # Select word embeddings to be included in plot
@@ -371,7 +373,7 @@ textProjection <- function(words,
 #############
 
 
-#' Plot words according to Supervised Centroid Projections.
+#' Plot words according to Supervised Bicentroid Projection.
 #' @param word_data Dataframe from textProjection
 #' @param k_n_words_to_test Select the k most frequent words to significance
 #' test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.
@@ -383,11 +385,11 @@ textProjection <- function(words,
 #' @param plot_n_words_p Number of significant words to plot on each(positive and negative) side of the x-axes and y-axes,
 #' (where duplicates are removed); selects first according to lowest p-value and then according to frequency. Hence, on a two
 #' dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.
-#' @param plot_n_word_extreme Number of words that are extreme on Supervised Centroid Projection per dimension.
+#' @param plot_n_word_extreme Number of words that are extreme on Supervised Bicentroid Projection per dimension.
 #' (i.e., even if not significant; per dimensions, where duplicates are removed).
 #' @param plot_n_word_frequency Number of words based on being most frequent.
 #' (i.e., even if not significant).
-#' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised Centroid Projection score
+#' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised Bicentroid Projection score
 #' (i.e., even if not significant;  per dimensions, where duplicates are removed).
 #' @param title_top Title (default "  ")
 #' @param titles_color Color for all the titles (default: "#61605e")
@@ -419,7 +421,7 @@ textProjection <- function(words,
 #' (default is to not show it, i.e., 0).
 #' @param points_without_words_alpha Transparency of the points not linked with a words
 #' (default is to not show it, i.e., 0).
-#' @param legend_title Title on the color legend (default: "(SCP)".
+#' @param legend_title Title on the color legend (default: "(SBP)".
 #' @param legend_x_axes_label Label on the color legend (default: "(x)".
 #' @param legend_y_axes_label Label on the color legend (default: "(y)".
 #' @param legend_x_position Position on the x coordinates of the color legend (default: 0.02).
@@ -428,11 +430,12 @@ textProjection <- function(words,
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size (default: 7).
 #' @param legend_number_size Font size of the values in the legend (default: 2).
+#' @param seed Set different seed.
 #' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
 #' @examples
 #' # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 #'
-#' # Supervised Centroid Projection Plot
+#' # Supervised Bicentroid Projection Plot
 #' plot_projection <- textProjectionPlot(
 #'   word_data = DP_projections_HILS_SWLS_100,
 #'   k_n_words_to_test = FALSE,
@@ -444,7 +447,7 @@ textProjection <- function(words,
 #'   plot_n_words_middle = 1,
 #'   y_axes = FALSE,
 #'   p_alpha = 0.05,
-#'   title_top = " Supervised Centroid Projection (SCP)",
+#'   title_top = "Supervised Bicentroid Projection (SBP)",
 #'   x_axes_label = "Low vs. High HILS score",
 #'   y_axes_label = "Low vs. High SWLS score",
 #'   p_adjust_method = "bonferroni",
@@ -477,9 +480,9 @@ textProjectionPlot <- function(word_data,
                                y_axes = FALSE,
                                p_alpha = 0.05,
                                p_adjust_method = "none",
-                               title_top = "Supervised Centroid Projection",
-                               x_axes_label = "Supervised Centroid Projection (SCP)",
-                               y_axes_label = "Supervised Centroid Projection (SCP)",
+                               title_top = "Supervised Bicentroid Projection",
+                               x_axes_label = "Supervised Bicentroid Projection (SBP)",
+                               y_axes_label = "Supervised Bicentroid Projection (SBP)",
                                scale_x_axes_lim = NULL,
                                scale_y_axes_lim = NULL,
                                word_font = NULL,
@@ -503,7 +506,8 @@ textProjectionPlot <- function(word_data,
                                legend_h_size = 0.2,
                                legend_w_size = 0.2,
                                legend_title_size = 7,
-                               legend_number_size = 2) {
+                               legend_number_size = 2,
+                               seed = 1005) {
 
   # Comment to be saved
   textProjectionPlot_comment <- paste(
@@ -538,7 +542,7 @@ textProjectionPlot <- function(word_data,
     "legend_number_size =", legend_number_size
   )
 
-  set.seed(2020)
+  set.seed(seed)
 
   # Sorting out axes
   # if (x_axes == TRUE) {
@@ -1068,11 +1072,11 @@ textCentrality <- function(words,
 #' @param min_freq_words_test Select words to significance test that have occurred
 #' at least min_freq_words_test (default = 1).
 #' @param plot_n_word_extreme Number of words per dimension to plot with extreme
-#' Supervised Centroid Projection value.
+#' Supervised Bicentroid Projection value.
 #' (i.e., even if not significant;  duplicates are removed).
 #' @param plot_n_word_frequency Number of words to plot according to their frequency.
 #' (i.e., even if not significant).
-#' @param plot_n_words_middle Number of words to plot that are in the middle in Supervised Centroid Projection score
+#' @param plot_n_words_middle Number of words to plot that are in the middle in Supervised Bicentroid Projection score
 #' (i.e., even if not significant; duplicates are removed).
 #' @param title_top Title (default "  ").
 #' @param titles_color Color for all the titles (default: "#61605e").
@@ -1104,6 +1108,7 @@ textCentrality <- function(words,
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size of the title (default = 7).
 #' @param legend_number_size Font size of the values in the legend (default = 2).
+#' @param seed Set different seed.
 #' @return A 1-dimensional word plot based on cosine similarity to the aggregated word embedding,
 #' as well as tibble with processed data used to plot..
 #' @seealso see \code{\link{textCentrality}} and \code{\link{textProjection}}
@@ -1163,7 +1168,8 @@ textCentralityPlot <- function(word_data,
                                legend_h_size = 0.2,
                                legend_w_size = 0.2,
                                legend_title_size = 7,
-                               legend_number_size = 2) {
+                               legend_number_size = 2,
+                               seed = 1007) {
 
   textCentralityPlot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",
@@ -1190,7 +1196,7 @@ textCentralityPlot <- function(word_data,
     "legend_number_size =", legend_number_size
   )
 
-  set.seed(2020)
+  set.seed(seed)
   y_axes_label <- NULL
   y_axes_values <- element_blank()
 
@@ -1337,6 +1343,7 @@ textCentralityPlot <- function(word_data,
 #' @param words Word or text variable to be plotted.
 #' @param single_wordembeddings Word embeddings from textEmbed for individual words
 #' (i.e., decontextualized embeddings).
+#' @param seed Set different seed.
 #' @return A dataframe with words, their frquency and two PCA dimensions from the wordembeddings
 #' for the individual words that is used for the plotting in the textPCAPlot function.
 #' @examples
@@ -1351,7 +1358,8 @@ textCentralityPlot <- function(word_data,
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake
 #' @export
 textPCA <- function(words,
-                    single_wordembeddings = single_wordembeddings_df) {
+                    single_wordembeddings = single_wordembeddings_df,
+                    seed = 1010) {
 
   textPCA_comment <- paste(
     "words =", substitute(words),
@@ -1359,7 +1367,7 @@ textPCA <- function(words,
   )
 
 
-  set.seed(2020)
+  set.seed(seed)
   # PCA on single_wordembeddings
   # Select word embeddings to be included in plot
   uniques_words_all <- unique_freq_words(words)
@@ -1389,11 +1397,11 @@ textPCA <- function(words,
 #' @param word_data Dataframe from textPCA
 #' @param min_freq_words_test Select words to significance test that have occurred at least min_freq_words_test
 #' (default = 1).
-#' @param plot_n_word_extreme Number of words that are extreme on Supervised Centroid Projection per dimension.
+#' @param plot_n_word_extreme Number of words that are extreme on Supervised Bicentroid Projection per dimension.
 #' (i.e., even if not significant; per dimensions, where duplicates are removed).
 #' @param plot_n_word_frequency Number of words based on being most frequent.
 #' (i.e., even if not significant).
-#' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised Centroid Projection score
+#' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised Bicentroid Projection score
 #' (i.e., even if not significant;  per dimensions, where duplicates are removed).
 #' @param title_top Title (default "  ")
 #' @param titles_color Color for all the titles (default: "#61605e")
@@ -1417,7 +1425,7 @@ textPCA <- function(words,
 #' (default is to not show it, i.e., 0).
 #' @param points_without_words_alpha Transparency of the points not linked with a words
 #' (default is to not show it, i.e., 0).
-#' @param legend_title Title on the color legend (default: "(SCP)".
+#' @param legend_title Title on the color legend (default: "(PCA)".
 #' @param legend_x_axes_label Label on the color legend (default: "(x)".
 #' @param legend_y_axes_label Label on the color legend (default: "(y)".
 #' @param legend_x_position Position on the x coordinates of the color legend (default: 0.02).
@@ -1426,11 +1434,12 @@ textPCA <- function(words,
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size (default: 7).
 #' @param legend_number_size Font size of the values in the legend (default: 2).
+#' @param Seed Set different seed.
 #' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot..
 #' @examples
 #' # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 #'
-#' # Supervised Centroid Projection Plot
+#' # Supervised Bicentroid Projection Plot
 #' principle_component_plot_projection <- textPCAPlot(PC_projections_satisfactionwords_40)
 #' principle_component_plot_projection
 #'
@@ -1477,7 +1486,8 @@ textPCAPlot <- function(word_data,
                         legend_h_size = 0.2,
                         legend_w_size = 0.2,
                         legend_title_size = 7,
-                        legend_number_size = 2) {
+                        legend_number_size = 2,
+                        seed = 1002) {
 
 
   textPCAPlot_comment <- paste(
@@ -1507,7 +1517,7 @@ textPCAPlot <- function(word_data,
 
 
 
-  set.seed(2020)
+  set.seed(seed)
 
   # Sorting out axes
   x_axes_1 <- "Dim_PC1"

@@ -4,13 +4,15 @@
 \alias{textPCA}
 \title{Compute 2 PCA dimensions of the word embeddings for individual words.}
 \usage{
-textPCA(words, single_wordembeddings = single_wordembeddings_df)
+textPCA(words, single_wordembeddings = single_wordembeddings_df, seed = 1010)
 }
 \arguments{
 \item{words}{Word or text variable to be plotted.}
 
 \item{single_wordembeddings}{Word embeddings from textEmbed for individual words
 (i.e., decontextualized embeddings).}
+
+\item{seed}{Set different seed.}
 }
 \value{
 A dataframe with words, their frquency and two PCA dimensions from the wordembeddings

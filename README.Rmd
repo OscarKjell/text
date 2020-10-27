@@ -118,7 +118,7 @@ library(text)
 plot_projection <- textProjectionPlot(
   word_data = DP_projections_HILS_SWLS_100,
   y_axes = TRUE,
-  title_top = " Dot Product Projection (DPP) of Harmony in life words",
+  title_top = " Supervised Bicentroid Projection of Harmony in life words",
   x_axes_label = "Low vs. High HILS score",
   y_axes_label = "Low vs. High SWLS score",
   position_jitter_hight = 0.5,

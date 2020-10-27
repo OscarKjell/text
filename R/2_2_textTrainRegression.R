@@ -389,6 +389,7 @@ summarize_tune_results <- function(object,
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it (i.e., only on unix, not windows). Hence it
 #' makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
+#' @param seed Set different seed.
 #' @return A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information
 #' about the model (preprossing_recipe, final_model and model_description).
 #' @examples
@@ -425,10 +426,11 @@ textTrainRegression <- function(x,
                                 method_cor = "pearson",
                                 model_description = "Consider writing a description of your model here",
                                 multi_cores = "multi_cores_sys_default",
-                                save_output = "all") {
+                                save_output = "all",
+                                seed = 2020) {
   T1_textTrainRegression <- Sys.time()
 
-  set.seed(2020)
+  set.seed(seed)
 
   variable_name_index_pca <- NA
 

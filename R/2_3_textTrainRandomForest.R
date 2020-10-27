@@ -484,7 +484,7 @@ summarize_tune_results_rf <- function(object,
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
 #' of participants and feature (word embedding dimensions) in the data. The formula is:
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
-#' @param extremely_randomised_splitrule default: NULL, which thus implement a random forest; can also select: "extratrees", "gini" or "hellinger"; if these are selected
+#' @param extremely_randomised_splitrule default: "extratrees", which thus implement a random forest; can also select: NULL, "gini" or "hellinger"; if these are selected
 #' your mtry settings will be overridden (see Geurts et al. (2006) Extremely randomized trees for details; and see the ranger r-package
 #' for details on implementations).
 #' @param mtry hyper parameter that may be tuned;  default:c(1, 20, 40),
@@ -496,6 +496,7 @@ summarize_tune_results_rf <- function(object,
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it (i.e., only on unix, not windows). Hence it
 #' makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
+#' @param seed Set different seed.
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe, final_model, model_description
 #' chisq and fishers test as well as evaluation measures, e.g., including accuracy, f_meas and roc_auc (for details on
@@ -531,7 +532,7 @@ textTrainRandomForest <- function(x,
                                   inside_strata_y = "y",
                                   mode_rf = "classification",
                                   preprocess_PCA = NA,
-                                  extremely_randomised_splitrule = NULL,
+                                  extremely_randomised_splitrule = "extratrees",
                                   mtry = c(1, 10, 20, 40),
                                   min_n = c(1, 10, 20, 40),
                                   trees = c(1000),
@@ -539,9 +540,10 @@ textTrainRandomForest <- function(x,
                                   model_description = "Consider writing a description of your model here",
                                   multi_cores = "multi_cores_sys_default",
                                   save_output = "all",
+                                  seed = 2020,
                                   ...) {
   T1_textTrainRandomForest <- Sys.time()
-  set.seed(2020)
+  set.seed(seed)
 
   variable_name_index_pca <- NA
 

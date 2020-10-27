@@ -19,7 +19,8 @@ textTrainRegression(
   method_cor = "pearson",
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
-  save_output = "all"
+  save_output = "all",
+  seed = 2020
 )
 }
 \arguments{
@@ -60,6 +61,8 @@ can set to "spearman" or "kendall").}
 makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.}
 
 \item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
+
+\item{seed}{Set different seed.}
 }
 \value{
 A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information

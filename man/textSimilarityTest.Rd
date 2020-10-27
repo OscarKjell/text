@@ -12,7 +12,8 @@ textSimilarityTest(
   method = "paired",
   alternative = c("two_sided", "less", "greater"),
   output.permutations = TRUE,
-  N_cluster_nodes = 1
+  N_cluster_nodes = 1,
+  seed = 1001
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ textSimilarityTest(
 \item{output.permutations}{If TRUE, returns permuted values in output.}
 
 \item{N_cluster_nodes}{Number of cluster nodes to use (more makes computation faster; see parallel package).}
+
+\item{seed}{Set different seed.}
 }
 \value{
 A list with a p-value, cosine_estimate and permuted values if output.permutations=TRUE.

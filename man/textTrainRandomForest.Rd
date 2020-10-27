@@ -13,7 +13,7 @@ textTrainRandomForest(
   inside_strata_y = "y",
   mode_rf = "classification",
   preprocess_PCA = NA,
-  extremely_randomised_splitrule = NULL,
+  extremely_randomised_splitrule = "extratrees",
   mtry = c(1, 10, 20, 40),
   min_n = c(1, 10, 20, 40),
   trees = c(1000),
@@ -21,6 +21,7 @@ textTrainRandomForest(
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
   save_output = "all",
+  seed = 2020,
   ...
 )
 }
@@ -44,7 +45,7 @@ number of components to select (e.g., 10). Default is "min_halving", which is a 
 of participants and feature (word embedding dimensions) in the data. The formula is:
 preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).}
 
-\item{extremely_randomised_splitrule}{default: NULL, which thus implement a random forest; can also select: "extratrees", "gini" or "hellinger"; if these are selected
+\item{extremely_randomised_splitrule}{default: "extratrees", which thus implement a random forest; can also select: NULL, "gini" or "hellinger"; if these are selected
 your mtry settings will be overridden (see Geurts et al. (2006) Extremely randomized trees for details; and see the ranger r-package
 for details on implementations).}
 
@@ -63,6 +64,8 @@ see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_me
 makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.}
 
 \item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
+
+\item{seed}{Set different seed.}
 
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
