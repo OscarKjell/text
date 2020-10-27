@@ -8,7 +8,7 @@
 textSimilarityTest(
   x,
   y,
-  Npermutations = 1000,
+  Npermutations = 10000,
   method = "paired",
   alternative = c("two_sided", "less", "greater"),
   output.permutations = TRUE,
