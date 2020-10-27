@@ -1164,6 +1164,7 @@ textCentralityPlot <- function(word_data,
                                legend_w_size = 0.2,
                                legend_title_size = 7,
                                legend_number_size = 2) {
+
   textCentralityPlot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",
     comment(word_data),
@@ -1188,10 +1189,6 @@ textCentralityPlot <- function(word_data,
     "legend_title_size =", legend_title_size,
     "legend_number_size =", legend_number_size
   )
-
-
-
-
 
   set.seed(2020)
   y_axes_label <- NULL
@@ -1355,6 +1352,7 @@ textCentralityPlot <- function(word_data,
 #' @export
 textPCA <- function(words,
                     single_wordembeddings = single_wordembeddings_df) {
+
   textPCA_comment <- paste(
     "words =", substitute(words),
     "single_wordembeddings =", comment(single_wordembeddings)
@@ -1480,6 +1478,8 @@ textPCAPlot <- function(word_data,
                         legend_w_size = 0.2,
                         legend_title_size = 7,
                         legend_number_size = 2) {
+
+
   textPCAPlot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",
     comment(word_data),
