@@ -88,7 +88,8 @@ multilingual BERT comprises *104 different languages*.
 | ‘bert-base-multilingual-cased’ | [Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/) | 12     | 768        | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
 | ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692.pdf)                | 24     | 1024       | [100 language](https://huggingface.co/transformers/multilingual.html)                |
 
-See [HuggingFace’s Github](https://github.com/huggingface/transformers)
+See
+[HuggingFace](https://huggingface.co/transformers/pretrained_models.html)
 for a more comprehensive list of models.
 
 ### An end-to-end package

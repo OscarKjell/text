@@ -107,7 +107,7 @@ Tables_short <- tibble::tibble(Models, References, Layers, Dimensions, Language)
 knitr::kable(Tables_short, caption="", bootstrap_options = c("hover"), full_width = T)
 ```
   
-See [HuggingFace's Github](https://github.com/huggingface/transformers) for a more comprehensive list of models. 
+See [HuggingFace](https://huggingface.co/transformers/pretrained_models.html) for a more comprehensive list of models. 
 
 ### An end-to-end package
 *Text* also provides functions to analyse the word embeddings with well-tested machine learning algorithms and statistics. The focus is to analyze and visualize text, and their relation to other text or numerical variables. An example is functions plotting statistically significant words in the word embedding space.  
