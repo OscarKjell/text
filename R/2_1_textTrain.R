@@ -389,11 +389,14 @@ textTrainLists <- function(x,
 #' @importFrom stats predict
 #' @importFrom tibble is_tibble as_tibble_col
 #' @export
+
 textPredict <- function(model_info, new_data, ...) {
 
   # In case the embedding is in list form get the tibble form
   if (!tibble::is_tibble(new_data) & length(new_data) == 1) {
     new_data1 <- new_data[[1]]
+    #Get original columns names, to remove these column from output
+    original_colnames <- colnames(new_data1)
 
     new_data1$id_nr <- c(1:nrow(new_data1))
     new_data_id_nr_col <- tibble::as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
@@ -420,6 +423,9 @@ textPredict <- function(model_info, new_data, ...) {
     # Make one df rather then list.
     new_data1 <- dplyr::bind_cols(new_datalist)
 
+    #Get original columns names, to remove these column from output
+    original_colnames <- colnames(new_data1)
+
     # Add id
     new_data1$id_nr <- c(1:nrow(new_data1))
     new_data_id_nr_col <- tibble::as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
@@ -432,6 +438,9 @@ textPredict <- function(model_info, new_data, ...) {
 
   } else {
     new_data1 <- new_data
+    #Get original columns names, to remove these column from output
+    original_colnames <- colnames(new_data1)
+
     new_data1$id_nr <- c(1:nrow(new_data1))
     new_data_id_nr_col <- tibble::as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
   }
@@ -439,13 +448,14 @@ textPredict <- function(model_info, new_data, ...) {
   # Load prepared_with_recipe
   data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data1)
 
+
   # Get scores
   predicted_scores <- data_prepared_with_recipe %>%
-    bind_cols(.pred = unlist(predict(model_info$final_model,new_data=data_prepared_with_recipe))) %>%
-    select(id_nr, .pred) %>%
+    bind_cols(predict(model_info$final_model,new_data=data_prepared_with_recipe, ...)) %>%
+    select(-!!original_colnames) %>%
     full_join(new_data_id_nr_col, by="id_nr") %>%
     arrange(id_nr) %>%
-    select(.pred)
+    select(-id_nr)
 
   predicted_scores
 
