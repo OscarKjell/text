@@ -310,54 +310,87 @@ summarize_tune_results <- function(object,
 
 
 
-
-#text1[18,]
-#text2 <- tibble(Dim1=c(3, 2, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim2=c(1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim3=c(3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
-#x <- list(text1, text2)
-#
-#
-#
 #library(tidyverse)
-#text1 <- tibble(Dim1=c(1, 1, 3, 1, 2, 3, 1, 3, 3, 1,
-#                       1, 3, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3),
-#                Dim2=c(2, 1, 2, 2, 2, 2, 2, 3, 2, 2, 1, 2, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3),
-#                Dim3=c(4, 1, 1, 2, 2, 2, 2, 3, 2, 2, 1, 2, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3))
+#library(text)
+#text1 <- tibble(Dim1=c(3, 2, 2, 3, 2, NA, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim2=c(1, 1, 2, 1, 1, NA, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim3=c(3, 1, 1, 3, 1, NA, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
 #
 #text1[18,]
-#text2 <- tibble(Dim1=c(3, 2, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim2=c(1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim3=c(3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
+#text2 <- tibble(Dim1=c(3, NA, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim2=c(1, NA, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim3=c(3, NA, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
 #x <- list(text1, text2)
 #names(x) <- c("text1", "text2")
 #x
+#
+## REGRESSION
 #y <- as_tibble_col(c(1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1))
 #colnames(y) <- "y_ok_reg"
 #
 #help("textTrainRegression")
-#train_text_StudiesAll_diagnose_dep <- textTrain(x = x[1],
-#                                                y= y,
-#                                                #model = "logistic",
-#                                                preprocess_PCA = NA)
+#train_test <- textTrainRegression(x = x[1],
+#                        y= y,
+#                        #model = "logistic",
+#                        preprocess_PCA = NA)
+#nrow(text1)
+#test_predictions1 <- textPredict_test(train_test, text1)
+#test_predictions1
+#
+#test_predictions2 <- textPredict_test(train_test, text2)
+#test_predictions2
+#nrow(test_predictions2)
+#
+## Multiple
+#train_test_m <- textTrainRegression(x = x,
+#                                  y= y,
+#                                  #model = "logistic",
+#                                  preprocess_PCA = NA)
+#
+#test_predictions3 <- textPredict_test(train_test_m, x)
+#test_predictions3
+#nrow(test_predictions3)
+#
+#### RANDOM FOREST
+#y_rf <- as_tibble_col(as_factor(c(1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1)))
+#colnames(y_rf) <- "y_ok_factor"
+#train_test_rf <- textTrainRandomForest(x = x[1],
+#                           y= y_rf,
+#                           #model = "logistic",
+#                           preprocess_PCA = NA)
+#train_test_rf
 #
 #
-#train_text_StudiesAll_diagnose_dep
+#nrow(text1)
+#test_predictions_rf <- textPredict_test(train_test_rf, text1)
+#test_predictions_rf
+#nrow(test_predictions_rf)
 #
-#y <- as_tibble_col(as_factor(c(1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1)))
-#colnames(y) <- "y_ok_factor"
-#train_text_StudiesAll_diagnose_dep_rf <- textTrain(x = x[1],
-#                                                y= y,
-#                                                #model = "logistic",
-#                                                preprocess_PCA = NA)
-#
-#
-#train_text_StudiesAll_diagnose_dep_rf
+#nrow(text2)
+#test_predictions_rf <- textPredict_test(train_test_rf, text2)
+#test_predictions_rf
+#nrow(test_predictions_rf)
 #
 #
-
-
-
+#train_test_rf_m <- textTrainRandomForest(x = x,
+#                                         y= y_rf,
+#                                         #model = "logistic",
+#                                         preprocess_PCA = NA)
+#
+#test_predictions_rf_m <- textPredict_test(train_test_rf_m, x)
+#test_predictions_rf_m
+#
+## Predict
+#new_data <- text2
+#new_data <- x
+#
+#model_info <- train_test
+#model_info <- train_test_m
+#
+#model_info <- train_test_rf
+#model_info <- train_test_rf_m
+#is_tibble(new_data)
+#
 
 
 
@@ -454,7 +487,7 @@ textTrainRegression <- function(x,
     x_name <- paste("input:", x_name, sep=" ", collapse = " ")
 
     embedding_description <- comment(x[[1]])
-    # In case it is just ane word embedding as tibble
+    # In case it is just one word embedding as tibble
   } else {
     x1 <- x
     x_name <- deparse(substitute(x))
@@ -628,16 +661,20 @@ textTrainRegression <- function(x,
     collected_results[[1]] <- NULL
   }
 
-  #####
-  # Construct final model to be saved and applied on other data
 
-  xy_short <- xy %>% dplyr::select(-id_nr)
+  ##### Construct final model to be saved and applied on other data  ########
+  ############################################################################
+
+  xy_short <- xy #%>% dplyr::select(-id_nr)
 
   ######### One word embedding as input
   if(colnames(xy_short[1]) == "Dim1"){
   # [0,] is added to just get the col names (and avoid saving all the data with the receipt)
   final_recipe <- # xy %>%
     recipes::recipe(y ~ ., xy_short[0, ]) %>%
+    recipes::update_role(id_nr, new_role = "id variable") %>%
+    recipes::update_role(-id_nr, new_role = "predictor") %>%
+    recipes::update_role(y, new_role = "outcome") %>%
     # recipes::step_BoxCox(all_predictors()) %>%
     recipes::step_naomit(Dim1, skip = TRUE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
@@ -662,6 +699,8 @@ textTrainRegression <- function(x,
     V1 <- colnames(xy_short[1])
 
     final_recipe <- recipes::recipe(y ~ ., xy_short[0, ]) %>%
+      recipes::update_role(id_nr, new_role = "id variable") %>%
+      recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
       recipes::step_naomit(dplyr::all_of(V1), skip = TRUE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
@@ -725,9 +764,9 @@ textTrainRegression <- function(x,
   }
 
 
-  ##########
-  ##########  DESCRIBING THE MODEL
-  ##########
+
+  ##########  DESCRIBING THE MODEL  ##########
+  ############################################
 
   outside_folds_v_description  <-  paste("outside_folds_v = ", deparse(outside_folds_v))
   outside_strata_y_description  <-  paste("outside_strata_y = ", deparse(outside_strata_y))
@@ -779,6 +818,9 @@ textTrainRegression <- function(x,
     model_description,
     time_date
   )
+
+  ###### Saving and arranging output ######
+  ##########################################
 
   if (model == "regression") {
     if (save_output == "all") {

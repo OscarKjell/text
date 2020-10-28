@@ -1,5 +1,4 @@
 
-extremely_randomised_splitrule= "extratrees"
 
 
 # devtools::document()
@@ -391,11 +390,62 @@ textTrainLists <- function(x,
 #' @export
 textPredict <- function(model_info, new_data, ...) {
 
+  # In case the embedding is in list form get the tibble form
+  if (!tibble::is_tibble(new_data) & length(new_data) == 1) {
+    new_data1 <- new_data[[1]]
+
+    new_data1$id_nr <- c(1:nrow(new_data1))
+    new_data_id_nr_col <- as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
+
+    # In case there are several different word embeddings (from different responses)
+  } else if (!tibble::is_tibble(new_data) & length(new_data) > 1) {
+
+    new_datalist <- lapply(new_data, function(X) {
+      X <- dplyr::select(X, dplyr::starts_with("Dim"))
+    })
+
+    Nword_variables <- length(new_datalist)
+    # Give each column specific names with indexes so that they can be handled separately in the PCAs
+    for (i in 1:Nword_variables) {
+      colnames(new_datalist[[i]]) <- paste("Dim_we", i, ".", names(new_datalist[i]), colnames(new_datalist[[i]]), sep = "")
+    }
+
+    # Make vector with each index so that we can allocate them separately for the PCAs
+    variable_name_index_pca <- list()
+    for (i in 1:Nword_variables) {
+      variable_name_index_pca[i] <- paste("Dim_we", i, sep = "")
+    }
+
+    # Make one df rather then list.
+    new_data1 <- dplyr::bind_cols(new_datalist)
+
+    # Add id
+    new_data1$id_nr <- c(1:nrow(new_data1))
+    new_data_id_nr_col <- as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
+
+    # Get the name of the first variable; which is used to exclude NA (i.e., word embedding have NA in all columns)
+    V1 <- colnames(new_data1)[1]
+
+    # Removing NAs for the analyses (here we could potentially impute missing values; e.g., mean of each dimension)
+    new_data1 <- new_data1[complete.cases(new_data1),]
+
+  } else {
+    new_data1 <- new_data
+    new_data1$id_nr <- c(1:nrow(new_data1))
+    new_data_id_nr_col <- as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
+  }
+
   # Load prepared_with_recipe
-  data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data)
+  data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data1)
 
   # Get scores
-  predicted_scores <- stats::predict(model_info$final_model, data_prepared_with_recipe, ...)
-  predicted_scores
-}
+  predicted_scores <- data_prepared_with_recipe %>%
+    bind_cols(.pred = unlist(predict(model_info$final_model,new_data=data_prepared_with_recipe))) %>%
+    select(id_nr, .pred) %>%
+    full_join(new_data_id_nr_col, by="id_nr") %>%
+    arrange(id_nr) %>%
+    select(.pred)
 
+  predicted_scores
+
+}

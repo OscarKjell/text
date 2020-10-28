@@ -147,13 +147,14 @@ fit_model_accuracy_rf <- function(object,
      } else {
 
        V1 <- colnames(rsample::analysis(object)[1])
+
        xy_recipe <- rsample::analysis(object) %>%
          recipes::recipe(y ~ .) %>%
          # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
          recipes::update_role(id_nr, new_role = "id variable") %>%
          recipes::update_role(-id_nr, new_role = "predictor") %>%
          recipes::update_role(y, new_role = "outcome") %>%
-         recipes::step_naomit(dplyr::all_of(V1), skip = TRUE) %>%
+         recipes::step_naomit(dplyr::all_of(V1), skip = FALSE) %>%
          recipes::step_center(recipes::all_predictors()) %>%
          recipes::step_scale(recipes::all_predictors())
 
@@ -403,29 +404,6 @@ summarize_tune_results_rf <- function(object,
 
 
 
-#x <- wordembeddings4[1:2]
-#y <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
-#
-#mode_rf = "classification"
-#preprocess_PCA = NA
-#preprocess_PCA = 0.9
-#preprocess_PCA = 3
-#extremely_randomised_splitrule = NULL
-#mtry = c(1)
-#min_n = c(1)
-#trees = c(1000)
-#eval_measure = "bal_accuracy"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = TRUE
-#save_output = "all"
-#
-#textTrainRandomForest(wordembeddings4[1:2],
-#                      y,
-#                     # preprocess_PCA = NA
-#                      preprocess_PCA = 0.9
-#                     #preprocess_PCA = 3
-#                      )
-
 
 
 
@@ -561,7 +539,7 @@ textTrainRandomForest <- function(x,
     x_name <- paste("input:", x_name, sep=" ", collapse = " ")
 
     embedding_description <- comment(x[[1]])
-    # In case it is just ane word embedding as tibble
+    # In case it is just one word embedding as tibble
   } else {
     x1 <- x
     x_name <- deparse(substitute(x))
@@ -728,19 +706,23 @@ textTrainRandomForest <- function(x,
   names(results_collected) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
 
 
-  # Construct final model to be saved and applied on other data
-  # Recipe: Pre-processing by removing na and normalizing variables. library(magrittr)
-  xy_short <- xy %>% dplyr::select(-id_nr)
+  ##### Construct final model to be saved and applied on other data  ########
+  ############################################################################
+
+  xy_short <- xy #%>% dplyr::select(-id_nr)
 
 
   ######### One word embedding as input
   if(colnames(xy_short[1]) == "Dim1"){
   final_recipe <- # xy %>%
     recipes::recipe(y ~ ., xy_short[0, ]) %>%
+    recipes::update_role(id_nr, new_role = "id variable") %>%
+    recipes::update_role(-id_nr, new_role = "predictor") %>%
+    recipes::update_role(y, new_role = "outcome") %>%
     recipes::step_naomit(Dim1, skip = FALSE) %>%
     recipes::step_center(recipes::all_predictors()) %>%
     recipes::step_scale(recipes::all_predictors()) %>%
-    recipes::step_BoxCox(recipes::all_predictors()) %>%
+    #recipes::step_BoxCox(recipes::all_predictors()) %>%
     {
       if (!is.na(preprocess_PCA[1])) {
         if (preprocess_PCA[1] >= 1) {
@@ -754,12 +736,14 @@ textTrainRandomForest <- function(x,
         .
       }
     }
-  ######### More than one word embeddings as input
+  ######### More than one word embeddings as input help(step_naomit)
   } else {
 
     V1 <- colnames(xy_short[1])
 
     final_recipe <- recipes::recipe(y ~ ., xy_short[0, ]) %>%
+      recipes::update_role(id_nr, new_role = "id variable") %>%
+      recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
       recipes::step_naomit(dplyr::all_of(V1), skip = TRUE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
@@ -806,7 +790,11 @@ textTrainRandomForest <- function(x,
     ) %>%
     # set_engine("ranger")
     parsnip::set_engine("randomForest") %>%
-    parsnip::fit(y ~ ., data = xy_final) # analysis(object)
+    parsnip::fit(y ~ ., data = xy_final)
+
+
+  ##########  DESCRIBING THE MODEL  ##########
+  ############################################
 
   # Saving the final mtry and min_n used for the final model.
   if (is.null(extremely_randomised_splitrule)) {
@@ -885,6 +873,9 @@ textTrainRandomForest <- function(x,
     time_date
   )
 
+  ###### Saving and arranging output ######
+  ##########################################
+
   if (save_output == "all") {
     final_results <- list(results_collected$roc_curve_data, results_collected$predy_y, preprocessing_recipe_save, final_predictive_model, results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
     names(final_results) <- c("roc_curve_data", "truth_predictions", "final_recipe", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
@@ -898,3 +889,8 @@ textTrainRandomForest <- function(x,
 
   final_results
 }
+
+
+
+
+
