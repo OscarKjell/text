@@ -1434,7 +1434,7 @@ textPCA <- function(words,
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size (default: 7).
 #' @param legend_number_size Font size of the values in the legend (default: 2).
-#' @param Seed Set different seed.
+#' @param seed Set different seed.
 #' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot..
 #' @examples
 #' # The test-data included in the package is called: DP_projections_HILS_SWLS_100

@@ -307,9 +307,11 @@ summarize_tune_results <- function(object,
 
 
 
-
-
-
+#x <- tibble(Dim1=c(3, 2, 2, 3, 2, NA, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim2=c(1, 1, 2, 1, 1, NA, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
+#                Dim3=c(3, 1, 1, 3, 1, NA, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
+#
+#
 #library(tidyverse)
 #library(text)
 #text1 <- tibble(Dim1=c(3, 2, 2, 3, 2, NA, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
@@ -340,6 +342,12 @@ summarize_tune_results <- function(object,
 #test_predictions2 <- textPredict_test(train_test, text2)
 #test_predictions2
 #nrow(test_predictions2)
+#
+#train_test_list <- textTrain(x = x,
+#                                  y= y,
+#                                  #model = "logistic",
+#                                  preprocess_PCA = NA)
+#train_test_list
 #
 ## Multiple
 #train_test_m <- textTrainRegression(x = x,
@@ -390,7 +398,7 @@ summarize_tune_results <- function(object,
 #model_info <- train_test_rf
 #model_info <- train_test_rf_m
 #is_tibble(new_data)
-#
+
 
 
 

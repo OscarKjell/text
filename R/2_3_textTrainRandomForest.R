@@ -43,7 +43,7 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy", holdout_pred 
 #' @param outputlist_results_outer Results from outer predictions.
 #' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
 #' @noRd
-classification_results <- function(outputlist_results_outer, ...) {
+classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
   # Unnest predictions and y
   predy_y <- tibble::tibble(
     tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
@@ -52,6 +52,11 @@ classification_results <- function(outputlist_results_outer, ...) {
     tidyr::unnest(outputlist_results_outer$.pred_2, cols = c(.pred_2)),
     tidyr::unnest(outputlist_results_outer$id_nr, cols = c(id_nr))
   )
+
+  if(tibble::is_tibble(id_nr)){
+    predy_y  <-  predy_y %>% full_join(id_nr, by = "id_nr")
+  }
+
   predy_y <- predy_y %>% dplyr::arrange(id_nr)
   # Correlate predictions and observed help(all_of)
   chisq <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
@@ -441,7 +446,7 @@ summarize_tune_results_rf <- function(object,
 #model_description = "Consider writing a description of your model here"
 #multi_cores = "multi_cores_sys_default"
 #save_output = "all"
-
+#seed = 2020
 
 
 
@@ -596,10 +601,9 @@ textTrainRandomForest <- function(x,
   }
   xy <- cbind(x1, y)
 
-  #  xy$id1 <- c(seq_len(nrow(xy)))
-  xy$id_nr <- c(seq_len(nrow(xy))) # New
-  # xy_formergingNA <- tibble::tibble(xy$id1, xy$y)
-  # colnames(xy_formergingNA) <- c("id1", "y")
+
+  xy$id_nr <- c(seq_len(nrow(xy)))
+  id_nr <- tibble::as_tibble_col(c(seq_len(nrow(xy))), column_name = "id_nr")
   xy1 <- tibble::as_tibble(xy[stats::complete.cases(xy), ])
 
   results_nested_resampling <- rlang::expr(rsample::nested_cv(xy1,
@@ -702,7 +706,7 @@ textTrainRandomForest <- function(x,
     purrr::map(na.omit)
 
   # Get  predictions and evaluation results
-  results_collected <- classification_results(outputlist_results_outer = outputlist_results_outer, ...)
+  results_collected <- classification_results(outputlist_results_outer = outputlist_results_outer, id_nr, ...)
   names(results_collected) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
 
 

@@ -387,6 +387,7 @@ textTrainLists <- function(x,
 #' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 #' @importFrom recipes prep bake
 #' @importFrom stats predict
+#' @importFrom tibble is_tibble as_tibble_col
 #' @export
 textPredict <- function(model_info, new_data, ...) {
 
@@ -395,7 +396,7 @@ textPredict <- function(model_info, new_data, ...) {
     new_data1 <- new_data[[1]]
 
     new_data1$id_nr <- c(1:nrow(new_data1))
-    new_data_id_nr_col <- as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
+    new_data_id_nr_col <- tibble::as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
 
     # In case there are several different word embeddings (from different responses)
   } else if (!tibble::is_tibble(new_data) & length(new_data) > 1) {
@@ -421,7 +422,7 @@ textPredict <- function(model_info, new_data, ...) {
 
     # Add id
     new_data1$id_nr <- c(1:nrow(new_data1))
-    new_data_id_nr_col <- as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
+    new_data_id_nr_col <- tibble::as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
 
     # Get the name of the first variable; which is used to exclude NA (i.e., word embedding have NA in all columns)
     V1 <- colnames(new_data1)[1]
@@ -432,7 +433,7 @@ textPredict <- function(model_info, new_data, ...) {
   } else {
     new_data1 <- new_data
     new_data1$id_nr <- c(1:nrow(new_data1))
-    new_data_id_nr_col <- as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
+    new_data_id_nr_col <- tibble::as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
   }
 
   # Load prepared_with_recipe

@@ -108,7 +108,7 @@ ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c
 
 \item{legend_number_size}{Font size of the values in the legend (default: 2).}
 
-\item{Seed}{Set different seed.}
+\item{seed}{Set different seed.}
 }
 \value{
 A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot..
