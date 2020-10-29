@@ -21,10 +21,10 @@ jobs:
 #          - {os: macOS-latest, r: 'release', old_dplyr: true,  dev_tidymodels: false}
 #          - {os: macOS-latest, r: 'release', old_dplyr: false, dev_tidymodels: true}
 #          - {os: ubuntu-16.04, r: 'devel', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
-          - {os: macOS-latest, r: 'release'}
-          - {os: macOS-latest, r: 'devel'}
-          - {os: ubuntu-16.04, r: 'release'}
-          - {os: ubuntu-16.04, r: 'devel'}
+#          - {os: macOS-latest, r: 'release'}
+#          - {os: macOS-latest, r: 'devel'}
+#          - {os: ubuntu-16.04, r: 'release'}
+#          - {os: ubuntu-16.04, r: 'devel'}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
@@ -72,7 +72,7 @@ jobs:
         run: |
           library(reticulate)
           install_miniconda()
-          conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'nltk', 'numpy'), pip = TRUE)
+          conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'nltk', 'numpy'))
         shell: Rscript {0}
 
 
