@@ -8,11 +8,32 @@ on:
 
 name: test-coverage
 
+
 jobs:
-  test-coverage:
-    runs-on: windows-latest
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest, r: 'devel'}
+          - {os: windows-latest, r: 'release'}
+#          - {os: macOS-latest, r: 'release', old_dplyr: true,  dev_tidymodels: true}
+#          - {os: macOS-latest, r: 'release', old_dplyr: true,  dev_tidymodels: false}
+#          - {os: macOS-latest, r: 'release', old_dplyr: false, dev_tidymodels: true}
+#          - {os: ubuntu-16.04, r: 'devel', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
+#          - {os: macOS-latest, r: 'release'}
+#          - {os: macOS-latest, r: 'devel'}
+#          - {os: ubuntu-16.04, r: 'release'}
+#          - {os: ubuntu-16.04, r: 'devel'}
     env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -72,10 +93,10 @@ jobs:
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
-      - name: Show testthat output
-        if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
+#      - name: Show testthat output
+#        if: always()
+#        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+#        shell: bash
 
       - name: Upload check results
         if: always()
