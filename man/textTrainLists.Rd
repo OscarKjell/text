@@ -52,7 +52,8 @@ several text variables to one numeric/categorical variable. It is not possible t
 \dontrun{
 wordembeddings <- wordembeddings4[1:2]
 ratings_data <- Language_based_assessment_data_8[5:6]
-results <- textTrainLists(wordembeddings,
+results <- textTrainLists(
+  wordembeddings,
   ratings_data
 )
 results

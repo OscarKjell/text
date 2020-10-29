@@ -29,7 +29,7 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy", holdout_pred 
     eval_measure_val <- yardstick::f_meas(holdout_pred, truth = y, estimate = .pred_class)
   } else if (eval_measure == "roc_auc") {
     class1_name <- eval(class)
-    eval_measure_val <- yardstick::roc_auc(holdout_pred, truth = y, class1_name) # all_of(class1_name)
+    eval_measure_val <- yardstick::roc_auc(holdout_pred, truth = y, class1_name)
   } else if (eval_measure == "rmse") {
     eval_measure_val <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)
   }
@@ -53,8 +53,8 @@ classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
     tidyr::unnest(outputlist_results_outer$id_nr, cols = c(id_nr))
   )
 
-  if(tibble::is_tibble(id_nr)){
-    predy_y  <-  predy_y %>% full_join(id_nr, by = "id_nr")
+  if (tibble::is_tibble(id_nr)) {
+    predy_y <- predy_y %>% full_join(id_nr, by = "id_nr")
   }
 
   predy_y <- predy_y %>% dplyr::arrange(id_nr)
@@ -72,8 +72,7 @@ classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
   kappa <- yardstick::kap(predy_y, truth, estimate, ...)
   f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...)
 
-  # eval_class <- colnames(predy_y[3])
-  roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3])) # OK tidyselect::all_of(eval_class) dplyr::
+  roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3]))
   roc_curve_data <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[3]))
   roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[3])))
 
@@ -118,74 +117,70 @@ fit_model_accuracy_rf <- function(object,
                                   extremely_randomised_splitrule = NULL) {
 
   # Recipe for one embedding input
-  if(colnames(rsample::analysis(object)[1]) == "Dim1"){
-
+  if (colnames(rsample::analysis(object)[1]) == "Dim1") {
     xy_recipe <- rsample::analysis(object) %>%
-    recipes::recipe(y ~ .) %>%
-    #    recipes::update_role(id1, new_role = "id variable") %>%
-    #    #recipes::update_role(-id1, new_role = "predictor") %>%
-    #    recipes::update_role(y, new_role = "outcome") %>%
-    recipes::update_role(id_nr, new_role = "id variable") %>% # New
-    recipes::update_role(-id_nr, new_role = "predictor") %>% # New
-    recipes::update_role(y, new_role = "outcome") %>% # New
-    recipes::step_naomit(Dim1, skip = FALSE) %>%
-    recipes::step_center(recipes::all_predictors()) %>%
-    recipes::step_scale(recipes::all_predictors()) %>%
-    recipes::step_BoxCox(recipes::all_predictors()) %>%
-    # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
-    {
-      if (!is.na(preprocess_PCA)) {
-        if (preprocess_PCA >= 1) {
-          recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
-        } else if (preprocess_PCA < 1) {
-          recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+      recipes::recipe(y ~ .) %>%
+      #    recipes::update_role(id1, new_role = "id variable") %>%
+      #    #recipes::update_role(-id1, new_role = "predictor") %>%
+      #    recipes::update_role(y, new_role = "outcome") %>%
+      recipes::update_role(id_nr, new_role = "id variable") %>% # New
+      recipes::update_role(-id_nr, new_role = "predictor") %>% # New
+      recipes::update_role(y, new_role = "outcome") %>% # New
+      recipes::step_naomit(Dim1, skip = FALSE) %>%
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors()) %>%
+      recipes::step_BoxCox(recipes::all_predictors()) %>%
+      # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
+      {
+        if (!is.na(preprocess_PCA)) {
+          if (preprocess_PCA >= 1) {
+            recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
+          } else if (preprocess_PCA < 1) {
+            recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+          } else {
+            .
+          }
         } else {
           .
         }
-      } else {
-        .
+      } %>%
+      recipes::prep()
+
+    # Recipe for multiple word embedding input (with possibility of separate PCAs)
+  } else {
+    V1 <- colnames(rsample::analysis(object)[1])
+
+    xy_recipe <- rsample::analysis(object) %>%
+      recipes::recipe(y ~ .) %>%
+      # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
+      recipes::update_role(id_nr, new_role = "id variable") %>%
+      recipes::update_role(-id_nr, new_role = "predictor") %>%
+      recipes::update_role(y, new_role = "outcome") %>%
+      recipes::step_naomit(dplyr::all_of(V1), skip = FALSE) %>%
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors())
+
+    # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
+    if (!is.na(preprocess_PCA)) {
+      if (preprocess_PCA >= 1) {
+        for (i in variable_name_index_pca) {
+          xy_recipe <-
+            xy_recipe %>%
+            # !! slices the current name into the `matches()` function.
+            # We use a custom prefix so there are no name collisions for the
+            # results of each PCA step.
+            recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+        }
+      } else if (preprocess_PCA < 1) {
+        for (i in variable_name_index_pca) {
+          xy_recipe <-
+            xy_recipe %>%
+            recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+        }
       }
-    } %>%
-    recipes::prep()
-
-     # Recipe for multiple word embedding input (with possibility of separate PCAs)
-     } else {
-
-       V1 <- colnames(rsample::analysis(object)[1])
-
-       xy_recipe <- rsample::analysis(object) %>%
-         recipes::recipe(y ~ .) %>%
-         # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
-         recipes::update_role(id_nr, new_role = "id variable") %>%
-         recipes::update_role(-id_nr, new_role = "predictor") %>%
-         recipes::update_role(y, new_role = "outcome") %>%
-         recipes::step_naomit(dplyr::all_of(V1), skip = FALSE) %>%
-         recipes::step_center(recipes::all_predictors()) %>%
-         recipes::step_scale(recipes::all_predictors())
-
-       # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
-       if (!is.na(preprocess_PCA)) {
-
-         if (preprocess_PCA >= 1) {
-           for (i in variable_name_index_pca) {
-             xy_recipe <-
-               xy_recipe %>%
-               # !! slices the current name into the `matches()` function.
-               # We use a custom prefix so there are no name collisions for the
-               # results of each PCA step.
-               recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste("PCA_", i, "_"))
-           }
-         } else if (preprocess_PCA < 1) {
-           for (i in variable_name_index_pca) {
-             xy_recipe <-
-               xy_recipe %>%
-               #recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
-               recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA_", i, "_"))
-           }
-         }
-       }
-       xy_recipe <- recipes::prep(xy_recipe)
-     }
+    }
+    xy_recipe <- recipes::prep(xy_recipe)
+  }
 
 
   # To load the prepared training data into a variable juice() is used.
@@ -198,13 +193,13 @@ fit_model_accuracy_rf <- function(object,
       parsnip::rand_forest(mode = mode_rf, trees = trees, mtry = mtry, min_n = min_n) %>%
       # parsnip::set_engine("ranger")
       parsnip::set_engine("randomForest") %>%
-      parsnip::fit(y ~ ., data = xy_training) # analysis(object)
+      parsnip::fit(y ~ ., data = xy_training)
   } else if (is.character(extremely_randomised_splitrule)) {
     mod <-
       parsnip::rand_forest(mode = mode_rf) %>%
-      parsnip::set_engine("ranger", splitrule = extremely_randomised_splitrule) %>% # extremely_randomised_splitrule = "extratrees" = "gini" "extratrees" "hellinger"
+      parsnip::set_engine("ranger", splitrule = extremely_randomised_splitrule) %>%
       # parsnip::set_mode("classification") %>%
-      parsnip::fit(y ~ ., data = xy_training) # ADDED line; and: install.packages("ranger")
+      parsnip::fit(y ~ ., data = xy_training)
   }
 
   # Prepare the test data according to the recipe
@@ -212,7 +207,7 @@ fit_model_accuracy_rf <- function(object,
     recipes::bake(rsample::assessment(object))
   # look at xy_testing: glimpse(xy_testing)
 
-  # Apply model on new data help(predict)
+  # Apply model on new data
   holdout_pred_class <-
     stats::predict(mod, xy_testing %>% dplyr::select(-y), type = c("class")) %>%
     dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
@@ -226,7 +221,7 @@ fit_model_accuracy_rf <- function(object,
 
   eval_measure_val <- select_eval_measure_val(eval_measure = eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred_class, class = class)
 
-  # Sort output of RMSE, predictions and truth (observed y) help(sens)
+  # Sort output of RMSE, predictions and truth (observed y)
   output <- list(
     list(eval_measure_val),
     list(holdout_pred$.pred_class),
@@ -248,10 +243,6 @@ fit_model_accuracy_rf <- function(object,
   output
 }
 
-# object: an rsplit object (from results_nested_resampling tibble)
-# object = results_nested_resampling$splits[[5]]; mtry = 1  min_n = 1
-# testing
-# fit_model_accuracy_rf(object = results_nested_resampling$splits[[2]], mtry = 1, min_n = 1, eval_measure="roc_auc")
 
 # In some situations, we want to parameterize the function over the tuning parameter:
 #' Function to fit a model and compute RMSE.
@@ -288,7 +279,6 @@ fit_model_accuracy_wrapper_rf <- function(mtry,
   )
 }
 
-# fit_model_accuracy_wrapper_rf(object = results_nested_resampling$splits[[1]], mtry=1, min_n=1, trees=10, preprocess_PCA=0.95, eval_measure = "roc_auc")
 
 #' For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
 #'
@@ -365,12 +355,8 @@ tune_over_cost_rf <- function(object,
 
   grid_inner_accuracy
 }
-# testing help(yardstick)
-# tune_over_cost_rf(object=results_nested_resampling$inner_resamples[[1]]$splits[[1]])
 
-# object = results_nested_resampling$inner_resamples[[1]]
-# Since this will be called across the set of OUTER cross-validation splits, another wrapper is required:
-# object: an `rsplit` object (from results$inner_resamples)
+
 #' Since this will be called across the set of OUTER cross-validation splits, another wrapper is required:
 #'
 #' @param object An rsplit object from the INNER samples
@@ -405,53 +391,6 @@ summarize_tune_results_rf <- function(object,
     extremely_randomised_splitrule = extremely_randomised_splitrule
   )
 }
-
-
-
-
-
-
-
-#text1 <- tibble(Dim1=c(1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 1, 3, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3),
-#                Dim2=c(2, 1, 2, 2, 2, 2, 2, 3, 2, 2, 1, 2, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3),
-#                Dim3=c(4, 1, 1, 2, 2, 2, 2, 3, 2, 2, 1, 2, 1, 1, 3, 1, 2, NA, 1, 3, 3, 1, 2, 3))
-#text2 <- tibble(Dim1=c(3, 2, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim2=c(1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim3=c(3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
-#x <- list(text1, text2)
-#names(x) <- c("text1", "text2")
-#x
-#
-#y <- as_tibble_col(as_factor(c(1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1)))
-#help("textTrainRegression")
-#train_text_StudiesAll_diagnose_dep <- textTrainRandomForest(x = embedings_test[1],
-#                                                            y= text_diagnose,
-#                                                            #model = "logistic",
-#                                                            preprocess_PCA = NA)
-#
-
-
-
-#outside_folds_v = 2
-#outside_strata_y = "y"
-#inside_folds_prop = 3/4
-#inside_strata_y = "y"
-#mode_rf = "classification"
-#preprocess_PCA = NA
-#extremely_randomised_splitrule = NULL
-#mtry = c(1, 10, 20, 40)
-#min_n = c(1, 10, 20, 40)
-#trees = c(1000)
-#eval_measure = "bal_accuracy"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
-
-
-
-
-
 
 
 #' Train word embeddings to a categorical variable using random forrest.
@@ -513,7 +452,7 @@ textTrainRandomForest <- function(x,
                                   y,
                                   outside_folds_v = 10,
                                   outside_strata_y = "y",
-                                  inside_folds_prop = 3/4,
+                                  inside_folds_prop = 3 / 4,
                                   inside_strata_y = "y",
                                   mode_rf = "classification",
                                   preprocess_PCA = NA,
@@ -542,8 +481,8 @@ textTrainRandomForest <- function(x,
     # In case there are several embeddings in list form get the x_names and embedding description for model description
   } else if (!tibble::is_tibble(x) & length(x) > 1) {
     x_name <- names(x)
-    x_name <- paste(x_name, sep=" ", collapse = " & ")
-    x_name <- paste("input:", x_name, sep=" ", collapse = " ")
+    x_name <- paste(x_name, sep = " ", collapse = " & ")
+    x_name <- paste("input:", x_name, sep = " ", collapse = " ")
 
     embedding_description <- comment(x[[1]])
     # In case it is just one word embedding as tibble
@@ -565,7 +504,7 @@ textTrainRandomForest <- function(x,
   ############ Arranging word embeddings to be concatenated from different texts ############
   ##################################################
 
-  if(!tibble::is_tibble(x) & length(x)>1){
+  if (!tibble::is_tibble(x) & length(x) > 1) {
 
     # Select all variables that starts with Dim in each dataframe of the list.
     xlist <- lapply(x, function(X) {
@@ -586,9 +525,6 @@ textTrainRandomForest <- function(x,
 
     # Make one df rather then list.
     x1 <- dplyr::bind_cols(xlist)
-
-    # Get the name of the first variable; which is used to exclude NA (i.e., word embedding have NA in all columns)
-    #V1 <- colnames(x)[1]
 
   }
 
@@ -619,26 +555,25 @@ textTrainRandomForest <- function(x,
       strata = !!inside_strata_y,
       breaks = 1
     )
-  )
-  )
+  ))
 
   results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
 
   # Deciding whether to use multicorese depending on system and settings.
-  if (multi_cores == "multi_cores_sys_default"){
-    if (.Platform$OS.type == "unix"){
+  if (multi_cores == "multi_cores_sys_default") {
+    if (.Platform$OS.type == "unix") {
       multi_cores_use <- TRUE
-    } else if (.Platform$OS.type == "windows"){
+    } else if (.Platform$OS.type == "windows") {
       multi_cores_use <- FALSE
     }
   } else if (multi_cores == TRUE) {
     multi_cores_use <- TRUE
-  } else if (multi_cores == FALSE){
+  } else if (multi_cores == FALSE) {
     multi_cores_use <- FALSE
   }
 
 
-  # Tuning inner resamples library(magrittr) warnings()
+  # Tuning inner resamples
   if (multi_cores_use == FALSE) {
     tuning_results <- purrr::map(
       .x = results_nested_resampling$inner_resamples,
@@ -649,12 +584,11 @@ textTrainRandomForest <- function(x,
       trees = trees,
       preprocess_PCA = preprocess_PCA,
       variable_name_index_pca = variable_name_index_pca,
-      eval_measure = eval_measure, # eval_measure = "bal_accuracy"; eval_measure = "roc_auc"
+      eval_measure = eval_measure,
       extremely_randomised_splitrule = extremely_randomised_splitrule
     )
-  } else if (multi_cores_use == TRUE){
+  } else if (multi_cores_use == TRUE) {
     # The multisession plan uses the local cores to process the inner resampling loop.
-    # library(future)
     future::plan(future::multisession)
     # The object tuning_results is a list of data frames for each of the OUTER resamples.
     tuning_results <- furrr::future_map(
@@ -678,8 +612,7 @@ textTrainRandomForest <- function(x,
   # for each of the outer resampling iterations:
   hyper_parameter_vals <-
     tuning_results %>%
-    purrr::map_df(bestParameters) # %>%
-  # dplyr::select(c(mtry, min_n, trees, preprocess_PCA))
+    purrr::map_df(bestParameters)
 
   # Bind best results
   results_split_parameter <-
@@ -687,7 +620,6 @@ textTrainRandomForest <- function(x,
 
   # Compute the outer resampling results for each of the
   # splits using the corresponding tuning parameter value from results_split_parameter.
-  # fit_model_rmse(results_split_parameter$splits[[1]])
   results_outer <- purrr::pmap(
     list(
       object = results_nested_resampling$splits,
@@ -715,36 +647,34 @@ textTrainRandomForest <- function(x,
   ##### Construct final model to be saved and applied on other data  ########
   ############################################################################
 
-  xy_short <- xy #%>% dplyr::select(-id_nr)
-
+  xy_short <- xy
 
   ######### One word embedding as input
-  if(colnames(xy_short[1]) == "Dim1"){
-  final_recipe <- # xy %>%
-    recipes::recipe(y ~ ., xy_short[0, ]) %>%
-    recipes::update_role(id_nr, new_role = "id variable") %>%
-    recipes::update_role(-id_nr, new_role = "predictor") %>%
-    recipes::update_role(y, new_role = "outcome") %>%
-    recipes::step_naomit(Dim1, skip = FALSE) %>%
-    recipes::step_center(recipes::all_predictors()) %>%
-    recipes::step_scale(recipes::all_predictors()) %>%
-    #recipes::step_BoxCox(recipes::all_predictors()) %>%
-    {
-      if (!is.na(preprocess_PCA[1])) {
-        if (preprocess_PCA[1] >= 1) {
-          recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
-        } else if (preprocess_PCA[1] < 1) {
-          recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+  if (colnames(xy_short[1]) == "Dim1") {
+    final_recipe <- # xy %>%
+      recipes::recipe(y ~ ., xy_short[0, ]) %>%
+      recipes::update_role(id_nr, new_role = "id variable") %>%
+      recipes::update_role(-id_nr, new_role = "predictor") %>%
+      recipes::update_role(y, new_role = "outcome") %>%
+      recipes::step_naomit(Dim1, skip = FALSE) %>%
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors()) %>%
+      # recipes::step_BoxCox(recipes::all_predictors()) %>%
+      {
+        if (!is.na(preprocess_PCA[1])) {
+          if (preprocess_PCA[1] >= 1) {
+            recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
+          } else if (preprocess_PCA[1] < 1) {
+            recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+          } else {
+            .
+          }
         } else {
           .
         }
-      } else {
-        .
       }
-    }
-  ######### More than one word embeddings as input help(step_naomit)
+    ######### More than one word embeddings as input
   } else {
-
     V1 <- colnames(xy_short[1])
 
     final_recipe <- recipes::recipe(y ~ ., xy_short[0, ]) %>%
@@ -757,7 +687,6 @@ textTrainRandomForest <- function(x,
 
     # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
     if (!is.na(preprocess_PCA)) {
-
       if (preprocess_PCA >= 1) {
         for (i in variable_name_index_pca) {
           final_recipe <-
@@ -772,7 +701,6 @@ textTrainRandomForest <- function(x,
         for (i in variable_name_index_pca) {
           final_recipe <-
             final_recipe %>%
-            #recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
             recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA_", i, "_"))
         }
       }
@@ -829,26 +757,27 @@ textTrainRandomForest <- function(x,
   }
 
 
-  outside_folds_v_description  <-  paste("outside_folds_v = ", deparse(outside_folds_v))
-  outside_strata_y_description  <-  paste("outside_strata_y = ", deparse(outside_strata_y))
-  inside_folds_prop_description  <-  paste("inside_folds_prop = ", deparse(inside_folds_prop))
-  inside_strata_y_description  <-  paste("inside_strata_y = ", deparse(inside_strata_y))
+  outside_folds_v_description <- paste("outside_folds_v = ", deparse(outside_folds_v))
+  outside_strata_y_description <- paste("outside_strata_y = ", deparse(outside_strata_y))
+  inside_folds_prop_description <- paste("inside_folds_prop = ", deparse(inside_folds_prop))
+  inside_strata_y_description <- paste("inside_strata_y = ", deparse(inside_strata_y))
 
   preprocess_PCA_setting <- paste("preprocess_PCA_setting = ", deparse(preprocess_PCA))
 
-  mtry_setting  <-  paste("mtry_setting = ", deparse(mtry))
-  min_n_setting <-  paste("min_n_setting = ", deparse(min_n))
-  trees_setting <-  paste("trees_setting = ", deparse(trees))
+  mtry_setting <- paste("mtry_setting = ", deparse(mtry))
+  min_n_setting <- paste("min_n_setting = ", deparse(min_n))
+  trees_setting <- paste("trees_setting = ", deparse(trees))
 
   # Getting time and date
   T2_textTrainRandomForest <- Sys.time()
-  Time_textTrainRandomForest <- T2_textTrainRandomForest-T1_textTrainRandomForest
-  Time_textTrainRandomForest <- sprintf('Duration to train text: %f %s', Time_textTrainRandomForest, units(Time_textTrainRandomForest))
+  Time_textTrainRandomForest <- T2_textTrainRandomForest - T1_textTrainRandomForest
+  Time_textTrainRandomForest <- sprintf("Duration to train text: %f %s", Time_textTrainRandomForest, units(Time_textTrainRandomForest))
   Date_textTrainRandomForest <- Sys.time()
   time_date <- paste(Time_textTrainRandomForest,
-                     "; Date created: ", Date_textTrainRandomForest,
-                     sep = "",
-                     collapse = " ")
+    "; Date created: ", Date_textTrainRandomForest,
+    sep = "",
+    collapse = " "
+  )
 
 
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
@@ -883,20 +812,52 @@ textTrainRandomForest <- function(x,
   ##########################################
 
   if (save_output == "all") {
-    final_results <- list(results_collected$roc_curve_data, results_collected$predy_y, preprocessing_recipe_save, final_predictive_model, results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
-    names(final_results) <- c("roc_curve_data", "truth_predictions", "final_recipe", "final_model", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
+    final_results <- list(results_collected$roc_curve_data,
+                          results_collected$predy_y,
+                          preprocessing_recipe_save,
+                          final_predictive_model,
+                          results_collected$roc_curve_plot,
+                          model_description_detail,
+                          results_collected$fisher,
+                          results_collected$chisq,
+                          results_collected$results_collected)
+    names(final_results) <- c("roc_curve_data",
+                              "truth_predictions",
+                              "final_recipe",
+                              "final_model",
+                              "roc_curve_plot",
+                              "model_description",
+                              "fisher_test",
+                              "chisq",
+                              "results")
   } else if (save_output == "only_results_predictions") {
-    final_results <- list(results_collected$roc_curve_data, results_collected$predy_y, results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
-    names(final_results) <- c("roc_curve_data", "truth_predictions", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
+    final_results <- list(results_collected$roc_curve_data,
+                          results_collected$predy_y,
+                          results_collected$roc_curve_plot,
+                          model_description_detail,
+                          results_collected$fisher,
+                          results_collected$chisq,
+                          results_collected$results_collected)
+    names(final_results) <- c("roc_curve_data",
+                              "truth_predictions",
+                              "roc_curve_plot",
+                              "model_description",
+                              "fisher_test",
+                              "chisq",
+                              "results")
   } else if (save_output == "only_results") {
-    final_results <- list(results_collected$roc_curve_data, results_collected$roc_curve_plot, model_description_detail, results_collected$fisher, results_collected$chisq, results_collected$results_collected)
-    names(final_results) <- c("roc_curve_data", "roc_curve_plot", "model_description", "fisher_test", "chisq", "results")
+    final_results <- list(results_collected$roc_curve_data,
+                          results_collected$roc_curve_plot,
+                          model_description_detail,
+                          results_collected$fisher,
+                          results_collected$chisq,
+                          results_collected$results_collected)
+    names(final_results) <- c("roc_curve_data",
+                              "roc_curve_plot",
+                              "model_description",
+                              "fisher_test",
+                              "chisq",
+                              "results")
   }
-
   final_results
 }
-
-
-
-
-

@@ -5,11 +5,8 @@
 #' @return all character variables in UTF-8 format.
 #' @noRd
 get_encoding_change <- function(x) {
-  # code_x_characters <- base::Encoding(x)
-  # utf8_x_characters <- base::iconv(x, base::deparse(code_x_characters), "UTF-8")
   Encoding(x) <- Encoding(enc2utf8(x))
   x
-  # Have not tried: utf8_x_characters <- enc2utf8(x)
 }
 
 
@@ -24,8 +21,8 @@ select_character_v_utf8 <- function(x) {
   # If a vector is submitted, make it a tibble column.
   if (is.vector(x) == TRUE & is.list(x) == FALSE) {
     # Select variable name to have as column name in the end
-    colname_x <- deparse(substitute(x)) # Language_based_assessment_data_8$harmonywords
-    # Remove everything before a $
+    colname_x <- deparse(substitute(x))
+    # Remove everything before a "$"
     colname_x <- gsub("^.*\\$", "", colname_x) # gsub(".*_", "", colname_x)
 
     x <- tibble::as_tibble_col(x)
@@ -34,7 +31,6 @@ select_character_v_utf8 <- function(x) {
   # Select all character variables
   x_characters <- dplyr::select_if(x, is.character)
   # This makes sure that all variables are UTF-8 coded
-  # x_characters <- tibble::as_tibble(purrr::map(x_characters, stringi::stri_encode, "", "UTF-8"))
   x_characters <- tibble::as_tibble(purrr::map(x_characters, get_encoding_change))
 }
 
@@ -256,7 +252,6 @@ textEmbedLayersOutput <- function(x,
         layers_string, ".",
         collapse = "; "
       ))
-      # comment(sorted_layers_ALL_variables$context)
     }
   }
 
@@ -367,14 +362,6 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
       stop("You are trying to aggregate layers that were not extracted. For example, in textEmbed the layers option needs to include all the layers used in context_layers.")
     }
 
-    # layers = 0:3
-    # existing_layers = 0:3
-    # setdiff(layers, existing_layers)
-    # if(is.numeric(setdiff(layers, unique(x[[1]]$layer_number))) == FALSE) {
-    #  stop("You are trying to aggregate layers that were not extracted. For example, in textEmbed the layer option need to include all the layers used in context_layers.")
-    # }
-
-
     selected_layers <- lapply(x, function(x) x[x$layer_number %in% layers, ])
 
     # Go over the lists and select the tokens (e.g., CLS) (tokens_select = NULL tokens_select = "[CLS]")
@@ -389,10 +376,6 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 
     ## Aggregate across layers; help(lapply); i_token_id=1
     selected_layers_aggregated <- lapply(selected_layers, layer_aggregation_helper, aggregation = aggregate_layers)
-
-    ## Aggregate across words/tokens
-    # Select only dimensions (i.e., remove tokens and layer_number)
-    # selected_layers <- lapply(selected_layers, function(x) dplyr::select(x, dplyr::starts_with("Dim")))
 
     # Aggregate (Remove all tokens and layers; but create a cell with the information abt layers, aggregation)
     selected_layers_tokens_aggregated <- lapply(selected_layers_aggregated, textEmbeddingAggregation, aggregation = aggregate_tokens)
@@ -480,7 +463,6 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 textEmbed <- function(x,
                       model = "bert-base-uncased",
                       layers = 11:12,
-                      # pretrained_weights = NULL,
                       contexts = TRUE,
                       context_layers = layers,
                       context_aggregation_layers = "concatenate",
@@ -493,7 +475,6 @@ textEmbed <- function(x,
                       decontext_aggregation_tokens = "mean",
                       decontext_tokens_select = NULL,
                       decontext_tokens_deselect = NULL) {
-
   T1_textEmbed <- Sys.time()
 
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
@@ -515,7 +496,6 @@ textEmbed <- function(x,
     aggregate_tokens = context_aggregation_tokens,
     tokens_deselect = NULL
   )
-  # comment(contextualised_embeddings[[1]])
 
   # Aggregate DEcontext layers (in case they should be added differently from context)
   decontextualised_embeddings <- textEmbedLayerAggreation(
@@ -536,22 +516,17 @@ textEmbed <- function(x,
   }
 
   T2_textEmbed <- Sys.time()
-  Time_textEmbed <- T2_textEmbed-T1_textEmbed
-  Time_textEmbed <- sprintf('Duration to embed text: %f %s', Time_textEmbed, units(Time_textEmbed))
+  Time_textEmbed <- T2_textEmbed - T1_textEmbed
+  Time_textEmbed <- sprintf("Duration to embed text: %f %s", Time_textEmbed, units(Time_textEmbed))
   Date_textEmbed <- Sys.time()
   # Adding embeddings to one list
   all_embeddings <- contextualised_embeddings
   all_embeddings$singlewords_we <- decontextualised_embeddings_words
 
   comment(all_embeddings) <- paste(Time_textEmbed,
-                                   "; Date created: ", Date_textEmbed,
-                                   sep = "",
-                                   collapse = " ")
+    "; Date created: ", Date_textEmbed,
+    sep = "",
+    collapse = " "
+  )
   all_embeddings
 }
-
-
-
-
-
-

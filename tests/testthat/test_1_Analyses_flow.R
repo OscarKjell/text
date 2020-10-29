@@ -9,7 +9,6 @@ context("Big analyses flow")
 
 
 test_that("Testing textEmbed as well as train", {
-
   skip_on_cran()
 
   harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1],
@@ -23,13 +22,13 @@ test_that("Testing textEmbed as well as train", {
     x = harmony_word_embeddings$harmonywords,
     y = Language_based_assessment_data_8$hilstotal,
     outside_folds_v = 2,
-    inside_folds_prop = 3/4,
+    inside_folds_prop = 3 / 4,
     outside_strata_y = NULL,
     inside_strata_y = NULL,
-    #preprocess_PCA = c(0.20),
+    # preprocess_PCA = c(0.20),
     preprocess_PCA = NA,
     penalty = 1e-16,
-    multi_cores = FALSE
+    multi_cores = TRUE
   )
 
   expect_that(text_train_results$results$estimate[1], is_a("numeric"))

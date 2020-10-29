@@ -125,7 +125,7 @@ textProjection <- function(words,
       recipes::step_scale(recipes::all_numeric()) %>%
       recipes::step_naomit(Dim1, skip = TRUE)
 
-    if (pca < 1) { # pca=0.9
+    if (pca < 1) {
       pca_trans <- recipes::step_pca(pca_trans, recipes::all_numeric(), threshold = pca)
     } else if (pca >= 1) {
       pca_trans <- recipes::step_pca(pca_trans, recipes::all_numeric(), num_comp = pca)
@@ -159,8 +159,6 @@ textProjection <- function(words,
     x2 <- tibble::as_tibble(cbind(x1, wordembeddings))
 
     # Splitting datasets up to low versus high according to median split
-    # group1 <- x2[x2[2] < stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
-    # group2 <- x2[x2[2] > stats::median(purrr::as_vector(x2$value), na.rm = TRUE), ]
     group1 <- x2 %>%
       dplyr::filter(value < mean(purrr::as_vector(value), na.rm = TRUE))
 
@@ -196,15 +194,10 @@ textProjection <- function(words,
     words_group2_single_wordembedding <- lapply(words_group2b_freq$words, applysemrep, single_wordembeddings)
     words_group2_single_wordembedding_b <- dplyr::bind_rows(words_group2_single_wordembedding)
 
-    # All: Group 1 & 2
-    # words_group1_2_freq <- unique_freq_words(x2$words)
-    # words_group1_2_freq_b <- words_group1_2_freq[words_group1_2_freq$n >= min_freq_words_test, ]
-    # words_group1_2_freq_b <- dplyr::rename(words_group1_2_freq_b, n_all = n)
-    # words_group1_2_single_wordembedding <- lapply(words_group1_2_freq_b$words, applysemrep, single_wordembeddings)
-
     ############
     ######         1 Create COMPARISON/Projection embedding: all Group 1 & Group 2 word embeddings.
     ############
+
     ### Sum all word embeddings in one column
 
     # split="median" split = "quartile"
@@ -298,7 +291,6 @@ textProjection <- function(words,
     forloops <- ceiling(Npermutations / n_per_split)
     dot_null_distribution <- list()
 
-    # i=1
     for (i in 1:forloops) {
       ### Create new Projected embedding
       # Randomly split word embeddings into two groups: words_group1_2_agg_single_wordembedding_e1
@@ -545,13 +537,8 @@ textProjectionPlot <- function(word_data,
   set.seed(seed)
 
   # Sorting out axes
-  # if (x_axes == TRUE) {
   x_axes_1 <- "dot.x"
   p_values_x <- "p_values_dot.x"
-  # } else {
-  #  x_axes_1 <- NULL
-  #  p_values_x <- NULL
-  # }
 
   if (y_axes == TRUE) {
     y_axes_1 <- "dot.y"
@@ -685,12 +672,12 @@ textProjectionPlot <- function(word_data,
     dplyr::slice(0:plot_n_word_frequency)
 
   # Select the middle range, order according to frequency and then select the plot_n_words_middle = 5
-  mean_m_sd_x <- mean(word_data$dot.x, na.rm = TRUE) - (sd(word_data$dot.x, na.rm = TRUE) / 10) # TODO Possibility to set this one? It may be that no words comes within this
+  mean_m_sd_x <- mean(word_data$dot.x, na.rm = TRUE) - (sd(word_data$dot.x, na.rm = TRUE) / 10)
   mean_p_sd_x <- mean(word_data$dot.x, na.rm = TRUE) + (sd(word_data$dot.x, na.rm = TRUE) / 10)
   word_data_middle_x <- word_data %>%
     dplyr::filter(dplyr::between(word_data$dot.x, mean_m_sd_x, mean_p_sd_x)) %>%
     dplyr::arrange(-n) %>%
-    dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. Perhaps point to have exact middle?
+    dplyr::slice(0:plot_n_words_middle)
 
   word_data_x <- word_data %>%
     dplyr::left_join(data_p_sq_all %>%
@@ -711,7 +698,6 @@ textProjectionPlot <- function(word_data,
       check_p_square, check_p_x_neg, check_p_x_pos, check_extreme_max_x, check_extreme_min_x,
       check_extreme_frequency_x, check_middle_x
     ), na.rm = T))
-  # table(word_data_x$extremes_all_x)
 
   if (is.null(y_axes_1) == FALSE) {
     # Computing adjusted p-values
@@ -740,7 +726,7 @@ textProjectionPlot <- function(word_data,
       dplyr::slice(0:plot_n_word_frequency)
 
     # Select the middle range, order according to frequency and then select the plot_n_words_middle =5
-    mean_m_sd_y <- mean(word_data$dot.y, na.rm = TRUE) - (sd(word_data$dot.y, na.rm = TRUE) / 10) # TODO Possibility to set this one? It may be that no words comes within this range
+    mean_m_sd_y <- mean(word_data$dot.y, na.rm = TRUE) - (sd(word_data$dot.y, na.rm = TRUE) / 10)
     mean_p_sd_y <- mean(word_data$dot.y, na.rm = TRUE) + (sd(word_data$dot.y, na.rm = TRUE) / 10)
     word_data_middle_y <- word_data %>%
       dplyr::filter(dplyr::between(word_data$dot.y, mean_m_sd_y, mean_p_sd_y)) %>%
@@ -781,9 +767,8 @@ textProjectionPlot <- function(word_data,
         dot.x > 0 & adjusted_p_values.x < p_alpha & dot.y < 0 & adjusted_p_values.y < p_alpha ~ bivariate_color_codes[9]
       ))
   }
-  # table(word_data_x$extremes_all_x)
-  # View(word_data_x[word_data_x$extremes_all_x==1,])
-  # View(word_data_all[word_data_all$extremes_all_x==1,])
+
+
   if (is.null(y_axes_1) == TRUE) {
     word_data_all <- word_data_x %>%
       dplyr::mutate(colour_categories = dplyr::case_when(
@@ -815,7 +800,6 @@ textProjectionPlot <- function(word_data,
     word_data_all_yadjusted <- word_data_all[word_data_all$extremes_all_x == 1, ]
   }
 
-  # word_data_all_yadjusted$colour_categories
   # Plot
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
@@ -880,9 +864,9 @@ textProjectionPlot <- function(word_data,
 
   # Creating legend
   bivariate_color_data <- tibble::tibble(
-    "1 - 3" = "#0078FF", "2 - 3" = "blue", "3 - 3" = "#49FF00",
-    "1 - 2" = "#8700FF", "2 - 2" = "#B8B8B8", "3 - 2" = "#34AC04",
-    "1 - 1" = "#FF1300", "2 - 1" = "#FF8300", "3 - 1" = "#04AC93"
+    "1 - 3" = "#XXXXXX", "2 - 3" = "#XXXXXX", "3 - 3" = "#XXXXXX",
+    "1 - 2" = "#XXXXXX", "2 - 2" = "#XXXXXX", "3 - 2" = "#XXXXXX",
+    "1 - 1" = "#XXXXXX", "2 - 1" = "#XXXXXX", "3 - 1" = "#XXXXXX"
   )
   bivariate_color_data <- rbind(bivariate_color_data, bivariate_color_codes)
   bivariate_color_data <- bivariate_color_data[-1, ]
@@ -996,14 +980,12 @@ textProjectionPlot <- function(word_data,
 ###### End textProjectionPlot(word_data)
 
 
-####################################
+
 ####################################
 ##################
 ##################   Semantic Centrality Plot SC
 ##################
 ####################################
-####################################
-
 
 #' Compute cosine semantic similarity score between single words' word embeddings
 #' and the aggregated word embedding of all words.
@@ -1170,7 +1152,6 @@ textCentralityPlot <- function(word_data,
                                legend_title_size = 7,
                                legend_number_size = 2,
                                seed = 1007) {
-
   textCentralityPlot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",
     comment(word_data),
@@ -1218,12 +1199,12 @@ textCentralityPlot <- function(word_data,
 
 
   # Select the middle range, order according to frequency and then select the plot_n_words_middle = 5
-  mean_m_sd_x <- mean(word_data$central_cosine, na.rm = TRUE) - (sd(word_data$central_cosine, na.rm = TRUE) / 10) # TODO Possibility to set this one? It may be that no words comes within this
+  mean_m_sd_x <- mean(word_data$central_cosine, na.rm = TRUE) - (sd(word_data$central_cosine, na.rm = TRUE) / 10)
   mean_p_sd_x <- mean(word_data$central_cosine, na.rm = TRUE) + (sd(word_data$central_cosine, na.rm = TRUE) / 10)
   word_data_middle_x <- word_data %>%
     dplyr::filter(dplyr::between(word_data$central_cosine, mean_m_sd_x, mean_p_sd_x)) %>%
     dplyr::arrange(-n) %>%
-    dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. perhaps point to have exact middle?
+    dplyr::slice(0:plot_n_words_middle)
 
   word_data_all <- word_data %>%
     dplyr::left_join(word_data_extrem_max_x %>%
@@ -1264,7 +1245,7 @@ textCentralityPlot <- function(word_data,
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
     ggplot2::ggplot(data = word_data_all, ggplot2::aes(!!rlang::sym(x_axes), !!rlang::sym(y_axes), label = words)) +
     ggplot2::geom_point(
-      data = word_data_all, # [word_data_all$extremes_all_x==0, ]
+      data = word_data_all,
       size = points_without_words_size,
       alpha = points_without_words_alpha,
       ggplot2::aes(color = "#EAEAEA")
@@ -1331,11 +1312,9 @@ textCentralityPlot <- function(word_data,
 
 
 ####################################
-####################################
 ##################
 ##################   textPCA and textPCAPlot
 ##################
-####################################
 ####################################
 
 
@@ -1360,7 +1339,6 @@ textCentralityPlot <- function(word_data,
 textPCA <- function(words,
                     single_wordembeddings = single_wordembeddings_df,
                     seed = 1010) {
-
   textPCA_comment <- paste(
     "words =", substitute(words),
     "single_wordembeddings =", comment(single_wordembeddings)
@@ -1488,8 +1466,6 @@ textPCAPlot <- function(word_data,
                         legend_title_size = 7,
                         legend_number_size = 2,
                         seed = 1002) {
-
-
   textPCAPlot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",
     comment(word_data),
@@ -1554,22 +1530,22 @@ textPCAPlot <- function(word_data,
 
   # Select the middle range, order according to frequency and then select the plot_n_words_middle = 5
   # PC1
-  mean_m_sd_PC1 <- mean(word_data$Dim_PC1, na.rm = TRUE) - (sd(word_data$Dim_PC1, na.rm = TRUE) / 2) # TODO Possibility to set this one? It may be that no words comes within this
+  mean_m_sd_PC1 <- mean(word_data$Dim_PC1, na.rm = TRUE) - (sd(word_data$Dim_PC1, na.rm = TRUE) / 2)
   mean_p_sd_PC1 <- mean(word_data$Dim_PC1, na.rm = TRUE) + (sd(word_data$Dim_PC1, na.rm = TRUE) / 2)
 
   word_data_middle_PC1 <- word_data %>%
     dplyr::filter(dplyr::between(word_data$Dim_PC1, mean_m_sd_PC1, mean_p_sd_PC1)) %>%
     dplyr::arrange(-n) %>%
-    dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. perhaps point to have exact middle?
+    dplyr::slice(0:plot_n_words_middle)
 
   # PC2
-  mean_m_sd_PC2 <- mean(word_data$Dim_PC2, na.rm = TRUE) - (sd(word_data$Dim_PC2, na.rm = TRUE) / 2) # TODO Possibility to set this one? It may be that no words comes within this
+  mean_m_sd_PC2 <- mean(word_data$Dim_PC2, na.rm = TRUE) - (sd(word_data$Dim_PC2, na.rm = TRUE) / 2)
   mean_p_sd_PC2 <- mean(word_data$Dim_PC2, na.rm = TRUE) + (sd(word_data$Dim_PC2, na.rm = TRUE) / 2)
 
   word_data_middle_PC2 <- word_data %>%
     dplyr::filter(dplyr::between(word_data$Dim_PC2, mean_m_sd_PC2, mean_p_sd_PC2)) %>%
     dplyr::arrange(-n) %>%
-    dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. perhaps point to have exact middle?
+    dplyr::slice(0:plot_n_words_middle)
 
   # Combine selected words
   word_data_all <- word_data %>%
@@ -1687,11 +1663,11 @@ textPCAPlot <- function(word_data,
     )
   plot
 
-  # Creating legend DONT HARD CODE COLOURS!!! TODO
+  # Creating legend
   bivariate_color_data <- tibble::tibble(
-    "1 - 3" = "#0078FF", "2 - 3" = "blue", "3 - 3" = "#49FF00",
-    "1 - 2" = "#8700FF", "2 - 2" = "#B8B8B8", "3 - 2" = "#34AC04",
-    "1 - 1" = "#FF1300", "2 - 1" = "#FF8300", "3 - 1" = "#04AC93"
+    "1 - 3" = "#XXXXXX", "2 - 3" = "#XXXXXX", "3 - 3" = "#XXXXXX",
+    "1 - 2" = "#XXXXXX", "2 - 2" = "#XXXXXX", "3 - 2" = "#XXXXXX",
+    "1 - 1" = "#XXXXXX", "2 - 1" = "#XXXXXX", "3 - 1" = "#XXXXXX"
   )
   bivariate_color_data <- rbind(bivariate_color_data, bivariate_color_codes)
   bivariate_color_data <- bivariate_color_data[-1, ]

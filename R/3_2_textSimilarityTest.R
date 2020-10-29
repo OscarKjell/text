@@ -118,36 +118,39 @@ textSimilarityTest <- function(x,
 
   x_name <- deparse(substitute(x))
   y_name <- deparse(substitute(y))
-    embedding_descriptions_x <- paste(x_name, ":", comment(x), col = "")
-    embedding_descriptions_y <- paste(y_name, ":", comment(y), col = "")
+  embedding_descriptions_x <- paste(x_name, ":", comment(x), col = "")
+  embedding_descriptions_y <- paste(y_name, ":", comment(y), col = "")
 
-    #Time
-    T2_textSimilarityTest <- Sys.time()
-    Time_textSimilarityTest <- T2_textSimilarityTest-T1_textSimilarityTest
-    Time_textSimilarityTest <- sprintf('Duration to run the test: %f %s', Time_textSimilarityTest, units(Time_textSimilarityTest))
-    Date_textSimilarityTest <- Sys.time()
-    time_date <- paste(Time_textSimilarityTest,
-                       "; Date created: ", Date_textSimilarityTest,
-                       sep = "",
-                       collapse = " ")
+  # Time
+  T2_textSimilarityTest <- Sys.time()
+  Time_textSimilarityTest <- T2_textSimilarityTest - T1_textSimilarityTest
+  Time_textSimilarityTest <- sprintf("Duration to run the test: %f %s", Time_textSimilarityTest, units(Time_textSimilarityTest))
+  Date_textSimilarityTest <- Sys.time()
+  time_date <- paste(Time_textSimilarityTest,
+    "; Date created: ", Date_textSimilarityTest,
+    sep = "",
+    collapse = " "
+  )
 
-    test_description <- paste("permutations = ", Npermutations,
-      "method = ", method,
-      "alternative = ", alternative,
-      collapse = " "
-    )
+  test_description <- paste("permutations = ", Npermutations,
+    "method = ", method,
+    "alternative = ", alternative,
+    collapse = " "
+  )
 
-    descriptions <- c(embedding_descriptions_x,
-                      embedding_descriptions_y,
-                      test_description,
-                      time_date)
-    names(descriptions) <- c("embedding_x", "embedding_y", "test_description", "time_date")
+  descriptions <- c(
+    embedding_descriptions_x,
+    embedding_descriptions_y,
+    test_description,
+    time_date
+  )
+  names(descriptions) <- c("embedding_x", "embedding_y", "test_description", "time_date")
 
-    results <- c(
-      random.estimates.4.null,
-      descriptions,
-      results
-    )
+  results <- c(
+    random.estimates.4.null,
+    descriptions,
+    results
+  )
 
   results
 }

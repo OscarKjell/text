@@ -6,7 +6,6 @@ library(testthat)
 context("textPlot Functions")
 
 test_that("textProjection MEAN and PCA produces a tibble with character variable and numeric variable.", {
-
   skip_on_cran()
 
   # Data
@@ -29,7 +28,6 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
 })
 
 test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
-
   skip_on_cran()
 
   # Data
@@ -58,7 +56,6 @@ test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tib
 })
 
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
-
   skip_on_cran()
 
   # Dot Product Projection Plot
@@ -86,7 +83,6 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
 
 
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
-
   skip_on_cran()
 
   # Dot Product Projection Plot
@@ -114,7 +110,6 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
 
 
 test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
-
   skip_on_cran()
 
   # Dot Product Projection Plot
@@ -142,7 +137,6 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
 
 
 test_that("textCentrality produces a tibble with character variable and numeric variable.", {
-
   skip_on_cran()
 
   wordembeddings <- wordembeddings4
@@ -160,7 +154,6 @@ test_that("textCentrality produces a tibble with character variable and numeric 
 })
 
 test_that("textCentralityPlot produces a plot.", {
-
   skip_on_cran()
 
   # Plot
@@ -191,7 +184,6 @@ test_that("textCentralityPlot produces a plot.", {
 
 
 test_that("textCentrality produces a tibble with character variable and numeric variable.", {
-
   skip_on_cran()
 
 
@@ -208,7 +200,6 @@ test_that("textCentrality produces a tibble with character variable and numeric 
 })
 
 test_that("textCentralityPlot produces a plot.", {
-
   skip_on_cran()
 
   # Plot

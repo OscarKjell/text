@@ -28,7 +28,8 @@ Train word embeddings to a numeric (ridge regression) or categorical (random for
 \dontrun{
 wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
-results <- textTrain(wordembeddings$harmonytext,
+results <- textTrain(
+  wordembeddings$harmonytext,
   ratings_data$hilstotal
 )
 }

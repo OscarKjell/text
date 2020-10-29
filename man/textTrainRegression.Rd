@@ -76,7 +76,8 @@ Train word embeddings to a numeric variable.
 wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
 
-results <- textTrainRegression(wordembeddings$harmonytext,
+results <- textTrainRegression(
+  wordembeddings$harmonytext,
   ratings_data$hilstotal
 )
 }

@@ -19,7 +19,6 @@ skip_if_no_torch <- function() {
 }
 
 test_that("textEmbedLayerAggreation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
-
   skip_on_cran()
 
   # skip_on_cran()
@@ -45,7 +44,6 @@ test_that("textEmbedLayerAggreation 'all': layer =  aggregate_tokens = 'mean' pr
 
 
 test_that("textEmbedLayerAggreation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
-
   skip_on_cran()
 
   # skip_on_cran()
@@ -61,7 +59,6 @@ test_that("textEmbedLayerAggreation 1:2 'min' tokens_select = '[CLS]' produces a
 })
 
 test_that("textEmbedLayerAggreation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
-
   skip_on_cran()
 
   # skip_on_cran()
@@ -77,7 +74,6 @@ test_that("textEmbedLayerAggreation 1:2 'max' tokens_deselect = '[CLS]' produces
 
 
 test_that("textEmbedStatic with example space", {
-
   skip_on_cran()
 
   # Create example space
@@ -105,7 +101,6 @@ test_that("textEmbedStatic with example space", {
 # Potentially below works on GitHUB but not on Mac?
 
 test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a list", {
-
   skip_on_cran()
 
   # skip_on_cran()

@@ -6,7 +6,6 @@ library(tibble)
 context("Semantic Similiarty Functions and textSimilarityTest")
 
 test_that("textSimilarity produces similarity scores", {
-
   skip_on_cran()
 
   similarity_scores <- textSimilarity(
@@ -17,7 +16,6 @@ test_that("textSimilarity produces similarity scores", {
 })
 
 test_that("textSimilarity produces similarity scores", {
-
   skip_on_cran()
 
   # Example norm
@@ -32,7 +30,6 @@ test_that("textSimilarity produces similarity scores", {
 })
 
 test_that("textSimilarityTest paired results in list with numeric output", {
-
   skip_on_cran()
 
   test_diff_results <- textSimilarityTest(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts,
@@ -44,7 +41,6 @@ test_that("textSimilarityTest paired results in list with numeric output", {
 })
 
 test_that("textSimilarityTest paired results in list with numeric output", {
-
   skip_on_cran()
 
   expect_error(textSimilarityTest(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts[1:39, ],
@@ -53,7 +49,6 @@ test_that("textSimilarityTest paired results in list with numeric output", {
 })
 
 test_that("textSimilarityTest unpaired results in list with numeric output", {
-
   skip_on_cran()
 
   test_diff_results <- textSimilarityTest(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts,

@@ -10,12 +10,11 @@ statisticalMode <- function(x) {
 }
 
 
-# results_nested_resampling$splits[[1]][[1]]
-#  devtools::document()
+
 #' Function to fit a model and compute RMSE.
 #'
 #' @param object An rsplit object (from results_nested_resampling tibble)
-#' object = results_nested_resampling$splits[[1]]
+#' object = results_nested_resampling$splits[[1]] OR results_nested_resampling$splits[[1]][[1]]
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
 #' @param preprocess_PCA threshold for pca; preprocess_PCA = NA
@@ -26,35 +25,34 @@ statisticalMode <- function(x) {
 fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", penalty = 1, mixture = 0, preprocess_PCA = NA, variable_name_index_pca = NA) {
 
   # Recipe for one embedding input
-  if(colnames(rsample::analysis(object)[1]) == "Dim1"){
-  xy_recipe <- rsample::analysis(object) %>%
-    recipes::recipe(y ~ .) %>%
-    # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
-    recipes::update_role(id_nr, new_role = "id variable") %>%
-    recipes::update_role(-id_nr, new_role = "predictor") %>%
-    recipes::update_role(y, new_role = "outcome") %>%
-    recipes::step_naomit(Dim1, skip = TRUE) %>%
-    recipes::step_center(recipes::all_predictors()) %>%
-    recipes::step_scale(recipes::all_predictors()) %>%
-    # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
-    {
-      if (!is.na(preprocess_PCA)) {
-        if (preprocess_PCA >= 1) {
-          recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
-        } else if (preprocess_PCA < 1) {
-          recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+  if (colnames(rsample::analysis(object)[1]) == "Dim1") {
+    xy_recipe <- rsample::analysis(object) %>%
+      recipes::recipe(y ~ .) %>%
+      # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
+      recipes::update_role(id_nr, new_role = "id variable") %>%
+      recipes::update_role(-id_nr, new_role = "predictor") %>%
+      recipes::update_role(y, new_role = "outcome") %>%
+      recipes::step_naomit(Dim1, skip = TRUE) %>%
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors()) %>%
+      # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
+      {
+        if (!is.na(preprocess_PCA)) {
+          if (preprocess_PCA >= 1) {
+            recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
+          } else if (preprocess_PCA < 1) {
+            recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+          } else {
+            .
+          }
         } else {
           .
         }
-      } else {
-        .
-      }
-    } %>%
-    recipes::prep()
+      } %>%
+      recipes::prep()
 
-  # Recipe for multiple word embedding input (with possibility of separate PCAs)
+    # Recipe for multiple word embedding input (with possibility of separate PCAs)
   } else {
-
     V1 <- colnames(rsample::analysis(object)[1])
     xy_recipe <- rsample::analysis(object) %>%
       recipes::recipe(y ~ .) %>%
@@ -68,29 +66,25 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
 
     # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
     if (!is.na(preprocess_PCA)) {
-
       if (preprocess_PCA >= 1) {
         for (i in variable_name_index_pca) {
           xy_recipe <-
             xy_recipe %>%
-             # !! slices the current name into the `matches()` function.
-             # We use a custom prefix so there are no name collisions for the
-             # results of each PCA step.
-             recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste("PCA_", i, "_"))
-    }
+            # !! slices the current name into the `matches()` function.
+            # We use a custom prefix so there are no name collisions for the
+            # results of each PCA step.
+            recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+        }
       } else if (preprocess_PCA < 1) {
-      for (i in variable_name_index_pca) {
-        xy_recipe <-
-          xy_recipe %>%
-          #recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
-          recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+        for (i in variable_name_index_pca) {
+          xy_recipe <-
+            xy_recipe %>%
+            recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+        }
       }
-      }
-      }
-      xy_recipe <- recipes::prep(xy_recipe)
     }
-
-
+    xy_recipe <- recipes::prep(xy_recipe)
+  }
 
 
   # To load the prepared training data into a variable juice() is used.
@@ -99,7 +93,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
 
   # Ridge and/or Lasso
   if (length(xy_training) > 2) {
-    # Create and fit model; penalty=NULL mixture = NULL
+    # Create and fit model
     mod <-
       {
         if (model == "regression") {
@@ -132,7 +126,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     # Apply model on new data; penalty
     holdout_pred <-
       stats::predict(mod, xy_testing %>% dplyr::select(-y)) %>%
-      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr)) # New
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
     # Get RMSE; eval_measure = "rmse"
     eval_result <- select_eval_measure_val(eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred)$.estimate
@@ -142,10 +136,10 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
   } else if (model == "logistic") {
     holdout_pred_class <-
       stats::predict(mod, xy_testing %>% dplyr::select(-y), type = c("class")) %>%
-      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr)) # New
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
     holdout_pred <-
       stats::predict(mod, xy_testing %>% dplyr::select(-y), type = c("prob")) %>%
-      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr)) # New
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
     holdout_pred$.pred_class <- holdout_pred_class$.pred_class
     class <- colnames(holdout_pred[1])
@@ -153,7 +147,6 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     # Get RMSE; eval_measure = "rmse"
     eval_result <- select_eval_measure_val(eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred_class)$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
-    # Sort output of RMSE, predictions and truth (observed y) help(accuracy)
     output <- list(
       list(eval_result),
       list(holdout_pred$.pred_class),
@@ -162,7 +155,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
       list(holdout_pred[2]),
       list(preprocess_PCA),
       list(holdout_pred$id_nr)
-    ) # New
+    )
     names(output) <- c(
       "eval_result",
       "estimate",
@@ -171,9 +164,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
       ".pred_2",
       "preprocess_PCA",
       "id_nr"
-    ) # New
-
-    # output <- list(list(eval_result), list(holdout_pred$.pred_class), list(holdout_pred$y), list(preprocess_PCA))
+    )
   }
   output
 }
@@ -196,13 +187,16 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
                                    model,
                                    eval_measure,
                                    preprocess_PCA = preprocess_PCA,
-                                   variable_name_index_pca = variable_name_index_pca) fit_model_rmse(object,
-                                                                                                     model,
-                                                                                                     eval_measure,
-                                                                                                     penalty,
-                                                                                                     mixture,
-                                                                                                     preprocess_PCA = preprocess_PCA,
-                                                                                                     variable_name_index_pca = variable_name_index_pca)
+                                   variable_name_index_pca = variable_name_index_pca) {
+  fit_model_rmse(object,
+    model,
+    eval_measure,
+    penalty,
+    mixture,
+    preprocess_PCA = preprocess_PCA,
+    variable_name_index_pca = variable_name_index_pca
+  )
+}
 
 #' For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
 #'
@@ -243,7 +237,7 @@ tune_over_cost <- function(object, model, eval_measure, penalty, mixture, prepro
     preprocess_PCA = preprocess_PCA_value
   )
 
-  # Test models with the different hyperparameters for the inner samples help(map2)
+  # Test models with the different hyperparameters for the inner samples
   tune_results <- purrr::pmap(list(
     grid_inner$penalty,
     grid_inner$mixture,
@@ -307,103 +301,6 @@ summarize_tune_results <- function(object,
 
 
 
-#x <- tibble(Dim1=c(3, 2, 2, 3, 2, NA, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim2=c(1, 1, 2, 1, 1, NA, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim3=c(3, 1, 1, 3, 1, NA, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
-#
-#
-#library(tidyverse)
-#library(text)
-#text1 <- tibble(Dim1=c(3, 2, 2, 3, 2, NA, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim2=c(1, 1, 2, 1, 1, NA, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim3=c(3, 1, 1, 3, 1, NA, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
-#
-#text1[18,]
-#text2 <- tibble(Dim1=c(3, NA, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim2=c(1, NA, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3),
-#                Dim3=c(3, NA, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 2, 3, 1, 3, 3, 1, 2, 3))
-#x <- list(text1, text2)
-#names(x) <- c("text1", "text2")
-#x
-#
-## REGRESSION
-#y <- as_tibble_col(c(1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1))
-#colnames(y) <- "y_ok_reg"
-#
-#help("textTrainRegression")
-#train_test <- textTrainRegression(x = x[1],
-#                        y= y,
-#                        #model = "logistic",
-#                        preprocess_PCA = NA)
-#nrow(text1)
-#test_predictions1 <- textPredict_test(train_test, text1)
-#test_predictions1
-#
-#test_predictions2 <- textPredict_test(train_test, text2)
-#test_predictions2
-#nrow(test_predictions2)
-#
-#train_test_list <- textTrain(x = x,
-#                                  y= y,
-#                                  #model = "logistic",
-#                                  preprocess_PCA = NA)
-#train_test_list
-#
-## Multiple
-#train_test_m <- textTrainRegression(x = x,
-#                                  y= y,
-#                                  #model = "logistic",
-#                                  preprocess_PCA = NA)
-#
-#test_predictions3 <- textPredict_test(train_test_m, x)
-#test_predictions3
-#nrow(test_predictions3)
-#
-#### RANDOM FOREST
-#y_rf <- as_tibble_col(as_factor(c(1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1)))
-#colnames(y_rf) <- "y_ok_factor"
-#train_test_rf <- textTrainRandomForest(x = x[1],
-#                           y= y_rf,
-#                           #model = "logistic",
-#                           preprocess_PCA = NA)
-#train_test_rf
-#
-#
-#nrow(text1)
-#test_predictions_rf <- textPredict_test(train_test_rf, text1)
-#test_predictions_rf
-#nrow(test_predictions_rf)
-#
-#nrow(text2)
-#test_predictions_rf <- textPredict_test(train_test_rf, text2)
-#test_predictions_rf
-#nrow(test_predictions_rf)
-#
-#
-#train_test_rf_m <- textTrainRandomForest(x = x,
-#                                         y= y_rf,
-#                                         #model = "logistic",
-#                                         preprocess_PCA = NA)
-#
-#test_predictions_rf_m <- textPredict_test(train_test_rf_m, x)
-#test_predictions_rf_m
-#
-## Predict
-#new_data <- text2
-#new_data <- x
-#
-#model_info <- train_test
-#model_info <- train_test_m
-#
-#model_info <- train_test_rf
-#model_info <- train_test_rf_m
-#is_tibble(new_data)
-
-
-
-
-
-
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
@@ -438,7 +335,8 @@ summarize_tune_results <- function(object,
 #' wordembeddings <- wordembeddings4
 #' ratings_data <- Language_based_assessment_data_8
 #'
-#' results <- textTrainRegression(wordembeddings$harmonytext,
+#' results <- textTrainRegression(
+#'   wordembeddings$harmonytext,
 #'   ratings_data$hilstotal
 #' )
 #' }
@@ -458,7 +356,7 @@ textTrainRegression <- function(x,
                                 y,
                                 outside_folds_v = 10,
                                 outside_strata_y = "y",
-                                inside_folds_prop = 3/4,
+                                inside_folds_prop = 3 / 4,
                                 inside_strata_y = "y",
                                 model = "regression",
                                 eval_measure = "default",
@@ -492,8 +390,8 @@ textTrainRegression <- function(x,
     # In case there are several embeddings in list form get the x_names and embedding description for model description
   } else if (!tibble::is_tibble(x) & length(x) > 1) {
     x_name <- names(x)
-    x_name <- paste(x_name, sep=" ", collapse = " & ")
-    x_name <- paste("input:", x_name, sep=" ", collapse = " ")
+    x_name <- paste(x_name, sep = " ", collapse = " & ")
+    x_name <- paste("input:", x_name, sep = " ", collapse = " ")
 
     embedding_description <- comment(x[[1]])
     # In case it is just one word embedding as tibble
@@ -516,7 +414,7 @@ textTrainRegression <- function(x,
   ############ Arranging word embeddings to be concatenated from different texts ############
   ##################################################
 
-  if(!tibble::is_tibble(x) & length(x)>1){
+  if (!tibble::is_tibble(x) & length(x) > 1) {
 
     # Select all variables that starts with Dim in each dataframe of the list.
     xlist <- lapply(x, function(X) {
@@ -524,23 +422,22 @@ textTrainRegression <- function(x,
     })
 
     Nword_variables <- length(xlist)
-  # Give each column specific names with indexes so that they can be handled separately in the PCAs
-  for (i in 1:Nword_variables) {
-    colnames(xlist[[i]]) <- paste("Dim_we", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep = "")
-  }
+    # Give each column specific names with indexes so that they can be handled separately in the PCAs
+    for (i in 1:Nword_variables) {
+      colnames(xlist[[i]]) <- paste("Dim_we", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep = "")
+    }
 
-  # Make vector with each index so that we can allocate them separately for the PCAs
-  variable_name_index_pca <- list()
-  for (i in 1:Nword_variables) {
-    variable_name_index_pca[i] <- paste("Dim_we", i, sep = "")
-  }
+    # Make vector with each index so that we can allocate them separately for the PCAs
+    variable_name_index_pca <- list()
+    for (i in 1:Nword_variables) {
+      variable_name_index_pca[i] <- paste("Dim_we", i, sep = "")
+    }
 
-  # Make one df rather then list.
-  x1 <- dplyr::bind_cols(xlist)
+    # Make one df rather then list.
+    x1 <- dplyr::bind_cols(xlist)
 
-  # Get the name of the first variable; which is used to exclude NA (i.e., word embedding have NA in all columns)
-  V1 <- colnames(x)[1]
-
+    # Get the name of the first variable; which is used to exclude NA (i.e., word embedding have NA in all columns)
+    V1 <- colnames(x)[1]
   }
 
   ############ End for multiple word embeddings ############
@@ -553,7 +450,7 @@ textTrainRegression <- function(x,
 
   results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
     outside = rsample::vfold_cv(
-      v = !!outside_folds_v, # outside_folds, setting a variable here does not work due to a bug in rsample (see https://github.com/tidymodels/rsample/issues/81)
+      v = !!outside_folds_v,
       repeats = 1,
       strata = !!outside_strata_y,
       breaks = 2
@@ -563,20 +460,19 @@ textTrainRegression <- function(x,
       strata = !!inside_strata_y, #
       breaks = 1
     )
-  )
-  )
+  ))
   results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
 
   # Deciding whether to use multicores depending on system and settings.
-  if (multi_cores == "multi_cores_sys_default"){
-    if (.Platform$OS.type == "unix"){
+  if (multi_cores == "multi_cores_sys_default") {
+    if (.Platform$OS.type == "unix") {
       multi_cores_use <- TRUE
-    } else if (.Platform$OS.type == "windows"){
+    } else if (.Platform$OS.type == "windows") {
       multi_cores_use <- FALSE
     }
   } else if (multi_cores == TRUE) {
     multi_cores_use <- TRUE
-  } else if (multi_cores == FALSE){
+  } else if (multi_cores == FALSE) {
     multi_cores_use <- FALSE
   }
 
@@ -595,7 +491,6 @@ textTrainRegression <- function(x,
     )
   } else if (multi_cores_use == TRUE) {
     # The multisession plan uses the local cores to process the inner resampling loop. help(multisession)
-    # library(future)
     future::plan(future::multisession)
     # The object tuning_results is a list of data frames for each of the OUTER resamples.
     tuning_results <- furrr::future_map(
@@ -610,7 +505,7 @@ textTrainRegression <- function(x,
     )
   }
 
-  # Function to get the lowest mean_RMSE mixture=0.5
+  # Function to get the lowest mean_RMSE
   bestParameters <- function(dat) dat[which.min(dat$eval_result), ]
 
   # Determine the best parameter estimate from each INNER sample to be used
@@ -674,37 +569,36 @@ textTrainRegression <- function(x,
   ##### Construct final model to be saved and applied on other data  ########
   ############################################################################
 
-  xy_short <- xy #%>% dplyr::select(-id_nr)
+  xy_short <- xy
 
   ######### One word embedding as input
-  if(colnames(xy_short[1]) == "Dim1"){
-  # [0,] is added to just get the col names (and avoid saving all the data with the receipt)
-  final_recipe <- # xy %>%
-    recipes::recipe(y ~ ., xy_short[0, ]) %>%
-    recipes::update_role(id_nr, new_role = "id variable") %>%
-    recipes::update_role(-id_nr, new_role = "predictor") %>%
-    recipes::update_role(y, new_role = "outcome") %>%
-    # recipes::step_BoxCox(all_predictors()) %>%
-    recipes::step_naomit(Dim1, skip = TRUE) %>%
-    recipes::step_center(recipes::all_predictors()) %>%
-    recipes::step_scale(recipes::all_predictors()) %>%
-    {
-      if (!is.na(preprocess_PCA[1])) {
-        if (preprocess_PCA[1] >= 1) {
-          recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
-        } else if (preprocess_PCA[1] < 1) {
-          recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+  if (colnames(xy_short[1]) == "Dim1") {
+    # [0,] is added to just get the col names (and avoid saving all the data with the receipt)
+    final_recipe <- # xy %>%
+      recipes::recipe(y ~ ., xy_short[0, ]) %>%
+      recipes::update_role(id_nr, new_role = "id variable") %>%
+      recipes::update_role(-id_nr, new_role = "predictor") %>%
+      recipes::update_role(y, new_role = "outcome") %>%
+      # recipes::step_BoxCox(all_predictors()) %>%
+      recipes::step_naomit(Dim1, skip = TRUE) %>%
+      recipes::step_center(recipes::all_predictors()) %>%
+      recipes::step_scale(recipes::all_predictors()) %>%
+      {
+        if (!is.na(preprocess_PCA[1])) {
+          if (preprocess_PCA[1] >= 1) {
+            recipes::step_pca(., recipes::all_predictors(), num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
+          } else if (preprocess_PCA[1] < 1) {
+            recipes::step_pca(., recipes::all_predictors(), threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+          } else {
+            .
+          }
         } else {
           .
         }
-      } else {
-        .
       }
-    }
 
-  ######### More than one word embeddings as input help(all_of)
+    ######### More than one word embeddings as input help(all_of)
   } else {
-
     V1 <- colnames(xy_short[1])
 
     final_recipe <- recipes::recipe(y ~ ., xy_short[0, ]) %>%
@@ -717,7 +611,6 @@ textTrainRegression <- function(x,
 
     # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
     if (!is.na(preprocess_PCA)) {
-
       if (preprocess_PCA >= 1) {
         for (i in variable_name_index_pca) {
           final_recipe <-
@@ -727,12 +620,12 @@ textTrainRegression <- function(x,
             # results of each PCA step.
             recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste("PCA_", i, "_"))
         }
-     # }
+        # }
       } else if (preprocess_PCA < 1) {
         for (i in variable_name_index_pca) {
           final_recipe <-
             final_recipe %>%
-            #recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+            # recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
             recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA_", i, "_"))
         }
       }
@@ -777,13 +670,13 @@ textTrainRegression <- function(x,
   ##########  DESCRIBING THE MODEL  ##########
   ############################################
 
-  outside_folds_v_description  <-  paste("outside_folds_v = ", deparse(outside_folds_v))
-  outside_strata_y_description  <-  paste("outside_strata_y = ", deparse(outside_strata_y))
-  inside_folds_prop_description  <-  paste("inside_folds_prop = ", deparse(inside_folds_prop))
-  inside_strata_y_description  <-  paste("inside_strata_y = ", deparse(inside_strata_y))
+  outside_folds_v_description <- paste("outside_folds_v = ", deparse(outside_folds_v))
+  outside_strata_y_description <- paste("outside_strata_y = ", deparse(outside_strata_y))
+  inside_folds_prop_description <- paste("inside_folds_prop = ", deparse(inside_folds_prop))
+  inside_strata_y_description <- paste("inside_strata_y = ", deparse(inside_strata_y))
 
-  penalty_setting  <-  paste("penalty_setting = ", deparse(penalty))
-  mixture_setting <-  paste("mixture_setting = ", deparse(mixture))
+  penalty_setting <- paste("penalty_setting = ", deparse(penalty))
+  mixture_setting <- paste("mixture_setting = ", deparse(mixture))
   preprocess_PCA_setting <- paste("preprocess_PCA_setting = ", deparse(preprocess_PCA))
 
   # Saving the final mtry and min_n used for the final model.
@@ -798,13 +691,14 @@ textTrainRegression <- function(x,
 
   # Getting time and date
   T2_textTrainRegression <- Sys.time()
-  Time_textTrainRegression <- T2_textTrainRegression-T1_textTrainRegression
-  Time_textTrainRegression <- sprintf('Duration to train text: %f %s', Time_textTrainRegression, units(Time_textTrainRegression))
+  Time_textTrainRegression <- T2_textTrainRegression - T1_textTrainRegression
+  Time_textTrainRegression <- sprintf("Duration to train text: %f %s", Time_textTrainRegression, units(Time_textTrainRegression))
   Date_textTrainRegression <- Sys.time()
   time_date <- paste(Time_textTrainRegression,
-                     "; Date created: ", Date_textTrainRegression,
-                     sep = "",
-                     collapse = " ")
+    "; Date created: ", Date_textTrainRegression,
+    sep = "",
+    collapse = " "
+  )
 
   # Describe model; adding user's-description + the name of the x and y
   model_description_detail <- c(
@@ -893,10 +787,3 @@ textTrainRegression <- function(x,
   }
   final_results
 }
-
-
-
-
-
-
-

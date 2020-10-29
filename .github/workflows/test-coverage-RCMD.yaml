@@ -25,8 +25,8 @@ jobs:
 #          - {os: macOS-latest, r: 'release', old_dplyr: true,  dev_tidymodels: false}
 #          - {os: macOS-latest, r: 'release', old_dplyr: false, dev_tidymodels: true}
 #          - {os: ubuntu-16.04, r: 'devel', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
-          - {os: macOS-latest, r: 'release'}
-#          - {os: macOS-latest, r: 'devel'}
+#          - {os: macOS-latest, r: 'release'}
+          - {os: macOS-latest, r: 'devel'}
           - {os: ubuntu-16.04, r: 'release'}
 #          - {os: ubuntu-16.04, r: 'devel'}
     env:

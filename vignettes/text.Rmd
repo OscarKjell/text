@@ -67,7 +67,7 @@ model_htext_hils$correlation
 
 ## textSimilarityTest(): Test the difference in meaning between to sets of texts
 The ```textSimilarityTest()``` function provides a permutation based test to examine whether two sets of texts significantly differ in meaning. It produces a p-value and estimate as an effect size. Below we examine whether the harmony text and satisfaction text responses differ in meaning. 
-```{r, eval = TRUE, warning=FALSE, message=FALSE}
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 
 # Compare the meaning between individuals' harmony in life and satisfaction with life answers

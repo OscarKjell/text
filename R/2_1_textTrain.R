@@ -16,7 +16,8 @@
 #' \dontrun{
 #' wordembeddings <- wordembeddings4
 #' ratings_data <- Language_based_assessment_data_8
-#' results <- textTrain(wordembeddings$harmonytext,
+#' results <- textTrain(
+#'   wordembeddings$harmonytext,
 #'   ratings_data$hilstotal
 #' )
 #' }
@@ -201,27 +202,29 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
     output_predscore <- lapply(output, "[[", "truth_predictions")
 
     # Append dataframe name to each of its columns within a list of dataframes
-    output_predscore <- purrr::imap(output_predscore,~dplyr::rename_with(.x, function(x) paste(.y, x, sep = '_')))
+    output_predscore <- purrr::imap(output_predscore, ~ dplyr::rename_with(.x, function(x) paste(.y, x, sep = "_")))
 
     # Renaming the last column of each dataframe to id_nr so that they can be joint later.
-    output_predscore <- lapply(output_predscore, function(x) {names(x)[ncol(x)] <- "id_nr";x})
+    output_predscore <- lapply(output_predscore, function(x) {
+      names(x)[ncol(x)] <- "id_nr"
+      x
+    })
 
     output_predscore <- output_predscore %>%
       purrr::reduce(dplyr::full_join, "id_nr") %>%
       dplyr::arrange(id_nr)
 
-    #colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
+    # colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
 
-   # output_predscore1 <- lapply(output, "[[", "truth_predictions")
-   #
-   # help(do.call)
-   # output_predscore <- do.call(cbind, output_predscore1) %>%
-   #   tibble::as_tibble() %>%
-   #   dplyr::arrange()
+    # output_predscore1 <- lapply(output, "[[", "truth_predictions")
+    #
+    # help(do.call)
+    # output_predscore <- do.call(cbind, output_predscore1) %>%
+    #   tibble::as_tibble() %>%
+    #   dplyr::arrange()
 
-  results <- list(output1, output_predscore, output_ordered_named1)
-  names(results) <- c("all_output", "predictions", "results")
-
+    results <- list(output1, output_predscore, output_ordered_named1)
+    names(results) <- c("all_output", "predictions", "results")
   } else if (save_output == "only_results") {
     results <- list(output1, output_ordered_named1) #
     names(results) <- c("all_output", "results") #
@@ -252,7 +255,8 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' \dontrun{
 #' wordembeddings <- wordembeddings4[1:2]
 #' ratings_data <- Language_based_assessment_data_8[5:6]
-#' results <- textTrainLists(wordembeddings,
+#' results <- textTrainLists(
+#'   wordembeddings,
 #'   ratings_data
 #' )
 #' results
@@ -273,7 +277,6 @@ textTrainLists <- function(x,
                            eval_measure = "rmse",
                            p_adjust_method = "holm",
                            ...) {
-
   T1_textTrainLists <- Sys.time()
 
   # If y is a vector make it into a tibble format
@@ -359,15 +362,16 @@ textTrainLists <- function(x,
     #
   }
 
-  #Time
+  # Time
   T2_textTrainLists <- Sys.time()
-  Time_textTrainLists <- T2_textTrainLists-T1_textTrainLists
-  Time_textTrainLists <- sprintf('Duration to train text: %f %s', Time_textTrainLists, units(Time_textTrainLists))
+  Time_textTrainLists <- T2_textTrainLists - T1_textTrainLists
+  Time_textTrainLists <- sprintf("Duration to train text: %f %s", Time_textTrainLists, units(Time_textTrainLists))
   Date_textTrainLists <- Sys.time()
   time_date <- paste(Time_textTrainLists,
-                     "; Date created: ", Date_textTrainLists,
-                     sep = "",
-                     collapse = " ")
+    "; Date created: ", Date_textTrainLists,
+    sep = "",
+    collapse = " "
+  )
   results$results$p_value_corrected <- stats::p.adjust(results$results$p_value, method = p_adjust_method)
   comment(results) <- time_date
   results
@@ -395,7 +399,7 @@ textPredict <- function(model_info, new_data, ...) {
   # In case the embedding is in list form get the tibble form
   if (!tibble::is_tibble(new_data) & length(new_data) == 1) {
     new_data1 <- new_data[[1]]
-    #Get original columns names, to remove these column from output
+    # Get original columns names, to remove these column from output
     original_colnames <- colnames(new_data1)
 
     new_data1$id_nr <- c(1:nrow(new_data1))
@@ -403,7 +407,6 @@ textPredict <- function(model_info, new_data, ...) {
 
     # In case there are several different word embeddings (from different responses)
   } else if (!tibble::is_tibble(new_data) & length(new_data) > 1) {
-
     new_datalist <- lapply(new_data, function(X) {
       X <- dplyr::select(X, dplyr::starts_with("Dim"))
     })
@@ -423,7 +426,7 @@ textPredict <- function(model_info, new_data, ...) {
     # Make one df rather then list.
     new_data1 <- dplyr::bind_cols(new_datalist)
 
-    #Get original columns names, to remove these column from output
+    # Get original columns names, to remove these column from output
     original_colnames <- colnames(new_data1)
 
     # Add id
@@ -434,11 +437,10 @@ textPredict <- function(model_info, new_data, ...) {
     V1 <- colnames(new_data1)[1]
 
     # Removing NAs for the analyses (here we could potentially impute missing values; e.g., mean of each dimension)
-    new_data1 <- new_data1[complete.cases(new_data1),]
-
+    new_data1 <- new_data1[complete.cases(new_data1), ]
   } else {
     new_data1 <- new_data
-    #Get original columns names, to remove these column from output
+    # Get original columns names, to remove these column from output
     original_colnames <- colnames(new_data1)
 
     new_data1$id_nr <- c(1:nrow(new_data1))
@@ -450,16 +452,15 @@ textPredict <- function(model_info, new_data, ...) {
 
   # Get column names to be removed
   colnames_to_b_removed <- colnames(data_prepared_with_recipe)
-  colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed=="id_nr" ]
+  colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed == "id_nr"]
 
   # Get scores
   predicted_scores <- data_prepared_with_recipe %>%
-    bind_cols(predict(model_info$final_model,new_data=data_prepared_with_recipe)) %>% #, ...
+    bind_cols(predict(model_info$final_model, new_data = data_prepared_with_recipe)) %>% # , ...
     select(-!!colnames_to_b_removed) %>%
-    full_join(new_data_id_nr_col, by="id_nr") %>%
+    full_join(new_data_id_nr_col, by = "id_nr") %>%
     arrange(id_nr) %>%
     select(-id_nr)
 
   predicted_scores
-
 }
