@@ -26,7 +26,7 @@ textEmbed(
 \item{x}{A character variable or a tibble/dataframe with at least one character variable.}
 
 \item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased').
- For full list of options see https://huggingface.co/transformers/pretrained_models.html
+ For full list of options see pretrained models at \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
  For example use "bert-base-multilingual-cased", "openai-gpt",
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 "roberta-base", or "xlm-roberta-base".}

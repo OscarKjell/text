@@ -193,7 +193,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @param decontexts Provide word embeddings of single words as input
 #' (embeddings used for plotting; default = TRUE).
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
-#'  For full list of options see https://huggingface.co/transformers/pretrained_models.html
+#'  For full list of options see pretrained models at \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base".
@@ -424,7 +424,7 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
-#'  For full list of options see https://huggingface.co/transformers/pretrained_models.html
+#'  For full list of options see pretrained models at \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base".
