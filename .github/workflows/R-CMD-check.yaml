@@ -72,7 +72,7 @@ jobs:
         run: |
           library(reticulate)
           install_miniconda()
-          conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'nltk', 'numpy'))
+          conda_install(envname = 'r-reticulate', c('torch', 'transformers==3.3.1', 'nltk', 'numpy'))
         shell: Rscript {0}
 
 
