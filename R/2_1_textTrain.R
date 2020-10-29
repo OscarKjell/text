@@ -13,13 +13,13 @@
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
 #' @examples
+#' \dontrun{
 #' wordembeddings <- wordembeddings4
 #' ratings_data <- Language_based_assessment_data_8
 #' results <- textTrain(wordembeddings$harmonytext,
-#'   ratings_data$hilstotal,
-#'   penalty = 1, # 1 due to computational constraints for the example context
-#'   multi_cores = FALSE
+#'   ratings_data$hilstotal
 #' )
+#' }
 #' @seealso \code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
 #' \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
 #' @importFrom tibble is_tibble
@@ -249,14 +249,15 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples
+#' \dontrun{
 #' wordembeddings <- wordembeddings4[1:2]
 #' ratings_data <- Language_based_assessment_data_8[5:6]
 #' results <- textTrainLists(wordembeddings,
-#'   ratings_data,
-#'   multi_cores = FALSE # set to FALSE due to CRAN testing
+#'   ratings_data
 #' )
 #' results
 #' comment(results)
+#' }
 #' @seealso see \code{\link{textTrain}}  \code{\link{textTrainRegression}}  \code{\link{textTrainRandomForest}}
 #' @importFrom stats cor.test
 #' @importFrom tibble as_tibble

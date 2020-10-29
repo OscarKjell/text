@@ -72,13 +72,14 @@ about the model (preprossing_recipe, final_model and model_description).
 Train word embeddings to a numeric variable.
 }
 \examples{
+\dontrun{
 wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
 
 results <- textTrainRegression(wordembeddings$harmonytext,
-  ratings_data$hilstotal,
-  multi_cores = FALSE # this is set to FALSE due to CRAN testing, and Windows machines.
+  ratings_data$hilstotal
 )
+}
 }
 \seealso{
 see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}

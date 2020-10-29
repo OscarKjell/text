@@ -28,6 +28,10 @@ test_that("textTrain Regression produces list of results with prediction being n
   testthat::expect_that(trained_min_halving, is_a("list"))
   testthat::expect_is(trained_min_halving$results$statistic[[1]], "numeric")
 
+
+  predict_list_form <- text::textPredict(trained_min_halving, wordembeddings4$satisfactiontexts)
+
+
   trained_logistic <- textTrainRegression(
     x = wordembeddings4[1],
     y = as.factor(Language_based_assessment_data_8$gender),
@@ -454,6 +458,11 @@ test_that("textTrainRegression adding wordembeddings together", {
 
   testthat::expect_that(multi_we_PCA_09, testthat::is_a("list"))
   testthat::expect_is(multi_we_PCA_09$results[[1]][[1]], "numeric")
+
+
+  # Prediction based on multiple we
+  predictions_multi <- text::textPredict(multi_we_PCA_09, wordembeddings4[1:2])
+  testthat::expect_is(predictions_multi$.pred[[1]], "numeric")
 
 
   multi_we_PCA_3 <- textTrainRegression(wordembeddings4[1:2],

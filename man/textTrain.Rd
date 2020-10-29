@@ -25,13 +25,13 @@ A correlation between predicted and observed values; as well as a tibble of pred
 Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 }
 \examples{
+\dontrun{
 wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
 results <- textTrain(wordembeddings$harmonytext,
-  ratings_data$hilstotal,
-  penalty = 1, # 1 due to computational constraints for the example context
-  multi_cores = FALSE
+  ratings_data$hilstotal
 )
+}
 }
 \seealso{
 \code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}

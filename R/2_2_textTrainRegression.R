@@ -434,13 +434,14 @@ summarize_tune_results <- function(object,
 #' @return A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information
 #' about the model (preprossing_recipe, final_model and model_description).
 #' @examples
+#' \dontrun{
 #' wordembeddings <- wordembeddings4
 #' ratings_data <- Language_based_assessment_data_8
 #'
 #' results <- textTrainRegression(wordembeddings$harmonytext,
-#'   ratings_data$hilstotal,
-#'   multi_cores = FALSE # this is set to FALSE due to CRAN testing, and Windows machines.
+#'   ratings_data$hilstotal
 #' )
+#' }
 #' @seealso see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}
 #' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 #' @importFrom stats cor.test na.omit lm
