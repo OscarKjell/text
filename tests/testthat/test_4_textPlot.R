@@ -6,6 +6,9 @@ library(testthat)
 context("textPlot Functions")
 
 test_that("textProjection MEAN and PCA produces a tibble with character variable and numeric variable.", {
+
+  skip_on_cran()
+
   # Data
   wordembeddings <- wordembeddings4
   data <- Language_based_assessment_data_8
@@ -26,6 +29,9 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
 })
 
 test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
+
+  skip_on_cran()
+
   # Data
   wordembeddings <- wordembeddings4
   data <- Language_based_assessment_data_8
@@ -53,6 +59,8 @@ test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tib
 
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
 
+  skip_on_cran()
+
   # Dot Product Projection Plot
   p <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
@@ -78,6 +86,9 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
 
 
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
+
+  skip_on_cran()
+
   # Dot Product Projection Plot
   p <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
@@ -103,6 +114,9 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
 
 
 test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
+
+  skip_on_cran()
+
   # Dot Product Projection Plot
   p <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
@@ -128,6 +142,9 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
 
 
 test_that("textCentrality produces a tibble with character variable and numeric variable.", {
+
+  skip_on_cran()
+
   wordembeddings <- wordembeddings4
   data <- Language_based_assessment_data_8
   df_for_plotting <- textCentrality(
@@ -143,6 +160,8 @@ test_that("textCentrality produces a tibble with character variable and numeric 
 })
 
 test_that("textCentralityPlot produces a plot.", {
+
+  skip_on_cran()
 
   # Plot
   centrality_plot <- textCentralityPlot(
@@ -172,6 +191,10 @@ test_that("textCentralityPlot produces a plot.", {
 
 
 test_that("textCentrality produces a tibble with character variable and numeric variable.", {
+
+  skip_on_cran()
+
+
   df_for_plotting2d <- textPCA(
     words = Language_based_assessment_data_8$harmonywords,
     single_wordembeddings = wordembeddings4$singlewords_we
@@ -185,6 +208,8 @@ test_that("textCentrality produces a tibble with character variable and numeric 
 })
 
 test_that("textCentralityPlot produces a plot.", {
+
+  skip_on_cran()
 
   # Plot
   principle_component_plot_projection <- textPCAPlot(PC_projections_satisfactionwords_40)

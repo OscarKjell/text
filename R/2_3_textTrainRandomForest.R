@@ -485,6 +485,7 @@ summarize_tune_results_rf <- function(object,
 #' chisq and fishers test as well as evaluation measures, e.g., including accuracy, f_meas and roc_auc (for details on
 #' these measures see the yardstick r-package documentation).
 #' @examples
+#' \dontrun{
 #' wordembeddings <- wordembeddings4
 #' example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
 #' results <- textTrainRandomForest(wordembeddings$harmonywords,
@@ -494,6 +495,7 @@ summarize_tune_results_rf <- function(object,
 #'   min_n = c(1), # this is short because of testing
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
+#' }
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
 #' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
 #' @importFrom dplyr select starts_with filter arrange rename
