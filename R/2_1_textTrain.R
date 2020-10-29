@@ -447,11 +447,14 @@ textPredict <- function(model_info, new_data, ...) {
   # Load prepared_with_recipe
   data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data1)
 
+  # Get column names to be removed
+  colnames_to_b_removed <- colnames(data_prepared_with_recipe)
+  colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed=="id_nr" ]
 
   # Get scores
   predicted_scores <- data_prepared_with_recipe %>%
-    bind_cols(predict(model_info$final_model,new_data=data_prepared_with_recipe, ...)) %>%
-    select(-!!original_colnames) %>%
+    bind_cols(predict(model_info$final_model,new_data=data_prepared_with_recipe)) %>% #, ...
+    select(-!!colnames_to_b_removed) %>%
     full_join(new_data_id_nr_col, by="id_nr") %>%
     arrange(id_nr) %>%
     select(-id_nr)

@@ -25,7 +25,8 @@ test_that("Testing textEmbed as well as train", {
     inside_folds_prop = 3/4,
     outside_strata_y = NULL,
     inside_strata_y = NULL,
-    preprocess_PCA = c(0.20),
+    #preprocess_PCA = c(0.20),
+    preprocess_PCA = NA,
     penalty = 1e-16,
     multi_cores = FALSE
   )
