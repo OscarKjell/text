@@ -389,7 +389,6 @@ textTrainLists <- function(x,
 #' @importFrom stats predict
 #' @importFrom tibble is_tibble as_tibble_col
 #' @export
-
 textPredict <- function(model_info, new_data, ...) {
 
   # In case the embedding is in list form get the tibble form

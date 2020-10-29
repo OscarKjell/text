@@ -202,7 +202,7 @@ fit_model_accuracy_rf <- function(object,
   } else if (is.character(extremely_randomised_splitrule)) {
     mod <-
       parsnip::rand_forest(mode = mode_rf) %>%
-      parsnip::set_engine("ranger", splitrule = extremely_randomised_splitrule) %>% # extremely_randomised_splitrule = "extratrees" = "gini" "extratrees" "hellinger" tune()
+      parsnip::set_engine("ranger", splitrule = extremely_randomised_splitrule) %>% # extremely_randomised_splitrule = "extratrees" = "gini" "extratrees" "hellinger"
       # parsnip::set_mode("classification") %>%
       parsnip::fit(y ~ ., data = xy_training) # ADDED line; and: install.packages("ranger")
   }
