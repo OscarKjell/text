@@ -6,6 +6,9 @@ library(dplyr)
 context("Training Functions")
 
 test_that("textTrain Regression produces list of results with prediction being numeric", {
+
+  skip_on_cran()
+
   trained_min_halving <- textTrainRegression(wordembeddings4[1],
     Language_based_assessment_data_8[6],
     outside_folds_v = 2,
@@ -99,6 +102,10 @@ test_that("textTrain Regression produces list of results with prediction being n
 
 
 test_that("textTrain Random Forest produces list of results with prediction being categorical", {
+
+  skip_on_cran()
+
+
   example_categories <- as.factor(c(
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
@@ -163,6 +170,9 @@ test_that("textTrain Random Forest produces list of results with prediction bein
 
 
 test_that("textTrainRandomForest with Extremely Randomized Trees produces list of results with prediction being categorical", {
+
+  skip_on_cran()
+
   example_categories <- as.factor(c(
     1, NA, 1, 2, 1, 2, 1, 2, 1, 2,
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
@@ -238,6 +248,8 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
 
 
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
+
+  skip_on_cran()
 
   # Two word embeddings and one vector
   results <- textTrain(wordembeddings4[1:2],
@@ -333,6 +345,10 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
 
 test_that("textTrainLists randomForest produces list of results with prediction being numeric", {
+
+
+  skip_on_cran()
+
   x <- wordembeddings4[1]
 
   y1 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
@@ -422,6 +438,8 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
 
 test_that("textTrainRegression adding wordembeddings together", {
+
+  skip_on_cran()
 
   multi_we_PCA_09 <- textTrainRegression(wordembeddings4[1:2],
                                          Language_based_assessment_data_8$hilstotal,

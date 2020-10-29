@@ -68,22 +68,21 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-#      - name: Install Python dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
-#          pip install transformers==3.3.1
-#          pip install nltk
-#          pip install numpy
-
-
-      - name: Install miniconda
+      - name: Install Python dependencies
         run: |
-          library(reticulate)
-          install_miniconda()
-          conda_install(envname = 'r-reticulate', c('transformers==3.3.1', 'nltk', 'numpy'))
-          conda_install(envname = 'r-reticulate', c('torch', conda="https://download.pytorch.org/whl/torch_stable.html"))
-        shell: Rscript {0}
+          python -m pip install --upgrade pip
+          pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
+          pip install transformers==3.3.1
+          pip install nltk
+          pip install numpy
+
+
+#     - name: Install miniconda
+#       run: |
+#         library(reticulate)
+#         install_miniconda()
+#         conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'nltk', 'numpy'))
+#       shell: Rscript {0}
 
 
 #      - name: Install dev dependencies
