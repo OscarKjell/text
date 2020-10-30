@@ -33,11 +33,11 @@ test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tib
   # Data
   wordembeddings <- wordembeddings4
   data <- Language_based_assessment_data_8
-  harmonywords <- data$harmonywords[1:10]
-  harmonywordembeddings <- wordembeddings$harmonywords[1:10, ]
+  harmonywords <- data$harmonywords[1:12]
+  harmonywordembeddings <- wordembeddings$harmonywords[1:12, ]
   wordembeddingssinglewords_we <- wordembeddings$singlewords_we
-  hilstotal <- data$hilstotal[1:10]
-  swlstotal <- data$swlstotal[1:10]
+  hilstotal <- data$hilstotal[1:12]
+  swlstotal <- data$swlstotal[1:12]
   # Pre-processing data for plotting
   df_for_plotting <- textProjection(harmonywords,
     harmonywordembeddings,

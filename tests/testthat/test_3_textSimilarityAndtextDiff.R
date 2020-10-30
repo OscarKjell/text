@@ -58,3 +58,17 @@ test_that("textSimilarityTest unpaired results in list with numeric output", {
   expect_that(test_diff_results, is_a("list"))
   expect_is(test_diff_results[[1]][[1]], "numeric")
 })
+
+
+test_that("textSimilarityTest unpaired results in list with numeric output", {
+  skip_on_cran()
+
+  test_diff_results <- textSimilarityTest(wordembeddings4$harmonytexts, wordembeddings4$satisfactiontexts,
+                                          method = "unpaired", Npermutations = 10, N_cluster_nodes = 1,
+                                          output.permutations = FALSE
+  )
+
+  expect_that(test_diff_results, is_a("list"))
+  expect_is(test_diff_results$p.value[[1]], "numeric")
+})
+

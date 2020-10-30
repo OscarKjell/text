@@ -360,7 +360,7 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
     # Go over the lists and select the layers; [[1]] ok to add below x=
     if ((length(setdiff(layers, unique(x[[1]]$layer_number))) > 0) == TRUE) {
       stop(cat(colourise("You are trying to aggregate layers that were not extracted.", fg = "red"),
-      colourise("For example, in textEmbed the layers option needs to include all the layers used in context_layers.", fg="green")))
+               colourise("For example, in textEmbed the layers option needs to include all the layers used in context_layers.", fg="green")))
     }
 
     selected_layers <- lapply(x, function(x) x[x$layer_number %in% layers, ])
