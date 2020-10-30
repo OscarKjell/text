@@ -97,7 +97,7 @@ test_that("textTrain Regression produces list of results with prediction being n
     inside_strata_y = NULL,
     penalty = c(1),
     mixture = c(0),
-    preprocess_PCA = c(1),
+    preprocess_PCA = NA,
     multi_cores = "multi_cores_sys_default",
     force_train_method = "regression",
     save_output = "only_results_predictions"
@@ -239,7 +239,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
     trees = c(1000),
     preprocess_PCA = c(3),
     extremely_randomised_splitrule = "gini",
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = FALSE,
     eval_measure = "bal_accuracy",
     save_output = "only_results_predictions"
   )

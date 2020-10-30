@@ -92,7 +92,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
   xy_training <- recipes::juice(xy_recipe)
 
   # Ridge and/or Lasso
-  if (length(xy_training) > 2) {
+  if (length(xy_training) > 3) {
     # Create and fit model
     mod <-
       {
@@ -104,7 +104,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
       parsnip::fit(y ~ ., data = xy_training)
 
     # Standard regression
-  } else if (length(xy_training) == 2) {
+  } else if (length(xy_training) == 3) {
     mod <-
       {
         if (model == "regression") {
@@ -639,7 +639,7 @@ textTrainRegression <- function(x,
   # It extracts the data from the xy_recipe object.
   xy_final <- recipes::juice(preprocessing_recipe_use)
 
-  if (length(xy_final) > 2) {
+  if (length(xy_final) > 3) {
     # Create and fit model; penalty=NULL mixture = NULL
     final_predictive_model <-
       {
@@ -651,7 +651,7 @@ textTrainRegression <- function(x,
       parsnip::fit(y ~ ., data = xy_final)
 
     # Standard regression
-  } else if (length(xy_final) == 2) {
+  } else if (length(xy_final) == 3) {
     final_predictive_model <-
       {
         if (model == "regression") {
