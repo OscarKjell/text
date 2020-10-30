@@ -351,7 +351,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   )
 
   testthat::expect_that(results_or_p, testthat::is_a("list"))
-  testthat::expect_is(results_or_p$results$correlation[1], "character")
+  testthat::expect_is(results_or_p$results$.estimate[1], "numeric")
 
 
   factors1 <- as.factor(Language_based_assessment_data_8$gender)
@@ -378,7 +378,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   )
 
   testthat::expect_that(results_or_p, testthat::is_a("list"))
-  testthat::expect_is(results_or_p$results$correlation[1], "character")
+  testthat::expect_is(results_or_p$results$.estimate[1], "numeric")
 
 
   results_list_logistic <- textTrain(wordembeddings,
@@ -396,7 +396,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   )
 
   testthat::expect_that(results_or_p, testthat::is_a("list"))
-  testthat::expect_is(results_or_p$results$correlation[1], "character")
+  testthat::expect_is(results_or_p$results$.estimate[1], "numeric")
 
 
 
