@@ -245,13 +245,13 @@ textEmbedLayersOutput <- function(x,
       sorted_layers_ALL_variables$context[[i_variables]] <- variable_x
       names(sorted_layers_ALL_variables$context)[[i_variables]] <- names(x)[[i_variables]]
 
-      # Adding informative comment
+      # Adding informative comment help(comment)
       layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
-      comment(sorted_layers_ALL_variables$context) <- c(paste("Information about the embeddings. textEmbedLayersOutput: ",
-        model, "layers:",
-        layers_string, ".",
-        collapse = "; "
-      ))
+      comment(sorted_layers_ALL_variables$context) <- paste("Information about the embeddings. textEmbedLayersOutput: ",
+                                                            "model:", model,
+                                                            "layers:", layers_string, ".",
+                                                            collapse = "; "
+      )
     }
   }
 
@@ -359,7 +359,8 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 
     # Go over the lists and select the layers; [[1]] ok to add below x=
     if ((length(setdiff(layers, unique(x[[1]]$layer_number))) > 0) == TRUE) {
-      stop("You are trying to aggregate layers that were not extracted. For example, in textEmbed the layers option needs to include all the layers used in context_layers.")
+      stop(cat(colourise("You are trying to aggregate layers that were not extracted.", fg = "red"),
+      colourise("For example, in textEmbed the layers option needs to include all the layers used in context_layers.", fg="green")))
     }
 
     selected_layers <- lapply(x, function(x) x[x$layer_number %in% layers, ])

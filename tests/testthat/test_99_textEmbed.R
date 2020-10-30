@@ -38,8 +38,17 @@ test_that("textEmbedLayerAggreation 'all': layer =  aggregate_tokens = 'mean' pr
     aggregate_tokens = "mean"
   )
   length_dims_con <- length(aggregated_embeddings_con[[1]])
-
   expect_true(2 * length_dims_mean == length_dims_con)
+
+  # Expect error
+  expect_error(aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
+                                                    layers = 0:3,
+                                                    aggregate_layers = "mean",
+                                                    aggregate_tokens = "mean"
+  )
+  )
+
+
 })
 
 
