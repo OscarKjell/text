@@ -291,12 +291,6 @@ textTrainLists <- function(x,
     names(x) <- x_name
   }
 
-  # Force or decide regression or random forest (and select only categorical or numeric variables for multiple input).
-#  if (is.numeric(y) == TRUE & force_train_method == "automatic") {
-#    train_method <- "regression"
-#  } else if (is.factor(y) == TRUE & force_train_method == "automatic") {
-#    train_method <- "random_forest"
-#  } else
     if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "automatic") {
 
     # Create a dataframe only comprising numeric or categorical depending on most frequent type
@@ -319,11 +313,6 @@ textTrainLists <- function(x,
     y <- dplyr::select_if(y, is.factor)
     train_method <- "random_forest"
   }
-# else if (force_train_method == "regression") {
-#    train_method <- "regression"
-#  }  else if (force_train_method == "random_forest") {
-#    train_method <- "random_forest"
-#  }
 
 
   # Get variable names in the list of outcomes.
@@ -361,8 +350,6 @@ textTrainLists <- function(x,
 
     results <- sort_classification_output_list(output = output, save_output = save_output, descriptions = descriptions)
     results$results$p_value_corrected <- stats::p.adjust(as.numeric(results$results$p_value), method = p_adjust_method)
-    # Combine output
-    #
   }
 
   # Time
