@@ -81,7 +81,7 @@ The exact way to install these packages may differ across systems. Please see:
 [transformers installation](https://huggingface.co/transformers/installation.html)
 
 ## Share advise
-*If you find a good solution please feel free to email [us](oscar.kjell@psy.lu.se) so that we can update above instructions.*
+*If you find a good solution please feel free to email oscar [ d_o t] kjell [a_t] psy [DOT] lu [d_o_t]se so that we can update above instructions.*
  
  
  
