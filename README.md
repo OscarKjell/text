@@ -33,11 +33,12 @@ objectives:
 ![Modular and End-to-End Solution](man/figures/modular_end_solution.png)
 
 *Text* is created through a collaboration between psychology and
-computer science to address research needs and ensure state-of-the-art
-techniques. It provides powerful functions tailored to test research
-hypotheses in social and behavior sciences for both relatively small and
-large datasets. *Text* is continuously tested on Ubuntu, Mac OS and
-Windows using the latest stable R version.
+computer science to address research needs and enable access to
+state-of-the-art techniques. It provides powerful functions tailored
+to test research hypotheses in social and behavior sciences for both
+relatively small and large datasets. *Text* is continuously tested on
+Linux (Ubuntu 16.04), Mac OS and Windows using the latest stable R
+version.
 
 ### Short installation guide
 
