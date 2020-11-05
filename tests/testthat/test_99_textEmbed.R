@@ -25,7 +25,7 @@ test_that("textEmbedLayerAggreation 'all': layer =  aggregate_tokens = 'mean' pr
   aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
     layers = 0:1,
     aggregate_layers = "mean",
-    aggregate_tokens = "mean"
+    aggregate_tokens = "normalize"
   )
 
   expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")

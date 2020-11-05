@@ -7,11 +7,16 @@
 
   packageStartupMessage(colourise(
     "This is text (version 0.9.0). \n",
-    fg = "green", bg = NULL
-  ), colourise("Newer versions may have updated default settings to reflect current understandings of the state-of-the-art.",
     fg = "blue", bg = NULL
+  ), colourise("Text is new and still rapidly improving. \nNewer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art. \nPlease send us feedback based on your experience.",
+    fg = "green", bg = NULL
   ))
 }
+
+
+
+
+
 
 # Below function is from testthat: https://github.com/r-lib/testthat/blob/717b02164def5c1f027d3a20b889dae35428b6d7/R/colour-text.r
 #' Colourise text for display in the terminal.

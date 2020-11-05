@@ -34,11 +34,24 @@ select_character_v_utf8 <- function(x) {
   x_characters <- tibble::as_tibble(purrr::map(x_characters, get_encoding_change))
 }
 
+
+#  devtools::document()
+#' Function to normalize the vector to one; to a unit vector.
+#'
+#' @param x a word embedding
+#' @return normalized (unit) vector/word embedding.
+#' @noRd
+normalizeV <- function(x) {
+  magnitude <-
+  x / sqrt(sum(x^2, na.rm = TRUE))
+}
+
+
 #' Function to take min, max, mean or the CLS
 #' (which comes from BERT models; not Static spaces) from list of vectors
 #' @param x word embeddings to be aggregated
 #' @param aggregation method to carry out the aggregation, including "min", "max" and "mean" which takes the
-#' minimum, maximum or mean across each column; or "concatenate", which linkes together each word embedding layer
+#' minimum, maximum or mean across each column; or "concatenate", which links together each word embedding layer
 #' to one long row.
 #' @return aggregated word embeddings.
 #' @importFrom tibble as_tibble_row
@@ -54,7 +67,12 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
     long_vector <- c(t(x)) %>% tibble::as_tibble_row(.name_repair = "minimal")
     colnames(long_vector) <- paste0("Dim", sep = "", seq_len(length(long_vector)))
     long_vector
-  }
+  } else if (aggregation == "normalize") {
+    sum_vector <- unlist(purrr::map(x, sum, na.rm = TRUE))
+    #normalised_vector <- unlist(purrr::map(sum_vector, normalizeV))
+    normalized_vector <- normalizeV(sum_vector)
+    normalized_vector
+    }
 }
 
 # devtools::document()
