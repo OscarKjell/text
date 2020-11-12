@@ -393,6 +393,28 @@ summarize_tune_results_rf <- function(object,
 }
 
 
+
+
+
+
+
+
+outside_folds_v = 10
+outside_strata_y = "y"
+inside_folds_prop = 3 / 4
+inside_strata_y = "y"
+mode_rf = "classification"
+preprocess_PCA = NA
+extremely_randomised_splitrule = "extratrees"
+mtry = c(1, 10, 20, 40)
+min_n = c(1, 10, 20, 40)
+trees = c(1000)
+eval_measure = "bal_accuracy"
+model_description = "Consider writing a description of your model here"
+multi_cores = "multi_cores_sys_default"
+save_output = "all"
+seed = 2020
+
 #' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Word embeddings from textEmbed.
@@ -707,24 +729,74 @@ textTrainRandomForest <- function(x,
     }
   }
 
-  preprocessing_recipe_save <- recipes::prep(final_recipe, xy_short, retain = FALSE)
+
+  # Creating new environment to keep saving size down
+  # Creating recipe in another environment sto avoid saving unnessarily large parts of the environment
+  # when saving the object to rda, rds or Rdata.
+  # http://r.789695.n4.nabble.com/Model-object-when-generated-in-a-function-saves-entire-environment-when-saved-td4723192.html
+  recipe_save_small_size <- function(final_recipe, xy_short){
+
+    env_final_recipe <- new.env(parent = globalenv())
+    env_final_recipe$xy_short <- xy_short
+    env_final_recipe$final_recipe <- final_recipe
+
+    with(env_final_recipe, preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe,
+                                                                                       xy_short,
+                                                                                       retain = FALSE)))
+  }
+  preprocessing_recipe_save <- recipe_save_small_size(final_recipe = final_recipe, xy_short = xy_short)
+  #preprocessing_recipe_save <- recipes::prep(final_recipe, xy_short, retain = FALSE)
+
   preprocessing_recipe_use <- recipes::prep(final_recipe, xy_short)
+
 
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
-  xy_final <- recipes::juice(preprocessing_recipe_use)
+   xy_final <- recipes::juice(preprocessing_recipe_use)
+###
+###  final_predictive_model <-
+###    parsnip::rand_forest(
+###      mode = mode_rf,
+###      trees = statisticalMode(results_split_parameter$trees),
+###      mtry = statisticalMode(results_split_parameter$mtry),
+###      min_n = statisticalMode(results_split_parameter$min_n)
+###    ) %>%
+###    # set_engine("ranger")
+###    parsnip::set_engine("randomForest") %>%
+###    parsnip::fit(y ~ ., data = xy_final)
 
-  final_predictive_model <-
+
+   model_save_small_size <- function(xy_final, xy_short, results_split_parameter, mode_rf){
+     env_final_model <- new.env(parent = globalenv())
+     env_final_model$xy_final <- xy_final
+     env_final_model$xy_short <- xy_short
+     #env_final_model$results_split_parameter <- results_split_parameter
+
+     env_final_model$trees_mode <- statisticalMode(results_split_parameter$trees)
+     env_final_model$mtry_mode <- statisticalMode(results_split_parameter$mtry)
+     env_final_model$min_n_mode <- statisticalMode(results_split_parameter$min_n)
+
+     env_final_model$model <- model
+     env_final_model$statisticalMode <- statisticalMode
+     env_final_model$`%>%`  <-  `%>%`
+
+     with(env_final_model, final_predictive_model <-
     parsnip::rand_forest(
       mode = mode_rf,
-      trees = statisticalMode(results_split_parameter$trees),
-      mtry = statisticalMode(results_split_parameter$mtry),
-      min_n = statisticalMode(results_split_parameter$min_n)
+      trees = trees_mode,
+      mtry = mtry_mode,
+      min_n = min_n_mode
     ) %>%
     # set_engine("ranger")
     parsnip::set_engine("randomForest") %>%
     parsnip::fit(y ~ ., data = xy_final)
+
+     )
+     }
+
+   final_predictive_model <- model_save_small_size(xy_final, xy_short, results_split_parameter, model)
+
 
 
   ##########  DESCRIBING THE MODEL  ##########
@@ -859,5 +931,27 @@ textTrainRandomForest <- function(x,
                               "chisq",
                               "results")
   }
+  # Remove object to minimize model size when saved to rds; use this to check sizes: sort( sapply(ls(),function(x){object.size(get(x))}))
+  remove(x)
+  remove(x1)
+  remove(y)
+  remove(xy)
+  remove(xy1)
+  remove(id_nr)
+
+  remove(preprocessing_recipe_save)
+  remove(final_predictive_model)
+  remove(model_description_detail)
+  remove(results_nested_resampling)
+  remove(tuning_results)
+  remove(hyper_parameter_vals)
+  remove(results_split_parameter)
+  remove(results_outer)
+  remove(outputlist_results_outer)
+  remove(xy_short)
+  remove(final_recipe)
+  remove(preprocessing_recipe_use)
+  remove(xy_final)
+
   final_results
 }

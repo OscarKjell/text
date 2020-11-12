@@ -1,5 +1,8 @@
 
 
+
+
+
 #' Function to find the mode
 #' @param x vector with numbers
 #' @return  Mode value
@@ -301,6 +304,64 @@ summarize_tune_results <- function(object,
 
 
 
+
+
+
+#x <- wordembeddings4$harmonywords
+#y <- Language_based_assessment_data_8$hilstotal
+#outside_folds_v = 10
+#outside_strata_y = "y"
+#inside_folds_prop = 3 / 4
+#inside_strata_y = "y"
+#model = "regression"
+#eval_measure = "default"
+#preprocess_PCA = NA
+#penalty = 10^seq(-16, 16)
+#mixture = c(0)
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#seed = 2020
+###
+##
+#
+
+# Original_size:                69 845
+# New environement in package:  98 811
+# New environaments not in pkg: 98 811.
+#
+#library(magrittr)
+#saveSize <- function (object) {
+#  tf <- tempfile(fileext = ".RData")
+#  on.exit(unlink(tf))
+#  save(object, file = tf)
+#  file.size(tf)
+#}
+##
+##
+#testing_size_model_NEW2_New <- textTrainRegressionT(wordembeddings4$harmonywords, Language_based_assessment_data_8$hilstotal)
+#saveSize(testing_size_model_NEW2_New)
+#saveSize(final_results)
+#
+##saveSize(testing_size)
+##saveSize(testing_size_recipe)
+##
+##saveSize(testing_size_recipePlus_model)
+##
+##
+##saveSize(testing_size_model)
+##saveSize(testing_size_model_NEW)
+##
+##saveSize(testing_size_model_NEW2)
+#
+#saveSize(testing_size_model_NEW2_New)
+#
+##
+#textPredict(testing_size_model_NEW2_New, wordembeddings4$satisfactionwords)
+#
+
+
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
@@ -440,6 +501,8 @@ textTrainRegression <- function(x,
     V1 <- colnames(x)[1]
   }
 
+
+
   ############ End for multiple word embeddings ############
   ##########################################################
 
@@ -463,6 +526,7 @@ textTrainRegression <- function(x,
   ))
   results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
 
+
   # Deciding whether to use multicores depending on system and settings.
   if (multi_cores == "multi_cores_sys_default") {
     if (.Platform$OS.type == "unix") {
@@ -475,7 +539,6 @@ textTrainRegression <- function(x,
   } else if (multi_cores == FALSE) {
     multi_cores_use <- FALSE
   }
-
 
 
   if (multi_cores_use == FALSE) {
@@ -518,6 +581,7 @@ textTrainRegression <- function(x,
   # Bind best results
   results_split_parameter <-
     dplyr::bind_cols(results_nested_resampling, hyper_parameter_vals)
+
 
   # Compute the outer resampling results for each of the
   # splits using the corresponding tuning parameter value from results_split_parameter.
@@ -565,10 +629,8 @@ textTrainRegression <- function(x,
     collected_results[[1]] <- NULL
   }
 
-
   ##### Construct final model to be saved and applied on other data  ########
   ############################################################################
-
   xy_short <- xy
 
   ######### One word embedding as input
@@ -632,20 +694,81 @@ textTrainRegression <- function(x,
     }
   }
 
-  #
-  preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe, xy_short, retain = FALSE))
+
+  # Creating recipe in another environment sto avoid saving unnessarily large parts of the environment
+  # when saving the object to rda, rds or Rdata.
+  # http://r.789695.n4.nabble.com/Model-object-when-generated-in-a-function-saves-entire-environment-when-saved-td4723192.html
+  # saveSize(final_recipe)   126305 / 1000000
+  # saveSize(xy_short)       14488233 / 1000000
+  recipe_save_small_size <- function(final_recipe, xy_short){
+
+    env_final_recipe <- new.env(parent = globalenv())
+    env_final_recipe$xy_short <- xy_short
+    env_final_recipe$final_recipe <- final_recipe
+
+    with(env_final_recipe, preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe,
+                                                                                       xy_short,
+                                                                                       retain = FALSE)))
+  }
+
+  preprocessing_recipe_save <- recipe_save_small_size(final_recipe = final_recipe, xy_short = xy_short)
+
+  # saveSize(preprocessing_recipe_save)  264115 /1000000
+###  preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe, xy_short, retain = FALSE))
+
   preprocessing_recipe_use <- recipes::prep(final_recipe, xy_short)
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
   xy_final <- recipes::juice(preprocessing_recipe_use)
 
+###         if (length(xy_final) > 3) {
+###           # Create and fit model; penalty=NULL mixture = NULL
+###           final_predictive_model <-
+###             {
+###               if (model == "regression") {
+###                 parsnip::linear_reg(penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture))
+###               } else if (model == "logistic") parsnip::logistic_reg(mode = "classification", penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture))
+###             } %>%
+###             parsnip::set_engine("glmnet") %>%
+###             parsnip::fit(y ~ ., data = xy_final)
+###
+###           # Standard regression
+###         } else if (length(xy_final) == 3) {
+###           final_predictive_model <-
+###             {
+###               if (model == "regression") {
+###                 parsnip::linear_reg(mode = "regression") %>%
+###                   parsnip::set_engine("lm")
+###               } else if (model == "logistic") {
+###                 parsnip::logistic_reg(mode = "classification") %>%
+###                   parsnip::set_engine("glm")
+###               }
+###             } %>%
+###             parsnip::fit(y ~ ., data = xy_final)
+###
+###         }
+
+
+  ####### NEW ENVIRONMENT
+  model_save_small_size <- function(xy_final, xy_short, results_split_parameter, model){
+    env_final_model <- new.env(parent = globalenv())
+    env_final_model$xy_final <- xy_final
+    env_final_model$xy_short <- xy_short
+    #env_final_model$results_split_parameter <- results_split_parameter
+    env_final_model$penalty_mode <- statisticalMode(results_split_parameter$penalty)
+    env_final_model$mixture_mode <- statisticalMode(results_split_parameter$mixture)
+    env_final_model$model <- model
+    env_final_model$statisticalMode <- statisticalMode
+    env_final_model$`%>%`  <-  `%>%`
+
+    with(env_final_model,
   if (length(xy_final) > 3) {
     # Create and fit model; penalty=NULL mixture = NULL
     final_predictive_model <-
       {
         if (model == "regression") {
-          parsnip::linear_reg(penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture))
-        } else if (model == "logistic") parsnip::logistic_reg(mode = "classification", penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture))
+          parsnip::linear_reg(penalty = penalty_mode, mixture = mixture_mode)
+        } else if (model == "logistic") parsnip::logistic_reg(mode = "classification", penalty = penalty_mode, mixture = mixture_mode)
       } %>%
       parsnip::set_engine("glmnet") %>%
       parsnip::fit(y ~ ., data = xy_final)
@@ -663,9 +786,16 @@ textTrainRegression <- function(x,
         }
       } %>%
       parsnip::fit(y ~ ., data = xy_final)
+
+  }
+)
   }
 
+  final_predictive_model <- model_save_small_size(xy_final, xy_short, results_split_parameter, model)
 
+  # saveSize(final_predictive_model) 315728592 /1000000; 40328100/1000000; 40328102/1000000
+
+  ##### NEW ENVIRONMENT END
 
   ##########  DESCRIBING THE MODEL  ##########
   ############################################
@@ -785,5 +915,30 @@ textTrainRegression <- function(x,
     }
     final_results
   }
+  # Remove object to minimize model size when saved to rds; use this to check sizes: sort( sapply(ls(),function(x){object.size(get(x))}))
+  remove(x)
+  remove(x1)
+  remove(y)
+  remove(x2)
+  remove(xy)
+
+  remove(predy_y)
+  remove(preprocessing_recipe_save)
+  remove(final_predictive_model)
+  remove(collected_results)
+  remove(model_description_detail)
+  remove(results_nested_resampling)
+  remove(tuning_results)
+  remove(hyper_parameter_vals)
+  remove(results_split_parameter)
+  remove(results_outer)
+  remove(outputlist_results_outer)
+  remove(xy_short)
+  remove(final_recipe)
+  remove(preprocessing_recipe_use)
+  remove(xy_final)
+
   final_results
 }
+
+
