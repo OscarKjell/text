@@ -169,19 +169,21 @@ fit_model_accuracy_rf <- function(object,
             # !! slices the current name into the `matches()` function.
             # We use a custom prefix so there are no name collisions for the
             # results of each PCA step.
-            recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+            recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste("PCA", i, sep = "_"))
         }
       } else if (preprocess_PCA < 1) {
         for (i in variable_name_index_pca) {
           xy_recipe <-
             xy_recipe %>%
-            recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA_", i, "_"))
+            recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA", i, sep = "_"))
         }
       }
     }
     xy_recipe <- recipes::prep(xy_recipe)
   }
 
+  # xy_training <- xy_training
+  # colnames(xy_training)
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -396,24 +398,36 @@ summarize_tune_results_rf <- function(object,
 
 
 
+#y <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
+#
+#x <- wordembeddings4[1:2]
+#x <- wordembeddings4[1:2]
+#y <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
+#outside_folds_v = 10
+#outside_strata_y = "y"
+#inside_folds_prop = 3 / 4
+#inside_strata_y = "y"
+#mode_rf = "classification"
+#preprocess_PCA = NA
+#extremely_randomised_splitrule = "extratrees"
+#mtry = c(1, 10, 20, 40)
+#min_n = c(1, 10, 20, 40)
+#trees = c(1000)
+#eval_measure = "bal_accuracy"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#seed = 2020
+#
+#outside_folds_v = 2
+#inside_folds_prop = 3 / 4
+#outside_strata_y = NULL
+#inside_strata_y = NULL
+#preprocess_PCA = 0.9
+#mtry = c(1)
+#min_n = c(1)
+#multi_cores = "multi_cores_sys_default"
 
-
-
-outside_folds_v = 10
-outside_strata_y = "y"
-inside_folds_prop = 3 / 4
-inside_strata_y = "y"
-mode_rf = "classification"
-preprocess_PCA = NA
-extremely_randomised_splitrule = "extratrees"
-mtry = c(1, 10, 20, 40)
-min_n = c(1, 10, 20, 40)
-trees = c(1000)
-eval_measure = "bal_accuracy"
-model_description = "Consider writing a description of your model here"
-multi_cores = "multi_cores_sys_default"
-save_output = "all"
-seed = 2020
 
 #' Train word embeddings to a categorical variable using random forrest.
 #'
@@ -777,7 +791,7 @@ textTrainRandomForest <- function(x,
      env_final_model$mtry_mode <- statisticalMode(results_split_parameter$mtry)
      env_final_model$min_n_mode <- statisticalMode(results_split_parameter$min_n)
 
-     env_final_model$model <- model
+     env_final_model$mode_rf <- mode_rf
      env_final_model$statisticalMode <- statisticalMode
      env_final_model$`%>%`  <-  `%>%`
 
@@ -795,7 +809,7 @@ textTrainRandomForest <- function(x,
      )
      }
 
-   final_predictive_model <- model_save_small_size(xy_final, xy_short, results_split_parameter, model)
+   final_predictive_model <- model_save_small_size(xy_final, xy_short, results_split_parameter, mode_rf)
 
 
 
