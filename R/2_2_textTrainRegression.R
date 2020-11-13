@@ -520,7 +520,7 @@ textTrainRegression <- function(x,
     ), #
     inside = rsample::validation_split(
       prop = !!inside_folds_prop,
-      strata = !!inside_strata_y, #
+      strata = !!inside_strata_y,
       breaks = 1
     )
   ))
@@ -698,8 +698,6 @@ textTrainRegression <- function(x,
   # Creating recipe in another environment sto avoid saving unnessarily large parts of the environment
   # when saving the object to rda, rds or Rdata.
   # http://r.789695.n4.nabble.com/Model-object-when-generated-in-a-function-saves-entire-environment-when-saved-td4723192.html
-  # saveSize(final_recipe)   126305 / 1000000
-  # saveSize(xy_short)       14488233 / 1000000
   recipe_save_small_size <- function(final_recipe, xy_short){
 
     env_final_recipe <- new.env(parent = globalenv())
@@ -713,40 +711,11 @@ textTrainRegression <- function(x,
 
   preprocessing_recipe_save <- recipe_save_small_size(final_recipe = final_recipe, xy_short = xy_short)
 
-  # saveSize(preprocessing_recipe_save)  264115 /1000000
-###  preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe, xy_short, retain = FALSE))
 
   preprocessing_recipe_use <- recipes::prep(final_recipe, xy_short)
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
   xy_final <- recipes::juice(preprocessing_recipe_use)
-
-###         if (length(xy_final) > 3) {
-###           # Create and fit model; penalty=NULL mixture = NULL
-###           final_predictive_model <-
-###             {
-###               if (model == "regression") {
-###                 parsnip::linear_reg(penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture))
-###               } else if (model == "logistic") parsnip::logistic_reg(mode = "classification", penalty = statisticalMode(results_split_parameter$penalty), mixture = statisticalMode(results_split_parameter$mixture))
-###             } %>%
-###             parsnip::set_engine("glmnet") %>%
-###             parsnip::fit(y ~ ., data = xy_final)
-###
-###           # Standard regression
-###         } else if (length(xy_final) == 3) {
-###           final_predictive_model <-
-###             {
-###               if (model == "regression") {
-###                 parsnip::linear_reg(mode = "regression") %>%
-###                   parsnip::set_engine("lm")
-###               } else if (model == "logistic") {
-###                 parsnip::logistic_reg(mode = "classification") %>%
-###                   parsnip::set_engine("glm")
-###               }
-###             } %>%
-###             parsnip::fit(y ~ ., data = xy_final)
-###
-###         }
 
 
   ####### NEW ENVIRONMENT
@@ -793,7 +762,6 @@ textTrainRegression <- function(x,
 
   final_predictive_model <- model_save_small_size(xy_final, xy_short, results_split_parameter, model)
 
-  # saveSize(final_predictive_model) 315728592 /1000000; 40328100/1000000; 40328102/1000000
 
   ##### NEW ENVIRONMENT END
 
