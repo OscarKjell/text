@@ -25,7 +25,8 @@ statisticalMode <- function(x) {
 #' from same word embedding together in separate pcas
 #' @return  RMSE.
 #' @noRd
-fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", penalty = 1, mixture = 0, preprocess_PCA = NA, variable_name_index_pca = NA) {
+fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", penalty = 1, mixture = 0,
+                           preprocess_PCA = NA, variable_name_index_pca = NA) {
 
   # Recipe for one embedding input
   if (colnames(rsample::analysis(object)[1]) == "Dim1") {
@@ -56,14 +57,16 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
 
     # Recipe for multiple word embedding input (with possibility of separate PCAs)
   } else {
-    V1 <- colnames(rsample::analysis(object)[1])
+    #V1 <- colnames(rsample::analysis(object)[1])
+    #V1 <- comment(model)
+
     xy_recipe <- rsample::analysis(object) %>%
       recipes::recipe(y ~ .) %>%
       # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(dplyr::all_of(V1), skip = TRUE) %>%
+      recipes::step_naomit(recipes::all_predictors(), skip = TRUE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors())
 
@@ -88,7 +91,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     }
     xy_recipe <- recipes::prep(xy_recipe)
   }
-
+  # V1 <- c("Dim_we1.gen_all_selectedDim1", "Dim_we2.dep_all_selectedDim1")
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -304,64 +307,6 @@ summarize_tune_results <- function(object,
 
 
 
-
-
-
-#x <- wordembeddings4$harmonywords
-#y <- Language_based_assessment_data_8$hilstotal
-#outside_folds_v = 10
-#outside_strata_y = "y"
-#inside_folds_prop = 3 / 4
-#inside_strata_y = "y"
-#model = "regression"
-#eval_measure = "default"
-#preprocess_PCA = NA
-#penalty = 10^seq(-16, 16)
-#mixture = c(0)
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
-###
-##
-#
-
-# Original_size:                69 845
-# New environement in package:  98 811
-# New environaments not in pkg: 98 811.
-#
-#library(magrittr)
-#saveSize <- function (object) {
-#  tf <- tempfile(fileext = ".RData")
-#  on.exit(unlink(tf))
-#  save(object, file = tf)
-#  file.size(tf)
-#}
-##
-##
-#testing_size_model_NEW2_New <- textTrainRegressionT(wordembeddings4$harmonywords, Language_based_assessment_data_8$hilstotal)
-#saveSize(testing_size_model_NEW2_New)
-#saveSize(final_results)
-#
-##saveSize(testing_size)
-##saveSize(testing_size_recipe)
-##
-##saveSize(testing_size_recipePlus_model)
-##
-##
-##saveSize(testing_size_model)
-##saveSize(testing_size_model_NEW)
-##
-##saveSize(testing_size_model_NEW2)
-#
-#saveSize(testing_size_model_NEW2_New)
-#
-##
-#textPredict(testing_size_model_NEW2_New, wordembeddings4$satisfactionwords)
-#
-
-
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
@@ -483,10 +428,16 @@ textTrainRegression <- function(x,
     })
 
     Nword_variables <- length(xlist)
+    VV1 <- list()
     # Give each column specific names with indexes so that they can be handled separately in the PCAs
     for (i in 1:Nword_variables) {
       colnames(xlist[[i]]) <- paste("Dim_we", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep = "")
+
+      # Get the name of the first column for the PCA
+      #VV1[i] <- colnames(xlist[[i]])[[1]]
     }
+
+    # V1 <- unlist(VV1)
 
     # Make vector with each index so that we can allocate them separately for the PCAs
     variable_name_index_pca <- list()
@@ -497,8 +448,6 @@ textTrainRegression <- function(x,
     # Make one df rather then list.
     x1 <- dplyr::bind_cols(xlist)
 
-    # Get the name of the first variable; which is used to exclude NA (i.e., word embedding have NA in all columns)
-    V1 <- colnames(x)[1]
   }
 
 
@@ -661,13 +610,13 @@ textTrainRegression <- function(x,
 
     ######### More than one word embeddings as input help(all_of)
   } else {
-    V1 <- colnames(xy_short[1])
+    #V1 <- colnames(xy_short[1])
 
     final_recipe <- recipes::recipe(y ~ ., xy_short[0, ]) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(dplyr::all_of(V1), skip = TRUE) %>%
+      recipes::step_naomit(recipes::all_predictors(), skip = TRUE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors())
 
@@ -723,7 +672,6 @@ textTrainRegression <- function(x,
     env_final_model <- new.env(parent = globalenv())
     env_final_model$xy_final <- xy_final
     env_final_model$xy_short <- xy_short
-    #env_final_model$results_split_parameter <- results_split_parameter
     env_final_model$penalty_mode <- statisticalMode(results_split_parameter$penalty)
     env_final_model$mixture_mode <- statisticalMode(results_split_parameter$mixture)
     env_final_model$model <- model
@@ -908,5 +856,4 @@ textTrainRegression <- function(x,
 
   final_results
 }
-
 

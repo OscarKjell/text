@@ -120,9 +120,6 @@ fit_model_accuracy_rf <- function(object,
   if (colnames(rsample::analysis(object)[1]) == "Dim1") {
     xy_recipe <- rsample::analysis(object) %>%
       recipes::recipe(y ~ .) %>%
-      #    recipes::update_role(id1, new_role = "id variable") %>%
-      #    #recipes::update_role(-id1, new_role = "predictor") %>%
-      #    recipes::update_role(y, new_role = "outcome") %>%
       recipes::update_role(id_nr, new_role = "id variable") %>% # New
       recipes::update_role(-id_nr, new_role = "predictor") %>% # New
       recipes::update_role(y, new_role = "outcome") %>% # New
@@ -148,7 +145,7 @@ fit_model_accuracy_rf <- function(object,
 
     # Recipe for multiple word embedding input (with possibility of separate PCAs)
   } else {
-    V1 <- colnames(rsample::analysis(object)[1])
+    #V1 <- colnames(rsample::analysis(object)[1])
 
     xy_recipe <- rsample::analysis(object) %>%
       recipes::recipe(y ~ .) %>%
@@ -156,7 +153,7 @@ fit_model_accuracy_rf <- function(object,
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(dplyr::all_of(V1), skip = FALSE) %>%
+      recipes::step_naomit(recipes::all_predictors(), skip = FALSE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors())
 
@@ -181,9 +178,6 @@ fit_model_accuracy_rf <- function(object,
     }
     xy_recipe <- recipes::prep(xy_recipe)
   }
-
-  # xy_training <- xy_training
-  # colnames(xy_training)
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -393,40 +387,6 @@ summarize_tune_results_rf <- function(object,
     extremely_randomised_splitrule = extremely_randomised_splitrule
   )
 }
-
-
-
-
-
-#y <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
-#
-#x <- wordembeddings4[1:2]
-#x <- wordembeddings4[1:2]
-#y <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
-#outside_folds_v = 10
-#outside_strata_y = "y"
-#inside_folds_prop = 3 / 4
-#inside_strata_y = "y"
-#mode_rf = "classification"
-#preprocess_PCA = NA
-#extremely_randomised_splitrule = "extratrees"
-#mtry = c(1, 10, 20, 40)
-#min_n = c(1, 10, 20, 40)
-#trees = c(1000)
-#eval_measure = "bal_accuracy"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
-#
-#outside_folds_v = 2
-#inside_folds_prop = 3 / 4
-#outside_strata_y = NULL
-#inside_strata_y = NULL
-#preprocess_PCA = 0.9
-#mtry = c(1)
-#min_n = c(1)
-#multi_cores = "multi_cores_sys_default"
 
 
 #' Train word embeddings to a categorical variable using random forrest.
@@ -717,7 +677,7 @@ textTrainRandomForest <- function(x,
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(dplyr::all_of(V1), skip = TRUE) %>%
+      recipes::step_naomit(recipes::all_predictors(), skip = TRUE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors())
 
@@ -768,18 +728,6 @@ textTrainRandomForest <- function(x,
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
    xy_final <- recipes::juice(preprocessing_recipe_use)
-###
-###  final_predictive_model <-
-###    parsnip::rand_forest(
-###      mode = mode_rf,
-###      trees = statisticalMode(results_split_parameter$trees),
-###      mtry = statisticalMode(results_split_parameter$mtry),
-###      min_n = statisticalMode(results_split_parameter$min_n)
-###    ) %>%
-###    # set_engine("ranger")
-###    parsnip::set_engine("randomForest") %>%
-###    parsnip::fit(y ~ ., data = xy_final)
-
 
    model_save_small_size <- function(xy_final, xy_short, results_split_parameter, mode_rf){
      env_final_model <- new.env(parent = globalenv())
