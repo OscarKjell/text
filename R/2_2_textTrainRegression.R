@@ -91,7 +91,6 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     }
     xy_recipe <- recipes::prep(xy_recipe)
   }
-  # V1 <- c("Dim_we1.gen_all_selectedDim1", "Dim_we2.dep_all_selectedDim1")
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
@@ -307,6 +306,7 @@ summarize_tune_results <- function(object,
 
 
 
+
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
@@ -407,7 +407,6 @@ textTrainRegression <- function(x,
     embedding_description <- comment(x)
   }
 
-
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
     y <- y[[1]]
@@ -428,7 +427,7 @@ textTrainRegression <- function(x,
     })
 
     Nword_variables <- length(xlist)
-    VV1 <- list()
+
     # Give each column specific names with indexes so that they can be handled separately in the PCAs
     for (i in 1:Nword_variables) {
       colnames(xlist[[i]]) <- paste("Dim_we", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep = "")
@@ -436,7 +435,6 @@ textTrainRegression <- function(x,
       # Get the name of the first column for the PCA
       #VV1[i] <- colnames(xlist[[i]])[[1]]
     }
-
     # V1 <- unlist(VV1)
 
     # Make vector with each index so that we can allocate them separately for the PCAs
