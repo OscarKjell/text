@@ -11,8 +11,9 @@ name: test-coverage
 jobs:
   test-coverage:
     runs-on: macOS-latest
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    echo "{name}={value}" >> $GITHUB_ENV
+#    env:
+#      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
 
