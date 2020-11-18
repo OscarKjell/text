@@ -446,7 +446,7 @@ textPredict <- function(model_info, new_data, ...) {
 
   # Get scores
   predicted_scores <- data_prepared_with_recipe %>%
-    bind_cols(predict(model_info$final_model, new_data = data_prepared_with_recipe)) %>% # , ...
+    bind_cols(predict(model_info$final_model, new_data = data_prepared_with_recipe, ...)) %>% #
     select(-!!colnames_to_b_removed) %>%
     full_join(new_data_id_nr_col, by = "id_nr") %>%
     arrange(id_nr) %>%

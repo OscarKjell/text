@@ -54,7 +54,7 @@ classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
   )
 
   if (tibble::is_tibble(id_nr)) {
-    predy_y <- predy_y %>% full_join(id_nr, by = "id_nr")
+    predy_y <- predy_y %>% dplyr::full_join(id_nr, by = "id_nr")
   }
 
   predy_y <- predy_y %>% dplyr::arrange(id_nr)
@@ -72,9 +72,9 @@ classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
   kappa <- yardstick::kap(predy_y, truth, estimate, ...)
   f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...)
 
-  roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3]))
-  roc_curve_data <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[3]))
-  roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[3])))
+  roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[4]))
+  roc_curve_data <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[4]))
+  roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[4])))
 
   results_collected <- dplyr::bind_rows(
     accuracy,
@@ -389,6 +389,33 @@ summarize_tune_results_rf <- function(object,
 }
 
 
+
+
+library(magrittr)
+x <- wordembeddings4$harmonywords
+y <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
+
+
+outside_folds_v = 10
+outside_strata_y = "y"
+inside_folds_prop = 3 / 4
+inside_strata_y = "y"
+mode_rf = "classification"
+preprocess_PCA = NA
+extremely_randomised_splitrule = "extratrees"
+mtry = c(1, 10, 20, 40)
+min_n = c(1, 10, 20, 40)
+trees = c(1000)
+eval_measure = "bal_accuracy"
+model_description = "Consider writing a description of your model here"
+multi_cores = "multi_cores_sys_default"
+save_output = "all"
+seed = 2020
+
+
+
+
+
 #' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Word embeddings from textEmbed.
@@ -635,7 +662,7 @@ textTrainRandomForest <- function(x,
     split.default(names(.)) %>%
     purrr::map(na.omit)
 
-  # Get  predictions and evaluation results
+  # Get  predictions and evaluation results help(full_join)
   results_collected <- classification_results(outputlist_results_outer = outputlist_results_outer, id_nr, ...)
   names(results_collected) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
 
