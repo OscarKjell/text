@@ -28,21 +28,21 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
                            preprocess_PCA = NA, variable_name_index_pca = NA, Npredictors = NA) {
 
 
-  data <- rsample::analysis(object)
-  data <- tibble::as_tibble(data)
+  data_train <- rsample::analysis(object)
+  data_train <- tibble::as_tibble(data_train)
 
   # If testing N first predictors help(step_scale) Npredictors = 3
   if (!is.na(Npredictors)) {
       #Select y and id
-      Nvariable_totals <- length(data)
-      variable_names <- colnames(data[(Npredictors+1):(Nvariable_totals-2)])
+      Nvariable_totals <- length(data_train)
+      variable_names <- colnames(data_train[(Npredictors+1):(Nvariable_totals-2)])
   }else {
     variable_names = "id_nr"
       }
 
   # Recipe for one embedding input summary(xy_recipe)
-  if (colnames(data[1]) == "Dim1") {
-    xy_recipe <- data %>%
+  if (colnames(data_train[1]) == "Dim1") {
+    xy_recipe <- data_train %>%
       recipes::recipe(y ~ .) %>%
       recipes::update_role(variable_names, new_role = "Not_predictors") %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
@@ -72,7 +72,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     #V1 <- colnames(data[1])
     #V1 <- comment(model)
 
-    xy_recipe <- data %>%
+    xy_recipe <- data_train %>%
       recipes::recipe(y ~ .) %>%
       # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
       recipes::update_role(id_nr, new_role = "id variable") %>%

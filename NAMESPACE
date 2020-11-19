@@ -3,7 +3,7 @@
 export(textCentrality)
 export(textCentralityPlot)
 export(textEmbed)
-export(textEmbedLayerAggreation)
+export(textEmbedLayerAggregation)
 export(textEmbedLayersOutput)
 export(textEmbedStatic)
 export(textPCA)

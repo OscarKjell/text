@@ -6,7 +6,7 @@ utils::globalVariables(c(
   "SS", "p_values.x", "p_values.y", "words", "n.x", "n.y",
   "addEqualNrNArows", "applysemrep", "single_wordembeddings_df", "Ndim",
   "semanticrepresentation", "single_wordembeddings2",
-  "guide_legend", "Dim1",
+  "guide_legend", "Dim1", "data_train",
   "textTrainRandomForest", "textTrainCVpredictions", "textTrainCVpredictionsRF",
   "textCentrality", "textCentralityPlot", "textEmbed", "textEmbedLayersOutput", "id_nr",
   "textEmbedLayerAggreation", "textProjection", "textProjectionPlot", "textSimilarity",

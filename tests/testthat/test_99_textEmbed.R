@@ -18,11 +18,11 @@ skip_if_no_torch <- function() {
   }
 }
 
-test_that("textEmbedLayerAggreation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
+test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
   skip_on_cran()
 
   # skip_on_cran()
-  aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
+  aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 0:1,
     aggregate_layers = "mean",
     aggregate_tokens = "normalize"
@@ -32,7 +32,7 @@ test_that("textEmbedLayerAggreation 'all': layer =  aggregate_tokens = 'mean' pr
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
   length_dims_mean <- length(aggregated_embeddings[[1]])
 
-  aggregated_embeddings_con <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
+  aggregated_embeddings_con <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 0:1,
     aggregate_layers = "concatenate",
     aggregate_tokens = "mean"
@@ -41,7 +41,7 @@ test_that("textEmbedLayerAggreation 'all': layer =  aggregate_tokens = 'mean' pr
   expect_true(2 * length_dims_mean == length_dims_con)
 
   # Expect error
-  expect_error(aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
+  expect_error(aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
                                                     layers = 0:3,
                                                     aggregate_layers = "mean",
                                                     aggregate_tokens = "mean"
@@ -52,11 +52,11 @@ test_that("textEmbedLayerAggreation 'all': layer =  aggregate_tokens = 'mean' pr
 })
 
 
-test_that("textEmbedLayerAggreation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
+test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
   skip_on_cran()
 
   # skip_on_cran()
-  aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
+  aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 1:2,
     aggregate_layers = "concatenate",
     aggregate_tokens = "min",
@@ -67,11 +67,11 @@ test_that("textEmbedLayerAggreation 1:2 'min' tokens_select = '[CLS]' produces a
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 })
 
-test_that("textEmbedLayerAggreation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
+test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
   skip_on_cran()
 
   # skip_on_cran()
-  aggregated_embeddings <- textEmbedLayerAggreation(embeddings_from_huggingface2$context,
+  aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = "all",
     aggregate_tokens = "max",
     tokens_deselect = "[CLS]"

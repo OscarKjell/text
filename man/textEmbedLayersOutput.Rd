@@ -31,7 +31,7 @@ textEmbedLayersOutput(
 \item{layers}{Specify the layers that should be extracted (default 11). It is more efficient
 to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this
 parameter to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
-and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggreation function.}
+and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation function.}
 
 \item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
 }
@@ -49,5 +49,5 @@ word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
 }
 }
 \seealso{
-see \code{\link{textEmbedLayerAggreation}} and \code{\link{textEmbed}}
+see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
 }

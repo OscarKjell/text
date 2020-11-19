@@ -214,7 +214,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @param layers Specify the layers that should be extracted (default 11). It is more efficient
 #' to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this
 #' parameter to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
-#' and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggreation function.
+#' and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
 #' @return A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
 #' input embedding to the transformer, and should normally not be used.
@@ -223,7 +223,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' x <- Language_based_assessment_data_8[1:2, 1:2]
 #' word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
 #' }
-#' @seealso see \code{\link{textEmbedLayerAggreation}} and \code{\link{textEmbed}}
+#' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python
 #' @importFrom dplyr %>% bind_rows
 #' @importFrom tibble tibble as_tibble
@@ -345,12 +345,14 @@ textEmbedLayersOutput <- function(x,
 #' the transformer, which is normally not used.
 #' @examples
 #' \donttest{
-#' wordembeddings <- textEmbedLayerAggreation(word_embeddings_layers)
+#' help(textEmbedLayerAggregation)
+#' word_embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1])
+#' wordembeddings <- textEmbedLayerAggregation(word_embeddings_layers, layers = 11)
 #' }
 #' @seealso see \code{\link{textEmbedLayersOutput}} and \code{\link{textEmbed}}
 #' @importFrom dplyr %>% bind_rows
 #' @export
-textEmbedLayerAggreation <- function(word_embeddings_layers,
+textEmbedLayerAggregation <- function(word_embeddings_layers,
                                      layers = 11:12,
                                      aggregate_layers = "concatenate",
                                      aggregate_tokens = "mean",
@@ -405,7 +407,7 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
     original_comment <- comment(word_embeddings_layers)
     layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
     comment(selected_layers_aggregated_tibble[[variable_list_i]]) <- paste(original_comment,
-      "textEmbedLayerAggreation: layers = ",
+      "textEmbedLayerAggregation: layers = ",
       layers_string,
       "aggregate_layers = ",
       aggregate_layers,
@@ -433,7 +435,7 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 #' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient to
 #' only extract the layers that you need (e.g., 12).
 #' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
-#' These layers can then be aggregated in the textEmbedLayerAggreation function. If you want all layers then use 'all'.
+#' These layers can then be aggregated in the textEmbedLayerAggregation function. If you want all layers then use 'all'.
 #' @param contexts Provide word embeddings based on word contexts
 #' (standard method; default = TRUE).
 #' @param decontexts Provide word embeddings of single words as input
@@ -477,7 +479,7 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 #' # Example 2
 #' wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 #' }
-#' @seealso see \code{\link{textEmbedLayerAggreation}} and \code{\link{textEmbedLayersOutput}}
+#' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbedLayersOutput}}
 #' @export
 textEmbed <- function(x,
                       model = "bert-base-uncased",
@@ -508,7 +510,7 @@ textEmbed <- function(x,
   )
 
   # Aggregate context layers
-  contextualised_embeddings <- textEmbedLayerAggreation(
+  contextualised_embeddings <- textEmbedLayerAggregation(
     word_embeddings_layers = all_wanted_layers$context,
     layers = context_layers,
     aggregate_layers = context_aggregation_layers,
@@ -517,7 +519,7 @@ textEmbed <- function(x,
   )
 
   # Aggregate DEcontext layers (in case they should be added differently from context)
-  decontextualised_embeddings <- textEmbedLayerAggreation(
+  decontextualised_embeddings <- textEmbedLayerAggregation(
     word_embeddings_layers = all_wanted_layers$decontext$single_we,
     layers = decontext_layers,
     aggregate_layers = decontext_aggregation_layers,

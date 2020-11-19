@@ -34,7 +34,7 @@ textEmbed(
 \item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient to
 only extract the layers that you need (e.g., 12).
 Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
-These layers can then be aggregated in the textEmbedLayerAggreation function. If you want all layers then use 'all'.}
+These layers can then be aggregated in the textEmbedLayerAggregation function. If you want all layers then use 'all'.}
 
 \item{contexts}{Provide word embeddings based on word contexts
 (standard method; default = TRUE).}
@@ -96,5 +96,5 @@ wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext
 }
 }
 \seealso{
-see \code{\link{textEmbedLayerAggreation}} and \code{\link{textEmbedLayersOutput}}
+see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbedLayersOutput}}
 }
