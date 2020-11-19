@@ -345,30 +345,10 @@ summarize_tune_results <- function(object,
   )
 }
 
-
-#x <- wordembeddings4$harmonytext
-#y <- Language_based_assessment_data_8$hilstotal
-#
-#outside_folds_v = 10
-#outside_strata_y = "y"
-#inside_folds_prop = 3 / 4
-#inside_strata_y = "y"
-#model = "regression"
-#eval_measure = "default"
-#preprocess_PCA = NA
-#penalty = 1
-#mixture = c(0)
-#Npredictors = 10
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
-
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
-#' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation).
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation).
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 #' @param outside_folds_v Number of folds for the outer folds (default = 10).
@@ -408,7 +388,7 @@ summarize_tune_results <- function(object,
 #'   ratings_data$hilstotal
 #' )
 #' }
-#' @seealso see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}
+#' @seealso see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
 #' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 #' @importFrom stats cor.test na.omit lm
 #' @importFrom dplyr select starts_with filter all_of
@@ -652,8 +632,8 @@ textTrainRegression <- function(x,
     # If testing N first predictors help(step_scale) Npredictors = 3
     if (!is.na(Npredictors)) {
       #Select y and id
-      Nvariable_totals <- length(data)
-      variable_names <- colnames(data[(Npredictors+1):(Nvariable_totals-2)])
+      Nvariable_totals <- length(xy_short)
+      variable_names <- colnames(xy_short[(Npredictors+1):(Nvariable_totals-2)])
     }else {
       variable_names = "id_nr"
     }

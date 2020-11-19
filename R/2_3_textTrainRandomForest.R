@@ -389,33 +389,6 @@ summarize_tune_results_rf <- function(object,
 }
 
 
-
-
-#library(magrittr)
-#x <- wordembeddings4$harmonywords
-#y <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
-#
-#
-#outside_folds_v = 10
-#outside_strata_y = "y"
-#inside_folds_prop = 3 / 4
-#inside_strata_y = "y"
-#mode_rf = "classification"
-#preprocess_PCA = NA
-#extremely_randomised_splitrule = "extratrees"
-#mtry = c(1, 10, 20, 40)
-#min_n = c(1, 10, 20, 40)
-#trees = c(1000)
-#eval_measure = "bal_accuracy"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
-#
-
-
-
-
 #' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Word embeddings from textEmbed.

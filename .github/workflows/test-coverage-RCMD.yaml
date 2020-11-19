@@ -20,10 +20,10 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   r: 'release'}
-#          - {os: windows-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
 #          - {os: windows-latest, r: '3.6'}
 #          - {os: ubuntu-16.04,   r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest", http-user-agent: "R/4.0.0 (ubuntu-16.04) R (4.0.0 x86_64-pc-linux-gnu x86_64 linux-gnu) on GitHub Actions" }
-#          - {os: ubuntu-16.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
+          - {os: ubuntu-16.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 #          - {os: ubuntu-16.04,   r: 'oldrel',  rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 #          - {os: ubuntu-16.04,   r: '3.5',     rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 #          - {os: ubuntu-16.04,   r: '3.4',     rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
@@ -114,119 +114,3 @@ jobs:
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
-
-
-
-
-
-#########
-###
-###
-###
-###on:
-###  push:
-###    branches:
-###      - master
-###  pull_request:
-###    branches:
-###      - master
-###
-###name: R-CMD-check
-###
-###
-###jobs:
-###  R-CMD-check:
-###    runs-on: ${{ matrix.config.os }}
-###
-###    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
-###
-###    strategy:
-###      fail-fast: false
-###      matrix:
-###        config:
-###          - {os: windows-latest, r: 'devel'}
-###          - {os: windows-latest, r: 'release'}
-####          - {os: macOS-latest, r: 'release', old_dplyr: true,  dev_tidymodels: true}
-####          - {os: macOS-latest, r: 'release', old_dplyr: true,  dev_tidymodels: false}
-####          - {os: macOS-latest, r: 'release', old_dplyr: false, dev_tidymodels: true}
-####          - {os: ubuntu-16.04, r: 'devel', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
-####          - {os: macOS-latest, r: 'release'}
-###          - {os: macOS-latest, r: 'devel'}
-###          - {os: ubuntu-16.04, r: 'release'}
-####          - {os: ubuntu-16.04, r: 'devel'}
-###    env:
-###      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-###      RSPM: ${{ matrix.config.rspm }}
-###      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-###    steps:
-###      - uses: actions/checkout@v2
-###
-###      - uses: actions/setup-python@v2
-###        with:
-###           python-version: 3.6
-###
-###      - uses: goanpeca/setup-miniconda@v1
-###        with:
-###          auto-update-conda: true
-###          python-version: 3.6
-###
-###      - uses: r-lib/actions/setup-r@master
-###        with:
-###          r-version: 4.0.3
-###          http-user-agent: ${{ matrix.config.http-user-agent }} # added this
-###
-###      - uses: r-lib/actions/setup-pandoc@master
-###
-###      - name: Install Python dependencies
-###        run: |
-###          python -m pip install --upgrade pip
-###          pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
-###          pip install transformers==3.3.1
-###          pip install nltk
-###          pip install numpy
-###
-###      - name: Query dependencies
-###        run: |
-###          install.packages('remotes')
-###          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-###          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-###        shell: Rscript {0}
-###
-###      - name: Cache R packages
-###        uses: actions/cache@v1
-###        with:
-###          path: ${{ env.R_LIBS_USER }}
-###          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-###          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
-###
-###      - name: Install dependencies
-###        run: |
-###          install.packages(c("remotes"))
-###          remotes::install_deps(dependencies = TRUE)
-###          remotes::install_cran("covr")
-###          remotes::install_cran("rcmdcheck")
-###        shell: Rscript {0}
-###
-####      - name: Test coverage
-####        run: covr::codecov()
-####        shell: Rscript {0}
-###
-###
-###      - name: Check
-###        env:
-###          _R_CHECK_CRAN_INCOMING_: false
-###        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
-###        shell: Rscript {0}
-###
-####      - name: Show testthat output
-####        if: always()
-####        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-####        shell: bash
-###
-###      - name: Upload check results
-###        if: always()
-###        uses: actions/upload-artifact@master
-###        with:
-###          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-###          path: check
-

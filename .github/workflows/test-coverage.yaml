@@ -11,6 +11,12 @@ name: test-coverage
 jobs:
   test-coverage:
     runs-on: macOS-latest
+
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -19,7 +25,6 @@ jobs:
            python-version: 3.6
 
       - uses: goanpeca/setup-miniconda@v1
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           auto-update-conda: true
           python-version: 3.6
