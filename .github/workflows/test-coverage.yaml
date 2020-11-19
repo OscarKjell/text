@@ -11,10 +11,11 @@ name: test-coverage
 jobs:
   test-coverage:
     runs-on: macOS-latest
+    ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     steps:
       - uses: actions/checkout@v2
 
-     - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
            python-version: 3.6
 
