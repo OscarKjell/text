@@ -16,6 +16,7 @@ textTrainRegression(
   preprocess_PCA = NA,
   penalty = 10^seq(-16, 16),
   mixture = c(0),
+  Npredictors = NA,
   method_cor = "pearson",
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
@@ -52,6 +53,11 @@ preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(5
 
 \item{mixture}{hyper parameter that is tuned default = 0 (hence a pure ridge regression).}
 
+\item{Npredictors}{by efault this setting is turned of (i.e., NA). The setting uses  set to the highest number of predictors you want to test.
+Then the X first dimensions are used in training, using a sequence from Kjell et al., 2019 paper in Psychological Methods.
+Adding 1, then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
+This option is currently only possible for one embedding at the time.}
+
 \item{method_cor}{Type of correlation used in evaluation (default "pearson";
 can set to "spearman" or "kendall").}
 
@@ -72,7 +78,7 @@ about the model (preprossing_recipe, final_model and model_description).
 Train word embeddings to a numeric variable.
 }
 \examples{
-\dontrun{
+\donttest{
 wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
 

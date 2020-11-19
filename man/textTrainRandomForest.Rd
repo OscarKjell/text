@@ -78,7 +78,7 @@ these measures see the yardstick r-package documentation).
 Train word embeddings to a categorical variable using random forrest.
 }
 \examples{
-\dontrun{
+\donttest{
 wordembeddings <- wordembeddings4
 example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
 results <- textTrainRandomForest(wordembeddings$harmonywords,

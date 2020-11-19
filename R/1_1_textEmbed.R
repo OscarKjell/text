@@ -219,7 +219,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @return A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
 #' input embedding to the transformer, and should normally not be used.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' x <- Language_based_assessment_data_8[1:2, 1:2]
 #' word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
 #' }
@@ -344,7 +344,7 @@ textEmbedLayersOutput <- function(x,
 #' @return A tibble with word embeddings. Note that layer 0 is the input embedding to
 #' the transformer, which is normally not used.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' wordembeddings <- textEmbedLayerAggreation(word_embeddings_layers)
 #' }
 #' @seealso see \code{\link{textEmbedLayersOutput}} and \code{\link{textEmbed}}
@@ -466,7 +466,7 @@ textEmbedLayerAggreation <- function(word_embeddings_layers,
 #' @return A tibble with tokens, a column for layer identifier and word embeddings.
 #' Note that layer 0 is the input embedding to the transformer
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' x <- Language_based_assessment_data_8[1:2, 1:2]
 #' # Example 1
 #' wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)

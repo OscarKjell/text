@@ -43,7 +43,7 @@ input embedding to the transformer, and should normally not be used.
 Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 }
 \examples{
-\dontrun{
+\donttest{
 x <- Language_based_assessment_data_8[1:2, 1:2]
 word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
 }

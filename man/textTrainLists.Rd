@@ -49,7 +49,7 @@ to have  word embeddings from one text variable and several numeric/categprical 
 several text variables to one numeric/categorical variable. It is not possible to mix numeric and categorical variables.
 }
 \examples{
-\dontrun{
+\donttest{
 wordembeddings <- wordembeddings4[1:2]
 ratings_data <- Language_based_assessment_data_8[5:6]
 results <- textTrainLists(

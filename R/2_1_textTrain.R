@@ -13,7 +13,7 @@
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' wordembeddings <- wordembeddings4
 #' ratings_data <- Language_based_assessment_data_8
 #' results <- textTrain(
@@ -252,7 +252,7 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' wordembeddings <- wordembeddings4[1:2]
 #' ratings_data <- Language_based_assessment_data_8[5:6]
 #' results <- textTrainLists(

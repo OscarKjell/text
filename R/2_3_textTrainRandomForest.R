@@ -447,7 +447,7 @@ summarize_tune_results_rf <- function(object,
 #' chisq and fishers test as well as evaluation measures, e.g., including accuracy, f_meas and roc_auc (for details on
 #' these measures see the yardstick r-package documentation).
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' wordembeddings <- wordembeddings4
 #' example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
 #' results <- textTrainRandomForest(wordembeddings$harmonywords,

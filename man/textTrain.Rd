@@ -25,7 +25,7 @@ A correlation between predicted and observed values; as well as a tibble of pred
 Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 }
 \examples{
-\dontrun{
+\donttest{
 wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
 results <- textTrain(

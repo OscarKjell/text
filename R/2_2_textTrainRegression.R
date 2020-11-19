@@ -12,8 +12,7 @@ statisticalMode <- function(x) {
   ux[which.max(tabulate(match(x, ux)))]
 }
 
-
-
+# library(magrittr)
 #' Function to fit a model and compute RMSE.
 #'
 #' @param object An rsplit object (from results_nested_resampling tibble)
@@ -22,19 +21,32 @@ statisticalMode <- function(x) {
 #' @param mixture hyperparameter for ridge regression.
 #' @param preprocess_PCA threshold for pca; preprocess_PCA = NA
 #' @param variable_name_index_pca variable with names to know how to keep variables
-#' from same word embedding together in separate pcas
+#' from same word embedding together in separate pca:s
 #' @return  RMSE.
 #' @noRd
 fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", penalty = 1, mixture = 0,
-                           preprocess_PCA = NA, variable_name_index_pca = NA) {
+                           preprocess_PCA = NA, variable_name_index_pca = NA, Npredictors = NA) {
 
-  # Recipe for one embedding input
-  if (colnames(rsample::analysis(object)[1]) == "Dim1") {
-    xy_recipe <- rsample::analysis(object) %>%
+
+  data <- rsample::analysis(object)
+  data <- tibble::as_tibble(data)
+
+  # If testing N first predictors help(step_scale) Npredictors = 3
+  if (!is.na(Npredictors)) {
+      #Select y and id
+      Nvariable_totals <- length(data)
+      variable_names <- colnames(data[(Npredictors+1):(Nvariable_totals-2)])
+  }else {
+    variable_names = "id_nr"
+      }
+
+  # Recipe for one embedding input summary(xy_recipe)
+  if (colnames(data[1]) == "Dim1") {
+    xy_recipe <- data %>%
       recipes::recipe(y ~ .) %>%
-      # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
+      recipes::update_role(variable_names, new_role = "Not_predictors") %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(-id_nr, new_role = "predictor") %>%
+      #recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
       recipes::step_naomit(Dim1, skip = TRUE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
@@ -57,10 +69,10 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
 
     # Recipe for multiple word embedding input (with possibility of separate PCAs)
   } else {
-    #V1 <- colnames(rsample::analysis(object)[1])
+    #V1 <- colnames(data[1])
     #V1 <- comment(model)
 
-    xy_recipe <- rsample::analysis(object) %>%
+    xy_recipe <- data %>%
       recipes::recipe(y ~ .) %>%
       # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
       recipes::update_role(id_nr, new_role = "id variable") %>%
@@ -192,14 +204,16 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
                                    model,
                                    eval_measure,
                                    preprocess_PCA = preprocess_PCA,
-                                   variable_name_index_pca = variable_name_index_pca) {
+                                   variable_name_index_pca = variable_name_index_pca,
+                                   Npredictors = Npredictors) {
   fit_model_rmse(object,
     model,
     eval_measure,
     penalty,
     mixture,
     preprocess_PCA = preprocess_PCA,
-    variable_name_index_pca = variable_name_index_pca
+    variable_name_index_pca = variable_name_index_pca,
+    Npredictors = Npredictors
   )
 }
 
@@ -214,7 +228,14 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
 #' from same word embedding together in separate pcas
 #' @return RMSE.
 #' @noRd
-tune_over_cost <- function(object, model, eval_measure, penalty, mixture, preprocess_PCA = preprocess_PCA, variable_name_index_pca = variable_name_index_pca) {
+tune_over_cost <- function(object,
+                           model,
+                           eval_measure,
+                           penalty,
+                           mixture,
+                           preprocess_PCA = preprocess_PCA,
+                           variable_name_index_pca = variable_name_index_pca,
+                           Npredictors = Npredictors) {
 
   # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
   if (!is.na(preprocess_PCA[1])) {
@@ -236,17 +257,35 @@ tune_over_cost <- function(object, model, eval_measure, penalty, mixture, prepro
     preprocess_PCA_value <- NA
   }
 
+  ## Sequence to select dimensions from the semreps. SM-article state: "Adding 1, then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8, where the next number of dimensions to be tested are the first 12; in other words ([8 +􏰄 1*] 􏱡 1.3)
+  if(!is.na(Npredictors)){
+    stop = Npredictors
+   new_num = 1
+   selection_vector = 1
+   while(new_num < stop) {
+     new_num  <-  round((new_num + 1) * 1.3)
+     selection_vector  <-  c(selection_vector, new_num)
+   }
+   #Changing the last number to the maximum number of dimensions
+   selection_vector[length(selection_vector)] <- Npredictors
+   Npredictors <- selection_vector
+   Npredictors
+  }
+
+
   grid_inner <- base::expand.grid(
     penalty = penalty,
     mixture = mixture,
-    preprocess_PCA = preprocess_PCA_value
+    preprocess_PCA = preprocess_PCA_value,
+    Npredictors = Npredictors
   )
 
   # Test models with the different hyperparameters for the inner samples
   tune_results <- purrr::pmap(list(
     grid_inner$penalty,
     grid_inner$mixture,
-    grid_inner$preprocess_PCA
+    grid_inner$preprocess_PCA,
+    grid_inner$Npredictors
   ),
   fit_model_rmse_wrapper,
   object = object,
@@ -289,7 +328,8 @@ summarize_tune_results <- function(object,
                                    penalty,
                                    mixture,
                                    preprocess_PCA = preprocess_PCA,
-                                   variable_name_index_pca = variable_name_index_pca) {
+                                   variable_name_index_pca = variable_name_index_pca,
+                                   Npredictors = Npredictors) {
 
   # Return row-bound tibble containing the INNER results
   purrr::map_df(
@@ -300,12 +340,30 @@ summarize_tune_results <- function(object,
     preprocess_PCA = preprocess_PCA,
     variable_name_index_pca = variable_name_index_pca,
     model = model,
-    eval_measure = eval_measure
+    eval_measure = eval_measure,
+    Npredictors = Npredictors
   )
 }
 
 
-
+#x <- wordembeddings4$harmonytext
+#y <- Language_based_assessment_data_8$hilstotal
+#
+#outside_folds_v = 10
+#outside_strata_y = "y"
+#inside_folds_prop = 3 / 4
+#inside_strata_y = "y"
+#model = "regression"
+#eval_measure = "default"
+#preprocess_PCA = NA
+#penalty = 1
+#mixture = c(0)
+#Npredictors = 10
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#seed = 2020
 
 # devtools::document()
 #' Train word embeddings to a numeric variable.
@@ -327,6 +385,10 @@ summarize_tune_results <- function(object,
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
 #' @param penalty hyper parameter that is tuned
 #' @param mixture hyper parameter that is tuned default = 0 (hence a pure ridge regression).
+#' @param Npredictors by efault this setting is turned of (i.e., NA). The setting uses  set to the highest number of predictors you want to test.
+#' Then the X first dimensions are used in training, using a sequence from Kjell et al., 2019 paper in Psychological Methods.
+#' Adding 1, then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
+#' This option is currently only possible for one embedding at the time.
 #' @param method_cor Type of correlation used in evaluation (default "pearson";
 #' can set to "spearman" or "kendall").
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
@@ -337,7 +399,7 @@ summarize_tune_results <- function(object,
 #' @return A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information
 #' about the model (preprossing_recipe, final_model and model_description).
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' wordembeddings <- wordembeddings4
 #' ratings_data <- Language_based_assessment_data_8
 #'
@@ -369,6 +431,7 @@ textTrainRegression <- function(x,
                                 preprocess_PCA = NA,
                                 penalty = 10^seq(-16, 16),
                                 mixture = c(0),
+                                Npredictors = NA,
                                 method_cor = "pearson",
                                 model_description = "Consider writing a description of your model here",
                                 multi_cores = "multi_cores_sys_default",
@@ -497,7 +560,8 @@ textTrainRegression <- function(x,
       penalty = penalty,
       mixture = mixture,
       preprocess_PCA = preprocess_PCA,
-      variable_name_index_pca = variable_name_index_pca
+      variable_name_index_pca = variable_name_index_pca,
+      Npredictors = Npredictors
     )
   } else if (multi_cores_use == TRUE) {
     # The multisession plan uses the local cores to process the inner resampling loop. help(multisession)
@@ -511,7 +575,8 @@ textTrainRegression <- function(x,
       penalty = penalty,
       mixture = mixture,
       preprocess_PCA = preprocess_PCA,
-      variable_name_index_pca = variable_name_index_pca
+      variable_name_index_pca = variable_name_index_pca,
+      Npredictors = Npredictors
     )
   }
 
@@ -523,7 +588,7 @@ textTrainRegression <- function(x,
   hyper_parameter_vals <-
     tuning_results %>%
     purrr::map_df(bestParameters) %>%
-    dplyr::select(c(penalty, mixture, preprocess_PCA))
+    dplyr::select(c(penalty, mixture, preprocess_PCA, Npredictors))
 
   # Bind best results
   results_split_parameter <-
@@ -539,6 +604,7 @@ textTrainRegression <- function(x,
       penalty = results_split_parameter$penalty,
       mixture = results_split_parameter$mixture,
       preprocess_PCA = results_split_parameter$preprocess_PCA,
+      Npredictors = results_split_parameter$Npredictors,
       variable_name_index_pca = list(variable_name_index_pca),
       model = model,
       eval_measure = eval_measure
@@ -582,11 +648,22 @@ textTrainRegression <- function(x,
 
   ######### One word embedding as input
   if (colnames(xy_short[1]) == "Dim1") {
+
+    # If testing N first predictors help(step_scale) Npredictors = 3
+    if (!is.na(Npredictors)) {
+      #Select y and id
+      Nvariable_totals <- length(data)
+      variable_names <- colnames(data[(Npredictors+1):(Nvariable_totals-2)])
+    }else {
+      variable_names = "id_nr"
+    }
+
     # [0,] is added to just get the col names (and avoid saving all the data with the receipt)
     final_recipe <- # xy %>%
       recipes::recipe(y ~ ., xy_short[0, ]) %>%
+      recipes::update_role(all_of(variable_names), new_role = "Not_predictors") %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(-id_nr, new_role = "predictor") %>%
+     # recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
       # recipes::step_BoxCox(all_predictors()) %>%
       recipes::step_naomit(Dim1, skip = TRUE) %>%
@@ -642,7 +719,7 @@ textTrainRegression <- function(x,
   }
 
 
-  # Creating recipe in another environment sto avoid saving unnessarily large parts of the environment
+  # Creating recipe in another environment to avoid saving unnecessarily large parts of the environment
   # when saving the object to rda, rds or Rdata.
   # http://r.789695.n4.nabble.com/Model-object-when-generated-in-a-function-saves-entire-environment-when-saved-td4723192.html
   recipe_save_small_size <- function(final_recipe, xy_short){

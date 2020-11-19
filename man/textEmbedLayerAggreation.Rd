@@ -43,7 +43,7 @@ the transformer, which is normally not used.
 Select and aggregate layers of hidden states to form a word embeddings.
 }
 \examples{
-\dontrun{
+\donttest{
 wordembeddings <- textEmbedLayerAggreation(word_embeddings_layers)
 }
 }

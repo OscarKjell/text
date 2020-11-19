@@ -14,7 +14,8 @@ Authors@R: c(
     )
 Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables, and visual statistically significant words according to various dimensions etc.   
 License: GPL-3
-URL: https://github.com/OscarKjell/text/
+URL: https://r-text.org/, 
+https://github.com/OscarKjell/text/
 BugReports: https://github.com/OscarKjell/text/issues/
 Encoding: UTF-8
 Archs: x64
