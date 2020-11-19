@@ -24,6 +24,6 @@ wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
 }
 \seealso{
-see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}
+see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
 \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 }

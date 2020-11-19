@@ -25,7 +25,7 @@ textTrainRegression(
 )
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation).}
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation).}
 
 \item{y}{Numeric variable to predict.}
 
@@ -89,6 +89,6 @@ results <- textTrainRegression(
 }
 }
 \seealso{
-see \code{\link{textEmbedLayerAggreation}} \code{\link{textTrainLists}}
+see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
 \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 }

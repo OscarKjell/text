@@ -19,7 +19,7 @@ textTrainLists(
 )
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation).}
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation).}
 
 \item{y}{Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
 categorical variables.}
