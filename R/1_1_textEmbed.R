@@ -345,8 +345,8 @@ textEmbedLayersOutput <- function(x,
 #' the transformer, which is normally not used.
 #' @examples
 #' \donttest{
-#' word_embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1], layers = 11:12)
-#' wordembeddings <- textEmbedLayerAggregation(word_embeddings_layers$context, layers = 11:12)
+#' word_embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1], layers = 11)
+#' wordembeddings <- textEmbedLayerAggregation(word_embeddings_layers$context, layers = 11)
 #' }
 #' @seealso see \code{\link{textEmbedLayersOutput}} and \code{\link{textEmbed}}
 #' @importFrom dplyr %>% bind_rows
