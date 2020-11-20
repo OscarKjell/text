@@ -40,11 +40,11 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     variable_names = "id_nr"
       }
 
-  # Recipe for one embedding input summary(xy_recipe)
+  # Recipe for one embedding input summary(xy_recipe) help(all_of)
   if (colnames(data_train[1]) == "Dim1") {
     xy_recipe <- data_train %>%
       recipes::recipe(y ~ .) %>%
-      recipes::update_role(variable_names, new_role = "Not_predictors") %>%
+      recipes::update_role(dplyr::all_of(variable_names), new_role = "Not_predictors") %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
       #recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
@@ -345,6 +345,34 @@ summarize_tune_results <- function(object,
   )
 }
 
+
+
+#x = wordembeddings4$harmonytext
+#y = Language_based_assessment_data_8$hilstotal
+#
+#outside_folds_v = 10
+#outside_strata_y = "y"
+#inside_folds_prop = 3 / 4
+#inside_strata_y = "y"
+#model = "regression"
+#eval_measure = "default"
+#preprocess_PCA = NA
+#penalty = 10^seq(-16, 16)
+#mixture = c(0)
+#Npredictors = NA
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#seed = 2020
+
+
+
+
+
+
+
+
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
@@ -544,9 +572,11 @@ textTrainRegression <- function(x,
       Npredictors = Npredictors
     )
   } else if (multi_cores_use == TRUE) {
-    # The multisession plan uses the local cores to process the inner resampling loop. help(multisession)
+    # The multisession plan uses the local cores to process the inner resampling loop.
+    # help(multisession) help(plan)
     future::plan(future::multisession)
     # The object tuning_results is a list of data frames for each of the OUTER resamples.
+    # help(future_map)
     tuning_results <- furrr::future_map(
       .x = results_nested_resampling$inner_resamples,
       .f = summarize_tune_results,
