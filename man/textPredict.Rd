@@ -4,12 +4,14 @@
 \alias{textPredict}
 \title{Predict scores or classification from, e.g., textTrain.}
 \usage{
-textPredict(model_info, new_data, ...)
+textPredict(model_info, new_data, type = NULL, ...)
 }
 \arguments{
 \item{model_info}{Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).}
 
 \item{new_data}{Word embeddings from new data to be predicted from.}
+
+\item{type}{Type of prediction; e.g., "prob", "class"}
 
 \item{...}{From predict}
 }
@@ -24,6 +26,6 @@ wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
 }
 \seealso{
-see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
+see \code{\link{textTrain}} \code{\link{textTrainLists}}
 \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 }

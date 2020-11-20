@@ -19,7 +19,7 @@ textTrainLists(
 )
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation).}
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation).}
 
 \item{y}{Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
 categorical variables.}
@@ -49,7 +49,7 @@ to have  word embeddings from one text variable and several numeric/categprical 
 several text variables to one numeric/categorical variable. It is not possible to mix numeric and categorical variables.
 }
 \examples{
-\donttest{
+\dontrun{
 wordembeddings <- wordembeddings4[1:2]
 ratings_data <- Language_based_assessment_data_8[5:6]
 results <- textTrainLists(

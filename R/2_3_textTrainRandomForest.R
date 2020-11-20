@@ -1,5 +1,4 @@
-
-
+#library(magrittr)
 #  devtools::document()
 #' Select evaluation measure and compute it (also used in logistic regression)
 #'
@@ -72,9 +71,9 @@ classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
   kappa <- yardstick::kap(predy_y, truth, estimate, ...)
   f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...)
 
-  roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[4]))
-  roc_curve_data <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[4]))
-  roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[4])))
+  roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3]))
+  roc_curve_data <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[3]))
+  roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[3])))
 
   results_collected <- dplyr::bind_rows(
     accuracy,
@@ -213,7 +212,7 @@ fit_model_accuracy_rf <- function(object,
     dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
   holdout_pred$.pred_class <- holdout_pred_class$.pred_class
-  class <- colnames(holdout_pred[1])
+  class <- colnames(holdout_pred[2])
 
   eval_measure_val <- select_eval_measure_val(eval_measure = eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred_class, class = class)
 

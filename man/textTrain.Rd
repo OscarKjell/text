@@ -7,7 +7,7 @@
 textTrain(x, y, force_train_method = "automatic", ...)
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation). Can analyze several variables at the same time; but if training to several
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation). Can analyze several variables at the same time; but if training to several
 outcomes at the same time use a tibble within the list as input rather than just a tibble input (i.e., keep the name of the wordembedding).}
 
 \item{y}{Numeric variable to predict. Can be several; although then make sure to have them within a tibble (this is required
@@ -25,7 +25,7 @@ A correlation between predicted and observed values; as well as a tibble of pred
 Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 }
 \examples{
-\donttest{
+\dontrun{
 wordembeddings <- wordembeddings4
 ratings_data <- Language_based_assessment_data_8
 results <- textTrain(

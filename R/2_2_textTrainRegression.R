@@ -1,8 +1,4 @@
 
-
-
-
-
 #' Function to find the mode
 #' @param x vector with numbers
 #' @return  Mode value
@@ -159,7 +155,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
       dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
     holdout_pred$.pred_class <- holdout_pred_class$.pred_class
-    class <- colnames(holdout_pred[1])
+    class <- colnames(holdout_pred[2])
 
     # Get RMSE; eval_measure = "rmse"
     eval_result <- select_eval_measure_val(eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred_class)$.estimate
@@ -346,33 +342,6 @@ summarize_tune_results <- function(object,
 }
 
 
-
-#x = wordembeddings4$harmonytext
-#y = Language_based_assessment_data_8$hilstotal
-#
-#outside_folds_v = 10
-#outside_strata_y = "y"
-#inside_folds_prop = 3 / 4
-#inside_strata_y = "y"
-#model = "regression"
-#eval_measure = "default"
-#preprocess_PCA = NA
-#penalty = 10^seq(-16, 16)
-#mixture = c(0)
-#Npredictors = NA
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
-
-
-
-
-
-
-
-
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
@@ -413,7 +382,8 @@ summarize_tune_results <- function(object,
 #'
 #' results <- textTrainRegression(
 #'   wordembeddings$harmonytext,
-#'   ratings_data$hilstotal
+#'   ratings_data$hilstotal,
+#'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}

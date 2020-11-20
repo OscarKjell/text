@@ -4,7 +4,7 @@
 # devtools::document()
 #' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 #'
-#' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). Can analyze several variables at the same time; but if training to several
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation). Can analyze several variables at the same time; but if training to several
 #' outcomes at the same time use a tibble within the list as input rather than just a tibble input (i.e., keep the name of the wordembedding).
 #' @param y Numeric variable to predict. Can be several; although then make sure to have them within a tibble (this is required
 #' even if it is only one outcome but several word embeddings variables).
@@ -13,7 +13,7 @@
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' wordembeddings <- wordembeddings4
 #' ratings_data <- Language_based_assessment_data_8
 #' results <- textTrain(
@@ -238,7 +238,7 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
 #' to have  word embeddings from one text variable and several numeric/categprical variables; or vice verse, word embeddings from
 #' several text variables to one numeric/categorical variable. It is not possible to mix numeric and categorical variables.
-#' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation).
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation).
 #' @param y Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
 #' categorical variables.
 #' @param force_train_method default is automatic; see also "regression" and "random_forest".
@@ -252,7 +252,7 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
 #' @return Correlations between predicted and observed values.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' wordembeddings <- wordembeddings4[1:2]
 #' ratings_data <- Language_based_assessment_data_8[5:6]
 #' results <- textTrainLists(
@@ -291,7 +291,16 @@ textTrainLists <- function(x,
     names(x) <- x_name
   }
 
-    if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "automatic") {
+  # Force or decide regression or random forest (and select only categorical or numeric variables for multiple input).
+  if (is.numeric(y) == TRUE & force_train_method == "automatic") {
+    train_method <- "regression"
+  } else if (force_train_method == "regression") {
+    train_method <- "regression"
+  } else if (is.factor(y) == TRUE & force_train_method == "automatic") {
+    train_method <- "random_forest"
+  } else if (force_train_method == "random_forest") {
+    train_method <- "random_forest"
+  } else if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "automatic") {
 
     # Create a dataframe only comprising numeric or categorical depending on most frequent type
     # Select all numeric variables
@@ -313,8 +322,7 @@ textTrainLists <- function(x,
     y <- dplyr::select_if(y, is.factor)
     train_method <- "random_forest"
   }
-
-
+  # length(y)
   # Get variable names in the list of outcomes.
   variables <- names(y)
   # Duplicate variable names to as many different word embeddings there are in x.
@@ -350,6 +358,8 @@ textTrainLists <- function(x,
 
     results <- sort_classification_output_list(output = output, save_output = save_output, descriptions = descriptions)
     results$results$p_value_corrected <- stats::p.adjust(as.numeric(results$results$p_value), method = p_adjust_method)
+    # Combine output
+    #
   }
 
   # Time
@@ -373,18 +383,19 @@ textTrainLists <- function(x,
 #'
 #' @param model_info Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
 #' @param new_data Word embeddings from new data to be predicted from.
+#' @param  type Type of prediction; e.g., "prob", "class"
 #' @param ... From predict
 #' @return Predicted scores from word embeddings.
 #' @examples
 #' wordembeddings <- wordembeddings4
 #' ratings_data <- Language_based_assessment_data_8
-#' @seealso see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
+#' @seealso see \code{\link{textTrain}} \code{\link{textTrainLists}}
 #' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 #' @importFrom recipes prep bake
 #' @importFrom stats predict
 #' @importFrom tibble is_tibble as_tibble_col
 #' @export
-textPredict <- function(model_info, new_data, ...) {
+textPredict <- function(model_info, new_data, type = NULL, ...) {
 
   # In case the embedding is in list form get the tibble form
   if (!tibble::is_tibble(new_data) & length(new_data) == 1) {
@@ -446,7 +457,7 @@ textPredict <- function(model_info, new_data, ...) {
 
   # Get scores
   predicted_scores <- data_prepared_with_recipe %>%
-    bind_cols(predict(model_info$final_model, new_data = data_prepared_with_recipe, ...)) %>% #
+    bind_cols(stats::predict(model_info$final_model, new_data = data_prepared_with_recipe, type = type, ...)) %>%
     select(-!!colnames_to_b_removed) %>%
     full_join(new_data_id_nr_col, by = "id_nr") %>%
     arrange(id_nr) %>%
