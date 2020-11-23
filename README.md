@@ -5,16 +5,16 @@
 
 <!-- badges: start -->
 
-[![Lifecycle:
-maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-<!--    [![CRAN Status](https://www.r-pkg.org/badges/version/text)](https://cran.r-project.org/package=text) -->
+[![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://codecov.io/gh/oscarkjell/text)
+[![CRAN
+Status](https://www.r-pkg.org/badges/version/text)](https://cran.r-project.org/package=text)
 [![Github build
 status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
-[![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://codecov.io/gh/oscarkjell/text)
-
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 
 <!-- badges: end -->
 
@@ -45,11 +45,11 @@ Most users simply need to run below installation code. For those
 experiencing problems, please see the [Extended Installation
 Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
 
-<!--[CRAN](https://CRAN.R-project.org) version:
+[CRAN](https://cran.r-project.org/web/packages/text/index.html) version:
 
 ``` r
 install.packages("text")
-```-->
+```
 
 [GitHub](https://github.com/) development version:
 
