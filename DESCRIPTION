@@ -12,10 +12,9 @@ Authors@R: c(
     person("Andrew", "Schwartz", role = c("aut"), 
       comment = c(ORCID = "0000-0002-6383-3339"))
     )
-Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables, and visual statistically significant words according to various dimensions etc.   
+Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables, and visual statistically significant words according to various dimensions etc. For more information see  <https://www.r-text.org>.
 License: GPL-3
-URL: https://r-text.org/, 
-https://github.com/OscarKjell/text/
+URL: https://r-text.org/, https://github.com/OscarKjell/text/
 BugReports: https://github.com/OscarKjell/text/issues/
 Encoding: UTF-8
 Archs: x64
