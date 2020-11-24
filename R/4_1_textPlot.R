@@ -21,6 +21,7 @@ unique_freq_words <- function(words) {
 
 
 
+
 ####################################
 ####################################
 ##################
@@ -363,6 +364,7 @@ textProjection <- function(words,
 }
 #### End textProjection
 #############
+
 
 
 #' Plot words according to Supervised Bicentroid Projection.
@@ -795,12 +797,11 @@ textProjectionPlot <- function(word_data,
 
   # Word data adjusted for if y_axes exists
   if (y_axes == TRUE) {
-    word_data_all_yadjusted <- word_data_all[word_data_all$extremes_all_x == 1 | word_data_all$extremes_all_y == 1, ]
+    word_data_all_yadjusted <- word_data_all[word_data_all$extremes_all_x >= 1 | word_data_all$extremes_all_y >= 1, ]
   } else if (y_axes == FALSE) {
-    word_data_all_yadjusted <- word_data_all[word_data_all$extremes_all_x == 1, ]
+    word_data_all_yadjusted <- word_data_all[word_data_all$extremes_all_x >= 1, ]
   }
 
-  # Plot
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
     ggplot2::ggplot(data = word_data_all, ggplot2::aes(!!rlang::sym(x_axes_1), !!rlang::sym(y_axes_1), label = words)) +
