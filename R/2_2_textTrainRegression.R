@@ -342,6 +342,29 @@ summarize_tune_results <- function(object,
 }
 
 
+
+
+#x = wordembeddings4$harmonywords
+#y = Language_based_assessment_data_8$hilstotal
+#outside_folds_v = 10
+#outside_strata_y = "y"
+#inside_folds_prop = 3 / 4
+#inside_strata_y = "y"
+#model = "regression"
+#eval_measure = "default"
+#preprocess_PCA = NA
+#penalty = 10^seq(-16, 16)
+#mixture = c(0)
+#Npredictors = TRUE
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#seed = 2020
+
+
+
+
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
@@ -350,7 +373,8 @@ summarize_tune_results <- function(object,
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 #' @param outside_folds_v Number of folds for the outer folds (default = 10).
 #' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param inside_folds_prop Number of folds for the inner folds (default proportion = 3/4).
+#' @param inside_folds_prop The proportion of data to be used for modeling/analysis; (default proportion = 3/4). For more information
+#' see validation_split in rsample.
 #' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
 #' @param eval_measure Type of evaluative measure to select models from; default =  "rmse" for regression and "bal_accuracy"
 #' for logistic.
@@ -362,7 +386,7 @@ summarize_tune_results <- function(object,
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
 #' @param penalty hyper parameter that is tuned
 #' @param mixture hyper parameter that is tuned default = 0 (hence a pure ridge regression).
-#' @param Npredictors by efault this setting is turned of (i.e., NA). The setting uses  set to the highest number of predictors you want to test.
+#' @param Npredictors by efault this setting is turned off (i.e., NA). The setting uses  set to the highest number of predictors you want to test.
 #' Then the X first dimensions are used in training, using a sequence from Kjell et al., 2019 paper in Psychological Methods.
 #' Adding 1, then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
 #' This option is currently only possible for one embedding at the time.
@@ -498,7 +522,7 @@ textTrainRegression <- function(x,
   xy <- cbind(x2, y)
   xy <- tibble::as_tibble(xy)
   xy$id_nr <- c(seq_len(nrow(xy)))
-
+#help(nested_cv) help(vfold_cv) help(validation_split)
   results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
     outside = rsample::vfold_cv(
       v = !!outside_folds_v,
@@ -779,6 +803,7 @@ textTrainRegression <- function(x,
   penalty_setting <- paste("penalty_setting = ", deparse(penalty))
   mixture_setting <- paste("mixture_setting = ", deparse(mixture))
   preprocess_PCA_setting <- paste("preprocess_PCA_setting = ", deparse(preprocess_PCA))
+  Npredictors_setting <- paste("Npredictors_setting = ", deparse(Npredictors))
 
   # Saving the final mtry and min_n used for the final model.
   penalty_description <- paste("penalty in final model = ", deparse(statisticalMode(results_split_parameter$penalty)))
@@ -789,6 +814,10 @@ textTrainRegression <- function(x,
 
   preprocess_PCA_description <- paste("preprocess_PCA in final model = ", deparse(statisticalMode(results_split_parameter$preprocess_PCA)))
   preprocess_PCA_fold_description <- paste("preprocess_PCA in each fold = ", deparse(results_split_parameter$preprocess_PCA))
+
+  Npredictors_description <- paste("Npredictors in final model = ", deparse(statisticalMode(results_split_parameter$Npredictors)))
+  Npredictors_fold_description <- paste("Npredictors in each fold = ", deparse(results_split_parameter$Npredictors))
+
 
   # Getting time and date
   T2_textTrainRegression <- Sys.time()
@@ -818,6 +847,9 @@ textTrainRegression <- function(x,
     preprocess_PCA_setting,
     preprocess_PCA_description,
     preprocess_PCA_fold_description,
+    Npredictors_fold_setting,
+    Npredictors_description,
+    Npredictors_fold_description,
     embedding_description,
     model_description,
     time_date
