@@ -31,10 +31,20 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy", holdout_pred 
     eval_measure_val <- yardstick::roc_auc(holdout_pred, truth = y, class1_name)
   } else if (eval_measure == "rmse") {
     eval_measure_val <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)
+  } else if (eval_measure == "rsq") {
+    eval_measure_val <- yardstick::rsq(holdout_pred, truth = y, estimate = .pred)
+  }  else if (eval_measure == "cor_test") {
+    cor_testing <- cor.test(holdout_pred$y, holdout_pred$.pred, na.action=na.omit)
+    estimate1 <- cor_testing[[4]][[1]]
+    metric <- "cor_test"
+    estimator <- "standard"
+    eval_measure_val <- tibble(metric, estimator, as.numeric(estimate1))
+    colnames(eval_measure_val) <- c(".metric", ".estimator", ".estimate")
   }
   eval_measure_val
 }
 
+# help(yardstick)
 
 #  devtools::document()
 #' Select evaluation measure and compute it (also used in logistic regression)
@@ -392,10 +402,16 @@ summarize_tune_results_rf <- function(object,
 #'
 #' @param x Word embeddings from textEmbed.
 #' @param y Categorical variable to predict.
-#' @param outside_folds_v Number of folds for the outer folds (default = 10).
+#' @param cv_method cross-validation method to use within a pipeline of nested outer and inner loops of folds (see nested_cv in rsample).
+#' Default is "cv_folds", which uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops; whereas "validation_split" is
+#' using rsample::validation_split in the inner loop to achieve a development and assessment set (note that for validation_split
+#' the inside_folds should be a proportion, e.g., inside_folds = 3/4).
+#' @param outside_folds Number of folds for the outer folds (default = 10).
 #' @param outside_strata_y Variable to stratify according (default "y"; can also set to NULL).
-#' @param inside_folds_prop Number of folds for the inner folds (default = 3/4).
+#' @param outside_breaks The number of bins wanted to stratify a numeric stratification variable in the outer cross-validation loop.
+#' @param inside_folds Number of folds for the inner folds (default = 3/4).
 #' @param inside_strata_y Variable to stratify according (default "y"; can also set to NULL).
+#' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner cross-validation loop.
 #' @param mode_rf Default is "classification" ("regression" is not supported yet).
 #' @param preprocess_PCA Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
@@ -445,10 +461,13 @@ summarize_tune_results_rf <- function(object,
 #' @export
 textTrainRandomForest <- function(x,
                                   y,
-                                  outside_folds_v = 10,
+                                  cv_method = "cv_folds",
+                                  outside_folds = 10,
                                   outside_strata_y = "y",
-                                  inside_folds_prop = 3 / 4,
+                                  outside_breaks = 4,
+                                  inside_folds = 10,
                                   inside_strata_y = "y",
+                                  inside_breaks = 4,
                                   mode_rf = "classification",
                                   preprocess_PCA = NA,
                                   extremely_randomised_splitrule = "extratrees",
@@ -522,7 +541,6 @@ textTrainRandomForest <- function(x,
     x1 <- dplyr::bind_cols(xlist)
 
   }
-
   ############ End for multiple word embeddings ############
   ##########################################################
 
@@ -539,18 +557,39 @@ textTrainRandomForest <- function(x,
   id_nr <- tibble::as_tibble_col(c(seq_len(nrow(xy))), column_name = "id_nr")
   xy1 <- tibble::as_tibble(xy[stats::complete.cases(xy), ])
 
-  results_nested_resampling <- rlang::expr(rsample::nested_cv(xy1,
-    outside = rsample::vfold_cv(
-      v = !!outside_folds_v,
-      repeats = 1,
-      strata = !!outside_strata_y
-    ), #
-    inside = rsample::validation_split(
-      prop = !!inside_folds_prop,
-      strata = !!inside_strata_y,
-      breaks = 1
-    )
-  ))
+
+  # Cross-Validation help(nested_cv) help(vfold_cv) help(validation_split)
+  if(cv_method == "cv_folds") {
+    results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
+                                                                outside = rsample::vfold_cv(
+                                                                  v       = !!outside_folds,
+                                                                  repeats = 1,
+                                                                  strata  = !!outside_strata_y,
+                                                                  breaks  = !!outside_breaks
+                                                                ), #
+                                                                inside = rsample::vfold_cv(
+                                                                  v       = !!inside_folds,
+                                                                  repeats = 1,
+                                                                  strata  = !!inside_strata_y,
+                                                                  breaks  = !!inside_breaks
+                                                                )
+    ))
+  }
+  if(cv_method == "validation_split") {
+    results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
+                                                                outside = rsample::vfold_cv(
+                                                                  v       = !!outside_folds,
+                                                                  repeats = 1,
+                                                                  strata  = !!outside_strata_y,
+                                                                  breaks  = !!outside_breaks
+                                                                ), #
+                                                                inside = rsample::validation_split(
+                                                                  prop   = !!inside_folds,
+                                                                  strata = !!inside_strata_y,
+                                                                  breaks = !!inside_breaks
+                                                                )
+    ))
+  }
 
   results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
 
@@ -600,8 +639,13 @@ textTrainRandomForest <- function(x,
     )
   }
 
+
   # Function to get the lowest eval_measure_val
-  bestParameters <- function(dat) dat[which.min(dat$eval_measure), ]
+  if(eval_measure %in% c("accuracy" , "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", "roc_auc", "rsq", "cor_test")) {
+    bestParameters <- function(dat) dat[which.max(dat$eval_measure), ]
+  } else if (eval_measure == "rmse"){
+    bestParameters <- function(dat) dat[which.min(dat$eval_measure), ]
+  }
 
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
@@ -789,10 +833,10 @@ textTrainRandomForest <- function(x,
     extremely_randomised_splitrule <- c("-")
   }
 
-
-  outside_folds_v_description <- paste("outside_folds_v = ", deparse(outside_folds_v))
+  cv_method_description <- paste("cv_method = ", deparse(cv_method))
+  outside_folds_description <- paste("outside_folds = ", deparse(outside_folds))
   outside_strata_y_description <- paste("outside_strata_y = ", deparse(outside_strata_y))
-  inside_folds_prop_description <- paste("inside_folds_prop = ", deparse(inside_folds_prop))
+  inside_folds_description <- paste("inside_folds = ", deparse(inside_folds))
   inside_strata_y_description <- paste("inside_strata_y = ", deparse(inside_strata_y))
 
   preprocess_PCA_setting <- paste("preprocess_PCA_setting = ", deparse(preprocess_PCA))
@@ -817,9 +861,10 @@ textTrainRandomForest <- function(x,
   model_description_detail <- c(
     x_name,
     y_name,
-    outside_folds_v_description,
+    cv_method_description,
+    outside_folds_description,
     outside_strata_y_description,
-    inside_folds_prop_description,
+    inside_folds_description,
     inside_strata_y_description,
     mode_rf_description,
     preprocess_PCA_setting,

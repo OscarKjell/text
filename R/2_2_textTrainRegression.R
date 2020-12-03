@@ -13,6 +13,7 @@ statisticalMode <- function(x) {
 #'
 #' @param object An rsplit object (from results_nested_resampling tibble)
 #' object = results_nested_resampling$splits[[1]] OR results_nested_resampling$splits[[1]][[1]]
+#' object = results_nested_resampling$inner_resamples[[1]][[1]][[1]]
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
 #' @param preprocess_PCA threshold for pca; preprocess_PCA = NA
@@ -24,7 +25,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
                            preprocess_PCA = NA, variable_name_index_pca = NA, Npredictors = NA) {
 
 
-  data_train <- rsample::analysis(object)
+  data_train <- rsample::analysis(object)   # mdata_train <- rsample::assessment(object)
   data_train <- tibble::as_tibble(data_train)
 
   # If testing N first predictors help(step_scale) Npredictors = 3
@@ -344,18 +345,21 @@ summarize_tune_results <- function(object,
 
 
 
-#x = wordembeddings4$harmonywords
+#x = wordembeddings4$harmonytext
 #y = Language_based_assessment_data_8$hilstotal
-#outside_folds_v = 10
+#cv_method = "cv_folds"
+#outside_folds = 10
 #outside_strata_y = "y"
-#inside_folds_prop = 3 / 4
+#outside_breaks = 4
+#inside_folds = 10
 #inside_strata_y = "y"
+#inside_breaks = 4
 #model = "regression"
-#eval_measure = "default"
+#eval_measure = "cor_test"
 #preprocess_PCA = NA
-#penalty = 10^seq(-16, 16)
+#penalty = 1 #0^seq(-16, 16)
 #mixture = c(0)
-#Npredictors = TRUE
+#Npredictors = NA
 #method_cor = "pearson"
 #model_description = "Consider writing a description of your model here"
 #multi_cores = "multi_cores_sys_default"
@@ -371,13 +375,20 @@ summarize_tune_results <- function(object,
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation).
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
-#' @param outside_folds_v Number of folds for the outer folds (default = 10).
+#' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops of folds (see nested_cv in rsample).
+#' Default is "cv_folds", which uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops; whereas "validation_split" is
+#' using rsample::validation_split in the inner loop to achieve a development and assessment set (note that for validation_split
+#' the inside_folds should be a proportion, e.g., inside_folds = 3/4).
+#' @param outside_folds Number of folds for the outer folds (default = 10).
 #' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param inside_folds_prop The proportion of data to be used for modeling/analysis; (default proportion = 3/4). For more information
+#' @param outside_breaks The number of bins wanted to stratify a numeric stratification variable in the outer cross-validation loop.
+#' @param inside_folds The proportion of data to be used for modeling/analysis; (default proportion = 3/4). For more information
 #' see validation_split in rsample.
 #' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param eval_measure Type of evaluative measure to select models from; default =  "rmse" for regression and "bal_accuracy"
-#' for logistic.
+#' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner cross-validation loop.
+#' @param eval_measure Type of evaluative measure to select models from. Default = "rmse" for regression and "bal_accuracy"
+#' for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure",
+#' or "roc_auc",(for more details see the yardstick package).
 #' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
 #' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function
@@ -386,7 +397,7 @@ summarize_tune_results <- function(object,
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
 #' @param penalty hyper parameter that is tuned
 #' @param mixture hyper parameter that is tuned default = 0 (hence a pure ridge regression).
-#' @param Npredictors by efault this setting is turned off (i.e., NA). The setting uses  set to the highest number of predictors you want to test.
+#' @param Npredictors by default this setting is turned off (i.e., NA). To use this method, set it to the highest number of predictors you want to test.
 #' Then the X first dimensions are used in training, using a sequence from Kjell et al., 2019 paper in Psychological Methods.
 #' Adding 1, then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
 #' This option is currently only possible for one embedding at the time.
@@ -424,10 +435,13 @@ summarize_tune_results <- function(object,
 #' @export
 textTrainRegression <- function(x,
                                 y,
-                                outside_folds_v = 10,
+                                cv_method = "cv_folds",
+                                outside_folds = 10,
                                 outside_strata_y = "y",
-                                inside_folds_prop = 3 / 4,
+                                outside_breaks = 4,
+                                inside_folds = 10,
                                 inside_strata_y = "y",
+                                inside_breaks = 4,
                                 model = "regression",
                                 eval_measure = "default",
                                 preprocess_PCA = NA,
@@ -439,10 +453,9 @@ textTrainRegression <- function(x,
                                 multi_cores = "multi_cores_sys_default",
                                 save_output = "all",
                                 seed = 2020) {
+
   T1_textTrainRegression <- Sys.time()
-
   set.seed(seed)
-
   variable_name_index_pca <- NA
 
   # Select correct eval_measure depending on model when default
@@ -490,7 +503,6 @@ textTrainRegression <- function(x,
     xlist <- lapply(x, function(X) {
       X <- dplyr::select(X, dplyr::starts_with("Dim"))
     })
-
     Nword_variables <- length(xlist)
 
     # Give each column specific names with indexes so that they can be handled separately in the PCAs
@@ -510,11 +522,7 @@ textTrainRegression <- function(x,
 
     # Make one df rather then list.
     x1 <- dplyr::bind_cols(xlist)
-
   }
-
-
-
   ############ End for multiple word embeddings ############
   ##########################################################
 
@@ -522,20 +530,41 @@ textTrainRegression <- function(x,
   xy <- cbind(x2, y)
   xy <- tibble::as_tibble(xy)
   xy$id_nr <- c(seq_len(nrow(xy)))
-#help(nested_cv) help(vfold_cv) help(validation_split)
-  results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
-    outside = rsample::vfold_cv(
-      v = !!outside_folds_v,
-      repeats = 1,
-      strata = !!outside_strata_y,
-      breaks = 2
-    ), #
-    inside = rsample::validation_split(
-      prop = !!inside_folds_prop,
-      strata = !!inside_strata_y,
-      breaks = 1
-    )
-  ))
+
+
+  # Cross-Validation help(nested_cv) help(vfold_cv) help(validation_split) inside_folds = 3/4
+  if(cv_method == "cv_folds") {
+    results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
+                                                                outside = rsample::vfold_cv(
+                                                                  v       = !!outside_folds,
+                                                                  repeats = 1,
+                                                                  strata  = !!outside_strata_y,
+                                                                  breaks  = !!outside_breaks
+                                                                ), #
+                                                                inside = rsample::vfold_cv(
+                                                                  v       = !!inside_folds,
+                                                                  repeats = 1,
+                                                                  strata  = !!inside_strata_y,
+                                                                  breaks  = !!inside_breaks
+                                                                )
+    ))
+  }
+  if(cv_method == "validation_split") {
+    results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
+                                                                outside = rsample::vfold_cv(
+                                                                  v       = !!outside_folds,
+                                                                  repeats = 1,
+                                                                  strata  = !!outside_strata_y,
+                                                                  breaks  = !!outside_breaks
+                                                                ),
+                                                                inside = rsample::validation_split(
+                                                                  prop   = !!inside_folds,
+                                                                  strata = !!inside_strata_y,
+                                                                  breaks = !!inside_breaks
+                                                                )
+    ))
+  }
+
   results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
 
 
@@ -584,8 +613,13 @@ textTrainRegression <- function(x,
     )
   }
 
-  # Function to get the lowest mean_RMSE
-  bestParameters <- function(dat) dat[which.min(dat$eval_result), ]
+
+  # Function to get the lowest eval_measure_val
+  if(eval_measure %in% c("accuracy" , "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", "roc_auc", "rsq", "cor_test")) {
+    bestParameters <- function(dat) dat[which.max(dat$eval_measure), ]
+  } else if (eval_measure == "rmse"){
+    bestParameters <- function(dat) dat[which.min(dat$eval_measure), ]
+  }
 
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
@@ -604,7 +638,7 @@ textTrainRegression <- function(x,
   # fit_model_rmse(results_split_parameter$splits[[1]])
   results_outer <- purrr::pmap(
     list(
-      object = results_nested_resampling$splits,
+      object = results_nested_resampling$splits, # SHOULD WE HERE ONLY USE/PREDICT THE LEFT-OUT PART; not re-running it?
       penalty = results_split_parameter$penalty,
       mixture = results_split_parameter$mixture,
       preprocess_PCA = results_split_parameter$preprocess_PCA,
@@ -613,7 +647,7 @@ textTrainRegression <- function(x,
       model = model,
       eval_measure = eval_measure
     ),
-    fit_model_rmse
+    fit_model_rmse     # Consider being able to select according to correlations here, rather than rmse ?
   )
 
   # Separate RMSE, predictions and observed y
@@ -795,9 +829,10 @@ textTrainRegression <- function(x,
   ##########  DESCRIBING THE MODEL  ##########
   ############################################
 
-  outside_folds_v_description <- paste("outside_folds_v = ", deparse(outside_folds_v))
+  cv_method_description <- paste("cv_method = ", deparse(cv_method))
+  outside_folds_description <- paste("outside_folds = ", deparse(outside_folds))
   outside_strata_y_description <- paste("outside_strata_y = ", deparse(outside_strata_y))
-  inside_folds_prop_description <- paste("inside_folds_prop = ", deparse(inside_folds_prop))
+  inside_folds_description <- paste("inside_folds = ", deparse(inside_folds))
   inside_strata_y_description <- paste("inside_strata_y = ", deparse(inside_strata_y))
 
   penalty_setting <- paste("penalty_setting = ", deparse(penalty))
@@ -834,9 +869,10 @@ textTrainRegression <- function(x,
   model_description_detail <- c(
     x_name,
     y_name,
-    outside_folds_v_description,
+    cv_method_description,
+    outside_folds_description,
     outside_strata_y_description,
-    inside_folds_prop_description,
+    inside_folds_description,
     inside_strata_y_description,
     penalty_setting,
     penalty_description,
@@ -847,7 +883,7 @@ textTrainRegression <- function(x,
     preprocess_PCA_setting,
     preprocess_PCA_description,
     preprocess_PCA_fold_description,
-    Npredictors_fold_setting,
+    Npredictors_setting,
     Npredictors_description,
     Npredictors_fold_description,
     embedding_description,

@@ -7,10 +7,13 @@
 textTrainRandomForest(
   x,
   y,
-  outside_folds_v = 10,
+  cv_method = "cv_folds",
+  outside_folds = 10,
   outside_strata_y = "y",
-  inside_folds_prop = 3/4,
+  outside_breaks = 4,
+  inside_folds = 10,
   inside_strata_y = "y",
+  inside_breaks = 4,
   mode_rf = "classification",
   preprocess_PCA = NA,
   extremely_randomised_splitrule = "extratrees",
@@ -30,13 +33,22 @@ textTrainRandomForest(
 
 \item{y}{Categorical variable to predict.}
 
-\item{outside_folds_v}{Number of folds for the outer folds (default = 10).}
+\item{cv_method}{cross-validation method to use within a pipeline of nested outer and inner loops of folds (see nested_cv in rsample).
+Default is "cv_folds", which uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops; whereas "validation_split" is
+using rsample::validation_split in the inner loop to achieve a development and assessment set (note that for validation_split
+the inside_folds should be a proportion, e.g., inside_folds = 3/4).}
+
+\item{outside_folds}{Number of folds for the outer folds (default = 10).}
 
 \item{outside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
 
-\item{inside_folds_prop}{Number of folds for the inner folds (default = 3/4).}
+\item{outside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the outer cross-validation loop.}
+
+\item{inside_folds}{Number of folds for the inner folds (default = 3/4).}
 
 \item{inside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
+
+\item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the inner cross-validation loop.}
 
 \item{mode_rf}{Default is "classification" ("regression" is not supported yet).}
 
