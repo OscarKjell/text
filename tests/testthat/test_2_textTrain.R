@@ -283,7 +283,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     inside_folds = 9/10,
     outside_strata_y = NULL,
     inside_strata_y = NULL,
-    preprocess_PCA = c(0.90),
+    #preprocess_PCA = c(0.90),
     model = "regression",
     penalty = c(2),
     mixture = c(0),
