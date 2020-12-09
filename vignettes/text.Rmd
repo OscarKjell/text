@@ -1,5 +1,13 @@
 ---
 title: "Getting started"
+description: "A brief introduction to text in R."
+author: "Oscar Kjell"
+opengraph:
+  image: 
+    src: "http://r-text.org/articles/text_files/figure-html/unnamed-chunk-5-1.png"
+  twitter:
+    card: summary_large_image
+    creator: "@oscarkjell"
 output: github_document #rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{text}

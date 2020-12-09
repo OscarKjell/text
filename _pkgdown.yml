@@ -11,6 +11,16 @@ home:
   - text: Ask a question about text
     href: https://stackoverflow.com/
 
+template:
+  opengraph:
+    image:
+      src: man/figures/logo.png
+      alt: "text analyzes text"
+    twitter:
+      creator: "@oscarkjell"
+#      site: "@rstudio"
+      card: summary_large_image
+
 authors:
   Oscar Kjell:
     href: https://oscarkjell.se/
@@ -28,7 +38,7 @@ reference:
   contents:
   - textEmbed
   - textEmbedLayersOutput
-  - textEmbedLayerAggreation
+  - textEmbedLayerAggregation
   - textEmbedStatic
 - title: Train word embeddings
   contents:

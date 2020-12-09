@@ -7,14 +7,16 @@
 textTrainRandomForest(
   x,
   y,
-  cv_method = "cv_folds",
+  cv_method = "validation_split",
   outside_folds = 10,
   outside_strata_y = "y",
   outside_breaks = 4,
-  inside_folds = 10,
+  inside_folds = 3/4,
   inside_strata_y = "y",
   inside_breaks = 4,
   mode_rf = "classification",
+  preprocess_step_center = FALSE,
+  preprocess_scale_center = FALSE,
   preprocess_PCA = NA,
   extremely_randomised_splitrule = "extratrees",
   mtry = c(1, 10, 20, 40),
@@ -33,10 +35,10 @@ textTrainRandomForest(
 
 \item{y}{Categorical variable to predict.}
 
-\item{cv_method}{cross-validation method to use within a pipeline of nested outer and inner loops of folds (see nested_cv in rsample).
-Default is "cv_folds", which uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops; whereas "validation_split" is
-using rsample::validation_split in the inner loop to achieve a development and assessment set (note that for validation_split
-the inside_folds should be a proportion, e.g., inside_folds = 3/4).}
+\item{cv_method}{Cross-validation method to use within a pipeline of nested outer and inner loops of folds (see nested_cv in rsample).
+Default is using cv_fols in the outside folds and "validation_split" using rsample::validation_split in the inner loop to achieve a development and assessment
+set (note that for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds" uses rsample::vfold_cv to achieve n-folds
+in both the outer and inner loops.}
 
 \item{outside_folds}{Number of folds for the outer folds (default = 10).}
 
@@ -51,6 +53,10 @@ the inside_folds should be a proportion, e.g., inside_folds = 3/4).}
 \item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the inner cross-validation loop.}
 
 \item{mode_rf}{Default is "classification" ("regression" is not supported yet).}
+
+\item{preprocess_step_center}{normalizes dimensions to have a mean of zero; default is set to TRUE. For more info see (step_center in recipes).}
+
+\item{preprocess_scale_center}{normalize dimensions to have a standard deviation of one. For more info see (step_scale in recipes).}
 
 \item{preprocess_PCA}{Pre-processing threshold for PCA. Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 number of components to select (e.g., 10). Default is "min_halving", which is a function that selects the number of PCA components based on number
@@ -91,14 +97,13 @@ Train word embeddings to a categorical variable using random forrest.
 }
 \examples{
 \donttest{
-wordembeddings <- wordembeddings4
-example_categories <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
-results <- textTrainRandomForest(wordembeddings$harmonywords,
-  example_categories,
-  trees = c(1000, 1500),
-  mtry  = c(1), # this is short because of testing
-  min_n = c(1), # this is short because of testing
-  multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
+results <- textTrainRandomForest(
+ wordembeddings4$harmonywords,
+ as.factor(Language_based_assessment_data_8$gender),
+ trees = c(1000, 1500),
+ mtry  = c(1), # this is short because of testing
+ min_n = c(1), # this is short because of testing
+ multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 )
 }
 }

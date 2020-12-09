@@ -9,6 +9,7 @@ utils::globalVariables(c(
   "guide_legend", "Dim1", "data_train",
   "textTrainRandomForest", "textTrainCVpredictions", "textTrainCVpredictionsRF",
   "textCentrality", "textCentralityPlot", "textEmbed", "textEmbedLayersOutput", "id_nr",
+  "mod_spec", "wf", "xy", "xy1",
   "textEmbedLayerAggreation", "textProjection", "textProjectionPlot", "textSimilarity",
   "penalty", "mixture", "trees",
   "id1", "y.y", "id",

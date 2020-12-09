@@ -103,8 +103,6 @@ textTrain <- function(x,
   }
 }
 
-
-
 # devtools::document()
 #' Sorts out the output from a regression model for the list format.
 #'
@@ -378,6 +376,7 @@ textTrainLists <- function(x,
 }
 
 
+
 # devtools::document()
 #' Predict scores or classification from, e.g., textTrain.
 #'
@@ -395,7 +394,9 @@ textTrainLists <- function(x,
 #' @importFrom stats predict
 #' @importFrom tibble is_tibble as_tibble_col
 #' @export
-textPredict <- function(model_info, new_data, type = NULL, ...) {
+textPredict <- function(model_info,
+                        new_data,
+                        type = NULL, ...) {
 
   # In case the embedding is in list form get the tibble form
   if (!tibble::is_tibble(new_data) & length(new_data) == 1) {
@@ -424,7 +425,7 @@ textPredict <- function(model_info, new_data, type = NULL, ...) {
       variable_name_index_pca[i] <- paste("Dim_we", i, sep = "")
     }
 
-    # Make one df rather then list.
+    # Make one df rather than list.
     new_data1 <- dplyr::bind_cols(new_datalist)
 
     # Get original columns names, to remove these column from output
@@ -452,16 +453,31 @@ textPredict <- function(model_info, new_data, type = NULL, ...) {
   data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data1)
 
   # Get column names to be removed
-  colnames_to_b_removed <- colnames(data_prepared_with_recipe)
-  colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed == "id_nr"]
+   colnames_to_b_removed <- colnames(data_prepared_with_recipe)
+   colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed == "id_nr"]
 
-  # Get scores
-  predicted_scores <- data_prepared_with_recipe %>%
-    bind_cols(stats::predict(model_info$final_model, new_data = data_prepared_with_recipe, type = type, ...)) %>%
+  # Get Prediction scores ORIGINAL
+#  predicted_scores <- data_prepared_with_recipe %>%
+#    bind_cols(stats::predict(model_info$final_model, new_data = data_prepared_with_recipe, type = type, ...)) %>%
+#    select(-!!colnames_to_b_removed) %>%
+#    full_join(new_data_id_nr_col, by = "id_nr") %>%
+#    arrange(id_nr) %>%
+#    select(-id_nr)
+
+
+  # Get Prediction scores
+  predicted_scores2 <- data_prepared_with_recipe %>%
+    bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type)) %>% #, ...
     select(-!!colnames_to_b_removed) %>%
     full_join(new_data_id_nr_col, by = "id_nr") %>%
     arrange(id_nr) %>%
     select(-id_nr)
 
-  predicted_scores
 }
+
+
+
+
+
+
+
