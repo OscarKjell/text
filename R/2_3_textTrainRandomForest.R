@@ -444,40 +444,6 @@ summarize_tune_results_rf <- function(object,
 }
 
 
-#results <- textTrainRandomForest(
-#  wordembeddings4$harmonywords[1],
-# as.factor(Language_based_assessment_data_8$gender),
-# trees = c(1000, 1500),
-# mtry  = c(1), # this is short because of testing
-# min_n = c(1), # this is short because of testing
-# multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
-#)
-#
-#library(text)
-#library(tidyverse)
-#x <- wordembeddings4$harmonywords
-#y <- as.factor(Language_based_assessment_data_8$gender)
-#cv_method = "validation_split"
-#outside_folds = 10
-#outside_strata_y = "y"
-#outside_breaks = 4
-#inside_folds = 3/4
-#inside_strata_y = "y"
-#inside_breaks = 4
-#mode_rf = "classification"
-#preprocess_step_center = FALSE
-#preprocess_scale_center = FALSE
-#preprocess_PCA = NA
-#extremely_randomised_splitrule = "extratrees"
-#mtry = 1
-#min_n = 1
-#trees = c(1000)
-#eval_measure = "bal_accuracy"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
-
 #' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Word embeddings from textEmbed.
@@ -864,13 +830,9 @@ textTrainRandomForest <- function(x,
                                                                                        retain = FALSE)))
   }
   preprocessing_recipe_save <- recipe_save_small_size(final_recipe = final_recipe, xy_all = xy_all)
-  #preprocessing_recipe_save <- recipes::prep(final_recipe, xy_all, retain = FALSE)
-
-  #preprocessing_recipe_use <- recipes::prep(final_recipe, xy_all)
 
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
-  # xy_final <- recipes::juice(preprocessing_recipe_use)
 
    model_save_small_size <- function(xy_all, final_recipe, results_split_parameter, mode_rf){
      env_final_model <- new.env(parent = globalenv())

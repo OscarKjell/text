@@ -381,10 +381,8 @@ summarize_tune_results <- function(object,
   )
 }
 
-
-
-#x <- harmony_we$x
-#y <- data1_csv$HILStot
+#x
+#y
 #cv_method = "validation_split"
 #outside_folds = 10
 #outside_strata_y = "y"
@@ -447,6 +445,7 @@ summarize_tune_results <- function(object,
 #' makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
 #' @param seed Set different seed.
+#' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information
 #' about the model (preprossing_recipe, final_model and model_description).
 #' @examples
@@ -471,6 +470,7 @@ summarize_tune_results <- function(object,
 #' @importFrom magrittr %>%
 #' @importFrom future plan multisession
 #' @importFrom furrr future_map
+#' @importFrom workflows workflow add_model add_recipe
 #' @export
 textTrainRegression <- function(x,
                                 y,
@@ -493,7 +493,8 @@ textTrainRegression <- function(x,
                                 model_description = "Consider writing a description of your model here",
                                 multi_cores = "multi_cores_sys_default",
                                 save_output = "all",
-                                seed = 2020) {
+                                seed = 2020,
+                                ...) {
 
   T1_textTrainRegression <- Sys.time()
   set.seed(seed)
@@ -571,7 +572,9 @@ textTrainRegression <- function(x,
   xy <- cbind(x2, y)
   xy <- tibble::as_tibble(xy)
   xy$id_nr <- c(seq_len(nrow(xy)))
-  xy <- tibble::as_tibble(xy[stats::complete.cases(xy), ])
+
+  # complete.cases is not neccassary
+  #xy <- tibble::as_tibble(xy[stats::complete.cases(xy), ])
 
   # Cross-Validation help(nested_cv) help(vfold_cv) help(validation_split) inside_folds = 3/4
   if(cv_method == "cv_folds") {
@@ -719,7 +722,7 @@ textTrainRegression <- function(x,
 
     collected_results <- list(predy_y, collected_results)
   } else if (model == "logistic") {
-    collected_results <- classification_results(outputlist_results_outer = outputlist_results_outer)
+    collected_results <- classification_results(outputlist_results_outer = outputlist_results_outer, ...)
 
     #  Save predictions outside list to make similar structure as model == regression output.
     predy_y <- collected_results$predy_y
@@ -776,7 +779,7 @@ textTrainRegression <- function(x,
         }
       }
 
-    ######### More than one word embeddings as input help(all_of)
+    ######### More than one word embeddings as input
   } else {
     #V1 <- colnames(xy_all[1])
 

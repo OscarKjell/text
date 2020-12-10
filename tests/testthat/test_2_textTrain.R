@@ -276,7 +276,7 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
   skip_on_cran()
 
-#  [BELOW WORKS ON MY COMPUTER BUT NOT ON GITHUB ACTIONS; NOT SURE WHY]
+#  [BELOW WORKS ON MY MAC BUT NOT ON GITHUB ACTIONS; NOT SURE WHY]
 #  # Two word embeddings and one vector
 #  results <- textTrain(wordembeddings4[1:2],
 #    Language_based_assessment_data_8$hilstotal,
@@ -367,7 +367,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   ratings_data_factors <- tibble::tibble(factors1, factors2, rating1)
 
   # Logistic
-  results_list_logistic <- textTrainLists(wordembeddings,
+  results_list_logistic <- textTrainLists(wordembeddings4[1],
     ratings_data_factors,
     preprocess_PCA = c(0.90),
     outside_folds = 2,

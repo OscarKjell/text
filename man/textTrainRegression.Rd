@@ -26,7 +26,8 @@ textTrainRegression(
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
   save_output = "all",
-  seed = 2020
+  seed = 2020,
+  ...
 )
 }
 \arguments{
@@ -89,6 +90,8 @@ makes the analyses considerably faster to run. Default is "multi_cores_sys_defau
 \item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
 
 \item{seed}{Set different seed.}
+
+\item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
 \value{
 A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information

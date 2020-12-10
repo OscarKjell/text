@@ -456,15 +456,6 @@ textPredict <- function(model_info,
    colnames_to_b_removed <- colnames(data_prepared_with_recipe)
    colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed == "id_nr"]
 
-  # Get Prediction scores ORIGINAL
-#  predicted_scores <- data_prepared_with_recipe %>%
-#    bind_cols(stats::predict(model_info$final_model, new_data = data_prepared_with_recipe, type = type, ...)) %>%
-#    select(-!!colnames_to_b_removed) %>%
-#    full_join(new_data_id_nr_col, by = "id_nr") %>%
-#    arrange(id_nr) %>%
-#    select(-id_nr)
-
-
   # Get Prediction scores
   predicted_scores2 <- data_prepared_with_recipe %>%
     bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type)) %>% #, ...
@@ -472,7 +463,6 @@ textPredict <- function(model_info,
     full_join(new_data_id_nr_col, by = "id_nr") %>%
     arrange(id_nr) %>%
     select(-id_nr)
-
 }
 
 
