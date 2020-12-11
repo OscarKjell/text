@@ -8,6 +8,7 @@ statisticalMode <- function(x) {
   ux[which.max(tabulate(match(x, ux)))]
 }
 
+
 # library(magrittr)
 #' Function to fit a model and compute RMSE.
 #'
@@ -38,14 +39,15 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     variable_names = "id_nr"
       }
 
-  # Recipe for one embedding input summary(xy_recipe) help(all_of) library(tidyverse)
+  # Recipe for one embedding input summary(xy_recipe) help(all_of) library(tidyverse) help(step_naomit)
   if (colnames(data_train[1]) == "Dim1") {
     xy_recipe <- data_train %>%
       recipes::recipe(y ~ .) %>%
       recipes::update_role(dplyr::all_of(variable_names), new_role = "Not_predictors") %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(Dim1, skip = TRUE) #%>%
+      recipes::step_naomit(recipes::all_predictors(), skip = TRUE) #%>%
+      #recipes::step_naomit(Dim1, skip = TRUE) #%>%
 
   if (preprocess_step_center) {
         xy_recipe <- recipes::step_center(xy_recipe, recipes::all_predictors())
@@ -113,12 +115,25 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     xy_recipe_prep <- recipes::prep(xy_recipe)
   }
 
-  # To load the prepared training data into a variable juice() is used.
-  # It extracts the data from the xy_recipe object.
-  nr_predictors <- recipes::juice(xy_recipe_prep)
-  nr_predictors <- length(nr_predictors)
+  # Figure out how many predictors to know whether to use simple or multiple regression, which
+  # depend on number of of PCA components that are retrived and/or whether first_n_predictors is used
+  if(!is.na(first_n_predictors) & is.na(preprocess_PCA)){
+    # Get number of predictors from receipe
+    nr_predictors <- table(xy_recipe_prep[[1]]$role)[["predictor"]]
+
+  } else if (!is.na(preprocess_PCA)) {
+    # To load the prepared training data into a variable juice() is used.
+    # It extracts the data from the xy_recipe object.
+    nr_predictors <- recipes::juice(xy_recipe_prep)
+    #Count number of PCAs
+    nr_predictors <- length(grep(x = colnames(nr_predictors), pattern = "PC"))
+    } else if (is.na(preprocess_PCA) & is.na(first_n_predictors)) {
+      nr_predictors <- recipes::juice(xy_recipe_prep)
+      nr_predictors <- length(nr_predictors) - 2
+    }
+
   # Ridge and/or Lasso
-  if (nr_predictors > 3) {
+  if (nr_predictors > 1) {
     # Create and fit model
     mod_spec <-
       {
@@ -138,7 +153,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     mod <-  parsnip::fit(wf, data = data_train)
 
     # Standard regression
-  } else if (nr_predictors == 3) {
+  } else if (nr_predictors == 1) {
     mod_spec <-
       {
         if (model == "regression") {
@@ -381,28 +396,6 @@ summarize_tune_results <- function(object,
   )
 }
 
-#x
-#y
-#cv_method = "validation_split"
-#outside_folds = 10
-#outside_strata_y = "y"
-#outside_breaks = 4
-#inside_folds = 3/4
-#inside_strata_y = "y"
-#inside_breaks = 4
-#model = "regression"
-#eval_measure = "default"
-#preprocess_step_center = TRUE
-#preprocess_step_scale = TRUE
-#preprocess_PCA = NA
-#penalty = 10^seq(-16, 16)
-#mixture = c(0)
-#first_n_predictors = NA
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
 
 # devtools::document()
 #' Train word embeddings to a numeric variable.
@@ -450,12 +443,9 @@ summarize_tune_results <- function(object,
 #' about the model (preprossing_recipe, final_model and model_description).
 #' @examples
 #' \donttest{
-#' wordembeddings <- wordembeddings4
-#' ratings_data <- Language_based_assessment_data_8
-#'
 #' results <- textTrainRegression(
-#'   wordembeddings$harmonytext,
-#'   ratings_data$hilstotal,
+#'   wordembeddings4$harmonytext,
+#'   Language_based_assessment_data_8$hilstotal,
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
 #' }
@@ -754,7 +744,7 @@ textTrainRegression <- function(x,
      # recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
       # recipes::step_BoxCox(all_predictors()) %>%
-      recipes::step_naomit(Dim1, skip = TRUE) #%>%
+      recipes::step_naomit(recipes::all_predictors(), skip = TRUE) #%>%
 
       if (preprocess_step_center) {
         final_recipe <- recipes::step_center(final_recipe, recipes::all_predictors())

@@ -296,7 +296,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 #  testthat::expect_that(results, testthat::is_a("list"))
 #  testthat::expect_is(results$results$rho_correlation[1], "character")
 
-  # One word embedding and two rating scales
+  # One word embedding and two rating scales help(textTrainRegression)
   results_or <- textTrainLists(wordembeddings4$harmonywords,
     Language_based_assessment_data_8[5:6],
     outside_folds = 2,

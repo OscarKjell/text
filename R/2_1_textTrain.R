@@ -63,7 +63,6 @@ textTrain <- function(x,
     train_method <- "random_forest"
   }
 
-
   # Analyze according to train_method decided above.
   if (train_method == "regression") {
     # textTrainLists x; if more than one wordembedding list; or more than one column of numeric/categorical variable
@@ -212,14 +211,6 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
       purrr::reduce(dplyr::full_join, "id_nr") %>%
       dplyr::arrange(id_nr)
 
-    # colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
-
-    # output_predscore1 <- lapply(output, "[[", "truth_predictions")
-    #
-    # help(do.call)
-    # output_predscore <- do.call(cbind, output_predscore1) %>%
-    #   tibble::as_tibble() %>%
-    #   dplyr::arrange()
 
     results <- list(output1, output_predscore, output_ordered_named1)
     names(results) <- c("all_output", "predictions", "results")
@@ -230,8 +221,7 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
   results
 }
 
-
-# library(data.table)
+# library(tidyverse)
 # devtools::document()
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
 #' to have  word embeddings from one text variable and several numeric/categprical variables; or vice verse, word embeddings from
@@ -337,6 +327,14 @@ textTrainLists <- function(x,
   if (train_method == "regression") {
     # Using mapply to loop over the word embeddings and the outcome variables to train the different combinations
 
+#  output <- mapply(textTrainRegression, x, y1, MoreArgs = list(
+#    method_cor = method_cor,
+#    save_output = save_output,
+#    model = model,
+#    first_n_predictors = 306,
+#    penalty = 0), SIMPLIFY = FALSE)
+
+
     output <- mapply(textTrainRegression, x, y1, MoreArgs = list(
       method_cor = method_cor,
       save_output = save_output,
@@ -349,6 +347,7 @@ textTrainLists <- function(x,
     } else if (model == "logistic") {
       results <- sort_classification_output_list(output = output, save_output = save_output, descriptions = descriptions)
     }
+
   } else if (train_method == "random_forest") { #
 
     # Apply textTrainRandomForest function between each list element and sort outcome.

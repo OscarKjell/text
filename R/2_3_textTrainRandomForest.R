@@ -135,7 +135,7 @@ fit_model_accuracy_rf <- function(object,
       recipes::update_role(id_nr, new_role = "id variable") %>% # New
       recipes::update_role(-id_nr, new_role = "predictor") %>% # New
       recipes::update_role(y, new_role = "outcome") %>% # New
-      recipes::step_naomit(Dim1, skip = FALSE) #%>%
+      recipes::step_naomit(recipes::all_predictors(), skip = FALSE) #%>%
       #recipes::step_BoxCox(recipes::all_predictors()) %>%
 
     if (preprocess_step_center) {
@@ -749,7 +749,7 @@ textTrainRandomForest <- function(x,
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(Dim1, skip = FALSE) #%>%
+      recipes::step_naomit(recipes::all_predictors(), skip = FALSE) #%>%
       # recipes::step_BoxCox(recipes::all_predictors()) %>%
 
    if (preprocess_step_center) {

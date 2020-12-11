@@ -102,12 +102,9 @@ Train word embeddings to a numeric variable.
 }
 \examples{
 \donttest{
-wordembeddings <- wordembeddings4
-ratings_data <- Language_based_assessment_data_8
-
 results <- textTrainRegression(
-  wordembeddings$harmonytext,
-  ratings_data$hilstotal,
+  wordembeddings4$harmonytext,
+  Language_based_assessment_data_8$hilstotal,
   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 )
 }
