@@ -419,47 +419,6 @@ summarize_tune_results <- function(object,
 }
 
 
-
-#x <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/ratings_cv_pred_dep_preds.rds")
-#y <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/outcome_dep_f.rds")
-
-x <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/sverker_pre_svd_dim_REMOVE_my_missing.rds")
-y <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/outcome_tibble_complete.rds")
-y <- y$value
-
-
-cv_method = "validation_split"
-outside_folds = 10
-outside_strata_y = "y"
-outside_breaks = 4
-inside_folds = 3/4
-inside_strata_y = "y"
-inside_breaks = 4
-model = "regression"
-eval_measure = "default"
-preprocess_step_center = TRUE
-preprocess_step_scale = TRUE
-preprocess_PCA = NA
-penalty = 10^seq(-16, 16)
-mixture = c(0)
-first_n_predictors = NA
-impute_missing = TRUE
-method_cor = "pearson"
-model_description = "Consider writing a description of your model here"
-multi_cores = "multi_cores_sys_default"
-save_output = "all"
-seed = 2020
-
-
-model="logistic"
-outside_folds = 10
-outside_strata_y = "y"
-outside_breaks = 4
-inside_folds = 3/4
-inside_strata_y = "y"
-inside_breaks = 4
-preprocess_PCA = 21
-
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'

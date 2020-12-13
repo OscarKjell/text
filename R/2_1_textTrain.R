@@ -222,25 +222,6 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 }
 
 
-x <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/matlab_we.rds")
-y <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/outcome_data_dep.rds")
-
-x <- x[4]
-
-force_train_method = "automatic"
-save_output = "all"
-method_cor = "pearson"
-model = "regression"
-eval_measure = "rmse"
-p_adjust_method = "holm"
-
-first_n_predictors = 306
-penalty = 0
-force_train_method = "regression"
-impute_missing = FALSE
-
-
-
 # library(tidyverse)
 # devtools::document()
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
@@ -346,15 +327,6 @@ textTrainLists <- function(x,
 
   if (train_method == "regression") {
     # Using mapply to loop over the word embeddings and the outcome variables to train the different combinations
-
-#  output <- mapply(textTrainRegression, x, y1, MoreArgs = list(
-#    method_cor = method_cor,
-#    save_output = save_output,
-#    model = model,
-#    first_n_predictors = 306,
-#    impute_missing = FALSE,   # FALSE -FUNGERAR EJ!
-#    penalty = 0), SIMPLIFY = FALSE)
-
 
     output <- mapply(textTrainRegression, x, y1, MoreArgs = list(
       method_cor = method_cor,
