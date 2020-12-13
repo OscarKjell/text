@@ -1,6 +1,6 @@
 
 
-
+# library(tidyverse)
 # devtools::document()
 #' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 #'
@@ -221,6 +221,26 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
   results
 }
 
+
+x <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/matlab_we.rds")
+y <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/outcome_data_dep.rds")
+
+x <- x[4]
+
+force_train_method = "automatic"
+save_output = "all"
+method_cor = "pearson"
+model = "regression"
+eval_measure = "rmse"
+p_adjust_method = "holm"
+
+first_n_predictors = 306
+penalty = 0
+force_train_method = "regression"
+impute_missing = FALSE
+
+
+
 # library(tidyverse)
 # devtools::document()
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
@@ -332,6 +352,7 @@ textTrainLists <- function(x,
 #    save_output = save_output,
 #    model = model,
 #    first_n_predictors = 306,
+#    impute_missing = FALSE,   # FALSE -FUNGERAR EJ!
 #    penalty = 0), SIMPLIFY = FALSE)
 
 
@@ -373,7 +394,6 @@ textTrainLists <- function(x,
   comment(results) <- time_date
   results
 }
-
 
 
 # devtools::document()
@@ -430,7 +450,7 @@ textPredict <- function(model_info,
     # Get original columns names, to remove these column from output
     original_colnames <- colnames(new_data1)
 
-    # Add id
+    # Add ID
     new_data1$id_nr <- c(1:nrow(new_data1))
     new_data_id_nr_col <- tibble::as_tibble_col(1:nrow(new_data1), column_name = "id_nr")
 
@@ -455,18 +475,13 @@ textPredict <- function(model_info,
    colnames_to_b_removed <- colnames(data_prepared_with_recipe)
    colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed == "id_nr"]
 
-  # Get Prediction scores
+  # Get Prediction scores help(predict)
   predicted_scores2 <- data_prepared_with_recipe %>%
-    bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type)) %>% #, ...
+    bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type), ...) %>%
     select(-!!colnames_to_b_removed) %>%
     full_join(new_data_id_nr_col, by = "id_nr") %>%
     arrange(id_nr) %>%
     select(-id_nr)
 }
-
-
-
-
-
 
 

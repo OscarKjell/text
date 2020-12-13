@@ -24,7 +24,7 @@ statisticalMode <- function(x) {
 #' @noRd
 fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", penalty = 1, mixture = 0,
                            preprocess_PCA = NA, variable_name_index_pca = NA, first_n_predictors = NA,
-                           preprocess_step_center = TRUE, preprocess_step_scale = TRUE) {
+                           preprocess_step_center = TRUE, preprocess_step_scale = TRUE, impute_missing = FALSE) {
 
 
   data_train <- rsample::analysis(object)   # mdata_train <- rsample::assessment(object)
@@ -45,9 +45,14 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
       recipes::recipe(y ~ .) %>%
       recipes::update_role(dplyr::all_of(variable_names), new_role = "Not_predictors") %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(recipes::all_predictors(), skip = TRUE) #%>%
-      #recipes::step_naomit(Dim1, skip = TRUE) #%>%
+      recipes::update_role(y, new_role = "outcome") #%>%
+
+  if (!impute_missing){
+    xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
+  } else if(impute_missing){
+    xy_recipe <- recipes::step_knnimpute(xy_recipe, recipes::all_predictors(), neighbors = 10) #, skip = TRUE
+  }
+
 
   if (preprocess_step_center) {
         xy_recipe <- recipes::step_center(xy_recipe, recipes::all_predictors())
@@ -73,7 +78,9 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
       } #%>%
       #recipes::prep()
     xy_recipe_prep <- recipes::prep(xy_recipe)
-    # Recipe for multiple word embedding input (with possibility of separate PCAs)
+
+
+  # Recipe for multiple word embedding input (with possibility of separate PCAs)
   } else {
 
     xy_recipe <- data_train %>%
@@ -81,8 +88,13 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
       # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
-      recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(recipes::all_predictors(), skip = TRUE) #%>%
+      recipes::update_role(y, new_role = "outcome")
+
+    if (!impute_missing){
+      xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
+    } else if(impute_missing){
+      xy_recipe <- recipes::step_knnimpute(xy_recipe, recipes::all_predictors(), neighbors = 10) #, skip = TRUE
+    }
 
     if (preprocess_step_center) {
         xy_recipe <- recipes::step_center(xy_recipe, recipes::all_predictors())
@@ -92,7 +104,6 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     }
 
     # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
-    #xy_recipe <- xy_recipe %>%
     # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
     if (!is.na(preprocess_PCA)) {
       if (preprocess_PCA >= 1) {
@@ -166,7 +177,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
       } #%>%
       #parsnip::fit(y ~ ., data = xy_training)
 
-    # Create Workflow (to know variable roles from recipes)
+    # Create Workflow (to know variable roles from recipes) help(workflow)
     wf <- workflows::workflow() %>%
       workflows::add_model(mod_spec) %>%
       workflows::add_recipe(xy_recipe)
@@ -175,14 +186,16 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     mod <-  parsnip::fit(wf, data = data_train)
   }
 
-  # Prepare the test data according to the recipe
-  xy_testing <- rsample::assessment(object)
+  # Prepare the test data; remove y and according to the recipe
+  xy_testing <- rsample::assessment(object) %>%
+    dplyr::select(-y)
 
   if (model == "regression") {
     # Apply model on new data; penalty
     holdout_pred <-
-      stats::predict(mod, xy_testing %>% dplyr::select(-y)) %>%
-      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
+      stats::predict(mod, xy_testing)  %>%
+      dplyr::bind_cols(rsample::assessment(object) %>%
+      dplyr::select(y, id_nr))
 
     # Get RMSE; eval_measure = "rmse" library(tidyverse)
     eval_result <- select_eval_measure_val(eval_measure, holdout_pred = holdout_pred, truth = y, estimate = .pred)$.estimate
@@ -191,11 +204,14 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     names(output) <- c("eval_result", "predictions", "y", "preprocess_PCA", "id_nr")
   } else if (model == "logistic") {
     holdout_pred_class <-
-      stats::predict(mod, xy_testing %>% dplyr::select(-y), type = c("class")) %>%
-      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
+      stats::predict(mod, xy_testing, type = c("class")) %>%
+      dplyr::bind_cols(rsample::assessment(object) %>%
+                         dplyr::select(y, id_nr))
+
     holdout_pred <-
-      stats::predict(mod, xy_testing %>% dplyr::select(-y), type = c("prob")) %>%
-      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
+      stats::predict(mod, xy_testing, type = c("prob")) %>%
+      dplyr::bind_cols(rsample::assessment(object) %>%
+                         dplyr::select(y, id_nr))
 
     holdout_pred$.pred_class <- holdout_pred_class$.pred_class
     class <- colnames(holdout_pred[2])
@@ -246,7 +262,8 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
                                    variable_name_index_pca = variable_name_index_pca,
                                    first_n_predictors = first_n_predictors,
                                    preprocess_step_center = preprocess_step_center,
-                                   preprocess_step_scale = preprocess_step_scale) {
+                                   preprocess_step_scale = preprocess_step_scale,
+                                   impute_missing = impute_missing) {
   fit_model_rmse(object,
     model,
     eval_measure,
@@ -256,7 +273,8 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
     variable_name_index_pca = variable_name_index_pca,
     first_n_predictors = first_n_predictors,
     preprocess_step_center = preprocess_step_center,
-    preprocess_step_scale = preprocess_step_scale
+    preprocess_step_scale = preprocess_step_scale,
+    impute_missing = impute_missing
   )
 }
 
@@ -280,7 +298,8 @@ tune_over_cost <- function(object,
                            variable_name_index_pca = variable_name_index_pca,
                            first_n_predictors = first_n_predictors,
                            preprocess_step_center = preprocess_step_center,
-                           preprocess_step_scale = preprocess_step_scale) {
+                           preprocess_step_scale = preprocess_step_scale,
+                           impute_missing = impute_missing) {
 
   # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
   if (!is.na(preprocess_PCA[1])) {
@@ -338,7 +357,8 @@ tune_over_cost <- function(object,
   eval_measure = eval_measure,
   variable_name_index_pca = variable_name_index_pca,
   preprocess_step_center = preprocess_step_center,
-  preprocess_step_scale = preprocess_step_scale
+  preprocess_step_scale = preprocess_step_scale,
+  impute_missing = impute_missing
   )
 
   # Sort the output to separate the rmse, predictions and truth
@@ -378,7 +398,8 @@ summarize_tune_results <- function(object,
                                    variable_name_index_pca = variable_name_index_pca,
                                    first_n_predictors = first_n_predictors,
                                    preprocess_step_center = preprocess_step_center,
-                                   preprocess_step_scale = preprocess_step_scale) {
+                                   preprocess_step_scale = preprocess_step_scale,
+                                   impute_missing = impute_missing) {
 
   # Return row-bound tibble containing the INNER results
   purrr::map_df(
@@ -392,10 +413,52 @@ summarize_tune_results <- function(object,
     eval_measure = eval_measure,
     first_n_predictors = first_n_predictors,
     preprocess_step_center = preprocess_step_center,
-    preprocess_step_scale = preprocess_step_scale
+    preprocess_step_scale = preprocess_step_scale,
+    impute_missing = impute_missing
   )
 }
 
+
+
+#x <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/ratings_cv_pred_dep_preds.rds")
+#y <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/outcome_dep_f.rds")
+
+x <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/sverker_pre_svd_dim_REMOVE_my_missing.rds")
+y <- readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/16 Mini Eng n Swe Study 1/SR MINI Eng Swe Study 1/outcome_tibble_complete.rds")
+y <- y$value
+
+
+cv_method = "validation_split"
+outside_folds = 10
+outside_strata_y = "y"
+outside_breaks = 4
+inside_folds = 3/4
+inside_strata_y = "y"
+inside_breaks = 4
+model = "regression"
+eval_measure = "default"
+preprocess_step_center = TRUE
+preprocess_step_scale = TRUE
+preprocess_PCA = NA
+penalty = 10^seq(-16, 16)
+mixture = c(0)
+first_n_predictors = NA
+impute_missing = TRUE
+method_cor = "pearson"
+model_description = "Consider writing a description of your model here"
+multi_cores = "multi_cores_sys_default"
+save_output = "all"
+seed = 2020
+
+
+model="logistic"
+outside_folds = 10
+outside_strata_y = "y"
+outside_breaks = 4
+inside_folds = 3/4
+inside_strata_y = "y"
+inside_breaks = 4
+preprocess_PCA = 21
 
 # devtools::document()
 #' Train word embeddings to a numeric variable.
@@ -404,7 +467,7 @@ summarize_tune_results <- function(object,
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops of folds (see nested_cv in rsample).
-#' Default is using cv_fols in the outside folds and "validation_split" using rsample::validation_split in the inner loop to achieve a development and assessment
+#' Default is using cv_folds in the outside folds and "validation_split" using rsample::validation_split in the inner loop to achieve a development and assessment
 #' set (note that for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds" uses rsample::vfold_cv to achieve n-folds
 #' in both the outer and inner loops.
 #' @param outside_folds Number of folds for the outer folds (default = 10).
@@ -433,6 +496,7 @@ summarize_tune_results <- function(object,
 #' This option is currently only possible for one embedding at the time.
 #' @param method_cor Type of correlation used in evaluation (default "pearson";
 #' can set to "spearman" or "kendall").
+#' @param impute_missing default FALSE (can be set to TRUE if something else than wordembeddings are trained).
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it (i.e., only on unix, not windows). Hence it
 #' makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
@@ -479,6 +543,7 @@ textTrainRegression <- function(x,
                                 penalty = 10^seq(-16, 16),
                                 mixture = c(0),
                                 first_n_predictors = NA,
+                                impute_missing = FALSE,
                                 method_cor = "pearson",
                                 model_description = "Consider writing a description of your model here",
                                 multi_cores = "multi_cores_sys_default",
@@ -628,7 +693,8 @@ textTrainRegression <- function(x,
       variable_name_index_pca = variable_name_index_pca,
       first_n_predictors = first_n_predictors,
       preprocess_step_center = preprocess_step_center,
-      preprocess_step_scale = preprocess_step_scale
+      preprocess_step_scale = preprocess_step_scale,
+      impute_missing = impute_missing
     )
   } else if (multi_cores_use == TRUE) {
     # The multisession plan uses the local cores to process the inner resampling loop.
@@ -647,7 +713,8 @@ textTrainRegression <- function(x,
       variable_name_index_pca = variable_name_index_pca,
       first_n_predictors = first_n_predictors,
       preprocess_step_center = preprocess_step_center,
-      preprocess_step_scale = preprocess_step_scale
+      preprocess_step_scale = preprocess_step_scale,
+      impute_missing = impute_missing
     )
   }
 
@@ -685,7 +752,8 @@ textTrainRegression <- function(x,
       model = model,
       eval_measure = eval_measure,
       preprocess_step_center = preprocess_step_center,
-      preprocess_step_scale = preprocess_step_scale
+      preprocess_step_scale = preprocess_step_scale,
+      impute_missing = impute_missing
     ),
     fit_model_rmse
   )
@@ -736,15 +804,20 @@ textTrainRegression <- function(x,
       variable_names = "id_nr"
     }
 
-    # [0,] is added to just get the col names (and avoid saving all the data with the receipt)
+    # [0,] is added to just get the col names (and avoid saving all the data with the receipt) help(step_naomit)
     final_recipe <- # xy %>%
       recipes::recipe(y ~ ., xy_all[0, ]) %>%
       recipes::update_role(all_of(variable_names), new_role = "Not_predictors") %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
      # recipes::update_role(-id_nr, new_role = "predictor") %>%
-      recipes::update_role(y, new_role = "outcome") %>%
-      # recipes::step_BoxCox(all_predictors()) %>%
-      recipes::step_naomit(recipes::all_predictors(), skip = TRUE) #%>%
+      recipes::update_role(y, new_role = "outcome") #%>%
+      # recipes::step_BoxCox(all_predictors())
+
+    if (!impute_missing){
+      final_recipe <- recipes::step_naomit(final_recipe, recipes::all_predictors(), skip = TRUE)
+    } else if(impute_missing){
+      final_recipe <- recipes::step_knnimpute(final_recipe, recipes::all_predictors(), neighbors = 10)
+    }
 
       if (preprocess_step_center) {
         final_recipe <- recipes::step_center(final_recipe, recipes::all_predictors())
@@ -771,13 +844,17 @@ textTrainRegression <- function(x,
 
     ######### More than one word embeddings as input
   } else {
-    #V1 <- colnames(xy_all[1])
 
     final_recipe <- recipes::recipe(y ~ ., xy_all[0, ]) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
-      recipes::update_role(y, new_role = "outcome") %>%
-      recipes::step_naomit(recipes::all_predictors(), skip = TRUE) #%>%
+      recipes::update_role(y, new_role = "outcome")
+
+    if (!impute_missing){
+      final_recipe <- recipes::step_naomit(final_recipe, recipes::all_predictors(), skip = TRUE)
+    } else if(impute_missing){
+      final_recipe <- recipes::step_knnimpute(final_recipe, recipes::all_predictors(), neighbors = 10)
+    }
 
     if (preprocess_step_center) {
       final_recipe <- recipes::step_center(final_recipe, recipes::all_predictors())
@@ -926,6 +1003,8 @@ textTrainRegression <- function(x,
   preprocess_step_center <- paste("preprocess_step_center_setting = ", deparse(preprocess_step_center))
   preprocess_step_scale <- paste("preprocess_step_scale_setting = ", deparse(preprocess_step_scale))
 
+  impute_missing <- paste("impute_missing_setting = ", deparse(impute_missing))
+
   # Getting time and date
   T2_textTrainRegression <- Sys.time()
   Time_textTrainRegression <- T2_textTrainRegression - T1_textTrainRegression
@@ -960,6 +1039,7 @@ textTrainRegression <- function(x,
     first_n_predictors_setting,
     first_n_predictors_description,
     first_n_predictors_fold_description,
+    impute_missing,
     embedding_description,
     model_description,
     time_date

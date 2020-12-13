@@ -22,6 +22,7 @@ textTrainRegression(
   penalty = 10^seq(-16, 16),
   mixture = c(0),
   first_n_predictors = NA,
+  impute_missing = FALSE,
   method_cor = "pearson",
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
@@ -36,7 +37,7 @@ textTrainRegression(
 \item{y}{Numeric variable to predict.}
 
 \item{cv_method}{Cross-validation method to use within a pipeline of nested outer and inner loops of folds (see nested_cv in rsample).
-Default is using cv_fols in the outside folds and "validation_split" using rsample::validation_split in the inner loop to achieve a development and assessment
+Default is using cv_folds in the outside folds and "validation_split" using rsample::validation_split in the inner loop to achieve a development and assessment
 set (note that for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds" uses rsample::vfold_cv to achieve n-folds
 in both the outer and inner loops.}
 
@@ -78,6 +79,8 @@ preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(5
 Then the X first dimensions are used in training, using a sequence from Kjell et al., 2019 paper in Psychological Methods.
 Adding 1, then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
 This option is currently only possible for one embedding at the time.}
+
+\item{impute_missing}{default FALSE (can be set to TRUE if something else than wordembeddings are trained).}
 
 \item{method_cor}{Type of correlation used in evaluation (default "pearson";
 can set to "spearman" or "kendall").}
