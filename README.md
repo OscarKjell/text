@@ -7,7 +7,7 @@
 
 [![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://codecov.io/gh/oscarkjell/text)
 [![CRAN
-Status](https://www.r-pkg.org/badges/version/text)](https://cran.r-project.org/package=text)
+Status](https://www.r-pkg.org/badges/version/text)](https://CRAN.R-project.org/package=text)
 [![Github build
 status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
 [![Project Status: Active – The project has reached a stable, usable
@@ -45,7 +45,7 @@ Most users simply need to run below installation code. For those
 experiencing problems, please see the [Extended Installation
 Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
 
-[CRAN](https://cran.r-project.org/web/packages/text/index.html) version:
+[CRAN](https://CRAN.R-project.org/package=text) version:
 
 ``` r
 install.packages("text")

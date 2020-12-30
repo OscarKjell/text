@@ -55,12 +55,13 @@ normalizeV <- function(x) {
 #' to one long row.
 #' @return aggregated word embeddings.
 #' @importFrom tibble as_tibble_row
+#' @importFrom purrr map
 #' @noRd
 textEmbeddingAggregation <- function(x, aggregation = "min") {
   if (aggregation == "min") {
-    min_vector <- unlist(map(x, min, na.rm = TRUE))
+    min_vector <- unlist(purrr::map(x, min, na.rm = TRUE))
   } else if (aggregation == "max") {
-    max_vector <- unlist(map(x, max, na.rm = TRUE))
+    max_vector <- unlist(purrr::map(x, max, na.rm = TRUE))
   } else if (aggregation == "mean") {
     mean_vector <- colMeans(x, na.rm = TRUE)
   } else if (aggregation == "concatenate") {
@@ -345,10 +346,10 @@ textEmbedLayersOutput <- function(x,
 #' the transformer, which is normally not used.
 #' @examples
 #' \donttest{
-#' embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1],
-#'  layers = 11)
+#' word_embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1],
+#'  layers = 11:12)
 #'
-#' wordembeddings <- textEmbedLayerAggregation(embeddings_layers$context, layers = 11)
+#' wordembeddings <- textEmbedLayerAggregation(word_embeddings_layers$context, layers = 11)
 #' }
 #' @seealso see \code{\link{textEmbedLayersOutput}} and \code{\link{textEmbed}}
 #' @importFrom dplyr %>% bind_rows
@@ -394,6 +395,19 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
     # Go over the lists and DEselect the token (e.g., CLS) (tokens_select = NULL tokens_select = "[CLS]")
     if (!is.null(tokens_deselect)) {
       selected_layers <- lapply(selected_layers, function(x) x[!x$tokens %in% tokens_deselect, ])
+
+    # If any of the tokens that was removed was "[CLS]", subtract one on token_id so it starts with 1 and works with the layer_aggregation_helper
+      if(length(tokens_deselect) == 1 & tokens_deselect == "[CLS]") {
+        # Subtract
+        selected_layers <- purrr::map(selected_layers, function(x) {x$token_id <- x$token_id-1
+        x})
+      } else if (length(tokens_deselect) > 1) {
+      if(table(tokens_deselect %in% "[CLS]")[[2]]  > 0){
+       # Subtract
+       selected_layers <- purrr::map(selected_layers, function(x) {x$token_id <- x$token_id-1
+       x})
+     }
+      }
     }
 
     ## Aggregate across layers; help(lapply); i_token_id=1

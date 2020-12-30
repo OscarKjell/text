@@ -15,7 +15,7 @@ textEmbedStatic(df, space, tk_df = "null", aggregate = "mean")
 \item{tk_df}{default "null"; option to use either the "tk" of "df" space (if using textSpace, which has not been implemented yet).}
 
 \item{aggregate}{method to aggregate semantic representation when their are more than a single word.
-(default is "mean"; see also "min" and "max")}
+(default is "mean"; see also "min" and "max", "concatenate" and "normalize")}
 }
 \value{
 A list with tibbles for each character variable. Each tibble comprises a column with the text, followed by

@@ -70,11 +70,11 @@ test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces 
 test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
   skip_on_cran()
 
-  # skip_on_cran()
+  # skip_on_cran() library(purrr)
   aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = "all",
     aggregate_tokens = "max",
-    tokens_deselect = "[CLS]"
+    tokens_deselect = c("[CLS]")
   )
 
   expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")

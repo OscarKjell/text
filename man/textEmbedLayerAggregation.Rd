@@ -44,10 +44,10 @@ Select and aggregate layers of hidden states to form a word embeddings.
 }
 \examples{
 \donttest{
-embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1],
- layers = 11)
+word_embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1],
+ layers = 11:12)
 
-wordembeddings <- textEmbedLayerAggregation(embeddings_layers$context, layers = 11)
+wordembeddings <- textEmbedLayerAggregation(word_embeddings_layers$context, layers = 11)
 }
 }
 \seealso{
