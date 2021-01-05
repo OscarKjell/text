@@ -25,13 +25,13 @@ unique_freq_words <- function(words) {
 ####################################
 ####################################
 ##################
-##################   Supervised Bicentroid Projection
+##################   Supervised Dimension Projection
 ##################
 ####################################
 ####################################
 
 
-#' Compute Supervised Bicentroid Projection and related variables for plotting words.
+#' Compute Supervised Dimension Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
 #' @param wordembeddings Word embeddings from textEmbed for the words to be plotted
 #' (i.e., the aggregated word embeddings for the "words" parameter).
@@ -51,13 +51,13 @@ unique_freq_words <- function(words) {
 #' the word embeddings with this in the computation of aggregated word embeddings for
 #' group low (1) and group high (2). This increases the weight of more frequent words.
 #' @param min_freq_words_test Option to select words that have occurred a specified number of
-#' times (default = 0); when creating the Supervised Bicentroid Projection line
-#' (i.e., single words receive Supervised Bicentroid Projection and p-value).
+#' times (default = 0); when creating the Supervised Dimension Projection line
+#' (i.e., single words receive Supervised Dimension Projection and p-value).
 #' @param Npermutations Number of permutations in the creation of the null distribution.
 #' @param n_per_split A setting to split Npermutations to avoid reaching computer memory limits;
 #' the higher the faster, but too high may lead to abortion.
 #' @param seed Set different seed.
-#' @return A dataframe with variables (e.g., including Supervised Bicentroid Projection, frequencies, p-values)
+#' @return A dataframe with variables (e.g., including Supervised Dimension Projection, frequencies, p-values)
 #' for the individual words that is used for the plotting in the textProjectionPlot function.
 #' @examples
 #' # Data
@@ -367,7 +367,7 @@ textProjection <- function(words,
 
 
 
-#' Plot words according to Supervised Bicentroid Projection.
+#' Plot words according to Supervised Dimension Projection.
 #' @param word_data Dataframe from textProjection
 #' @param k_n_words_to_test Select the k most frequent words to significance
 #' test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.
@@ -379,11 +379,11 @@ textProjection <- function(words,
 #' @param plot_n_words_p Number of significant words to plot on each(positive and negative) side of the x-axes and y-axes,
 #' (where duplicates are removed); selects first according to lowest p-value and then according to frequency. Hence, on a two
 #' dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.
-#' @param plot_n_word_extreme Number of words that are extreme on Supervised Bicentroid Projection per dimension.
+#' @param plot_n_word_extreme Number of words that are extreme on Supervised Dimension Projection per dimension.
 #' (i.e., even if not significant; per dimensions, where duplicates are removed).
 #' @param plot_n_word_frequency Number of words based on being most frequent.
 #' (i.e., even if not significant).
-#' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised Bicentroid Projection score
+#' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised Dimension Projection score
 #' (i.e., even if not significant;  per dimensions, where duplicates are removed).
 #' @param title_top Title (default "  ")
 #' @param titles_color Color for all the titles (default: "#61605e")
@@ -415,7 +415,7 @@ textProjection <- function(words,
 #' (default is to not show it, i.e., 0).
 #' @param points_without_words_alpha Transparency of the points not linked with a words
 #' (default is to not show it, i.e., 0).
-#' @param legend_title Title on the color legend (default: "(SBP)".
+#' @param legend_title Title on the color legend (default: "(SDP)".
 #' @param legend_x_axes_label Label on the color legend (default: "(x)".
 #' @param legend_y_axes_label Label on the color legend (default: "(y)".
 #' @param legend_x_position Position on the x coordinates of the color legend (default: 0.02).
@@ -429,7 +429,7 @@ textProjection <- function(words,
 #' @examples
 #' # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 #'
-#' # Supervised Bicentroid Projection Plot
+#' # Supervised Dimension Projection Plot
 #' plot_projection <- textProjectionPlot(
 #'   word_data = DP_projections_HILS_SWLS_100,
 #'   k_n_words_to_test = FALSE,
@@ -441,7 +441,7 @@ textProjection <- function(words,
 #'   plot_n_words_middle = 1,
 #'   y_axes = FALSE,
 #'   p_alpha = 0.05,
-#'   title_top = "Supervised Bicentroid Projection (SBP)",
+#'   title_top = "Supervised Dimension Projection (SDP)",
 #'   x_axes_label = "Low vs. High HILS score",
 #'   y_axes_label = "Low vs. High SWLS score",
 #'   p_adjust_method = "bonferroni",
@@ -474,9 +474,9 @@ textProjectionPlot <- function(word_data,
                                y_axes = FALSE,
                                p_alpha = 0.05,
                                p_adjust_method = "none",
-                               title_top = "Supervised Bicentroid Projection",
-                               x_axes_label = "Supervised Bicentroid Projection (SBP)",
-                               y_axes_label = "Supervised Bicentroid Projection (SBP)",
+                               title_top = "Supervised Dimension Projection",
+                               x_axes_label = "Supervised Dimension Projection (SDP)",
+                               y_axes_label = "Supervised Dimension Projection (SDP)",
                                scale_x_axes_lim = NULL,
                                scale_y_axes_lim = NULL,
                                word_font = NULL,
@@ -1055,11 +1055,11 @@ textCentrality <- function(words,
 #' @param min_freq_words_test Select words to significance test that have occurred
 #' at least min_freq_words_test (default = 1).
 #' @param plot_n_word_extreme Number of words per dimension to plot with extreme
-#' Supervised Bicentroid Projection value.
+#' Supervised Dimension Projection value.
 #' (i.e., even if not significant;  duplicates are removed).
 #' @param plot_n_word_frequency Number of words to plot according to their frequency.
 #' (i.e., even if not significant).
-#' @param plot_n_words_middle Number of words to plot that are in the middle in Supervised Bicentroid Projection score
+#' @param plot_n_words_middle Number of words to plot that are in the middle in Supervised Dimension Projection score
 #' (i.e., even if not significant; duplicates are removed).
 #' @param title_top Title (default "  ").
 #' @param titles_color Color for all the titles (default: "#61605e").
@@ -1376,11 +1376,11 @@ textPCA <- function(words,
 #' @param word_data Dataframe from textPCA
 #' @param min_freq_words_test Select words to significance test that have occurred at least min_freq_words_test
 #' (default = 1).
-#' @param plot_n_word_extreme Number of words that are extreme on Supervised Bicentroid Projection per dimension.
+#' @param plot_n_word_extreme Number of words that are extreme on Supervised Dimension Projection per dimension.
 #' (i.e., even if not significant; per dimensions, where duplicates are removed).
 #' @param plot_n_word_frequency Number of words based on being most frequent.
 #' (i.e., even if not significant).
-#' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised Bicentroid Projection score
+#' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised Dimension Projection score
 #' (i.e., even if not significant;  per dimensions, where duplicates are removed).
 #' @param title_top Title (default "  ")
 #' @param titles_color Color for all the titles (default: "#61605e")
@@ -1418,7 +1418,7 @@ textPCA <- function(words,
 #' @examples
 #' # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 #'
-#' # Supervised Bicentroid Projection Plot
+#' # Supervised Dimension Projection Plot
 #' principle_component_plot_projection <- textPCAPlot(PC_projections_satisfactionwords_40)
 #' principle_component_plot_projection
 #'
