@@ -52,3 +52,33 @@ p_value_comparing_with_Null <- function(Observedresults,
   return(p_value)
 }
 
+
+
+#  devtools::document()
+#' Cohen's D effect size
+#'
+#' @param x a variable.
+#' @param y a variable..
+#' @return p_value
+#' @importFrom stats var
+#' @noRd
+cohens_d <- function(x, y) {
+  lx <- length(x)- 1
+  ly <- length(y)- 1
+
+  # mean difference (numerator)
+  md  <- abs(mean(x) - mean(y))
+  # Sigma; denominator
+  csd <- lx * var(x) + ly * var(y)
+  csd <- csd/(lx + ly)
+  csd <- sqrt(csd)
+
+  cd  <- md/csd
+  # Cohen's d
+  cd
+}
+
+
+
+
+

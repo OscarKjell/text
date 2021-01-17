@@ -230,10 +230,10 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation).
 #' @param y Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
 #' categorical variables.
-#' @param force_train_method default is automatic; see also "regression" and "random_forest".
+#' @param force_train_method Default is automatic; see also "regression" and "random_forest".
 #' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
-#' @param method_cor  "pearson",
-#' @param model  type of model to use in regression; default is "regression"; see also "logistic".
+#' @param method_cor  Default "Pearson".
+#' @param model  Type of model to use in regression; default is "regression"; see also "logistic".
 #' (To set different random forest algorithms see extremely_randomised_splitrule parameter in textTrainRandomForest)
 #' @param eval_measure  Type of evaluative measure to assess models on.
 #' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons
@@ -373,8 +373,8 @@ textTrainLists <- function(x,
 #'
 #' @param model_info Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
 #' @param new_data Word embeddings from new data to be predicted from.
-#' @param  type Type of prediction; e.g., "prob", "class"
-#' @param ... From predict
+#' @param  type Type of prediction; e.g., "prob", "class".
+#' @param ... Setting trom stats::predict can be called.
 #' @return Predicted scores from word embeddings.
 #' @examples
 #' wordembeddings <- wordembeddings4
@@ -455,5 +455,161 @@ textPredict <- function(model_info,
     arrange(id_nr) %>%
     select(-id_nr)
 }
+
+
+# test data
+#library("MASS")
+#n     <- 200                    # length of vector
+#rho   <- 0.8                   # desired correlation = cos(angle)
+#theta <- acos(rho)             # corresponding angle
+#x1    <- rnorm(n, 1, 1)        # fixed given data
+#x2    <- rnorm(n, 2, 0.5)      # new random data
+#X     <- cbind(x1, x2)         # matrix
+#Xctr  <- scale(X, center=TRUE, scale=FALSE)   # centered columns (mean 0)
+#
+#Id   <- diag(n)                               # identity matrix
+#Q    <- qr.Q(qr(Xctr[ , 1, drop=FALSE]))      # QR-decomposition, just matrix Q
+#P    <- tcrossprod(Q)          # = Q Q'       # projection onto space defined by x1
+#x2o  <- (Id-P) %*% Xctr[ , 2]                 # x2ctr made orthogonal to x1ctr
+#Xc2  <- cbind(Xctr[ , 1], x2o)                # bind to matrix
+#Y    <- Xc2 %*% diag(1/sqrt(colSums(Xc2^2)))  # scale columns to length 1
+#
+#x <- Y[ , 2] + (1 / tan(theta)) * Y[ , 1]     # final new vector
+#cor(x1, x)
+
+#y <- x1
+#yhat1 <- x
+#y2 <- x1
+#yhat2 <- x
+
+# devtools::document()
+#' Significance testing correlations
+#' If only y1 is provided a t-test is computed, between the absolute error from yhat1-y1 and yhat2-y1.
+#'
+#' If y2 is provided a bootstrapped procedure is used to compare the correlations between y1 and yhat1 versus
+#' y2 and yhat2. This is achieved by creating two distributions of correlations using bootstrapping; and then
+#' finally compute the distributions overlap.
+#'
+#' @param y1 The observed scores (i.e., what was used to predict when training a model).
+#' @param y2 The second observed scores (default = NULL; i.e., for when comparing models that are predicting different
+#' outcomes. In this case a bootstrap procedure is used to create two distributions of correlations that are
+#' compared (see description above).
+#' @param yhat1 The predicted scores from model 1.
+#' @param yhat2 The predicted scores from model 2 that will be compared with model 1.
+#' @param paired Paired test or not in stats::t.test (default TRUE).
+#' @param bootstraps_times Number of bootstraps (when providing y2).
+#' @param seed Set different seed.
+#' @param ... Settings from stats::t.test or overlapping::overlap (e.g., plot = TRUE).
+#' @return Comparison of correlations either a t-test or the overlap of a bootstrapped provedure (see $OV).
+#' @examples
+#' # Example random data
+#' y1 <- runif(10)
+#' yhat1 <- runif(10)
+#' y2 <- runif(10)
+#' yhat2 <- runif(10)
+#'
+#' boot_test <- textPredictTest(y1, yhat1, y2, yhat2, bootstraps_times = 10)
+#'
+#' @seealso see \code{\link{textTrain}} \code{\link{textPredict}}
+#' @importFrom stats t.test cor
+#' @importFrom tibble is_tibble as_tibble_col
+#' @importFrom tidyr unnest
+#' @importFrom dplyr select mutate
+#' @importFrom overlapping overlap
+#' @importFrom rsample analysis bootstraps
+#' @export
+textPredictTest <- function(y1,
+                            y2 = NULL,
+                            yhat1,
+                            yhat2,
+                            paired = TRUE,
+                            bootstraps_times = 10000,
+                            seed = 6134,
+                            ...){
+
+  ## If comparing predictions from models that predict the SAME outcome
+  if(is.null(y2)){
+
+  yhat1_absolut_error <- abs(yhat1 - y1)
+  yhat1_absolut_error_mean <- mean(yhat1_absolut_error)
+  yhat1_absolut_error_sd <- sd(yhat1_absolut_error)
+
+  yhat2_absolut_error <- abs(yhat2 - y1)
+  yhat2_absolut_error_mean <- mean(yhat2_absolut_error)
+  yhat2_absolut_error_sd <- sd(yhat2_absolut_error)
+
+  # T-test
+  t_test_results <- stats::t.test(yhat1_absolut_error,
+                                  yhat2_absolut_error,
+                                  paired = paired, ...)
+  # Effect size
+  cohensD <- cohens_d(yhat1_absolut_error,
+                      yhat2_absolut_error)
+  # Descriptive
+  descriptives <- tibble::tibble(yhat1_absolut_error_mean, yhat1_absolut_error_sd,
+                                 yhat2_absolut_error_mean, yhat2_absolut_error_sd)
+  # Outputs
+  output <- list(descriptives, cohensD, t_test_results)
+  names(output) <- c("Descriptives", "Effect_size", "Test")
+  }
+
+  ########
+  ## If comparing predictions from models that predict DIFFERENT outcomes
+  ####### help(mutate)
+
+  if(!is.null(y2)){
+    set.seed(seed)
+    #Bootstrap data to create distribution of correlations; help(bootstraps)
+
+    # Correlation function
+    corr_on_bootstrap <- function(split) {
+      stats::cor(rsample::analysis(split)[[1]], rsample::analysis(split)[[2]])
+    }
+
+    # Creating correlation distribution for y1 and yhat1
+    y_yhat1_df <- tibble::tibble(y1, yhat1)
+    boots_y1 <- rsample::bootstraps(y_yhat1_df, times = bootstraps_times, apparent = FALSE)
+
+    boot_corrss_y1 <- boots_y1 %>%
+      dplyr::mutate(corr_y1 = purrr::map(splits, corr_on_bootstrap))
+
+    boot_y1_distribution <- boot_corrss_y1 %>%
+      tidyr::unnest(corr_y1) %>%
+      dplyr::select(corr_y1)
+
+    # Creating correlation distribution for y2 and yhat2
+    y_yhat2_df <- tibble::tibble(y2, yhat2)
+    boots_y2 <- rsample::bootstraps(y_yhat2_df, times = bootstraps_times, apparent = FALSE)
+
+    boot_corrss_y2 <- boots_y2 %>%
+      dplyr::mutate(corr_y2 = purrr::map(splits, corr_on_bootstrap))
+
+    boot_y2_distribution <- boot_corrss_y2 %>%
+      tidyr::unnest(corr_y2) %>%
+      dplyr::select(corr_y2)
+
+
+   ### Examining the overlap
+   x_list_dist <- list(boot_y1_distribution$corr_y1, boot_y2_distribution$corr_y2)
+   #install.packages("overlapping")
+   output <- overlapping::overlap(x_list_dist, ...)
+   output$DD <- NULL
+   output$xpoints <- NULL
+   names(output) <- c("overlapp_p_value")
+}
+  output
+}
+
+#textPredictTest(y, y2, yhat1, yhat2, plot = T)
+#
+#cor(y, yhat1)
+#cor(y, yhat2)
+#textPredictTest(y1 = y, y2=y, yhat1= yhat1, yhat2= yhat2, plot = T)
+#
+#textPredictTest(y1 = y, y2=NULL, yhat1= yhat1, yhat2= yhat2, plot = T)
+
+
+
+
 
 

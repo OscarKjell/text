@@ -9,6 +9,7 @@ statisticalMode <- function(x) {
 }
 
 
+
 # library(magrittr)
 #' Function to fit a model and compute RMSE.
 #'
@@ -418,8 +419,30 @@ summarize_tune_results <- function(object,
   )
 }
 
-
-
+#x <-  wordembeddings4$harmonytext
+#y <- Language_based_assessment_data_8$hilstotal
+#
+#cv_method = "validation_split"
+#outside_folds = 10
+#outside_strata_y = "y"
+#outside_breaks = 4
+#inside_folds = 3/4
+#inside_strata_y = "y"
+#inside_breaks = 4
+#model = "regression"
+#eval_measure = "default"
+#preprocess_step_center = TRUE
+#preprocess_step_scale = TRUE
+#preprocess_PCA = NA
+#penalty = 10^seq(-16, 16)
+#mixture = c(0)
+#first_n_predictors = NA
+#impute_missing = TRUE
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#seed = 2020
 
 # devtools::document()
 #' Train word embeddings to a numeric variable.

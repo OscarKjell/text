@@ -1,7 +1,7 @@
 Package: text
 Type: Package
 Title: Analyses of Text using Natural Language Processing and Machine Learning
-Version: 0.9.10
+Version: 0.9.11
 Authors@R: c(
     person("Oscar", "Kjell", , "oscar.kjell@psy.lu.se", role = c("aut", "cre"), 
       comment = c(ORCID = "0000-0002-2728-6278"),
@@ -41,7 +41,8 @@ Imports:
     workflows,
     yardstick,
     future,
-    furrr
+    furrr,
+    overlapping
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,

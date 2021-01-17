@@ -2,10 +2,13 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # text 0.9.11 
-This version is not on CRAN.
+
 
 ### New Features
-- If any of the tokens to remove is "[CLS]", subtract one on token_id so it to work with layer_aggregation_helper.
+- `textPredictTest` function to significance test correaltions of different models. 0.9.11 
+
+### Bug Fixes
+- If any of the tokens to remove is "[CLS]", subtract 1 on token_id so that it works with layer_aggregation_helper. 0.9.11
 
 # text 0.9.10 
 This version is now on CRAN.

@@ -605,3 +605,24 @@ test_that("textTrainRandomForest adding wordembeddings together", {
   testthat::expect_that(multi_we_RF_PCA_NA, testthat::is_a("list"))
   testthat::expect_is(multi_we_RF_PCA_NA$results$.estimate[[1]], "numeric")
 })
+
+
+#
+#test_that("textPredictTest ", {
+#
+#  # Test data
+#  y1 <- runif(10)
+#  yhat1 <- runif(10)
+#  y2 <- runif(10)
+#  yhat2 <- runif(10)
+#
+#  boot_test <- textPredictTest(y1, yhat1, y2, yhat2, bootstraps_times = 10)
+#
+#  testthat::expect_that(boot_test, testthat::is_a("list"))
+#
+#  boot_test2 <- textPredictTest(y1=y1, yhat1, y2=NULL, yhat2)
+#  testthat::expect_that(boot_test2, testthat::is_a("list"))
+#  })
+#
+
+

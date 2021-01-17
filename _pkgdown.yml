@@ -47,6 +47,7 @@ reference:
     - textTrainRegression
     - textTrainRandomForest
     - textPredict
+    - textPredictTest
 - title: Semantic Similairties
   contents:
     - textSimilarity

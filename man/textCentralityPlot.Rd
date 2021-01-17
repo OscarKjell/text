@@ -43,13 +43,13 @@ textCentralityPlot(
 at least min_freq_words_test (default = 1).}
 
 \item{plot_n_word_extreme}{Number of words per dimension to plot with extreme
-Supervised Bicentroid Projection value.
+Supervised Dimension Projection value.
 (i.e., even if not significant;  duplicates are removed).}
 
 \item{plot_n_word_frequency}{Number of words to plot according to their frequency.
 (i.e., even if not significant).}
 
-\item{plot_n_words_middle}{Number of words to plot that are in the middle in Supervised Bicentroid Projection score
+\item{plot_n_words_middle}{Number of words to plot that are in the middle in Supervised Dimension Projection score
 (i.e., even if not significant; duplicates are removed).}
 
 \item{titles_color}{Color for all the titles (default: "#61605e").}

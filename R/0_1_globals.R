@@ -25,5 +25,6 @@ utils::globalVariables(c(
   "hgTransformerGetEmbedding", "central_cosine",
   "Dim_PC1", "Dim_PC2", "check_extreme_frequency", "check_extreme_max_PC1",
   "check_extreme_max_PC2", "check_extreme_min_PC1", "check_extreme_min_PC2",
-  "check_middle_PC1", "check_middle_PC2"
+  "check_middle_PC1", "check_middle_PC2",
+  "corr_y1", "corr_y2", "splits"
 ))
