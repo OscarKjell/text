@@ -444,6 +444,15 @@ summarize_tune_results <- function(object,
 #save_output = "all"
 #seed = 2020
 
+
+#textTrainRegression(
+#  x = wordembeddings4[1:2],
+#  y = Language_based_assessment_data_8$hilstotal,
+#  preprocess_PCA = c(2, 13)
+#)
+
+
+
 # devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
