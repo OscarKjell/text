@@ -457,31 +457,8 @@ textPredict <- function(model_info,
 }
 
 
-# test data
-#library("MASS")
-#n     <- 200                    # length of vector
-#rho   <- 0.8                   # desired correlation = cos(angle)
-#theta <- acos(rho)             # corresponding angle
-#x1    <- rnorm(n, 1, 1)        # fixed given data
-#x2    <- rnorm(n, 2, 0.5)      # new random data
-#X     <- cbind(x1, x2)         # matrix
-#Xctr  <- scale(X, center=TRUE, scale=FALSE)   # centered columns (mean 0)
-#
-#Id   <- diag(n)                               # identity matrix
-#Q    <- qr.Q(qr(Xctr[ , 1, drop=FALSE]))      # QR-decomposition, just matrix Q
-#P    <- tcrossprod(Q)          # = Q Q'       # projection onto space defined by x1
-#x2o  <- (Id-P) %*% Xctr[ , 2]                 # x2ctr made orthogonal to x1ctr
-#Xc2  <- cbind(Xctr[ , 1], x2o)                # bind to matrix
-#Y    <- Xc2 %*% diag(1/sqrt(colSums(Xc2^2)))  # scale columns to length 1
-#
-#x <- Y[ , 2] + (1 / tan(theta)) * Y[ , 1]     # final new vector
-#cor(x1, x)
 
-#y <- x1
-#yhat1 <- x
-#y2 <- x1
-#yhat2 <- x
-
+# library(tidyverse)
 # devtools::document()
 #' Significance testing correlations
 #' If only y1 is provided a t-test is computed, between the absolute error from yhat1-y1 and yhat2-y1.
@@ -541,7 +518,7 @@ textPredictTest <- function(y1,
   # T-test
   t_test_results <- stats::t.test(yhat1_absolut_error,
                                   yhat2_absolut_error,
-                                  paired = paired, ...)
+                                  paired = paired, ...) #, ... Double check
   # Effect size
   cohensD <- cohens_d(yhat1_absolut_error,
                       yhat2_absolut_error)
@@ -593,14 +570,14 @@ textPredictTest <- function(y1,
    x_list_dist <- list(boot_y1_distribution$corr_y1, boot_y2_distribution$corr_y2)
    #install.packages("overlapping")
    output <- overlapping::overlap(x_list_dist, ...)
-   output$DD <- NULL
-   output$xpoints <- NULL
-   names(output) <- c("overlapp_p_value")
+   output <- list(output$OV[[1]])
+   names(output) <- "overlapp_p_value"
 }
   output
 }
 
-#textPredictTest(y, y2, yhat1, yhat2, plot = T)
+# help(overlap)
+#textPredictTest(y1, y2, yhat1, yhat2, bootstraps_times = 100000)
 #
 #cor(y, yhat1)
 #cor(y, yhat2)
@@ -609,7 +586,8 @@ textPredictTest <- function(y1,
 #textPredictTest(y1 = y, y2=NULL, yhat1= yhat1, yhat2= yhat2, plot = T)
 
 
-
+# check p converging
+# Change output of the Y1-Y2
 
 
 
