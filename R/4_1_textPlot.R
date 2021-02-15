@@ -322,8 +322,7 @@ textProjection <- function(words,
     ### Compare observed dot-product with null
     dot_null_distribution <- dot_null_distribution[stats::complete.cases(dot_null_distribution), ]
     p_values_dot_prod <- purrr::map(as.list(purrr::as_vector(dot_products_observed)), p_value_comparing_with_Null,
-      dot_null_distribution,
-      Npermutations = Npermutations, alternative = "two_sided"
+      dot_null_distribution, alternative = "two_sided"
     )
     p_values_dot_prod <- unlist(p_values_dot_prod)
     # Sort out dataframe
