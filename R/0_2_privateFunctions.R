@@ -19,19 +19,20 @@ addEqualNrNArows <- function(x, y) {
   return(x)
 }
 
+
+
 #  devtools::document()
-#' Examine how the ordered data's mean of the cosine compare,
+#' Examine how the ordered data's mean of a statistics compare,
 #' with the random data's null comparison distribution.
-#' p_value_comparing_with_Null
-#' @param NULLresults a vector with a NULL distribution of estimates (cosines).
 #' @param Observedresults a value representing the observed cosine.
-#' @param Npermutations number of permutation used in the test.
+#' @param NULLresults a tibble column with a NULL distribution of estimates (cosines).
+# #' @param Npermutations number of permutation used in the test.
 #' @param alternative type of test: "two_sided", "greater", "less".
 #' @return p_value
 #' @noRd
 p_value_comparing_with_Null <- function(Observedresults,
                                         NULLresults,
-                                        Npermutations,
+                                        # Npermutations,
                                         alternative = c("two_sided", "less", "greater")) {
   switch(alternative,
     "two_sided" = {
@@ -46,7 +47,7 @@ p_value_comparing_with_Null <- function(Observedresults,
   )
   if (!is.na(p_value)) {
     if (p_value == 0) {
-      p_value <- 1 / (Npermutations + 1)
+      p_value <- 1 / (nrow(NULLresults) + 1)
     }
   }
   return(p_value)
