@@ -46,7 +46,7 @@ y <- wordembeddings4$satisfactionwords
 textSimilarityTest(x,
   y,
   method = "paired",
-  Npermutations = 10,
+  Npermutations = 100,
   N_cluster_nodes = 1,
   alternative = "two_sided"
 )
