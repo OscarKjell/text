@@ -40,8 +40,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
           pip install transformers==3.3.1
-          pip install nltk==1.19.5
-          pip install numpy
+          pip install nltk
+          pip install numpy==1.19.5
 
       - name: Query dependencies
         run: |
