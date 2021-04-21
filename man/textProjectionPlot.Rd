@@ -42,6 +42,14 @@ textProjectionPlot(
   legend_w_size = 0.2,
   legend_title_size = 7,
   legend_number_size = 2,
+  group_embeddings1 = FALSE,
+  group_embeddings2 = FALSE,
+  projection_embedding = FALSE,
+  aggregated_point_size = 0.8,
+  aggregated_shape = 8,
+  aggregated_color_G1 = "#EAEAEA",
+  aggregated_color_G2 = "#EAEAEA",
+  projection_color = "#f542bf",
   seed = 1005
 )
 }
@@ -136,6 +144,22 @@ exact same colour-code because the numbers within the squares of the legend will
 \item{legend_title_size}{Font size (default: 7).}
 
 \item{legend_number_size}{Font size of the values in the legend (default: 2).}
+
+\item{group_embeddings1}{Shows a point representing the aggregated word embedding for group 1 (default = FALSE).}
+
+\item{group_embeddings2}{Shows a point representing the aggregated word embedding for group 2 (default = FALSE).}
+
+\item{projection_embedding}{Shows a point representing the aggregated direction embedding (default = FALSE).}
+
+\item{aggregated_point_size}{Size of the points representing the group_embeddings1, group_embeddings2 and projection_embedding}
+
+\item{aggregated_shape}{Shape type of the points representing the group_embeddings1, group_embeddings2 and projection_embeddingd}
+
+\item{aggregated_color_G1}{Color}
+
+\item{aggregated_color_G2}{Color}
+
+\item{projection_color}{Color}
 
 \item{seed}{Set different seed.}
 }

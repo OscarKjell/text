@@ -30,6 +30,32 @@ unique_freq_words <- function(words) {
 ####################################
 ####################################
 
+#wordembeddings <- wordembeddings4
+#raw_data <- Language_based_assessment_data_8
+#
+#words = raw_data$harmonywords
+#single_wordembeddings = wordembeddings$singlewords_we
+#wordembeddings = wordembeddings$harmonywords
+#
+#x = raw_data$hilstotal
+#y = raw_data$swlstotal
+#split = "mean"
+#Npermutations = 10
+#n_per_split = 1
+#
+#words
+#wordembeddings # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
+#single_wordembeddings
+#x
+#y# = NULL
+#pca = NULL
+#aggregation = "mean"
+#split = "quartile"
+#word_weight_power = 1
+#min_freq_words_test = 0
+#Npermutations = 10
+#n_per_split = 5
+#seed = 1003
 
 #' Compute Supervised Dimension Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
@@ -261,7 +287,7 @@ textProjection <- function(words,
     all_unique_words_we <- lapply(all_unique_words_freq$words, applysemrep, single_wordembeddings)
     all_unique_words_we_b <- dplyr::bind_rows(all_unique_words_we)
 
-    # Position the embedding; i.e., taking the word embedding substracted with aggregated word embedding
+    # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
     # version 1: word_new = word_old - ((group(high harmony) + group(low harmony)) / 2)
     words_positioned_embeddings <- all_unique_words_we_b - ((t(replicate(nrow(all_unique_words_we_b), Aggregated_word_embedding_group2)) +
       t(replicate(nrow(all_unique_words_we_b), Aggregated_word_embedding_group1))) / 2)
@@ -269,6 +295,19 @@ textProjection <- function(words,
     # Project the embeddings using dot product.
     dot_products_observed <- rowSums(words_positioned_embeddings * t(replicate(nrow(all_unique_words_we_b), projected_embedding)))
     all_unique_words_freq$dot <- dot_products_observed
+
+
+    # Computing the dot product projection for the aggregated and projected embeddings
+    all_aggregated <- rbind(Aggregated_word_embedding_group1, Aggregated_word_embedding_group2, projected_embedding)
+    dot_products_all_aggregated <- rowSums(all_aggregated * t(replicate(nrow(all_aggregated), projected_embedding)))
+
+    DP_aggregate <- tibble::as_tibble_col(c("Group1*", "Group2*", "projected_embedding"), column_name = "words")
+    DP_aggregate$n <- c(0, 0, 0)
+    DP_aggregate$dot <- dot_products_all_aggregated
+    dot_products_observed <- c(as.vector(dot_products_all_aggregated), dot_products_observed)
+    # Add DP_aggregate to the words data
+    all_unique_words_freq <- rbind(DP_aggregate, all_unique_words_freq)
+
 
     ############
     ######         Comparison distributions for Project embedding
@@ -366,6 +405,71 @@ textProjection <- function(words,
 
 
 
+
+
+#wordembeddings <- wordembeddings4
+#raw_data <- Language_based_assessment_data_8
+## Pre-processing data for plotting
+#df_for_plotting <- textProjection(
+#  words = raw_data$harmonywords,
+#  wordembeddings = wordembeddings$harmonywords,
+#  single_wordembeddings = wordembeddings$singlewords_we,
+#  x = raw_data$hilstotal,
+#  y = raw_data$swlstotal,
+#  split = "mean",
+#  Npermutations = 10,
+#  n_per_split = 1
+#)
+##df_for_plotting
+##
+#
+#word_data = df_for_plotting
+#k_n_words_to_test = FALSE
+#min_freq_words_test = 0
+#min_freq_words_plot = 0
+#plot_n_words_square = 3
+#plot_n_words_p = 5
+#plot_n_word_extreme = 5
+#plot_n_word_frequency = 5
+#plot_n_words_middle = 5
+#titles_color = "#61605e"
+## x_axes = TRUE
+#y_axes = TRUE
+#p_alpha = 0.05
+#p_adjust_method = "none"
+#title_top = "Supervised Dimension Projection"
+#x_axes_label = "Supervised Dimension Projection (SDP)"
+#y_axes_label = "Supervised Dimension Projection (SDP)"
+#scale_x_axes_lim = NULL
+#scale_y_axes_lim = NULL
+#word_font = NULL
+#bivariate_color_codes = c(
+#  "#398CF9", "#60A1F7", "#5dc688",
+#  "#e07f6a", "#EAEAEA", "#40DD52",
+#  "#FF0000", "#EA7467", "#85DB8E"
+#)
+#word_size_range = c(3, 8)
+#position_jitter_hight = .0
+#position_jitter_width = .03
+#point_size = 0.5
+#arrow_transparency = 0.1
+#points_without_words_size = 0.2
+#points_without_words_alpha = 0.2
+#legend_title = "DPP"
+#legend_x_axes_label = "x"
+#legend_y_axes_label = "y"
+#legend_x_position = 0.02
+#legend_y_position = 0.02
+#legend_h_size = 0.2
+#legend_w_size = 0.2
+#legend_title_size = 7
+#legend_number_size = 2
+#group_embeddings1 = TRUE
+#group_embeddings2 = TRUE
+#projection_embedding = TRUE
+#seed = 1005
+
+
 #' Plot words according to Supervised Dimension Projection.
 #' @param word_data Dataframe from textProjection
 #' @param k_n_words_to_test Select the k most frequent words to significance
@@ -423,6 +527,14 @@ textProjection <- function(words,
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size (default: 7).
 #' @param legend_number_size Font size of the values in the legend (default: 2).
+#' @param group_embeddings1 Shows a point representing the aggregated word embedding for group 1 (default = FALSE).
+#' @param group_embeddings2 Shows a point representing the aggregated word embedding for group 2 (default = FALSE).
+#' @param projection_embedding Shows a point representing the aggregated direction embedding (default = FALSE).
+#' @param aggregated_point_size Size of the points representing the group_embeddings1, group_embeddings2 and projection_embedding
+#' @param aggregated_shape Shape type of the points representing the group_embeddings1, group_embeddings2 and projection_embeddingd
+#' @param aggregated_color_G1 Color
+#' @param aggregated_color_G2 Color
+#' @param projection_color Color
 #' @param seed Set different seed.
 #' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
 #' @examples
@@ -500,6 +612,14 @@ textProjectionPlot <- function(word_data,
                                legend_w_size = 0.2,
                                legend_title_size = 7,
                                legend_number_size = 2,
+                               group_embeddings1 = FALSE,
+                               group_embeddings2 = FALSE,
+                               projection_embedding = FALSE,
+                               aggregated_point_size = 0.8,
+                               aggregated_shape = 8,
+                               aggregated_color_G1 = "#EAEAEA",
+                               aggregated_color_G2 = "#EAEAEA",
+                               projection_color = "#f542bf",
                                seed = 1005) {
 
   # Comment to be saved
@@ -554,6 +674,9 @@ textProjectionPlot <- function(word_data,
   ### Selecting words to plot
   # Computing adjusted p-values with those words selected by min_freq_words_test
   word_data_padjusted <- word_data[word_data$n >= min_freq_words_test, ]
+
+  # Selected Aggregated points
+  aggregated_embeddings_data <- word_data[word_data$n == 0,]
 
   # Computing adjusted p-values with those words selected by: k = sqrt(100*N)
   if (k_n_words_to_test == TRUE) {
@@ -826,6 +949,33 @@ textProjectionPlot <- function(word_data,
       size = point_size,
       ggplot2::aes(color = colour_categories)
     ) +
+
+    {if(group_embeddings1 == TRUE)
+    # Aggregated point help(geom_point)
+    ggplot2::geom_point(
+      data = aggregated_embeddings_data[1,],
+      size = aggregated_point_size,
+      shape = aggregated_shape,
+      ggplot2::aes(color = aggregated_color_G1)
+    ) } +
+
+    # Aggregated point help(geom_point)
+    {if(group_embeddings2 == TRUE)
+    ggplot2::geom_point(
+        data = aggregated_embeddings_data[2,],
+        size = aggregated_point_size,
+        shape = aggregated_shape,
+        ggplot2::aes(color = aggregated_color_G2)
+      ) } +
+
+    # Aggregated point help(geom_point)
+    {if(projection_embedding == TRUE)
+    ggplot2::geom_point(
+        data = aggregated_embeddings_data[3,],
+        size = aggregated_point_size,
+        shape = aggregated_shape,
+        ggplot2::aes(color = projection_color)
+        ) } +
 
     # set word size range and the guide
     ggplot2::scale_size_continuous(

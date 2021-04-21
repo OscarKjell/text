@@ -1,11 +1,19 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.12
+
+
+### New Features
+- in `textProjetion` and `textProjetionPlot` providing the possibility to add points of the aggregated word embeddings in the plot
+
+
+
 # text 0.9.11 
 
 
 ### New Features
-- `textPredictTest` function to significance test correaltions of different models. 0.9.11 
+- `textPredictTest` function to significance test correlations of different models. 0.9.11 
 
 ### Bug Fixes
 - If any of the tokens to remove is "[CLS]", subtract 1 on token_id so that it works with layer_aggregation_helper. 0.9.11
