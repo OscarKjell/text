@@ -1,3 +1,12 @@
+#x <- wordembeddings4$harmonytexts
+#y <- wordembeddings4$satisfactiontexts
+#method = "unpaired"
+#Npermutations = 100
+#N_cluster_nodes = 1
+#alternative = "two_sided"
+#output.permutations = TRUE
+#
+#seed = 1001
 
 #' Test whether there is a significant difference in meaning between two sets of texts
 #' (i.e., between their word embeddings).

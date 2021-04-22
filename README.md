@@ -41,6 +41,8 @@ hypotheses in social and behavior sciences for both relatively small and
 large datasets. *Text* is continuously tested on Ubuntu, Mac OS and
 Windows using the latest stable R version.
 
+[Download tutorial paper](https://psyarxiv.com/293kt/)
+
 ### Short installation guide
 
 Most users simply need to run below installation code. For those
@@ -123,24 +125,24 @@ plot_projection
 
     #> 
     #> $description
-    #> [1] "INFORMATION ABOUT THE PROJECTION  INFORMATION ABOUT THE PLOT word_data = DP_projections_HILS_SWLS_100 k_n_words_to_test = FALSE min_freq_words_test = 1 min_freq_words_plot = 1 plot_n_words_square = 3 plot_n_words_p = 5 plot_n_word_extreme = 5 plot_n_word_frequency = 5 plot_n_words_middle = 5 y_axes = TRUE p_alpha = 0.05 p_adjust_method = none bivariate_color_codes = #398CF9 #60A1F7 #5dc688 #e07f6a #EAEAEA #40DD52 #FF0000 #EA7467 #85DB8E word_size_range = 3 - 8 position_jitter_hight = 0.5 position_jitter_width = 0.8 point_size = 0.5 arrow_transparency = 0.5 points_without_words_size = 0.2 points_without_words_alpha = 0.2 legend_x_position = 0.02 legend_y_position = 0.02 legend_h_size = 0.2 legend_w_size = 0.2 legend_title_size = 7 legend_number_size = 2"
+    #> [1] "INFORMATION ABOUT THE PROJECTION words = $ wordembeddings = Information about the embeddings. textEmbedLayersOutput:  model: bert-base-uncased layers: 11 12 . textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   single_wordembeddings = Information about the embeddings. textEmbedLayersOutput:  bert-base-uncased layers: 11 12 . textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   x = $ y = $ pca =  aggregation =  mean split =  quartile word_weight_power = 1 min_freq_words_test = 0 Npermutations = 1e+06 n_per_split = 1e+05 words = Language_based_assessment_data_8_100 wordembeddings = Information about the embeddings. textEmbedLayersOutput:  model: bert-base-uncased layers: 11 12 . textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   single_wordembeddings = Information about the embeddings. textEmbedLayersOutput:  bert-base-uncased layers: 11 12 . textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   x = Language_based_assessment_data_8_100 y = Language_based_assessment_data_8_100 pca =  aggregation =  mean split =  quartile word_weight_power = 1 min_freq_words_test = 0 Npermutations = 1e+06 n_per_split = 1e+05 words = harmonywords wordembeddings = Information about the embeddings. textEmbedLayersOutput:  model: bert-base-uncased layers: 11 12 . textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   single_wordembeddings = Information about the embeddings. textEmbedLayersOutput:  bert-base-uncased layers: 11 12 . textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   x = hilstotal y = swlstotal pca =  aggregation =  mean split =  quartile word_weight_power = 1 min_freq_words_test = 0 Npermutations = 1e+06 n_per_split = 1e+05 INFORMATION ABOUT THE PLOT word_data = DP_projections_HILS_SWLS_100 k_n_words_to_test = FALSE min_freq_words_test = 1 min_freq_words_plot = 1 plot_n_words_square = 3 plot_n_words_p = 5 plot_n_word_extreme = 5 plot_n_word_frequency = 5 plot_n_words_middle = 5 y_axes = TRUE p_alpha = 0.05 p_adjust_method = none bivariate_color_codes = #398CF9 #60A1F7 #5dc688 #e07f6a #EAEAEA #40DD52 #FF0000 #EA7467 #85DB8E word_size_range = 3 - 8 position_jitter_hight = 0.5 position_jitter_width = 0.8 point_size = 0.5 arrow_transparency = 0.5 points_without_words_size = 0.2 points_without_words_alpha = 0.2 legend_x_position = 0.02 legend_y_position = 0.02 legend_h_size = 0.2 legend_w_size = 0.2 legend_title_size = 7 legend_number_size = 2"
     #> 
     #> $processed_word_data
     #> # A tibble: 583 x 32
-    #>    words    dot.x p_values_dot.x n_g1.x n_g2.x  dot.y p_values_dot.y n_g1.y
-    #>    <chr>    <dbl>          <dbl>  <dbl>  <dbl>  <dbl>          <dbl>  <dbl>
-    #>  1 able   6.86e-1     0.194          NA      1  2.31      0.0123         NA
-    #>  2 acce…  1.52e+0     0.0272         -1      2  1.15      0.0620         -1
-    #>  3 acco…  2.14e+0     0.00856        NA      1  3.51      0.00273        NA
-    #>  4 acti…  1.23e+0     0.0503         NA      1  1.56      0.0361         NA
-    #>  5 adap… -3.87e-4     0.969          -1     NA  0.331     0.476          -1
-    #>  6 admi…  5.14e-1     0.315          NA      1  1.52      0.0398         NA
-    #>  7 adri… -3.79e+0     0.00000100     -1     NA -3.60      0.00000100     -1
-    #>  8 affi…  7.49e-1     0.150          NA      1  2.04      0.0184         NA
-    #>  9 agre…  2.23e+0     0.00626        NA      1  1.69      0.0312         NA
-    #> 10 alco… -5.51e-1     0.318          -1     NA -1.07      0.0605         -1
-    #> # … with 573 more rows, and 24 more variables: n_g2.y <dbl>, n <int>,
-    #> #   n.percent <dbl>, N_participant_responses <int>, adjusted_p_values.x <dbl>,
+    #>    words  dot.x p_values_dot.x n_g1.x n_g2.x  dot.y p_values_dot.y n_g1.y n_g2.y
+    #>    <chr>  <dbl>          <dbl>  <dbl>  <dbl>  <dbl>          <dbl>  <dbl>  <dbl>
+    #>  1 able   1.42      0.0140         NA      1  2.99      0.00000100     NA      1
+    #>  2 acce…  0.732     0.105          -1      2  1.40      0.0291         -1      2
+    #>  3 acco…  2.04      0.000409       NA      1  3.45      0.00000100     NA      1
+    #>  4 acti…  1.46      0.0121         NA      1  1.92      0.00399        NA      1
+    #>  5 adap…  2.40      0.00000100     NA      1  0.960     0.0865         -1     NA
+    #>  6 admi…  0.161     0.734          NA      1  1.58      0.0150         NA      1
+    #>  7 adri… -2.64      0.00000100     -1     NA -3.17      0.00000100     -1     NA
+    #>  8 affi…  1.03      0.0402         NA      1  2.24      0.00115        NA      1
+    #>  9 agre…  1.62      0.00657        NA      1  2.12      0.00161        NA      1
+    #> 10 alco… -2.15      0.00000100     -1     NA -1.78      0.00414        -1     NA
+    #> # … with 573 more rows, and 23 more variables: n <dbl>, n.percent <dbl>,
+    #> #   N_participant_responses <int>, adjusted_p_values.x <dbl>,
     #> #   adjusted_p_values.y <dbl>, square_categories <dbl>, check_p_square <dbl>,
     #> #   check_p_x_neg <dbl>, check_p_x_pos <dbl>, check_extreme_max_x <dbl>,
     #> #   check_extreme_min_x <dbl>, check_extreme_frequency_x <dbl>,

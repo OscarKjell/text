@@ -26,5 +26,6 @@ utils::globalVariables(c(
   "Dim_PC1", "Dim_PC2", "check_extreme_frequency", "check_extreme_max_PC1",
   "check_extreme_max_PC2", "check_extreme_min_PC1", "check_extreme_min_PC2",
   "check_middle_PC1", "check_middle_PC2",
-  "corr_y1", "corr_y2", "splits"
+  "corr_y1", "corr_y2", "splits", "word_data1", "word_data1_middle_x", "word_data_extrem_max_PC1", "word_data_extrem_max_PC2",
+  "word_data_extrem_min_PC1", "word_data_extrem_min_PC2", "word_data_frequency"
 ))

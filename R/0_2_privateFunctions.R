@@ -20,7 +20,6 @@ addEqualNrNArows <- function(x, y) {
 }
 
 
-
 #  devtools::document()
 #' Examine how the ordered data's mean of a statistics compare,
 #' with the random data's null comparison distribution.
@@ -34,6 +33,8 @@ p_value_comparing_with_Null <- function(Observedresults,
                                         NULLresults,
                                         # Npermutations,
                                         alternative = c("two_sided", "less", "greater")) {
+
+  NULLresults <- tibble::as_tibble_col(NULLresults)
   switch(alternative,
     "two_sided" = {
       p_value <- 2 * (min(sum(NULLresults < Observedresults), sum(NULLresults > Observedresults)) / sum(!is.na(NULLresults)))

@@ -5,7 +5,8 @@
 
 
 ### New Features
-- in `textProjetion` and `textProjetionPlot` providing the possibility to add points of the aggregated word embeddings in the plot
+- In `textProjetion` and `textProjetionPlot` it now possible to add points of the aggregated word embeddings in the plot
+- In `textProjetion` it now possible to manually add words to the plot in order to explore them in the word embedding space.
 
 
 

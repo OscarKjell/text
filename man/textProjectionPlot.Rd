@@ -47,10 +47,14 @@ textProjectionPlot(
   projection_embedding = FALSE,
   aggregated_point_size = 0.8,
   aggregated_shape = 8,
-  aggregated_color_G1 = "#EAEAEA",
-  aggregated_color_G2 = "#EAEAEA",
-  projection_color = "#f542bf",
-  seed = 1005
+  aggregated_color_G1 = "black",
+  aggregated_color_G2 = "black",
+  projection_color = "blue",
+  seed = 1005,
+  explore_words = NULL,
+  explore_words_color = "#ad42f5",
+  explore_words_point = "ALL_1",
+  explore_words_aggregation = "mean"
 )
 }
 \arguments{
@@ -162,6 +166,14 @@ exact same colour-code because the numbers within the squares of the legend will
 \item{projection_color}{Color}
 
 \item{seed}{Set different seed.}
+
+\item{explore_words}{Explore where specific words are positioned in the embedding space. For example, c("happy content", "sad down").}
+
+\item{explore_words_color}{Specify the color(s) of the words being explored. For example c("#ad42f5", "green")}
+
+\item{explore_words_point}{Specify the names of the point for the aggregated word embeddings of all the explored words.}
+
+\item{explore_words_aggregation}{Specify how to aggregate the word embeddings of the explored words.}
 }
 \value{
 A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.

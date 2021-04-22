@@ -22,9 +22,9 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
     pca = 2
   )
 
-  expect_true(tibble::is_tibble(df_for_plotting))
-  expect_is(df_for_plotting$words[1], "character")
-  expect_is(df_for_plotting$n[1], "numeric")
+  expect_true(tibble::is_tibble(df_for_plotting[[2]]))
+  expect_is(df_for_plotting[[2]]$words[1], "character")
+  expect_is(df_for_plotting[[2]]$n[1], "numeric")
 })
 
 test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
@@ -50,9 +50,9 @@ test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tib
     pca = 0.9
   )
 
-  expect_true(tibble::is_tibble(df_for_plotting))
-  expect_is(df_for_plotting$words[1], "character")
-  expect_is(df_for_plotting$n[1], "numeric")
+  expect_true(tibble::is_tibble(df_for_plotting[[2]]))
+  expect_is(df_for_plotting[[2]]$words[1], "character")
+  expect_is(df_for_plotting[[2]]$n[1], "numeric")
 })
 
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
