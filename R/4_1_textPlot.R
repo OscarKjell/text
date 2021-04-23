@@ -449,61 +449,61 @@ textProjection <- function(words,
 ##
 #
 #word_data = df_for_plotting
-#k_n_words_to_test = FALSE
-#min_freq_words_test = 0
-#min_freq_words_plot = 0
-#plot_n_words_square = 3
-#plot_n_words_p = 5
-#plot_n_word_extreme = 5
-#plot_n_word_frequency = 5
-#plot_n_words_middle = 5
-#titles_color = "#61605e"
-## x_axes = TRUE
-#y_axes = TRUE
-#p_alpha = 0.05
-#p_adjust_method = "none"
-#title_top = "Supervised Dimension Projection"
-#x_axes_label = "Supervised Dimension Projection (SDP)"
-#y_axes_label = "Supervised Dimension Projection (SDP)"
-#scale_x_axes_lim = NULL
-#scale_y_axes_lim = NULL
-#word_font = NULL
-#bivariate_color_codes = c(
-#  "#398CF9", "#60A1F7", "#5dc688",
-#  "#e07f6a", "#EAEAEA", "#40DD52",
-#  "#FF0000", "#EA7467", "#85DB8E"
-#)
-#word_size_range = c(3, 8)
-#position_jitter_hight = .0
-#position_jitter_width = .03
-#point_size = 0.5
-#arrow_transparency = 0.1
-#points_without_words_size = 0.2
-#points_without_words_alpha = 0.2
-#legend_title = "DPP"
-#legend_x_axes_label = "x"
-#legend_y_axes_label = "y"
-#legend_x_position = 0.02
-#legend_y_position = 0.02
-#legend_h_size = 0.2
-#legend_w_size = 0.2
-#legend_title_size = 7
-#legend_number_size = 2
-#group_embeddings1 = T
-#group_embeddings2 = T
-#projection_embedding = T
-#aggregated_point_size = 0.8
-#aggregated_shape = 8
-#aggregated_color_G1 = "#EAEAEA"
-#aggregated_color_G2 = "#EAEAEA"
-#projection_color = "#f542bf"
-#seed = 1005
-#explore_wordsT1 = c("happy")
-#explore_wordsT1_color = "#ad42f5"
-#explore_wordsT1_point = "T1_n"
-#explore_wordsT2 = c("sad")
-#explore_wordsT2_color = "#42f5c5"
-#explore_wordsT2_point = "T2_n"
+k_n_words_to_test = FALSE
+min_freq_words_test = 0
+min_freq_words_plot = 0
+plot_n_words_square = 3
+plot_n_words_p = 5
+plot_n_word_extreme = 5
+plot_n_word_frequency = 5
+plot_n_words_middle = 5
+titles_color = "#61605e"
+# x_axes = TRUE
+y_axes = TRUE
+p_alpha = 0.05
+p_adjust_method = "none"
+title_top = "Supervised Dimension Projection"
+x_axes_label = "Supervised Dimension Projection (SDP)"
+y_axes_label = "Supervised Dimension Projection (SDP)"
+scale_x_axes_lim = NULL
+scale_y_axes_lim = NULL
+word_font = NULL
+bivariate_color_codes = c(
+  "#398CF9", "#60A1F7", "#5dc688",
+  "#e07f6a", "#EAEAEA", "#40DD52",
+  "#FF0000", "#EA7467", "#85DB8E"
+)
+word_size_range = c(3, 8)
+position_jitter_hight = .0
+position_jitter_width = .03
+point_size = 0.5
+arrow_transparency = 0.1
+points_without_words_size = 0.2
+points_without_words_alpha = 0.2
+legend_title = "DPP"
+legend_x_axes_label = "x"
+legend_y_axes_label = "y"
+legend_x_position = 0.02
+legend_y_position = 0.02
+legend_h_size = 0.2
+legend_w_size = 0.2
+legend_title_size = 7
+legend_number_size = 2
+group_embeddings1 = T
+group_embeddings2 = T
+projection_embedding = T
+aggregated_point_size = 0.8
+aggregated_shape = 8
+aggregated_color_G1 = "#EAEAEA"
+aggregated_color_G2 = "#EAEAEA"
+projection_color = "#f542bf"
+seed = 1005
+explore_wordsT1 = c("happy")
+explore_wordsT1_color = "#ad42f5"
+explore_wordsT1_point = "T1_n"
+explore_wordsT2 = c("sad")
+explore_wordsT2_color = "#42f5c5"
+explore_wordsT2_point = "T2_n"
 
 #names(DP_projections_HILS_SWLS_100)
 
@@ -577,6 +577,7 @@ textProjection <- function(words,
 #' @param explore_words_color Specify the color(s) of the words being explored. For example c("#ad42f5", "green")
 #' @param explore_words_point Specify the names of the point for the aggregated word embeddings of all the explored words.
 #' @param explore_words_aggregation Specify how to aggregate the word embeddings of the explored words.
+#' @param space Provide a semantic space if using static embeddings.
 #' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
 #' @examples
 #' # The test-data included in the package is called: DP_projections_HILS_SWLS_100
@@ -666,7 +667,8 @@ textProjectionPlot <- function(word_data,
                                explore_words = NULL,
                                explore_words_color = "#ad42f5",
                                explore_words_point = "ALL_1",
-                               explore_words_aggregation = "mean") {
+                               explore_words_aggregation = "mean",
+                               space = NULL) {
 
   # Comment to be saved
   textProjectionPlot_comment <- paste(
@@ -982,6 +984,10 @@ textProjectionPlot <- function(word_data,
 
     for (i_add_w in 1:forloops_add_w) {
 
+      # If using a contextualised language model
+      if(is.null(space) == TRUE){
+
+
     # Creating word embeddings for the words.
     model_text <- sub(".*model: ", '', textProjectionPlot_comment)
     model_name <- sub(" layer.*", '', model_text)
@@ -992,6 +998,15 @@ textProjectionPlot <- function(word_data,
     explore_words_embeddings <- textEmbed(explore_words[i_add_w],
                                           model = model_name,
                                           layers = dput(as.numeric(layers_number_split[[1]])))
+      }
+      # If using a static/decontextualised language model
+      help(textEmbedStatic)
+      if(!is.null(space)==TRUE){
+        explore_words_embeddings <- textEmbedStatic(data.frame(explore_words[i_add_w]),
+                                                       space = space,
+                                                       aggregate = explore_words_aggregation)
+
+      }
 
     words <- tibble::as_tibble_col(explore_words_point[i_add_w])
     colnames(words) <- "words"

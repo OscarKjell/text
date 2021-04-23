@@ -54,7 +54,8 @@ textProjectionPlot(
   explore_words = NULL,
   explore_words_color = "#ad42f5",
   explore_words_point = "ALL_1",
-  explore_words_aggregation = "mean"
+  explore_words_aggregation = "mean",
+  space = NULL
 )
 }
 \arguments{
@@ -174,6 +175,8 @@ exact same colour-code because the numbers within the squares of the legend will
 \item{explore_words_point}{Specify the names of the point for the aggregated word embeddings of all the explored words.}
 
 \item{explore_words_aggregation}{Specify how to aggregate the word embeddings of the explored words.}
+
+\item{space}{Provide a semantic space if using static embeddings.}
 }
 \value{
 A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
