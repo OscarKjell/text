@@ -36,7 +36,7 @@ The language that individuals use contains a wealth of psychological information
 
 *Text* is created through a collaboration between psychology and computer science to address research needs and ensure state-of-the-art techniques. It provides powerful functions tailored to test research hypotheses in social and behavior sciences for both relatively small and large datasets. *Text* is continuously tested on Ubuntu, Mac OS and Windows using the latest stable R version.
 
-[Download tutorial paper](https://psyarxiv.com/293kt/)
+[Tutorial paper](https://psyarxiv.com/293kt/)
 
 ### Short installation guide
 Most users simply need to run below installation code. 

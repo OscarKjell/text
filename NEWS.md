@@ -7,6 +7,7 @@
 ### New Features
 - In `textProjetion` and `textProjetionPlot` it now possible to add points of the aggregated word embeddings in the plot
 - In `textProjetion` it now possible to manually add words to the plot in order to explore them in the word embedding space.
+- In `textProjetion` it is possible to add color or remove words that are more frequent on the opposite "side" of its dot product projection. 
 
 
 

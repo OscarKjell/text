@@ -41,7 +41,7 @@ hypotheses in social and behavior sciences for both relatively small and
 large datasets. *Text* is continuously tested on Ubuntu, Mac OS and
 Windows using the latest stable R version.
 
-[Download tutorial paper](https://psyarxiv.com/293kt/)
+[Tutorial paper](https://psyarxiv.com/293kt/)
 
 ### Short installation guide
 
