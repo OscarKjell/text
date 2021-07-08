@@ -33,7 +33,7 @@ textProjectionPlot(
   arrow_transparency = 0.1,
   points_without_words_size = 0.2,
   points_without_words_alpha = 0.2,
-  legend_title = "DPP",
+  legend_title = "SDP",
   legend_x_axes_label = "x",
   legend_y_axes_label = "y",
   legend_x_position = 0.02,
@@ -57,7 +57,8 @@ textProjectionPlot(
   explore_words_aggregation = "mean",
   n_contrast_group_color = NULL,
   n_contrast_group_remove = FALSE,
-  space = NULL
+  space = NULL,
+  scaling = TRUE
 )
 }
 \arguments{
@@ -183,6 +184,8 @@ exact same colour-code because the numbers within the squares of the legend will
 \item{n_contrast_group_remove}{Remove words that have higher frequency (N) on the other opposite side of its dot product projection (default = FALSE).}
 
 \item{space}{Provide a semantic space if using static embeddings and wanting to explore words.}
+
+\item{scaling}{Scaling word embeddings before aggregation.}
 }
 \value{
 A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
