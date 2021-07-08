@@ -1,12 +1,14 @@
-#x <- wordembeddings4$harmonytexts
+#x <- wordembeddings4$harmonytexts[1:5,]
 #y <- wordembeddings4$satisfactiontexts
+#method = "paired"
 #method = "unpaired"
 #Npermutations = 100
 #N_cluster_nodes = 1
 #alternative = "two_sided"
 #output.permutations = TRUE
-#
 #seed = 1001
+
+
 
 #' Test whether there is a significant difference in meaning between two sets of texts
 #' (i.e., between their word embeddings).
@@ -43,7 +45,7 @@ textSimilarityTest <- function(x,
   T1_textSimilarityTest <- Sys.time()
 
   set.seed(seed)
-  if ((nrow(x) != nrow(y))) {
+  if (method == "paired" & (nrow(x) != nrow(y))) {
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
   }
   alternative <- match.arg(alternative)

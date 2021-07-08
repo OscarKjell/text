@@ -68,7 +68,7 @@ textSimilarityNorm <- function(x, y) {
   y1 <- dplyr::select(as_tibble(as.list(y)), dplyr::starts_with("Dim"))
 
   y2 <- y1 %>%
-    dplyr::slice(rep(row_number(), nrow(x1)))
+    dplyr::slice(rep(dplyr::row_number(), nrow(x1)))
 
   # Apply the cosines functions
   ss <- cosines(x1, y2)
