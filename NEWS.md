@@ -12,6 +12,7 @@
 
 ### Bug Fixes
 - If any of the tokens to remove is "[CLS]", subtract 1 on token_id so that it works with layer_aggregation_helper. 0.9.11
+- Can now submit one word to `textEmbed` with `decontexts=TRUE`. 
 
 # text 0.9.11 
 - `textSimilarityTest` is not giving error when using method = unpaired, with unequal number of participants in each group. 

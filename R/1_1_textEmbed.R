@@ -76,6 +76,7 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
     }
 }
 
+
 # devtools::document()
 #' getUniqueWordsAndFreq
 #' Function unites several text variables and rows to one,
@@ -96,6 +97,10 @@ getUniqueWordsAndFreq <- function(x_characters) {
   x_characters4 <- tokenizers::tokenize_words(x_characters3, simplify = T)
   # Create dataframe with single words and frequency
   x_characters5 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters4), " ")))))
+  if(length(x_characters5)==1){
+  colnames(x_characters5) <- c("Freq")
+  x_characters5 <- tibble::rownames_to_column(x_characters5, "Var1")
+  }
   singlewords <- tibble::tibble(x_characters5$Var1, x_characters5$Freq)
   colnames(singlewords) <- c("words", "n")
   singlewords$words <- as.character(singlewords$words)
