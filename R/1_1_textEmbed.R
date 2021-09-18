@@ -222,6 +222,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' parameter to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
 #' and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
+#' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
 #' @return A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
 #' input embedding to the transformer, and should normally not be used.
 #' @examples
@@ -240,7 +241,8 @@ textEmbedLayersOutput <- function(x,
                                   decontexts = TRUE,
                                   model = "bert-base-uncased",
                                   layers = 11,
-                                  return_tokens = TRUE) {
+                                  return_tokens = TRUE,
+                                  device = "cpu") {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
@@ -261,7 +263,8 @@ textEmbedLayersOutput <- function(x,
         text_strings = x[[i_variables]],
         model = model,
         layers = layers,
-        return_tokens = return_tokens
+        return_tokens = return_tokens,
+        device = device
       )
 
       variable_x <- sortingLayers(x = hg_embeddings, layers = layers, return_tokens = return_tokens)
@@ -292,7 +295,8 @@ textEmbedLayersOutput <- function(x,
       text_strings = list_words,
       model = model,
       layers = layers,
-      return_tokens = return_tokens
+      return_tokens = return_tokens,
+      device = device
     )
 
     # Sort out layers as above
@@ -485,6 +489,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' such as [CLS] and [SEP] for the decontext embeddings.
 #' @param decontext_tokens_deselect option to deselect embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the decontext embeddings.
+#' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
 #' @return A tibble with tokens, a column for layer identifier and word embeddings.
 #' Note that layer 0 is the input embedding to the transformer
 #' @examples
@@ -515,7 +520,8 @@ textEmbed <- function(x,
                       decontext_aggregation_layers = "concatenate",
                       decontext_aggregation_tokens = "mean",
                       decontext_tokens_select = NULL,
-                      decontext_tokens_deselect = NULL) {
+                      decontext_tokens_deselect = NULL,
+                      device = "cpu") {
   T1_textEmbed <- Sys.time()
 
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
@@ -526,7 +532,8 @@ textEmbed <- function(x,
     decontexts = decontexts,
     model = model,
     layers = layers,
-    return_tokens = FALSE
+    return_tokens = FALSE,
+    device = device
   )
 
   # Aggregate context layers

@@ -19,7 +19,8 @@ textEmbed(
   decontext_aggregation_layers = "concatenate",
   decontext_aggregation_tokens = "mean",
   decontext_tokens_select = NULL,
-  decontext_tokens_deselect = NULL
+  decontext_tokens_deselect = NULL,
+  device = "cpu"
 )
 }
 \arguments{
@@ -74,6 +75,8 @@ such as [CLS] and [SEP] for the decontext embeddings.}
 
 \item{decontext_tokens_deselect}{option to deselect embeddings linked to specific tokens
 such as [CLS] and [SEP] for the decontext embeddings.}
+
+\item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 }
 \value{
 A tibble with tokens, a column for layer identifier and word embeddings.

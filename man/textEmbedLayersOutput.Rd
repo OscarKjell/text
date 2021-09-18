@@ -10,7 +10,8 @@ textEmbedLayersOutput(
   decontexts = TRUE,
   model = "bert-base-uncased",
   layers = 11,
-  return_tokens = TRUE
+  return_tokens = TRUE,
+  device = "cpu"
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ parameter to "all". Layer 0 is the decontextualized input layer (i.e., not compr
 and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation function.}
 
 \item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
+
+\item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 }
 \value{
 A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the

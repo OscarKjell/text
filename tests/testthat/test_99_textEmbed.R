@@ -125,7 +125,16 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
     model = "bert-base-uncased",
     contexts = TRUE,
     decontexts = FALSE,
+    return_tokens = TRUE,
     layers = "all"
+  )
+
+  embeddings <- textEmbedLayersOutput(x,
+                                      model = "bert-base-uncased",
+                                      contexts = TRUE,
+                                      decontexts = FALSE,
+                                      return_tokens = FALSE,
+                                      layers = "all"
   )
 
   expect_that(embeddings, is_a("list"))

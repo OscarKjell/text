@@ -19,7 +19,7 @@ def hgTransformerGetEmbedding(text_strings,
                               layers = 'all',  
                               return_tokens = True,
                               max_token_to_sentence = 4,
-                              device = 'gpu'):
+                              device = 'cpu'):
     """
     Simple Python method for embedding text with pretained Hugging Face models
 

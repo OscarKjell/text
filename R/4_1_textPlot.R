@@ -591,6 +591,8 @@ textProjection <- function(words,
 #### End textProjection
 #############
 
+#library(text)
+#library(tidyverse)
 ##wordembeddings_hil <- textEmbed(Language_based_assessment_data_8[1])
 ##saveRDS(wordembeddings_hil, "/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
 #wordembeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
@@ -608,7 +610,8 @@ textProjection <- function(words,
 #  n_per_split = 5000
 #)
 ##
-#textProjectionPlot(df_for_plotting)
+#textProjectionPlot(df_for_plotting,
+#                   explore_words = c("happy harmony") )
 #
 #
 #identical(df_for_plotting_original_mean$word_data, df_for_plotting_new_mean$word_data)
@@ -639,7 +642,7 @@ textProjection <- function(words,
 #titles_color = "#61605e"
 ## x_axes = TRUE
 #y_axes = FALSE
-#p_alpha = 0.05
+#p_alpha = 0.9
 #p_adjust_method = "none"
 #title_top = "Supervised Dimension Projection"
 #x_axes_label = "Supervised Dimension Projection (SDP)"
@@ -685,14 +688,19 @@ textProjection <- function(words,
 #space = NULL
 #n_contrast_group_color = "black"
 #n_contrast_group_remove = TRUE
+#scaling = TRUE
+#
+#
+#
 #names(DP_projections_HILS_SWLS_100)
 #
 #
 #word_data$word_data$dot.x
 #word_data$word_data$n_g1.x
 #word_data$word_data$n_g2.x
+#range(word_data$word_data$p_values_dot.x, na.rm=TRUE)
+#range(word_data$word_data$p_values_dot.y, na.rm=TRUE)
 #
-
 
 #' Plot words according to Supervised Dimension Projection.
 #' @param word_data Dataframe from textProjection
