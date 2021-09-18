@@ -129,16 +129,6 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
     layers = "all"
   )
 
-  embeddings <- textEmbedLayersOutput(x,
-                                      model = "bert-base-uncased",
-                                      contexts = TRUE,
-                                      decontexts = FALSE,
-                                      return_tokens = FALSE,
-                                      layers = "all"
-  )
-
-  expect_that(embeddings, is_a("list"))
-
   # Is the first value there and numeric
   expect_that(embeddings[[1]][[1]][[1]][[1]][[1]], is.character)
   # If below line fail it might be because the output in huggingface has changed,
