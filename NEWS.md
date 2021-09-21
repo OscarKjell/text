@@ -1,8 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# text 0.9.12
+# text 0.9.13
+### New Features
+- `textEmbed` and `textEmbedLayersOutput` support the use of GPU using the `device` setting.  
 
+# text 0.9.12
 
 ### New Features
 - In `textProjetion` and `textProjetionPlot` it now possible to add points of the aggregated word embeddings in the plot
