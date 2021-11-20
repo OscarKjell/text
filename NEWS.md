@@ -4,6 +4,7 @@
 # text 0.9.13
 ### New Features
 - `textEmbed` and `textEmbedLayersOutput` support the use of GPU using the `device` setting.  
+- `remove_words` makes it possible to remove specific words from `textProjectionPlot`
 
 # text 0.9.12
 

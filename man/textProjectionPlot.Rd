@@ -55,6 +55,7 @@ textProjectionPlot(
   explore_words_color = "#ad42f5",
   explore_words_point = "ALL_1",
   explore_words_aggregation = "mean",
+  remove_words = NULL,
   n_contrast_group_color = NULL,
   n_contrast_group_remove = FALSE,
   space = NULL,
@@ -178,6 +179,8 @@ exact same colour-code because the numbers within the squares of the legend will
 \item{explore_words_point}{Specify the names of the point for the aggregated word embeddings of all the explored words.}
 
 \item{explore_words_aggregation}{Specify how to aggregate the word embeddings of the explored words.}
+
+\item{remove_words}{manually remove words from the plot (which is done just before the words are plotted so that the remove_words are part of previous counts/analyses).}
 
 \item{n_contrast_group_color}{Set color to words that have higher frequency (N) on the other opposite side of its dot product projection (default = NULL).}
 

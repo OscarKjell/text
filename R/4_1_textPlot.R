@@ -598,7 +598,7 @@ textProjection <- function(words,
 #wordembeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
 #wordembeddings <- wordembeddings4
 #raw_data <- Language_based_assessment_data_8
-## Pre-processing data for plotting
+### Pre-processing data for plotting
 #df_for_plotting <- textProjection(
 #  words = Language_based_assessment_data_8$harmonywords,
 #  wordembeddings = wordembeddings_hil$harmonywords,
@@ -626,10 +626,26 @@ textProjection <- function(words,
 #df_for_plotting_old_quartile
 #df_for_plotting_old_quartile2
 #
-
+#
 ##comment(df_for_plotting)
 ###
 ##
+#
+#words <- c("happy", "sad", "angry", "fun")
+#x1 <- c(1, 2, 3, 4)
+#x2<- c(1, 2, 3, 4)
+#
+#test1 <- tibble(words, x1, x2)
+#remove_words = c("happy", "fun")
+#if (!is.null(remove_words)){
+#test2 <- test1 %>% filter(!words %in% remove_words)
+#}
+#
+#test2
+
+#
+#
+#library(text)
 #word_data = df_for_plotting
 #k_n_words_to_test = FALSE
 #min_freq_words_test = 0
@@ -681,16 +697,21 @@ textProjection <- function(words,
 #projection_color = "#f542bf"
 #seed = 1005
 #
-#explore_words = c("happy harmony")
+#explore_words = NULL #c("happy harmony")
 #explore_words_color = "#ad42f5"
 #explore_words_point = "ALL_1"
 #explore_words_aggregation = "mean"
+#remove_words = c("happy", "sad")
 #space = NULL
 #n_contrast_group_color = "black"
 #n_contrast_group_remove = TRUE
 #scaling = TRUE
 #
-#
+
+
+
+
+
 #
 #names(DP_projections_HILS_SWLS_100)
 #
@@ -772,6 +793,7 @@ textProjection <- function(words,
 #' @param explore_words_color Specify the color(s) of the words being explored. For example c("#ad42f5", "green")
 #' @param explore_words_point Specify the names of the point for the aggregated word embeddings of all the explored words.
 #' @param explore_words_aggregation Specify how to aggregate the word embeddings of the explored words.
+#' @param remove_words manually remove words from the plot (which is done just before the words are plotted so that the remove_words are part of previous counts/analyses).
 #' @param space Provide a semantic space if using static embeddings and wanting to explore words.
 #' @param n_contrast_group_color Set color to words that have higher frequency (N) on the other opposite side of its dot product projection (default = NULL).
 #' @param n_contrast_group_remove Remove words that have higher frequency (N) on the other opposite side of its dot product projection (default = FALSE).
@@ -866,6 +888,7 @@ textProjectionPlot <- function(word_data,
                                explore_words_color = "#ad42f5",
                                explore_words_point = "ALL_1",
                                explore_words_aggregation = "mean",
+                               remove_words = NULL,
                                n_contrast_group_color = NULL,
                                n_contrast_group_remove = FALSE,
                                space = NULL,
@@ -919,6 +942,14 @@ textProjectionPlot <- function(word_data,
     p_values_y <- NULL
     y_axes_values_hide <- TRUE
   }
+  #######
+  ####    Removing words MANUALY
+  ######
+
+  if (!is.null(remove_words)){
+    word_data$word_data <- word_data$word_data %>% dplyr::filter(!words %in% remove_words)
+  }
+  ######
 
   ### Selecting words to plot
   # Computing adjusted p-values with those words selected by min_freq_words_test
@@ -1191,8 +1222,6 @@ textProjectionPlot <- function(word_data,
 
 
 
-
-
   # This solution is because it is not possible to send "0" as a parameter
   if (is.null(y_axes_1) == TRUE) {
     only_x_dimension <- 0
@@ -1357,6 +1386,7 @@ textProjectionPlot <- function(word_data,
     added_words_information_unlist <- dplyr::bind_rows(added_words_information)
     word_data_all_yadjusted <- dplyr::bind_rows(word_data_all_yadjusted, added_words_information_unlist)
   }
+
 
 
   plot <-
