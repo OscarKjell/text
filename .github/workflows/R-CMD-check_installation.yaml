@@ -85,7 +85,7 @@ jobs:
         run: |
           echo "::set-output name=year-week::$(date -u "+%Y-%U")"
           echo "::set-output name=date::$(date -u "+%F")"
-          sudo chown 501:20 /usr/local/miniconda/pkgs/cache/b89cf7bf.json
+#          sudo chown 501:20 /usr/local/miniconda/pkgs/cache/b89cf7bf.json
 
       - name: Restore R package cache
         uses: actions/cache@v2
