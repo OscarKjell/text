@@ -24,15 +24,17 @@ The language that individuals use contains a wealth of psychological
 information interesting for research. The *text*-package has two main
 objectives:
 
-  - First, to serve R-users as a *point solution* for transforming text
+-   First, to serve R-users as a *point solution* for transforming text
     to state-of-the-art word embeddings that are ready to be used for
     downstream tasks.
 
-  - Second, to serve as an *end-to-end solution* that provides
+-   Second, to serve as an *end-to-end solution* that provides
     state-of-the-art AI techniques tailored for social and behavioral
     scientists.
 
-![Modular and End-to-End Solution](man/figures/modular_end_solution.png)
+<figure>
+<img src="man/figures/modular_end_solution.png" style="width:75.0%" alt="Modular and End-to-End Solution" /><figcaption aria-hidden="true">Modular and End-to-End Solution</figcaption>
+</figure>
 
 *Text* is created through a collaboration between psychology and
 computer science to address research needs and ensure state-of-the-art
@@ -86,7 +88,7 @@ multilingual BERT comprises *104 different languages*.
 *Table 1. Some of the available language models*
 
 | Models                         | References                                                       | Layers | Dimensions | Language                                                                             |
-| :----------------------------- | :--------------------------------------------------------------- | :----- | :--------- | :----------------------------------------------------------------------------------- |
+|:-------------------------------|:-----------------------------------------------------------------|:-------|:-----------|:-------------------------------------------------------------------------------------|
 | ‘bert-base-uncased’            | [Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/) | 12     | 768        | English                                                                              |
 | ‘roberta-base’                 | [Liu et al. 2019](https://arxiv.org/abs/1907.11692)              | 12     | 768        | English                                                                              |
 | ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)            | 6      | 768        | English                                                                              |
