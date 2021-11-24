@@ -18,12 +18,7 @@ conda_args <- reticulate:::conda_args
 #' @param conda character; path to conda executable. Default "auto" which
 #'   automatically find the path
 #' @param pip \code{TRUE} to use pip for installing rpp If \code{FALSE}, conda
-#' package manager with conda-forge channel will be used for installing rpp
-# @param lang_models character; language models to be installed. Default
-#   \code{en_core_web_sm} (English model). A vector of multiple model names can be used
-#   (e.g. \code{c("en_core_web_sm", "de_core_news_sm")}).  A list of available language models and their
-#   names is available from the \href{https://spacy.io/usage/models}{spaCy
-#   language models} page.
+#' package manager with conda-forge channel will be used for installing rpp.
 #' @param rpp_version character; rpp:s  to install.
 #' @param python_version character; determine Python version for condaenv
 #'   installation.
@@ -42,7 +37,6 @@ conda_args <- reticulate:::conda_args
 #' @export
 textrpp_install <- function(conda = "auto",
                           rpp_version = c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'),
-                          #lang_models = "en_core_web_sm",
                           python_version = "3.7",
                           envname = "textrpp_condaenv",
                           pip = TRUE,
@@ -130,6 +124,7 @@ textrpp_install <- function(conda = "auto",
 #' @rdname textrpp_install
 #' @description If you wish to install Python in a "virtualenv", use the
 #'   \code{textrpp_install_virtualenv} function.
+#' @param pip_version character;
 #' @examples
 #' \dontrun{
 #' # install text required python packages in a virtualenv environment

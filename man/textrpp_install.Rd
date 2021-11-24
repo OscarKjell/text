@@ -18,6 +18,7 @@ textrpp_install(
 textrpp_install_virtualenv(
   rpp_version = c("torch==0.4.1", "transformers==3.3.1", "numpy", "nltk"),
   python_version = "3.6",
+  pip_version = "pip",
   python_path = NULL,
   prompt = TRUE
 )
@@ -35,11 +36,13 @@ installation.}
 Default is "textrpp_condaenv".}
 
 \item{pip}{\code{TRUE} to use pip for installing rpp If \code{FALSE}, conda
-package manager with conda-forge channel will be used for installing rpp}
+package manager with conda-forge channel will be used for installing rpp.}
 
 \item{python_path}{character; path to Python in virtualenv installation}
 
 \item{prompt}{logical; ask whether to proceed during the installation}
+
+\item{pip_version}{character;}
 }
 \description{
 Install text required python packages (rpp) in a self-contained environment.  For macOS and Linux-based systems, this will
