@@ -111,7 +111,7 @@ jobs:
         run: remotes::install_local(dependencies = TRUE, force = TRUE)
 
       - name: Install text reuired python packages
-        run: text::textrpp_install(promt = FALSE)
+        run: text::textrpp_install(prompt = FALSE)
 
       - name: Initiate text reuired python packages
         run: text::textrpp_initialize()
