@@ -82,6 +82,7 @@ textrpp_initialize <- function(
   if (save_profile == TRUE){
     save_textrpp_options(settings$key, settings$val)
   }
+  textEmbed("hello")
 }
 
 #' Finalize text required python packages

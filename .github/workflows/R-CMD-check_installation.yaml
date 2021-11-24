@@ -120,7 +120,7 @@ jobs:
 
       - name: Initiate text reuired python packages
         run: text::textrpp_initialize()
-          text::textEmbed("hello")
+#          text::textEmbed("hello")
 
 #      - name: Install TensorFlow
 #        run: tensorflow::install_tensorflow(version = '${{ matrix.tf }}-cpu')
