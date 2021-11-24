@@ -97,14 +97,13 @@ textrpp_install <- function(conda = "auto",
            call. = FALSE)
     }
 
-    # process the installation of text reqruied python packages
+    # process the installation of text required python packages
     process_textrpp_installation_conda(conda,
                                      rpp_version,
                                      python_version,
                                      prompt,
                                      envname = envname,
                                      pip = pip)
-
   }
 
   message(colourise(
@@ -132,7 +131,7 @@ textrpp_install <- function(conda = "auto",
 #' }
 #' @export
 textrpp_install_virtualenv <- function(rpp_version = c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'),
-                                     python_version = "3.6",
+                                     python_version = "3.7",
                                      pip_version = "pip",
                                      python_path = NULL,
                                      prompt = TRUE) {

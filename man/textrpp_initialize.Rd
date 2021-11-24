@@ -7,7 +7,7 @@
 textrpp_initialize(
   python_executable = NULL,
   virtualenv = NULL,
-  condaenv = NULL,
+  condaenv = "textrpp_condaenv",
   ask = FALSE,
   refresh_settings = FALSE,
   save_profile = FALSE,

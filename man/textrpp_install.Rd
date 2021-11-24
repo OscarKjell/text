@@ -17,7 +17,7 @@ textrpp_install(
 
 textrpp_install_virtualenv(
   rpp_version = c("torch==0.4.1", "transformers==3.3.1", "numpy", "nltk"),
-  python_version = "3.6",
+  python_version = "3.7",
   pip_version = "pip",
   python_path = NULL,
   prompt = TRUE
