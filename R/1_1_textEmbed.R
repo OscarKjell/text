@@ -245,7 +245,11 @@ textEmbedLayersOutput <- function(x,
                                   device = "cpu") {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
-  reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
+ reticulate::source_python(system.file("python",
+                                       "huggingface_Interface3.py",
+                                       #envir = NULL,
+                                       package = "text",
+                                       mustWork = TRUE))
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(x)
@@ -578,3 +582,4 @@ textEmbed <- function(x,
   )
   all_embeddings
 }
+

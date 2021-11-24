@@ -14,6 +14,8 @@ except:
 
 from nltk.tokenize import sent_tokenize
 
+
+
 def hgTransformerGetEmbedding(text_strings,
                               model = 'bert-base-uncased',
                               layers = 'all',  
