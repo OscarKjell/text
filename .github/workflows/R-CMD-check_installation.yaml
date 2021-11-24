@@ -120,13 +120,14 @@ jobs:
 
       - name: Initiate text reuired python packages
         run: text::textrpp_initialize()
+             text::textEmbed("hello")
 
 
 #      - name: Install TensorFlow
 #        run: tensorflow::install_tensorflow(version = '${{ matrix.tf }}-cpu')
 
-      - name: Check textEmbed
-        run: text::textEmbed("hello")
+#      - name: Check textEmbed
+#        run: text::textEmbed("hello")
 
       - name: Install rcmdcheck
         run: remotes::install_cran("rcmdcheck")
