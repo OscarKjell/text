@@ -119,9 +119,8 @@ jobs:
         run: text::textrpp_install(prompt = FALSE)
 
       - name: Initiate text reuired python packages
-        run:
-          - text::textrpp_initialize()
-          - text::textEmbed("hello")
+        run: text::textrpp_initialize()
+        text::textEmbed("hello")
 
 
 #      - name: Install TensorFlow
