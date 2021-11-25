@@ -196,7 +196,7 @@ textrpp_install_virtualenv <- function(rpp_version = c('torch==0.4.1', 'transfor
         )
       }
 
-      stop("Prerequisites for installing text required python packages not available.\n\n",
+      stop("Prerequisites for installing text required python packages in a virtual environment are not available.\n\n",
            install_commands, "\n\n", call. = FALSE)
     }
   }
