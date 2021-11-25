@@ -20,9 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {os: 'ubuntu-20.04'  , tf: 'default', r: 'release'}
+#          - {os: 'ubuntu-20.04'  , tf: 'default', r: 'release'}
           - {os: 'windows-latest', tf: 'default', r: 'release'}
-          - {os: 'macOS-latest'  , tf: 'default', r: 'release'}
+#          - {os: 'macOS-latest'  , tf: 'default', r: 'release'}
 
 #          - {os: 'ubuntu-20.04'  , tf: 'default', r: 'oldrel'}
 #          - {os: 'windows-latest', tf: 'default', r: 'oldrel'}
@@ -84,6 +84,13 @@ jobs:
         run: |
           echo "::set-output name=year-week::$(date -u "+%Y-%U")"
           echo "::set-output name=date::$(date -u "+%F")"
+
+      - name: Install Anaconda for Windows
+        if: runner.os == 'Windows'
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          auto-update-conda: true
+          python-version: 3.6
 
       - name: Restore R package cache
         uses: actions/cache@v2
