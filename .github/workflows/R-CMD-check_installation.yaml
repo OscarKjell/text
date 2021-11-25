@@ -90,10 +90,8 @@ jobs:
         if: runner.os == 'Windows'
         uses: s-weigand/setup-conda@v1
         with:
-          auto-update-conda: true
+          update-conda: true
           python-version: 3.7
-          openssl-devel: true
-          brotli: true
 
       - name: Restore R package cache
         uses: actions/cache@v2
