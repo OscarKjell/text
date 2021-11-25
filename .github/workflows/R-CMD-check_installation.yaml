@@ -88,14 +88,10 @@ jobs:
 
       - name: Install Anaconda for Windows
         if: runner.os == 'Windows'
-        #uses: goanpeca/setup-miniconda@v1
-        #with:
-        #  auto-update-conda: true
-        #  python-version: 3.7
-        - uses: actions/checkout@v2
-        - uses: s-weigand/setup-conda@v1
-        - run: conda --version
-        - run: which python
+        uses: actions/checkout@v2
+        uses: s-weigand/setup-conda@v1
+        run: conda --version
+        run: which python
 
       - name: Restore R package cache
         uses: actions/cache@v2
