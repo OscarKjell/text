@@ -93,6 +93,7 @@ jobs:
           auto-update-conda: true
           python-version: 3.7
           openssl-devel: true
+          brotli: true
 
       - name: Restore R package cache
         uses: actions/cache@v2
