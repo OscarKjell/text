@@ -20,6 +20,7 @@
 #'   settings in the profile and initiate a search of new settings.
 #' @param save_profile logical; if \code{TRUE}, the current text required python packages setting will
 #'   be saved for the future use.
+#' @param textEmbed_test logical; Test whether function (textEmbed) that requires python packages works.
 #' @export
 textrpp_initialize <- function(
                              python_executable = NULL,
@@ -28,7 +29,8 @@ textrpp_initialize <- function(
                              ask = FALSE,
                              refresh_settings = FALSE,
                              save_profile = FALSE,
-                             check_env = TRUE) {
+                             check_env = TRUE,
+                             textEmbed_test = FALSE) {
 
   # here are a number of checkings help(options)
 ##  if (!is.null(options("textrpp_initialized")$textrpp_initialized)) {
@@ -82,7 +84,11 @@ textrpp_initialize <- function(
   if (save_profile == TRUE){
     save_textrpp_options(settings$key, settings$val)
   }
-  textEmbed("hello")
+
+  if (textEmbed_test == TRUE){
+    textEmbed("hello")
+  }
+
 }
 
 #' Finalize text required python packages

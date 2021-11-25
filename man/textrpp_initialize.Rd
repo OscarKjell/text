@@ -11,7 +11,8 @@ textrpp_initialize(
   ask = FALSE,
   refresh_settings = FALSE,
   save_profile = FALSE,
-  check_env = TRUE
+  check_env = TRUE,
+  textEmbed_test = FALSE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ be saved for the future use.}
 
 \item{check_env}{logical; check whether conda/virtual environment generated
 by \code{textrpp_install()} exists}
+
+\item{textEmbed_test}{logical; Test whether function (textEmbed) that requires python packages works.}
 }
 \description{
 Initialize text required python packages to call from R.
