@@ -118,8 +118,8 @@ jobs:
       - name: Install package + deps
         run: remotes::install_local(dependencies = TRUE, force = TRUE)
 
-      - name: Install Miniconda
-        run: reticulate::install_miniconda()
+##      - name: Install Miniconda
+##        run: reticulate::install_miniconda()
 
       - name: Install text reuired python packages
         run: text::textrpp_install(prompt = FALSE)

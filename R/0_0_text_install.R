@@ -159,11 +159,11 @@ textrpp_install_virtualenv <- function(rpp_version = c('torch==0.4.1', 'transfor
     install_commands <- NULL
     if (is_osx()) {
       if (!have_pip)
-        install_commands <- c(install_commands, "$ /usr/bin/easy_install pip") # original: "$ sudo /usr/bin/easy_install pip"
+        install_commands <- c(install_commands, "$ sudo /usr/bin/easy_install pip") # original: "$ sudo /usr/bin/easy_install pip"
       if (!have_virtualenv) {
         if (is.null(pip))
           pip <- "/usr/local/bin/pip"
-        install_commands <- c(install_commands, sprintf("$ %s install --upgrade virtualenv", pip)) #"$ sudo %s install --upgrade virtualenv"
+        install_commands <- c(install_commands, sprintf("$ sudo %s install --upgrade virtualenv", pip)) #"$ sudo %s install --upgrade virtualenv"
       }
       if (!is.null(install_commands))
         install_commands <- paste(install_commands, collapse = "\n")
@@ -173,7 +173,7 @@ textrpp_install_virtualenv <- function(rpp_version = c('torch==0.4.1', 'transfor
       if (!have_virtualenv)
         install_commands <- c(install_commands, "python-virtualenv")
       if (!is.null(install_commands)) {
-        install_commands <- paste("$ apt-get install", #"$ sudo apt-get install"
+        install_commands <- paste("$ sudo apt-get install", #"$ sudo apt-get install"
                                   paste(install_commands, collapse = " "))
       }
     } else {
