@@ -124,8 +124,7 @@ jobs:
 ##        run: reticulate::install_miniconda()
 
       - name: Install text reuired python packages
-        run: text::textrpp_install(rpp_version = c('pytorch', 'transformers==3.3.1', 'numpy', 'nltk'),
-        prompt = FALSE)
+        run: text::textrpp_install(rpp_version = c('pytorch', 'transformers==3.3.1', 'numpy', 'nltk'), prompt = FALSE)
 
       - name: Initiate text reuired python packages
         run: text::textrpp_initialize(textEmbed_test = TRUE)
