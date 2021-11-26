@@ -101,7 +101,7 @@ jobs:
 
 
       - name: Install text reuired python packages
-        run: text::textrpp_install(rpp_version = c('numpy', 'nltk'), prompt = FALSE)
+        run: text::textrpp_install(prompt = FALSE)
 
       - name: Initiate text reuired python packages
         run: text::textrpp_initialize(textEmbed_test = TRUE)
