@@ -107,15 +107,15 @@ jobs:
 
       - name: Install text reuired python packages
         run: text::textrpp_install(prompt = FALSE)
-        shell: Rscript {0}
+        shell: Rscript
 
       - name: Initiate text reuired python packages
         run: text::textrpp_initialize(textEmbed_test = TRUE)
-        shell: Rscript {0}
+        shell: Rscript
 
       - name: Install rcmdcheck
         run: remotes::install_cran("rcmdcheck")
-        shell: Rscript {0}
+        shell: Rscript
 #
 #      - name: Show testthat output
 #        if: always()
