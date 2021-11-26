@@ -99,21 +99,26 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      - name: Check
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
-        shell: Rscript {0}
+#      - name: Check
+#        env:
+#          _R_CHECK_CRAN_INCOMING_: false
+#        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+#        shell: Rscript {0}
 
       - name: Install text reuired python packages
         run:  |
+          install.packages("devtools")
+          library(devtools)
+          devtools::install_github("oscarkjell/text")
+          text::textrpp_install(prompt = FALSE)
+          text::textrpp_initialize(textEmbed_test = TRUE)
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
-      - name: Install rcmdcheck
-        run: remotes::install_cran("rcmdcheck")
-        shell: Rscript {0}
+#      - name: Install rcmdcheck
+#        run: remotes::install_cran("rcmdcheck")
+#        shell: Rscript {0}
 #
 #      - name: Show testthat output
 #        if: always()
