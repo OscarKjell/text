@@ -51,10 +51,10 @@ jobs:
         with:
            python-version: 3.7
 
-      - uses: goanpeca/setup-miniconda@v1
-        with:
-          auto-update-conda: true
-          python-version: 3.7
+#      - uses: goanpeca/setup-miniconda@v1
+#        with:
+#          auto-update-conda: true
+#          python-version: 3.7
 
 #      - name: Install Python dependencies
 #        run: |
