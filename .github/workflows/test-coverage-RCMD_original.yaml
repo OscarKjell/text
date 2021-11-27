@@ -92,7 +92,7 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-      - name: Fix Conda permissions on macOS
+      - name: Fix Conda permissions on macOS ()SUDO)
         if: runner.os == 'macOS'
         run: sudo chown -R $UID $CONDA
 
