@@ -92,6 +92,17 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
+      - name: Installing text and testing it
+        run:  |
+          install.packages("devtools")
+          library(devtools)
+          devtools::install_github("oscarkjell/text")
+          text::textEmbed("hello")
+#          text::textrpp_install(prompt = FALSE)
+#          text::textrpp_initialize(textEmbed_test = TRUE)
+        shell: Rscript {0}
+
+
       - name: Session info
         run: |
           options(width = 100)
@@ -99,20 +110,21 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      - name: Check
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
-        shell: Rscript {0}
-
-      - name: Show testthat output
-        if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@main
-        with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
+#      - name: Check
+#        env:
+#          _R_CHECK_CRAN_INCOMING_: false
+#        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+#        shell: Rscript {0}
+#
+#      - name: Show testthat output
+#        if: always()
+#        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+#        shell: bash
+#
+#      - name: Upload check results
+#        if: failure()
+#        uses: actions/upload-artifact@main
+#        with:
+#          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
+#          path: check
+#
