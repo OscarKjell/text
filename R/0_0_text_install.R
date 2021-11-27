@@ -37,7 +37,7 @@ conda_args <- reticulate:::conda_args
 #' @export
 textrpp_install <- function(conda = "auto",
                           rpp_version = c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'),
-                          python_version = "3.7",
+                          python_version = "3.7.0",
                           envname = "textrpp_condaenv",
                           pip = TRUE,
                           python_path = NULL,
