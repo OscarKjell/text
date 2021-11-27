@@ -96,6 +96,7 @@ jobs:
         run:  |
           install.packages("devtools")
           library(devtools)
+          system('sudo chown 501:20 /usr/local/miniconda/pkgs/cache/b89cf7bf.json')
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
