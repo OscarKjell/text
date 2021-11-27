@@ -36,12 +36,37 @@ conda_args <- reticulate:::conda_args
 #' }
 #' @export
 textrpp_install <- function(conda = "auto",
-                          rpp_version = c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'),
-                          python_version = "3.7.0",
+                          rpp_version = "rpp_version_system_specific_defaults",
+                          python_version = "python_version_system_specific_defaults",
                           envname = "textrpp_condaenv",
                           pip = TRUE,
                           python_path = NULL,
                           prompt = TRUE) {
+
+  if(rpp_version == "rpp_version_system_specific_defaults"){
+
+    if(is_osx() | is_linux()){
+      rpp_version <-  c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk')
+    }
+    if(is_windows()){
+      rpp_version <-  c('torch==1.10', 'transformers==3.3.1', 'numpy', 'nltk')
+    }
+  }
+
+  if(python_version == "python_version_system_specific_defaults"){
+
+    if(is_osx() | is_linux()){
+      python_version <- "3.7.0"
+    }
+
+    if(is_windows()){
+      python_version  <-  "3.6.13"
+
+    }
+  }
+
+
+
   # verify os
   if (!is_windows() && !is_osx() && !is_linux()) {
     stop("This function is available only for Windows, Mac, and Linux")

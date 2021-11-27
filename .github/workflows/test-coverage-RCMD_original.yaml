@@ -104,7 +104,7 @@ jobs:
           devtools::install_github("oscarkjell/text")
           system('mv ~/miniconda/bin/openssl ~/miniconda/bin/orig_openssl')
           system('ln -s /usr/bin/openssl /home/user/miniconda/bin/openssl')
-          text::textrpp_install(python_version = "3.6", rpp_version = c('torch==1.10', 'transformers==3.3.1', 'numpy', 'nltk'), prompt = FALSE)
+          text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
