@@ -64,7 +64,7 @@ textrpp_install <- function(conda = "auto",
       cat("No conda was found in the system. ")
       ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda in ~/miniconda?")
       if (ans == 2) {
-        install_miniconda()
+        text_install_miniconda()
         conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
       } else stop("Conda environment installation failed (no conda binary found)\n", call. = FALSE)
     }
@@ -77,24 +77,31 @@ textrpp_install <- function(conda = "auto",
                                      envname = envname,
                                      pip = pip)
 
-    # windows installation
+    # Windows installation
   } else {
 
-    # determine whether we have system python
+    # determine whether we have system python help(py_versions_windows)
     python_versions <- reticulate::py_versions_windows()
     python_versions <- python_versions[python_versions$type == "PythonCore", ]
     python_versions <- python_versions[python_versions$version %in% c("3.5", "3.6", "3.7"), ]
     python_versions <- python_versions[python_versions$arch == "x64", ]
     have_system <- nrow(python_versions) > 0
     if (have_system)
+      # Well this isnt used later
       python_system_version <- python_versions[1, ]
 
     # validate that we have conda
     if (!have_conda) {
-      stop("Conda installation failed (no conda binary found)\n\n",
-           "Install Anaconda 3.x for Windows (https://www.anaconda.com/download/#windows)\n",
-           "before installing text required python packages",
-           call. = FALSE)
+
+      #OK adds help(install_miniconda)
+      reticulate::install_miniconda()
+      conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
+
+
+#      stop("Conda installation failed (no conda binary found)\n\n",
+#           "Install Anaconda 3.x for Windows (https://www.anaconda.com/download/#windows)\n",
+#           "before installing text required python packages",
+#           call. = FALSE)
     }
 
     # process the installation of text required python packages
@@ -386,7 +393,7 @@ textrpp_uninstall <- function(conda = "auto",
 #                            update_conda = FALSE
 #                            )
 
-install_miniconda <- function() {
+text_install_miniconda <- function() {
   if (is_osx()) {
     message("Downloading installation script")
     system(paste(
