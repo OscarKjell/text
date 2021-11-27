@@ -246,8 +246,8 @@ process_textrpp_installation_conda <- function(conda,
   packages <- rpp_version
 
   # OK: Install OpenSSL for conda using NOT pip
-  #reticulate::conda_install(envname, packages = "opensll", pip = FALSE, conda = conda)
-  reticulate::conda_install(envname, packages = "sll", pip = FALSE, conda = conda)
+  reticulate::conda_install(envname, packages = "opensll-1.1.1", pip = FALSE, conda = conda)
+  #reticulate::conda_install(envname, packages = "sll", pip = FALSE, conda = conda)
   #reticulate::conda_install(envname, packages = "pyopenssl", pip = FALSE, conda = conda)
   reticulate::conda_install(envname, packages, pip = pip, conda = conda)
 

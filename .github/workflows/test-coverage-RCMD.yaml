@@ -56,14 +56,14 @@ jobs:
           auto-update-conda: true
           python-version: 3.7
 
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
-          pip install transformers==3.3.1
-          pip install nltk
-          pip install numpy
-
+#      - name: Install Python dependencies
+#        run: |
+#          python -m pip install --upgrade pip
+#          pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
+#          pip install transformers==3.3.1
+#          pip install nltk
+#          pip install numpy
+#
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -110,8 +110,6 @@ jobs:
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          text::textrpp_install(prompt = FALSE)
-          text::textrpp_initialize(textEmbed_test = TRUE)
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
