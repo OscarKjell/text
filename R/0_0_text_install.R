@@ -139,7 +139,7 @@ textrpp_install <- function(conda = "auto",
 #' textrpp_install_virtualenv()
 #' }
 #' @export
-textrpp_install_virtualenv <- function(rpp_version = c('transformers==3.3.1', 'numpy', 'nltk'),
+textrpp_install_virtualenv <- function(rpp_version = c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'),
                                      python_version = "3.7",
                                      pip_version = "pip",
                                      python_path = NULL,
