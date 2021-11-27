@@ -97,9 +97,8 @@ jobs:
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          text::textEmbed("hello")
-#          text::textrpp_install(prompt = FALSE)
-#          text::textrpp_initialize(textEmbed_test = TRUE)
+          text::textrpp_install(prompt = FALSE)
+          text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
 
