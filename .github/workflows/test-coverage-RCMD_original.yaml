@@ -102,6 +102,7 @@ jobs:
           library(devtools)
           system('sudo chown 501:20 /usr/local/miniconda/pkgs/cache/b89cf7bf.json')
           devtools::install_github("oscarkjell/text")
+          system('alias openssl='/usr/bin/openssl')
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
