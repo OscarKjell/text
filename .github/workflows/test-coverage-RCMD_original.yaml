@@ -19,13 +19,13 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - {os: macOS-latest,   r: 'release'}
+          - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
 #          - {os: windows-latest, r: '3.6'}
 #          - {os: ubuntu-16.04,   r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest", http-user-agent: "R/4.0.0 (ubuntu-16.04) R (4.0.0 x86_64-pc-linux-gnu x86_64 linux-gnu) on GitHub Actions" }
 #          - {os: ubuntu-16.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 # Testing adding this myself
-#          - {os: ubuntu-latest,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
+          - {os: ubuntu-latest,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 #          - {os: ubuntu-16.04,   r: 'oldrel',  rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 #          - {os: ubuntu-16.04,   r: '3.5',     rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 #          - {os: ubuntu-16.04,   r: '3.4',     rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
@@ -49,21 +49,21 @@ jobs:
 
       - uses: actions/setup-python@v2
         with:
-           python-version: 3.7
+           python-version: 3.6
 
-#      - uses: goanpeca/setup-miniconda@v1
-#        with:
-#          auto-update-conda: true
-#          python-version: 3.7
+      - uses: goanpeca/setup-miniconda@v1
+        with:
+          auto-update-conda: true
+          python-version: 3.6
 
-#      - name: Install Python dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
-#          pip install transformers==3.3.1
-#          pip install nltk
-#          pip install numpy
-#
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
+          pip install transformers==3.3.1
+          pip install nltk
+          pip install numpy
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -99,30 +99,17 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-#      - name: Check
-#        env:
-#          _R_CHECK_CRAN_INCOMING_: false
-#        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
-#        shell: Rscript {0}
-
-      - name: Install text reuired python packages
-        run:  |
-          install.packages("devtools")
-          library(devtools)
-          devtools::install_github("oscarkjell/text")
-          text::textrpp_install(prompt = FALSE)
-          text::textrpp_initialize(textEmbed_test = TRUE)
+      - name: Check
+        env:
+          _R_CHECK_CRAN_INCOMING_: false
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
-#      - name: Install rcmdcheck
-#        run: remotes::install_cran("rcmdcheck")
-#        shell: Rscript {0}
-#
-#      - name: Show testthat output
-#        if: always()
-#        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-#        shell: bash
-#
+      - name: Show testthat output
+        if: always()
+        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
+
       - name: Upload check results
         if: failure()
         uses: actions/upload-artifact@main
