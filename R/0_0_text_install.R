@@ -90,8 +90,8 @@ textrpp_install <- function(conda = "auto",
       # Well this isnt used later
       python_system_version <- python_versions[1, ]
 
-    # validate that we have conda
-    if (!have_conda) {
+    # validate that we have conda: OK: added  "| have_conda" to make sure reticualte is installet it
+    if (!have_conda | have_conda) {
 
       #OK adds help(install_miniconda)
       reticulate::install_miniconda()
@@ -246,7 +246,7 @@ process_textrpp_installation_conda <- function(conda,
   packages <- rpp_version
 
   # OK: Install OpenSSL for conda using NOT pip
-##  reticulate::conda_install(envname, packages = "openssl-1.1.1l-h2bbff1b_0.tar.bz2", pip = FALSE, conda = conda)
+#  reticulate::conda_install(envname, packages = "openssl-1.1.1l-h2bbff1b_0.tar.bz2", pip = FALSE, conda = conda)
   #reticulate::conda_install(envname, packages = "sll", pip = FALSE, conda = conda)
   #reticulate::conda_install(envname, packages = "pyopenssl", pip = FALSE, conda = conda)
   reticulate::conda_install(envname, packages, pip = pip, conda = conda)
