@@ -92,7 +92,7 @@ textrpp_install <- function(conda = "auto",
       cat("No conda was found in the system. ")
       ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda in ~/miniconda?")
       if (ans == 2) {
-        #text_install_miniconda()
+        #text_install_miniconda() help(install_miniconda)
         reticulate::install_miniconda()
         conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
       } else stop("Conda environment installation failed (no conda binary found)\n", call. = FALSE)
