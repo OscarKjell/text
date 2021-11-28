@@ -46,6 +46,7 @@ textrpp_install <- function(conda = "auto",
                           python_path = NULL,
                           prompt = TRUE) {
 
+  # Set system specific default versions
   if(rpp_version == "rpp_version_system_specific_defaults"){
 
     if(is_osx() | is_linux()){
@@ -68,13 +69,12 @@ textrpp_install <- function(conda = "auto",
     }
   }
 
-
-
   # verify os
   if (!is_windows() && !is_osx() && !is_linux()) {
     stop("This function is available only for Windows, Mac, and Linux")
   }
-   #verify 64-bit
+
+   # verify 64-bit
    if (.Machine$sizeof.pointer != 8) {
        stop("Unable to install Text on this platform.",
             "Binary installation is only available for 64-bit platforms.")
@@ -90,9 +90,9 @@ textrpp_install <- function(conda = "auto",
     # validate that we have conda
     if (!have_conda) {
       cat("No conda was found in the system. ")
-##      ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda in ~/miniconda?")
+      ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda in ~/miniconda?")
       # OK: add
-      ans <- 2
+      # ans <- 2
       if (ans == 2) {
         #text_install_miniconda()
         reticulate::install_miniconda()
@@ -122,7 +122,7 @@ textrpp_install <- function(conda = "auto",
       python_system_version <- python_versions[1, ]
 
     # validate that we have conda: OK: added  "| have_conda" to make sure reticulate is install it
-    if (!have_conda | have_conda) {
+    if (!have_conda) {
 
       #OK adds help(install_miniconda)
       reticulate::install_miniconda()
@@ -275,10 +275,6 @@ process_textrpp_installation_conda <- function(conda,
   cat("Installing text required python packages...\n")
   packages <- rpp_version
 
-  # OK: Install OpenSSL for conda using NOT pip
-#  reticulate::conda_install(envname, packages = "openssl-1.1.1l-h2bbff1b_0.tar.bz2", pip = FALSE, conda = conda)
-  #reticulate::conda_install(envname, packages = "sll", pip = FALSE, conda = conda)
-  #reticulate::conda_install(envname, packages = "pyopenssl", pip = FALSE, conda = conda)
   reticulate::conda_install(envname, packages, pip = pip, conda = conda)
 
 }
