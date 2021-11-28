@@ -91,8 +91,6 @@ textrpp_install <- function(conda = "auto",
     if (!have_conda) {
       cat("No conda was found in the system. ")
       ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda in ~/miniconda?")
-      # OK: add
-      # ans <- 2
       if (ans == 2) {
         #text_install_miniconda()
         reticulate::install_miniconda()
@@ -121,7 +119,7 @@ textrpp_install <- function(conda = "auto",
       # Well this isnt used later
       python_system_version <- python_versions[1, ]
 
-    # validate that we have conda: OK: added  "| have_conda" to make sure reticulate is install it
+    # validate that we have conda:
     if (!have_conda) {
 
       #OK adds help(install_miniconda)

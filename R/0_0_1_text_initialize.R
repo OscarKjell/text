@@ -211,7 +211,7 @@ check_textrpp_model <- function(py_exec) { ###, model
   tryCatch({
 
     sys_message <- "see error in text_initialize row 235"
-    #system2(py_exec, c(sprintf("-c \"import spacy; spacy.load('%s'); print('OK')\"", model)),
+    #system2(py_exec, c(sprintf("-c \"import texrpp; text.load('%s'); print('OK')\"", model)),
     #        stderr = TRUE, stdout = TRUE)
   })
   options(warn = 0)

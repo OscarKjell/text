@@ -7,7 +7,7 @@ on:
     branches:
       - master
 
-name: System specific installation NoPy
+name: System specific installation WithPy
 
 jobs:
   R-CMD-check:
@@ -39,22 +39,10 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
 
-#      - uses: actions/setup-python@v2
-#        with:
-#           python-version: 3.6
-
       - uses: goanpeca/setup-miniconda@v1
         with:
           auto-update-conda: true
-          python-version: 3.7
-
-#      - name: Install Python dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
-#          pip install transformers==3.3.1
-#          pip install nltk
-#          pip install numpy
+          python-version: 3.7.0
 
       - name: Query dependencies
         run: |
