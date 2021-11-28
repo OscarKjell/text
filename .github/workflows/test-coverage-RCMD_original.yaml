@@ -7,7 +7,7 @@ on:
     branches:
       - master
 
-name: R-CMD-check test
+name: System specific installation NoPy
 
 jobs:
   R-CMD-check:
@@ -21,7 +21,7 @@ jobs:
         config:
           - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-16.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
+          - {os: ubuntu-latest,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -104,22 +104,3 @@ jobs:
           pkgs <- installed.packages()[, "Package"]
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
-
-#      - name: Check
-#        env:
-#          _R_CHECK_CRAN_INCOMING_: false
-#        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
-#        shell: Rscript {0}
-#
-#      - name: Show testthat output
-#        if: always()
-#        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-#        shell: bash
-#
-#      - name: Upload check results
-#        if: failure()
-#        uses: actions/upload-artifact@main
-#        with:
-#          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-#          path: check
-#

@@ -19,8 +19,11 @@ conda_args <- reticulate:::conda_args
 #'   automatically find the path
 #' @param pip \code{TRUE} to use pip for installing rpp If \code{FALSE}, conda
 #' package manager with conda-forge channel will be used for installing rpp.
-#' @param rpp_version character; rpp:s  to install.
-#' @param python_version character; determine Python version for condaenv
+#' @param rpp_version character; default is "rpp_version_system_specific_defaults", because diffent systems require
+#' different combinations of python version and packages. It is also possible to
+#' specify your own, such s c('torch==0.4.1', 'transformers==3.3.1').
+#' @param python_version character; default is "python_version_system_specific_defaults". You can specify your
+#' Python version for the condaenv yourself.
 #'   installation.
 #' @param python_path character; path to Python in virtualenv installation
 #' @param envname character; name of the conda-environment to install text required python packages.

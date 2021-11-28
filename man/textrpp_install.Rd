@@ -7,8 +7,8 @@
 \usage{
 textrpp_install(
   conda = "auto",
-  rpp_version = c("torch==0.4.1", "transformers==3.3.1", "numpy", "nltk"),
-  python_version = "3.7",
+  rpp_version = "rpp_version_system_specific_defaults",
+  python_version = "python_version_system_specific_defaults",
   envname = "textrpp_condaenv",
   pip = TRUE,
   python_path = NULL,
@@ -27,10 +27,13 @@ textrpp_install_virtualenv(
 \item{conda}{character; path to conda executable. Default "auto" which
 automatically find the path}
 
-\item{rpp_version}{character; rpp:s  to install.}
+\item{rpp_version}{character; default is "rpp_version_system_specific_defaults", because diffent systems require
+different combinations of python version and packages. It is also possible to
+specify your own, such s c('torch==0.4.1', 'transformers==3.3.1').}
 
-\item{python_version}{character; determine Python version for condaenv
-installation.}
+\item{python_version}{character; default is "python_version_system_specific_defaults". You can specify your
+Python version for the condaenv yourself.
+  installation.}
 
 \item{envname}{character; name of the conda-environment to install text required python packages.
 Default is "textrpp_condaenv".}
