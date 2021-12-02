@@ -44,6 +44,7 @@ textrpp_initialize <- function(
 ##  }
 ##  # NEW: if textrpp_condaenv exists use it
 ##  else {
+  # clear_textrpp_options()
     set_textrpp_python_option(python_executable,
                             virtualenv,
                             condaenv,
@@ -59,7 +60,9 @@ textrpp_initialize <- function(
     if (settings$key == "textrpp_python_executable") {
       reticulate::use_python(settings$val, required = TRUE)
     }
-    else if (settings$key == "textrpp_virtualenv") reticulate::use_virtualenv(settings$val, required = TRUE)
+    else if (settings$key == "textrpp_virtualenv") {
+      reticulate::use_virtualenv(settings$val, required = TRUE)
+    }
     else if (settings$key == "textrpp_condaenv") {
       reticulate::use_condaenv(settings$val, required = TRUE)
     }
@@ -241,8 +244,8 @@ set_textrpp_python_option <- function(python_executable = NULL,
   # give warning when nothing is specified
   else if (sum(!is.null(c(python_executable, virtualenv, condaenv))) == 1){
     if (!is.null(python_executable)) {
-      if (check_textrpp_model(python_executable) != "OK"){ ###, model
-        stop("Text required python packages ", " are not installed in ", python_executable) #model,
+      if (check_textrpp_model(python_executable) != "OK"){
+        stop("Text required python packages ", " are not installed in ", python_executable)
       }
       clear_textrpp_options()
       options(textrpp_python_executable = python_executable)
@@ -263,10 +266,10 @@ set_textrpp_python_option <- function(python_executable = NULL,
     clear_textrpp_options()
     options(textrpp_condaenv = "textrpp_condaenv")
   }
-  else if (check_env && file.exists(file.path("~/.virtualenvs", "textrpp_virtualenv", "bin", "activate"))) {
-    message("Found 'textrpp_virtualenv'. Text will use this environment")
+  else if (check_env && file.exists(virtualenv)) { #OK: Original file.exists(file.path("~/.virtualenvs", "textrpp_virtualenv", "bin", "activate"))
+    message("Found your specified virtual environemnt. Text will use this environment") #OK: original: Found 'textrpp_virtualenv'. Text will use this environment"
     clear_textrpp_options()
-    options(textrpp_virtualenv = "~/.virtualenvs/textrpp_virtualenv")
+    options(textrpp_virtualenv = file.path(virtualenv)) #OK: original: "~/.virtualenvs/textrpp_virtualenv
   }
   else {
     message("Finding a python executable with text required python pakages installed...")

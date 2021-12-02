@@ -180,9 +180,9 @@ textrpp_install_virtualenv <- function(rpp_version = c('torch==0.4.1', 'transfor
 
   # find system python binary
   python <- if (!is.null(python_path)) python_path else python_unix_binary("python")
-  if (is.null(python))
+  if (is.null(python)) {
     stop("Unable to locate Python on this system.", call. = FALSE)
-
+  }
   # find other required tools
   pip <- python_unix_binary("pip")
   have_pip <- !is.null(pip)
@@ -194,11 +194,11 @@ textrpp_install_virtualenv <- function(rpp_version = c('torch==0.4.1', 'transfor
     install_commands <- NULL
     if (is_osx()) {
       if (!have_pip)
-        install_commands <- c(install_commands, "$ sudo /usr/bin/easy_install pip") # original: "$ sudo /usr/bin/easy_install pip"
+        install_commands <- c(install_commands, "$ sudo /usr/bin/easy_install pip")
       if (!have_virtualenv) {
         if (is.null(pip))
           pip <- "/usr/local/bin/pip"
-        install_commands <- c(install_commands, sprintf("$ sudo %s install --upgrade virtualenv", pip)) #"$ sudo %s install --upgrade virtualenv"
+        install_commands <- c(install_commands, sprintf("$ sudo %s install --upgrade virtualenv", pip))
       }
       if (!is.null(install_commands))
         install_commands <- paste(install_commands, collapse = "\n")
@@ -208,7 +208,7 @@ textrpp_install_virtualenv <- function(rpp_version = c('torch==0.4.1', 'transfor
       if (!have_virtualenv)
         install_commands <- c(install_commands, "python-virtualenv")
       if (!is.null(install_commands)) {
-        install_commands <- paste("$ sudo apt-get install", #"$ sudo apt-get install"
+        install_commands <- paste("$ sudo apt-get install",
                                   paste(install_commands, collapse = " "))
       }
     } else {
@@ -341,16 +341,18 @@ process_textrpp_installation_virtualenv <- function(python,
   pip_install(pip_version, "Upgrading pip")
 
   # install updated version of the wheel package
-  # pip_install("wheel", "Upgrading wheel")
+   pip_install("wheel", "Upgrading wheel")
 
   # upgrade setuptools so it can use wheels
-  # pip_install("setuptools", "Upgrading setuptools")
+   pip_install("setuptools", "Upgrading setuptools")
 
   pkgs <- rpp_version
   pip_install(pkgs, "Installing text required python packages...")
 
 }
 
+# Check whether "bin"/something exists in the bin folder
+# For example, bin = "pip"
 python_unix_binary <- function(bin) {
   locations <- file.path(c( "/usr/local/bin", "/usr/bin"), bin)
   locations <- locations[file.exists(locations)]
