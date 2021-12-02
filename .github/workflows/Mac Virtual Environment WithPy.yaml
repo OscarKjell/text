@@ -20,8 +20,8 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   r: 'release'}
-#          - {os: windows-latest, r: 'release'}
-#          - {os: ubuntu-latest,  r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest,  r: 'release'}
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -67,19 +67,12 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-      - name: Fix Conda permissions on macOS (SUDO)
-        if: runner.os == 'macOS'
-        run: sudo chown -R $UID $CONDA
 
       - name: Installing text and testing it
         run:  |
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          text::textrpp_install(prompt = FALSE)
-          text::textrpp_initialize(textEmbed_test = TRUE)
-          install.packages(reticulate)
-          library(reticulate)
           reticulate::virtualenv_create("text_virtualenv", python = "/usr/bin/python3")
           reticulate::use_virtualenv("text_virtualenv", required = TRUE)
           reticulate::py_install("nltk", envname = "text_virtualenv")
