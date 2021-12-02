@@ -41,7 +41,7 @@ jobs:
 
       - uses: actions/setup-python@v2
         with:
-           python-version: 3.7.0
+           python-version: 3.7.12
 
       - name: Query dependencies
         run: |
@@ -77,7 +77,7 @@ jobs:
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          reticulate::virtualenv_create("text_virtualenv", python = "/usr/bin/python3.7.0")
+          reticulate::virtualenv_create("text_virtualenv", python = "/usr/bin/python3.7.12")
           reticulate::use_virtualenv("text_virtualenv", required = TRUE)
           reticulate::py_install("nltk", envname = "text_virtualenv")
           reticulate::py_install("numpy", envname = "text_virtualenv")
