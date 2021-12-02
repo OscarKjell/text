@@ -19,8 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
+#          - {os: macOS-latest,   r: 'release'}
+#          - {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,  r: 'release'}
 
     env:
@@ -38,6 +38,10 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
 
       - uses: r-lib/actions/setup-pandoc@master
+
+      - uses: actions/setup-python@v2
+        with:
+           python-version: 3.7.0
 
       - name: Query dependencies
         run: |
@@ -73,7 +77,7 @@ jobs:
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          reticulate::virtualenv_create("text_virtualenv", python = "/usr/bin/python3")
+          reticulate::virtualenv_create("text_virtualenv", python = "/usr/bin/python3.7.0")
           reticulate::use_virtualenv("text_virtualenv", required = TRUE)
           reticulate::py_install("nltk", envname = "text_virtualenv")
           reticulate::py_install("numpy", envname = "text_virtualenv")
