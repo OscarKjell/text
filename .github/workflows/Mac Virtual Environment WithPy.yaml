@@ -40,14 +40,13 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@master
 
       - uses: actions/setup-python@v2
-        if: runner.os = != 'Windows'
         with:
-           python-version: 3.9.8
+           python-version: 3.9.0
 
-      - uses: actions/setup-python@v2
-        if: runner.os = 'Windows'
-        with:
-           python-version: 3.10.0
+#      - uses: actions/setup-python@v2
+#        if: runner.os = 'Windows'
+#        with:
+#           python-version: 3.10.0
 
 
       - name: Query dependencies
@@ -101,7 +100,7 @@ jobs:
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.10", required = TRUE)
+          reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.9", required = TRUE)
           reticulate::use_virtualenv("text_virtualenv", required = TRUE)
           reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
           reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
