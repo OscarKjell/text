@@ -20,8 +20,8 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   r: 'release'}
-#          - {os: windows-latest, r: 'release'}
-#          - {os: ubuntu-latest,  r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest,  r: 'release'}
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
