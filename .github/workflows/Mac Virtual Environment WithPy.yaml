@@ -40,13 +40,14 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@master
 
       - uses: actions/setup-python@v2
+        if: runner.os != 'Windows'
         with:
            python-version: 3.9.0
 
-#      - uses: actions/setup-python@v2
-#        if: runner.os = 'Windows'
-#        with:
-#           python-version: 3.10.0
+      - uses: actions/setup-python@v2
+        if: runner.os == 'Windows'
+        with:
+           python-version: 3.10.0
 
 
       - name: Query dependencies
@@ -95,7 +96,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Installing text and testing it
-        if: runner.os = 'Windows'
+        if: runner.os == 'Windows'
         run:  |
           install.packages("devtools")
           library(devtools)
