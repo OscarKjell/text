@@ -7,7 +7,7 @@ on:
     branches:
       - master
 
-name: Virtual environment
+name: System specific installation NoPy
 
 jobs:
   R-CMD-check:
@@ -19,9 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - {os: macOS-latest,   r: 'release'}
+          - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,  r: 'release'}
+          - {os: ubuntu-latest, r: 'release'}
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -39,9 +39,22 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
 
-      - uses: actions/setup-python@v2
-        with:
-           python-version: 3.6.13
+#      - uses: actions/setup-python@v2
+#        with:
+#           python-version: 3.6
+
+#      - uses: goanpeca/setup-miniconda@v1
+#        with:
+#          auto-update-conda: true
+#          python-version: 3.6
+
+#      - name: Install Python dependencies
+#        run: |
+#          python -m pip install --upgrade pip
+#          pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
+#          pip install transformers==3.3.1
+#          pip install nltk
+#          pip install numpy
 
       - name: Query dependencies
         run: |
@@ -71,20 +84,17 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
+      - name: Fix Conda permissions on macOS (SUDO)
+        if: runner.os == 'macOS'
+        run: sudo chown -R $UID $CONDA
 
       - name: Installing text and testing it
         run:  |
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.6", required = TRUE)
-          reticulate::use_virtualenv("text_virtualenv", required = TRUE)
-          reticulate::py_install('torch==1.10', envname = "text_virtualenv")
-          reticulate::py_install('transformers==3.3.1', envname = "text_virtualenv")
-          reticulate::py_install("nltk", envname = "text_virtualenv")
-          reticulate::py_install("numpy", envname = "text_virtualenv")
-          library(text)
-          text::textEmbed("hello")
+          text::textrpp_install(prompt = FALSE, rpp_version = c('torch==1.7.1', 'transformers==4.12.5', 'numpy', 'nltk'), python_version = "3.9.8")
+          text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
 
