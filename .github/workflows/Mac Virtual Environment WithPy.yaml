@@ -7,7 +7,7 @@ on:
     branches:
       - master
 
-name: System specific installation WithPy
+name: Virtual environment
 
 jobs:
   R-CMD-check:
@@ -77,12 +77,12 @@ jobs:
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.9", required =TRUE)
+          reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.9", required = TRUE)
           reticulate::use_virtualenv("text_virtualenv", required = TRUE)
-          reticulate::py_install("nltk", envname = "text_virtualenv")
-          reticulate::py_install("numpy", envname = "text_virtualenv")
           reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
           reticulate::py_install('transformers-4.12', envname = "text_virtualenv")
+          reticulate::py_install("nltk", envname = "text_virtualenv")
+          reticulate::py_install("numpy", envname = "text_virtualenv")
           library(text)
           text::textEmbed("hello")
         shell: Rscript {0}
