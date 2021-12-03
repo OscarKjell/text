@@ -47,7 +47,7 @@ textrpp_install <- function(conda = "auto",
                           prompt = TRUE) {
 
   # Set system specific default versions
-  if(rpp_version == "rpp_version_system_specific_defaults"){
+  if(rpp_version[[1]] == "rpp_version_system_specific_defaults"){
 
     if(is_osx() | is_linux()){
       rpp_version <-  c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk')
