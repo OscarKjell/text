@@ -40,8 +40,15 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@master
 
       - uses: actions/setup-python@v2
+        if: runner.os = 'macOS'
         with:
-           python-version: 3.6.13
+           python-version: 3.9.8
+
+      - uses: actions/setup-python@v2
+        if: runner.os = 'Windows'
+        with:
+           python-version: 3.10.0
+
 
       - name: Query dependencies
         run: |
@@ -73,14 +80,31 @@ jobs:
 
 
       - name: Installing text and testing it
+        if: runner.os != 'Windows'
         run:  |
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.6", required = TRUE)
+          reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.9", required = TRUE)
           reticulate::use_virtualenv("text_virtualenv", required = TRUE)
-          reticulate::py_install('torch==1.10', envname = "text_virtualenv")
-          reticulate::py_install('transformers==3.3.1', envname = "text_virtualenv")
+          reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
+          reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
+          reticulate::py_install("nltk", envname = "text_virtualenv")
+          reticulate::py_install("numpy", envname = "text_virtualenv")
+          library(text)
+          text::textEmbed("hello")
+        shell: Rscript {0}
+
+      - name: Installing text and testing it
+        if: runner.os = 'Windows'
+        run:  |
+          install.packages("devtools")
+          library(devtools)
+          devtools::install_github("oscarkjell/text")
+          reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.10", required = TRUE)
+          reticulate::use_virtualenv("text_virtualenv", required = TRUE)
+          reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
+          reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
           reticulate::py_install("nltk", envname = "text_virtualenv")
           reticulate::py_install("numpy", envname = "text_virtualenv")
           library(text)
