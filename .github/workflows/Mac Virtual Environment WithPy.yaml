@@ -19,9 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - {os: macOS-latest,   r: 'release'}
+          - {os: macOS-latest,   r: 'release'}
 #          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,  r: 'release'}
+#          - {os: ubuntu-latest,  r: 'release'}
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -41,7 +41,7 @@ jobs:
 
       - uses: actions/setup-python@v2
         with:
-           python-version: 3.7.12
+           python-version: 3.9.8
 
       - name: Query dependencies
         run: |
@@ -77,12 +77,12 @@ jobs:
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          reticulate::virtualenv_create("text_virtualenv", python = "/usr/bin/python3.7.12")
+          reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.9", required =TRUE)
           reticulate::use_virtualenv("text_virtualenv", required = TRUE)
           reticulate::py_install("nltk", envname = "text_virtualenv")
           reticulate::py_install("numpy", envname = "text_virtualenv")
-          reticulate::py_install('torch==0.4.1', envname = "text_virtualenv")
-          reticulate::py_install('transformers==3.3.1', envname = "text_virtualenv")
+          reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
+          reticulate::py_install('transformers-4.12', envname = "text_virtualenv")
           library(text)
           text::textEmbed("hello")
         shell: Rscript {0}
