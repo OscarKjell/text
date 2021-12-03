@@ -40,7 +40,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@master
 
       - uses: actions/setup-python@v2
-        if: runner.os = 'macOS'
+        if: runner.os = != 'Windows'
         with:
            python-version: 3.9.8
 
