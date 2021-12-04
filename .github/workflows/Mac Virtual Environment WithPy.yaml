@@ -101,6 +101,8 @@ jobs:
           reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
           reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
           reticulate::py_install("numpy", envname = "text_virtualenv")
+          library(text)
+          text::textEmbed("hello")
         shell: Rscript {0}
 
       - name: WINDOWS - Installing text and testing it
@@ -109,6 +111,14 @@ jobs:
           Sys.setenv(RETICULATE_PYTHON = "C:\\hostedtoolcache\\windows\\Python\\3.9.0\\x64")
           library(reticulate)
           reticulate::py_config()
+          reticulate::virtualenv_create("text_virtualenv", required = TRUE)
+          reticulate::use_virtualenv("text_virtualenv", required = TRUE)
+          reticulate::py_install("nltk", envname = "text_virtualenv")
+          reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
+          reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
+          reticulate::py_install("numpy", envname = "text_virtualenv")
+          library(text)
+          text::textEmbed("hello")
         shell: Rscript {0}
 
       - name: Session info
