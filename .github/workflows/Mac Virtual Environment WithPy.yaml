@@ -43,6 +43,11 @@ jobs:
         with:
            python-version: 3.9.0
 
+      - name: Check Python paths
+        run: |
+          python -c "import sys; print(sys.path)"
+          python -c "import sys; print(':'.join(x for x in sys.path if x))"
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -103,7 +108,7 @@ jobs:
           library(devtools)
           devtools::install_github("oscarkjell/text")
           library(text)
-          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "C:\\hostedtoolcache\\windows\\Python\\3.9.0", prompt = FALSE)
+          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "C:\\Users\\runneradmin\\AppData\\Local\\Python3.9.0", prompt = FALSE)
           text::textrpp_initialize(virtualenv = "textrpp_virtualenv", refresh_settings = TRUE)
           text::textEmbed("hello")
         shell: Rscript {0}
