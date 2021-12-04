@@ -43,7 +43,7 @@ jobs:
         with:
            python-version: 3.9.0
 
-      - name: Check Python paths
+      - name: Check python paths
         run: |
           python -c "import sys; print(sys.path)"
 
@@ -83,7 +83,7 @@ jobs:
           library(devtools)
           devtools::install_github("oscarkjell/text")
           library(text)
-          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/Users/runner/hostedtoolcache/Python/3.9", prompt = FALSE)
+          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/usr/local/bin/python3.9", prompt = FALSE)
           text::textrpp_initialize(virtualenv = "textrpp_virtualenv", refresh_settings = TRUE)
           text::textEmbed("hello")
         shell: Rscript {0}
@@ -93,13 +93,14 @@ jobs:
         run:  |
           install.packages("devtools")
           library(devtools)
-          devtools::install_github("oscarkjell/text")
+          reticulate::py_config()
           reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.9", required = TRUE)
           reticulate::use_virtualenv("text_virtualenv", required = TRUE)
           reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
           reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
           reticulate::py_install("nltk", envname = "text_virtualenv")
           reticulate::py_install("numpy", envname = "text_virtualenv")
+          devtools::install_github("oscarkjell/text")
           library(text)
           text::textEmbed("hello")
         shell: Rscript {0}
@@ -109,13 +110,14 @@ jobs:
         run:  |
           install.packages("devtools")
           library(devtools)
-          devtools::install_github("oscarkjell/text")
+          reticulate::py_config()
           reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.9", required = TRUE)
           reticulate::use_virtualenv("text_virtualenv", required = TRUE)
           reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
           reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
           reticulate::py_install("nltk", envname = "text_virtualenv")
           reticulate::py_install("numpy", envname = "text_virtualenv")
+          devtools::install_github("oscarkjell/text")
           library(text)
           text::textEmbed("hello")
         shell: Rscript {0}
