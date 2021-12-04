@@ -40,13 +40,11 @@ The language that individuals use contains a wealth of psychological information
 
 ### Short installation guide
 Most users simply need to run below installation code. 
-For those experiencing problems, please see the [Extended Installation Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
+For those experiencing problems or want more alternatives, please see the [Extended Installation Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
 
-[CRAN](https://CRAN.R-project.org/package=text) version:
+For the text package to work, you first have to install the text-package in R, and then make it work with text required python packages. 
 
-``` r
-install.packages("text")
-```
+1. First install either a text-verion. (at the moment the second step only works using the development version of tet from GitHub)
 
 [GitHub](https://github.com/) development version:
 
@@ -54,6 +52,25 @@ install.packages("text")
 # install.packages("devtools")
 devtools::install_github("oscarkjell/text")
 ```
+
+[CRAN](https://CRAN.R-project.org/package=text) version:
+
+``` r
+install.packages("text")
+```
+
+2. Install and initialize text required python packages
+
+``` r
+# Install text required python packages in a conda environment (with defaults).
+textrpp_install()
+
+# Initialize the installed conda environment.
+# save_profile = TRUE saves the settings so that you don't have to run textrpp_initialize() after restarting R. 
+textrpp_initialize(save_profile = TRUE)
+```
+
+
 
 ### Point solution for transforming text to embeddings
 Recent significant advances in NLP research have resulted in improved representations of human language (i.e., language models). These language models have produced big performance gains in tasks related to understanding human language. Text are making these SOTA models  easily accessible through an interface to [HuggingFace](https://huggingface.co/transformers/) in Python.

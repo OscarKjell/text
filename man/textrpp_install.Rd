@@ -19,7 +19,7 @@ textrpp_install_virtualenv(
   rpp_version = c("torch==1.7.1", "transformers==4.12.5", "numpy", "nltk"),
   python_path = "/usr/local/bin/python3.9",
   pip_version = NULL,
-  envname = "textrpp_condaenv",
+  envname = "textrpp_virtualenv",
   prompt = TRUE
 )
 }

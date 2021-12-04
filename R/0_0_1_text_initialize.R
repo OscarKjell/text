@@ -99,24 +99,6 @@ textrpp_initialize <- function(
 
 }
 
-#' Finalize text required python packages
-#'
-#' While running text required python packages on Python through R, a Python process is always running
-#' in the background and the R session will take up a lot of memory (typically over
-#' 1.5GB). \code{textrpp_finalize()} terminates the Python process and frees up
-#' the memory it was using.
-#' @return NULL
-#' @export
-#' @author Adapted from: Akitaka Matsuo
-textrpp_finalize <- function() {
-  if (is.null(getOption("textrpp_initialized"))) {
-    stop("Nothing to finalize. text rpp:s are not initialized")
-  }
-  reticulate::py_run_file(system.file("python", "finalize_textrppPython.py",
-                                      package = "text"))
-  options("textrpp_initialized" = NULL)
-}
-
 #' Find text required python packages
 #'
 #' Locate the user's version of Python for which text required python packages are installed.
@@ -128,7 +110,7 @@ textrpp_finalize <- function() {
 #'   this value will always be treated as \code{FALSE}.
 #'
 #' @keywords internal
-find_textrpp <- function( ask){
+find_textrpp <- function(ask){
   textrpp_found <- `:=` <- NA
   textrpp_python <- NULL
   options(warn = -1)
@@ -289,6 +271,7 @@ set_textrpp_python_option <- function(python_executable = NULL,
   }
   return(NULL)
 }
+
 
 clear_textrpp_options <- function(){
   options(textrpp_python_executable = NULL)

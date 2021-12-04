@@ -48,8 +48,22 @@ Windows using the latest stable R version.
 ### Short installation guide
 
 Most users simply need to run below installation code. For those
-experiencing problems, please see the [Extended Installation
+experiencing problems or want more alternatives, please see the
+[Extended Installation
 Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
+
+For the text package to work, you first have to install the text-package
+in R, and then make it work with text required python packages.
+
+1.  First install either a text-verion. (at the moment the second step
+    only works using the development version of tet from GitHub)
+
+[GitHub](https://github.com/) development version:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("oscarkjell/text")
+```
 
 [CRAN](https://CRAN.R-project.org/package=text) version:
 
@@ -57,11 +71,15 @@ Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
 install.packages("text")
 ```
 
-[GitHub](https://github.com/) development version:
+2.  Install and initialize text required python packages
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("oscarkjell/text")
+# Install text required python packages in a conda environment (with defaults).
+textrpp_install()
+
+# Initialize the installed conda environment.
+# save_profile = TRUE saves the settings so that you don't have to run textrpp_initialize() after restarting R. 
+textrpp_initialize(save_profile = TRUE)
 ```
 
 ### Point solution for transforming text to embeddings
