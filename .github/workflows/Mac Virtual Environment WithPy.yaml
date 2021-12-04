@@ -91,37 +91,17 @@ jobs:
       - name: UBUNTU - Installing text and testing it
         if: runner.os == 'Linux'
         run:  |
-          Sys.setenv(RETICULATE_PYTHON = "/usr/bin/python3")
+          Sys.setenv(RETICULATE_PYTHON = "/usr/bin/python3.9")
           library(reticulate)
           reticulate::py_config()
-          reticulate::virtualenv_create("text_virtualenv", python = "/usr/bin/python3.9", required = TRUE)
-          reticulate::use_virtualenv("text_virtualenv", required = TRUE)
-          reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
-          reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
-          reticulate::py_install("nltk", envname = "text_virtualenv")
-          reticulate::py_install("numpy", envname = "text_virtualenv")
-          install.packages("devtools")
-          library(devtools)
-          devtools::install_github("oscarkjell/text")
-          library(text)
-          text::textEmbed("hello")
         shell: Rscript {0}
 
       - name: WINDOWS - Installing text and testing it
         if: runner.os == 'Windows'
         run:  |
-          install.packages("devtools")
-          library(devtools)
+          Sys.setenv(RETICULATE_PYTHON = "/usr/bin/python3.9")
+          library(reticulate)
           reticulate::py_config()
-          reticulate::virtualenv_create("text_virtualenv", python = "/usr/local/bin/python3.9", required = TRUE)
-          reticulate::use_virtualenv("text_virtualenv", required = TRUE)
-          reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
-          reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
-          reticulate::py_install("nltk", envname = "text_virtualenv")
-          reticulate::py_install("numpy", envname = "text_virtualenv")
-          devtools::install_github("oscarkjell/text")
-          library(text)
-          text::textEmbed("hello")
         shell: Rscript {0}
 
       - name: Session info
