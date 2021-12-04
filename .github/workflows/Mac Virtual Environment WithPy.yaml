@@ -46,6 +46,7 @@ jobs:
       - name: Check python paths
         run: |
           python -c "import sys; print(sys.path)"
+          which -a python python3
 
       - name: Query dependencies
         run: |
@@ -91,7 +92,7 @@ jobs:
       - name: UBUNTU - Installing text and testing it
         if: runner.os == 'Linux'
         run:  |
-          Sys.setenv(RETICULATE_PYTHON = "/usr/bin/python3.9")
+          Sys.setenv(RETICULATE_PYTHON = "/usr/bin/python3")
           library(reticulate)
           reticulate::py_config()
         shell: Rscript {0}
@@ -99,7 +100,7 @@ jobs:
       - name: WINDOWS - Installing text and testing it
         if: runner.os == 'Windows'
         run:  |
-          Sys.setenv(RETICULATE_PYTHON = "/usr/bin/python3.9")
+          Sys.setenv(RETICULATE_PYTHON = "C:\\hostedtoolcache\\windows\\Python\\3.9.0")
           library(reticulate)
           reticulate::py_config()
         shell: Rscript {0}
