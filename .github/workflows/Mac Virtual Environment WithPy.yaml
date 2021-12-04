@@ -79,7 +79,7 @@ jobs:
           library(devtools)
           devtools::install_github("oscarkjell/text")
           library(text)
-          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/usr/bin/python3.9.0", prompt = FALSE)
+          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/usr/local/bin/python3.9.0", prompt = FALSE)
           text::textrpp_initialize(virtualenv = "textrpp_virtualenv", refresh_settings = TRUE)
           text::textEmbed("hello")
         shell: Rscript {0}
