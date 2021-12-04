@@ -95,12 +95,13 @@ jobs:
           Sys.setenv(RETICULATE_PYTHON = "/usr/bin/python3")
           library(reticulate)
           reticulate::py_config()
+          reticulate::virtualenv_create("text_virtualenv", required = TRUE)
         shell: Rscript {0}
 
       - name: WINDOWS - Installing text and testing it
         if: runner.os == 'Windows'
         run:  |
-          Sys.setenv(RETICULATE_PYTHON = "C:\\hostedtoolcache\\windows\\Python\\3.9.0")
+          Sys.setenv(RETICULATE_PYTHON = "\\c\\hostedtoolcache\\windows\\Python\\3.9.0\\x64\\python3")
           library(reticulate)
           reticulate::py_config()
         shell: Rscript {0}
