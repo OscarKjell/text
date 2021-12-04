@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - {os: macOS-latest,   r: 'release'}
+          - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,  r: 'release'}
 
@@ -46,7 +46,6 @@ jobs:
       - name: Check Python paths
         run: |
           python -c "import sys; print(sys.path)"
-          python -c "import sys; print(':'.join(x for x in sys.path if x))"
 
       - name: Query dependencies
         run: |
@@ -84,7 +83,7 @@ jobs:
           library(devtools)
           devtools::install_github("oscarkjell/text")
           library(text)
-          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/usr/local/bin/python3.9", prompt = FALSE)
+          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/Users/runner/hostedtoolcache/Python/3.9.0/x64/lib/python3.9", prompt = FALSE)
           text::textrpp_initialize(virtualenv = "textrpp_virtualenv", refresh_settings = TRUE)
           text::textEmbed("hello")
         shell: Rscript {0}
@@ -96,7 +95,7 @@ jobs:
           library(devtools)
           devtools::install_github("oscarkjell/text")
           library(text)
-          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/opt/hostedtoolcache/Python/3.9.0/x64", prompt = FALSE)
+          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/opt/hostedtoolcache/Python/3.9.0", prompt = FALSE)
           text::textrpp_initialize(virtualenv = "textrpp_virtualenv", refresh_settings = TRUE)
           text::textEmbed("hello")
         shell: Rscript {0}
