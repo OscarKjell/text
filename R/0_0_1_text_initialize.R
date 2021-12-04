@@ -79,8 +79,13 @@ textrpp_initialize <- function(
     fg = "green", bg = NULL
   ))
   settings <- check_textrpp_python_options()
-  message(
-    '(python options: type = "', sub("text_", "", settings$key), '", value = "', settings$val,'.')
+
+  settings_text <- paste('Python options: \n type = "', settings$key,
+                         '", \n name = "', settings$val,'".', sep="")
+
+  message(colourise(settings_text,
+        fg = "blue", bg = NULL))
+
 
   options("textrpp_initialized" = TRUE)
 
@@ -266,10 +271,10 @@ set_textrpp_python_option <- function(python_executable = NULL,
     clear_textrpp_options()
     options(textrpp_condaenv = "textrpp_condaenv")
   }
-  else if (check_env && file.exists(virtualenv)) { #OK: Original file.exists(file.path("~/.virtualenvs", "textrpp_virtualenv", "bin", "activate"))
+  else if (check_env && file.exists(file.path("~/.virtualenvs", virtualenv, "bin", "activate"))) { #OK: worked:file.exists(virtualenv)     Original file.exists(file.path("~/.virtualenvs", "textrpp_virtualenv", "bin", "activate"))
     message("Found your specified virtual environemnt. Text will use this environment") #OK: original: Found 'textrpp_virtualenv'. Text will use this environment"
     clear_textrpp_options()
-    options(textrpp_virtualenv = file.path(virtualenv)) #OK: original: "~/.virtualenvs/textrpp_virtualenv
+    options(textrpp_virtualenv = file.path("~/.virtualenvs/", virtualenv)) #OK: original: "~/.virtualenvs/textrpp_virtualenv
   }
   else {
     message("Finding a python executable with text required python pakages installed...")

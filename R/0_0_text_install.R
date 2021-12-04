@@ -50,21 +50,21 @@ textrpp_install <- function(conda = "auto",
   if(rpp_version[[1]] == "rpp_version_system_specific_defaults"){
 
     if(is_osx() | is_linux()){
-      rpp_version <-  c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk')
+      rpp_version <-  c('torch==1.7.1', 'transformers==4.12.5', 'numpy', 'nltk')
     }
     if(is_windows()){
-      rpp_version <-  c('torch==1.10', 'transformers==3.3.1', 'numpy', 'nltk')
+      rpp_version <-  c('torch==1.7.1', 'transformers==4.12.5', 'numpy', 'nltk')
     }
   }
 
   if(python_version == "python_version_system_specific_defaults"){
 
     if(is_osx() | is_linux()){
-      python_version <- "3.7.0"
+      python_version <- "3.9.0"
     }
 
     if(is_windows()){
-      python_version  <-  "3.6.13"
+      python_version  <-  "3.9.0"
 
     }
   }
@@ -155,93 +155,6 @@ textrpp_install <- function(conda = "auto",
   invisible(NULL)
 }
 
-#' @rdname textrpp_install
-#' @description If you wish to install Python in a "virtualenv", use the
-#'   \code{textrpp_install_virtualenv} function.
-#' @param pip_version character;
-#' @examples
-#' \dontrun{
-#' # install text required python packages in a virtualenv environment
-#' textrpp_install_virtualenv()
-#' }
-#' @export
-textrpp_install_virtualenv <- function(rpp_version = c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'),
-                                     python_version = "3.7",
-                                     pip_version = "pip",
-                                     python_path = NULL,
-                                     prompt = TRUE) {
-  # verify os
-  if (!is_osx() && !is_linux()) {
-    stop("This function is available only for Mac and Linux", call. = FALSE)
-  }
-
-  # mac and linux
-  # check for explicit conda method
-
-  # find system python binary
-  python <- if (!is.null(python_path)) python_path else python_unix_binary("python")
-  if (is.null(python)) {
-    stop("Unable to locate Python on this system.", call. = FALSE)
-  }
-  # find other required tools
-  pip <- python_unix_binary("pip")
-  have_pip <- !is.null(pip)
-  virtualenv <- python_unix_binary("virtualenv")
-  have_virtualenv <- !is.null(virtualenv)
-
-  # stop if either pip or virtualenv is not available
-  if (!have_pip || !have_virtualenv) {
-    install_commands <- NULL
-    if (is_osx()) {
-      if (!have_pip)
-        install_commands <- c(install_commands, "$ sudo /usr/bin/easy_install pip")
-      if (!have_virtualenv) {
-        if (is.null(pip))
-          pip <- "/usr/local/bin/pip"
-        install_commands <- c(install_commands, sprintf("$ sudo %s install --upgrade virtualenv", pip))
-      }
-      if (!is.null(install_commands))
-        install_commands <- paste(install_commands, collapse = "\n")
-    } else if (is_ubuntu()) {
-      if (!have_pip)
-        install_commands <- c(install_commands, "python-pip")
-      if (!have_virtualenv)
-        install_commands <- c(install_commands, "python-virtualenv")
-      if (!is.null(install_commands)) {
-        install_commands <- paste("$ sudo apt-get install",
-                                  paste(install_commands, collapse = " "))
-      }
-    } else {
-      if (!have_pip)
-        install_commands <- c(install_commands, "pip")
-      if (!have_virtualenv)
-        install_commands <- c(install_commands, "virtualenv")
-      if (!is.null(install_commands)) {
-        install_commands <- paste("Please install the following Python packages before proceeding:",
-                                  paste(install_commands, collapse = ", "))
-      }
-    }
-    if (!is.null(install_commands)) {
-
-      # if these are terminal commands then add special preface
-      if (grepl("^\\$ ", install_commands)) {
-        install_commands <- paste0(
-          "Execute the following at a terminal to install the prerequisites:\n",
-          install_commands
-        )
-      }
-
-      stop("Prerequisites for installing text required python packages in a virtual environment are not available.\n\n",
-           install_commands, "\n\n", call. = FALSE)
-    }
-  }
-  process_textrpp_installation_virtualenv(python, pip_version, virtualenv, rpp_version, prompt)
-
-  cat("\nInstallation complete.\n\n")
-
-  invisible(NULL)
-}
-
 process_textrpp_installation_conda <- function(conda,
                                                rpp_version,
                                                python_version,
@@ -277,21 +190,96 @@ process_textrpp_installation_conda <- function(conda,
 
 }
 
-process_textrpp_installation_virtualenv <- function(python,
+#' @rdname textrpp_install
+#' @description If you wish to install Python in a "virtualenv", use the
+#'   \code{textrpp_install_virtualenv} function. It requires that you have a python version
+#'   and path to it (such as "/usr/local/bin/python3.9" for Mac and Linux.).
+#' @param pip_version character;
+#' @examples
+#' \dontrun{
+#' # install text required python packages in a virtual environment
+#' textrpp_install_virtualenv()
+#' }
+#' @export
+textrpp_install_virtualenv <- function(rpp_version = c('torch==1.7.1', 'transformers==4.12.5', 'numpy', 'nltk'),
+                                       python_path = "/usr/local/bin/python3.9",
+                                       pip_version = NULL,
+                                       envname = "textrpp_virtualenv",
+                                       prompt = TRUE) {
+  # verify os
+#  if (!is_osx() && !is_linux()) {
+#    stop("This function is available only for Mac and Linux", call. = FALSE)
+#  }
+
+  # find system python binary
+  python <- if (!is.null(python_path)) python_path else python_unix_binary("python")
+  if (is.null(python)) {
+    stop("Unable to locate Python on this system.", call. = FALSE)
+  }
+
+  process_textrpp_installation_virtualenv(python=python,
+                                          pip_version = pip_version,
+                                          rpp_version = rpp_version,
+                                          envname = envname,
+                                          prompt = prompt)
+
+
+  message(colourise(
+    "\nInstallation is completed.\n",
+    fg = "blue", bg = NULL
+  ))
+  invisible(NULL)
+}
+
+
+process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/python3.9",
+                                                    rpp_version,
+                                                    pip_version,
+                                                    envname = "textrpp_virtualenv",
+                                                    prompt = TRUE) {
+
+  libraries <- paste(rpp_version, collapse = ", ")
+  cat(sprintf('A new virtual environment called "%s" will be created using "%s" \n and, the following text reuired python packages will be installed: \n "%s" \n \n',
+              envname, python, libraries))
+  if (prompt) {
+    ans <- utils::menu(c("No", "Yes"), title = "Proceed?")
+    if (ans == 1) stop("Virtualenv setup is cancelled by user", call. = FALSE)
+  }
+
+  #Make python path help(virtualenv_create)
+  reticulate::virtualenv_create(envname, python, pip_version = NULL, required=TRUE)
+  #help(use_virtualenv)
+  reticulate::use_virtualenv(envname, required = TRUE)
+
+  # i = 4 rpp_version = c('torch==1.7.1', 'transformers==4.12.5', "nltk", "numpy") help(py_install)
+  for (i in 1:length(rpp_version)){
+  reticulate::py_install(rpp_version[[i]], envname = envname, pip = TRUE)
+  }
+
+  message(colourise(
+    "\nSuccess!\n",
+    fg = "green", bg = NULL
+  ))
+
+  }
+
+# Original
+process_textrpp_installation_virtualenv_original <- function(python,
                                                     pip_version = "pip",
                                                     virtualenv,
                                                     rpp_version,
+                                                    envname = "textrpp_virtualenv",
                                                     prompt = TRUE) {
 
   # determine python version to use
-  is_python3 <- python_version(python) >= "3.0"
+  is_python3 <- python_version_function(python) >= "3.0"
   if (!is_python3) {
     stop("text does not support virtual environment installation for python 2.*", call. = FALSE)
   }
   pip_version <- ifelse(is_python3, "pip3", "pip")
 
   virtualenv_root <- Sys.getenv("WORKON_HOME", unset = "~/.virtualenvs")
-  virtualenv_path <- file.path(virtualenv_root, "textrpp_virtualenv")
+  virtualenv_path <- file.path(virtualenv_root, envname)
 
   cat(sprintf('A new virtual environment "%s" will be created and, \n text required python packages, "%s", will be installed.\n ',
               virtualenv_path,
@@ -352,7 +340,7 @@ process_textrpp_installation_virtualenv <- function(python,
 }
 
 # Check whether "bin"/something exists in the bin folder
-# For example, bin = "pip"
+# For example, bin = "pip3" bin = "python3.9" bin = ".virtualenv" file.exists("/usr/local/bin/.virtualenvs") /Users/oscarkjell/.virtualenvs
 python_unix_binary <- function(bin) {
   locations <- file.path(c( "/usr/local/bin", "/usr/bin"), bin)
   locations <- locations[file.exists(locations)]
@@ -362,7 +350,8 @@ python_unix_binary <- function(bin) {
     NULL
 }
 
-python_version <- function(python) {
+# python="python3.9"
+python_version_function <- function(python) {
 
   # check for the version
   result <- system2(python, "--version", stdout = TRUE, stderr = TRUE)

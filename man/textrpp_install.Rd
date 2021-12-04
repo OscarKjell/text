@@ -16,10 +16,10 @@ textrpp_install(
 )
 
 textrpp_install_virtualenv(
-  rpp_version = c("torch==0.4.1", "transformers==3.3.1", "numpy", "nltk"),
-  python_version = "3.7",
-  pip_version = "pip",
-  python_path = NULL,
+  rpp_version = c("torch==1.7.1", "transformers==4.12.5", "numpy", "nltk"),
+  python_path = "/usr/local/bin/python3.9",
+  pip_version = NULL,
+  envname = "textrpp_condaenv",
   prompt = TRUE
 )
 }
@@ -59,7 +59,8 @@ Install text required python packages (rpp) in a self-contained environment.  Fo
   available, so the user will need to \href{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda (or Anaconda) manually}.
 
 If you wish to install Python in a "virtualenv", use the
-  \code{textrpp_install_virtualenv} function.
+  \code{textrpp_install_virtualenv} function. It requires that you have a python version
+  and path to it (such as "/usr/local/bin/python3.9" for Mac and Linux.).
 }
 \examples{
 \dontrun{
@@ -70,7 +71,7 @@ textrpp_install(prompt = FALSE)
 textrpp_install(conda = "~/anaconda/bin/")
 }
 \dontrun{
-# install text required python packages in a virtualenv environment
+# install text required python packages in a virtual environment
 textrpp_install_virtualenv()
 }
 }
