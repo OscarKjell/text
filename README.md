@@ -52,11 +52,11 @@ experiencing problems or want more alternatives, please see the
 [Extended Installation
 Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
 
-For the text package to work, you first have to install the text-package
+For the text-package to work, you first have to install the text-package
 in R, and then make it work with text required python packages.
 
-1.  First install either a text-verion. (at the moment the second step
-    only works using the development version of tet from GitHub)
+1.  Install text-version (at the moment the second step only works using
+    the development version of text from GitHub).
 
 [GitHub](https://github.com/) development version:
 
@@ -71,9 +71,11 @@ devtools::install_github("oscarkjell/text")
 install.packages("text")
 ```
 
-2.  Install and initialize text required python packages
+2.  Install and initialize text required python packages:
 
 ``` r
+library(text)
+
 # Install text required python packages in a conda environment (with defaults).
 textrpp_install()
 

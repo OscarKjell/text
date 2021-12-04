@@ -74,7 +74,7 @@ articles:
 - title: Set-up
   navbar: ~
   contents:
-  - Extended_Installation_Guide
+  - Extended Installation Guide
   - Computer_Capacity
   - Removing_Cache_Files
 - title: Tutorials

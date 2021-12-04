@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-#0.9.16
+# text 0.9.16
 ### New Features
 - `textrpp_install()` installs a conda environment with text required python packages.
 - `textrpp_install_virtualenv()` installa a virutal environment with text required python packages.
