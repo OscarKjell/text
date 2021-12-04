@@ -72,30 +72,41 @@ jobs:
         shell: Rscript {0}
 
 
-      - name: Installing text and testing it
-        if: runner.os != 'Windows'
+      - name: MAC - Installing text and testing it
+        if: runner.os == 'macOS'
         run:  |
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
           library(text)
-          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/opt/hostedtoolcache/Python/3.9.0/", prompt = FALSE)
+          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/usr/local/bin/python3.9", prompt = FALSE)
           text::textrpp_initialize(virtualenv = "textrpp_virtualenv", refresh_settings = TRUE)
           text::textEmbed("hello")
         shell: Rscript {0}
 
-      - name: Installing text and testing it
+      - name: UBUNTU - Installing text and testing it
+        if: runner.os == 'ubuntu'
+        run:  |
+          install.packages("devtools")
+          library(devtools)
+          devtools::install_github("oscarkjell/text")
+          library(text)
+          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "/opt/hostedtoolcache/Python3.9", prompt = FALSE)
+          text::textrpp_initialize(virtualenv = "textrpp_virtualenv", refresh_settings = TRUE)
+          text::textEmbed("hello")
+        shell: Rscript {0}
+
+      - name: WINDOWS - Installing text and testing it
         if: runner.os == 'Windows'
         run:  |
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
           library(text)
-          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = " C:\\hostedtoolcache\\windows\\Python\\3.9.0", prompt = FALSE)
+          text::textrpp_install_virtualenv(envname = "textrpp_virtualenv", python_path = "C:\\hostedtoolcache\\windows\\Python\\3.9.0", prompt = FALSE)
           text::textrpp_initialize(virtualenv = "textrpp_virtualenv", refresh_settings = TRUE)
           text::textEmbed("hello")
         shell: Rscript {0}
-
 
       - name: Session info
         run: |
