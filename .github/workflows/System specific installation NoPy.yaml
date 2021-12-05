@@ -43,11 +43,11 @@ jobs:
 #        with:
 #           python-version: 3.6
 
-      - uses: goanpeca/setup-miniconda@v1
-        with:
-          miniconda-version: 4.7.12
-          auto-update-conda: true
-          python-version: 3.9.0
+#      - uses: goanpeca/setup-miniconda@v1
+#        with:
+#          miniconda-version: 4.7.12
+#          auto-update-conda: true
+#          python-version: 3.9.0
 
 #      - name: Install Python dependencies
 #        run: |
@@ -94,7 +94,7 @@ jobs:
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          text::textrpp_install(prompt = FALSE, rpp_version = c('torch==1.7.1', 'transformers==4.12.5', 'numpy', 'nltk'))
+          text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 

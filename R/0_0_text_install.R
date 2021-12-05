@@ -17,6 +17,7 @@ conda_args <- reticulate:::conda_args
 #'
 #' @param conda character; path to conda executable. Default "auto" which
 #'   automatically find the path
+#' @param update_conda Boolean; update to the latest version of Miniconda after install?
 #' @param pip \code{TRUE} to use pip for installing rpp If \code{FALSE}, conda
 #' package manager with conda-forge channel will be used for installing rpp.
 #' @param rpp_version character; default is "rpp_version_system_specific_defaults", because diffent systems require
@@ -39,12 +40,13 @@ conda_args <- reticulate:::conda_args
 #' }
 #' @export
 textrpp_install <- function(conda = "auto",
-                          rpp_version = "rpp_version_system_specific_defaults",
-                          python_version = "python_version_system_specific_defaults",
-                          envname = "textrpp_condaenv",
-                          pip = TRUE,
-                          python_path = NULL,
-                          prompt = TRUE) {
+                            update_conda = TRUE,
+                            rpp_version = "rpp_version_system_specific_defaults",
+                            python_version = "python_version_system_specific_defaults",
+                            envname = "textrpp_condaenv",
+                            pip = TRUE,
+                            python_path = NULL,
+                            prompt = TRUE) {
 
   # Set system specific default versions
   if(rpp_version[[1]] == "rpp_version_system_specific_defaults"){
@@ -80,7 +82,7 @@ textrpp_install <- function(conda = "auto",
             "Binary installation is only available for 64-bit platforms.")
    }
 
-  # resolve and look for conda
+  # resolve and look for conda help(conda_binary)
   conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
   have_conda <- !is.null(conda)
 
@@ -92,10 +94,15 @@ textrpp_install <- function(conda = "auto",
       cat("No conda was found in the system. ")
       ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda in ~/miniconda?")
       if (ans == 2) {
-        #text_install_miniconda() help(install_miniconda)
-        reticulate::install_miniconda()
+        #help(install_miniconda)
+        reticulate::install_miniconda(update = update_conda)
         conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
       } else stop("Conda environment installation failed (no conda binary found)\n", call. = FALSE)
+    }
+
+    # Update mini_conda
+    if (have_conda & update_conda){
+      reticulate::install_miniconda(update = update_conda)
     }
 
     # process the installation of text required python packages
@@ -131,7 +138,10 @@ textrpp_install <- function(conda = "auto",
 #           "before installing text required python packages",
 #           call. = FALSE)
     }
-
+    # Update mini_conda
+    if (have_conda & update_conda){
+      reticulate::install_miniconda(update = update_conda)
+    }
     # process the installation of text required python packages
     process_textrpp_installation_conda(conda,
                                      rpp_version,

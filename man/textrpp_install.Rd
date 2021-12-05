@@ -7,6 +7,7 @@
 \usage{
 textrpp_install(
   conda = "auto",
+  update_conda = TRUE,
   rpp_version = "rpp_version_system_specific_defaults",
   python_version = "python_version_system_specific_defaults",
   envname = "textrpp_condaenv",
@@ -26,6 +27,8 @@ textrpp_install_virtualenv(
 \arguments{
 \item{conda}{character; path to conda executable. Default "auto" which
 automatically find the path}
+
+\item{update_conda}{Boolean; update to the latest version of Miniconda after install?}
 
 \item{rpp_version}{character; default is "rpp_version_system_specific_defaults", because diffent systems require
 different combinations of python version and packages. It is also possible to

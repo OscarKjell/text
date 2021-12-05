@@ -40,35 +40,43 @@ textEmbed("hello")
 
 ### Recommended versions for conda
 
-The success of the installation is dependent on using python and package versions that work together. The installation of the text-package with text required python packages is tested on Linux, Mac OS, and Windows. The installation procedure and details can be seen at [github actions](https://github.com/OscarKjell/text/actions) (look at workflow runs called System specific installation NoPy).
+The success of the installation is dependent on using conda, python and package versions that work together. The installation of the text-package with text required python packages is tested on Linux, Mac OS, and Windows using github actions. The installation procedure and details can be seen at [github actions](https://github.com/OscarKjell/text/actions) (look at workflow runs called System specific installation NoPy).
 
 The table below show various combination of python and package versions that have worked (it is not an exhaustive list). 
 
 ``` {r conda_tabble_short, echo=FALSE, results='asis'}
 library(magrittr)
 
-OS <- c("'Mac OS'", "'Linux'", "'Windows'",
+os <- c("'Windows'", 
+        "'Mac OS'", "'Linux'", "'Windows'",
         "'Mac OS'", "'Linux'",  "'Windows'",
         "'Mac OS'", "'Linux'", "'Windows'")
-
-Pyhon_version <- c("'3.9.0'", "'3.9.0'", "'3.9.0'",
+mini_conda <- c("'4.10.1'", 
+                "'4.10.3'", "'4.10.3'", "'4.10.3'",
+                "'4.10.3'", "'4.10.3'", "'4.10.3'",
+                "'4.10.3'", "'4.10.3'", "'4.10.3'")
+pyhon <- c("'3.9.0'",
+                   "'3.9.0'", "'3.9.0'", "'3.9.0'",
                    "'3.8.10'", "'3.8.10'", "'3.8.10'",
                    "'3.7.0'", "'3.7.0'", "'3.6.13'"
                 )
 
-torch <- c("'torch==1.7.1'", "'torch==1.7.1'", "'torch==1.7.1'", 
+torch <- c("'torch==1.7.1'", 
+           "'torch==1.7.1'", "'torch==1.7.1'", "'torch==1.7.1'", 
            "'torch==1.7.1'", "'torch==1.7.1'", "'torch==1.7.1'", 
            "'torch==0.4.1'", "'torch==0.4.1'", "'torch==1.10'")
 
-transformers <- c("'transformers==4.12.5'", "'transformers==4.12.5'", "'transformers==4.12.5'",
+transformers <- c("'transformers==4.12.5'", 
+                  "'transformers==4.12.5'", "'transformers==4.12.5'", "'transformers==4.12.5'",
                   "'transformers==4.12.5'", "'transformers==4.12.5'", "'transformers==4.12.5'", 
                   "'transformers==3.3.1'", "'transformers==3.3.1'", "'transformers==3.3.1'")
 
-Success <- c("Pass", "Pass","Pass",
+success <- c("FAIL", 
+             "Pass", "Pass","Pass",
              "Pass","Pass","Pass",
              "Pass","Pass","Pass")
 
-mini_conda_table <- tibble::tibble(OS, Pyhon_version, torch, transformers, Success)
+mini_conda_table <- tibble::tibble(os, mini_conda, pyhon, torch, transformers, success)
 
 knitr::kable(mini_conda_table, caption="", bootstrap_options = c("hover"), full_width = T)
 ``` 
