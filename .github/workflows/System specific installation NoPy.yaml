@@ -21,7 +21,7 @@ jobs:
         config:
           - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest, r: 'release'}
+          - {os: ubuntu-latest,  r: 'release'}
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -93,7 +93,7 @@ jobs:
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
-          text::textrpp_install(prompt = FALSE, rpp_version = c('torch==1.7.1', 'transformers==4.12.5', 'numpy', 'nltk'), python_version = "3.8.10")
+          text::textrpp_install(prompt = FALSE, rpp_version = c('torch==1.7.1', 'transformers==4.12.5', 'numpy', 'nltk'))
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
