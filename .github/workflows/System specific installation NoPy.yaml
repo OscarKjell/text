@@ -45,7 +45,7 @@ jobs:
 
       - uses: goanpeca/setup-miniconda@v1
         with:
-          miniconda-version: 4.10.1
+          miniconda-version: 4.7.12
           auto-update-conda: true
           python-version: 3.9.0
 
