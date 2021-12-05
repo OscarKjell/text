@@ -43,10 +43,11 @@ jobs:
 #        with:
 #           python-version: 3.6
 
-#      - uses: goanpeca/setup-miniconda@v1
-#        with:
-#          auto-update-conda: true
-#          python-version: 3.6
+      - uses: goanpeca/setup-miniconda@v1
+        with:
+          miniconda-version: 4.10.1
+          auto-update-conda: true
+          python-version: 3.9.0
 
 #      - name: Install Python dependencies
 #        run: |
