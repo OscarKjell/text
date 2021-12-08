@@ -176,7 +176,7 @@ process_textrpp_installation_conda <- function(conda,
 
   conda_envs <- reticulate::conda_list(conda = conda)
   if (prompt) {
-    ans <- utils::menu(c("No", "Yes"), title = "Proceed?")
+    ans <- utils::menu(c("No", "Yes"), title = "Do you want to set up a new conda environment?")
     if (ans == 1) stop("condaenv setup is cancelled by user", call. = FALSE)
   }
   conda_env <- subset(conda_envs, conda_envs$name == envname)
