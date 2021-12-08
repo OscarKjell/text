@@ -18,6 +18,7 @@ conda_args <- reticulate:::conda_args
 #' @param conda character; path to conda executable. Default "auto" which
 #'   automatically find the path
 #' @param update_conda Boolean; update to the latest version of Miniconda after install?
+#' @param force_conda Boolean; force re-installation if Miniconda is already installed at the requested path?
 #' @param pip \code{TRUE} to use pip for installing rpp If \code{FALSE}, conda
 #' package manager with conda-forge channel will be used for installing rpp.
 #' @param rpp_version character; default is "rpp_version_system_specific_defaults", because diffent systems require
@@ -41,6 +42,7 @@ conda_args <- reticulate:::conda_args
 #' @export
 textrpp_install <- function(conda = "auto",
                             update_conda = TRUE,
+                            force_conda = FALSE,
                             rpp_version = "rpp_version_system_specific_defaults",
                             python_version = "python_version_system_specific_defaults",
                             envname = "textrpp_condaenv",
@@ -101,8 +103,8 @@ textrpp_install <- function(conda = "auto",
     }
 
     # Update mini_conda
-    if (have_conda & update_conda){
-      reticulate::install_miniconda(update = update_conda)
+    if (have_conda & update_conda | have_conda & force_conda){
+      reticulate::install_miniconda(update = update_conda, force = force_conda)
     }
 
     # process the installation of text required python packages
@@ -139,8 +141,8 @@ textrpp_install <- function(conda = "auto",
 #           call. = FALSE)
     }
     # Update mini_conda
-    if (have_conda & update_conda){
-      reticulate::install_miniconda(update = update_conda)
+    if (have_conda & update_conda | have_conda & force_conda){
+      reticulate::install_miniconda(update = update_conda, force = force_conda)
     }
     # process the installation of text required python packages
     process_textrpp_installation_conda(conda,
