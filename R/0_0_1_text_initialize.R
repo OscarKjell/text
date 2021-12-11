@@ -32,26 +32,13 @@ textrpp_initialize <- function(
                              check_env = TRUE,
                              textEmbed_test = FALSE) {
 
-  # here are a number of checkings help(options)
-##  if (!is.null(options("textrpp_initialized")$textrpp_initialized)) {
-##    message("Text required python packages are already initialized")
-##    return(NULL)
-##  }
 
-  # once python is initialized, you cannot change the python executables
-##  if (!is.null(options("python_initialized")$python_initialized)) {
-##    message("Python space is already attached.  If you want to switch to a different Python, please restart R.")
-##  }
-##  # NEW: if textrpp_condaenv exists use it
-##  else {
-  # clear_textrpp_options()
     set_textrpp_python_option(python_executable,
                             virtualenv,
                             condaenv,
                             check_env,
                             refresh_settings,
                             ask)
-##  }
 
   ## check settings and start reticulate python
   settings <- check_textrpp_python_options()

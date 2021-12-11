@@ -34,6 +34,12 @@ twitter:
   href: http://twitter.com/OscarKjell
 
 reference:
+- title: Installation
+  contents:
+  - textrpp_install
+  - textrpp_install_virtualenv
+  - textrpp_uninstall
+  - textrpp_initialize
 - title: Transform text to word embeddings
   contents:
   - textEmbed

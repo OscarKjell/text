@@ -135,10 +135,6 @@ textrpp_install <- function(conda = "auto",
       reticulate::install_miniconda()
       conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
 
-#      stop("Conda installation failed (no conda binary found)\n\n",
-#           "Install Anaconda 3.x for Windows (https://www.anaconda.com/download/#windows)\n",
-#           "before installing text required python packages",
-#           call. = FALSE)
     }
     # Update mini_conda
     if (have_conda & update_conda | have_conda & force_conda){
@@ -218,10 +214,6 @@ textrpp_install_virtualenv <- function(rpp_version = c('torch==1.7.1', 'transfor
                                        pip_version = NULL,
                                        envname = "textrpp_virtualenv",
                                        prompt = TRUE) {
-  # verify os
-#  if (!is_osx() && !is_linux()) {
-#    stop("This function is available only for Mac and Linux", call. = FALSE)
-#  }
 
   # find system python binary
   python <- if (!is.null(python_path)) python_path else python_unix_binary("python")
@@ -275,82 +267,6 @@ process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/pyt
 
   }
 
-# Original
-#process_textrpp_installation_virtualenv_original <- function(python,
-#                                                    pip_version = "pip",
-#                                                    virtualenv,
-#                                                    rpp_version,
-#                                                    envname = "textrpp_virtualenv",
-#                                                    prompt = TRUE) {
-#
-#  # determine python version to use
-#  is_python3 <- python_version_function(python) >= "3.0"
-#  if (!is_python3) {
-#    stop("text does not support virtual environment installation for python 2.*", call. = FALSE)
-#  }
-#  pip_version <- ifelse(is_python3, "pip3", "pip")
-#
-#  virtualenv_root <- Sys.getenv("WORKON_HOME", unset = "~/.virtualenvs")
-#  virtualenv_path <- file.path(virtualenv_root, envname)
-#
-#  cat(sprintf('A new virtual environment "%s" will be created and, \n text required python packages, "%s", will be installed.\n ',
-#              virtualenv_path,
-#              paste(rpp_version, collapse = ", ")))
-#  if (prompt) {
-#    ans <- utils::menu(c("No", "Yes"), title = "Proceed?")
-#    if (ans == 1) stop("Virtualenv setup is cancelled by user", call. = FALSE)
-#  }
-#
-#  # create virtualenv
-#  if (!file.exists(virtualenv_root))
-#    dir.create(virtualenv_root, recursive = TRUE)
-#
-#  # helper to construct paths to virtualenv binaries
-#  virtualenv_bin <- function(bin) path.expand(file.path(virtualenv_path, "bin", bin))
-#
-#  # create virtualenv if necessary
-#  if (!file.exists(virtualenv_path) || !file.exists(virtualenv_bin("activate"))) {
-#    cat("Creating virtualenv for text required python packages at ", virtualenv_path, "\n")
-#    result <- system2(virtualenv, shQuote(c(
-#      #"--system-site-packages",
-#      "--python", python,
-#      path.expand(virtualenv_path)))
-#    )
-#    if (result != 0L)
-#      stop("Error ", result, " occurred creating virtualenv at ", virtualenv_path,
-#           call. = FALSE)
-#  } else {
-#    cat("Using existing virtualenv at ", virtualenv_path, "\n")
-#  }
-#
-#  # function to call pip within virtual env
-#  pip_install <- function(pkgs, message) {
-#    cmd <- sprintf("%ssource %s && %s install --ignore-installed --upgrade %s%s",
-#                   ifelse(is_osx(), "", "/bin/bash -c \""),
-#                   shQuote(path.expand(virtualenv_bin("activate"))),
-#                   shQuote(path.expand(virtualenv_bin(pip_version))),
-#                   paste(shQuote(pkgs), collapse = " "),
-#                   ifelse(is_osx(), "", "\""))
-#    cat(message, "...\n")
-#    result <- system(cmd)
-#    if (result != 0L)
-#      stop("Error ", result, " occurred installing text required python packages", call. = FALSE)
-#  }
-#
-#  # upgrade pip
-#  pip_install(pip_version, "Upgrading pip")
-#
-#  # install updated version of the wheel package
-#   pip_install("wheel", "Upgrading wheel")
-#
-#  # upgrade setuptools so it can use wheels
-#   pip_install("setuptools", "Upgrading setuptools")
-#
-#  pkgs <- rpp_version
-#  pip_install(pkgs, "Installing text required python packages...")
-#
-#}
-#
 
 # Check whether "bin"/something exists in the bin folder
 # For example, bin = "pip3" bin = "python3.9" bin = ".virtualenv" file.exists("/usr/local/bin/.virtualenvs") /Users/oscarkjell/.virtualenvs
@@ -418,13 +334,6 @@ textrpp_uninstall <- function(conda = "auto",
 }
 
 
-# Removed here.
-# textrpp_upgrade  <- function(conda = "auto",
-#                            envname = "textrpp_condaenv",
-#                            prompt = TRUE,
-#                            pip = FALSE,
-#                            update_conda = FALSE
-#                            )
 
 text_install_miniconda <- function() {
   if (is_osx()) {
@@ -485,7 +394,7 @@ conda_get_version <- function(major_version = NA, conda, envname) {
 
 
 ###### see utils.R in spacyr
-# checking os functions, thanks to r-tensorflow;
+# checking OS functions, thanks to r-tensorflow;
 
 is_windows <- function() {
   identical(.Platform$OS.type, "windows")
