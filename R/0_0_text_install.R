@@ -18,6 +18,7 @@ conda_args <- reticulate:::conda_args
 #' @param conda character; path to conda executable. Default "auto" which
 #'   automatically find the path
 #' @param update_conda Boolean; update to the latest version of Miniconda after install?
+#' (should be combined with force_conda = TRUE)
 #' @param force_conda Boolean; force re-installation if Miniconda is already installed at the requested path?
 #' @param pip \code{TRUE} to use pip for installing rpp If \code{FALSE}, conda
 #' package manager with conda-forge channel will be used for installing rpp.
@@ -41,7 +42,7 @@ conda_args <- reticulate:::conda_args
 #' }
 #' @export
 textrpp_install <- function(conda = "auto",
-                            update_conda = TRUE,
+                            update_conda = FALSE,
                             force_conda = FALSE,
                             rpp_version = "rpp_version_system_specific_defaults",
                             python_version = "python_version_system_specific_defaults",
@@ -103,7 +104,7 @@ textrpp_install <- function(conda = "auto",
     }
 
     # Update mini_conda
-    if (have_conda & update_conda | have_conda & force_conda){
+    if (update_conda & force_conda | force_conda){
       reticulate::install_miniconda(update = update_conda, force = force_conda)
     }
 
@@ -343,7 +344,10 @@ text_install_miniconda <- function() {
       "echo \"Running installation script\";",
       "bash ~/miniconda.sh -b -p $HOME/miniconda"))
     system('echo \'export PATH="$PATH:$HOME/miniconda/bin"\' >> $HOME/.bash_profile; rm ~/miniconda.sh')
-    message("Installation of miniconda complete")
+    message(colourise(
+      "Installation of miniconda complete",
+      fg = "green", bg = NULL
+    ))
   } else if (is_linux()) {
     message("Downloading installation script")
     system(paste(
@@ -351,7 +355,10 @@ text_install_miniconda <- function() {
       "echo \"Running installation script\";",
       "bash ~/miniconda.sh -b -p $HOME/miniconda"))
     system('echo \'export PATH="$PATH:$HOME/miniconda/bin"\' >> $HOME/.bashrc; rm ~/miniconda.sh')
-    message("Installation of miniconda complete")
+    message(colourise(
+      "Installation of miniconda complete",
+      fg = "green", bg = NULL
+    ))
   } else {
     stop("miniconda installation is available only for Mac or Linux")
   }

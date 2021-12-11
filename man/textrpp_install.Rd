@@ -7,7 +7,7 @@
 \usage{
 textrpp_install(
   conda = "auto",
-  update_conda = TRUE,
+  update_conda = FALSE,
   force_conda = FALSE,
   rpp_version = "rpp_version_system_specific_defaults",
   python_version = "python_version_system_specific_defaults",
@@ -29,7 +29,8 @@ textrpp_install_virtualenv(
 \item{conda}{character; path to conda executable. Default "auto" which
 automatically find the path}
 
-\item{update_conda}{Boolean; update to the latest version of Miniconda after install?}
+\item{update_conda}{Boolean; update to the latest version of Miniconda after install?
+(should be combined with force_conda = TRUE)}
 
 \item{force_conda}{Boolean; force re-installation if Miniconda is already installed at the requested path?}
 

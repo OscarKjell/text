@@ -236,12 +236,18 @@ set_textrpp_python_option <- function(python_executable = NULL,
   else if (check_env &&
            !(is.null(tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL))) &&
            "textrpp_condaenv" %in% reticulate::conda_list(conda = "auto")$name) {
-    message("Found 'textrpp_condaenv'. text will use this environment")
+    message(colourise(
+      "Found 'textrpp_condaenv'. text will use this environment \n",
+      fg = "green", bg = NULL
+    ))
     clear_textrpp_options()
     options(textrpp_condaenv = "textrpp_condaenv")
   }
   else if (check_env && file.exists(file.path("~/.virtualenvs", virtualenv, "bin", "activate"))) { #OK: worked:file.exists(virtualenv)     Original file.exists(file.path("~/.virtualenvs", "textrpp_virtualenv", "bin", "activate"))
-    message("Found your specified virtual environemnt. Text will use this environment") #OK: original: Found 'textrpp_virtualenv'. Text will use this environment"
+    message(colourise(
+      "Found your specified virtual environment. Text will use this environment \n",
+      fg = "green", bg = NULL
+    )) #OK: original: Found 'textrpp_virtualenv'. Text will use this environment"
     clear_textrpp_options()
     options(textrpp_virtualenv = file.path("~/.virtualenvs/", virtualenv)) #OK: original: "~/.virtualenvs/textrpp_virtualenv
   }
@@ -292,7 +298,10 @@ save_textrpp_options <- function(key, val, prompt = TRUE) {
     rprofile <- grep("options\\(\\s*textrpp_.+\\)", rprofile, value = TRUE, invert = TRUE)
     rprofile <- c(rprofile, sprintf('options(%s = "%s")', key, val))
     write(rprofile, file = prof_file)
-    message("The option was saved. The option will be used in textrpp_initialize() in future")
+    message(colourise(
+      "The option was saved. The option will be used in textrpp_initialize() in future \n",
+      fg = "green", bg = NULL
+    ))
   } else {
     message("The option was not saved (user cancelled)")
   }
