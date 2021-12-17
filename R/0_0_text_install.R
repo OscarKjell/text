@@ -120,20 +120,25 @@ textrpp_install <- function(conda = "auto",
   } else {
 
     # determine whether we have system python help(py_versions_windows)
+    if(python_version == "find_python"){
     python_versions <- reticulate::py_versions_windows()
     python_versions <- python_versions[python_versions$type == "PythonCore", ]
-    python_versions <- python_versions[python_versions$version %in% c("3.5", "3.6", "3.7"), ]
+    python_versions <- python_versions[python_versions$version %in% c("3.5", "3.6", "3.7", "3.8", "3.9"), ]
     python_versions <- python_versions[python_versions$arch == "x64", ]
     have_system <- nrow(python_versions) > 0
-    if (have_system)
+
+    if (have_system){
       # Well this isnt used later
-      python_system_version <- python_versions[1, ]
+      # python_system_version <- python_versions[1, ]
+      python_version <- python_versions[1, ]
+    }
+    }
 
     # validate that we have conda:
     if (!have_conda) {
 
       #OK adds help(install_miniconda)
-      reticulate::install_miniconda()
+      reticulate::install_miniconda(update = update_conda)
       conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
 
     }
@@ -187,7 +192,7 @@ process_textrpp_installation_conda <- function(conda,
     cat("A new conda environment", paste0('"', envname, '"'), "will be created and \npython required packages:",
         paste(rpp_version, collapse = ", "), "will be installed.  ")
     cat("Creating", envname, "conda environment for text installation...\n")
-    python_packages <- ifelse(is.null(python_version), "python=3.6",
+    python_packages <- ifelse(is.null(python_version), "python=3.9",
                               sprintf("python=%s", python_version))
     python <- reticulate::conda_create(envname, packages = python_packages, conda = conda)
   }
