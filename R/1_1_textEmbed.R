@@ -223,6 +223,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+#' @param print_python_warnings bolean; when true any warnings from python environment are printed to the console.
 #' @return A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
 #' input embedding to the transformer, and should normally not be used.
 #' @examples
@@ -231,7 +232,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
-#' @importFrom reticulate source_python
+#' @importFrom reticulate source_python py_capture_output
 #' @importFrom dplyr %>% bind_rows
 #' @importFrom tibble tibble as_tibble
 #' @importFrom magrittr set_colnames
@@ -242,7 +243,8 @@ textEmbedLayersOutput <- function(x,
                                   model = "bert-base-uncased",
                                   layers = 11,
                                   return_tokens = TRUE,
-                                  device = "cpu") {
+                                  device = "cpu",
+                                  print_python_warnings=TRUE) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
  reticulate::source_python(system.file("python",
@@ -263,13 +265,14 @@ textEmbedLayersOutput <- function(x,
     for (i_variables in seq_len(length(data_character_variables))) {
 
       # Python file function to HuggingFace
-      hg_embeddings <- hgTransformerGetEmbedding(
+      textrpp_py_warnings_text_context <- reticulate::py_capture_output(
+        hg_embeddings <- hgTransformerGetEmbedding(
         text_strings = x[[i_variables]],
         model = model,
         layers = layers,
         return_tokens = return_tokens,
         device = device
-      )
+      ))
 
       variable_x <- sortingLayers(x = hg_embeddings, layers = layers, return_tokens = return_tokens)
 
@@ -295,13 +298,14 @@ textEmbedLayersOutput <- function(x,
     list_words <- sapply(singlewords$words, list)
     names(list_words) <- NULL
 
-    hg_decontexts_embeddings <- hgTransformerGetEmbedding(
+    textrpp_py_warnings_text_decontext <- reticulate::py_capture_output(
+      hg_decontexts_embeddings <- hgTransformerGetEmbedding(
       text_strings = list_words,
       model = model,
       layers = layers,
       return_tokens = return_tokens,
       device = device
-    )
+    ))
 
     # Sort out layers as above
     sorted_layers_All_decontexts$decontext$single_we$single_we <- sortingLayers(
@@ -328,6 +332,12 @@ textEmbedLayersOutput <- function(x,
 
     sorted_layers_All_decontexts
   }
+
+  if(print_python_warnings==TRUE){
+    cat(textrpp_py_warnings_text_decontext)
+    cat(textrpp_py_warnings_text_decontext)
+  }
+
   # Combine previous list and word list
   if (contexts == TRUE & decontexts == TRUE) {
     word_embeddings_with_layers <- c(sorted_layers_ALL_variables, sorted_layers_All_decontexts)
@@ -494,6 +504,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' @param decontext_tokens_deselect option to deselect embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the decontext embeddings.
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+#' @param print_python_warnings bolean; when true any warnings from python environment are printed to the console.
 #' @return A tibble with tokens, a column for layer identifier and word embeddings.
 #' Note that layer 0 is the input embedding to the transformer
 #' @examples
@@ -525,7 +536,8 @@ textEmbed <- function(x,
                       decontext_aggregation_tokens = "mean",
                       decontext_tokens_select = NULL,
                       decontext_tokens_deselect = NULL,
-                      device = "cpu") {
+                      device = "cpu",
+                      print_python_warnings = FALSE) {
   T1_textEmbed <- Sys.time()
 
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
@@ -537,7 +549,8 @@ textEmbed <- function(x,
     model = model,
     layers = layers,
     return_tokens = FALSE,
-    device = device
+    device = device,
+    print_python_warnings = print_python_warnings
   )
 
   # Aggregate context layers
