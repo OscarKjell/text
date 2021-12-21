@@ -55,10 +55,10 @@ textrpp_install <- function(conda = "auto",
   if(rpp_version[[1]] == "rpp_version_system_specific_defaults"){
 
     if(is_osx() | is_linux()){
-      rpp_version <-  c('torch==1.7.1', 'transformers==4.12.5', 'numpy', 'nltk')
+      rpp_version <-  c('torch==1.8.0', 'transformers==4.12.5', 'numpy', 'nltk')
     }
     if(is_windows()){
-      rpp_version <-  c('torch==1.7.1', 'transformers==4.12.5', 'numpy', 'nltk')
+      rpp_version <-  c('torch==1.8.0', 'transformers==4.12.5', 'numpy', 'nltk')
     }
   }
 
