@@ -3,7 +3,8 @@
 
 # text 0.9.17
 ### New Features
-- 
+- textrpp_initiate() runs automatically in library(text) when default environment exits
+- option to capture python warnings
 
 
 
