@@ -20,7 +20,8 @@ textEmbed(
   decontext_aggregation_tokens = "mean",
   decontext_tokens_select = NULL,
   decontext_tokens_deselect = NULL,
-  device = "cpu"
+  device = "cpu",
+  print_python_warnings = FALSE
 )
 }
 \arguments{
@@ -77,6 +78,8 @@ such as [CLS] and [SEP] for the decontext embeddings.}
 such as [CLS] and [SEP] for the decontext embeddings.}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
+
+\item{print_python_warnings}{bolean; when true any warnings from python environment are printed to the console.}
 }
 \value{
 A tibble with tokens, a column for layer identifier and word embeddings.

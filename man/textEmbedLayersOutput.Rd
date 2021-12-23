@@ -11,7 +11,8 @@ textEmbedLayersOutput(
   model = "bert-base-uncased",
   layers = 11,
   return_tokens = TRUE,
-  device = "cpu"
+  device = "cpu",
+  print_python_warnings = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ and thus should normally not be used. These layers can then be aggregated in the
 \item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
+
+\item{print_python_warnings}{bolean; when true any warnings from python environment are printed to the console.}
 }
 \value{
 A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the

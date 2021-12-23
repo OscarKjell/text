@@ -36,7 +36,7 @@ compared (see description above).}
 \item{...}{Settings from stats::t.test or overlapping::overlap (e.g., plot = TRUE).}
 }
 \value{
-Comparison of correlations either a t-test or the overlap of a bootstrapped provedure (see $OV).
+Comparison of correlations either a t-test or the overlap of a bootstrapped procedure (see $OV).
 }
 \description{
 If y2 is provided a bootstrapped procedure is used to compare the correlations between y1 and yhat1 versus
