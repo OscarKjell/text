@@ -12,7 +12,10 @@
     fg = "green", bg = NULL
   ))
 
-  textrpp_initialize()
+  #if( ){
+    textrpp_initialize(check_env = FALSE)
+  #}
+
 }
 
 
