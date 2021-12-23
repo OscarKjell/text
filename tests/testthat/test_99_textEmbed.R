@@ -51,7 +51,6 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
 
 })
 
-
 test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
   skip_on_cran()
 
@@ -81,7 +80,6 @@ test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produce
   expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
 })
 
-
 test_that("textEmbedStatic with example space", {
   skip_on_cran()
 
@@ -106,8 +104,15 @@ test_that("textEmbedStatic with example space", {
   expect_is(test_result, "list")
 })
 
-
 # Potentially below works on GitHUB but not on Mac?
+
+test_that("installing text", {
+
+  #help(textrpp_install)
+  textrpp_install()
+
+  textrpp_initialize()
+})
 
 test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a list", {
   skip_on_cran()
