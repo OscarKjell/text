@@ -56,12 +56,3 @@ Suggests:
     ranger
 VignetteBuilder: knitr
 Depends: R (>= 4.00)
-Config/reticulate:
-  list(
-    packages = list(
-      list(package = "torch", pip = TRUE),
-      list(package = "transformers", pip = TRUE),
-      list(package = "nltk", pip = TRUE), 
-      list(package = "numpy", pip = TRUE)
-    )
-  )
