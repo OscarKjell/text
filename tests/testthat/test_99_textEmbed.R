@@ -2,7 +2,7 @@ library(text)
 library(tibble)
 library(testthat)
 
-context("Embedding of text and retrieval of word embeddings")
+context("Installation and Embedding of text and retrieval of word embeddings")
 
 # helper function to skip tests if we don't have the 'foo' module
 skip_if_no_transformers <- function() {
@@ -17,6 +17,17 @@ skip_if_no_torch <- function() {
     skip("torch not available for testing")
   }
 }
+
+
+test_that("installing text", {
+
+  #help(textrpp_install)
+  textrpp_install(prompt = FALSE)
+
+  #help(textrpp_initialize)
+  #.rs.restartR()
+  textrpp_initialize(textEmbed_test=TRUE)
+})
 
 test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
   skip_on_cran()
