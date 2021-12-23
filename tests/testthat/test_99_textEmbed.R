@@ -106,15 +106,7 @@ test_that("textEmbedStatic with example space", {
 
 # Potentially below works on GitHUB but not on Mac?
 
-test_that("installing text", {
 
-  #help(textrpp_install)
-  textrpp_install(prompt = FALSE)
-
-  #help(textrpp_initialize)
-  #.rs.restartR()
-  textrpp_initialize(textEmbed_test=TRUE)
-})
 
 test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a list", {
   skip_on_cran()
@@ -143,66 +135,66 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   expect_that(ncol(embeddings[[1]][[1]][[1]]), equals(771))
 })
 #
-test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {
-  skip_on_cran()
-  # skip_if_no_transformers()
-  # skip_if_no_torch
-
-  # x <- Language_based_assessment_data_8[1:2, 1:2]
-  text_to_test_import1 <- c("jag mår bra", "vad händer")
-  text_to_test_import2 <- c("ön är vacker", "molnen svävar")
-  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
-
-  embeddings <- textEmbedLayersOutput(x,
-    model = "bert-base-uncased",
-    contexts = FALSE,
-    decontexts = TRUE,
-    layers = "all"
-  )
-  expect_that(embeddings, is_a("list"))
-
-  # Is the first value there and numeric
-  expect_that(embeddings[[1]][[1]][[1]][[1]][[1]], is.character)
-  # If below line fail it might be because the output in huggingface has changed,
-  # so that 770 needs to be something else
-  expect_that(ncol(embeddings[[1]][[1]][[1]][[1]]), equals(771))
-})
-
-test_that("textEmbed", {
-  skip_on_cran()
-  # skip_if_no_transformers()
-  # skip_if_no_torch
-
-  # x <- Language_based_assessment_data_8[1:2, 1:2]
-  text_to_test_import1 <- c("test this", "hope it works")
-  text_to_test_import2 <- c("I am happy", "Let us go")
-  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
-
-  embeddings_decontextsT <- textEmbed(x,
-    model = "bert-base-uncased",
-    decontexts = TRUE
-  )
-
-  embeddings_decontextsF <- textEmbed(x,
-    model = "bert-base-uncased",
-    decontexts = FALSE
-  )
-
-  expect_that(embeddings_decontextsT, is_a("list"))
-  expect_that(embeddings_decontextsF, is_a("list"))
-
-
-
-  long_text_test <- c("Humour (British English) or humor (American English; see spelling differences) is the tendency to experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
- People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.
- Humour (British English) or humor (American English; see spelling differences) is the tendency of experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
- People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.
- Humour (British English) or humor (American English; see spelling differences) is the tendency of experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
- People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.
- ")
-  long_text_embedding <- textEmbed(long_text_test,
-    model = "bert-base-uncased"
-  )
-
-  expect_that(long_text_embedding, is_a("list"))
-})
+#test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {
+#  skip_on_cran()
+#  # skip_if_no_transformers()
+#  # skip_if_no_torch
+#
+#  # x <- Language_based_assessment_data_8[1:2, 1:2]
+#  text_to_test_import1 <- c("jag mår bra", "vad händer")
+#  text_to_test_import2 <- c("ön är vacker", "molnen svävar")
+#  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
+#
+#  embeddings <- textEmbedLayersOutput(x,
+#    model = "bert-base-uncased",
+#    contexts = FALSE,
+#    decontexts = TRUE,
+#    layers = "all"
+#  )
+#  expect_that(embeddings, is_a("list"))
+#
+#  # Is the first value there and numeric
+#  expect_that(embeddings[[1]][[1]][[1]][[1]][[1]], is.character)
+#  # If below line fail it might be because the output in huggingface has changed,
+#  # so that 770 needs to be something else
+#  expect_that(ncol(embeddings[[1]][[1]][[1]][[1]]), equals(771))
+#})
+#
+#test_that("textEmbed", {
+#  skip_on_cran()
+#  # skip_if_no_transformers()
+#  # skip_if_no_torch
+#
+#  # x <- Language_based_assessment_data_8[1:2, 1:2]
+#  text_to_test_import1 <- c("test this", "hope it works")
+#  text_to_test_import2 <- c("I am happy", "Let us go")
+#  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
+#
+#  embeddings_decontextsT <- textEmbed(x,
+#    model = "bert-base-uncased",
+#    decontexts = TRUE
+#  )
+#
+#  embeddings_decontextsF <- textEmbed(x,
+#    model = "bert-base-uncased",
+#    decontexts = FALSE
+#  )
+#
+#  expect_that(embeddings_decontextsT, is_a("list"))
+#  expect_that(embeddings_decontextsF, is_a("list"))
+#
+#
+#
+#  long_text_test <- c("Humour (British English) or humor (American English; see spelling differences) is the tendency to experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
+# People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.
+# Humour (British English) or humor (American English; see spelling differences) is the tendency of experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
+# People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.
+# Humour (British English) or humor (American English; see spelling differences) is the tendency of experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
+# People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.
+# ")
+#  long_text_embedding <- textEmbed(long_text_test,
+#    model = "bert-base-uncased"
+#  )
+#
+#  expect_that(long_text_embedding, is_a("list"))
+#})
