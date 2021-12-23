@@ -477,7 +477,7 @@ textPredict <- function(model_info,
 #' @param bootstraps_times Number of bootstraps (when providing y2).
 #' @param seed Set different seed.
 #' @param ... Settings from stats::t.test or overlapping::overlap (e.g., plot = TRUE).
-#' @return Comparison of correlations either a t-test or the overlap of a bootstrapped provedure (see $OV).
+#' @return Comparison of correlations either a t-test or the overlap of a bootstrapped procedure (see $OV).
 #' @examples
 #' # Example random data
 #' y1 <- runif(10)

@@ -63,6 +63,25 @@ unique_freq_words <- function(words) {
 
 # Pre-processing data for plotting
 
+#ds <- readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/ds.rds")
+#text_cols_embeddings <- readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/text_cols_embeddings.rds")
+#
+#HFDHinder_all_inre_motivation_fig_5 <- text::textProjection(
+#  words = ds$HFDHinder_all,
+#  wordembeddings = text_cols_embeddings$HFDHinder_all,
+#  single_wordembeddings = text_cols_embeddings$singlewords_we,
+#  x = ds$inre_motivation,
+#  y = NULL,
+#  pca = NULL,
+#  aggregation = "mean",
+#  split = "quartile",
+#  word_weight_power = 1,
+#  min_freq_words_test = 0,
+#  Npermutations = 10000,
+#  n_per_split = 50000,
+#  seed = 1003)
+
+
 #wordembeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
 #words = Language_based_assessment_data_8$harmonywords
 #wordembeddings = wordembeddings_hil$harmonywords
@@ -86,8 +105,6 @@ unique_freq_words <- function(words) {
 #seed = 1003
 #
 #i_dim=1
-
-
 
 
 #' Compute Supervised Dimension Projection and related variables for plotting words.
@@ -599,7 +616,7 @@ textProjection <- function(words,
 #wordembeddings <- wordembeddings4
 #raw_data <- Language_based_assessment_data_8
 ### Pre-processing data for plotting
-#df_for_plotting <- textProjection(
+#df_for_plotting <- text::textProjection(
 #  words = Language_based_assessment_data_8$harmonywords,
 #  wordembeddings = wordembeddings_hil$harmonywords,
 #  single_wordembeddings = wordembeddings_hil$singlewords_we,
@@ -643,85 +660,158 @@ textProjection <- function(words,
 #
 #test2
 
-#
-#
-#library(text)
-#word_data = df_for_plotting
-#k_n_words_to_test = FALSE
-#min_freq_words_test = 0
-#min_freq_words_plot = 0
-#plot_n_words_square = 3
-#plot_n_words_p = 5
-#plot_n_word_extreme = 5
-#plot_n_word_frequency = 5
-#plot_n_words_middle = 5
-#titles_color = "#61605e"
-## x_axes = TRUE
-#y_axes = FALSE
-#p_alpha = 0.9
-#p_adjust_method = "none"
-#title_top = "Supervised Dimension Projection"
-#x_axes_label = "Supervised Dimension Projection (SDP)"
-#y_axes_label = "Supervised Dimension Projection (SDP)"
-#scale_x_axes_lim = NULL
-#scale_y_axes_lim = NULL
-#word_font = NULL
-#bivariate_color_codes = c(
-#  "#398CF9", "#60A1F7", "#5dc688",
-#  "#e07f6a", "#EAEAEA", "#40DD52",
-#  "#FF0000", "#EA7467", "#85DB8E"
-#)
-#word_size_range = c(3, 8)
-#position_jitter_hight = .0
-#position_jitter_width = .03
-#point_size = 0.5
-#arrow_transparency = 0.1
-#points_without_words_size = 0.2
-#points_without_words_alpha = 0.2
-#legend_title = "SDP"
-#legend_x_axes_label = "x"
-#legend_y_axes_label = "y"
-#legend_x_position = 0.02
-#legend_y_position = 0.02
-#legend_h_size = 0.2
-#legend_w_size = 0.2
-#legend_title_size = 7
-#legend_number_size = 2
-#group_embeddings1 = T
-#group_embeddings2 = T
-#projection_embedding = T
-#aggregated_point_size = 0.8
-#aggregated_shape = 8
-#aggregated_color_G1 = "#EAEAEA"
-#aggregated_color_G2 = "#EAEAEA"
-#projection_color = "#f542bf"
-#seed = 1005
-#
-#explore_words = NULL #c("happy harmony")
-#explore_words_color = "#ad42f5"
-#explore_words_point = "ALL_1"
-#explore_words_aggregation = "mean"
-#remove_words = c("happy", "sad")
-#space = NULL
-#n_contrast_group_color = "black"
-#n_contrast_group_remove = TRUE
-#scaling = TRUE
-#
-
-
-
 
 
 #
-#names(DP_projections_HILS_SWLS_100)
 #
-#
-#word_data$word_data$dot.x
-#word_data$word_data$n_g1.x
-#word_data$word_data$n_g2.x
-#range(word_data$word_data$p_values_dot.x, na.rm=TRUE)
-#range(word_data$word_data$p_values_dot.y, na.rm=TRUE)
-#
+###library(text)
+###library(tidyverse)
+###
+###
+#####saveRDS(wordembeddings_hil, "/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
+###wordembeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
+###wordembeddings <- wordembeddings4
+###raw_data <- Language_based_assessment_data_8
+##### Pre-processing data for plotting
+###df_for_plotting <- text::textProjection(
+###  words = Language_based_assessment_data_8$harmonywords,
+###  wordembeddings = wordembeddings_hil$harmonywords,
+###  single_wordembeddings = wordembeddings_hil$singlewords_we,
+###  x = raw_data$hilstotal,
+###  #y = raw_data$swlstotal,
+###  split = "quartile",
+###  word_weight_power = 1,
+###  min_freq_words_test = 0,
+###  Npermutations = 10000,
+###  n_per_split = 50000,
+###  seed = 1003
+###)
+###
+###textProjectionPlot(word_data = df_for_plotting,
+###                   plot_n_words_square = 0,
+###                   plot_n_words_p = 0,
+###                   plot_n_word_extreme = 0,
+###                   plot_n_word_frequency = 0,
+###                   plot_n_words_middle =15,
+###                   bivariate_color_codes = c(
+###                     "#398CF9", "#60A1F7", "#5dc688",
+###                     "green", "#EAEAEA", "red",
+###                     "#FF0000", "#EA7467", "#85DB8E"
+###                   ))
+###
+###
+####
+###word_data = readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/HFDHinder_all_inre_motivation_fig_5.rds")
+###
+###ds <- readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/ds.rds")
+###text_cols_embeddings <- readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/text_cols_embeddings.rds")
+###
+###HFDHinder_all_inre_motivation_fig_5 <- text::textProjection(
+###  words = ds$HFDHinder_all,
+###  wordembeddings = text_cols_embeddings$HFDHinder_all,
+###  single_wordembeddings = text_cols_embeddings$singlewords_we,
+###  x = ds$inre_motivation,
+###  y = NULL,
+###  pca = NULL,
+###  aggregation = "mean",
+###  split = "quartile",
+###  word_weight_power = 1,
+###  min_freq_words_test = 0,
+###  Npermutations = 10000,
+###  n_per_split = 50000,
+###  seed = 1003)
+###View(HFDHinder_all_inre_motivation_fig_5$word_data)
+###
+###help(textProjectionPlot)
+###textProjectionPlot(df_for_plotting,
+###                   group_embeddings1 = TRUE,
+###                   group_embeddings2 = TRUE,
+###                   projection_embedding = TRUE,
+###                   aggregated_point_size = 0.8,
+###                   aggregated_shape = 8,
+###                   aggregated_color_G1 = "red",
+###                   aggregated_color_G2 = "green",
+###                   projection_color = "blue")
+###
+###
+###
+###
+###textProjectionPlot(word_data = word_data,
+###                   plot_n_words_square = 0,
+###                   plot_n_words_p = 0,
+###                   plot_n_word_extreme = 0,
+###                   plot_n_word_frequency = 0,
+###                   plot_n_words_middle =15,
+###                   bivariate_color_codes = c(
+###                     "#398CF9", "#60A1F7", "#5dc688",
+###                     "green", "#EAEAEA", "red",
+###                     "#FF0000", "#EA7467", "#85DB8E"
+###                   ))
+###
+###
+###
+###
+###k_n_words_to_test = FALSE
+###min_freq_words_test = 1
+###min_freq_words_plot = 1
+###plot_n_words_square = 0
+###plot_n_words_p = 0
+###plot_n_word_extreme = 0
+###plot_n_word_frequency = 0
+###plot_n_words_middle = 15
+###titles_color = "#61605e"
+#### x_axes = TRUE
+###y_axes = FALSE
+###p_alpha = 0.05
+###p_adjust_method = "none"
+###title_top = "Supervised Dimension Projection"
+###x_axes_label = "Supervised Dimension Projection (SDP)"
+###y_axes_label = "Supervised Dimension Projection (SDP)"
+###scale_x_axes_lim = NULL
+###scale_y_axes_lim = NULL
+###word_font = NULL
+###bivariate_color_codes = c(
+###  "#398CF9", "#60A1F7", "#5dc688",
+###  "green", "#EAEAEA", "red",
+###  "#FF0000", "#EA7467", "#85DB8E"
+###)
+###word_size_range = c(3, 8)
+###position_jitter_hight = .0
+###position_jitter_width = .03
+###point_size = 0.5
+###arrow_transparency = 0.1
+###points_without_words_size = 0.2
+###points_without_words_alpha = 0.2
+###legend_title = "SDP"
+###legend_x_axes_label = "x"
+###legend_y_axes_label = "y"
+###legend_x_position = 0.02
+###legend_y_position = 0.02
+###legend_h_size = 0.2
+###legend_w_size = 0.2
+###legend_title_size = 7
+###legend_number_size = 2
+###group_embeddings1 = FALSE
+###group_embeddings2 = FALSE
+###projection_embedding = FALSE
+###aggregated_point_size = 0.8
+###aggregated_shape = 8
+###aggregated_color_G1 = "black"
+###aggregated_color_G2 = "black"
+###projection_color = "blue"
+###seed = 1005
+###explore_words = NULL
+###explore_words_color = "#ad42f5"
+###explore_words_point = "ALL_1"
+###explore_words_aggregation = "mean"
+###remove_words = NULL
+###n_contrast_group_color = NULL
+###n_contrast_group_remove = FALSE
+###space = NULL
+###scaling = TRUE
+###
+###View(word_data$word_data)
+###View(df_for_plotting$word_data)
 
 #' Plot words according to Supervised Dimension Projection.
 #' @param word_data Dataframe from textProjection
@@ -958,7 +1048,7 @@ textProjectionPlot <- function(word_data,
   # Selected Aggregated points
   aggregated_embeddings_data <- word_data$word_data[word_data$word_data$n == 0,]
 
-  # Computing adjusted p-values with those words selected by: k = sqrt(100*N)
+  # View(word_data_padjusted) Computing adjusted p-values with those words selected by: k = sqrt(100*N)
   if (k_n_words_to_test == TRUE) {
     words_k <- sqrt(100 * word_data$word_data$N_participant_responses[1])
     word_data_padjusted <- word_data_padjusted %>%
@@ -980,7 +1070,7 @@ textProjectionPlot <- function(word_data,
   # Select only min_freq_words_plot to plot (i.e., after correction of multiple comparison for sig. test)
   word_data1 <- word_data1[word_data1$n >= min_freq_words_plot, ]
 
-  # Select only words based on square-position; and then top frequency in each "square" (see legend) plot_n_words_square
+  #  Select only words based on square-position; and then top frequency in each "square" (see legend) plot_n_words_square
   if (is.null(y_axes_1) == TRUE) {
     word_data1 <- word_data1 %>%
       dplyr::mutate(square_categories = dplyr::case_when(
@@ -1185,7 +1275,7 @@ textProjectionPlot <- function(word_data,
         dot.x > 0 & adjusted_p_values.x < p_alpha ~ bivariate_color_codes[6]
       ))
   }
-
+   #View(word_data_all)
 
   #######
   #### Removing and Changing Color of Words Plotted on the side they were less represented in
@@ -1315,8 +1405,9 @@ textProjectionPlot <- function(word_data,
     Mean1 <- dplyr::bind_cols(words, n_words, Aggregated_embedding_added_words)
     manual_words_mean1 <- bind_rows(explore_words_embeddings$singlewords_we, Mean1)
     }
-
-    ###### Project embedding on the x axes
+  #######
+  #### Project embedding on the x axes
+  #######
     projected_embedding.x <- as.vector(word_data$background[[1]]$Aggregated_word_embedding_group2.x - word_data$background[[1]]$Aggregated_word_embedding_group1.x)
 
     # Position words in relation to Aggregated word embedding
@@ -1341,9 +1432,10 @@ textProjectionPlot <- function(word_data,
                                       word_data$background[[1]]$dot_null_distribution, alternative = "two_sided")
 
     p_values_dot_prod.x <- unlist(p_values_dot_prod.x)
-
+  #######
+  ### Project embedding on the Y axes
+  #######
     if(y_axes == TRUE){
-    ###### Project embedding on the Y axes
     projected_embedding.y <- word_data$background[[2]]$Aggregated_word_embedding_group2.y - word_data$background[[2]]$Aggregated_word_embedding_group1.y
     # Position words in relation to Aggregated word embedding
     # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
@@ -1387,8 +1479,11 @@ textProjectionPlot <- function(word_data,
     word_data_all_yadjusted <- dplyr::bind_rows(word_data_all_yadjusted, added_words_information_unlist)
   }
 
-
-
+ #looking at specific words: View(word_data_all)[word_data_all$words %in% c("källsortering", "det"),])
+ # looking View(word_data_all_yadjusted)
+  #######
+  #### Plotting
+  #######
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
     ggplot2::ggplot(data = word_data_all, ggplot2::aes(!!rlang::sym(x_axes_1), !!rlang::sym(y_axes_1), label = words)) +
