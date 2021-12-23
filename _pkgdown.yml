@@ -52,6 +52,8 @@ reference:
     - textTrainLists
     - textTrainRegression
     - textTrainRandomForest
+- title: Predict from word embeddings
+  contents:
     - textPredict
     - textPredictTest
 - title: Semantic Similairties

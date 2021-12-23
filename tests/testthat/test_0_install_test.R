@@ -11,5 +11,6 @@ test_that("installing text", {
   textrpp_initialize(textEmbed_test=FALSE)
 
   text_test <- textEmbed("hello")
+
   expect_that(ncol(text_test[[1]]), equals(1536))
 })
