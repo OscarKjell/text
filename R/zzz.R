@@ -11,6 +11,8 @@
   ), colourise("Text is new and still rapidly improving. \nNewer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art. \nPlease send us feedback based on your experience.",
     fg = "green", bg = NULL
   ))
+
+  textrpp_initialize()
 }
 
 
