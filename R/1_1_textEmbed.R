@@ -335,11 +335,11 @@ textEmbedLayersOutput <- function(x,
 
   if(print_python_warnings==TRUE){
 
-    if(context==TRUE){
+    if(contexts==TRUE){
       cat(textrpp_py_warnings_text_context)
     }
 
-    if(decontexts == TRUE) {
+    if(decontexts==TRUE) {
       cat(textrpp_py_warnings_text_decontext)
     }
   }

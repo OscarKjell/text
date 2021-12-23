@@ -1,6 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.17
+### New Features
+- 
+
+
+
 # text 0.9.16
 ### New Features
 - `textrpp_install()` installs a conda environment with text required python packages.
@@ -10,8 +16,8 @@
 
 # text 0.9.13
 ### New Features
-- `textEmbed` and `textEmbedLayersOutput` support the use of GPU using the `device` setting.  
-- `remove_words` makes it possible to remove specific words from `textProjectionPlot`
+- `textEmbed()` and `textEmbedLayersOutput()` support the use of GPU using the `device` setting.  
+- `remove_words` makes it possible to remove specific words from `textProjectionPlot()`
 
 # text 0.9.12
 

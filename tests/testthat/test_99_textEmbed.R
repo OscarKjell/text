@@ -112,6 +112,7 @@ test_that("installing text", {
   textrpp_install(prompt = FALSE)
 
   #help(textrpp_initialize)
+  #.rs.restartR()
   textrpp_initialize(textEmbed_test=TRUE)
 })
 
