@@ -143,29 +143,29 @@ test_that("installing text", {
 #})
 #
 #test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {
-  skip_on_cran()
-  # skip_if_no_transformers()
-  # skip_if_no_torch
-
-  # x <- Language_based_assessment_data_8[1:2, 1:2]
-  text_to_test_import1 <- c("jag mår bra", "vad händer")
-  text_to_test_import2 <- c("ön är vacker", "molnen svävar")
-  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
-
-  embeddings <- textEmbedLayersOutput(x,
-    model = "bert-base-uncased",
-    contexts = FALSE,
-    decontexts = TRUE,
-    layers = "all"
-  )
-  expect_that(embeddings, is_a("list"))
-
-  # Is the first value there and numeric
-  expect_that(embeddings[[1]][[1]][[1]][[1]][[1]], is.character)
-  # If below line fail it might be because the output in huggingface has changed,
-  # so that 770 needs to be something else
-  expect_that(ncol(embeddings[[1]][[1]][[1]][[1]]), equals(771))
-})
+#  skip_on_cran()
+#  # skip_if_no_transformers()
+#  # skip_if_no_torch
+#
+#  # x <- Language_based_assessment_data_8[1:2, 1:2]
+#  text_to_test_import1 <- c("jag mår bra", "vad händer")
+#  text_to_test_import2 <- c("ön är vacker", "molnen svävar")
+#  x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
+#
+#  embeddings <- textEmbedLayersOutput(x,
+#    model = "bert-base-uncased",
+#    contexts = FALSE,
+#    decontexts = TRUE,
+#    layers = "all"
+#  )
+#  expect_that(embeddings, is_a("list"))
+#
+#  # Is the first value there and numeric
+#  expect_that(embeddings[[1]][[1]][[1]][[1]][[1]], is.character)
+#  # If below line fail it might be because the output in huggingface has changed,
+#  # so that 770 needs to be something else
+#  expect_that(ncol(embeddings[[1]][[1]][[1]][[1]]), equals(771))
+#})
 #
 test_that("textEmbed", {
   skip_on_cran()
