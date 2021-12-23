@@ -109,8 +109,9 @@ test_that("textEmbedStatic with example space", {
 test_that("installing text", {
 
   #help(textrpp_install)
-  textrpp_install()
+  textrpp_install(prompt = FALSE)
 
+  #help(textrpp_initialize)
   textrpp_initialize()
 })
 
