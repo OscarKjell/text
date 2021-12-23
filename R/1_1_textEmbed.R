@@ -334,8 +334,14 @@ textEmbedLayersOutput <- function(x,
   }
 
   if(print_python_warnings==TRUE){
-    cat(textrpp_py_warnings_text_decontext)
-    cat(textrpp_py_warnings_text_decontext)
+
+    if(context==TRUE){
+      cat(textrpp_py_warnings_text_context)
+    }
+
+    if(decontexts == TRUE) {
+      cat(textrpp_py_warnings_text_decontext)
+    }
   }
 
   # Combine previous list and word list
