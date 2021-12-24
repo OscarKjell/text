@@ -223,7 +223,8 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
-#' @param print_python_warnings bolean; when true any warnings from python environment are printed to the console.
+#' @param print_python_warnings bolean; when TRUE any warnings from python environment are printed to the console. (Either way warnings
+#' are saved in the comment of the embedding)
 #' @return A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
 #' input embedding to the transformer, and should normally not be used.
 #' @examples
@@ -244,7 +245,7 @@ textEmbedLayersOutput <- function(x,
                                   layers = 11,
                                   return_tokens = TRUE,
                                   device = "cpu",
-                                  print_python_warnings=TRUE) {
+                                  print_python_warnings=FALSE) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
  reticulate::source_python(system.file("python",
@@ -281,10 +282,17 @@ textEmbedLayersOutput <- function(x,
 
       # Adding informative comment help(comment)
       layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
+
+      if(!exists("textrpp_py_warnings_text_context")){
+        textrpp_py_warnings_text_context <- "There were no python warnings."
+      }
+
       comment(sorted_layers_ALL_variables$context) <- paste("Information about the embeddings. textEmbedLayersOutput: ",
-                                                            "model:", model,
+                                                            "model:", model, "; ",
                                                             "layers:", layers_string, ".",
-                                                            collapse = "; "
+                                                            "Warnings from python: ", textrpp_py_warnings_text_context,
+                                                            collapse = "\n"
+
       )
     }
   }
