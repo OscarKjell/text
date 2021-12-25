@@ -207,8 +207,13 @@ set_textrpp_python_option <- function(python_executable = NULL,
 
   if (!is.null(check_textrpp_python_options())) {
     settings <- check_textrpp_python_options()
-    message("textrpp python option is already set, text will use:\n\t",
-            sub("textrpp_", "", settings$key), ' = "', settings$val, '"')
+
+    message_text1 <- paste("textrpp python option is already set, text will use: ",
+      sub("textrpp_", "", settings$key), ' = "', settings$val, '"', sep="")
+
+    message(colourise(message_text1,
+      fg = "blue", bg = NULL))
+
   }
   # a user can specify only one
   else if (sum(!is.null(c(python_executable, virtualenv, condaenv))) > 1) {
