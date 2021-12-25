@@ -23,9 +23,8 @@ LazyData: true
 BuildVignettes: true
 Imports: 
     dplyr,
-    tokenizers,
     tibble,
-    stringr,
+    stringi,
     tidyr,
     ggplot2,
     ggrepel,

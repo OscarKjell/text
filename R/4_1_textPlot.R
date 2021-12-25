@@ -610,18 +610,19 @@ textProjection <- function(words,
 
 #library(text)
 #library(tidyverse)
-##wordembeddings_hil <- textEmbed(Language_based_assessment_data_8[1])
+#wordembeddings_hil <- textEmbed(Language_based_assessment_data_8[1],
+#                                layers = c(11, 12))
 ##saveRDS(wordembeddings_hil, "/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
 #wordembeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
-#wordembeddings <- wordembeddings4
+##wordembeddings <- wordembeddings4
 #raw_data <- Language_based_assessment_data_8
 ### Pre-processing data for plotting
-#df_for_plotting <- text::textProjection(
-#  words = Language_based_assessment_data_8$harmonywords,
-#  wordembeddings = wordembeddings_hil$harmonywords,
+#word_data <- text::textProjection(
+#  words = Language_based_assessment_data_8$satisfactiontexts,
+#  wordembeddings = wordembeddings_hil$satisfactiontexts,
 #  single_wordembeddings = wordembeddings_hil$singlewords_we,
-#  x = raw_data$hilstotal,
-#  y = raw_data$swlstotal,
+#  x = Language_based_assessment_data_8$hilstotal,
+#  y = Language_based_assessment_data_8$swlstotal,
 #  split = "no",
 #  Npermutations = 10000,
 #  n_per_split = 5000
@@ -701,7 +702,7 @@ textProjection <- function(words,
 ###
 ###
 ####
-###word_data = readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/HFDHinder_all_inre_motivation_fig_5.rds")
+#word_data = readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/HFDHinder_all_inre_motivation_fig_5.rds")
 ###
 ###ds <- readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/ds.rds")
 ###text_cols_embeddings <- readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/text_cols_embeddings.rds")
@@ -751,64 +752,64 @@ textProjection <- function(words,
 ###
 ###
 ###
-###k_n_words_to_test = FALSE
-###min_freq_words_test = 1
-###min_freq_words_plot = 1
-###plot_n_words_square = 0
-###plot_n_words_p = 0
-###plot_n_word_extreme = 0
-###plot_n_word_frequency = 0
-###plot_n_words_middle = 15
-###titles_color = "#61605e"
-#### x_axes = TRUE
-###y_axes = FALSE
-###p_alpha = 0.05
-###p_adjust_method = "none"
-###title_top = "Supervised Dimension Projection"
-###x_axes_label = "Supervised Dimension Projection (SDP)"
-###y_axes_label = "Supervised Dimension Projection (SDP)"
-###scale_x_axes_lim = NULL
-###scale_y_axes_lim = NULL
-###word_font = NULL
-###bivariate_color_codes = c(
-###  "#398CF9", "#60A1F7", "#5dc688",
-###  "green", "#EAEAEA", "red",
-###  "#FF0000", "#EA7467", "#85DB8E"
-###)
-###word_size_range = c(3, 8)
-###position_jitter_hight = .0
-###position_jitter_width = .03
-###point_size = 0.5
-###arrow_transparency = 0.1
-###points_without_words_size = 0.2
-###points_without_words_alpha = 0.2
-###legend_title = "SDP"
-###legend_x_axes_label = "x"
-###legend_y_axes_label = "y"
-###legend_x_position = 0.02
-###legend_y_position = 0.02
-###legend_h_size = 0.2
-###legend_w_size = 0.2
-###legend_title_size = 7
-###legend_number_size = 2
-###group_embeddings1 = FALSE
-###group_embeddings2 = FALSE
-###projection_embedding = FALSE
-###aggregated_point_size = 0.8
-###aggregated_shape = 8
-###aggregated_color_G1 = "black"
-###aggregated_color_G2 = "black"
-###projection_color = "blue"
-###seed = 1005
-###explore_words = NULL
-###explore_words_color = "#ad42f5"
-###explore_words_point = "ALL_1"
-###explore_words_aggregation = "mean"
-###remove_words = NULL
-###n_contrast_group_color = NULL
-###n_contrast_group_remove = FALSE
-###space = NULL
-###scaling = TRUE
+#k_n_words_to_test = FALSE
+#min_freq_words_test = 1
+#min_freq_words_plot = 1
+#plot_n_words_square = 0
+#plot_n_words_p = 0
+#plot_n_word_extreme = 0
+#plot_n_word_frequency = 0
+#plot_n_words_middle = 15
+#titles_color = "#61605e"
+## x_axes = TRUE
+#y_axes = FALSE
+#p_alpha = 0.05
+#p_adjust_method = "none"
+#title_top = "Supervised Dimension Projection"
+#x_axes_label = "Supervised Dimension Projection (SDP)"
+#y_axes_label = "Supervised Dimension Projection (SDP)"
+#scale_x_axes_lim = NULL
+#scale_y_axes_lim = NULL
+#word_font = NULL
+#bivariate_color_codes = c(
+#  "#398CF9", "#60A1F7", "#5dc688",
+#  "green", "#EAEAEA", "red",
+#  "#FF0000", "#EA7467", "#85DB8E"
+#)
+#word_size_range = c(3, 8)
+#position_jitter_hight = .0
+#position_jitter_width = .03
+#point_size = 0.5
+#arrow_transparency = 0.1
+#points_without_words_size = 0.2
+#points_without_words_alpha = 0.2
+#legend_title = "SDP"
+#legend_x_axes_label = "x"
+#legend_y_axes_label = "y"
+#legend_x_position = 0.02
+#legend_y_position = 0.02
+#legend_h_size = 0.2
+#legend_w_size = 0.2
+#legend_title_size = 7
+#legend_number_size = 2
+#group_embeddings1 = FALSE
+#group_embeddings2 = FALSE
+#projection_embedding = FALSE
+#aggregated_point_size = 0.8
+#aggregated_shape = 8
+#aggregated_color_G1 = "black"
+#aggregated_color_G2 = "black"
+#projection_color = "blue"
+#seed = 1005
+#explore_words = NULL
+#explore_words_color = "#ad42f5"
+#explore_words_point = "ALL_1"
+#explore_words_aggregation = "mean"
+#remove_words = NULL
+#n_contrast_group_color = NULL
+#n_contrast_group_remove = FALSE
+#space = NULL
+#scaling = TRUE
 ###
 ###View(word_data$word_data)
 ###View(df_for_plotting$word_data)
@@ -922,7 +923,7 @@ textProjection <- function(words,
 #' @importFrom rlang sym
 #' @importFrom cowplot ggdraw draw_plot
 #' @importFrom purrr as_vector
-#' @importFrom stringr str_split
+#' @importFrom stringi stri_split_boundaries
 #' @export
 textProjectionPlot <- function(word_data,
                                k_n_words_to_test = FALSE,
@@ -1356,7 +1357,9 @@ textProjectionPlot <- function(word_data,
     model_name <- sub(" layer.*", '', model_text)
     layers_text <- sub(".*layers: ", '', textProjectionPlot_comment)
     layers_number <- sub(" . textEmbedLayerAggregation.*", '', layers_text)
-    layers_number_split <- stringr::str_split(layers_number, " ", n = Inf, simplify = FALSE)
+    layers_number_split <- stringi::stri_split_boundaries(layers_number,  type = "word",
+                                                          skip_word_none = TRUE,
+                                                          skip_word_number = FALSE)
 
     explore_words_embeddings <- textEmbed(explore_words[i_add_w],
                                           model = model_name,
@@ -1589,6 +1592,7 @@ textProjectionPlot <- function(word_data,
     # Remove the y axes title on the legend
     legend_y_axes_label <- " "
   }
+
   legend <- bivariate_color_data %>%
     tidyr::gather("group", "fill") %>%
     tidyr::separate(group, into = c("x", "y"), sep = " - ") %>%
@@ -1677,11 +1681,10 @@ textProjectionPlot <- function(word_data,
     ggplot2::coord_fixed()
   legend
 
-  # Plot both figure and legend
-  final_plot <- suppressWarnings(cowplot::ggdraw() +
-    cowplot::draw_plot(plot, 0, 0, 1, 1) +
-    cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
-
+  # Plot both figure and legend help(null_dev_env)
+  final_plot <- suppressWarnings(ggdraw() +
+    draw_plot(plot, 0, 0, 1, 1) +
+    draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
 
   output_plot_data <- list(final_plot, textProjectionPlot_comment, word_data_all)
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")

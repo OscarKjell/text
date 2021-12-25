@@ -7,14 +7,15 @@
 - Python warnings a captured in embedding comments
 - Option to print python options to console
 
-
+### Minor changes
+- Changed from stringr to stringi (and removed tokenizer) as imported package
 
 # text 0.9.16
 ### New Features
 - `textrpp_install()` installs a conda environment with text required python packages.
-- `textrpp_install_virtualenv()` installa a virutal environment with text required python packages.
+- `textrpp_install_virtualenv()` install a virtual environment with text required python packages.
 - `textrpp_initialize()` initializes installed environment. 
-- `textrpp_uninstall()` uninstallts conda environment.
+- `textrpp_uninstall()` uninstalls conda environment.
 
 # text 0.9.13
 ### New Features

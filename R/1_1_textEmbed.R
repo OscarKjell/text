@@ -76,7 +76,6 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
     }
 }
 
-
 # devtools::document()
 #' getUniqueWordsAndFreq
 #' Function unites several text variables and rows to one,
@@ -85,18 +84,26 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
 #' @param x_characters A character column in a tibble.
 #' @return A tibble with a unique words column and a column with their respective frequency.
 #' @importFrom tibble tibble
-#' @importFrom stringr str_c
-#' @importFrom tokenizers tokenize_words
+#' @importFrom stringi stri_c stri_trans_tolower
+# @importFrom stringr str_c str_split stri_split_boundaries
+# @importFrom tokenizers tokenize_words
 #' @noRd
 getUniqueWordsAndFreq <- function(x_characters) {
   # Unite all text variables into one
   x_characters2 <- tidyr::unite(x_characters, "x_characters2", seq_len(ncol(x_characters)), sep = " ")
+
   # unite all rows in the column into one cell
-  x_characters3 <- stringr::str_c(x_characters2$x_characters2, collapse = " ")
-  # Tokenize into single words
-  x_characters4 <- tokenizers::tokenize_words(x_characters3, simplify = T)
+  x_characters3 <- stringi::stri_c(x_characters2$x_characters2, collapse = " ")
+  # x_characters3 <- stringr::str_c(x_characters2$x_characters2, collapse = " ")
+  # Tokenize into single words help(stri_split_boundaries)
+  x_characters4a  <- stringi::stri_trans_tolower(x_characters3)
+  x_characters4b <- stringi::stri_split_boundaries(x_characters4a,  type = "word",
+                                                   skip_word_none = TRUE,
+                                                   skip_word_number = FALSE)[[1]]
+  #x_characters4   <- tokenizers::tokenize_words(x_characters3, simplify = T)
+
   # Create dataframe with single words and frequency
-  x_characters5 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters4), " ")))))
+  x_characters5 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters4b), " ")))))
   if(length(x_characters5)==1){
   colnames(x_characters5) <- c("Freq")
   x_characters5 <- tibble::rownames_to_column(x_characters5, "Var1")
@@ -229,8 +236,8 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' input embedding to the transformer, and should normally not be used.
 #' @examples
 #' \donttest{
-#' x <- Language_based_assessment_data_8[1:2, 1:2]
-#' word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
+#' # x <- Language_based_assessment_data_8[1:2, 1:2]
+#' # word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python py_capture_output
@@ -383,10 +390,9 @@ textEmbedLayersOutput <- function(x,
 #' the transformer, which is normally not used.
 #' @examples
 #' \donttest{
-#' word_embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1],
-#'  layers = 11:12)
-#'
-#' wordembeddings <- textEmbedLayerAggregation(word_embeddings_layers$context, layers = 11)
+#' # word_embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1],
+#' # layers = 11:12)
+#' # wordembeddings <- textEmbedLayerAggregation(word_embeddings_layers$context, layers = 11)
 #' }
 #' @seealso see \code{\link{textEmbedLayersOutput}} and \code{\link{textEmbed}}
 #' @importFrom dplyr %>% bind_rows
@@ -523,15 +529,15 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' Note that layer 0 is the input embedding to the transformer
 #' @examples
 #' \donttest{
-#' x <- Language_based_assessment_data_8[1:2, 1:2]
+#' # x <- Language_based_assessment_data_8[1:2, 1:2]
 #' # Example 1
-#' wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
+#' # wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
 #' # Show information that have been saved with the embeddings about how they were constructed
-#' comment(wordembeddings$satisfactionwords)
-#' comment(wordembeddings$singlewords_we)
-#' comment(wordembeddings)
+#' # comment(wordembeddings$satisfactionwords)
+#' # comment(wordembeddings$singlewords_we)
+#' # comment(wordembeddings)
 #' # Example 2
-#' wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
+#' # wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbedLayersOutput}}
 #' @export

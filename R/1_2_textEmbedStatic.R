@@ -1,5 +1,4 @@
 
-
 #  devtools::document()
 #' semanticrepresentation
 #' Function to apply an aggregated semantic representation for ALL words in a "CELL"; and if there are no words return a vector with NAs.
@@ -12,7 +11,8 @@
 semanticrepresentation <- function(x, single_wordembeddings2, aggregate = "min", ...) {
   x <- tolower(x)
   # Separates the words in a cell into a character vector with separate words.
-  x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
+  #x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
+  x <- data.frame(unlist(stringi::stri_extract_all(x, regex= "[[:alpha:]]+")))
   colnames(x) <- c("wordsAll1")
   x <- tibble::as_tibble(x)
   x <- as.character(x$wordsAll1)
