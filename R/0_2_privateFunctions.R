@@ -54,6 +54,9 @@ addEqualNrNArows <- function(x, y) {
 ##  return(p_value)
 ##}
 
+#p_value_comparing_with_Null(Observedresult = 1,
+#                            NULLresults = c(1:10, NA),
+#                            alternative = "two_sided")
 
 #  devtools::document()
 #' Examine how the ordered data's mean of a statistics compare,
@@ -68,7 +71,7 @@ p_value_comparing_with_Null <- function(Observedresult,
                                         NULLresults,
                                         alternative = c("two_sided", "less", "greater")) {
 
-  #  NULLresults= c(1:10, NA) Observedresult = 2
+  #  NULLresults= c(1:10, NA) Observedresult = 1 NA alternative = "two_sided"
   NULLresults <- NULLresults %>%
     tibble::as_tibble_col() %>%
     tidyr::drop_na()
@@ -84,7 +87,18 @@ p_value_comparing_with_Null <- function(Observedresult,
            p_value <- p_right
          },
          "two_sided" = {
-           p_value <- min(p_left, p_right) * 2
+           #p_value <- min(p_left, p_right) * 2
+           if(isTRUE(Observedresult >= 0)){
+             p_value <- p_right * 2
+             if(p_value >1) p_value <- 1
+
+           }else if(isTRUE(Observedresult < 0)){
+             p_value <- p_left * 2
+             if(p_value >1) p_value <- 1
+
+           } else if(is.na(Observedresult)){
+             p_value <- NA
+           }
            }
          )
   if (!is.na(p_value)) {
