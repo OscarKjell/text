@@ -116,7 +116,7 @@ textSimilarityTest <- function(x,
   NULLresults <- unlist(distribution_mean_cosine_permutated)
 
   # Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution
-  p_value <- p_value_comparing_with_Null(NULLresults, Observedresults = results["cosine_estimate"], alternative = alternative)
+  p_value <- p_value_comparing_with_Null(NULLresults, Observedresult = results["cosine_estimate"], alternative = alternative)
   results["p.value"] <- p_value
   results <- as.list(results)
 

@@ -20,32 +20,73 @@ addEqualNrNArows <- function(x, y) {
 }
 
 
+
+###  devtools::document()
+### Examine how the ordered data's mean of a statistics compare,
+### with the random data's null comparison distribution.
+### @param Observedresults a value representing the observed cosine.
+### @param NULLresults a tibble column with a NULL distribution of estimates (cosines).
+### # @param Npermutations number of permutation used in the test.
+### @param alternative type of test: "two_sided", "greater", "less".
+### @return p_value
+### @noRd
+##p_value_comparing_with_Null <- function(Observedresults,
+##                                        NULLresults,
+##                                        alternative = c("two_sided", "less", "greater")) {
+##
+##  NULLresults <- tibble::as_tibble_col(NULLresults)
+##  switch(alternative,
+##         "two_sided" = {
+##           p_value <- 2 * (min(sum(NULLresults < Observedresults), sum(NULLresults > Observedresults)) / sum(!is.na(NULLresults)))
+##         },
+##         "greater" = {
+##           p_value <- sum(NULLresults < Observedresults) / sum(!is.na(NULLresults))
+##         },
+##         "less" = {
+##           p_value <- sum(NULLresults > Observedresults) / sum(!is.na(NULLresults))
+##         }
+##  )
+##  if (!is.na(p_value)) {
+##    if (p_value == 0) {
+##      p_value <- 1 / (nrow(NULLresults) + 1)
+##    }
+##  }
+##  return(p_value)
+##}
+
+
 #  devtools::document()
 #' Examine how the ordered data's mean of a statistics compare,
 #' with the random data's null comparison distribution.
-#' @param Observedresults a value representing the observed cosine.
+#' @param Observedresult a value representing the observed cosine.
 #' @param NULLresults a tibble column with a NULL distribution of estimates (cosines).
 # #' @param Npermutations number of permutation used in the test.
 #' @param alternative type of test: "two_sided", "greater", "less".
 #' @return p_value
 #' @noRd
-p_value_comparing_with_Null <- function(Observedresults,
+p_value_comparing_with_Null <- function(Observedresult,
                                         NULLresults,
-                                        # Npermutations,
                                         alternative = c("two_sided", "less", "greater")) {
 
-  NULLresults <- tibble::as_tibble_col(NULLresults)
+  #  NULLresults= c(1:10, NA) Observedresult = 2
+  NULLresults <- NULLresults %>%
+    tibble::as_tibble_col() %>%
+    tidyr::drop_na()
+
+  p_left  <- sum(NULLresults <= Observedresult)  / nrow(NULLresults)
+  p_right <- sum(NULLresults >= Observedresult) /  nrow(NULLresults)
+
   switch(alternative,
-    "two_sided" = {
-      p_value <- 2 * (min(sum(NULLresults < Observedresults), sum(NULLresults > Observedresults)) / sum(!is.na(NULLresults)))
-    },
-    "less" = {
-      p_value <- sum(NULLresults < Observedresults) / sum(!is.na(NULLresults))
-    },
-    "greater" = {
-      p_value <- sum(NULLresults > Observedresults) / sum(!is.na(NULLresults))
-    }
-  )
+         "less" = {
+           p_value <- p_left
+         },
+         "greater" = {
+           p_value <- p_right
+         },
+         "two_sided" = {
+           p_value <- min(p_left, p_right) * 2
+           }
+         )
   if (!is.na(p_value)) {
     if (p_value == 0) {
       p_value <- 1 / (nrow(NULLresults) + 1)

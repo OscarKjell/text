@@ -12,7 +12,8 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
   wordembeddings <- wordembeddings4
   data <- Language_based_assessment_data_8
   # Pre-processing data for plotting
-  df_for_plotting <- textProjection(data$harmonywords[1:5],
+  df_for_plotting <- textProjection(
+    data$harmonywords[1:5],
     wordembeddings$harmonywords[1:5, ],
     wordembeddings$singlewords_we,
     data$hilstotal[1:5],

@@ -105,7 +105,7 @@ unique_freq_words <- function(words) {
 #seed = 1003
 #
 #i_dim=1
-
+#
 
 #' Compute Supervised Dimension Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
@@ -293,7 +293,7 @@ textProjection <- function(words,
       words_group1b_freq <- words_group1b_freq[words_group1b_freq$n >= min_freq_words_test, ]
       words_group1b_freq$n_g1_g2 <- words_group1b_freq$n * -1
 
-      # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
+      # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedStatic).
       words_group1_single_wordembedding <- lapply(words_group1b_freq$words, applysemrep, single_wordembeddings)
       words_group1_single_wordembedding_b <- dplyr::bind_rows(words_group1_single_wordembedding)
 
@@ -505,7 +505,7 @@ textProjection <- function(words,
     ### Compare observed dot-product with null
     dot_null_distribution <- dot_null_distribution[stats::complete.cases(dot_null_distribution), ]
     p_values_dot_prod <- purrr::map(as.list(purrr::as_vector(dot_products_observed)), p_value_comparing_with_Null,
-      dot_null_distribution, alternative = "two_sided"
+                                    dot_null_distribution$value, alternative = "two_sided"
     )
     p_values_dot_prod <- unlist(p_values_dot_prod)
     # Sort out dataframe
@@ -1682,9 +1682,9 @@ textProjectionPlot <- function(word_data,
   legend
 
   # Plot both figure and legend help(null_dev_env)
-  final_plot <- suppressWarnings(ggdraw() +
-    draw_plot(plot, 0, 0, 1, 1) +
-    draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
+  final_plot <- suppressWarnings(cowplot::ggdraw() +
+    cowplot::draw_plot(plot, 0, 0, 1, 1) +
+      cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
 
   output_plot_data <- list(final_plot, textProjectionPlot_comment, word_data_all)
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")

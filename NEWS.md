@@ -6,6 +6,7 @@
 - textrpp_initiate() runs automatically in library(text) when default environment exits
 - Python warnings a captured in embedding comments
 - Option to print python options to console
+- Updated the permutation test for plotting and textSimilarityTest.  
 
 ### Minor changes
 - Changed from stringr to stringi (and removed tokenizer) as imported package
