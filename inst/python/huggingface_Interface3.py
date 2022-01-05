@@ -14,6 +14,8 @@ except:
 
 from nltk.tokenize import sent_tokenize
 
+import os
+
 
 
 def hgTransformerGetEmbedding(text_strings,
@@ -21,7 +23,8 @@ def hgTransformerGetEmbedding(text_strings,
                               layers = 'all',  
                               return_tokens = True,
                               max_token_to_sentence = 4,
-                              device = 'cpu'):
+                              device = 'cpu',
+                              tokenizer_parallelism = False):
     """
     Simple Python method for embedding text with pretained Hugging Face models
     
@@ -49,6 +52,11 @@ def hgTransformerGetEmbedding(text_strings,
     all_toks : list, optional
         tokenized version of text_strings
     """
+    
+    if tokenizer_parallelism:
+        os.environ["TOKENIZERS_PARALLELISM"] = "true"
+    else:
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
     device = device.lower()
     if not device.startswith('cpu') and not device.startswith('gpu'):
