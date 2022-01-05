@@ -12,7 +12,8 @@ textEmbedLayersOutput(
   layers = 11,
   return_tokens = TRUE,
   device = "cpu",
-  print_python_warnings = FALSE
+  print_python_warnings = FALSE,
+  tokenizer_parallelism = FALSE
 )
 }
 \arguments{
@@ -41,6 +42,8 @@ and thus should normally not be used. These layers can then be aggregated in the
 
 \item{print_python_warnings}{bolean; when TRUE any warnings from python environment are printed to the console. (Either way warnings
 are saved in the comment of the embedding)}
+
+\item{tokenizer_parallelism}{If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 }
 \value{
 A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
