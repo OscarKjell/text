@@ -87,18 +87,18 @@ p_value_comparing_with_Null <- function(Observedresult,
            p_value <- p_right
          },
          "two_sided" = {
-           #p_value <- min(p_left, p_right) * 2
-           if(isTRUE(Observedresult >= 0)){
-             p_value <- p_right * 2
-             if(p_value >1) p_value <- 1
-
-           }else if(isTRUE(Observedresult < 0)){
-             p_value <- p_left * 2
-             if(p_value >1) p_value <- 1
-
-           } else if(is.na(Observedresult)){
-             p_value <- NA
-           }
+           p_value <- min(p_left, p_right) * 2
+           #if(isTRUE(Observedresult >= 0)){
+           #  p_value <- p_right * 2
+           #  if(p_value >1) p_value <- 1
+#
+           #}else if(isTRUE(Observedresult < 0)){
+           #  p_value <- p_left * 2
+           #  if(p_value >1) p_value <- 1
+#
+           #} else if(is.na(Observedresult)){
+           #  p_value <- NA
+           #}
            }
          )
   if (!is.na(p_value)) {
