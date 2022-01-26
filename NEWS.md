@@ -1,6 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+
+# text 0.9.18
+### New Features
+- Possibility to use textPlot()
+
 # text 0.9.17
 ### New Features
 - textrpp_initiate() runs automatically in library(text) when default environment exits
