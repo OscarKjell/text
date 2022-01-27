@@ -338,15 +338,15 @@ textEmbedLayersOutput <- function(x,
     # Adding informative data
     layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
     comment(sorted_layers_All_decontexts$decontext$single_we) <- c(paste("Information about the embeddings. textEmbedLayersOutput: ",
-      model, "layers:",
-      layers_string, ".",
-      collapse = "; "
+                                                                         "model:", model,
+                                                                         "layers:", layers_string, ".",
+                                                                         collapse = "; "
     ))
 
     comment(sorted_layers_All_decontexts$decontext$single_words) <- c(paste("Information about the embeddings. textEmbedLayersOutput: ",
-      model, "layers:",
-      layers_string, ".",
-      collapse = "; "
+                                                                            "model:", model,
+                                                                            "layers:", layers_string, ".",
+                                                                            collapse = "; "
     ))
 
     sorted_layers_All_decontexts
