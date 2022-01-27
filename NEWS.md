@@ -2,9 +2,10 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 
-# text 0.9.18
+# text 0.9.20
 ### New Features
-- Possibility to use textPlot()
+- New functions being tested: textWordPredictions() (which has a trial period/not fully developed and might be removed in future versions); p-values are not yet implemented.
+- Possibility to use textPlot() for objects from both textProjection() and textWordPredictions()
 
 # text 0.9.17
 ### New Features
