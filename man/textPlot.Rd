@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlot.R
 \name{textPlot}
 \alias{textPlot}
-\title{Plot words according to Supervised Dimension Projection.}
+\title{Plot words from textProjection() or textWordPrediction().}
 \usage{
 textPlot(
   word_data,
@@ -194,13 +194,13 @@ exact same colour-code because the numbers within the squares of the legend will
 A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
 }
 \description{
-Plot words according to Supervised Dimension Projection.
+Plot words from textProjection() or textWordPrediction().
 }
 \examples{
 # The test-data included in the package is called: DP_projections_HILS_SWLS_100
 
 # Supervised Dimension Projection Plot
-plot_projection <- textProjectionPlot(
+plot_projection <- textPlot(
   word_data = DP_projections_HILS_SWLS_100,
   k_n_words_to_test = FALSE,
   min_freq_words_test = 1,

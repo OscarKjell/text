@@ -2,7 +2,8 @@
 % Please edit documentation in R/4_4_textPlotWordPrediction.R
 \name{textWordPrediction}
 \alias{textWordPrediction}
-\title{Compute Supervised Dimension Projection and related variables for plotting words.}
+\title{Compute predictions based on single words for plotting words. The word embeddings of
+single words are trained to predict the mean value associated with that word.}
 \usage{
 textWordPrediction(
   words,
@@ -10,7 +11,8 @@ textWordPrediction(
   x,
   y = NULL,
   seed = 1003,
-  case_insensitive = TRUE
+  case_insensitive = TRUE,
+  ...
 )
 }
 \arguments{
@@ -25,29 +27,28 @@ textWordPrediction(
 
 \item{seed}{Set different seed.}
 
+\item{case_insensitive}{When TRUE all words are made lower case.}
+
 \item{...}{Training options from textTrainRegression().}
 }
 \value{
-A dataframe with variables (e.g., including Supervised Dimension Projection, frequencies, p-values)
+A dataframe with variables (e.g., including trained (out of sample) predictions, frequencies, p-values)
 for the individual words that is used for the plotting in the textProjectionPlot function.
 }
 \description{
-Compute Supervised Dimension Projection and related variables for plotting words.
+Compute predictions based on single words for plotting words. The word embeddings of
+single words are trained to predict the mean value associated with that word.
 }
 \examples{
 # Data
-wordembeddings <- wordembeddings4
-raw_data <- Language_based_assessment_data_8
 # Pre-processing data for plotting
-df_for_plotting <- textProjection(
-  words = raw_data$harmonywords,
-  wordembeddings = wordembeddings$harmonywords,
-  single_wordembeddings = wordembeddings$singlewords_we,
-  x = raw_data$hilstotal,
-  split = "mean",
-  Npermutations = 10,
-  n_per_split = 1
+\dontrun{
+df_for_plotting <- textWordPrediction(
+  words = Language_based_assessment_data_8$harmonywords,
+  single_wordembeddings = wordembeddings4$singlewords_we,
+  x = Language_based_assessment_data_8$hilstotal
 )
 df_for_plotting
+}
 #' @seealso see \code{\link{textProjection}}
 }

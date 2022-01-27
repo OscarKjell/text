@@ -42,15 +42,15 @@ wordsMeanValue <- function(words, target_word, x_value, case_insensitive){
 #' for the individual words that is used for the plotting in the textProjectionPlot function.
 #' @examples
 #' # Data
-#' wordembeddings <- wordembeddings4
-#' raw_data <- Language_based_assessment_data_8
 #' # Pre-processing data for plotting
-#' df_for_plotting <- textWordPredict(
-#'   words = raw_data$harmonywords,
-#'   single_wordembeddings = wordembeddings$singlewords_we,
-#'   x = raw_data$hilstotal
+#' \dontrun{
+#' df_for_plotting <- textWordPrediction(
+#'   words = Language_based_assessment_data_8$harmonywords,
+#'   single_wordembeddings = wordembeddings4$singlewords_we,
+#'   x = Language_based_assessment_data_8$hilstotal
 #' )
 #' df_for_plotting
+#' }
 #' #' @seealso see \code{\link{textProjection}}
 #' @importFrom tibble as_tibble_col as_tibble
 #' @importFrom dplyr bind_cols
@@ -97,30 +97,30 @@ textWordPrediction <- function(words,
   }
 
   # Get word embeddings for each word
-  uniques_words_all_wordembedding <- sapply(words_sorted_2$words, applysemrep, single_wordembeddings)
+  uniques_words_all_wordembedding <- sapply(words_sorted_1$words, applysemrep, single_wordembeddings)
   uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
   # Train model
   model_x <- textTrainRegression(uniques_words_all_wordembedding, mean_word_value_x, ...) #, ...
-  embedding_prediction_x <- tibble::as_tibble_col(model$predictions$predictions, column_name = "embedding_based_prediction_x")
+  embedding_prediction_x <- tibble::as_tibble_col(model_x$predictions$predictions, column_name = "embedding_based_prediction_x")
 
   # Train model for y-axes
   if (!is.null(y)){
     model_y <- textTrainRegression(uniques_words_all_wordembedding, mean_word_value_y, ...) #, ...
-    embedding_prediction_y <- tibble::as_tibble_col(model$predictions$predictions, column_name = "embedding_based_prediction_y")
+    embedding_prediction_y <- tibble::as_tibble_col(model_y$predictions$predictions, column_name = "embedding_based_prediction_y")
   }
 
   # TO DO: Compute p-values
-  p_value_x <- tibble::as_tibble_col(rep(0, nrow(words_sorted_2)), column_name = "p_value_x")
+  p_value_x <- tibble::as_tibble_col(rep(1, nrow(words_sorted_1)), column_name = "p_value_w_pred_x")
 
   if (!is.null(y)){
-    p_value_y <- tibble::as_tibble_col(rep(0, nrow(words_sorted_2)), column_name = "p_value_y")
+    p_value_y <- tibble::as_tibble_col(rep(1, nrow(words_sorted_1)), column_name = "p_value_w_pred_y")
 
   }
 
   #### Sorting output ####
 
-  word_data <- dplyr::bind_cols(words_sorted_2, mean_word_value_x, embedding_prediction_x, p_value_x)
+  word_data <- dplyr::bind_cols(words_sorted_1, mean_word_value_x, embedding_prediction_x, p_value_x)
 
   if (!is.null(y)){
     word_data <- dplyr::bind_cols(word_data, mean_word_value_y, embedding_prediction_y, p_value_y)
@@ -141,16 +141,53 @@ textWordPrediction <- function(words,
   return(output)
 }
 
-#wordembeddings <- wordembeddings4
-#raw_data <- Language_based_assessment_data_8
-## Pre-processing data for plotting
-#df_for_plotting_y <- textWordPrediction(
-#  words = raw_data$harmonywords,
-#  single_wordembeddings = wordembeddings$singlewords_we,
-#  x = raw_data$hilstotal
-#  ,y = raw_data$swlstotal
+
+# Test
+#embeddings_L <- textEmbed(Language_based_assessment_data_3_100)
+#
+#df_for_plotting_y_L <- textWordPrediction(
+#  words = Language_based_assessment_data_3_100$harmonywords,
+#  single_wordembeddings = embeddings_L$singlewords_we,
+#  x = Language_based_assessment_data_3_100$hilstotal
+#  ,y = Language_based_assessment_data_3_100$swlstotal
 #)
 #
+#textPlot(df_for_plotting_y_L,
+#         y_axes = TRUE)
+#
+#
+#textPlot(df_for_plotting_y_L,
+#         y_axes = TRUE,
+#         explore_words = c("happy harmony", "hate disharmony suicide"),
+#         explore_words_color = c("green", "red"),
+#         explore_words_point = c("ALL_1","ALL_2"))
+#
+## Pre-processing data for plotting
+#library(text)
+#df_for_plotting_y <- textWordPrediction(
+#  words = Language_based_assessment_data_8$harmonywords,
+#  single_wordembeddings = wordembeddings4$singlewords_we,
+#  x = Language_based_assessment_data_8$hilstotal
+#  ,y = Language_based_assessment_data_8$hilstotal
+#)
+#
+#help(textPlot)
+#textPlot(df_for_plotting_y,
+#         y_axes = TRUE,
+#         explore_words = c("happy divorce", "calm cock"),
+#         explore_words_color = c("#ad42f5", "black"),
+#         explore_words_point = c("ALL_1","ALL_2"))
+##
+##
+##df_for_projection_y <- textProjection(
+##  words = Language_based_assessment_data_8$harmonywords,
+##  wordembeddings = wordembeddings4$harmonywords,
+##  single_wordembeddings = wordembeddings4$singlewords_we,
+##  x = Language_based_assessment_data_8$hilstotal
+##  ,y = Language_based_assessment_data_8$swlstotal
+##)
+
+#textProjectionPlot(df_for_projection_y, y_axes = TRUE)
 
 #embeddings_test <- textEmbed(Language_based_assessment_data_8[3])
 

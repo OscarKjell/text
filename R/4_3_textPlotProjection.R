@@ -223,7 +223,6 @@ textProjection <- function(words,
     ### Sum all word embeddings in one column
     if(split == "mean" | split == "quartile"){
 
-
     # split="median" split = "quartile" or create interval sensitive
     if (split == "mean") {
 
@@ -580,6 +579,7 @@ textProjection <- function(words,
   names(word_data_tibble1) <- c("background", "word_data")
 
   comment(word_data_tibble1) <- textProjection_descriptions
+
   return(word_data_tibble1)
 }
 #### End textProjection
