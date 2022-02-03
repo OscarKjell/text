@@ -80,7 +80,7 @@ Then the X first dimensions are used in training, using a sequence from Kjell et
 Adding 1, then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
 This option is currently only possible for one embedding at the time.}
 
-\item{impute_missing}{default FALSE (can be set to TRUE if something else than wordembeddings are trained).}
+\item{impute_missing}{default FALSE (can be set to TRUE if something else than word_embeddings are trained).}
 
 \item{method_cor}{Type of correlation used in evaluation (default "pearson";
 can set to "spearman" or "kendall").}
@@ -106,7 +106,7 @@ Train word embeddings to a numeric variable.
 \examples{
 \donttest{
 results <- textTrainRegression(
-  wordembeddings4$harmonytext,
+  word_embeddings_4$harmonytext,
   Language_based_assessment_data_8$hilstotal,
   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 )

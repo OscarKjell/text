@@ -26,10 +26,10 @@ Train word embeddings to a numeric (ridge regression) or categorical (random for
 }
 \examples{
 \dontrun{
-wordembeddings <- wordembeddings4
+word_embeddings <- word_embeddings_4
 ratings_data <- Language_based_assessment_data_8
 results <- textTrain(
-  wordembeddings$harmonytext,
+  word_embeddings$harmonytext,
   ratings_data$hilstotal
 )
 }

@@ -11,8 +11,8 @@
 #
 #
 #proj_plot_test_100 <- textProjection(words = Language_based_assessment_data_8$harmonywords,
-#                           wordembeddings = embeddings_all$harmonywords,
-#                           single_wordembeddings = embeddings_all$singlewords_we,
+#                           word_embeddings = embeddings_all$harmonywords,
+#                           single_word_embeddings = embeddings_all$singlewords_we,
 #                           x = Language_based_assessment_data_8$hilstotal/1000,
 #                           y = NULL,
 #                           pca = NULL,
@@ -30,8 +30,8 @@
 #                   projection_embedding = T,)
 #
 #words = Language_based_assessment_data_8$harmonywords
-#wordembeddings = embeddings_all$harmonywords      # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
-#single_wordembeddings = embeddings_all$singlewords_we
+#word_embeddings = embeddings_all$harmonywords      # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
+#single_word_embeddings = embeddings_all$singlewords_we
 #
 
 
@@ -43,8 +43,8 @@
 #
 #HFDHinder_all_inre_motivation_fig_5 <- text::textProjection(
 #  words = ds$HFDHinder_all,
-#  wordembeddings = text_cols_embeddings$HFDHinder_all,
-#  single_wordembeddings = text_cols_embeddings$singlewords_we,
+#  word_embeddings = text_cols_embeddings$HFDHinder_all,
+#  single_word_embeddings = text_cols_embeddings$singlewords_we,
 #  x = ds$inre_motivation,
 #  y = NULL,
 #  pca = NULL,
@@ -57,10 +57,10 @@
 #  seed = 1003)
 
 
-#wordembeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
+#word_embeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/word_embeddings_hil.rds")
 #words = Language_based_assessment_data_8$harmonywords
-#wordembeddings = wordembeddings_hil$harmonywords
-#single_wordembeddings = wordembeddings_hil$singlewords_we
+#word_embeddings = word_embeddings_hil$harmonywords
+#single_word_embeddings = word_embeddings_hil$singlewords_we
 #
 #x = Language_based_assessment_data_8$hilstotal
 #y = Language_based_assessment_data_8$swlstotal
@@ -84,9 +84,9 @@
 
 #' Compute Supervised Dimension Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
-#' @param wordembeddings Word embeddings from textEmbed for the words to be plotted
+#' @param word_embeddings Word embeddings from textEmbed for the words to be plotted
 #' (i.e., the aggregated word embeddings for the "words" parameter).
-#' @param single_wordembeddings Word embeddings from textEmbed for individual words
+#' @param single_word_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., decontextualized embeddings).
 #' @param x Numeric variable that the words should be plotted according to on the x-axes.
 #' @param y Numeric variable that the words should be plotted according to on the y-axes (y=NULL).
@@ -112,13 +112,13 @@
 #' for the individual words that is used for the plotting in the textProjectionPlot function.
 #' @examples
 #' # Data
-#' wordembeddings <- wordembeddings4
+#' word_embeddings <- word_embeddings_4
 #' raw_data <- Language_based_assessment_data_8
 #' # Pre-processing data for plotting
 #' df_for_plotting <- textProjection(
 #'   words = raw_data$harmonywords,
-#'   wordembeddings = wordembeddings$harmonywords,
-#'   single_wordembeddings = wordembeddings$singlewords_we,
+#'   word_embeddings = word_embeddings$harmonywords,
+#'   single_word_embeddings = word_embeddings$singlewords_we,
 #'   x = raw_data$hilstotal,
 #'   split = "mean",
 #'   Npermutations = 10,
@@ -134,8 +134,8 @@
 #' @importFrom purrr as_vector
 #' @export
 textProjection <- function(words,
-                           wordembeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
-                           single_wordembeddings = single_wordembeddings_df,
+                           word_embeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
+                           single_word_embeddings = single_word_embeddings_df,
                            x,
                            y = NULL,
                            pca = NULL,
@@ -151,8 +151,8 @@ textProjection <- function(words,
   textProjection_descriptions <- paste(
     "type = textProjection",
     "words =", substitute(words),
-    "wordembeddings =", comment(wordembeddings),
-    "single_wordembeddings =", comment(single_wordembeddings),
+    "word_embeddings =", comment(word_embeddings),
+    "single_word_embeddings =", comment(single_word_embeddings),
     "x =", substitute(x),
     "y =", substitute(y),
     "pca =", as.character(pca),
@@ -166,11 +166,11 @@ textProjection <- function(words,
   )
 
   set.seed(seed)
-  # PCA on single_wordembeddings
+  # PCA on single_word_embeddings
   if (is.numeric(pca)) {
     # Select word embeddings to be included in plot
     uniques_words_all <- unique_freq_words(words)
-    uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, single_wordembeddings)
+    uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, single_word_embeddings)
     uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
     rec_pca <- recipes::recipe(~., data = uniques_words_all_wordembedding)
@@ -188,8 +188,8 @@ textProjection <- function(words,
     pca_estimates <- recipes::prep(pca_trans, training = uniques_words_all_wordembedding)
     pca_data <- recipes::bake(pca_estimates, uniques_words_all_wordembedding)
     pca_data <- pca_data %>% stats::setNames(paste0("Dim_", names(.)))
-    single_wordembeddings <- dplyr::bind_cols(uniques_words_all, pca_data)
-    single_wordembeddings
+    single_word_embeddings <- dplyr::bind_cols(uniques_words_all, pca_data)
+    single_word_embeddings
   }
 
   # Make dataframe (and combine x and y)
@@ -212,7 +212,7 @@ textProjection <- function(words,
     x0 <- x[i_dim]
     x1 <- cbind(words, x0)
     colnames(x1) <- c("words", "value")
-    x2 <- tibble::as_tibble(cbind(x1, wordembeddings))
+    x2 <- tibble::as_tibble(cbind(x1, word_embeddings))
 
 
 
@@ -270,14 +270,14 @@ textProjection <- function(words,
       words_group1b_freq$n_g1_g2 <- words_group1b_freq$n * -1
 
       # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedStatic).
-      words_group1_single_wordembedding <- lapply(words_group1b_freq$words, applysemrep, single_wordembeddings)
+      words_group1_single_wordembedding <- lapply(words_group1b_freq$words, applysemrep, single_word_embeddings)
       words_group1_single_wordembedding_b <- dplyr::bind_rows(words_group1_single_wordembedding)
 
       # Group 2
       words_group2b_freq <- unique_freq_words(group2$words)
       words_group2b_freq <- words_group2b_freq[words_group2b_freq$n >= min_freq_words_test, ]
       words_group2b_freq$n_g1_g2 <- words_group2b_freq$n * 1
-      words_group2_single_wordembedding <- lapply(words_group2b_freq$words, applysemrep, single_wordembeddings)
+      words_group2_single_wordembedding <- lapply(words_group2b_freq$words, applysemrep, single_word_embeddings)
       words_group2_single_wordembedding_b <- dplyr::bind_rows(words_group2_single_wordembedding)
 
 
@@ -334,7 +334,7 @@ textProjection <- function(words,
           tidyr::separate_rows(words, sep = ' ')
 
         # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
-        words_single_wordembedding   <- lapply(words_values_sep$words, applysemrep, single_wordembeddings)
+        words_single_wordembedding   <- lapply(words_values_sep$words, applysemrep, single_word_embeddings)
         words_single_wordembedding_b <- dplyr::bind_rows(words_single_wordembedding)
         words_single_wordembedding_c <- dplyr::bind_cols(words_values_sep, words_single_wordembedding_b)
         #words_single_wordembedding_c <- tibble::as_tibble(words_single_wordembedding_c)
@@ -372,7 +372,7 @@ textProjection <- function(words,
     # Position words in relation to Group 2 (High)
     all_unique_words_freq <- unique_freq_words(x2$words)
     # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
-    all_unique_words_we <- lapply(all_unique_words_freq$words, applysemrep, single_wordembeddings)
+    all_unique_words_we <- lapply(all_unique_words_freq$words, applysemrep, single_word_embeddings)
     all_unique_words_we_b <- dplyr::bind_rows(all_unique_words_we)
 
     if (split == "no"){
@@ -586,15 +586,15 @@ textProjection <- function(words,
 #############
 
 
-#####saveRDS(wordembeddings_hil, "/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
-#wordembeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/wordembeddings_hil.rds")
-#wordembeddings <- wordembeddings4
+#####saveRDS(word_embeddings_hil, "/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/word_embeddings_hil.rds")
+#word_embeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/word_embeddings_hil.rds")
+#word_embeddings <- word_embeddings_4
 #raw_data <- Language_based_assessment_data_8
 ###### Pre-processing data for plotting
 #df_for_plotting <- text::textProjection(
 #  words = Language_based_assessment_data_8$harmonywords,
-#  wordembeddings = wordembeddings_hil$harmonywords,
-#  single_wordembeddings = wordembeddings_hil$singlewords_we,
+#  word_embeddings = word_embeddings_hil$harmonywords,
+#  single_word_embeddings = word_embeddings_hil$singlewords_we,
 #  x = raw_data$hilstotal,
 #  #y = raw_data$swlstotal,
 #  split = "quartile",

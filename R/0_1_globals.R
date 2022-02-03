@@ -4,8 +4,8 @@
 utils::globalVariables(c(
   "layer_index", "token_index",
   "SS", "p_values.x", "p_values.y", "words", "n.x", "n.y",
-  "addEqualNrNArows", "applysemrep", "single_wordembeddings_df", "Ndim",
-  "semanticrepresentation", "single_wordembeddings2",
+  "addEqualNrNArows", "applysemrep", "single_word_embeddings_df", "Ndim",
+  "semanticrepresentation", "single_word_embeddings2",
   "guide_legend", "Dim1", "data_train",
   "textTrainRandomForest", "textTrainCVpredictions", "textTrainCVpredictionsRF",
   "textCentrality", "textCentralityPlot", "textEmbed", "textEmbedLayersOutput", "id_nr",

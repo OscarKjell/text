@@ -7,9 +7,9 @@
 #' Compute cosine semantic similarity score between single words' word embeddings
 #' and the aggregated word embedding of all words.
 #' @param words Word or text variable to be plotted.
-#' @param wordembeddings Word embeddings from textEmbed for the words to be plotted
+#' @param word_embeddings Word embeddings from textEmbed for the words to be plotted
 #' (i.e., the aggregated word embeddings for the "words" variable).
-#' @param single_wordembeddings Word embeddings from textEmbed for individual words
+#' @param single_word_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., the decontextualized word embeddings).
 #' @param aggregation Method to aggregate the word embeddings
 #' (default = "mean"; see also "min", "max" or "[CLS]").
@@ -19,12 +19,12 @@
 #' @return A dataframe with variables (e.g., including semantic similarity, frequencies)
 #' for the individual words that are used for the plotting in the textCentralityPlot function.
 #' @examples
-#' wordembeddings <- wordembeddings4
+#' word_embeddings <- word_embeddings_4
 #' data <- Language_based_assessment_data_8
 #' df_for_plotting <- textCentrality(
 #'   data$harmonywords,
-#'   wordembeddings$harmonywords,
-#'   wordembeddings$singlewords_we
+#'   word_embeddings$harmonywords,
+#'   word_embeddings$singlewords_we
 #' )
 #' df_for_plotting
 #' @seealso see \code{\link{textCentralityPlot}}  \code{\link{textProjection}}
@@ -32,21 +32,21 @@
 #' @importFrom tibble tibble
 #' @export
 textCentrality <- function(words,
-                           wordembeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
-                           single_wordembeddings = single_wordembeddings_df,
+                           word_embeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
+                           single_word_embeddings = single_word_embeddings_df,
                            aggregation = "mean",
                            # word_weight_power = 1,
                            min_freq_words_test = 0) {
   textCentrality_description <- paste("words =", substitute(words),
-    "wordembeddings =", comment(wordembeddings),
-    "single_wordembeddings =", comment(single_wordembeddings),
+    "word_embeddings =", comment(word_embeddings),
+    "single_word_embeddings =", comment(single_word_embeddings),
     "aggregation =", aggregation,
     "min_freq_words_test =", min_freq_words_test,
     collapse = " "
   )
 
   # Create Central Point by aggregating all word embeddings
-  Central_Point <- textEmbeddingAggregation(wordembeddings, aggregation = "mean")
+  Central_Point <- textEmbeddingAggregation(word_embeddings, aggregation = "mean")
 
   # Select embeddings for unique words
   # Group 1: getting unique words and their frequency min_freq_words_test=3
@@ -54,7 +54,7 @@ textCentrality <- function(words,
   all_unique_freq_words_min_freq <- all_unique_freq_words[all_unique_freq_words$n >= min_freq_words_test, ]
 
   # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
-  all_single_wordembedding_a <- lapply(all_unique_freq_words_min_freq$words, applysemrep, single_wordembeddings)
+  all_single_wordembedding_a <- lapply(all_unique_freq_words_min_freq$words, applysemrep, single_word_embeddings)
   all_single_wordembedding_a1 <- dplyr::bind_rows(all_single_wordembedding_a)
 
   # Compute Cosine

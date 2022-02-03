@@ -64,7 +64,9 @@ reference:
 - title: Plot words in the word embedding space
   contents:
     - textProjection
+    - textPlot
     - textProjectionPlot
+    - textWordPrediction
     - textCentrality
     - textCentralityPlot
     - textPCA
@@ -72,7 +74,7 @@ reference:
 - title: Example Data
   contents:
     - Language_based_assessment_data_8
-    - wordembeddings4
+    - word_embeddings_4
     - Language_based_assessment_data_3_100
     - DP_projections_HILS_SWLS_100
     - centrality_data_harmony

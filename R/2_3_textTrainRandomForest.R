@@ -485,7 +485,7 @@ summarize_tune_results_rf <- function(object,
 #' @examples
 #' \donttest{
 #'results <- textTrainRandomForest(
-#'  wordembeddings4$harmonywords,
+#'  word_embeddings_4$harmonywords,
 #'  as.factor(Language_based_assessment_data_8$gender),
 #'  trees = c(1000, 1500),
 #'  mtry  = c(1), # this is short because of testing

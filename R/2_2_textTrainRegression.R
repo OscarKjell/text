@@ -419,7 +419,7 @@ summarize_tune_results <- function(object,
   )
 }
 
-#x <-  wordembeddings4$harmonytext
+#x <-  word_embeddings_4$harmonytext
 #y <- Language_based_assessment_data_8$hilstotal
 #
 #cv_method = "validation_split"
@@ -446,11 +446,12 @@ summarize_tune_results <- function(object,
 
 
 #textTrainRegression(
-#  x = wordembeddings4[1:2],
+#  x = word_embeddings_4[1:2],
 #  y = Language_based_assessment_data_8$hilstotal,
 #  preprocess_PCA = c(2, 13)
 #)
 
+# UNRELIABLE VALUE: Future (‘<none>’) unexpectedly generated random numbers without specifying argument 'seed'. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'seed=NULL', or set option 'future.rng.onMisuse' to "ignore".
 
 
 # devtools::document()
@@ -489,7 +490,7 @@ summarize_tune_results <- function(object,
 #' This option is currently only possible for one embedding at the time.
 #' @param method_cor Type of correlation used in evaluation (default "pearson";
 #' can set to "spearman" or "kendall").
-#' @param impute_missing default FALSE (can be set to TRUE if something else than wordembeddings are trained).
+#' @param impute_missing default FALSE (can be set to TRUE if something else than word_embeddings are trained).
 #' @param model_description Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it (i.e., only on unix, not windows). Hence it
 #' makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
@@ -501,7 +502,7 @@ summarize_tune_results <- function(object,
 #' @examples
 #' \donttest{
 #' results <- textTrainRegression(
-#'   wordembeddings4$harmonytext,
+#'   word_embeddings_4$harmonytext,
 #'   Language_based_assessment_data_8$hilstotal,
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
@@ -696,6 +697,7 @@ textTrainRegression <- function(x,
     # The object tuning_results is a list of data frames for each of the OUTER resamples.
     # help(future_map)
     tuning_results <- furrr::future_map(
+      .options = furrr::furrr_options(seed = seed),
       .x = results_nested_resampling$inner_resamples,
       .f = summarize_tune_results,
       model = model,
@@ -710,7 +712,6 @@ textTrainRegression <- function(x,
       impute_missing = impute_missing
     )
   }
-
 
   # Function to get the lowest eval_measure_val
   if(eval_measure %in% c("accuracy" , "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", "roc_auc", "rsq", "cor_test")) {

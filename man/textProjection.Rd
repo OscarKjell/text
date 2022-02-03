@@ -6,8 +6,8 @@
 \usage{
 textProjection(
   words,
-  wordembeddings,
-  single_wordembeddings = single_wordembeddings_df,
+  word_embeddings,
+  single_word_embeddings = single_word_embeddings_df,
   x,
   y = NULL,
   pca = NULL,
@@ -23,10 +23,10 @@ textProjection(
 \arguments{
 \item{words}{Word or text variable to be plotted.}
 
-\item{wordembeddings}{Word embeddings from textEmbed for the words to be plotted
+\item{word_embeddings}{Word embeddings from textEmbed for the words to be plotted
 (i.e., the aggregated word embeddings for the "words" parameter).}
 
-\item{single_wordembeddings}{Word embeddings from textEmbed for individual words
+\item{single_word_embeddings}{Word embeddings from textEmbed for individual words
 (i.e., decontextualized embeddings).}
 
 \item{x}{Numeric variable that the words should be plotted according to on the x-axes.}
@@ -68,13 +68,13 @@ Compute Supervised Dimension Projection and related variables for plotting words
 }
 \examples{
 # Data
-wordembeddings <- wordembeddings4
+word_embeddings <- word_embeddings_4
 raw_data <- Language_based_assessment_data_8
 # Pre-processing data for plotting
 df_for_plotting <- textProjection(
   words = raw_data$harmonywords,
-  wordembeddings = wordembeddings$harmonywords,
-  single_wordembeddings = wordembeddings$singlewords_we,
+  word_embeddings = word_embeddings$harmonywords,
+  single_word_embeddings = word_embeddings$singlewords_we,
   x = raw_data$hilstotal,
   split = "mean",
   Npermutations = 10,

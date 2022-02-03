@@ -396,7 +396,7 @@ textEmbedLayersOutput <- function(x,
 #' \donttest{
 #' # word_embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1],
 #' # layers = 11:12)
-#' # wordembeddings <- textEmbedLayerAggregation(word_embeddings_layers$context, layers = 11)
+#' # word_embeddings <- textEmbedLayerAggregation(word_embeddings_layers$context, layers = 11)
 #' }
 #' @seealso see \code{\link{textEmbedLayersOutput}} and \code{\link{textEmbed}}
 #' @importFrom dplyr %>% bind_rows
@@ -535,13 +535,13 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' \donttest{
 #' # x <- Language_based_assessment_data_8[1:2, 1:2]
 #' # Example 1
-#' # wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
+#' # word_embeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
 #' # Show information that have been saved with the embeddings about how they were constructed
-#' # comment(wordembeddings$satisfactionwords)
-#' # comment(wordembeddings$singlewords_we)
-#' # comment(wordembeddings)
+#' # comment(word_embeddings$satisfactionwords)
+#' # comment(word_embeddings$singlewords_we)
+#' # comment(word_embeddings)
 #' # Example 2
-#' # wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
+#' # word_embeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbedLayersOutput}}
 #' @export

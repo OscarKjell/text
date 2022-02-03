@@ -1,5 +1,5 @@
-#x <- wordembeddings4$harmonytexts[1:5,]
-#y <- wordembeddings4$satisfactiontexts
+#x <- word_embeddings_4$harmonytexts[1:5,]
+#y <- word_embeddings_4$satisfactiontexts
 #method = "paired"
 #method = "unpaired"
 #Npermutations = 100
@@ -22,8 +22,8 @@
 #' @param seed Set different seed.
 #' @return A list with a p-value, cosine_estimate and permuted values if output.permutations=TRUE.
 #' @examples
-#' x <- wordembeddings4$harmonywords
-#' y <- wordembeddings4$satisfactionwords
+#' x <- word_embeddings_4$harmonywords
+#' y <- word_embeddings_4$satisfactionwords
 #' textSimilarityTest(x,
 #'   y,
 #'   method = "paired",

@@ -7,7 +7,7 @@ single words are trained to predict the mean value associated with that word.}
 \usage{
 textWordPrediction(
   words,
-  single_wordembeddings = single_wordembeddings_df,
+  single_word_embeddings = single_word_embeddings_df,
   x,
   y = NULL,
   seed = 1003,
@@ -18,7 +18,7 @@ textWordPrediction(
 \arguments{
 \item{words}{Word or text variable to be plotted.}
 
-\item{single_wordembeddings}{Word embeddings from textEmbed for individual words
+\item{single_word_embeddings}{Word embeddings from textEmbed for individual words
 (i.e., decontextualized embeddings).}
 
 \item{x}{Numeric variable that the words should be plotted according to on the x-axes.}
@@ -45,7 +45,7 @@ single words are trained to predict the mean value associated with that word.
 \dontrun{
 df_for_plotting <- textWordPrediction(
   words = Language_based_assessment_data_8$harmonywords,
-  single_wordembeddings = wordembeddings4$singlewords_we,
+  single_word_embeddings = word_embeddings_4$singlewords_we,
   x = Language_based_assessment_data_8$hilstotal
 )
 df_for_plotting

@@ -22,7 +22,7 @@ Predicted scores from word embeddings.
 Predict scores or classification from, e.g., textTrain.
 }
 \examples{
-wordembeddings <- wordembeddings4
+word_embeddings <- word_embeddings_4
 ratings_data <- Language_based_assessment_data_8
 }
 \seealso{

@@ -14,10 +14,10 @@
 #' @return A correlation between predicted and observed values; as well as a tibble of predicted values.
 #' @examples
 #' \dontrun{
-#' wordembeddings <- wordembeddings4
+#' word_embeddings <- word_embeddings_4
 #' ratings_data <- Language_based_assessment_data_8
 #' results <- textTrain(
-#'   wordembeddings$harmonytext,
+#'   word_embeddings$harmonytext,
 #'   ratings_data$hilstotal
 #' )
 #' }
@@ -242,10 +242,10 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' @return Correlations between predicted and observed values.
 #' @examples
 #' \dontrun{
-#' wordembeddings <- wordembeddings4[1:2]
+#' word_embeddings <- word_embeddings_4[1:2]
 #' ratings_data <- Language_based_assessment_data_8[5:6]
 #' results <- textTrainLists(
-#'   wordembeddings,
+#'   word_embeddings,
 #'   ratings_data
 #' )
 #' results
@@ -377,7 +377,7 @@ textTrainLists <- function(x,
 #' @param ... Setting trom stats::predict can be called.
 #' @return Predicted scores from word embeddings.
 #' @examples
-#' wordembeddings <- wordembeddings4
+#' word_embeddings <- word_embeddings_4
 #' ratings_data <- Language_based_assessment_data_8
 #' @seealso see \code{\link{textTrain}} \code{\link{textTrainLists}}
 #' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}

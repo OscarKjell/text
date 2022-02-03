@@ -7,6 +7,13 @@
 - New functions being tested: textWordPredictions() (which has a trial period/not fully developed and might be removed in future versions); p-values are not yet implemented.
 - Possibility to use textPlot() for objects from both textProjection() and textWordPredictions()
 
+
+### Minor changes
+- Changed wordembeddigs to word_embeddings through out the code/package.
+
+### Bug Fixes
+- Warnings about seed when using multi cores on Mac is addressed. 
+
 # text 0.9.17
 ### New Features
 - textrpp_initiate() runs automatically in library(text) when default environment exits

@@ -7,8 +7,8 @@ and the aggregated word embedding of all words.}
 \usage{
 textCentrality(
   words,
-  wordembeddings,
-  single_wordembeddings = single_wordembeddings_df,
+  word_embeddings,
+  single_word_embeddings = single_word_embeddings_df,
   aggregation = "mean",
   min_freq_words_test = 0
 )
@@ -16,10 +16,10 @@ textCentrality(
 \arguments{
 \item{words}{Word or text variable to be plotted.}
 
-\item{wordembeddings}{Word embeddings from textEmbed for the words to be plotted
+\item{word_embeddings}{Word embeddings from textEmbed for the words to be plotted
 (i.e., the aggregated word embeddings for the "words" variable).}
 
-\item{single_wordembeddings}{Word embeddings from textEmbed for individual words
+\item{single_word_embeddings}{Word embeddings from textEmbed for individual words
 (i.e., the decontextualized word embeddings).}
 
 \item{aggregation}{Method to aggregate the word embeddings
@@ -38,12 +38,12 @@ Compute cosine semantic similarity score between single words' word embeddings
 and the aggregated word embedding of all words.
 }
 \examples{
-wordembeddings <- wordembeddings4
+word_embeddings <- word_embeddings_4
 data <- Language_based_assessment_data_8
 df_for_plotting <- textCentrality(
   data$harmonywords,
-  wordembeddings$harmonywords,
-  wordembeddings$singlewords_we
+  word_embeddings$harmonywords,
+  word_embeddings$singlewords_we
 )
 df_for_plotting
 }

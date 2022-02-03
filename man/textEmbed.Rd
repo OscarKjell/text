@@ -92,13 +92,13 @@ Extract layers and aggregate them to word embeddings, for all character variable
 \donttest{
 # x <- Language_based_assessment_data_8[1:2, 1:2]
 # Example 1
-# wordembeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
+# word_embeddings <- textEmbed(x, layers = 9:11, context_layers = 11, decontext_layers = 9)
 # Show information that have been saved with the embeddings about how they were constructed
-# comment(wordembeddings$satisfactionwords)
-# comment(wordembeddings$singlewords_we)
-# comment(wordembeddings)
+# comment(word_embeddings$satisfactionwords)
+# comment(word_embeddings$singlewords_we)
+# comment(word_embeddings)
 # Example 2
-# wordembeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
+# word_embeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 }
 }
 \seealso{

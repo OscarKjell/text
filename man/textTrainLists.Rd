@@ -50,10 +50,10 @@ several text variables to one numeric/categorical variable. It is not possible t
 }
 \examples{
 \dontrun{
-wordembeddings <- wordembeddings4[1:2]
+word_embeddings <- word_embeddings_4[1:2]
 ratings_data <- Language_based_assessment_data_8[5:6]
 results <- textTrainLists(
-  wordembeddings,
+  word_embeddings,
   ratings_data
 )
 results

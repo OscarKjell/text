@@ -42,7 +42,7 @@ Imports:
     future,
     furrr,
     overlapping
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.2
 Suggests: 
     knitr,
     rmarkdown,
