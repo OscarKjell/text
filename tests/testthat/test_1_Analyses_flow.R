@@ -7,7 +7,7 @@ library(text)
 context("Big analyses flow")
 
 
-#testing_size_model_NEW2_New <- textTrainRegression(wordembeddings4$harmonywords, Language_based_assessment_data_8$hilstotal)
+#testing_size_model_NEW2_New <- textTrainRegression(word_embeddings_4$harmonywords, Language_based_assessment_data_8$hilstotal)
 
 #
 

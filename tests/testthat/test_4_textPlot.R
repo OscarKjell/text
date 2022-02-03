@@ -9,13 +9,13 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
   skip_on_cran()
 
   # Data
-  wordembeddings <- wordembeddings4
+  word_embeddings <- word_embeddings_4
   data <- Language_based_assessment_data_8
   # Pre-processing data for plotting
   df_for_plotting <- textProjection(
     data$harmonywords[1:5],
-    wordembeddings$harmonywords[1:5, ],
-    wordembeddings$singlewords_we,
+    word_embeddings$harmonywords[1:5, ],
+    word_embeddings$singlewords_we,
     data$hilstotal[1:5],
     split = "mean",
     Npermutations = 2,
@@ -32,17 +32,17 @@ test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tib
   skip_on_cran()
 
   # Data
-  wordembeddings <- wordembeddings4
+  word_embeddings <- word_embeddings_4
   data <- Language_based_assessment_data_8
   harmonywords <- data$harmonywords[1:12]
-  harmonywordembeddings <- wordembeddings$harmonywords[1:12, ]
-  wordembeddingssinglewords_we <- wordembeddings$singlewords_we
+  harmonyword_embeddings <- word_embeddings$harmonywords[1:12, ]
+  word_embeddingssinglewords_we <- word_embeddings$singlewords_we
   hilstotal <- data$hilstotal[1:12]
   swlstotal <- data$swlstotal[1:12]
   # Pre-processing data for plotting
   df_for_plotting <- textProjection(harmonywords,
-    harmonywordembeddings,
-    wordembeddingssinglewords_we,
+    harmonyword_embeddings,
+    word_embeddingssinglewords_we,
     hilstotal,
     swlstotal,
     split = "quartile",
@@ -146,12 +146,12 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
 test_that("textCentrality produces a tibble with character variable and numeric variable.", {
   skip_on_cran()
 
-  wordembeddings <- wordembeddings4
+  word_embeddings <- word_embeddings_4
   data <- Language_based_assessment_data_8
   df_for_plotting <- textCentrality(
     data$harmonywords[1:2],
-    wordembeddings$harmonywords[1:2, ],
-    wordembeddings$singlewords_we
+    word_embeddings$harmonywords[1:2, ],
+    word_embeddings$singlewords_we
   )
 
 
@@ -196,7 +196,7 @@ test_that("textCentrality produces a tibble with character variable and numeric 
 
   df_for_plotting2d <- textPCA(
     words = Language_based_assessment_data_8$harmonywords,
-    single_wordembeddings = wordembeddings4$singlewords_we
+    single_word_embeddings = word_embeddings_4$singlewords_we
   )
   df_for_plotting2d
 
