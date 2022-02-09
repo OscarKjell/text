@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - {os: macOS-latest,   r: 'release'}
+          - {os: macOS-latest,   r: 'release'}
 #          - {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,  r: 'release'}
 
@@ -101,47 +101,6 @@ jobs:
           text::textEmbed("hello")
         shell: Rscript {0}
 
-#      - name: UBUNTU - Installing text and testing it
-#        if: runner.os == 'Linux'
-#        run:  |
-#          Sys.setenv(RETICULATE_PYTHON = "/usr/bin/python3")
-#          library(reticulate)
-#          reticulate::virtualenv_create("text_virtualenv", required = TRUE)
-#          reticulate::use_virtualenv("text_virtualenv", required = TRUE)
-#          reticulate::py_install("nltk", envname = "text_virtualenv")
-#          reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
-#          reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
-#          reticulate::py_install("numpy", envname = "text_virtualenv")
-#          reticulate::py_config()
-#          install.packages("devtools")
-#          library(devtools)
-#          devtools::install_github("oscarkjell/text")
-#          library(text)
-#          reticulate::use_virtualenv("text_virtualenv", required = TRUE)
-#          text::textEmbed("hello")
-#        shell: Rscript {0}
-
-
-
-#      - name: UBUNTU - Installing text and testing it
-#        if: runner.os == 'Linux'
-#        run:  |
-#          Sys.setenv(RETICULATE_PYTHON = "/usr/bin/python3")
-#          library(reticulate)
-#          reticulate::virtualenv_create("text_virtualenv", required = TRUE)
-#          reticulate::use_virtualenv("text_virtualenv", required = TRUE)
-#          reticulate::py_install("nltk", envname = "text_virtualenv")
-#          reticulate::py_install('transformers==4.12.5', envname = "text_virtualenv")
-#          reticulate::py_install('torch==1.7.1', envname = "text_virtualenv")
-#          reticulate::py_install("numpy", envname = "text_virtualenv")
-#          reticulate::py_config()
-#          install.packages("devtools")
-#          library(devtools)
-#          devtools::install_github("oscarkjell/text")
-#          library(text)
-#          reticulate::use_virtualenv("text_virtualenv", required = TRUE)
-#          text::textEmbed("hello")
-#        shell: Rscript {0}
 
       - name: WINDOWS - Installing text and testing it
         if: runner.os == 'Windows'
