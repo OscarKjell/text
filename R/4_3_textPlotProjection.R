@@ -53,7 +53,7 @@
 #' @importFrom purrr as_vector
 #' @export
 textProjection <- function(words,
-                           word_embeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
+                           word_embeddings,
                            single_word_embeddings = single_word_embeddings_df,
                            x,
                            y = NULL,
@@ -119,7 +119,8 @@ textProjection <- function(words,
     x <- tibble::tibble(x, y)
   }
 
-  # Creating a list for the x and y dimensions; and one to save aggregated word embeddings and dot product null distributions for both x and y
+  # Creating a list for the x and y dimensions; and one to save aggregated word embeddings and
+  # dot product null distributions for both x and y
   # so that these can be saved and used for when manually adding words to the plot in the next step.
   word_data_list <- list()
   aggregated_embeddings_dot_null_distribution <- list()
@@ -211,8 +212,8 @@ textProjection <- function(words,
         dplyr::mutate(., n1 = n^word_weight_power) %>%
         tidyr::uncount(n1)
 
-
-      ## Get dataframe with ALL embeddings to randomly draw from (without log transformed, and quartiles) for Comparison distribution
+      ## Get dataframe with ALL embeddings to randomly draw from (without log transformed, and quartiles)
+      # for Comparison distribution
       words_group1_agg_single_wordembedding_e <- cbind(words_group1b_freq, words_group1_single_wordembedding_b)
       words_group1_agg_single_wordembedding_f <- words_group1_agg_single_wordembedding_e %>%
         dplyr::mutate(., n1_e = n) %>%
@@ -223,8 +224,10 @@ textProjection <- function(words,
         dplyr::mutate(., n1_e = n) %>%
         tidyr::uncount(n1_e)
 
-      words_group1_2_agg_single_wordembedding_e <- rbind(words_group1_agg_single_wordembedding_f, words_group2_agg_single_wordembedding_f)
-      words_group1_2_agg_single_wordembedding_e1 <- dplyr::select(words_group1_2_agg_single_wordembedding_e, dplyr::starts_with("Dim"))
+      words_group1_2_agg_single_wordembedding_e <- rbind(words_group1_agg_single_wordembedding_f,
+                                                         words_group2_agg_single_wordembedding_f)
+      words_group1_2_agg_single_wordembedding_e1 <- dplyr::select(words_group1_2_agg_single_wordembedding_e,
+                                                                  dplyr::starts_with("Dim"))
 
       # Interval: No split. Weighting embeddings according to interval scale.
     } else if (split == "no") {
@@ -247,7 +250,6 @@ textProjection <- function(words,
       words_single_wordembedding <- lapply(words_values_sep$words, applysemrep, single_word_embeddings)
       words_single_wordembedding_b <- dplyr::bind_rows(words_single_wordembedding)
       words_single_wordembedding_c <- dplyr::bind_cols(words_values_sep, words_single_wordembedding_b)
-      # words_single_wordembedding_c <- tibble::as_tibble(words_single_wordembedding_c)
 
       # weight the word embeddings with the value weight
       weights <- words_single_wordembedding_c$value^word_weight_power
@@ -262,16 +264,20 @@ textProjection <- function(words,
       weight_rev <- (max(words_single_wordembedding_c$value) + 1 - words_single_wordembedding_c$value)^word_weight_power
       words_group1_agg_single_wordembedding_d <- tibble::as_tibble((words_single_wordembedding_d_scaled * weight_rev) / mean(weight_rev))
 
-      ## Get dataframe with ALL embeddings to randomly draw from (without log transformed, and quartiles) for Comparison distribution
+      ## Get dataframe with ALL embeddings to randomly draw from (without log transformed,
+      # and quartiles) for Comparison distribution
       # Shuffle weights/values
       weights_shuffled <- sample(words_single_wordembedding_c$value, replace = FALSE)
-      words_single_wordembedding_d_weights_shuffled <- tibble::as_tibble((words_single_wordembedding_d_scaled * weights_shuffled) / mean(weights_shuffled))
+      words_single_wordembedding_d_weights_shuffled <- tibble::as_tibble((words_single_wordembedding_d_scaled * weights_shuffled) /
+                                                                           mean(weights_shuffled))
 
       words_group1_2_agg_single_wordembedding_e1 <- words_single_wordembedding_d_weights_shuffled
     }
 
-    Aggregated_word_embedding_group1 <- textEmbeddingAggregation(dplyr::select(words_group1_agg_single_wordembedding_d, dplyr::starts_with("Dim")), aggregation = aggregation)
-    Aggregated_word_embedding_group2 <- textEmbeddingAggregation(dplyr::select(words_group2_agg_single_wordembedding_d, dplyr::starts_with("Dim")), aggregation = aggregation)
+    Aggregated_word_embedding_group1 <- textEmbeddingAggregation(dplyr::select(words_group1_agg_single_wordembedding_d,
+                                                                               dplyr::starts_with("Dim")), aggregation = aggregation)
+    Aggregated_word_embedding_group2 <- textEmbeddingAggregation(dplyr::select(words_group2_agg_single_wordembedding_d,
+                                                                               dplyr::starts_with("Dim")), aggregation = aggregation)
 
     ######  Project embedding ####
     projected_embedding <- Aggregated_word_embedding_group2 - Aggregated_word_embedding_group1
@@ -294,7 +300,8 @@ textProjection <- function(words,
     }
 
     # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
-    embedding_to_anchour_with <- tibble::as_tibble_row((Aggregated_word_embedding_group2 + Aggregated_word_embedding_group1) / 2)
+    embedding_to_anchour_with <- tibble::as_tibble_row((Aggregated_word_embedding_group2 +
+                                                          Aggregated_word_embedding_group1) / 2)
 
     embedding_to_anchour_with <- embedding_to_anchour_with %>%
       dplyr::slice(rep(1:dplyr::n(), each = nrow(all_unique_words_we_b)))
@@ -311,14 +318,13 @@ textProjection <- function(words,
 
 
     # Computing the dot product projection for the aggregated and projected embeddings
-    all_aggregated <- dplyr::bind_rows(Aggregated_word_embedding_group1, Aggregated_word_embedding_group2, projected_embedding)
+    all_aggregated <- dplyr::bind_rows(Aggregated_word_embedding_group1,
+                                       Aggregated_word_embedding_group2, projected_embedding)
 
     projected_embedding_a <- tibble::as_tibble_row(projected_embedding) %>%
       dplyr::slice(rep(1:dplyr::n(), each = nrow(all_aggregated)))
 
     dot_products_all_aggregated <- rowSums(all_aggregated * projected_embedding_a)
-
-    # dot_products_all_aggregated <- rowSums(all_aggregated * t(replicate(nrow(all_aggregated), projected_embedding)))
 
     DP_aggregate <- tibble::as_tibble_col(c("Group1*", "Group2*", "projected_embedding"), column_name = "words")
     DP_aggregate$n <- c(0, 0, 0)
@@ -340,9 +346,11 @@ textProjection <- function(words,
       # Randomly split word embeddings into two groups: words_group1_2_agg_single_wordembedding_e1
       ind <- sample(c(TRUE, FALSE), nrow(words_group1_2_agg_single_wordembedding_e1), replace = TRUE)
       Aggregated_word_embedding_group1_random <- words_group1_2_agg_single_wordembedding_e1[ind, ]
-      Aggregated_word_embedding_group1_random <- textEmbeddingAggregation(Aggregated_word_embedding_group1_random, aggregation = "mean")
+      Aggregated_word_embedding_group1_random <- textEmbeddingAggregation(Aggregated_word_embedding_group1_random,
+                                                                          aggregation = "mean")
       Aggregated_word_embedding_group2_random <- words_group1_2_agg_single_wordembedding_e1[!ind, ]
-      Aggregated_word_embedding_group2_random <- textEmbeddingAggregation(Aggregated_word_embedding_group2_random, aggregation = "mean")
+      Aggregated_word_embedding_group2_random <- textEmbeddingAggregation(Aggregated_word_embedding_group2_random,
+                                                                          aggregation = "mean")
       projected_embedding_random <- Aggregated_word_embedding_group2_random - Aggregated_word_embedding_group1_random
 
       # Select random word embeddings according to setting
@@ -357,7 +365,8 @@ textProjection <- function(words,
       Aggregated_word_embedding_group2_long <- tibble::as_tibble_row(Aggregated_word_embedding_group2) %>%
         dplyr::slice(rep(1:dplyr::n(), each = nrow(random_group2_embedding)))
 
-      words_positioned_embeddings_random <- random_group2_embedding - (Aggregated_word_embedding_group2_long + Aggregated_word_embedding_group1) / 2
+      words_positioned_embeddings_random <- random_group2_embedding - (Aggregated_word_embedding_group2_long +
+                                                                         Aggregated_word_embedding_group1) / 2
 
       # project the embeddings using dot products
 
@@ -509,8 +518,8 @@ textProjection <- function(words,
 #' (i.e., even if not significant; per dimensions, where duplicates are removed).
 #' @param plot_n_word_frequency Number of words based on being most frequent.
 #' (i.e., even if not significant).
-#' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised Dimension Projection score
-#' (i.e., even if not significant;  per dimensions, where duplicates are removed).
+#' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised
+#' Dimension Projection score (i.e., even if not significant;  per dimensions, where duplicates are removed).
 #' @param title_top Title (default "  ")
 #' @param titles_color Color for all the titles (default: "#61605e")
 # @param x_axes If TRUE, plotting on the x_axes.
@@ -527,8 +536,9 @@ textProjection <- function(words,
 #' @param scale_y_axes_lim Manually set the length of the y-axes (default = NULL; which uses
 #' ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c(-5, 5)).
 #' @param word_font Font type (default: NULL).
-#' @param bivariate_color_codes The different colors of the words. Note that, at the moment, two squares should not have the
-#' exact same colour-code because the numbers within the squares of the legend will then be aggregated (and show the same, incorrect  value).
+#' @param bivariate_color_codes The different colors of the words. Note that, at the moment,
+#' two squares should not have the exact same colour-code because the numbers within the
+#' squares of the legend will then be aggregated (and show the same, incorrect  value).
 #' (default: c("#398CF9", "#60A1F7", "#5dc688",
 #' "#e07f6a", "#EAEAEA", "#40DD52",
 #' "#FF0000", "#EA7467", "#85DB8E")).
@@ -553,20 +563,28 @@ textProjection <- function(words,
 #' @param group_embeddings1 Shows a point representing the aggregated word embedding for group 1 (default = FALSE).
 #' @param group_embeddings2 Shows a point representing the aggregated word embedding for group 2 (default = FALSE).
 #' @param projection_embedding Shows a point representing the aggregated direction embedding (default = FALSE).
-#' @param aggregated_point_size Size of the points representing the group_embeddings1, group_embeddings2 and projection_embedding
-#' @param aggregated_shape Shape type of the points representing the group_embeddings1, group_embeddings2 and projection_embeddingd
+#' @param aggregated_point_size Size of the points representing the group_embeddings1,
+#' group_embeddings2 and projection_embedding
+#' @param aggregated_shape Shape type of the points representing the group_embeddings1,
+#' group_embeddings2 and projection_embeddingd
 #' @param aggregated_color_G1 Color
 #' @param aggregated_color_G2 Color
 #' @param projection_color Color
 #' @param seed Set different seed.
-#' @param explore_words Explore where specific words are positioned in the embedding space. For example, c("happy content", "sad down").
-#' @param explore_words_color Specify the color(s) of the words being explored. For example c("#ad42f5", "green")
-#' @param explore_words_point Specify the names of the point for the aggregated word embeddings of all the explored words.
+#' @param explore_words Explore where specific words are positioned in the embedding space.
+#' For example, c("happy content", "sad down").
+#' @param explore_words_color Specify the color(s) of the words being explored.
+#' For example c("#ad42f5", "green")
+#' @param explore_words_point Specify the names of the point for the aggregated word embeddings
+#' of all the explored words.
 #' @param explore_words_aggregation Specify how to aggregate the word embeddings of the explored words.
-#' @param remove_words manually remove words from the plot (which is done just before the words are plotted so that the remove_words are part of previous counts/analyses).
+#' @param remove_words manually remove words from the plot (which is done just before the words are
+#' plotted so that the remove_words are part of previous counts/analyses).
 #' @param space Provide a semantic space if using static embeddings and wanting to explore words.
-#' @param n_contrast_group_color Set color to words that have higher frequency (N) on the other opposite side of its dot product projection (default = NULL).
-#' @param n_contrast_group_remove Remove words that have higher frequency (N) on the other opposite side of its dot product projection (default = FALSE).
+#' @param n_contrast_group_color Set color to words that have higher frequency (N) on the other
+#' opposite side of its dot product projection (default = NULL).
+#' @param n_contrast_group_remove Remove words that have higher frequency (N) on the other
+#' opposite side of its dot product projection (default = FALSE).
 #' @param scaling Scaling word embeddings before aggregation.
 #' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
 #' @examples

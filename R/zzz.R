@@ -1,13 +1,19 @@
 
 .onAttach <- function(libname, pkgname) {
   if (!grepl(x = R.Version()$arch, pattern = "64")) {
-    warning("The text package requires running R on a 64-bit systems as it is dependent on torch from ptyhon; and you're system is not 64-bit.")
+    warning("The text package requires running R on a 64-bit systems
+            as it is dependent on torch from ptyhon; and you're
+            system is not 64-bit.")
   }
 
   packageStartupMessage(colourise(
-    "This is text (version 0.9.20). \n",
+    "This is text (version 0.9.50). \n",
     fg = "blue", bg = NULL
-  ), colourise("Text is new and still rapidly improving. \nNewer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art. \nPlease send us feedback based on your experience.",
+  ), colourise("Text is new and still rapidly improving.
+               \nNewer versions may have improved functions
+               and updated defaults to reflect current
+               understandings of the state-of-the-art. \nPlease
+               send us feedback based on your experience.",
     fg = "green", bg = NULL
   ))
 
@@ -16,7 +22,8 @@
   }
 }
 
-# Below function is from testthat: https://github.com/r-lib/testthat/blob/717b02164def5c1f027d3a20b889dae35428b6d7/R/colour-text.r
+# Below function is from testthat:
+# https://github.com/r-lib/testthat/blob/717b02164def5c1f027d3a20b889dae35428b6d7/R/colour-text.r
 #' Colourise text for display in the terminal.
 #'
 #' If R is not currently running in a system that supports terminal colours

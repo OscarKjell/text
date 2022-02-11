@@ -86,8 +86,8 @@ dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.}
 \item{plot_n_word_frequency}{Number of words based on being most frequent.
 (i.e., even if not significant).}
 
-\item{plot_n_words_middle}{Number of words plotted that are in the middle in Supervised Dimension Projection score
-(i.e., even if not significant;  per dimensions, where duplicates are removed).}
+\item{plot_n_words_middle}{Number of words plotted that are in the middle in Supervised
+Dimension Projection score (i.e., even if not significant;  per dimensions, where duplicates are removed).}
 
 \item{titles_color}{Color for all the titles (default: "#61605e")}
 
@@ -114,8 +114,9 @@ ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c
 
 \item{word_font}{Font type (default: NULL).}
 
-\item{bivariate_color_codes}{The different colors of the words. Note that, at the moment, two squares should not have the
-exact same colour-code because the numbers within the squares of the legend will then be aggregated (and show the same, incorrect  value).
+\item{bivariate_color_codes}{The different colors of the words. Note that, at the moment,
+two squares should not have the exact same colour-code because the numbers within the
+squares of the legend will then be aggregated (and show the same, incorrect  value).
 (default: c("#398CF9", "#60A1F7", "#5dc688",
 "#e07f6a", "#EAEAEA", "#40DD52",
 "#FF0000", "#EA7467", "#85DB8E")).}
@@ -160,9 +161,11 @@ exact same colour-code because the numbers within the squares of the legend will
 
 \item{projection_embedding}{Shows a point representing the aggregated direction embedding (default = FALSE).}
 
-\item{aggregated_point_size}{Size of the points representing the group_embeddings1, group_embeddings2 and projection_embedding}
+\item{aggregated_point_size}{Size of the points representing the group_embeddings1,
+group_embeddings2 and projection_embedding}
 
-\item{aggregated_shape}{Shape type of the points representing the group_embeddings1, group_embeddings2 and projection_embeddingd}
+\item{aggregated_shape}{Shape type of the points representing the group_embeddings1,
+group_embeddings2 and projection_embeddingd}
 
 \item{aggregated_color_G1}{Color}
 
@@ -172,19 +175,25 @@ exact same colour-code because the numbers within the squares of the legend will
 
 \item{seed}{Set different seed.}
 
-\item{explore_words}{Explore where specific words are positioned in the embedding space. For example, c("happy content", "sad down").}
+\item{explore_words}{Explore where specific words are positioned in the embedding space.
+For example, c("happy content", "sad down").}
 
-\item{explore_words_color}{Specify the color(s) of the words being explored. For example c("#ad42f5", "green")}
+\item{explore_words_color}{Specify the color(s) of the words being explored.
+For example c("#ad42f5", "green")}
 
-\item{explore_words_point}{Specify the names of the point for the aggregated word embeddings of all the explored words.}
+\item{explore_words_point}{Specify the names of the point for the aggregated word embeddings
+of all the explored words.}
 
 \item{explore_words_aggregation}{Specify how to aggregate the word embeddings of the explored words.}
 
-\item{remove_words}{manually remove words from the plot (which is done just before the words are plotted so that the remove_words are part of previous counts/analyses).}
+\item{remove_words}{manually remove words from the plot (which is done just before the words are
+plotted so that the remove_words are part of previous counts/analyses).}
 
-\item{n_contrast_group_color}{Set color to words that have higher frequency (N) on the other opposite side of its dot product projection (default = NULL).}
+\item{n_contrast_group_color}{Set color to words that have higher frequency (N) on the other
+opposite side of its dot product projection (default = NULL).}
 
-\item{n_contrast_group_remove}{Remove words that have higher frequency (N) on the other opposite side of its dot product projection (default = FALSE).}
+\item{n_contrast_group_remove}{Remove words that have higher frequency (N) on the other
+opposite side of its dot product projection (default = FALSE).}
 
 \item{space}{Provide a semantic space if using static embeddings and wanting to explore words.}
 

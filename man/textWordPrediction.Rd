@@ -3,7 +3,8 @@
 \name{textWordPrediction}
 \alias{textWordPrediction}
 \title{Compute predictions based on single words for plotting words. The word embeddings of
-single words are trained to predict the mean value associated with that word.}
+single words are trained to predict the mean value associated with that word. P-values does
+NOT work yet.}
 \usage{
 textWordPrediction(
   words,
@@ -37,7 +38,8 @@ for the individual words that is used for the plotting in the textProjectionPlot
 }
 \description{
 Compute predictions based on single words for plotting words. The word embeddings of
-single words are trained to predict the mean value associated with that word.
+single words are trained to predict the mean value associated with that word. P-values does
+NOT work yet.
 }
 \examples{
 # Data

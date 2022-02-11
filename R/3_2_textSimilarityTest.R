@@ -105,7 +105,9 @@ textSimilarityTest <- function(x,
   NULLresults <- unlist(distribution_mean_cosine_permutated)
 
   # Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution
-  p_value <- p_value_comparing_with_Null(NULLresults, Observedresult = results["cosine_estimate"], alternative = alternative)
+  p_value <- p_value_comparing_with_Null(NULLresults,
+                                         Observedresult = results["cosine_estimate"],
+                                         alternative = alternative)
   results["p.value"] <- p_value
   results <- as.list(results)
 
@@ -124,7 +126,8 @@ textSimilarityTest <- function(x,
   # Time
   T2_textSimilarityTest <- Sys.time()
   Time_textSimilarityTest <- T2_textSimilarityTest - T1_textSimilarityTest
-  Time_textSimilarityTest <- sprintf("Duration to run the test: %f %s", Time_textSimilarityTest, units(Time_textSimilarityTest))
+  Time_textSimilarityTest <- sprintf("Duration to run the test: %f %s", Time_textSimilarityTest,
+                                     units(Time_textSimilarityTest))
   Date_textSimilarityTest <- Sys.time()
   time_date <- paste(Time_textSimilarityTest,
     "; Date created: ", Date_textSimilarityTest,

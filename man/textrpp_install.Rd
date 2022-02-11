@@ -55,15 +55,17 @@ package manager with conda-forge channel will be used for installing rpp.}
 \item{pip_version}{character;}
 }
 \description{
-Install text required python packages (rpp) in a self-contained environment.  For macOS and Linux-based systems, this will
-  also install Python itself via a "miniconda" environment, for
+Install text required python packages (rpp) in a self-contained environment.
+For macOS and Linux-based systems, this will also install Python itself via a "miniconda" environment, for
   \code{textrpp_install}.  Alternatively, an existing conda installation may be
   used, by specifying its path.  The default setting of \code{"auto"} will
   locate and use an existing installation automatically, or download and
   install one if none exists.
 
   For Windows, automatic installation of miniconda installation is not currently
-  available, so the user will need to \href{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda (or Anaconda) manually}.
+  available, so the user will need to
+  \href{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda
+   (or Anaconda) manually}.
 
 If you wish to install Python in a "virtualenv", use the
   \code{textrpp_install_virtualenv} function. It requires that you have a python version

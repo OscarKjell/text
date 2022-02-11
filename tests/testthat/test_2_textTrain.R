@@ -196,7 +196,9 @@ test_that("textTrain Random Forest produces list of results with prediction bein
 
 
 
-test_that("textTrainRandomForest with Extremely Randomized Trees produces list of results with prediction being categorical", {
+test_that("textTrainRandomForest with Extremely
+          Randomized Trees produces list of results
+          with prediction being categorical", {
   skip_on_cran()
 
   example_categories <- as.factor(c(
@@ -275,26 +277,6 @@ test_that("textTrainRandomForest with Extremely Randomized Trees produces list o
 
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
   skip_on_cran()
-
-  #  [BELOW WORKS ON MY MAC BUT NOT ON GITHUB ACTIONS; NOT SURE WHY]
-  #  # Two word embeddings and one vector
-  #  results <- textTrain(word_embeddings_4[1:2],
-  #    Language_based_assessment_data_8$hilstotal,
-  #    outside_folds = 2,
-  #    inside_folds = 9/10,
-  #    outside_strata_y = NULL,
-  #    inside_strata_y = NULL,
-  #    #preprocess_PCA = c(0.90),
-  #    model = "regression",
-  #    penalty = c(2),
-  #    mixture = c(0),
-  #    force_train_method = "regression",
-  #    method_cor = "spearman",
-  #    multi_cores = "multi_cores_sys_default"
-  #  )
-  #
-  #  testthat::expect_that(results, testthat::is_a("list"))
-  #  testthat::expect_is(results$results$rho_correlation[1], "character")
 
   # One word embedding and two rating scales help(textTrainRegression)
   results_or <- textTrainLists(word_embeddings_4$harmonywords,

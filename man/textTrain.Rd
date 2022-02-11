@@ -7,19 +7,25 @@
 textTrain(x, y, force_train_method = "automatic", ...)
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation). Can analyze several variables at the same time; but if training to several
-outcomes at the same time use a tibble within the list as input rather than just a tibble input (i.e., keep the name of the wordembedding).}
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation).
+Can analyze several variables at the same time; but if training to several
+outcomes at the same time use a tibble within the list as input rather than just a
+tibble input (i.e., keep the name of the wordembedding).}
 
-\item{y}{Numeric variable to predict. Can be several; although then make sure to have them within a tibble (this is required
+\item{y}{Numeric variable to predict. Can be several; although then make
+sure to have them within a tibble (this is required
 even if it is only one outcome but several word embeddings variables).}
 
-\item{force_train_method}{default is "automatic", so if y is a factor random_forest is used, and if y is numeric ridge regression
+\item{force_train_method}{default is "automatic", so if y is a factor
+random_forest is used, and if y is numeric ridge regression
 is used. This can be overridden using "regression" or "random_forest".}
 
-\item{...}{Arguments from textTrainRegression or textTrainRandomForest the textTrain function.}
+\item{...}{Arguments from textTrainRegression or textTrainRandomForest
+the textTrain function.}
 }
 \value{
-A correlation between predicted and observed values; as well as a tibble of predicted values.
+A correlation between predicted and observed values; as well as a
+ tibble of predicted values.
 }
 \description{
 Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.

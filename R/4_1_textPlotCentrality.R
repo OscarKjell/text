@@ -29,10 +29,9 @@
 #' @importFrom tibble tibble
 #' @export
 textCentrality <- function(words,
-                           word_embeddings, # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
+                           word_embeddings,
                            single_word_embeddings = single_word_embeddings_df,
                            aggregation = "mean",
-                           # word_weight_power = 1,
                            min_freq_words_test = 0) {
   textCentrality_description <- paste("words =", substitute(words),
     "word_embeddings =", comment(word_embeddings),
@@ -135,7 +134,8 @@ textCentrality <- function(words,
 #' # )
 #' # centrality_plot
 #' @importFrom dplyr arrange slice filter between left_join transmute mutate case_when
-#' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme theme_void theme_minimal aes labs scale_color_identity
+#' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme
+#' theme_void theme_minimal aes labs scale_color_identity
 #' @importFrom rlang sym
 #' @export
 textCentralityPlot <- function(word_data,

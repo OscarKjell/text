@@ -7,10 +7,6 @@ library(text)
 context("Big analyses flow")
 
 
-# testing_size_model_NEW2_New <- textTrainRegression(word_embeddings_4$harmonywords, Language_based_assessment_data_8$hilstotal)
-
-#
-
 test_that("Testing textEmbed as well as train", {
   skip_on_cran()
 

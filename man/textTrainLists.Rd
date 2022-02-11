@@ -2,9 +2,10 @@
 % Please edit documentation in R/2_1_textTrain.R
 \name{textTrainLists}
 \alias{textTrainLists}
-\title{Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
-to have  word embeddings from one text variable and several numeric/categprical variables; or vice verse, word embeddings from
-several text variables to one numeric/categorical variable. It is not possible to mix numeric and categorical variables.}
+\title{Individually trains word embeddings from several text variables to several numeric or categorical variables.
+It is possible to have  word embeddings from one text variable and several numeric/categprical variables;
+or vice verse, word embeddings from several text variables to one numeric/categorical variable.
+It is not possible to mix numeric and categorical variables.}
 \usage{
 textTrainLists(
   x,
@@ -26,7 +27,8 @@ categorical variables.}
 
 \item{force_train_method}{Default is automatic; see also "regression" and "random_forest".}
 
-\item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
+\item{save_output}{Option not to save all output; default "all". see also "only_results"
+and "only_results_predictions".}
 
 \item{method_cor}{Default "Pearson".}
 
@@ -44,9 +46,10 @@ categorical variables.}
 Correlations between predicted and observed values.
 }
 \description{
-Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
-to have  word embeddings from one text variable and several numeric/categprical variables; or vice verse, word embeddings from
-several text variables to one numeric/categorical variable. It is not possible to mix numeric and categorical variables.
+Individually trains word embeddings from several text variables to several numeric or categorical variables.
+It is possible to have  word embeddings from one text variable and several numeric/categprical variables;
+or vice verse, word embeddings from several text variables to one numeric/categorical variable.
+It is not possible to mix numeric and categorical variables.
 }
 \examples{
 \dontrun{

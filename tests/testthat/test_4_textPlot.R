@@ -28,7 +28,9 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
   expect_is(df_for_plotting[[2]]$n[1], "numeric")
 })
 
-test_that("textProjection with QUARTILE, 0.9 PCA and 2-dimensions produces a tibble with character variable and numeric variable.", {
+test_that("textProjection with QUARTILE, 0.9 PCA and
+          2-dimensions produces a tibble with character
+          variable and numeric variable.", {
   skip_on_cran()
 
   # Data

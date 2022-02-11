@@ -122,11 +122,11 @@ find_textrpp <- function(ask) {
   if (length(py_execs) == 0 | grepl("not find", py_execs[1])[1]) {
     return(NA)
   }
-  # df_python_check <- data.table::data.table(py_execs, textrpp_found = 0)
+
   df_python_check <- tibble::tibble(py_execs, textrpp_found = 0)
-  for (i in 1:nrow(df_python_check)) { # i=1
-    py_exec <- df_python_check[i, ] # to remove data::data.table I removed py_execs (before it was: df_python_check2[i, py_execs])
-    sys_message <- check_textrpp_model(py_exec) # , model
+  for (i in seq_len(nrow(df_python_check))) { #
+    py_exec <- df_python_check[i, ]
+    sys_message <- check_textrpp_model(py_exec) #
     if (sys_message == "OK") {
       df_python_check[i, textrpp_found := 1]
     }
@@ -256,13 +256,13 @@ set_textrpp_python_option <- function(python_executable = NULL,
     clear_textrpp_options()
     options(textrpp_condaenv = "textrpp_condaenv")
   }
-  else if (check_env && file.exists(file.path("~/.virtualenvs", virtualenv, "bin", "activate"))) { # OK: worked:file.exists(virtualenv)     Original file.exists(file.path("~/.virtualenvs", "textrpp_virtualenv", "bin", "activate"))
+  else if (check_env && file.exists(file.path("~/.virtualenvs", virtualenv, "bin", "activate"))) {
     message(colourise(
       "Found your specified virtual environment. Text will use this environment \n",
       fg = "green", bg = NULL
     )) # OK: original: Found 'textrpp_virtualenv'. Text will use this environment"
     clear_textrpp_options()
-    options(textrpp_virtualenv = file.path("~/.virtualenvs/", virtualenv)) # OK: original: "~/.virtualenvs/textrpp_virtualenv
+    options(textrpp_virtualenv = file.path("~/.virtualenvs/", virtualenv))
   }
   else {
     message("Finding a python executable with text required python pakages installed...")

@@ -36,10 +36,11 @@ textTrainRegression(
 
 \item{y}{Numeric variable to predict.}
 
-\item{cv_method}{Cross-validation method to use within a pipeline of nested outer and inner loops of folds (see nested_cv in rsample).
-Default is using cv_folds in the outside folds and "validation_split" using rsample::validation_split in the inner loop to achieve a development and assessment
-set (note that for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds" uses rsample::vfold_cv to achieve n-folds
-in both the outer and inner loops.}
+\item{cv_method}{Cross-validation method to use within a pipeline of nested outer and inner loops
+of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
+using rsample::validation_split in the inner loop to achieve a development and assessment set (note that
+for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds"
+uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.}
 
 \item{outside_folds}{Number of folds for the outer folds (default = 10).}
 
@@ -57,10 +58,11 @@ see validation_split in rsample.}
 \item{model}{Type of model. Default is "regression"; see also "logistic" for classification.}
 
 \item{eval_measure}{Type of evaluative measure to select models from. Default = "rmse" for regression and "bal_accuracy"
-for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure",
-or "roc_auc",(for more details see the yardstick package).}
+for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy", "bal_accuracy", "sens", "spec",
+"precision", "kappa", "f_measure", or "roc_auc",(for more details see the yardstick package).}
 
-\item{preprocess_step_center}{normalizes dimensions to have a mean of zero; default is set to TRUE. For more info see (step_center in recipes).}
+\item{preprocess_step_center}{normalizes dimensions to have a mean of zero; default is set to TRUE.
+For more info see (step_center in recipes).}
 
 \item{preprocess_step_scale}{normalize dimensions to have a standard deviation of one. For more info see (step_scale in recipes).}
 
@@ -75,10 +77,10 @@ preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(5
 
 \item{mixture}{hyper parameter that is tuned default = 0 (hence a pure ridge regression).}
 
-\item{first_n_predictors}{by default this setting is turned off (i.e., NA). To use this method, set it to the highest number of predictors you want to test.
-Then the X first dimensions are used in training, using a sequence from Kjell et al., 2019 paper in Psychological Methods.
-Adding 1, then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
-This option is currently only possible for one embedding at the time.}
+\item{first_n_predictors}{by default this setting is turned off (i.e., NA). To use this method,
+set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
+using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1, then multiplying by 1.3 and finally
+rounding to the nearest integer (e.g., 1, 3, 5, 8). This option is currently only possible for one embedding at the time.}
 
 \item{impute_missing}{default FALSE (can be set to TRUE if something else than word_embeddings are trained).}
 
@@ -87,8 +89,9 @@ can set to "spearman" or "kendall").}
 
 \item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
 
-\item{multi_cores}{If TRUE it enables the use of multiple cores if the computer system allows for it (i.e., only on unix, not windows). Hence it
-makes the analyses considerably faster to run. Default is "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.}
+\item{multi_cores}{If TRUE it enables the use of multiple cores if the computer system allows for it
+(i.e., only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
+"multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.}
 
 \item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
 
@@ -97,8 +100,9 @@ makes the analyses considerably faster to run. Default is "multi_cores_sys_defau
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
 \value{
-A (one-sided) correlation test between predicted and observed values; tibble of predicted values, as well as information
-about the model (preprossing_recipe, final_model and model_description).
+A (one-sided) correlation test between predicted and observed values; tibble
+of predicted values, as well as information about the model (preprossing_recipe, final_model
+ and model_description).
 }
 \description{
 Train word embeddings to a numeric variable.

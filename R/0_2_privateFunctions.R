@@ -1,6 +1,5 @@
 
 
-#  devtools::document()
 #' Make x and y into same length for when we will randomly draw K-folds from them
 #' Function to add rows of NA until y and x have the same number of rows.
 #' @param x a variable
@@ -19,7 +18,6 @@ addEqualNrNArows <- function(x, y) {
 }
 
 
-#  devtools::document()
 #' Examine how the ordered data's mean of a statistics compare,
 #' with the random data's null comparison distribution.
 #' @param Observedresult a value representing the observed cosine.
@@ -60,7 +58,6 @@ p_value_comparing_with_Null <- function(Observedresult,
 }
 
 
-#  devtools::document()
 #' Cohen's D effect size
 #'
 #' @param x a variable.

@@ -1,6 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.50
+
+- Code has been cleaned up and prepared for CRAN
 
 # text 0.9.20
 ### New Features

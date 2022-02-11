@@ -22,7 +22,6 @@ skip_if_no_torch <- function() {
 test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
   skip_on_cran()
 
-  # skip_on_cran()
   aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 0:1,
     aggregate_layers = "mean",
@@ -52,7 +51,6 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
 test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
   skip_on_cran()
 
-  # skip_on_cran()
   aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 1:2,
     aggregate_layers = "concatenate",
@@ -97,7 +95,7 @@ test_that("textEmbedStatic with example space", {
   # Test function
   test_result <- textEmbedStatic(df = tibble_response, space = test_space, tk_df = "null", aggregate = "mean")
   test_result
-  # rlang::last_error()
+
   expect_is(test_result$word_response[[1]][[1]], "numeric")
   expect_is(test_result, "list")
 })
@@ -109,11 +107,6 @@ test_that("textEmbedStatic with example space", {
 test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a list", {
   skip_on_cran()
 
-  # skip_on_cran()
-  # skip_if_no_transformers()
-  # skip_if_no_torch
-
-  # x <- Language_based_assessment_data_8[1:2, 1:2]
   text_to_test_import1 <- c("test this", "hope it works")
   text_to_test_import2 <- c("I am happy", "Let us go")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
@@ -135,10 +128,8 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
 
 test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {
   skip_on_cran()
-  # skip_if_no_transformers()
-  # skip_if_no_torch
 
-  # x <- Language_based_assessment_data_8[1:2, 1:2]
+
   text_to_test_import1 <- c("jag mår bra", "vad händer")
   text_to_test_import2 <- c("ön är vacker", "molnen svävar")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
@@ -160,10 +151,7 @@ test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = 
 
 test_that("textEmbed", {
   skip_on_cran()
-  # skip_if_no_transformers()
-  # skip_if_no_torch
 
-  # x <- Language_based_assessment_data_8[1:2, 1:2]
   text_to_test_import1 <- c("test this", "hope it works")
   text_to_test_import2 <- c("I am happy", "Let us go")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)

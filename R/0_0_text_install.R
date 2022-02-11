@@ -5,16 +5,17 @@ conda_args <- reticulate:::conda_args
 
 #' Install text required python packages in conda or virtualenv environment
 #'
-#' @description Install text required python packages (rpp) in a self-contained environment.  For macOS and Linux-based systems, this will
-#'   also install Python itself via a "miniconda" environment, for
+#' @description Install text required python packages (rpp) in a self-contained environment.
+#' For macOS and Linux-based systems, this will also install Python itself via a "miniconda" environment, for
 #'   \code{textrpp_install}.  Alternatively, an existing conda installation may be
 #'   used, by specifying its path.  The default setting of \code{"auto"} will
 #'   locate and use an existing installation automatically, or download and
 #'   install one if none exists.
 #'
 #'   For Windows, automatic installation of miniconda installation is not currently
-#'   available, so the user will need to \href{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda (or Anaconda) manually}.
-#'
+#'   available, so the user will need to
+#'   \href{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda
+#'    (or Anaconda) manually}.
 #' @param conda character; path to conda executable. Default "auto" which
 #'   automatically find the path
 #' @param update_conda Boolean; update to the latest version of Miniconda after install?
@@ -96,7 +97,7 @@ textrpp_install <- function(conda = "auto",
       cat("No conda was found in the system. ")
       ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda in ~/miniconda?")
       if (ans == 2) {
-        # help(install_miniconda)
+
         reticulate::install_miniconda(update = update_conda)
         conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
       } else {
@@ -130,8 +131,7 @@ textrpp_install <- function(conda = "auto",
       have_system <- nrow(python_versions) > 0
 
       if (have_system) {
-        # Well this isnt used later
-        # python_system_version <- python_versions[1, ]
+        # Well this isn't used later
         python_version <- python_versions[1, ]
       }
     }
@@ -191,7 +191,7 @@ process_textrpp_installation_conda <- function(conda,
       "\ntext:",
       paste(rpp_version, collapse = ", "), "will be installed.  "
     )
-    python <- conda_env$python
+    # python <- conda_env$python
   }
   else {
     cat(
@@ -259,7 +259,8 @@ process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/pyt
                                                     prompt = TRUE) {
   libraries <- paste(rpp_version, collapse = ", ")
   cat(sprintf(
-    'A new virtual environment called "%s" will be created using "%s" \n and, the following text reuired python packages will be installed: \n "%s" \n \n',
+    'A new virtual environment called "%s" will be created using "%s" \n and,
+    the following text reuired python packages will be installed: \n "%s" \n \n',
     envname, python, libraries
   ))
   if (prompt) {
@@ -269,11 +270,11 @@ process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/pyt
 
   # Make python path help(virtualenv_create)
   reticulate::virtualenv_create(envname, python, pip_version = NULL, required = TRUE)
-  # help(use_virtualenv)
+
   reticulate::use_virtualenv(envname, required = TRUE)
 
-  # i = 4 rpp_version = c('torch==1.7.1', 'transformers==4.12.5', "nltk", "numpy") help(py_install)
-  for (i in 1:length(rpp_version)) {
+  #
+  for (i in seq_len(length(rpp_version))) {
     reticulate::py_install(rpp_version[[i]], envname = envname, pip = TRUE)
   }
 
@@ -285,7 +286,8 @@ process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/pyt
 
 
 # Check whether "bin"/something exists in the bin folder
-# For example, bin = "pip3" bin = "python3.9" bin = ".virtualenv" file.exists("/usr/local/bin/.virtualenvs") /Users/oscarkjell/.virtualenvs
+# For example, bin = "pip3" bin = "python3.9" bin = ".virtualenv"
+# And for example: file.exists("/usr/local/bin/.virtualenvs") /Users/oscarkjell/.virtualenvs
 python_unix_binary <- function(bin) {
   locations <- file.path(c("/usr/local/bin", "/usr/bin"), bin)
   locations <- locations[file.exists(locations)]
@@ -412,13 +414,13 @@ conda_get_version <- function(major_version = NA, conda, envname) {
   regex <- "^(\\S+)\\s?(.*)$"
   cmd1 <- sub(regex, "\\1", cmd)
   cmd2 <- sub(regex, "\\2", cmd)
-  oldw <- getOption("warn")
+  # oldw <- getOption("warn")
   result <- system2(cmd1, cmd2, stdout = TRUE, stderr = TRUE)
   result <- sub("\\S+\\s+(\\S+)\\s.+", "\\1", result)
   if (!is.na(major_version)) {
     result <- grep(paste0("^", major_version, "\\."), result, value = T)
   }
-  # version_check_regex <- sprintf(".+(%s.\\d+\\.\\d+).+", major_version)
+  #
   return(result[length(result)])
 }
 

@@ -23,7 +23,7 @@ select_character_v_utf8 <- function(x) {
     # Select variable name to have as column name in the end
     colname_x <- deparse(substitute(x))
     # Remove everything before a "$"
-    colname_x <- gsub("^.*\\$", "", colname_x) # gsub(".*_", "", colname_x)
+    colname_x <- gsub("^.*\\$", "", colname_x)
 
     x <- tibble::as_tibble_col(x)
     colnames(x) <- substitute(colname_x)
@@ -35,7 +35,6 @@ select_character_v_utf8 <- function(x) {
 }
 
 
-#  devtools::document()
 #' Function to normalize the vector to one; to a unit vector.
 #'
 #' @param x a word embedding
@@ -60,23 +59,25 @@ normalizeV <- function(x) {
 textEmbeddingAggregation <- function(x, aggregation = "min") {
   if (aggregation == "min") {
     min_vector <- unlist(purrr::map(x, min, na.rm = TRUE))
+    min_vector
   } else if (aggregation == "max") {
     max_vector <- unlist(purrr::map(x, max, na.rm = TRUE))
+    max_vector
   } else if (aggregation == "mean") {
     mean_vector <- colMeans(x, na.rm = TRUE)
+    mean_vector
   } else if (aggregation == "concatenate") {
     long_vector <- c(t(x)) %>% tibble::as_tibble_row(.name_repair = "minimal")
     colnames(long_vector) <- paste0("Dim", sep = "", seq_len(length(long_vector)))
     long_vector
   } else if (aggregation == "normalize") {
     sum_vector <- unlist(purrr::map(x, sum, na.rm = TRUE))
-    # normalised_vector <- unlist(purrr::map(sum_vector, normalizeV))
     normalized_vector <- normalizeV(sum_vector)
     normalized_vector
   }
 }
 
-# devtools::document()
+
 #' getUniqueWordsAndFreq
 #' Function unites several text variables and rows to one,
 #' where all text is transformed to lowercase and tokenized.
@@ -94,7 +95,6 @@ getUniqueWordsAndFreq <- function(x_characters) {
 
   # unite all rows in the column into one cell
   x_characters3 <- stringi::stri_c(x_characters2$x_characters2, collapse = " ")
-  # x_characters3 <- stringr::str_c(x_characters2$x_characters2, collapse = " ")
   # Tokenize into single words help(stri_split_boundaries)
   x_characters4a <- stringi::stri_trans_tolower(x_characters3)
   x_characters4b <- stringi::stri_split_boundaries(x_characters4a,
@@ -102,7 +102,6 @@ getUniqueWordsAndFreq <- function(x_characters) {
     skip_word_none = TRUE,
     skip_word_number = FALSE
   )[[1]]
-  # x_characters4   <- tokenizers::tokenize_words(x_characters3, simplify = T)
 
   # Create dataframe with single words and frequency
   x_characters5 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters4b), " ")))))
@@ -225,18 +224,20 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @param decontexts Provide word embeddings of single words as input
 #' (embeddings used for plotting; default = TRUE).
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
-#'  For full list of options see pretrained models at \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
+#'  For full list of options see pretrained models at
+#'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base".
 #' @param layers Specify the layers that should be extracted (default 11). It is more efficient
-#' to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this
-#' parameter to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
-#' and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation function.
+#' to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
+#' or all by setting this parameter to "all". Layer 0 is the decontextualized input layer
+#' (i.e., not comprising hidden states) and thus should normally not be used. These layers can then
+#'  be aggregated in the textEmbedLayerAggregation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
-#' @param print_python_warnings bolean; when TRUE any warnings from python environment are printed to the console. (Either way warnings
-#' are saved in the comment of the embedding)
+#' @param print_python_warnings bolean; when TRUE any warnings from python environment are printed
+#'  to the console. (Either way warnings are saved in the comment of the embedding)
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @return A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
 #' input embedding to the transformer, and should normally not be used.
@@ -344,13 +345,15 @@ textEmbedLayersOutput <- function(x,
 
     # Adding informative data
     layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
-    comment(sorted_layers_All_decontexts$decontext$single_we) <- c(paste("Information about the embeddings. textEmbedLayersOutput: ",
+    comment(sorted_layers_All_decontexts$decontext$single_we) <- c(paste("Information about the embeddings.
+                                                                         textEmbedLayersOutput: ",
       "model:", model,
       "layers:", layers_string, ".",
       collapse = "; "
     ))
 
-    comment(sorted_layers_All_decontexts$decontext$single_words) <- c(paste("Information about the embeddings. textEmbedLayersOutput: ",
+    comment(sorted_layers_All_decontexts$decontext$single_words) <- c(paste("Information about the embeddings.
+                                                                            textEmbedLayersOutput: ",
       "model:", model,
       "layers:", layers_string, ".",
       collapse = "; "
@@ -377,6 +380,7 @@ textEmbedLayersOutput <- function(x,
   } else if (contexts == FALSE & decontexts == TRUE) {
     word_embeddings_with_layers <- c(sorted_layers_All_decontexts)
   }
+  return(word_embeddings_with_layers)
 }
 
 
@@ -436,7 +440,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
     if ((length(setdiff(layers, unique(x[[1]]$layer_number))) > 0) == TRUE) {
       stop(cat(
         colourise("You are trying to aggregate layers that were not extracted.", fg = "red"),
-        colourise("For example, in textEmbed the layers option needs to include all the layers used in context_layers.", fg = "green")
+        colourise("For example, in textEmbed the layers option needs to include all the
+                  layers used in context_layers.", fg = "green")
       ))
     }
 
@@ -451,7 +456,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
     if (!is.null(tokens_deselect)) {
       selected_layers <- lapply(selected_layers, function(x) x[!x$tokens %in% tokens_deselect, ])
 
-      # If any of the tokens that was removed was "[CLS]", subtract one on token_id so it starts with 1 and works with the layer_aggregation_helper
+      # If any of the tokens that was removed was "[CLS]", subtract one on token_id so it starts with
+      # 1 and works with the layer_aggregation_helper
       if (length(tokens_deselect) == 1 & tokens_deselect == "[CLS]") {
         # Subtract
         selected_layers <- purrr::map(selected_layers, function(x) {
@@ -473,7 +479,9 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
     selected_layers_aggregated <- lapply(selected_layers, layer_aggregation_helper, aggregation = aggregate_layers)
 
     # Aggregate (Remove all tokens and layers; but create a cell with the information abt layers, aggregation)
-    selected_layers_tokens_aggregated <- lapply(selected_layers_aggregated, textEmbeddingAggregation, aggregation = aggregate_tokens)
+    selected_layers_tokens_aggregated <- lapply(selected_layers_aggregated,
+                                                textEmbeddingAggregation,
+                                                aggregation = aggregate_tokens)
 
     # Sort output
     selected_layers_aggregated_tibble[[variable_list_i]] <- dplyr::bind_rows(selected_layers_tokens_aggregated)
@@ -502,7 +510,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
-#'  For full list of options see pretrained models at \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
+#'  For full list of options see pretrained models at
+#'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base".
@@ -517,24 +526,25 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 # @param pretrained_weights advanced parameter submitted to the HuggingFace interface to get models not yet officially
 # incorporated into text. Default = NULL. for details see https://huggingface.co/.
 #' @param context_layers Specify the layers that should be aggregated (default the number of layers extracted above).
-#' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised not to be used.
-#' @param context_aggregation_layers Method to aggregate the contextualized layers (e.g., "mean", "min" or "max, which takes the
-#' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
-#' to one long row.
-#' @param context_aggregation_tokens Method to aggregate the contextualized tokens (e.g., "mean", "min" or "max, which takes the
-#' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
-#' to one long row.
+#' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
+#' and thus advised not to be used.
+#' @param context_aggregation_layers Method to aggregate the contextualized layers (e.g., "mean", "min" or
+#' "max, which takes the minimum, maximum or mean, respectively, across each column; or "concatenate", which links
+#'  together each word embedding layer to one long row.
+#' @param context_aggregation_tokens Method to aggregate the contextualized tokens (e.g., "mean", "min" or
+#' "max, which takes the minimum, maximum or mean, respectively, across each column; or "concatenate",
+#' which links together each word embedding layer to one long row.
 #' @param context_tokens_select Option to select word embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the context embeddings.
 #' @param context_tokens_deselect Option to deselect embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the context embeddings.
 #' @param decontext_layers Layers to aggregate for the decontext embeddings  the number of layers extracted above.
-#' @param decontext_aggregation_layers Method to aggregate the decontextualized layers (e.g., "mean", "min" or "max, which takes the
-#' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
-#' to one long row.
-#' @param decontext_aggregation_tokens Method to aggregate the decontextualized tokens (e.g., "mean", "min" or "max, which takes the
-#' minimum, maximum or mean, respectively, across each column; or "concatenate", which links together each word embedding layer
-#' to one long row.
+#' @param decontext_aggregation_layers Method to aggregate the decontextualized layers (e.g., "mean", "min" or
+#'  "max, which takes the minimum, maximum or mean, respectively, across each column; or "concatenate",
+#'  which links together each word embedding layer to one long row.
+#' @param decontext_aggregation_tokens Method to aggregate the decontextualized tokens (e.g., "mean", "min" or "max,
+#' which takes the minimum, maximum or mean, respectively, across each column; or "concatenate", which links
+#' together each word embedding layer to one long row.
 #' @param decontext_tokens_select Option to select embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the decontext embeddings.
 #' @param decontext_tokens_deselect option to deselect embeddings linked to specific tokens
@@ -566,7 +576,7 @@ textEmbed <- function(x,
                       context_aggregation_tokens = "mean",
                       context_tokens_select = NULL,
                       context_tokens_deselect = NULL,
-                      decontexts = TRUE, # decontexts = FALSE
+                      decontexts = TRUE,
                       decontext_layers = layers,
                       decontext_aggregation_layers = "concatenate",
                       decontext_aggregation_tokens = "mean",
@@ -610,7 +620,8 @@ textEmbed <- function(x,
 
 
   # Combine the words for each decontextualized embedding
-  decontextualised_embeddings_words <- dplyr::bind_cols(all_wanted_layers$decontext$single_words, decontextualised_embeddings)
+  decontextualised_embeddings_words <- dplyr::bind_cols(all_wanted_layers$decontext$single_words,
+                                                        decontextualised_embeddings)
 
   if (decontexts == TRUE) {
     comment(decontextualised_embeddings_words) <- comment(decontextualised_embeddings[[1]])

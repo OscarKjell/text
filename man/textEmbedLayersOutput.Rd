@@ -26,22 +26,24 @@ textEmbedLayersOutput(
 (embeddings used for plotting; default = TRUE).}
 
 \item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased').
- For full list of options see pretrained models at \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
+ For full list of options see pretrained models at
+ \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
  For example use "bert-base-multilingual-cased", "openai-gpt",
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 "roberta-base", or "xlm-roberta-base".}
 
 \item{layers}{Specify the layers that should be extracted (default 11). It is more efficient
-to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this
-parameter to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
-and thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation function.}
+to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
+or all by setting this parameter to "all". Layer 0 is the decontextualized input layer
+(i.e., not comprising hidden states) and thus should normally not be used. These layers can then
+ be aggregated in the textEmbedLayerAggregation function.}
 
 \item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 
-\item{print_python_warnings}{bolean; when TRUE any warnings from python environment are printed to the console. (Either way warnings
-are saved in the comment of the embedding)}
+\item{print_python_warnings}{bolean; when TRUE any warnings from python environment are printed
+to the console. (Either way warnings are saved in the comment of the embedding)}
 
 \item{tokenizer_parallelism}{If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 }

@@ -51,7 +51,6 @@ y2 <- runif(10)
 yhat2 <- runif(10)
 
 boot_test <- textPredictTest(y1, yhat1, y2, yhat2, bootstraps_times = 10)
-
 }
 \seealso{
 see \code{\link{textTrain}} \code{\link{textPredict}}

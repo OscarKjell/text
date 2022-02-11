@@ -12,14 +12,16 @@ textEmbedStatic(df, space, tk_df = "null", aggregate = "mean")
 
 \item{space}{decontextualized/static space (from textSpace, which is not included in the current text package).}
 
-\item{tk_df}{default "null"; option to use either the "tk" of "df" space (if using textSpace, which has not been implemented yet).}
+\item{tk_df}{default "null"; option to use either the "tk" of "df" space (if using textSpace, which has
+not been implemented yet).}
 
 \item{aggregate}{method to aggregate semantic representation when their are more than a single word.
 (default is "mean"; see also "min" and "max", "concatenate" and "normalize")}
 }
 \value{
 A list with tibbles for each character variable. Each tibble comprises a column with the text, followed by
-columns representing the semantic representations of the text. The tibbles are called the same as the original variable.
+columns representing the semantic representations of the text.
+The tibbles are called the same as the original variable.
 }
 \description{
 Applies word embeddings from a given decontextualized static space (such as
