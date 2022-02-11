@@ -43,13 +43,10 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
 
   # Expect error
   expect_error(aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
-                                                    layers = 0:3,
-                                                    aggregate_layers = "mean",
-                                                    aggregate_tokens = "mean"
-  )
-  )
-
-
+    layers = 0:3,
+    aggregate_layers = "mean",
+    aggregate_tokens = "mean"
+  ))
 })
 
 test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {

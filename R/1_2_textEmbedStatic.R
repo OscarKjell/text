@@ -11,36 +11,35 @@
 semanticrepresentation <- function(x, single_word_embeddings2, aggregate = "min", ...) {
   x <- tolower(x)
   # Separates the words in a cell into a character vector with separate words.
-  #x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
-  x <- data.frame(unlist(stringi::stri_extract_all(x, regex= "[[:alpha:]]+")))
+  # x <- data.frame(unlist(stringr::str_extract_all(x, "[[:alpha:]]+")))
+  x <- data.frame(unlist(stringi::stri_extract_all(x, regex = "[[:alpha:]]+")))
   colnames(x) <- c("wordsAll1")
   x <- tibble::as_tibble(x)
   x <- as.character(x$wordsAll1)
   # If empty return a "semantic representation" with NA
   if (length(x) == 0) {
     x2 <- data.frame(matrix(ncol = length(single_word_embeddings2 %>%
-                                            dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
+      dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
     x2 <- as.numeric(x2)
   } else {
     # Create a matrix with all the semantic representations using the function above
-    x1 <- map(x, applysemrep, single_word_embeddings1 = single_word_embeddings2) #, ...
+    x1 <- map(x, applysemrep, single_word_embeddings1 = single_word_embeddings2) # , ...
     x2 <- bind_rows(x1)
-    #x1 <- tibble::as_tibble(t(x1)) # This makes it work for textStaticSpace
+    # x1 <- tibble::as_tibble(t(x1)) # This makes it work for textStaticSpace
     # If more than one semrep; Sum all the semantic representations; if not return it as is, so that NAs etc is returned/kept
     x2 <- textEmbeddingAggregation(x2, aggregation = aggregate)
     # If all values are 0 they should be NA instead; otherwise return the semantic representation.
     if (all(x2 == 0 | x2 == Inf | x2 == -Inf | is.nan(x2)) == TRUE) {
-      #x2 <- data.frame(matrix(ncol = length(single_word_embeddings2 %>%
+      # x2 <- data.frame(matrix(ncol = length(single_word_embeddings2 %>%
       #                                        dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
-      #x2 <- as.numeric(x2)
+      # x2 <- as.numeric(x2)
 
       dim_length <- length(single_word_embeddings2 %>%
-                             dplyr::select(dplyr::starts_with("Dim")))
+        dplyr::select(dplyr::starts_with("Dim")))
 
-      x2 <- data.frame(t(rep(NA_real_, dim_length))) #tibble::as_tibble
+      x2 <- data.frame(t(rep(NA_real_, dim_length))) # tibble::as_tibble
       colnames(x2) <- paste0("Dim", sep = "", seq_len(dim_length))
       x2
-
     } else {
       x2 <- x2
       x2
@@ -68,7 +67,7 @@ applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
     # If the word does not have a representation return a vector with NAs with the same number of dimensions as columns with Dim
   } else {
     dim_length <- length(single_word_embeddings1 %>%
-                           dplyr::select(dplyr::starts_with("Dim")))
+      dplyr::select(dplyr::starts_with("Dim")))
 
     # wordrep <- tibble::as_tibble(t(rep(NA_real_, dim_length))) #, .name_repair = "check_unique"
     wordrep <- data.frame(t(rep(NA_real_, dim_length)))
@@ -97,15 +96,15 @@ applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
 textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean") {
 
   # Select the tk or dk matrrix derived from the lsa (svd)
-  if(tk_df == "tk") {
+  if (tk_df == "tk") {
     space <- tibble::as_tibble(space$tk, .name_repair = "check_unique")
-  } else if (tk_df == "df"){
+  } else if (tk_df == "df") {
     space <- tibble::as_tibble(space$df, .name_repair = "check_unique")
-  } else if (tk_df == "null"){
+  } else if (tk_df == "null") {
     space
   }
   # Select all character variables help(as_tibble)
-  df_characters <-   dplyr::select_if(df, is.character)
+  df_characters <- dplyr::select_if(df, is.character)
 
   # Create empty list
   list_semrep <- list()
@@ -116,21 +115,21 @@ textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean") {
   for (i in 1:length(df_characters)) { # i=1 i=2
     # Apply the semantic representation function to all rows; transpose the resulting matrix and making a tibble
     df_output <- data.frame(t(sapply(df_characters[[i]],
-                                                   semanticrepresentation,
-                                                   single_word_embeddings2,
-                                                   aggregate,
-                                                   single_word_embeddings1=single_word_embeddings1)))
+      semanticrepresentation,
+      single_word_embeddings2,
+      aggregate,
+      single_word_embeddings1 = single_word_embeddings1
+    )))
 
 
     list_semrep[[i]] <- df_output %>%
       dplyr::mutate(dplyr::across(dplyr::everything(), unlist)) %>% # dplyr ok?
       tibble::as_tibble(.name_repair = "unique")
-
   }
 
   # Add single word embeddings used for plotting
   singlewords <- getUniqueWordsAndFreq(df_characters)
-  output_vectors_sw <- map(singlewords$words, applysemrep,  single_word_embeddings1)
+  output_vectors_sw <- map(singlewords$words, applysemrep, single_word_embeddings1)
   names(output_vectors_sw) <- singlewords$words
   output_vectors_sw2 <- dplyr::bind_cols(output_vectors_sw)
   output_vectors_sw3 <- data.frame(t(output_vectors_sw2))

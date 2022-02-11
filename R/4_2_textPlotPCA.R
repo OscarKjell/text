@@ -422,4 +422,3 @@ textPCAPlot <- function(word_data,
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")
   output_plot_data
 }
-

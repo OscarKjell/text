@@ -54,8 +54,7 @@ textPlotting <- function(word_data_all = word_data_all,
                          titles_color = titles_color,
                          x_axes_label = x_axes_label,
                          y_axes_label = y_axes_label,
-                         y_axes_values = y_axes_values){
-
+                         y_axes_values = y_axes_values) {
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
     ggplot2::ggplot(data = word_data_all, ggplot2::aes(!!rlang::sym(x_axes_1), !!rlang::sym(y_axes_1), label = words)) +
@@ -81,33 +80,41 @@ textPlotting <- function(word_data_all = word_data_all,
       size = point_size,
       ggplot2::aes(color = colour_categories)
     ) +
-
-    {if(group_embeddings1 == TRUE)
-      # Aggregated point help(geom_point)
-      ggplot2::geom_point(
-        data = aggregated_embeddings_data[1,],
-        size = aggregated_point_size,
-        shape = aggregated_shape,
-        ggplot2::aes(color = aggregated_color_G1)
-      ) } +
+    {
+      if (group_embeddings1 == TRUE) {
+        # Aggregated point help(geom_point)
+        ggplot2::geom_point(
+          data = aggregated_embeddings_data[1, ],
+          size = aggregated_point_size,
+          shape = aggregated_shape,
+          ggplot2::aes(color = aggregated_color_G1)
+        )
+      }
+    } +
 
     # Aggregated point 2
-    {if(group_embeddings2 == TRUE)
-      ggplot2::geom_point(
-        data = aggregated_embeddings_data[2,],
-        size = aggregated_point_size,
-        shape = aggregated_shape,
-        ggplot2::aes(color = aggregated_color_G2)
-      ) } +
+    {
+      if (group_embeddings2 == TRUE) {
+        ggplot2::geom_point(
+          data = aggregated_embeddings_data[2, ],
+          size = aggregated_point_size,
+          shape = aggregated_shape,
+          ggplot2::aes(color = aggregated_color_G2)
+        )
+      }
+    } +
 
     # Projection embedding
-    {if(projection_embedding == TRUE)
-      ggplot2::geom_point(
-        data = aggregated_embeddings_data[3,],
-        size = aggregated_point_size,
-        shape = aggregated_shape,
-        ggplot2::aes(color = projection_color)
-      ) } +
+    {
+      if (projection_embedding == TRUE) {
+        ggplot2::geom_point(
+          data = aggregated_embeddings_data[3, ],
+          size = aggregated_point_size,
+          shape = aggregated_shape,
+          ggplot2::aes(color = projection_color)
+        )
+      }
+    } +
 
     # set word size range and the guide
     ggplot2::scale_size_continuous(
@@ -159,8 +166,7 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
                        word_data_all = word_data_all,
                        legend_number_size = legend_number_size,
                        # only_x_dimension = only_x_dimension,
-                       titles_color = titles_color){
-
+                       titles_color = titles_color) {
   bivariate_color_data <- tibble::tibble(
     "1 - 3" = "#XXXXXX", "2 - 3" = "#XXXXXX", "3 - 3" = "#XXXXXX",
     "1 - 2" = "#XXXXXX", "2 - 2" = "#XXXXXX", "3 - 2" = "#XXXXXX",
@@ -265,7 +271,6 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
     ) +
     ggplot2::coord_fixed()
   legend
-
 }
 
 #' Computes the dot product projection for added data.
@@ -281,7 +286,7 @@ textOwnWordsProjection <- function(word_data = word_data,
                                    explore_words_aggregation = explore_words_aggregation,
                                    space = space,
                                    text_plot_comment = text_plot_comment,
-                                   scaling = scaling){
+                                   scaling = scaling) {
 
   # For loop for different batches of added words; i_add_w=1 explore_words = "happy harmony love"
   forloops_add_w <- length(explore_words)
@@ -290,28 +295,31 @@ textOwnWordsProjection <- function(word_data = word_data,
   for (i_add_w in 1:forloops_add_w) {
 
     # If using a contextualized language model
-    if(is.null(space) == TRUE){
+    if (is.null(space) == TRUE) {
 
 
       # Creating word embeddings for the words.
-      model_text <- sub(".*model: ", '', text_plot_comment)
-      model_name <- sub(" layer.*", '', model_text)
-      layers_text <- sub(".*layers: ", '', text_plot_comment)
-      layers_number <- sub(" . textEmbedLayerAggregation.*", '', layers_text)
-      layers_number_split <- stringi::stri_split_boundaries(layers_number,  type = "word",
-                                                            skip_word_none = TRUE,
-                                                            skip_word_number = FALSE)
+      model_text <- sub(".*model: ", "", text_plot_comment)
+      model_name <- sub(" layer.*", "", model_text)
+      layers_text <- sub(".*layers: ", "", text_plot_comment)
+      layers_number <- sub(" . textEmbedLayerAggregation.*", "", layers_text)
+      layers_number_split <- stringi::stri_split_boundaries(layers_number,
+        type = "word",
+        skip_word_none = TRUE,
+        skip_word_number = FALSE
+      )
 
       explore_words_embeddings <- textEmbed(explore_words[i_add_w],
-                                            model = model_name,
-                                            layers = dput(as.numeric(layers_number_split[[1]])))
+        model = model_name,
+        layers = dput(as.numeric(layers_number_split[[1]]))
+      )
     }
     # If using a static/decontextualized language model
-    if(!is.null(space)==TRUE){
+    if (!is.null(space) == TRUE) {
       explore_words_embeddings <- textEmbedStatic(data.frame(explore_words[i_add_w]),
-                                                  space = space,
-                                                  aggregate = explore_words_aggregation)
-
+        space = space,
+        aggregate = explore_words_aggregation
+      )
     }
 
     words <- tibble::as_tibble_col(explore_words_point[i_add_w])
@@ -320,33 +328,31 @@ textOwnWordsProjection <- function(word_data = word_data,
     colnames(n_words) <- "n"
 
     # Scaling embeddings before aggregation
-    if (scaling == TRUE){
-
+    if (scaling == TRUE) {
       singlewords_we_x <- dplyr::select(explore_words_embeddings$singlewords_we, dplyr::starts_with("Dim"))
 
       # Applying scaling parameters to all the unique word's embeddings
       scale_center_weights <- word_data$background[[1]]$scale_centre.x %>%
-        dplyr::slice(rep(1:dplyr::n(), each=nrow(singlewords_we_x)))
+        dplyr::slice(rep(1:dplyr::n(), each = nrow(singlewords_we_x)))
 
       scale_scale_weights <- word_data$background[[1]]$scale_scale.x %>%
-        dplyr::slice(rep(1:dplyr::n(), each=nrow(singlewords_we_x)))
+        dplyr::slice(rep(1:dplyr::n(), each = nrow(singlewords_we_x)))
 
-      singlewords_we_x_scaled <- tibble::as_tibble((singlewords_we_x - scale_center_weights)/scale_scale_weights)
+      singlewords_we_x_scaled <- tibble::as_tibble((singlewords_we_x - scale_center_weights) / scale_scale_weights)
 
       singlewords_we_x_scaled_w_n <- bind_cols(explore_words_embeddings$singlewords_we[1:2], singlewords_we_x_scaled)
 
       #### Create token and aggregated word embeddings ####
       # Aggregate the words
-      Aggregated_embedding_added_words <-  tibble::as_tibble_row(textEmbeddingAggregation(singlewords_we_x_scaled, aggregation = explore_words_aggregation))
+      Aggregated_embedding_added_words <- tibble::as_tibble_row(textEmbeddingAggregation(singlewords_we_x_scaled, aggregation = explore_words_aggregation))
 
-      #Aggregated_embedding_added_words <- as_tibble(t(Aggregated_embedding_added_words))
+      # Aggregated_embedding_added_words <- as_tibble(t(Aggregated_embedding_added_words))
       Mean1 <- dplyr::bind_cols(words, n_words, Aggregated_embedding_added_words)
       manual_words_mean1 <- bind_rows(singlewords_we_x_scaled_w_n, Mean1)
-
     } else {
       # Aggregate the words
-      Aggregated_embedding_added_words <-  tibble::as_tibble_row(textEmbeddingAggregation(dplyr::select(explore_words_embeddings$singlewords_we, dplyr::starts_with("Dim")), aggregation = explore_words_aggregation))
-      #Aggregated_embedding_added_words <- as_tibble(t(Aggregated_embedding_added_words))
+      Aggregated_embedding_added_words <- tibble::as_tibble_row(textEmbeddingAggregation(dplyr::select(explore_words_embeddings$singlewords_we, dplyr::starts_with("Dim")), aggregation = explore_words_aggregation))
+      # Aggregated_embedding_added_words <- as_tibble(t(Aggregated_embedding_added_words))
       Mean1 <- dplyr::bind_cols(words, n_words, Aggregated_embedding_added_words)
       manual_words_mean1 <- bind_rows(explore_words_embeddings$singlewords_we, Mean1)
     }
@@ -356,11 +362,11 @@ textOwnWordsProjection <- function(word_data = word_data,
 
     # Position words in relation to Aggregated word embedding
     # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
-    embedding_to_anchour_with.x <- tibble::as_tibble((word_data$background[[1]]$Aggregated_word_embedding_group2.x + word_data$background[[1]]$Aggregated_word_embedding_group1.x)/2)
+    embedding_to_anchour_with.x <- tibble::as_tibble((word_data$background[[1]]$Aggregated_word_embedding_group2.x + word_data$background[[1]]$Aggregated_word_embedding_group1.x) / 2)
     manual_words_mean1_1.x <- dplyr::select(manual_words_mean1, dplyr::starts_with("Dim"))
 
     embedding_to_anchour_with.x_df <- embedding_to_anchour_with.x %>%
-      dplyr::slice(rep(1:dplyr::n(), each=nrow(manual_words_mean1_1.x)))
+      dplyr::slice(rep(1:dplyr::n(), each = nrow(manual_words_mean1_1.x)))
 
     words_positioned_embeddings <- tibble::as_tibble(manual_words_mean1_1.x - embedding_to_anchour_with.x_df)
 
@@ -368,26 +374,28 @@ textOwnWordsProjection <- function(word_data = word_data,
       slice(rep(1:dplyr::n(), each = nrow(manual_words_mean1)))
 
     # Project the embeddings using dot product.
-    #word_data$word_data[word_data$word_data$words == "love",]
+    # word_data$word_data[word_data$word_data$words == "love",]
     dot_products_observed.x <- rowSums(words_positioned_embeddings * projected_embedding.x_df)
 
     ### Compare observed dot-product with null
     p_values_dot_prod.x <- purrr::map(as.list(purrr::as_vector(dot_products_observed.x)), p_value_comparing_with_Null,
-                                      word_data$background[[1]]$dot_null_distribution[[1]], alternative = "two_sided")
+      word_data$background[[1]]$dot_null_distribution[[1]],
+      alternative = "two_sided"
+    )
 
     p_values_dot_prod.x <- unlist(p_values_dot_prod.x)
 
     #### Project embedding on the Y axes ####
 
-    if(y_axes == TRUE){
+    if (y_axes == TRUE) {
       projected_embedding.y <- as.vector(word_data$background[[2]]$Aggregated_word_embedding_group2.y - word_data$background[[2]]$Aggregated_word_embedding_group1.y)
       # Position words in relation to Aggregated word embedding
       # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
-      embedding_to_anchour_with.y <- tibble::as_tibble((word_data$background[[2]]$Aggregated_word_embedding_group2.y + word_data$background[[2]]$Aggregated_word_embedding_group1.y)/2)
+      embedding_to_anchour_with.y <- tibble::as_tibble((word_data$background[[2]]$Aggregated_word_embedding_group2.y + word_data$background[[2]]$Aggregated_word_embedding_group1.y) / 2)
       manual_words_mean1_1.y <- dplyr::select(manual_words_mean1, dplyr::starts_with("Dim"))
 
       embedding_to_anchour_with.y_df <- embedding_to_anchour_with.y %>%
-        dplyr::slice(rep(1:dplyr::n(), each=nrow(manual_words_mean1_1.y)))
+        dplyr::slice(rep(1:dplyr::n(), each = nrow(manual_words_mean1_1.y)))
 
       words_positioned_embeddings <- tibble::as_tibble(manual_words_mean1_1.y - embedding_to_anchour_with.y_df)
 
@@ -395,15 +403,16 @@ textOwnWordsProjection <- function(word_data = word_data,
         slice(rep(1:dplyr::n(), each = nrow(manual_words_mean1)))
 
       # Project the embeddings using dot product.
-      #word_data$word_data[word_data$word_data$words == "love",]
+      # word_data$word_data[word_data$word_data$words == "love",]
       dot_products_observed.y <- rowSums(words_positioned_embeddings * projected_embedding.y_df)
 
       ### Compare observed dot-product with null
       p_values_dot_prod.y <- purrr::map(as.list(purrr::as_vector(dot_products_observed.y)), p_value_comparing_with_Null,
-                                        word_data$background[[2]]$dot_null_distribution[[1]], alternative = "two_sided")
+        word_data$background[[2]]$dot_null_distribution[[1]],
+        alternative = "two_sided"
+      )
 
       p_values_dot_prod.y <- unlist(p_values_dot_prod.y)
-
     }
 
     #### Sort out dataframe for textOwnWordsProjection ####
@@ -412,20 +421,20 @@ textOwnWordsProjection <- function(word_data = word_data,
     explore_words_results$p_values_x <- p_values_dot_prod.x
     explore_words_results$adjusted_p_values.x <- p_values_dot_prod.x
 
-    if(y_axes == TRUE){
+    if (y_axes == TRUE) {
       explore_words_results$y_plotted <- dot_products_observed.y
       explore_words_results$p_values_y <- p_values_dot_prod.y
       explore_words_results$adjusted_p_values.y <- p_values_dot_prod.y
     }
 
-    explore_words_results$colour_categories <- explore_words_color[i_add_w] #"#e07f6a"   # "#e07f6a", "#EAEAEA", "#40DD52
+    explore_words_results$colour_categories <- explore_words_color[i_add_w] # "#e07f6a"   # "#e07f6a", "#EAEAEA", "#40DD52
     # TODO; should not have to print extreme?
-    explore_words_results$extremes_all_x <- rep(NA, nrow(explore_words_results))#c(1, 1, 1)
-    explore_words_results$n <- rep(mean(word_data_all$n), nrow(explore_words_results)) #c(300, 300, 300)
+    explore_words_results$extremes_all_x <- rep(NA, nrow(explore_words_results)) # c(1, 1, 1)
+    explore_words_results$n <- rep(mean(word_data_all$n), nrow(explore_words_results)) # c(300, 300, 300)
     explore_words_results$n.percent <- rep(0.5, nrow(explore_words_results)) # c(0.5, 0.5, 0.5)
-    #explore_words_results$n_g1.x <- c(-1, -1, -1)
-    explore_words_results$n_g2.x <- rep(5, nrow(explore_words_results)) #c(5, 5, 5)
-    explore_words_results$N_participant_responses <- rep(max(word_data_all$N_participant_responses), nrow(explore_words_results)) #c(40, 40, 40)
+    # explore_words_results$n_g1.x <- c(-1, -1, -1)
+    explore_words_results$n_g2.x <- rep(5, nrow(explore_words_results)) # c(5, 5, 5)
+    explore_words_results$N_participant_responses <- rep(max(word_data_all$N_participant_responses), nrow(explore_words_results)) # c(40, 40, 40)
 
     added_words_information[[i_add_w]] <- explore_words_results
   }
@@ -440,16 +449,16 @@ textOwnWordsProjection <- function(word_data = word_data,
 #' @return Word_data_all_yadjusted with added infomration for the added words.
 #' @noRd
 textOwnWordPrediction <- function(word_data = word_data,
-                                   word_data_all = word_data_all,
-                                   word_data_all_yadjusted = word_data_all_yadjusted,
-                                   y_axes = y_axes,
-                                   explore_words = explore_words,
-                                   explore_words_color = explore_words_color,
-                                   explore_words_point = explore_words_point,
-                                   explore_words_aggregation = explore_words_aggregation,
-                                   space = space,
-                                   text_plot_comment = text_plot_comment,
-                                   scaling = scaling){
+                                  word_data_all = word_data_all,
+                                  word_data_all_yadjusted = word_data_all_yadjusted,
+                                  y_axes = y_axes,
+                                  explore_words = explore_words,
+                                  explore_words_color = explore_words_color,
+                                  explore_words_point = explore_words_point,
+                                  explore_words_aggregation = explore_words_aggregation,
+                                  space = space,
+                                  text_plot_comment = text_plot_comment,
+                                  scaling = scaling) {
 
   # For loop for different batches of added words; i_add_w=1 explore_words = "happy harmony love"
   forloops_add_w <- length(explore_words)
@@ -458,27 +467,30 @@ textOwnWordPrediction <- function(word_data = word_data,
   for (i_add_w in 1:forloops_add_w) {
 
     # If using a contextualized language model
-    if(is.null(space) == TRUE){
+    if (is.null(space) == TRUE) {
 
       # Creating word embeddings for the words.
-      model_text <- sub(".*model: ", '', text_plot_comment)
-      model_name <- sub(" layer.*", '', model_text)
-      layers_text <- sub(".*layers: ", '', text_plot_comment)
-      layers_number <- sub(" . textEmbedLayerAggregation.*", '', layers_text)
-      layers_number_split <- stringi::stri_split_boundaries(layers_number,  type = "word",
-                                                            skip_word_none = TRUE,
-                                                            skip_word_number = FALSE)
+      model_text <- sub(".*model: ", "", text_plot_comment)
+      model_name <- sub(" layer.*", "", model_text)
+      layers_text <- sub(".*layers: ", "", text_plot_comment)
+      layers_number <- sub(" . textEmbedLayerAggregation.*", "", layers_text)
+      layers_number_split <- stringi::stri_split_boundaries(layers_number,
+        type = "word",
+        skip_word_none = TRUE,
+        skip_word_number = FALSE
+      )
 
       explore_words_embeddings <- textEmbed(explore_words[i_add_w],
-                                            model = model_name,
-                                            layers = dput(as.numeric(layers_number_split[[1]])))
+        model = model_name,
+        layers = dput(as.numeric(layers_number_split[[1]]))
+      )
     }
     # If using a static/decontextualized language model
-    if(!is.null(space)==TRUE){
+    if (!is.null(space) == TRUE) {
       explore_words_embeddings <- textEmbedStatic(data.frame(explore_words[i_add_w]),
-                                                  space = space,
-                                                  aggregate = explore_words_aggregation)
-
+        space = space,
+        aggregate = explore_words_aggregation
+      )
     }
 
     #### Create token and aggregated word embeddings ####
@@ -488,24 +500,22 @@ textOwnWordPrediction <- function(word_data = word_data,
     colnames(n_words) <- "n"
 
     # Aggregate the words
-    Aggregated_embedding_added_words <-  tibble::as_tibble_row(textEmbeddingAggregation(dplyr::select(explore_words_embeddings$singlewords_we, dplyr::starts_with("Dim")), aggregation = explore_words_aggregation))
-    #Aggregated_embedding_added_words <- as_tibble(t(Aggregated_embedding_added_words))
+    Aggregated_embedding_added_words <- tibble::as_tibble_row(textEmbeddingAggregation(dplyr::select(explore_words_embeddings$singlewords_we, dplyr::starts_with("Dim")), aggregation = explore_words_aggregation))
+    # Aggregated_embedding_added_words <- as_tibble(t(Aggregated_embedding_added_words))
     Mean1 <- dplyr::bind_cols(words, n_words, Aggregated_embedding_added_words)
     manual_words_mean1 <- bind_rows(explore_words_embeddings$singlewords_we, Mean1)
 
 
-    prediction_x <- textPredict(word_data$model_x, manual_words_mean1)$.pred #, ...
+    prediction_x <- textPredict(word_data$model_x, manual_words_mean1)$.pred # , ...
 
     # Creating p-value column  TO DO: implement a real p-value
     p_value_x <- rep(1, length(prediction_x))
 
-    if(y_axes == TRUE){
-
-      prediction_y <- textPredict(word_data$model_y, manual_words_mean1)$.pred #, ...
+    if (y_axes == TRUE) {
+      prediction_y <- textPredict(word_data$model_y, manual_words_mean1)$.pred # , ...
 
       # Creating p-value column  TO DO: implement a real p-value
       p_value_y <- rep(1, length(prediction_y))
-
     }
 
     #### Sort out df for textOwnWordPrediction ####
@@ -514,19 +524,19 @@ textOwnWordPrediction <- function(word_data = word_data,
     explore_words_results$p_values_x <- p_value_x
     explore_words_results$adjusted_p_values.x <- p_value_x
 
-    if(y_axes == TRUE){
+    if (y_axes == TRUE) {
       explore_words_results$y_plotted <- prediction_y
       explore_words_results$p_values_y <- p_value_y
       explore_words_results$adjusted_p_values.y <- p_value_y
     }
 
-    explore_words_results$colour_categories <- explore_words_color[i_add_w] #"#e07f6a"   # "#e07f6a", "#EAEAEA", "#40DD52
-    explore_words_results$extremes_all_x <- rep(NA, nrow(explore_words_results))#c(1, 1, 1)
-    explore_words_results$n <- rep(mean(word_data_all$n), nrow(explore_words_results)) #c(300, 300, 300)
+    explore_words_results$colour_categories <- explore_words_color[i_add_w] # "#e07f6a"   # "#e07f6a", "#EAEAEA", "#40DD52
+    explore_words_results$extremes_all_x <- rep(NA, nrow(explore_words_results)) # c(1, 1, 1)
+    explore_words_results$n <- rep(mean(word_data_all$n), nrow(explore_words_results)) # c(300, 300, 300)
     explore_words_results$n.percent <- rep(0.5, nrow(explore_words_results)) # c(0.5, 0.5, 0.5)
-    #explore_words_results$n_g1.x <- c(-1, -1, -1)
-    explore_words_results$n_g2.x <- rep(5, nrow(explore_words_results)) #c(5, 5, 5)
-    #explore_words_results$N_participant_responses <- rep(max(word_data_all$N_participant_responses), nrow(explore_words_results)) #c(40, 40, 40)
+    # explore_words_results$n_g1.x <- c(-1, -1, -1)
+    explore_words_results$n_g2.x <- rep(5, nrow(explore_words_results)) # c(5, 5, 5)
+    # explore_words_results$N_participant_responses <- rep(max(word_data_all$N_participant_responses), nrow(explore_words_results)) #c(40, 40, 40)
 
     added_words_information[[i_add_w]] <- explore_words_results
   }
@@ -540,26 +550,25 @@ textOwnWordPrediction <- function(word_data = word_data,
 #' Find out plot type to be plotted and adjust word_data columns accordingly.
 #' @return word_data with generically called columns that can run in textPlot.
 #' @noRd
-adjust_for_plot_type <- function(word_data, y_axes){
-
-  type_text <- sub(".*type = ", '', comment(word_data))
-  type_name <- sub(" .*", '', type_text)
+adjust_for_plot_type <- function(word_data, y_axes) {
+  type_text <- sub(".*type = ", "", comment(word_data))
+  type_name <- sub(" .*", "", type_text)
 
   # Making column names generic across different input
 
-  if(type_name == "textWordPrediction") {
+  if (type_name == "textWordPrediction") {
     colnames(word_data$word_data)[which(names(word_data$word_data) == "p_value_w_pred_x")] <- "p_values_x"
     colnames(word_data$word_data)[which(names(word_data$word_data) == "embedding_based_prediction_x")] <- "x_plotted"
-    if(y_axes){
+    if (y_axes) {
       colnames(word_data$word_data)[which(names(word_data$word_data) == "p_value_w_pred_y")] <- "p_values_y"
       colnames(word_data$word_data)[which(names(word_data$word_data) == "embedding_based_prediction_y")] <- "y_plotted"
     }
   }
 
-  if(type_name == "textProjection") {
+  if (type_name == "textProjection") {
     colnames(word_data$word_data)[which(names(word_data$word_data) == "p_values_dot.x")] <- "p_values_x"
     colnames(word_data$word_data)[which(names(word_data$word_data) == "dot.x")] <- "x_plotted"
-    if(y_axes){
+    if (y_axes) {
       colnames(word_data$word_data)[which(names(word_data$word_data) == "p_values_dot.y")] <- "p_values_y"
       colnames(word_data$word_data)[which(names(word_data$word_data) == "dot.y")] <- "y_plotted"
     }
@@ -774,13 +783,15 @@ textPlot <- function(word_data,
   )
 
   set.seed(seed)
-  plot_type_text <- sub(".*type = ", '', comment(word_data))
-  plot_type_name <- sub(" .*", '', plot_type_text)
+  plot_type_text <- sub(".*type = ", "", comment(word_data))
+  plot_type_name <- sub(" .*", "", plot_type_text)
 
   #### Sorting out axes ####
   # Renaming column names from different types of word_data
-  word_data <- adjust_for_plot_type(word_data = word_data,
-                                    y_axes = y_axes)
+  word_data <- adjust_for_plot_type(
+    word_data = word_data,
+    y_axes = y_axes
+  )
   x_axes_1 <- "x_plotted"
   p_values_x <- "p_values_x"
 
@@ -796,7 +807,7 @@ textPlot <- function(word_data,
 
   #### Removing words MANUALY #######
 
-  if (!is.null(remove_words)){
+  if (!is.null(remove_words)) {
     word_data$word_data <- word_data$word_data %>% dplyr::filter(!words %in% remove_words)
   }
 
@@ -805,7 +816,7 @@ textPlot <- function(word_data,
   word_data_padjusted <- word_data$word_data[word_data$word_data$n >= min_freq_words_test, ]
 
   # Selected Aggregated points
-  aggregated_embeddings_data <- word_data$word_data[word_data$word_data$n == 0,]
+  aggregated_embeddings_data <- word_data$word_data[word_data$word_data$n == 0, ]
 
   # View(word_data_padjusted) Computing adjusted p-values with those words selected by: k = sqrt(100*N)
   if (k_n_words_to_test == TRUE) {
@@ -934,19 +945,19 @@ textPlot <- function(word_data,
 
   word_data1_x <- word_data1 %>%
     dplyr::left_join(data_p_sq_all %>%
-                       dplyr::transmute(words, check_p_square = 1), by = "words") %>%
+      dplyr::transmute(words, check_p_square = 1), by = "words") %>%
     dplyr::left_join(data_p_x_neg %>%
-                       dplyr::transmute(words, check_p_x_neg = 1), by = "words") %>%
+      dplyr::transmute(words, check_p_x_neg = 1), by = "words") %>%
     dplyr::left_join(data_p_x_pos %>%
-                       dplyr::transmute(words, check_p_x_pos = 1), by = "words") %>%
+      dplyr::transmute(words, check_p_x_pos = 1), by = "words") %>%
     dplyr::left_join(word_data1_extrem_max_x %>%
-                       dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
     dplyr::left_join(word_data1_extrem_min_x %>%
-                       dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
     dplyr::left_join(word_data1_frequency_x %>%
-                       dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
     dplyr::left_join(word_data1_middle_x %>%
-                       dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
     dplyr::mutate(extremes_all_x = rowSums(cbind(
       check_p_square, check_p_x_neg, check_p_x_pos, check_extreme_max_x, check_extreme_min_x,
       check_extreme_frequency_x, check_middle_x
@@ -990,17 +1001,17 @@ textPlot <- function(word_data,
 
     word_data_all <- word_data1_x %>%
       dplyr::left_join(data_p_y_pos %>%
-                         dplyr::transmute(words, check_p_y_pos = 1), by = "words") %>%
+        dplyr::transmute(words, check_p_y_pos = 1), by = "words") %>%
       dplyr::left_join(data_p_y_neg %>%
-                         dplyr::transmute(words, check_p_y_neg = 1), by = "words") %>%
+        dplyr::transmute(words, check_p_y_neg = 1), by = "words") %>%
       dplyr::left_join(word_data1_extrem_max_y %>%
-                         dplyr::transmute(words, check_extreme_max_y = 1), by = "words") %>%
+        dplyr::transmute(words, check_extreme_max_y = 1), by = "words") %>%
       dplyr::left_join(word_data1_extrem_min_y %>%
-                         dplyr::transmute(words, check_extreme_min_y = 1), by = "words") %>%
+        dplyr::transmute(words, check_extreme_min_y = 1), by = "words") %>%
       dplyr::left_join(word_data1_frequency_y %>%
-                         dplyr::transmute(words, check_extreme_frequency_y = 1), by = "words") %>%
+        dplyr::transmute(words, check_extreme_frequency_y = 1), by = "words") %>%
       dplyr::left_join(word_data1_middle_y %>%
-                         dplyr::transmute(words, check_middle_y = 1), by = "words") %>%
+        dplyr::transmute(words, check_middle_y = 1), by = "words") %>%
       dplyr::mutate(extremes_all_y = rowSums(cbind(
         check_p_y_neg, check_p_y_pos, check_extreme_max_y, check_extreme_min_y,
         check_extreme_frequency_y, check_middle_y
@@ -1034,40 +1045,37 @@ textPlot <- function(word_data,
         x_plotted > 0 & adjusted_p_values.x < p_alpha ~ bivariate_color_codes[6]
       ))
   }
-  #View(word_data_all)
+  # View(word_data_all)
 
   #### Colorize words that are more frequent on the opposite side of the dot product projection ####
-  if(is.character(n_contrast_group_color) == TRUE) {
+  if (is.character(n_contrast_group_color) == TRUE) {
 
     # Select words with MORE words in G1 and POSITIVE dot product (i.e., remove words that are more represented in the opposite group of its dot product projection)
-    word_data_all$colour_categories[(abs(word_data_all$n_g1.x) > abs(word_data_all$n_g2.x) & word_data_all$x_plotted>0)] <- n_contrast_group_color
+    word_data_all$colour_categories[(abs(word_data_all$n_g1.x) > abs(word_data_all$n_g2.x) & word_data_all$x_plotted > 0)] <- n_contrast_group_color
 
     # Select words with MORE words in G2 and POSITIVE dot product (i.e., remove words that are more represented in the opposite group of its dot product projection)
-    word_data_all$colour_categories[(abs(word_data_all$n_g1.x) < abs(word_data_all$n_g2.x) & word_data_all$x_plotted<0)] <- n_contrast_group_color
-
+    word_data_all$colour_categories[(abs(word_data_all$n_g1.x) < abs(word_data_all$n_g2.x) & word_data_all$x_plotted < 0)] <- n_contrast_group_color
   }
 
   #### Remove words that are more frequent on the opposite side of the dot product projection ####
-  if(n_contrast_group_remove == TRUE) {
-
-    word_data_all1  <- word_data_all %>%
+  if (n_contrast_group_remove == TRUE) {
+    word_data_all1 <- word_data_all %>%
       # Select words with MORE words in G1 and NEGATIVE dot product (i.e., do not select words that are more represented in the opposite group of its dot product projection)
       filter((abs(n_g1.x) > abs(n_g2.x) &
-                x_plotted < 0))
+        x_plotted < 0))
 
-    word_data_all2  <- word_data_all %>%
+    word_data_all2 <- word_data_all %>%
       # Select words with MORE words in G2 and POSITIVE dot product (i.e., do not select words that are more represented in the opposite group of its dot product projection)
       filter((abs(n_g1.x) < abs(n_g2.x) &
-                x_plotted > 0))
+        x_plotted > 0))
 
     word_data_all <- bind_rows(word_data_all1, word_data_all2)
-
   }
 
   #### Preparing for the plot function ####
 
   # This solution is because it is not possible to send "0" as a parameter
-  only_x_dimension = NULL
+  only_x_dimension <- NULL
   if (is.null(y_axes_1) == TRUE) {
     only_x_dimension <- 0
     y_axes_1 <- "only_x_dimension"
@@ -1091,98 +1099,99 @@ textPlot <- function(word_data,
   ##### Adding/exploring words MANUALY ######
 
   if (!is.null(explore_words) == TRUE) {
-    if (plot_type_name == "textProjection"){
-      word_data_all_yadjusted <- textOwnWordsProjection(word_data = word_data,
-                                                       word_data_all = word_data_all,
-                                                       word_data_all_yadjusted = word_data_all_yadjusted,
-                                                       y_axes = y_axes,
-                                                       explore_words = explore_words,
-                                                       explore_words_color = explore_words_color,
-                                                       explore_words_point = explore_words_point,
-                                                       explore_words_aggregation = explore_words_aggregation,
-                                                       space = space,
-                                                       text_plot_comment = text_plot_comment,
-                                                       scaling = scaling)
-
+    if (plot_type_name == "textProjection") {
+      word_data_all_yadjusted <- textOwnWordsProjection(
+        word_data = word_data,
+        word_data_all = word_data_all,
+        word_data_all_yadjusted = word_data_all_yadjusted,
+        y_axes = y_axes,
+        explore_words = explore_words,
+        explore_words_color = explore_words_color,
+        explore_words_point = explore_words_point,
+        explore_words_aggregation = explore_words_aggregation,
+        space = space,
+        text_plot_comment = text_plot_comment,
+        scaling = scaling
+      )
     }
 
-    if (plot_type_name == "textWordPrediction"){
-      word_data_all_yadjusted <- textOwnWordPrediction(word_data = word_data,
-                                                        word_data_all = word_data_all,
-                                                        word_data_all_yadjusted = word_data_all_yadjusted,
-                                                        y_axes = y_axes,
-                                                        explore_words = explore_words,
-                                                        explore_words_color = explore_words_color,
-                                                        explore_words_point = explore_words_point,
-                                                        explore_words_aggregation = explore_words_aggregation,
-                                                        space = space,
-                                                        text_plot_comment = text_plot_comment,
-                                                        scaling = scaling)
-
-
+    if (plot_type_name == "textWordPrediction") {
+      word_data_all_yadjusted <- textOwnWordPrediction(
+        word_data = word_data,
+        word_data_all = word_data_all,
+        word_data_all_yadjusted = word_data_all_yadjusted,
+        y_axes = y_axes,
+        explore_words = explore_words,
+        explore_words_color = explore_words_color,
+        explore_words_point = explore_words_point,
+        explore_words_aggregation = explore_words_aggregation,
+        space = space,
+        text_plot_comment = text_plot_comment,
+        scaling = scaling
+      )
     }
   }
 
   #### Plotting  ####
-  plot <- textPlotting(word_data_all = word_data_all,
-                       word_data_all_yadjusted = word_data_all_yadjusted,
-                       only_x_dimension = only_x_dimension,
-                       x_axes_1 = x_axes_1,
-                       y_axes_1 = y_axes_1,
-                       group_embeddings1 = group_embeddings1,
-                       group_embeddings2 = group_embeddings2,
-                       projection_embedding = projection_embedding,
-                       label = words,
-                       points_without_words_size = points_without_words_size,
-                       points_without_words_alpha = points_without_words_alpha,
-                       colour_categories = colour_categories,
-                       arrow_transparency = arrow_transparency,
-                       scale_x_axes_lim = scale_x_axes_lim,
-                       scale_y_axes_lim = scale_y_axes_lim,
-                       position_jitter_hight = position_jitter_hight,
-                       position_jitter_width = position_jitter_width,
-                       word_font = word_font,
-                       point_size = point_size,
-                       aggregated_embeddings_data = aggregated_embeddings_data,
-                       aggregated_point_size = aggregated_point_size,
-                       aggregated_shape = aggregated_shape,
-                       aggregated_color_G1 = aggregated_color_G1,
-                       aggregated_color_G2 = aggregated_color_G2,
-                       projection_color = projection_color,
-                       word_size_range = word_size_range,
-                       # titles
-                       title_top = title_top,
-                       titles_color = titles_color,
-                       x_axes_label = x_axes_label,
-                       y_axes_label = y_axes_label,
-                       y_axes_values = y_axes_values
+  plot <- textPlotting(
+    word_data_all = word_data_all,
+    word_data_all_yadjusted = word_data_all_yadjusted,
+    only_x_dimension = only_x_dimension,
+    x_axes_1 = x_axes_1,
+    y_axes_1 = y_axes_1,
+    group_embeddings1 = group_embeddings1,
+    group_embeddings2 = group_embeddings2,
+    projection_embedding = projection_embedding,
+    label = words,
+    points_without_words_size = points_without_words_size,
+    points_without_words_alpha = points_without_words_alpha,
+    colour_categories = colour_categories,
+    arrow_transparency = arrow_transparency,
+    scale_x_axes_lim = scale_x_axes_lim,
+    scale_y_axes_lim = scale_y_axes_lim,
+    position_jitter_hight = position_jitter_hight,
+    position_jitter_width = position_jitter_width,
+    word_font = word_font,
+    point_size = point_size,
+    aggregated_embeddings_data = aggregated_embeddings_data,
+    aggregated_point_size = aggregated_point_size,
+    aggregated_shape = aggregated_shape,
+    aggregated_color_G1 = aggregated_color_G1,
+    aggregated_color_G2 = aggregated_color_G2,
+    projection_color = projection_color,
+    word_size_range = word_size_range,
+    # titles
+    title_top = title_top,
+    titles_color = titles_color,
+    x_axes_label = x_axes_label,
+    y_axes_label = y_axes_label,
+    y_axes_values = y_axes_values
   )
-  #plot
+  # plot
 
   #### Creating the legend ####
 
-  legend <- textLegend(bivariate_color_codes = bivariate_color_codes,
-                       y_axes_1 = y_axes_1,
-                       fill = fill,
-                       legend_title = legend_title,
-                       legend_title_size = legend_title_size,
-                       legend_x_axes_label = legend_x_axes_label,
-                       legend_y_axes_label = legend_y_axes_label,
-                       word_data_all = word_data_all,
-                       legend_number_size = legend_number_size,
-                       #only_x_dimension = only_x_dimension,
-                       titles_color = titles_color)
-  #legend
+  legend <- textLegend(
+    bivariate_color_codes = bivariate_color_codes,
+    y_axes_1 = y_axes_1,
+    fill = fill,
+    legend_title = legend_title,
+    legend_title_size = legend_title_size,
+    legend_x_axes_label = legend_x_axes_label,
+    legend_y_axes_label = legend_y_axes_label,
+    word_data_all = word_data_all,
+    legend_number_size = legend_number_size,
+    # only_x_dimension = only_x_dimension,
+    titles_color = titles_color
+  )
+  # legend
 
   #### Plot both figure and legend help(null_dev_env) ####
   final_plot <- suppressWarnings(cowplot::ggdraw() +
-                                   cowplot::draw_plot(plot, 0, 0, 1, 1) +
-                                   cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
+    cowplot::draw_plot(plot, 0, 0, 1, 1) +
+    cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
 
   output_plot_data <- list(final_plot, text_plot_comment, word_data_all)
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")
   output_plot_data
 }
-
-
-

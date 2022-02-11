@@ -43,7 +43,7 @@ select_character_v_utf8 <- function(x) {
 #' @noRd
 normalizeV <- function(x) {
   magnitude <-
-  x / sqrt(sum(x^2, na.rm = TRUE))
+    x / sqrt(sum(x^2, na.rm = TRUE))
 }
 
 
@@ -70,10 +70,10 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
     long_vector
   } else if (aggregation == "normalize") {
     sum_vector <- unlist(purrr::map(x, sum, na.rm = TRUE))
-    #normalised_vector <- unlist(purrr::map(sum_vector, normalizeV))
+    # normalised_vector <- unlist(purrr::map(sum_vector, normalizeV))
     normalized_vector <- normalizeV(sum_vector)
     normalized_vector
-    }
+  }
 }
 
 # devtools::document()
@@ -96,17 +96,19 @@ getUniqueWordsAndFreq <- function(x_characters) {
   x_characters3 <- stringi::stri_c(x_characters2$x_characters2, collapse = " ")
   # x_characters3 <- stringr::str_c(x_characters2$x_characters2, collapse = " ")
   # Tokenize into single words help(stri_split_boundaries)
-  x_characters4a  <- stringi::stri_trans_tolower(x_characters3)
-  x_characters4b <- stringi::stri_split_boundaries(x_characters4a,  type = "word",
-                                                   skip_word_none = TRUE,
-                                                   skip_word_number = FALSE)[[1]]
-  #x_characters4   <- tokenizers::tokenize_words(x_characters3, simplify = T)
+  x_characters4a <- stringi::stri_trans_tolower(x_characters3)
+  x_characters4b <- stringi::stri_split_boundaries(x_characters4a,
+    type = "word",
+    skip_word_none = TRUE,
+    skip_word_number = FALSE
+  )[[1]]
+  # x_characters4   <- tokenizers::tokenize_words(x_characters3, simplify = T)
 
   # Create dataframe with single words and frequency
   x_characters5 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters4b), " ")))))
-  if(length(x_characters5)==1){
-  colnames(x_characters5) <- c("Freq")
-  x_characters5 <- tibble::rownames_to_column(x_characters5, "Var1")
+  if (length(x_characters5) == 1) {
+    colnames(x_characters5) <- c("Freq")
+    x_characters5 <- tibble::rownames_to_column(x_characters5, "Var1")
   }
   singlewords <- tibble::tibble(x_characters5$Var1, x_characters5$Freq)
   colnames(singlewords) <- c("words", "n")
@@ -256,15 +258,16 @@ textEmbedLayersOutput <- function(x,
                                   layers = 11,
                                   return_tokens = TRUE,
                                   device = "cpu",
-                                  print_python_warnings=FALSE,
-                                  tokenizer_parallelism=FALSE) {
+                                  print_python_warnings = FALSE,
+                                  tokenizer_parallelism = FALSE) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
- reticulate::source_python(system.file("python",
-                                       "huggingface_Interface3.py",
-                                       #envir = NULL,
-                                       package = "text",
-                                       mustWork = TRUE))
+  reticulate::source_python(system.file("python",
+    "huggingface_Interface3.py",
+    # envir = NULL,
+    package = "text",
+    mustWork = TRUE
+  ))
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(x)
@@ -280,13 +283,14 @@ textEmbedLayersOutput <- function(x,
       # Python file function to HuggingFace
       textrpp_py_warnings_text_context <- reticulate::py_capture_output(
         hg_embeddings <- hgTransformerGetEmbedding(
-        text_strings = x[[i_variables]],
-        model = model,
-        layers = layers,
-        return_tokens = return_tokens,
-        device = device,
-        tokenizer_parallelism = tokenizer_parallelism
-      ))
+          text_strings = x[[i_variables]],
+          model = model,
+          layers = layers,
+          return_tokens = return_tokens,
+          device = device,
+          tokenizer_parallelism = tokenizer_parallelism
+        )
+      )
 
       variable_x <- sortingLayers(x = hg_embeddings, layers = layers, return_tokens = return_tokens)
 
@@ -296,16 +300,15 @@ textEmbedLayersOutput <- function(x,
       # Adding informative comment help(comment)
       layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
 
-      if(!exists("textrpp_py_warnings_text_context")){
+      if (!exists("textrpp_py_warnings_text_context")) {
         textrpp_py_warnings_text_context <- "There were no python warnings."
       }
 
       comment(sorted_layers_ALL_variables$context) <- paste("Information about the embeddings. textEmbedLayersOutput: ",
-                                                            "model:", model, "; ",
-                                                            "layers:", layers_string, ".",
-                                                            "Warnings from python: ", textrpp_py_warnings_text_context,
-                                                            collapse = "\n"
-
+        "model:", model, "; ",
+        "layers:", layers_string, ".",
+        "Warnings from python: ", textrpp_py_warnings_text_context,
+        collapse = "\n"
       )
     }
   }
@@ -321,13 +324,14 @@ textEmbedLayersOutput <- function(x,
 
     textrpp_py_warnings_text_decontext <- reticulate::py_capture_output(
       hg_decontexts_embeddings <- hgTransformerGetEmbedding(
-      text_strings = list_words,
-      model = model,
-      layers = layers,
-      return_tokens = return_tokens,
-      device = device,
-      tokenizer_parallelism = tokenizer_parallelism
-    ))
+        text_strings = list_words,
+        model = model,
+        layers = layers,
+        return_tokens = return_tokens,
+        device = device,
+        tokenizer_parallelism = tokenizer_parallelism
+      )
+    )
 
     # Sort out layers as above
     sorted_layers_All_decontexts$decontext$single_we$single_we <- sortingLayers(
@@ -341,27 +345,26 @@ textEmbedLayersOutput <- function(x,
     # Adding informative data
     layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
     comment(sorted_layers_All_decontexts$decontext$single_we) <- c(paste("Information about the embeddings. textEmbedLayersOutput: ",
-                                                                         "model:", model,
-                                                                         "layers:", layers_string, ".",
-                                                                         collapse = "; "
+      "model:", model,
+      "layers:", layers_string, ".",
+      collapse = "; "
     ))
 
     comment(sorted_layers_All_decontexts$decontext$single_words) <- c(paste("Information about the embeddings. textEmbedLayersOutput: ",
-                                                                            "model:", model,
-                                                                            "layers:", layers_string, ".",
-                                                                            collapse = "; "
+      "model:", model,
+      "layers:", layers_string, ".",
+      collapse = "; "
     ))
 
     sorted_layers_All_decontexts
   }
 
-  if(print_python_warnings==TRUE){
-
-    if(contexts==TRUE){
+  if (print_python_warnings == TRUE) {
+    if (contexts == TRUE) {
       cat(textrpp_py_warnings_text_context)
     }
 
-    if(decontexts==TRUE) {
+    if (decontexts == TRUE) {
       cat(textrpp_py_warnings_text_decontext)
     }
   }
@@ -405,11 +408,11 @@ textEmbedLayersOutput <- function(x,
 #' @importFrom dplyr %>% bind_rows
 #' @export
 textEmbedLayerAggregation <- function(word_embeddings_layers,
-                                     layers = 11:12,
-                                     aggregate_layers = "concatenate",
-                                     aggregate_tokens = "mean",
-                                     tokens_select = NULL,
-                                     tokens_deselect = NULL) {
+                                      layers = 11:12,
+                                      aggregate_layers = "concatenate",
+                                      aggregate_tokens = "mean",
+                                      tokens_select = NULL,
+                                      tokens_deselect = NULL) {
 
   # If selecting 'all' layers, find out number of layers to help indicate layer index later in code
   if (is.character(layers)) {
@@ -431,8 +434,10 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 
     # Go over the lists and select the layers; [[1]] ok to add below x=
     if ((length(setdiff(layers, unique(x[[1]]$layer_number))) > 0) == TRUE) {
-      stop(cat(colourise("You are trying to aggregate layers that were not extracted.", fg = "red"),
-               colourise("For example, in textEmbed the layers option needs to include all the layers used in context_layers.", fg="green")))
+      stop(cat(
+        colourise("You are trying to aggregate layers that were not extracted.", fg = "red"),
+        colourise("For example, in textEmbed the layers option needs to include all the layers used in context_layers.", fg = "green")
+      ))
     }
 
     selected_layers <- lapply(x, function(x) x[x$layer_number %in% layers, ])
@@ -446,17 +451,21 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
     if (!is.null(tokens_deselect)) {
       selected_layers <- lapply(selected_layers, function(x) x[!x$tokens %in% tokens_deselect, ])
 
-    # If any of the tokens that was removed was "[CLS]", subtract one on token_id so it starts with 1 and works with the layer_aggregation_helper
-      if(length(tokens_deselect) == 1 & tokens_deselect == "[CLS]") {
+      # If any of the tokens that was removed was "[CLS]", subtract one on token_id so it starts with 1 and works with the layer_aggregation_helper
+      if (length(tokens_deselect) == 1 & tokens_deselect == "[CLS]") {
         # Subtract
-        selected_layers <- purrr::map(selected_layers, function(x) {x$token_id <- x$token_id-1
-        x})
+        selected_layers <- purrr::map(selected_layers, function(x) {
+          x$token_id <- x$token_id - 1
+          x
+        })
       } else if (length(tokens_deselect) > 1) {
-      if(table(tokens_deselect %in% "[CLS]")[[2]]  > 0){
-       # Subtract
-       selected_layers <- purrr::map(selected_layers, function(x) {x$token_id <- x$token_id-1
-       x})
-     }
+        if (table(tokens_deselect %in% "[CLS]")[[2]] > 0) {
+          # Subtract
+          selected_layers <- purrr::map(selected_layers, function(x) {
+            x$token_id <- x$token_id - 1
+            x
+          })
+        }
       }
     }
 

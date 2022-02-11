@@ -37,20 +37,20 @@ p_value_comparing_with_Null <- function(Observedresult,
     tibble::as_tibble_col() %>%
     tidyr::drop_na()
 
-  p_left  <- sum(NULLresults <= Observedresult)  / nrow(NULLresults)
-  p_right <- sum(NULLresults >= Observedresult) /  nrow(NULLresults)
+  p_left <- sum(NULLresults <= Observedresult) / nrow(NULLresults)
+  p_right <- sum(NULLresults >= Observedresult) / nrow(NULLresults)
 
   switch(alternative,
-         "less" = {
-           p_value <- p_left
-         },
-         "greater" = {
-           p_value <- p_right
-         },
-         "two_sided" = {
-           p_value <- min(p_left, p_right) * 2
-           }
-         )
+    "less" = {
+      p_value <- p_left
+    },
+    "greater" = {
+      p_value <- p_right
+    },
+    "two_sided" = {
+      p_value <- min(p_left, p_right) * 2
+    }
+  )
   if (!is.na(p_value)) {
     if (p_value == 0) {
       p_value <- 1 / (nrow(NULLresults) + 1)
@@ -69,17 +69,17 @@ p_value_comparing_with_Null <- function(Observedresult,
 #' @importFrom stats var
 #' @noRd
 cohens_d <- function(x, y) {
-  lx <- length(x)- 1
-  ly <- length(y)- 1
+  lx <- length(x) - 1
+  ly <- length(y) - 1
 
   # mean difference (numerator)
-  md  <- abs(mean(x) - mean(y))
+  md <- abs(mean(x) - mean(y))
   # Sigma; denominator
   csd <- lx * var(x) + ly * var(y)
-  csd <- csd/(lx + ly)
+  csd <- csd / (lx + ly)
   csd <- sqrt(csd)
 
-  cd  <- md/csd
+  cd <- md / csd
   # Cohen's d
   cd
 }

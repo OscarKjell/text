@@ -122,7 +122,7 @@ textProjection <- function(words,
   # Creating a list for the x and y dimensions; and one to save aggregated word embeddings and dot product null distributions for both x and y
   # so that these can be saved and used for when manually adding words to the plot in the next step.
   word_data_list <- list()
-  aggregated_embeddings_dot_null_distribution<- list()
+  aggregated_embeddings_dot_null_distribution <- list()
 
   # For-loop for x and y input/dimensions; i.e., y if the plot has two dimensions (i_dim=1 i_dim=2) remove(i_dim)
   for (i_dim in seq_len(ncol(x))) {
@@ -138,46 +138,45 @@ textProjection <- function(words,
     ############
 
     ### Sum all word embeddings in one column
-    if(split == "mean" | split == "quartile"){
+    if (split == "mean" | split == "quartile") {
 
-    # split="median" split = "quartile" or create interval sensitive
-    if (split == "mean") {
+      # split="median" split = "quartile" or create interval sensitive
+      if (split == "mean") {
 
-      # Splitting datasets up to low versus high according to median split
-      group1 <- x2 %>%
-        dplyr::filter(value < mean(purrr::as_vector(value), na.rm = TRUE))
+        # Splitting datasets up to low versus high according to median split
+        group1 <- x2 %>%
+          dplyr::filter(value < mean(purrr::as_vector(value), na.rm = TRUE))
 
-      group2 <- x2 %>%
-        dplyr::filter(value > mean(purrr::as_vector(value), na.rm = TRUE))
+        group2 <- x2 %>%
+          dplyr::filter(value > mean(purrr::as_vector(value), na.rm = TRUE))
 
-      # Use function addEqualNrNArows from 3_1_testSimilarity
-      # Function adds rows of NA until group2 and group1 have the same amount of rows.
-      if (nrow(group1) < nrow(group2)) {
-        group1 <- addEqualNrNArows(group1, group2)
-      } else if (nrow(group1) > nrow(group2)) {
-        group2 <- addEqualNrNArows(group2, group1)
-      } else {
-        group1 <- group1
-        group2 <- group2
-      }
+        # Use function addEqualNrNArows from 3_1_testSimilarity
+        # Function adds rows of NA until group2 and group1 have the same amount of rows.
+        if (nrow(group1) < nrow(group2)) {
+          group1 <- addEqualNrNArows(group1, group2)
+        } else if (nrow(group1) > nrow(group2)) {
+          group2 <- addEqualNrNArows(group2, group1)
+        } else {
+          group1 <- group1
+          group2 <- group2
+        }
+      } else if (split == "quartile") {
+        # Select according to lower and upper quartile
+        # However, if it is a dichotomous variable use mean
+        if (length(unique(x1$value)) == 2) {
+          q1 <- summary(x1$value)[4][[1]]
+          q3 <- summary(x1$value)[4][[1]]
+        } else if (length(unique(x1$value)) > 2) {
+          q1 <- summary(x1$value)[2][[1]]
+          q3 <- summary(x1$value)[5][[1]]
+        }
 
-    } else if (split == "quartile") {
-      # Select according to lower and upper quartile
-      # However, if it is a dichotomous variable use mean
-      if (length(unique(x1$value)) == 2) {
-        q1 <- summary(x1$value)[4][[1]]
-        q3 <- summary(x1$value)[4][[1]]
-      } else if (length(unique(x1$value)) > 2) {
-        q1 <- summary(x1$value)[2][[1]]
-        q3 <- summary(x1$value)[5][[1]]
-      }
-
-      group1 <- x2 %>%
+        group1 <- x2 %>%
           dplyr::filter(x2$value <= q1, )
 
-      group2 <- x2 %>%
+        group2 <- x2 %>%
           dplyr::filter(x2$value >= q3, )
-    }
+      }
 
       ## ##       Get word embeddings ####
       # Group 1: getting unique words and their frequency
@@ -228,48 +227,47 @@ textProjection <- function(words,
       words_group1_2_agg_single_wordembedding_e1 <- dplyr::select(words_group1_2_agg_single_wordembedding_e, dplyr::starts_with("Dim"))
 
       # Interval: No split. Weighting embeddings according to interval scale.
-      } else if (split == "no"){
+    } else if (split == "no") {
 
-        # Getting unique words and their frequency
-        words_group1b_freq <- unique_freq_words(x2$words)
-        words_group1b_freq <- words_group1b_freq[words_group1b_freq$n >= min_freq_words_test, ]
-        words_group1b_freq$n_g1_g2 <- words_group1b_freq$n * -1
-        # Group 2
-        words_group2b_freq <- unique_freq_words(x2$words)
-        words_group2b_freq <- words_group2b_freq[words_group2b_freq$n >= min_freq_words_test, ]
-        words_group2b_freq$n_g1_g2 <- words_group2b_freq$n * 1
+      # Getting unique words and their frequency
+      words_group1b_freq <- unique_freq_words(x2$words)
+      words_group1b_freq <- words_group1b_freq[words_group1b_freq$n >= min_freq_words_test, ]
+      words_group1b_freq$n_g1_g2 <- words_group1b_freq$n * -1
+      # Group 2
+      words_group2b_freq <- unique_freq_words(x2$words)
+      words_group2b_freq <- words_group2b_freq[words_group2b_freq$n >= min_freq_words_test, ]
+      words_group2b_freq$n_g1_g2 <- words_group2b_freq$n * 1
 
-        # Get each words on its own row and keep value so that it can be the weight for the word embedding
-        words_values_sep <- x2 %>%
-          select(words, value) %>%
-          tidyr::separate_rows(words, sep = ' ')
+      # Get each words on its own row and keep value so that it can be the weight for the word embedding
+      words_values_sep <- x2 %>%
+        select(words, value) %>%
+        tidyr::separate_rows(words, sep = " ")
 
-        # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
-        words_single_wordembedding   <- lapply(words_values_sep$words, applysemrep, single_word_embeddings)
-        words_single_wordembedding_b <- dplyr::bind_rows(words_single_wordembedding)
-        words_single_wordembedding_c <- dplyr::bind_cols(words_values_sep, words_single_wordembedding_b)
-        #words_single_wordembedding_c <- tibble::as_tibble(words_single_wordembedding_c)
+      # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
+      words_single_wordembedding <- lapply(words_values_sep$words, applysemrep, single_word_embeddings)
+      words_single_wordembedding_b <- dplyr::bind_rows(words_single_wordembedding)
+      words_single_wordembedding_c <- dplyr::bind_cols(words_values_sep, words_single_wordembedding_b)
+      # words_single_wordembedding_c <- tibble::as_tibble(words_single_wordembedding_c)
 
-        # weight the word embeddings with the value weight
-        weights <- words_single_wordembedding_c$value^word_weight_power
-        words_single_wordembedding_d <- words_single_wordembedding_c %>%
-          select(-c(words, value))
+      # weight the word embeddings with the value weight
+      weights <- words_single_wordembedding_c$value^word_weight_power
+      words_single_wordembedding_d <- words_single_wordembedding_c %>%
+        select(-c(words, value))
 
-        words_single_wordembedding_d_scaled <- scale(words_single_wordembedding_d)
+      words_single_wordembedding_d_scaled <- scale(words_single_wordembedding_d)
 
-        words_group2_agg_single_wordembedding_d <- tibble::as_tibble((words_single_wordembedding_d_scaled * weights)/mean(weights))
+      words_group2_agg_single_wordembedding_d <- tibble::as_tibble((words_single_wordembedding_d_scaled * weights) / mean(weights))
 
-        # reversed weights
-        weight_rev <- (max(words_single_wordembedding_c$value)+1 - words_single_wordembedding_c$value)^word_weight_power
-        words_group1_agg_single_wordembedding_d <- tibble::as_tibble((words_single_wordembedding_d_scaled * weight_rev)/mean(weight_rev))
+      # reversed weights
+      weight_rev <- (max(words_single_wordembedding_c$value) + 1 - words_single_wordembedding_c$value)^word_weight_power
+      words_group1_agg_single_wordembedding_d <- tibble::as_tibble((words_single_wordembedding_d_scaled * weight_rev) / mean(weight_rev))
 
-        ## Get dataframe with ALL embeddings to randomly draw from (without log transformed, and quartiles) for Comparison distribution
-        # Shuffle weights/values
-        weights_shuffled  <- sample(words_single_wordembedding_c$value, replace=FALSE)
-        words_single_wordembedding_d_weights_shuffled <- tibble::as_tibble((words_single_wordembedding_d_scaled * weights_shuffled)/mean(weights_shuffled))
+      ## Get dataframe with ALL embeddings to randomly draw from (without log transformed, and quartiles) for Comparison distribution
+      # Shuffle weights/values
+      weights_shuffled <- sample(words_single_wordembedding_c$value, replace = FALSE)
+      words_single_wordembedding_d_weights_shuffled <- tibble::as_tibble((words_single_wordembedding_d_scaled * weights_shuffled) / mean(weights_shuffled))
 
-        words_group1_2_agg_single_wordembedding_e1 <- words_single_wordembedding_d_weights_shuffled
-
+      words_group1_2_agg_single_wordembedding_e1 <- words_single_wordembedding_d_weights_shuffled
     }
 
     Aggregated_word_embedding_group1 <- textEmbeddingAggregation(dplyr::select(words_group1_agg_single_wordembedding_d, dplyr::starts_with("Dim")), aggregation = aggregation)
@@ -284,19 +282,19 @@ textProjection <- function(words,
     all_unique_words_we <- lapply(all_unique_words_freq$words, applysemrep, single_word_embeddings)
     all_unique_words_we_b <- dplyr::bind_rows(all_unique_words_we)
 
-    if (split == "no"){
+    if (split == "no") {
       # Applying the z-score parameters to all the unique word's embeddings
-      scale_center_weights <- tibble::as_tibble_row(attr(words_single_wordembedding_d_scaled,"scaled:center")) %>%
-        slice(rep(1:dplyr::n(), each=nrow(all_unique_words_we_b)))
+      scale_center_weights <- tibble::as_tibble_row(attr(words_single_wordembedding_d_scaled, "scaled:center")) %>%
+        slice(rep(1:dplyr::n(), each = nrow(all_unique_words_we_b)))
 
-      scale_scale_weights <- tibble::as_tibble_row(attr(words_single_wordembedding_d_scaled,"scaled:scale"))%>%
-        slice(rep(1:dplyr::n(), each=nrow(all_unique_words_we_b)))
+      scale_scale_weights <- tibble::as_tibble_row(attr(words_single_wordembedding_d_scaled, "scaled:scale")) %>%
+        slice(rep(1:dplyr::n(), each = nrow(all_unique_words_we_b)))
 
-      all_unique_words_we_b <- tibble::as_tibble((all_unique_words_we_b - scale_center_weights)/scale_scale_weights)
+      all_unique_words_we_b <- tibble::as_tibble((all_unique_words_we_b - scale_center_weights) / scale_scale_weights)
     }
 
     # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
-    embedding_to_anchour_with <- tibble::as_tibble_row((Aggregated_word_embedding_group2 + Aggregated_word_embedding_group1)/2)
+    embedding_to_anchour_with <- tibble::as_tibble_row((Aggregated_word_embedding_group2 + Aggregated_word_embedding_group1) / 2)
 
     embedding_to_anchour_with <- embedding_to_anchour_with %>%
       dplyr::slice(rep(1:dplyr::n(), each = nrow(all_unique_words_we_b)))
@@ -376,7 +374,8 @@ textProjection <- function(words,
     ### Compare observed dot-product with null
     dot_null_distribution <- dot_null_distribution[stats::complete.cases(dot_null_distribution), ]
     p_values_dot_prod <- purrr::map(as.list(purrr::as_vector(dot_products_observed)), p_value_comparing_with_Null,
-                                    dot_null_distribution$value, alternative = "two_sided"
+      dot_null_distribution$value,
+      alternative = "two_sided"
     )
     p_values_dot_prod <- unlist(p_values_dot_prod)
     # Sort out dataframe
@@ -395,17 +394,21 @@ textProjection <- function(words,
     colnames(dot_result) <- c("words", "n", "dot", "p_values_dot", "n_g1", "n_g2")
 
 
-    to_be_saved_below <- list(tibble::as_tibble_row(Aggregated_word_embedding_group1),
-                              tibble::as_tibble_row(Aggregated_word_embedding_group2),
-            dot_null_distribution)
+    to_be_saved_below <- list(
+      tibble::as_tibble_row(Aggregated_word_embedding_group1),
+      tibble::as_tibble_row(Aggregated_word_embedding_group2),
+      dot_null_distribution
+    )
 
-    names(to_be_saved_below) <- c("Aggregated_word_embedding_group1", "Aggregated_word_embedding_group2",
-                                  "dot_null_distribution")
+    names(to_be_saved_below) <- c(
+      "Aggregated_word_embedding_group1", "Aggregated_word_embedding_group2",
+      "dot_null_distribution"
+    )
 
     # Adding the scale parameters for the word embeddings so that words can be manually added in the textProjectionPlot.
     if (split == "no") {
-      to_be_saved_below$scale_centre <-  tibble::as_tibble_row(attr(words_single_wordembedding_d_scaled,"scaled:center"))
-      to_be_saved_below$scale_scale <-  tibble::as_tibble_row(attr(words_single_wordembedding_d_scaled,"scaled:scale"))
+      to_be_saved_below$scale_centre <- tibble::as_tibble_row(attr(words_single_wordembedding_d_scaled, "scaled:center"))
+      to_be_saved_below$scale_scale <- tibble::as_tibble_row(attr(words_single_wordembedding_d_scaled, "scaled:scale"))
     }
 
     aggregated_embeddings_dot_null_distribution[i_dim] <- list(to_be_saved_below)
@@ -423,19 +426,21 @@ textProjection <- function(words,
     word_data_tibble$N_participant_responses <- c(rep(N_participant_responses, nrow(word_data_tibble)))
 
     # Naming
-    names(aggregated_embeddings_dot_null_distribution[[1]]) <- c("Aggregated_word_embedding_group1.x",
-                                                                 "Aggregated_word_embedding_group2.x",
-                                                                 "dot_null_distribution.x")
+    names(aggregated_embeddings_dot_null_distribution[[1]]) <- c(
+      "Aggregated_word_embedding_group1.x",
+      "Aggregated_word_embedding_group2.x",
+      "dot_null_distribution.x"
+    )
 
-    if (split == "no" ){
-      names(aggregated_embeddings_dot_null_distribution[[1]]) <- c("Aggregated_word_embedding_group1.x",
-                                                                   "Aggregated_word_embedding_group2.x",
-                                                                   "dot_null_distribution.x",
-                                                                   "scale_centre.x",
-                                                                   "scale_scale.x")
-
+    if (split == "no") {
+      names(aggregated_embeddings_dot_null_distribution[[1]]) <- c(
+        "Aggregated_word_embedding_group1.x",
+        "Aggregated_word_embedding_group2.x",
+        "dot_null_distribution.x",
+        "scale_centre.x",
+        "scale_scale.x"
+      )
     }
-
   } else {
     word_data_tibble <- dplyr::full_join(word_data_list[[1]], word_data_list[[2]], by = "words")
     word_data_tibble$n <- word_data_tibble$n.x
@@ -444,31 +449,39 @@ textProjection <- function(words,
     word_data_tibble$N_participant_responses <- c(rep(N_participant_responses, nrow(word_data_tibble)))
 
     # Naming
-    names(aggregated_embeddings_dot_null_distribution[[1]]) <- c("Aggregated_word_embedding_group1.x",
-                                                                 "Aggregated_word_embedding_group2.x",
-                                                                 "dot_null_distribution.x")
+    names(aggregated_embeddings_dot_null_distribution[[1]]) <- c(
+      "Aggregated_word_embedding_group1.x",
+      "Aggregated_word_embedding_group2.x",
+      "dot_null_distribution.x"
+    )
     # Naming
-    names(aggregated_embeddings_dot_null_distribution[[2]]) <- c("Aggregated_word_embedding_group1.y",
-                                                                 "Aggregated_word_embedding_group2.y",
-                                                                 "dot_null_distribution.y")
+    names(aggregated_embeddings_dot_null_distribution[[2]]) <- c(
+      "Aggregated_word_embedding_group1.y",
+      "Aggregated_word_embedding_group2.y",
+      "dot_null_distribution.y"
+    )
 
     if (split == "no") {
-      names(aggregated_embeddings_dot_null_distribution[[1]]) <- c("Aggregated_word_embedding_group1.x",
-                                                                   "Aggregated_word_embedding_group2.x",
-                                                                   "dot_null_distribution.x",
-                                                                   "scale_centre.x",
-                                                                   "scale_scale.x")
+      names(aggregated_embeddings_dot_null_distribution[[1]]) <- c(
+        "Aggregated_word_embedding_group1.x",
+        "Aggregated_word_embedding_group2.x",
+        "dot_null_distribution.x",
+        "scale_centre.x",
+        "scale_scale.x"
+      )
 
-      names(aggregated_embeddings_dot_null_distribution[[2]]) <- c("Aggregated_word_embedding_group1.y",
-                                                                 "Aggregated_word_embedding_group2.y",
-                                                                 "dot_null_distribution.y",
-                                                                 "scale_centre.y",
-                                                                 "scale_scale.y")
+      names(aggregated_embeddings_dot_null_distribution[[2]]) <- c(
+        "Aggregated_word_embedding_group1.y",
+        "Aggregated_word_embedding_group2.y",
+        "dot_null_distribution.y",
+        "scale_centre.y",
+        "scale_scale.y"
+      )
     }
   }
 
 
- # }
+  # }
 
   word_data_tibble1 <- list(aggregated_embeddings_dot_null_distribution, word_data_tibble)
   names(word_data_tibble1) <- c("background", "word_data")
@@ -650,62 +663,63 @@ textProjectionPlot <- function(word_data,
                                n_contrast_group_remove = FALSE,
                                space = NULL,
                                scaling = FALSE) {
-
-  plot <-  textPlot(word_data = word_data,
-                    k_n_words_to_test = k_n_words_to_test,
-                    min_freq_words_test = min_freq_words_test,
-                    min_freq_words_plot = min_freq_words_plot,
-                    plot_n_words_square = plot_n_words_square,
-                    plot_n_words_p = plot_n_words_p,
-                    plot_n_word_extreme = plot_n_word_extreme,
-                    plot_n_word_frequency = plot_n_word_frequency,
-                    plot_n_words_middle = plot_n_words_middle,
-                    titles_color = titles_color,
-                    # x_axes = TRUE,
-                    y_axes = y_axes,
-                    p_alpha = p_alpha,
-                    p_adjust_method = p_adjust_method,
-                    title_top = title_top,
-                    x_axes_label = x_axes_label,
-                    y_axes_label = y_axes_label,
-                    scale_x_axes_lim = scale_x_axes_lim,
-                    scale_y_axes_lim = scale_y_axes_lim,
-                    word_font = word_font,
-                    bivariate_color_codes =bivariate_color_codes,
-                    word_size_range = word_size_range,
-                    position_jitter_hight = position_jitter_hight,
-                    position_jitter_width = position_jitter_width,
-                    point_size = point_size,
-                    arrow_transparency = arrow_transparency,
-                    points_without_words_size = points_without_words_size,
-                    points_without_words_alpha = points_without_words_alpha,
-                    legend_title = legend_title,
-                    legend_x_axes_label = legend_x_axes_label,
-                    legend_y_axes_label = legend_y_axes_label,
-                    legend_x_position = legend_x_position,
-                    legend_y_position = legend_y_position,
-                    legend_h_size = legend_h_size,
-                    legend_w_size = legend_w_size,
-                    legend_title_size = legend_title_size,
-                    legend_number_size = legend_number_size,
-                    group_embeddings1 = group_embeddings1,
-                    group_embeddings2 = group_embeddings2,
-                    projection_embedding = projection_embedding,
-                    aggregated_point_size = aggregated_point_size,
-                    aggregated_shape = aggregated_shape,
-                    aggregated_color_G1 = aggregated_color_G1,
-                    aggregated_color_G2 = aggregated_color_G2,
-                    projection_color = projection_color,
-                    seed = seed,
-                    explore_words = explore_words,
-                    explore_words_color = explore_words_color,
-                    explore_words_point = explore_words_point,
-                    explore_words_aggregation = explore_words_aggregation,
-                    remove_words = remove_words,
-                    n_contrast_group_color = n_contrast_group_color,
-                    n_contrast_group_remove = n_contrast_group_remove,
-                    space = space,
-                    scaling = scaling)
+  plot <- textPlot(
+    word_data = word_data,
+    k_n_words_to_test = k_n_words_to_test,
+    min_freq_words_test = min_freq_words_test,
+    min_freq_words_plot = min_freq_words_plot,
+    plot_n_words_square = plot_n_words_square,
+    plot_n_words_p = plot_n_words_p,
+    plot_n_word_extreme = plot_n_word_extreme,
+    plot_n_word_frequency = plot_n_word_frequency,
+    plot_n_words_middle = plot_n_words_middle,
+    titles_color = titles_color,
+    # x_axes = TRUE,
+    y_axes = y_axes,
+    p_alpha = p_alpha,
+    p_adjust_method = p_adjust_method,
+    title_top = title_top,
+    x_axes_label = x_axes_label,
+    y_axes_label = y_axes_label,
+    scale_x_axes_lim = scale_x_axes_lim,
+    scale_y_axes_lim = scale_y_axes_lim,
+    word_font = word_font,
+    bivariate_color_codes = bivariate_color_codes,
+    word_size_range = word_size_range,
+    position_jitter_hight = position_jitter_hight,
+    position_jitter_width = position_jitter_width,
+    point_size = point_size,
+    arrow_transparency = arrow_transparency,
+    points_without_words_size = points_without_words_size,
+    points_without_words_alpha = points_without_words_alpha,
+    legend_title = legend_title,
+    legend_x_axes_label = legend_x_axes_label,
+    legend_y_axes_label = legend_y_axes_label,
+    legend_x_position = legend_x_position,
+    legend_y_position = legend_y_position,
+    legend_h_size = legend_h_size,
+    legend_w_size = legend_w_size,
+    legend_title_size = legend_title_size,
+    legend_number_size = legend_number_size,
+    group_embeddings1 = group_embeddings1,
+    group_embeddings2 = group_embeddings2,
+    projection_embedding = projection_embedding,
+    aggregated_point_size = aggregated_point_size,
+    aggregated_shape = aggregated_shape,
+    aggregated_color_G1 = aggregated_color_G1,
+    aggregated_color_G2 = aggregated_color_G2,
+    projection_color = projection_color,
+    seed = seed,
+    explore_words = explore_words,
+    explore_words_color = explore_words_color,
+    explore_words_point = explore_words_point,
+    explore_words_aggregation = explore_words_aggregation,
+    remove_words = remove_words,
+    n_contrast_group_color = n_contrast_group_color,
+    n_contrast_group_remove = n_contrast_group_remove,
+    space = space,
+    scaling = scaling
+  )
 
   plot$warning <- "This function will be depracted: instead use textPlot()"
   return(plot)

@@ -322,4 +322,3 @@ textCentralityPlot <- function(word_data,
   output_plot_data
 }
 ###### End textCentralityPlot
-

@@ -336,7 +336,6 @@ textTrainLists <- function(x,
     } else if (model == "logistic") {
       results <- sort_classification_output_list(output = output, save_output = save_output, descriptions = descriptions)
     }
-
   } else if (train_method == "random_forest") { #
 
     # Apply textTrainRandomForest function between each list element and sort outcome.
@@ -440,8 +439,8 @@ textPredict <- function(model_info,
   data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data1)
 
   # Get column names to be removed
-   colnames_to_b_removed <- colnames(data_prepared_with_recipe)
-   colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed == "id_nr"]
+  colnames_to_b_removed <- colnames(data_prepared_with_recipe)
+  colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed == "id_nr"]
 
   # Get Prediction scores help(predict)
   predicted_scores2 <- data_prepared_with_recipe %>%
@@ -480,7 +479,6 @@ textPredict <- function(model_info,
 #' yhat2 <- runif(10)
 #'
 #' boot_test <- textPredictTest(y1, yhat1, y2, yhat2, bootstraps_times = 10)
-#'
 #' @seealso see \code{\link{textTrain}} \code{\link{textPredict}}
 #' @importFrom stats t.test cor
 #' @importFrom tibble is_tibble as_tibble_col
@@ -496,41 +494,45 @@ textPredictTest <- function(y1,
                             paired = TRUE,
                             bootstraps_times = 10000,
                             seed = 6134,
-                            ...){
+                            ...) {
 
   ## If comparing predictions from models that predict the SAME outcome
-  if(is.null(y2)){
+  if (is.null(y2)) {
+    yhat1_absolut_error <- abs(yhat1 - y1)
+    yhat1_absolut_error_mean <- mean(yhat1_absolut_error)
+    yhat1_absolut_error_sd <- sd(yhat1_absolut_error)
 
-  yhat1_absolut_error <- abs(yhat1 - y1)
-  yhat1_absolut_error_mean <- mean(yhat1_absolut_error)
-  yhat1_absolut_error_sd <- sd(yhat1_absolut_error)
+    yhat2_absolut_error <- abs(yhat2 - y1)
+    yhat2_absolut_error_mean <- mean(yhat2_absolut_error)
+    yhat2_absolut_error_sd <- sd(yhat2_absolut_error)
 
-  yhat2_absolut_error <- abs(yhat2 - y1)
-  yhat2_absolut_error_mean <- mean(yhat2_absolut_error)
-  yhat2_absolut_error_sd <- sd(yhat2_absolut_error)
-
-  # T-test
-  t_test_results <- stats::t.test(yhat1_absolut_error,
-                                  yhat2_absolut_error,
-                                  paired = paired, ...) #, ... Double check
-  # Effect size
-  cohensD <- cohens_d(yhat1_absolut_error,
-                      yhat2_absolut_error)
-  # Descriptive
-  descriptives <- tibble::tibble(yhat1_absolut_error_mean, yhat1_absolut_error_sd,
-                                 yhat2_absolut_error_mean, yhat2_absolut_error_sd)
-  # Outputs
-  output <- list(descriptives, cohensD, t_test_results)
-  names(output) <- c("Descriptives", "Effect_size", "Test")
+    # T-test
+    t_test_results <- stats::t.test(yhat1_absolut_error,
+      yhat2_absolut_error,
+      paired = paired, ...
+    ) # , ... Double check
+    # Effect size
+    cohensD <- cohens_d(
+      yhat1_absolut_error,
+      yhat2_absolut_error
+    )
+    # Descriptive
+    descriptives <- tibble::tibble(
+      yhat1_absolut_error_mean, yhat1_absolut_error_sd,
+      yhat2_absolut_error_mean, yhat2_absolut_error_sd
+    )
+    # Outputs
+    output <- list(descriptives, cohensD, t_test_results)
+    names(output) <- c("Descriptives", "Effect_size", "Test")
   }
 
   ########
   ## If comparing predictions from models that predict DIFFERENT outcomes
   ####### help(mutate)
 
-  if(!is.null(y2)){
+  if (!is.null(y2)) {
     set.seed(seed)
-    #Bootstrap data to create distribution of correlations; help(bootstraps)
+    # Bootstrap data to create distribution of correlations; help(bootstraps)
 
     # Correlation function
     corr_on_bootstrap <- function(split) {
@@ -560,12 +562,12 @@ textPredictTest <- function(y1,
       dplyr::select(corr_y2)
 
 
-   ### Examining the overlap
-   x_list_dist <- list(boot_y1_distribution$corr_y1, boot_y2_distribution$corr_y2)
-   #install.packages("overlapping")
-   output <- overlapping::overlap(x_list_dist, ...)
-   output <- list(output$OV[[1]])
-   names(output) <- "overlapp_p_value"
-}
+    ### Examining the overlap
+    x_list_dist <- list(boot_y1_distribution$corr_y1, boot_y2_distribution$corr_y2)
+    # install.packages("overlapping")
+    output <- overlapping::overlap(x_list_dist, ...)
+    output <- list(output$OV[[1]])
+    names(output) <- "overlapp_p_value"
+  }
   output
 }

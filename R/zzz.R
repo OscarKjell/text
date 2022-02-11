@@ -11,7 +11,7 @@
     fg = "green", bg = NULL
   ))
 
-  if(isTRUE(check_textrpp_python_options()$val == "textrpp_condaenv")){
+  if (isTRUE(check_textrpp_python_options()$val == "textrpp_condaenv")) {
     textrpp_initialize(check_env = FALSE)
   }
 }

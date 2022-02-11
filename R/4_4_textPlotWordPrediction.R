@@ -9,12 +9,13 @@
 #' @return Mean value of x associated to target word.
 #' @importFrom stringi stri_count_regex
 #' @noRd
-wordsMeanValue <- function(words, target_word, x_value, case_insensitive){
+wordsMeanValue <- function(words, target_word, x_value, case_insensitive) {
   # Number of time word occurs per row
   word_freq_row <- stringi::stri_count_regex(words, target_word,
-                                             case_insensitive = case_insensitive)
+    case_insensitive = case_insensitive
+  )
 
-  mean_value <- sum(word_freq_row * x_value)/sum(word_freq_row)
+  mean_value <- sum(word_freq_row * x_value) / sum(word_freq_row)
   return(mean_value)
 }
 
@@ -54,7 +55,7 @@ textWordPrediction <- function(words,
                                y = NULL,
                                seed = 1003,
                                case_insensitive = TRUE,
-                               ...){
+                               ...) {
   set.seed(seed)
 
   # Description to include as a comment in the end of function
@@ -74,19 +75,20 @@ textWordPrediction <- function(words,
 
   # Get mean value for each word: Apply function over all words
   mean_word_value_x <- unlist(lapply(words_sorted_1$words, wordsMeanValue,
-                                   words=words, x_value=x, case_insensitive = case_insensitive))
+    words = words, x_value = x, case_insensitive = case_insensitive
+  ))
 
   mean_word_value_x <- tibble::as_tibble_col(mean_word_value_x, column_name = "word_mean_value_x")
 
-  #words_sorted_2 <- dplyr::bind_cols(words_sorted_1, mean_word_value_x)
+  # words_sorted_2 <- dplyr::bind_cols(words_sorted_1, mean_word_value_x)
 
   # Adding mean value of y associated with each word
-  if (!is.null(y)){
+  if (!is.null(y)) {
     mean_word_value_y <- unlist(lapply(words_sorted_1$words, wordsMeanValue,
-                                     words=words, x_value=y, case_insensitive = case_insensitive))
+      words = words, x_value = y, case_insensitive = case_insensitive
+    ))
 
     mean_word_value_y <- tibble::as_tibble_col(mean_word_value_y, column_name = "word_mean_value_y")
-
   }
 
   # Get word embeddings for each word
@@ -94,37 +96,36 @@ textWordPrediction <- function(words,
   uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
   # Train model
-  model_x <- textTrainRegression(uniques_words_all_wordembedding, mean_word_value_x, ...) #, ...
+  model_x <- textTrainRegression(uniques_words_all_wordembedding, mean_word_value_x, ...) # , ...
   embedding_prediction_x <- tibble::as_tibble_col(model_x$predictions$predictions, column_name = "embedding_based_prediction_x")
 
   # Train model for y-axes
-  if (!is.null(y)){
-    model_y <- textTrainRegression(uniques_words_all_wordembedding, mean_word_value_y, ...) #, ...
+  if (!is.null(y)) {
+    model_y <- textTrainRegression(uniques_words_all_wordembedding, mean_word_value_y, ...) # , ...
     embedding_prediction_y <- tibble::as_tibble_col(model_y$predictions$predictions, column_name = "embedding_based_prediction_y")
   }
 
   # TO DO: Compute p-values
   p_value_x <- tibble::as_tibble_col(rep(1, nrow(words_sorted_1)), column_name = "p_value_w_pred_x")
 
-  if (!is.null(y)){
+  if (!is.null(y)) {
     p_value_y <- tibble::as_tibble_col(rep(1, nrow(words_sorted_1)), column_name = "p_value_w_pred_y")
-
   }
 
   #### Sorting output ####
 
   word_data <- dplyr::bind_cols(words_sorted_1, mean_word_value_x, embedding_prediction_x, p_value_x)
 
-  if (!is.null(y)){
+  if (!is.null(y)) {
     word_data <- dplyr::bind_cols(word_data, mean_word_value_y, embedding_prediction_y, p_value_y)
   }
 
-  if (is.null(y)){
-  output <- list(model_x, word_data)
-  names(output) <- c("model_x", "word_data")
+  if (is.null(y)) {
+    output <- list(model_x, word_data)
+    names(output) <- c("model_x", "word_data")
   }
 
-  if (!is.null(y)){
+  if (!is.null(y)) {
     output <- list(model_x, model_y, word_data)
     names(output) <- c("model_x", "model_y", "word_data")
   }
