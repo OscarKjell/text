@@ -186,8 +186,7 @@ conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1',
 The exact way to install these packages may differ across systems. Please see:   
 [Python](https://www.python.org/)   
 [torch](https://pytorch.org/)  
-[transformers](https://huggingface.co/transformers/)  
-[transformers installation](https://huggingface.co/transformers/installation.html)
+[transformers](https://huggingface.co/docs/transformers/index)
 
 ## Share advise
 *If you find a good solution please feel free to email oscar [ d_o t] kjell [a_t] psy [DOT] lu [d_o_t]se so that we can update above instructions.*

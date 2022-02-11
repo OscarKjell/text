@@ -2,12 +2,10 @@ library(testthat)
 library(text)
 
 test_that("installing text", {
+  skip_on_cran()
 
-  #help(textrpp_install)
   textrpp_install(prompt = FALSE)
 
-  #help(textrpp_initialize)
-  #.rs.restartR()
   textrpp_initialize(textEmbed_test=FALSE)
 
   text_test <- textEmbed("hello")

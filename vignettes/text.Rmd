@@ -165,7 +165,7 @@ plot_projection
 *Kjell, et al., (2016). Social Indicators Research*
 
 ***Computer Science: Python Software***  
-[DLATK: Differential language analysis toolkit](https://www.aclweb.org/anthology/D17-2010/)  
+[DLATK: Differential language analysis toolkit](https://aclanthology.org/D17-2010/)  
 *Schwartz, H. A., Giorgi, et al., (2017).  In Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing: System Demonstrations* 
 
 
