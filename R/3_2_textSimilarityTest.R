@@ -1,14 +1,3 @@
-#x <- word_embeddings_4$harmonytexts[1:5,]
-#y <- word_embeddings_4$satisfactiontexts
-#method = "paired"
-#method = "unpaired"
-#Npermutations = 100
-#N_cluster_nodes = 1
-#alternative = "two_sided"
-#output.permutations = TRUE
-#seed = 1001
-
-
 
 #' Test whether there is a significant difference in meaning between two sets of texts
 #' (i.e., between their word embeddings).
@@ -162,6 +151,5 @@ textSimilarityTest <- function(x,
     descriptions,
     results
   )
-
   results
 }

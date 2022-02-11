@@ -50,7 +50,6 @@
 "embeddings_from_huggingface2"
 
 
-
 #' Word embeddings for 4 text variables for 40 participants
 #'
 #' The dataset is a shortened version of the data sets of Study 3-5
@@ -108,6 +107,7 @@
 #' }
 #' @source \url{https://link.springer.com/article/10.1007/s11205-015-0903-z}
 "centrality_data_harmony"
+
 
 #' Example data for plotting a Principle Component Projection Plot.
 #'

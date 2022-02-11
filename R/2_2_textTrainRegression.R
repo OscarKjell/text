@@ -1,4 +1,4 @@
-#library(magrittr)
+
 #' Function to find the mode
 #' @param x vector with numbers
 #' @return  Mode value
@@ -9,8 +9,6 @@ statisticalMode <- function(x) {
 }
 
 
-
-# library(magrittr)
 #' Function to fit a model and compute RMSE.
 #'
 #' @param object An rsplit object (from results_nested_resampling tibble)
@@ -242,6 +240,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
   output
 }
 
+
 #' In some situations, we want to parameterize the function over the tuning parameter:
 #' Function to fit a model and compute RMSE.
 #'
@@ -278,6 +277,7 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
     impute_missing = impute_missing
   )
 }
+
 
 #' For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
 #'
@@ -419,42 +419,7 @@ summarize_tune_results <- function(object,
   )
 }
 
-#x <-  word_embeddings_4$harmonytext
-#y <- Language_based_assessment_data_8$hilstotal
-#
-#cv_method = "validation_split"
-#outside_folds = 10
-#outside_strata_y = "y"
-#outside_breaks = 4
-#inside_folds = 3/4
-#inside_strata_y = "y"
-#inside_breaks = 4
-#model = "regression"
-#eval_measure = "default"
-#preprocess_step_center = TRUE
-#preprocess_step_scale = TRUE
-#preprocess_PCA = NA
-#penalty = 10^seq(-16, 16)
-#mixture = c(0)
-#first_n_predictors = NA
-#impute_missing = TRUE
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
 
-
-#textTrainRegression(
-#  x = word_embeddings_4[1:2],
-#  y = Language_based_assessment_data_8$hilstotal,
-#  preprocess_PCA = c(2, 13)
-#)
-
-# UNRELIABLE VALUE: Future (‘<none>’) unexpectedly generated random numbers without specifying argument 'seed'. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'seed=NULL', or set option 'future.rng.onMisuse' to "ignore".
-
-
-# devtools::document()
 #' Train word embeddings to a numeric variable.
 #'
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation).

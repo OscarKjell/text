@@ -1,6 +1,5 @@
 
 
-
 #  devtools::document()
 #' Make x and y into same length for when we will randomly draw K-folds from them
 #' Function to add rows of NA until y and x have the same number of rows.
@@ -19,44 +18,6 @@ addEqualNrNArows <- function(x, y) {
   return(x)
 }
 
-
-
-###  devtools::document()
-### Examine how the ordered data's mean of a statistics compare,
-### with the random data's null comparison distribution.
-### @param Observedresults a value representing the observed cosine.
-### @param NULLresults a tibble column with a NULL distribution of estimates (cosines).
-### # @param Npermutations number of permutation used in the test.
-### @param alternative type of test: "two_sided", "greater", "less".
-### @return p_value
-### @noRd
-##p_value_comparing_with_Null <- function(Observedresults,
-##                                        NULLresults,
-##                                        alternative = c("two_sided", "less", "greater")) {
-##
-##  NULLresults <- tibble::as_tibble_col(NULLresults)
-##  switch(alternative,
-##         "two_sided" = {
-##           p_value <- 2 * (min(sum(NULLresults < Observedresults), sum(NULLresults > Observedresults)) / sum(!is.na(NULLresults)))
-##         },
-##         "greater" = {
-##           p_value <- sum(NULLresults < Observedresults) / sum(!is.na(NULLresults))
-##         },
-##         "less" = {
-##           p_value <- sum(NULLresults > Observedresults) / sum(!is.na(NULLresults))
-##         }
-##  )
-##  if (!is.na(p_value)) {
-##    if (p_value == 0) {
-##      p_value <- 1 / (nrow(NULLresults) + 1)
-##    }
-##  }
-##  return(p_value)
-##}
-
-#p_value_comparing_with_Null(Observedresult = 1,
-#                            NULLresults = c(1:10, NA),
-#                            alternative = "two_sided")
 
 #  devtools::document()
 #' Examine how the ordered data's mean of a statistics compare,
@@ -88,17 +49,6 @@ p_value_comparing_with_Null <- function(Observedresult,
          },
          "two_sided" = {
            p_value <- min(p_left, p_right) * 2
-           #if(isTRUE(Observedresult >= 0)){
-           #  p_value <- p_right * 2
-           #  if(p_value >1) p_value <- 1
-#
-           #}else if(isTRUE(Observedresult < 0)){
-           #  p_value <- p_left * 2
-           #  if(p_value >1) p_value <- 1
-#
-           #} else if(is.na(Observedresult)){
-           #  p_value <- NA
-           #}
            }
          )
   if (!is.na(p_value)) {
@@ -108,7 +58,6 @@ p_value_comparing_with_Null <- function(Observedresult,
   }
   return(p_value)
 }
-
 
 
 #  devtools::document()
@@ -134,8 +83,3 @@ cohens_d <- function(x, y) {
   # Cohen's d
   cd
 }
-
-
-
-
-

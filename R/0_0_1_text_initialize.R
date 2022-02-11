@@ -23,27 +23,26 @@
 #' @param textEmbed_test logical; Test whether function (textEmbed) that requires python packages works.
 #' @export
 textrpp_initialize <- function(
-                             python_executable = NULL,
-                             virtualenv = NULL,
-                             condaenv = "textrpp_condaenv",
-                             ask = FALSE,
-                             refresh_settings = FALSE,
-                             save_profile = FALSE,
-                             check_env = TRUE,
-                             textEmbed_test = FALSE) {
-
-
-    set_textrpp_python_option(python_executable,
-                            virtualenv,
-                            condaenv,
-                            check_env,
-                            refresh_settings,
-                            ask)
+                               python_executable = NULL,
+                               virtualenv = NULL,
+                               condaenv = "textrpp_condaenv",
+                               ask = FALSE,
+                               refresh_settings = FALSE,
+                               save_profile = FALSE,
+                               check_env = TRUE,
+                               textEmbed_test = FALSE) {
+  set_textrpp_python_option(
+    python_executable,
+    virtualenv,
+    condaenv,
+    check_env,
+    refresh_settings,
+    ask
+  )
 
   ## check settings and start reticulate python
   settings <- check_textrpp_python_options()
   if (!is.null(settings)) {
-
     if (settings$key == "textrpp_python_executable") {
       reticulate::use_python(settings$val, required = TRUE)
     }
@@ -57,9 +56,10 @@ textrpp_initialize <- function(
 
   # Importing this here may start importing necessary packages
   reticulate::source_python(system.file("python",
-                                        "huggingface_Interface3.py",
-                                        package = "text",
-                                        mustWork = TRUE))
+    "huggingface_Interface3.py",
+    package = "text",
+    mustWork = TRUE
+  ))
 
   message(colourise(
     "\nSuccessfully initialized text required python packages.\n",
@@ -68,22 +68,24 @@ textrpp_initialize <- function(
   settings <- check_textrpp_python_options()
 
   settings_text <- paste('Python options: \n type = "', settings$key,
-                         '", \n name = "', settings$val,'".', sep="")
+    '", \n name = "', settings$val, '".',
+    sep = ""
+  )
 
   message(colourise(settings_text,
-        fg = "blue", bg = NULL))
+    fg = "blue", bg = NULL
+  ))
 
 
   options("textrpp_initialized" = TRUE)
 
-  if (save_profile == TRUE){
+  if (save_profile == TRUE) {
     save_textrpp_options(settings$key, settings$val)
   }
 
-  if (textEmbed_test == TRUE){
+  if (textEmbed_test == TRUE) {
     textEmbed("hello")
   }
-
 }
 
 #' Find text required python packages
@@ -97,30 +99,34 @@ textrpp_initialize <- function(
 #'   this value will always be treated as \code{FALSE}.
 #'
 #' @keywords internal
-find_textrpp <- function(ask){
+find_textrpp <- function(ask) {
   textrpp_found <- `:=` <- NA
   textrpp_python <- NULL
   options(warn = -1)
   py_execs <- if (is_windows()) {
     system2("where", "python", stdout = TRUE)
   } else if (is_osx() && file.exists("~/.bash_profile")) {
-    c(system2("source", "~/.bash_profile; which -a python", stdout = TRUE),
-      system2("source", "~/.bash_profile; which -a python3", stdout = TRUE))
+    c(
+      system2("source", "~/.bash_profile; which -a python", stdout = TRUE),
+      system2("source", "~/.bash_profile; which -a python3", stdout = TRUE)
+    )
   } else {
-    c(system2("which", "-a python", stdout = TRUE),
-      system2("which", "-a python3", stdout = TRUE))
+    c(
+      system2("which", "-a python", stdout = TRUE),
+      system2("which", "-a python3", stdout = TRUE)
+    )
   }
   py_execs <- unique(py_execs)
   options(warn = 0)
 
-  if (length(py_execs) == 0 | grepl("not find", py_execs[1])[1]){
+  if (length(py_execs) == 0 | grepl("not find", py_execs[1])[1]) {
     return(NA)
   }
-  #df_python_check <- data.table::data.table(py_execs, textrpp_found = 0)
+  # df_python_check <- data.table::data.table(py_execs, textrpp_found = 0)
   df_python_check <- tibble::tibble(py_execs, textrpp_found = 0)
   for (i in 1:nrow(df_python_check)) { # i=1
     py_exec <- df_python_check[i, ] # to remove data::data.table I removed py_execs (before it was: df_python_check2[i, py_execs])
-    sys_message <- check_textrpp_model(py_exec) #, model
+    sys_message <- check_textrpp_model(py_exec) # , model
     if (sys_message == "OK") {
       df_python_check[i, textrpp_found := 1]
     }
@@ -155,8 +161,8 @@ find_textrpp <- function(ask){
 #' @export
 #'
 #' @keywords internal
-find_textrpp_env <- function(){
-  if (is.null(tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL))){
+find_textrpp_env <- function() {
+  if (is.null(tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL))) {
     return(FALSE)
   }
   found <- if ("textrpp_condaenv" %in% reticulate::conda_list(conda = "auto")$name) {
@@ -170,7 +176,7 @@ find_textrpp_env <- function(){
 }
 
 
-check_textrpp_model <- function(py_exec) { ###, model
+check_textrpp_model <- function(py_exec) { ### , model
   options(warn = -1)
   py_exist <- if (is_windows()) {
     if (py_exec %in% system2("where", "python", stdout = TRUE)) {
@@ -186,9 +192,8 @@ check_textrpp_model <- function(py_exec) { ###, model
     stop(py_exec, " is not a python executable")
   }
   tryCatch({
-
     sys_message <- "see error in text_initialize row 235"
-    #system2(py_exec, c(sprintf("-c \"import texrpp; text.load('%s'); print('OK')\"", model)),
+    # system2(py_exec, c(sprintf("-c \"import texrpp; text.load('%s'); print('OK')\"", model)),
     #        stderr = TRUE, stdout = TRUE)
   })
   options(warn = 0)
@@ -197,33 +202,36 @@ check_textrpp_model <- function(py_exec) { ###, model
 
 
 set_textrpp_python_option <- function(python_executable = NULL,
-                                    virtualenv = NULL,
-                                    condaenv = NULL,
-                                    check_env = TRUE,
-                                    refresh_settings = FALSE,
-                                    ask = NULL
-                                    ) {
+                                      virtualenv = NULL,
+                                      condaenv = NULL,
+                                      check_env = TRUE,
+                                      refresh_settings = FALSE,
+                                      ask = NULL) {
   if (refresh_settings) clear_textrpp_options()
 
   if (!is.null(check_textrpp_python_options())) {
     settings <- check_textrpp_python_options()
 
     message_text1 <- paste("textrpp python option is already set, text will use: ",
-      sub("textrpp_", "", settings$key), ' = "', settings$val, '"', sep="")
+      sub("textrpp_", "", settings$key), ' = "', settings$val, '"',
+      sep = ""
+    )
 
     message(colourise(message_text1,
-      fg = "blue", bg = NULL))
-
+      fg = "blue", bg = NULL
+    ))
   }
   # a user can specify only one
   else if (sum(!is.null(c(python_executable, virtualenv, condaenv))) > 1) {
-    stop(paste("Too many python environments are specified, please select only one",
-               "from python_executable, virtualenv, and condaenv"))
+    stop(paste(
+      "Too many python environments are specified, please select only one",
+      "from python_executable, virtualenv, and condaenv"
+    ))
   }
   # give warning when nothing is specified
-  else if (sum(!is.null(c(python_executable, virtualenv, condaenv))) == 1){
+  else if (sum(!is.null(c(python_executable, virtualenv, condaenv))) == 1) {
     if (!is.null(python_executable)) {
-      if (check_textrpp_model(python_executable) != "OK"){
+      if (check_textrpp_model(python_executable) != "OK") {
         stop("Text required python packages ", " are not installed in ", python_executable)
       }
       clear_textrpp_options()
@@ -239,8 +247,8 @@ set_textrpp_python_option <- function(python_executable = NULL,
     }
   }
   else if (check_env &&
-           !(is.null(tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL))) &&
-           "textrpp_condaenv" %in% reticulate::conda_list(conda = "auto")$name) {
+    !(is.null(tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL))) &&
+    "textrpp_condaenv" %in% reticulate::conda_list(conda = "auto")$name) {
     message(colourise(
       "Found 'textrpp_condaenv'. text will use this environment \n",
       fg = "green", bg = NULL
@@ -248,17 +256,17 @@ set_textrpp_python_option <- function(python_executable = NULL,
     clear_textrpp_options()
     options(textrpp_condaenv = "textrpp_condaenv")
   }
-  else if (check_env && file.exists(file.path("~/.virtualenvs", virtualenv, "bin", "activate"))) { #OK: worked:file.exists(virtualenv)     Original file.exists(file.path("~/.virtualenvs", "textrpp_virtualenv", "bin", "activate"))
+  else if (check_env && file.exists(file.path("~/.virtualenvs", virtualenv, "bin", "activate"))) { # OK: worked:file.exists(virtualenv)     Original file.exists(file.path("~/.virtualenvs", "textrpp_virtualenv", "bin", "activate"))
     message(colourise(
       "Found your specified virtual environment. Text will use this environment \n",
       fg = "green", bg = NULL
-    )) #OK: original: Found 'textrpp_virtualenv'. Text will use this environment"
+    )) # OK: original: Found 'textrpp_virtualenv'. Text will use this environment"
     clear_textrpp_options()
-    options(textrpp_virtualenv = file.path("~/.virtualenvs/", virtualenv)) #OK: original: "~/.virtualenvs/textrpp_virtualenv
+    options(textrpp_virtualenv = file.path("~/.virtualenvs/", virtualenv)) # OK: original: "~/.virtualenvs/textrpp_virtualenv
   }
   else {
     message("Finding a python executable with text required python pakages installed...")
-    textrpp_python <- find_textrpp(ask = ask) #model,
+    textrpp_python <- find_textrpp(ask = ask) # model,
     if (is.null(textrpp_python)) {
       stop("Text required python packages ", " are not installed in any of python executables.") #  model,
     } else if (is.na(textrpp_python)) {
@@ -271,7 +279,7 @@ set_textrpp_python_option <- function(python_executable = NULL,
 }
 
 
-clear_textrpp_options <- function(){
+clear_textrpp_options <- function() {
   options(textrpp_python_executable = NULL)
   options(textrpp_condaenv = NULL)
   options(textrpp_virtualenv = NULL)
@@ -279,9 +287,11 @@ clear_textrpp_options <- function(){
 
 check_textrpp_python_options <- function() {
   settings <- NULL
-  for (k in c("textrpp_python_executable",
-              "textrpp_condaenv",
-              "textrpp_virtualenv")) {
+  for (k in c(
+    "textrpp_python_executable",
+    "textrpp_condaenv",
+    "textrpp_virtualenv"
+  )) {
     if (!is.null(getOption(k))) {
       settings$key <- k
       settings$val <- getOption(k)
@@ -296,8 +306,11 @@ save_textrpp_options <- function(key, val, prompt = TRUE) {
 
   ans <- if (prompt) {
     utils::menu(c("No", "Yes"),
-                title = sprintf('Do you want to set the option, \'%s = "%s"\' , as a default (y|[n])? ', key, val))
-  } else 2
+      title = sprintf('Do you want to set the option, \'%s = "%s"\' , as a default (y|[n])? ', key, val)
+    )
+  } else {
+    2
+  }
   if (ans == 2) {
     rprofile <- if (file.exists(prof_file)) readLines(prof_file) else NULL
     rprofile <- grep("options\\(\\s*textrpp_.+\\)", rprofile, value = TRUE, invert = TRUE)

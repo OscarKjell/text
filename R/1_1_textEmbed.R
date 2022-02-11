@@ -181,6 +181,7 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
   variable_x
 }
 
+
 #' This is a function that uses the textAggregation to aggreagate the layers
 #' @param x list of layers.
 #' @param aggregation method to aggregate the layers.
@@ -202,6 +203,7 @@ layer_aggregation_helper <- function(x, aggregation = aggregation) {
   return(aggregated_layers_saved1)
 }
 
+
 #' grep_col_by_name_in_list
 #' This function finds a column by name independent on where in the list structure it is.
 #' @param l a list.
@@ -212,6 +214,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
   u <- unlist(l)
   u[grep(pattern, names(u))]
 }
+
 
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
@@ -619,4 +622,3 @@ textEmbed <- function(x,
   )
   all_embeddings
 }
-

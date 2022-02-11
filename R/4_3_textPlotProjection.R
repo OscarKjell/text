@@ -1,86 +1,5 @@
 
-
 #### Supervised Dimension Projection ######
-
-
-#library(tidyverse)
-#library(text)
-#
-#
-#embeddings_all <- textEmbed(Language_based_assessment_data_8[1:2])
-#
-#
-#proj_plot_test_100 <- textProjection(words = Language_based_assessment_data_8$harmonywords,
-#                           word_embeddings = embeddings_all$harmonywords,
-#                           single_word_embeddings = embeddings_all$singlewords_we,
-#                           x = Language_based_assessment_data_8$hilstotal/1000,
-#                           y = NULL,
-#                           pca = NULL,
-#                           aggregation = "mean",
-#                           split = "no",
-#                           word_weight_power = 1,
-#                           min_freq_words_test = 0,
-#                           Npermutations = 1000,
-#                           n_per_split = 5000,
-#                           seed = 1003)
-#help(textProjectionPlot)
-#textProjectionPlot(proj_plot_test_100,
-#                   group_embeddings1 = T,
-#                   group_embeddings2 = T,
-#                   projection_embedding = T,)
-#
-#words = Language_based_assessment_data_8$harmonywords
-#word_embeddings = embeddings_all$harmonywords      # better to have these in and aggregate according to them as it becomes context (BERT) aggregated.
-#single_word_embeddings = embeddings_all$singlewords_we
-#
-
-
-
-# Pre-processing data for plotting
-
-#ds <- readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/ds.rds")
-#text_cols_embeddings <- readRDS("/Users/oscarkjell/Desktop/1 Projects/4 Lab/BSc students/Jenny2/text_cols_embeddings.rds")
-#
-#HFDHinder_all_inre_motivation_fig_5 <- text::textProjection(
-#  words = ds$HFDHinder_all,
-#  word_embeddings = text_cols_embeddings$HFDHinder_all,
-#  single_word_embeddings = text_cols_embeddings$singlewords_we,
-#  x = ds$inre_motivation,
-#  y = NULL,
-#  pca = NULL,
-#  aggregation = "mean",
-#  split = "quartile",
-#  word_weight_power = 1,
-#  min_freq_words_test = 0,
-#  Npermutations = 10000,
-#  n_per_split = 50000,
-#  seed = 1003)
-
-
-#word_embeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/word_embeddings_hil.rds")
-#words = Language_based_assessment_data_8$harmonywords
-#word_embeddings = word_embeddings_hil$harmonywords
-#single_word_embeddings = word_embeddings_hil$singlewords_we
-#
-#x = Language_based_assessment_data_8$hilstotal
-#y = Language_based_assessment_data_8$swlstotal
-#split = "mean"
-#split = "quartile"
-#Npermutations = 10
-#n_per_split = 1
-#
-#pca = NULL
-#aggregation = "mean"
-#split = "quartile"
-#split = "no"
-#word_weight_power = 1
-#min_freq_words_test = 0
-#Npermutations = 1000
-#n_per_split = 500
-#seed = 1003
-#
-#i_dim=1
-#
 
 #' Compute Supervised Dimension Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
@@ -214,8 +133,6 @@ textProjection <- function(words,
     colnames(x1) <- c("words", "value")
     x2 <- tibble::as_tibble(cbind(x1, word_embeddings))
 
-
-
     ############
     ######         1 Create COMPARISON/Projection embedding: all Group 1 & Group 2 word embeddings.
     ############
@@ -261,9 +178,8 @@ textProjection <- function(words,
       group2 <- x2 %>%
           dplyr::filter(x2$value >= q3, )
     }
-      ###
-      ##        Get word embeddings
-      ###
+
+      ## ##       Get word embeddings ####
       # Group 1: getting unique words and their frequency
       words_group1b_freq <- unique_freq_words(group1$words)
       words_group1b_freq <- words_group1b_freq[words_group1b_freq$n >= min_freq_words_test, ]
@@ -297,8 +213,6 @@ textProjection <- function(words,
         tidyr::uncount(n1)
 
 
-
-
       ## Get dataframe with ALL embeddings to randomly draw from (without log transformed, and quartiles) for Comparison distribution
       words_group1_agg_single_wordembedding_e <- cbind(words_group1b_freq, words_group1_single_wordembedding_b)
       words_group1_agg_single_wordembedding_f <- words_group1_agg_single_wordembedding_e %>%
@@ -313,8 +227,6 @@ textProjection <- function(words,
       words_group1_2_agg_single_wordembedding_e <- rbind(words_group1_agg_single_wordembedding_f, words_group2_agg_single_wordembedding_f)
       words_group1_2_agg_single_wordembedding_e1 <- dplyr::select(words_group1_2_agg_single_wordembedding_e, dplyr::starts_with("Dim"))
 
-
-
       # Interval: No split. Weighting embeddings according to interval scale.
       } else if (split == "no"){
 
@@ -326,7 +238,6 @@ textProjection <- function(words,
         words_group2b_freq <- unique_freq_words(x2$words)
         words_group2b_freq <- words_group2b_freq[words_group2b_freq$n >= min_freq_words_test, ]
         words_group2b_freq$n_g1_g2 <- words_group2b_freq$n * 1
-
 
         # Get each words on its own row and keep value so that it can be the weight for the word embedding
         words_values_sep <- x2 %>%
@@ -364,9 +275,7 @@ textProjection <- function(words,
     Aggregated_word_embedding_group1 <- textEmbeddingAggregation(dplyr::select(words_group1_agg_single_wordembedding_d, dplyr::starts_with("Dim")), aggregation = aggregation)
     Aggregated_word_embedding_group2 <- textEmbeddingAggregation(dplyr::select(words_group2_agg_single_wordembedding_d, dplyr::starts_with("Dim")), aggregation = aggregation)
 
-    ############
-    ######         Project embedding
-    #############
+    ######  Project embedding ####
     projected_embedding <- Aggregated_word_embedding_group2 - Aggregated_word_embedding_group1
 
     # Position words in relation to Group 2 (High)
@@ -393,7 +302,6 @@ textProjection <- function(words,
       dplyr::slice(rep(1:dplyr::n(), each = nrow(all_unique_words_we_b)))
 
     words_positioned_embeddings <- all_unique_words_we_b - embedding_to_anchour_with
-
 
     # Project the embeddings using dot product.
     projected_embedding_nrow <- tibble::as_tibble_row(projected_embedding) %>%
@@ -422,10 +330,7 @@ textProjection <- function(words,
     all_unique_words_freq <- rbind(DP_aggregate, all_unique_words_freq)
 
 
-    ############
-    ######         Comparison distributions for Project embedding
-    #############
-
+    ###### Comparison distributions for Project embedding ####
 
     # Splitting up the permutations in different loops to avoid memory issues
     forloops <- ceiling(Npermutations / n_per_split)
@@ -455,16 +360,6 @@ textProjection <- function(words,
         dplyr::slice(rep(1:dplyr::n(), each = nrow(random_group2_embedding)))
 
       words_positioned_embeddings_random <- random_group2_embedding - (Aggregated_word_embedding_group2_long + Aggregated_word_embedding_group1) / 2
-
-      #words_positioned_embeddings_random_new[[1]]
-      #words_positioned_embeddings_random_old[[1]]
-      #words_positioned_embeddings_random_old <- random_group2_embedding - ((t(replicate(nrow(random_group2_embedding), Aggregated_word_embedding_group2)) +
-      #  t(replicate(nrow(random_group2_embedding), Aggregated_word_embedding_group1))) / 2)
-
-
-
-  #    embedding_to_anchour_with <- (Aggregated_word_embedding_group2 + Aggregated_word_embedding_group1)/2
-  #    words_positioned_embeddings <- all_unique_words_we_b - t(replicate(nrow(all_unique_words_we_b), as.vector(embedding_to_anchour_with)))
 
       # project the embeddings using dot products
 
@@ -584,26 +479,6 @@ textProjection <- function(words,
 }
 #### End textProjection
 #############
-
-
-#####saveRDS(word_embeddings_hil, "/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/word_embeddings_hil.rds")
-#word_embeddings_hil <- read_rds("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/word_embeddings_hil.rds")
-#word_embeddings <- word_embeddings_4
-#raw_data <- Language_based_assessment_data_8
-###### Pre-processing data for plotting
-#df_for_plotting <- text::textProjection(
-#  words = Language_based_assessment_data_8$harmonywords,
-#  word_embeddings = word_embeddings_hil$harmonywords,
-#  single_word_embeddings = word_embeddings_hil$singlewords_we,
-#  x = raw_data$hilstotal,
-#  #y = raw_data$swlstotal,
-#  split = "quartile",
-#  word_weight_power = 1,
-#  min_freq_words_test = 0,
-#  Npermutations = 100000,
-#  n_per_split = 50000,
-#  seed = 1003
-#)
 
 #' Plot words according to Supervised Dimension Projection.
 #' @param word_data Dataframe from textProjection
@@ -835,14 +710,3 @@ textProjectionPlot <- function(word_data,
   plot$warning <- "This function will be depracted: instead use textPlot()"
   return(plot)
 }
-
-#pok1 <- textPlot(df_for_plotting,
-#                 explore_words = c("happy peace", "sad angry"),
-#                 explore_words_color = c("#ad42f5","black"),
-#                 explore_words_point = c("ALL_1","ALL_2"),
-#                 scaling = FALSE,
-#                 y_axes = TRUE)
-#pok1
-#textProjectionPlot(df_for_plotting)
-
-

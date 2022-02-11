@@ -204,6 +204,7 @@ process_textrpp_installation_conda <- function(conda,
 
 }
 
+
 #' @rdname textrpp_install
 #' @description If you wish to install Python in a "virtualenv", use the
 #'   \code{textrpp_install_virtualenv} function. It requires that you have a python version
@@ -285,7 +286,7 @@ python_unix_binary <- function(bin) {
     NULL
 }
 
-# python="python3.9"
+
 python_version_function <- function(python) {
 
   # check for the version
@@ -340,7 +341,6 @@ textrpp_uninstall <- function(conda = "auto",
 }
 
 
-
 text_install_miniconda <- function() {
   if (is_osx()) {
     message("Downloading installation script")
@@ -368,6 +368,7 @@ text_install_miniconda <- function() {
     stop("miniconda installation is available only for Mac or Linux")
   }
 }
+
 
 pip_get_version <- function(cmd, major_version) {
   regex <- "^(\\S+)\\s?(.*)$"
@@ -402,7 +403,6 @@ conda_get_version <- function(major_version = NA, conda, envname) {
   #version_check_regex <- sprintf(".+(%s.\\d+\\.\\d+).+", major_version)
   return(result[length(result)])
 }
-
 
 
 ###### see utils.R in spacyr

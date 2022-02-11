@@ -1,8 +1,5 @@
 
-
-
-######## Semantic Centrality Plot SC ####
-
+#### Semantic Centrality Plot SC ####
 
 #' Compute cosine semantic similarity score between single words' word embeddings
 #' and the aggregated word embedding of all words.
@@ -65,58 +62,6 @@ textCentrality <- function(words,
   return(cenrtal_cosine_df)
 }
 # End Semantic Centrality Plot data
-
-
-
-#word_data = centrality_data_harmony
-#min_freq_words_test = 10
-#plot_n_word_extreme = 10
-#plot_n_word_frequency = 10
-#plot_n_words_middle = 10
-#titles_color = "#61605e"
-#x_axes = "central_cosine"
-#
-#title_top = "Semantic Centrality Plot"
-#x_axes_label = "Semantic Centrality"
-#
-#word_font = NULL
-#centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9", "#000000")
-#word_size_range = c(3, 8)
-#point_size = 0.5
-#arrow_transparency = 0.1
-#points_without_words_size = 0.5
-#points_without_words_alpha = 0.5
-#
-#
-#min_freq_words_test = 1
-#plot_n_word_extreme = 10
-#plot_n_word_frequency = 10
-#plot_n_words_middle = 10
-#titles_color = "#61605e"
-#x_axes = "central_cosine"
-#title_top = "Semantic Centrality Plot"
-#x_axes_label = "Semantic Centrality"
-#scale_x_axes_lim = NULL
-#scale_y_axes_lim = NULL
-#word_font = NULL
-#centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d")
-#word_size_range = c(3, 8)
-#position_jitter_hight = .0
-#position_jitter_width = .03
-#point_size = 0.5
-#arrow_transparency = 0.1
-#points_without_words_size = 0.5
-#points_without_words_alpha = 0.5
-#legend_title = "SC"
-#legend_x_axes_label = "x"
-#legend_x_position = 0.02
-#legend_y_position = 0.02
-#legend_h_size = 0.2
-#legend_w_size = 0.2
-#legend_title_size = 7
-#legend_number_size = 2
-#seed = 1007
-
 
 
 #' Plot words according to cosine semantic similarity to the aggregated word embedding.
@@ -266,7 +211,6 @@ textCentralityPlot <- function(word_data,
   word_data1_frequency_x <- word_data1 %>%
     dplyr::arrange(-n) %>%
     dplyr::slice(0:plot_n_word_frequency)
-
 
   # Select the middle range, order according to frequency and then select the plot_n_words_middle = 5
   mean_m_sd_x <- mean(word_data1$central_cosine, na.rm = TRUE) - (sd(word_data1$central_cosine, na.rm = TRUE) / 10)

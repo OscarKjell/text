@@ -1,7 +1,4 @@
 
-
-# library(tidyverse)
-# devtools::document()
 #' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 #'
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation). Can analyze several variables at the same time; but if training to several
@@ -222,7 +219,6 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 }
 
 
-# library(tidyverse)
 # devtools::document()
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables. It is possible
 #' to have  word embeddings from one text variable and several numeric/categprical variables; or vice verse, word embeddings from
@@ -457,8 +453,6 @@ textPredict <- function(model_info,
 }
 
 
-
-# library(tidyverse)
 # devtools::document()
 #' Significance testing correlations
 #' If only y1 is provided a t-test is computed, between the absolute error from yhat1-y1 and yhat2-y1.
@@ -575,19 +569,3 @@ textPredictTest <- function(y1,
 }
   output
 }
-
-# help(overlap)
-#textPredictTest(y1, y2, yhat1, yhat2, bootstraps_times = 100000)
-#
-#cor(y, yhat1)
-#cor(y, yhat2)
-#textPredictTest(y1 = y, y2=y, yhat1= yhat1, yhat2= yhat2, plot = T)
-#
-#textPredictTest(y1 = y, y2=NULL, yhat1= yhat1, yhat2= yhat2, plot = T)
-
-
-# check p converging
-# Change output of the Y1-Y2
-
-
-

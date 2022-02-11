@@ -1,5 +1,5 @@
 
-#### textWordPredixtion ####
+#### textWordPrediction ####
 
 #' Function to compute associated mean value of "x" for each word.
 #' @param words Variable of words.
@@ -18,16 +18,9 @@ wordsMeanValue <- function(words, target_word, x_value, case_insensitive){
   return(mean_value)
 }
 
-## Test data
-#embeddings_test <- textEmbed(Language_based_assessment_data_8[3])
-#words <- Language_based_assessment_data_8$harmonywords
-#single_word_embeddings <- embeddings_test$singlewords_we
-#x <-  Language_based_assessment_data_8$hilstotal
-#y <-  Language_based_assessment_data_8$swlstotal
-
-
 #' Compute predictions based on single words for plotting words. The word embeddings of
-#' single words are trained to predict the mean value associated with that word.
+#' single words are trained to predict the mean value associated with that word. P-values does
+#' NOT work yet.
 #' @param words Word or text variable to be plotted.
 # @param word_embeddings Word embeddings from textEmbed for the words to be plotted
 # (i.e., the aggregated word embeddings for the "words" parameter).
@@ -140,78 +133,3 @@ textWordPrediction <- function(words,
 
   return(output)
 }
-
-
-# Test
-#embeddings_L <- textEmbed(Language_based_assessment_data_3_100)
-#
-#df_for_plotting_y_L <- textWordPrediction(
-#  words = Language_based_assessment_data_3_100$harmonywords,
-#  single_word_embeddings = embeddings_L$singlewords_we,
-#  x = Language_based_assessment_data_3_100$hilstotal
-#  ,y = Language_based_assessment_data_3_100$swlstotal
-#)
-#
-#textPlot(df_for_plotting_y_L,
-#         y_axes = TRUE)
-#
-#
-#textPlot(df_for_plotting_y_L,
-#         y_axes = TRUE,
-#         explore_words = c("happy harmony", "hate disharmony suicide"),
-#         explore_words_color = c("green", "red"),
-#         explore_words_point = c("ALL_1","ALL_2"))
-#
-## Pre-processing data for plotting
-#library(text)
-#df_for_plotting_y <- textWordPrediction(
-#  words = Language_based_assessment_data_8$harmonywords,
-#  single_word_embeddings = word_embeddings_4$singlewords_we,
-#  x = Language_based_assessment_data_8$hilstotal
-#  ,y = Language_based_assessment_data_8$hilstotal
-#)
-#
-#help(textPlot)
-#textPlot(df_for_plotting_y,
-#         y_axes = TRUE,
-#         explore_words = c("happy divorce", "calm cock"),
-#         explore_words_color = c("#ad42f5", "black"),
-#         explore_words_point = c("ALL_1","ALL_2"))
-##
-##
-##df_for_projection_y <- textProjection(
-##  words = Language_based_assessment_data_8$harmonywords,
-##  word_embeddings = word_embeddings_4$harmonywords,
-##  single_word_embeddings = word_embeddings_4$singlewords_we,
-##  x = Language_based_assessment_data_8$hilstotal
-##  ,y = Language_based_assessment_data_8$swlstotal
-##)
-
-#textProjectionPlot(df_for_projection_y, y_axes = TRUE)
-
-#embeddings_test <- textEmbed(Language_based_assessment_data_8[3])
-
-#library(tidyverse)
-#word_prediction_test <- textWordPrediction(words = Language_based_assessment_data_8[3],
-#                                           #embeddings = embeddings_test[1],
-#                                           single_word_embeddings = embeddings_test[2],
-#                                           x = Language_based_assessment_data_8[5],
-#                                           y = NULL,
-#                                           seed = 1003)
-#word_prediction_test
-#
-#colnames(word_prediction_test$word_data)[which(names(word_prediction_test$word_data) == "p_value")] <- "p_values_dot.x"
-#colnames(word_prediction_test$word_data)[which(names(word_prediction_test$word_data) == "embedding_based_prediction")] <- "dot.x"
-#word_prediction_test$word_data
-#
-#text::textProjectionPlot(word_prediction_test)
-#
-#
-#help(textEmbed)
-#$word_data
-# words    n    [dot.x = prediction_score]   p_value
-# p_value = permutation type test by creating a NULL distribution of prediction scores from the data.
-# For example, randomixe words
-
-
-

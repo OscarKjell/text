@@ -43,8 +43,6 @@ textPCA <- function(words,
 
   pca_trans <- recipes::step_pca(pca_trans, recipes::all_numeric(), num_comp = 2)
 
-
-
   pca_estimates <- recipes::prep(pca_trans, training = uniques_words_all_wordembedding)
   pca_data <- recipes::bake(pca_estimates, uniques_words_all_wordembedding)
   pca_data <- pca_data %>% stats::setNames(paste0("Dim_", names(.)))
@@ -173,8 +171,6 @@ textPCAPlot <- function(word_data,
     "legend_title_size =", legend_title_size,
     "legend_number_size =", legend_number_size
   )
-
-
 
   set.seed(seed)
 

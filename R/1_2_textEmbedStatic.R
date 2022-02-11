@@ -78,7 +78,7 @@ applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
   }
 }
 
-# insert link in the future to \code{\link{textEmbed}}
+
 # devtools::document()
 #' Applies word embeddings from a given decontextualized static space (such as
 #' from Latent Semantic Analyses) to all character variables
@@ -143,10 +143,3 @@ textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean") {
   list_semrep$singlewords_we <- singlewords_we
   list_semrep
 }
-
-
-
-
-
-
-
