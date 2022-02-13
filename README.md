@@ -91,7 +91,7 @@ representations of human language (i.e., language models). These
 language models have produced big performance gains in tasks related to
 understanding human language. Text are making these SOTA models easily
 accessible through an interface to
-[HuggingFace](https://huggingface.co/transformers/) in Python.
+[HuggingFace](https://huggingface.co/docs/transformers/index) in Python.
 
 ``` r
 library(text)
@@ -109,17 +109,16 @@ multilingual BERT comprises *104 different languages*.
 
     #> Warning: package 'magrittr' was built under R version 4.0.5
 
-| Models                         | References                                                       | Layers | Dimensions | Language                                                                             |
-|:-------------------------------|:-----------------------------------------------------------------|:-------|:-----------|:-------------------------------------------------------------------------------------|
-| ‘bert-base-uncased’            | [Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/) | 12     | 768        | English                                                                              |
-| ‘roberta-base’                 | [Liu et al. 2019](https://arxiv.org/abs/1907.11692)              | 12     | 768        | English                                                                              |
-| ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)            | 6      | 768        | English                                                                              |
-| ‘bert-base-multilingual-cased’ | [Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/) | 12     | 768        | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
-| ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692.pdf)                | 24     | 1024       | [100 language](https://huggingface.co/transformers/multilingual.html)                |
+| Models                         | References                                               | Layers | Dimensions | Language                                                                             |
+|:-------------------------------|:---------------------------------------------------------|:-------|:-----------|:-------------------------------------------------------------------------------------|
+| ‘bert-base-uncased’            | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12     | 768        | English                                                                              |
+| ‘roberta-base’                 | [Liu et al. 2019](https://arxiv.org/abs/1907.11692)      | 12     | 768        | English                                                                              |
+| ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)    | 6      | 768        | English                                                                              |
+| ‘bert-base-multilingual-cased’ | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12     | 768        | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
+| ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692.pdf)        | 24     | 1024       | [100 language](https://huggingface.co/docs/transformers/multilingual)                |
 
-See
-[HuggingFace](https://huggingface.co/transformers/pretrained_models.html)
-for a more comprehensive list of models.
+See [HuggingFace](https://huggingface.co/models/) for a more
+comprehensive list of models.
 
 ### An end-to-end package
 

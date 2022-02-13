@@ -75,7 +75,7 @@ textrpp_initialize(save_profile = TRUE)
 
 
 ### Point solution for transforming text to embeddings
-Recent significant advances in NLP research have resulted in improved representations of human language (i.e., language models). These language models have produced big performance gains in tasks related to understanding human language. Text are making these SOTA models  easily accessible through an interface to [HuggingFace](https://huggingface.co/transformers/) in Python.
+Recent significant advances in NLP research have resulted in improved representations of human language (i.e., language models). These language models have produced big performance gains in tasks related to understanding human language. Text are making these SOTA models  easily accessible through an interface to [HuggingFace](https://huggingface.co/docs/transformers/index) in Python.
 
 ```{r short_word_embedding_example, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
@@ -97,10 +97,10 @@ Models <- c("'bert-base-uncased'",
             "'xlm-roberta-large'"
             )
 
-References <- c("[Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/)",
+References <- c("[Devlin et al. 2019](https://aclanthology.org/N19-1423/)",
                 "[Liu et al. 2019](https://arxiv.org/abs/1907.11692)",
                 "[Sahn et al., 2019](https://arxiv.org/abs/1910.01108)",
-                "[Devlin et al. 2019](https://www.aclweb.org/anthology/N19-1423/)",
+                "[Devlin et al. 2019](https://aclanthology.org/N19-1423/)",
                 "[Liu et al](https://arxiv.org/pdf/1907.11692.pdf)"
                 )
 
@@ -114,7 +114,7 @@ Language <- c("English",
               "English", 
               "English",
               "[104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias)",
-              "[100 language](https://huggingface.co/transformers/multilingual.html)")
+              "[100 language](https://huggingface.co/docs/transformers/multilingual)")
 
 Dimensions <- c("768", 
                 "768", 
@@ -127,7 +127,7 @@ Tables_short <- tibble::tibble(Models, References, Layers, Dimensions, Language)
 knitr::kable(Tables_short, caption="", bootstrap_options = c("hover"), full_width = T)
 ```
   
-See [HuggingFace](https://huggingface.co/transformers/pretrained_models.html) for a more comprehensive list of models. 
+See [HuggingFace](https://huggingface.co/models/) for a more comprehensive list of models. 
 
 ### An end-to-end package
 *Text* also provides functions to analyse the word embeddings with well-tested machine learning algorithms and statistics. The focus is to analyze and visualize text, and their relation to other text or numerical variables. An example is functions plotting statistically significant words in the word embedding space.   
