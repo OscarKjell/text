@@ -61,7 +61,7 @@ textrpp_initialize <- function(
     mustWork = TRUE
   ))
 
-  message(colourise(
+    message(colourise(
     "\nSuccessfully initialized text required python packages.\n",
     fg = "green", bg = NULL
   ))

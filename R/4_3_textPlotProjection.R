@@ -1,6 +1,25 @@
 
 #### Supervised Dimension Projection ######
 
+#word_embeddings <- word_embeddings_4
+#data <- Language_based_assessment_data_8
+#single_word_embeddings = word_embeddings$singlewords_we
+#words = data$harmonywords[1:5]
+#word_embeddings = word_embeddings$harmonywords[1:5, ]
+#
+#
+#x=data$hilstotal[1:5]
+#y = NULL
+#split = "mean"
+#Npermutations = 2
+#n_per_split = 1
+#pca = 2
+#
+#aggregation = "mean"
+#min_freq_words_test = 0
+#word_weight_power = 1
+
+
 #' Compute Supervised Dimension Projection and related variables for plotting words.
 #' @param words Word or text variable to be plotted.
 #' @param word_embeddings Word embeddings from textEmbed for the words to be plotted
@@ -106,7 +125,9 @@ textProjection <- function(words,
 
     pca_estimates <- recipes::prep(pca_trans, training = uniques_words_all_wordembedding)
     pca_data <- recipes::bake(pca_estimates, uniques_words_all_wordembedding)
-    pca_data <- pca_data %>% stats::setNames(paste0("Dim_", names(.)))
+
+    #pca_data <- pca_data %>% stats::setNames(paste0("Dim_", names(.)))
+    pca_data <- pca_data %>% stats::setNames(paste0("Dim", 1:length(pca_data)))
     single_word_embeddings <- dplyr::bind_cols(uniques_words_all, pca_data)
     single_word_embeddings
   }
@@ -193,6 +214,7 @@ textProjection <- function(words,
       words_group2b_freq <- unique_freq_words(group2$words)
       words_group2b_freq <- words_group2b_freq[words_group2b_freq$n >= min_freq_words_test, ]
       words_group2b_freq$n_g1_g2 <- words_group2b_freq$n * 1
+
       words_group2_single_wordembedding <- lapply(words_group2b_freq$words, applysemrep, single_word_embeddings)
       words_group2_single_wordembedding_b <- dplyr::bind_rows(words_group2_single_wordembedding)
 
