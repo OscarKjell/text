@@ -7,11 +7,23 @@
 #' @importFrom tibble as_tibble
 #' @noRd
 unique_freq_words <- function(words) {
-  words_group1 <- data.frame(unlist(strsplit(tolower(words), " ")))
+  # Make all words lower case
+  words <- tolower(words)
+
+  # separate words/tokens ombined with /
+  words <- gsub("/", " ", words)
+
+  # Tokenize with nltk
+  nltk <- reticulate::import("nltk")
+  tokenizerNLTK <- nltk$tokenize$word_tokenize
+  words_group <- unlist(lapply(words, tokenizerNLTK))
+
+  # words_group1 <- data.frame(unlist(strsplit(tolower(words), " ")))
   # Remove empty cells (otherwise all words are put within " ",
   # which create problems in getUniqueWordsAndFreq or textCentrality)
-  words_group <- words_group1[words_group1 != ""]
-  words_group <- as.character(words_group)
+  #words_group <- words_group1[words_group1 != ""]
+  #words_group <- as.character(words_group)
+
   words_groupb <- tibble::as_tibble(words_group)
   sort(words_groupb$value)
   words_groupb <- table(words_groupb)
@@ -19,6 +31,10 @@ unique_freq_words <- function(words) {
   colnames(words_groupb_freq) <- c("words", "n")
   words_groupb_freq
 }
+#words = BestVSTop_Tib$allwords
+#help(strsplit)
+#output <- unique_freq_words(words)
+# View(output)
 
 
 #' Creates the plot object (except for the legend).

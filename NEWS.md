@@ -1,6 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.51
+
+- tokenization is made with NLTK from python.
+
+
+
 # text 0.9.50
 
 - Code has been cleaned up and prepared for CRAN
