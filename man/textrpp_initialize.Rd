@@ -12,7 +12,8 @@ textrpp_initialize(
   refresh_settings = FALSE,
   save_profile = FALSE,
   check_env = TRUE,
-  textEmbed_test = FALSE
+  textEmbed_test = FALSE,
+  prompt = TRUE
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ be saved for the future use.}
 by \code{textrpp_install()} exists}
 
 \item{textEmbed_test}{logical; Test whether function (textEmbed) that requires python packages works.}
+
+\item{prompt}{logical; asking whether user wants to set the environment as default.}
 }
 \description{
 Initialize text required python packages to call from R.

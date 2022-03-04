@@ -1,6 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.52
+
+- prompt option added to textrpp_initiate()
+
+
 # text 0.9.51
 
 - tokenization is made with NLTK from python.

@@ -21,6 +21,7 @@
 #' @param save_profile logical; if \code{TRUE}, the current text required python packages setting will
 #'   be saved for the future use.
 #' @param textEmbed_test logical; Test whether function (textEmbed) that requires python packages works.
+#' @param prompt logical; asking whether user wants to set the environment as default.
 #' @export
 textrpp_initialize <- function(
                                python_executable = NULL,
@@ -30,7 +31,8 @@ textrpp_initialize <- function(
                                refresh_settings = FALSE,
                                save_profile = FALSE,
                                check_env = TRUE,
-                               textEmbed_test = FALSE) {
+                               textEmbed_test = FALSE,
+                               prompt = TRUE) {
   set_textrpp_python_option(
     python_executable,
     virtualenv,
@@ -80,7 +82,7 @@ textrpp_initialize <- function(
   options("textrpp_initialized" = TRUE)
 
   if (save_profile == TRUE) {
-    save_textrpp_options(settings$key, settings$val)
+    save_textrpp_options(settings$key, settings$val, prompt = prompt)
   }
 
   if (textEmbed_test == TRUE) {
