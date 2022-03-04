@@ -22,12 +22,14 @@ for the individual words that is used for the plotting in the textPCAPlot functi
 Compute 2 PCA dimensions of the word embeddings for individual words.
 }
 \examples{
+\dontrun{
 # Data
 df_for_plotting2d <- textPCA(
   words = Language_based_assessment_data_8$harmonywords,
   single_word_embeddings = word_embeddings_4$singlewords_we
 )
 df_for_plotting2d
+}
 }
 \seealso{
 see \code{\link{textPCAPlot}}

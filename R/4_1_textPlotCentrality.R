@@ -18,12 +18,14 @@
 #' @examples
 #' word_embeddings <- word_embeddings_4
 #' data <- Language_based_assessment_data_8
+#' \dontrun{
 #' df_for_plotting <- textCentrality(
 #'   data$harmonywords,
 #'   word_embeddings$harmonywords,
 #'   word_embeddings$singlewords_we
 #' )
 #' df_for_plotting
+#' }
 #' @seealso see \code{\link{textCentralityPlot}}  \code{\link{textProjection}}
 #' @importFrom dplyr bind_rows
 #' @importFrom tibble tibble

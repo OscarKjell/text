@@ -53,6 +53,7 @@
 #' word_embeddings <- word_embeddings_4
 #' raw_data <- Language_based_assessment_data_8
 #' # Pre-processing data for plotting
+#' \dontrun{
 #' df_for_plotting <- textProjection(
 #'   words = raw_data$harmonywords,
 #'   word_embeddings = word_embeddings$harmonywords,
@@ -63,6 +64,7 @@
 #'   n_per_split = 1
 #' )
 #' df_for_plotting
+#' }
 #' #' @seealso see \code{\link{textProjectionPlot}}
 #' @importFrom tibble as_tibble
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake

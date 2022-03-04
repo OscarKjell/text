@@ -9,12 +9,14 @@
 #' @return A dataframe with words, their frquency and two PCA dimensions from the word_embeddings
 #' for the individual words that is used for the plotting in the textPCAPlot function.
 #' @examples
+#' \dontrun{
 #' # Data
 #' df_for_plotting2d <- textPCA(
 #'   words = Language_based_assessment_data_8$harmonywords,
 #'   single_word_embeddings = word_embeddings_4$singlewords_we
 #' )
 #' df_for_plotting2d
+#' }
 #' @seealso see \code{\link{textPCAPlot}}
 #' @importFrom tibble as_tibble
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake

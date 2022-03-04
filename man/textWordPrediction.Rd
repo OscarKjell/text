@@ -13,6 +13,7 @@ textWordPrediction(
   y = NULL,
   seed = 1003,
   case_insensitive = TRUE,
+  text_remove = "[()]",
   ...
 )
 }
@@ -29,6 +30,8 @@ textWordPrediction(
 \item{seed}{Set different seed.}
 
 \item{case_insensitive}{When TRUE all words are made lower case.}
+
+\item{text_remove}{Remove special characters}
 
 \item{...}{Training options from textTrainRegression().}
 }
