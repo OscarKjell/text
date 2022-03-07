@@ -61,7 +61,7 @@ test_that("textProjection with QUARTILE, 0.9 PCA and
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   skip_on_cran()
 
-  # Dot Product Projection Plot
+  # Dot Product Projection Plot help(textProjectionPlot)
   p <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
     k_n_words_to_test = TRUE,
@@ -81,7 +81,7 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
     scale_y_axes_lim = NULL,
     group_embeddings1 = F,
     group_embeddings2 = F,
-    projection_embedding = F,
+    projection_embedding = F
   )
 
   expect_true(ggplot2::is.ggplot(p$final_plot))

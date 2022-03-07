@@ -17,10 +17,33 @@ test_that("Testing textEmbed as well as train", {
 
   harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1],
     model = "bert-base-uncased",
-    layers = c(0, 12),
-    context_layers = 12,
-    decontext_layers = 0
+    layers = c(11),
+    context_layers = c(11),
+    decontext_layers = c(11),
   )
+
+  # help(textProjection)
+  proj <- textProjection(
+    words = Language_based_assessment_data_8[1],
+    word_embeddings = harmony_word_embeddings$satisfactiontexts,
+    single_word_embeddings = harmony_word_embeddings$singlewords_we,
+    x = Language_based_assessment_data_8$hilstotal,
+    y = NULL,
+    pca = NULL,
+    aggregation = "mean",
+    split = "quartile",
+    word_weight_power = 1,
+    min_freq_words_test = 0,
+    Npermutations = 10,
+    n_per_split = 5,
+    seed = 1003)
+  expect_that(proj[[1]][[1]][[1]][[1]], is_a("numeric"))
+
+  # help(text)
+  plot_proj <- textProjectionPlot(proj,
+                        explore_words = c("happy joy", "happy joy"))
+
+  expect_that(plot_proj$processed_word_data$n[1], is_a("numeric"))
 
   text_train_results <- textTrain(
     x = harmony_word_embeddings$satisfactiontexts,
