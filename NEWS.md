@@ -1,6 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.53
+
+- inclusion of textDescriptives()
+
+
 # text 0.9.52
 
 - prompt option added to textrpp_initiate()
