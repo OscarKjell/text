@@ -28,7 +28,7 @@ test_that("Testing textEmbed as well as train", {
     word_embeddings = harmony_word_embeddings$satisfactiontexts,
     single_word_embeddings = harmony_word_embeddings$singlewords_we,
     x = Language_based_assessment_data_8$hilstotal,
-    y = NULL,
+    y = Language_based_assessment_data_8$swlstotal,
     pca = NULL,
     aggregation = "mean",
     split = "quartile",
@@ -37,13 +37,27 @@ test_that("Testing textEmbed as well as train", {
     Npermutations = 10,
     n_per_split = 5,
     seed = 1003)
+
   expect_that(proj[[1]][[1]][[1]][[1]], is_a("numeric"))
 
-  # help(text)
+  # help(textProjectionPlot)
   plot_proj <- textProjectionPlot(proj,
-                        explore_words = c("happy joy", "happy joy"))
+                        explore_words = c("happy"),
+                        y_axes = TRUE)
 
   expect_that(plot_proj$processed_word_data$n[1], is_a("numeric"))
+
+  #help(textWordPrediction)
+#  pred_word <- textWordPrediction(words = Language_based_assessment_data_8[1],
+#                                  single_word_embeddings = harmony_word_embeddings$singlewords_we,
+#                                  x = Language_based_assessment_data_8$hilstotal)
+#
+#  plot_pred <- textPlot(pred_word,
+#                        explore_words = c("happy"),
+#                        y_axes = FALSE)
+#
+
+
 
   text_train_results <- textTrain(
     x = harmony_word_embeddings$satisfactiontexts,
