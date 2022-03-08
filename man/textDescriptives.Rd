@@ -12,12 +12,13 @@ textDescriptives(
 )
 }
 \arguments{
-\item{words}{A character variable; if its a tibble or dataframe, all the character variables will be selected.}
+\item{words}{One or several character variables; if its a tibble or dataframe, all the character variables will be selected.}
 
-\item{compute_total}{If words is a tibble or dataframe with several character variables are total variable is computed.
-That is, the text columns are united using dplyr unite function.}
+\item{compute_total}{If words is a tibble or dataframe with several character variables, a total variable is computed.
+For more infomration see the entropy package and specifically its entropy.plugin function.
+That is, the text columns are combined using the dplyr unite function.}
 
-\item{entropy_unit}{The unit entropy is measured. The default is to used bits (i.e., log2; see also, "log", "log10").}
+\item{entropy_unit}{The unit entropy is measured in. The default is to used bits (i.e., log2; see also, "log", "log10").}
 
 \item{na.rm}{Option to remove NAs when computing mean, median etc (see under return).}
 }
