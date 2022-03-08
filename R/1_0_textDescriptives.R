@@ -1,7 +1,9 @@
+
 #' Compute descriptive statistics of character variables.
 #'
-#' @param words Word embeddings from textEmbed (or textEmbedLayerAggregation).
+#' @param words A character variable; if its a tibble or dataframe, all the character variables will be selected.
 #' @param entropy_unit  The unit entropy is measured. The default is to used bits (i.e., log2; see also, "log", "log10").
+#' @param na.rm Option to remove NAs when computing mean, median etc (see under return).
 #' @return A tibble with descriptive statistics, including
 #' variable = the variable names of input "words";
 #' w_total = total number of words in the variable;
@@ -24,8 +26,7 @@
 #' @importFrom stringi stri_count_words stri_split_regex
 #' @importFrom dplyr bind_cols
 #' @export
-textDescriptives <- function(words, entropy_unit = "log2"){
-
+textDescriptives <- function(words, entropy_unit = "log2", na.rm = TRUE){
 
   if(tibble::is_tibble(words) | is.data.frame(words)){
     # Select all character variables and make them UTF-8 coded.
@@ -46,22 +47,17 @@ textDescriptives <- function(words, entropy_unit = "log2"){
     words <- select_character_v_utf8(words)
   }
 
-
-
-  #output_list <- list()
-  # i =1
-  #for(i in 1:ncol(words)){
   word_descriptives <- function(words, entropy_unit){
 
     # Total words
-    w_total <- sum(stringi::stri_count_words(words))
+    w_total <- sum(stringi::stri_count_words(words), na.rm = na.rm)
 
     # Mean, median SD and range words
-    w_mean   <- mean(stringi::stri_count_words(words))
-    w_median <- median(stringi::stri_count_words(words))
-    w_sd     <- sd(stringi::stri_count_words(words))
-    w_range_min <- range(stringi::stri_count_words(words))[1]
-    w_range_max <- range(stringi::stri_count_words(words))[2]
+    w_mean   <- mean(stringi::stri_count_words(words), na.rm = na.rm)
+    w_median <- median(stringi::stri_count_words(words), na.rm = na.rm)
+    w_sd     <- sd(stringi::stri_count_words(words), na.rm = na.rm)
+    w_range_min <- range(stringi::stri_count_words(words), na.rm = na.rm)[1]
+    w_range_max <- range(stringi::stri_count_words(words), na.rm = na.rm)[2]
 
     # Number of tokens and unique tokens using nltk
     n_tokens <- sum(unique_freq_words(words)$n)
