@@ -2,6 +2,8 @@
 #' Compute descriptive statistics of character variables.
 #'
 #' @param words A character variable; if its a tibble or dataframe, all the character variables will be selected.
+#' @param compute_total If words is a tibble or dataframe with several character variables are total variable is computed.
+#' That is, the text columns are united using dplyr unite function.
 #' @param entropy_unit  The unit entropy is measured. The default is to used bits (i.e., log2; see also, "log", "log10").
 #' @param na.rm Option to remove NAs when computing mean, median etc (see under return).
 #' @return A tibble with descriptive statistics, including
@@ -26,11 +28,20 @@
 #' @importFrom stringi stri_count_words stri_split_regex
 #' @importFrom dplyr bind_cols
 #' @export
-textDescriptives <- function(words, entropy_unit = "log2", na.rm = TRUE){
+textDescriptives <- function(words,
+                             compute_total = TRUE,
+                             entropy_unit = "log2",
+                             na.rm = TRUE){
 
   if(tibble::is_tibble(words) | is.data.frame(words)){
     # Select all character variables and make them UTF-8 coded.
     words <- select_character_v_utf8(words)
+
+    #create a total variable help(unite)
+    if(compute_total){
+      total <- tidyr::unite(words, total, sep = " ")
+      words <- dplyr::bind_cols(words, total)
+    }
 
     variable_name <- colnames(words)
     variable_name <- tibble::as_tibble_col(variable_name,

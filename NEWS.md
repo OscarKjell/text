@@ -1,6 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.54
+
+- textDescriptives() get options to remove NA and compute total scores.
+
 # text 0.9.53
 
 - inclusion of textDescriptives()

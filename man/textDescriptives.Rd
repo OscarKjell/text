@@ -4,10 +4,18 @@
 \alias{textDescriptives}
 \title{Compute descriptive statistics of character variables.}
 \usage{
-textDescriptives(words, entropy_unit = "log2", na.rm = TRUE)
+textDescriptives(
+  words,
+  compute_total = TRUE,
+  entropy_unit = "log2",
+  na.rm = TRUE
+)
 }
 \arguments{
 \item{words}{A character variable; if its a tibble or dataframe, all the character variables will be selected.}
+
+\item{compute_total}{If words is a tibble or dataframe with several character variables are total variable is computed.
+That is, the text columns are united using dplyr unite function.}
 
 \item{entropy_unit}{The unit entropy is measured. The default is to used bits (i.e., log2; see also, "log", "log10").}
 
