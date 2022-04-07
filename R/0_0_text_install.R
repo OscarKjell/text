@@ -100,7 +100,7 @@ textrpp_install <- function(conda = "auto",
       } else {
         ans <- 2 # When no prompt is set to false, default to install miniconda.
       }
-      if (ans == 2 || prompt ) {
+      if (ans == 2) {
 
         reticulate::install_miniconda(update = update_conda)
         conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
