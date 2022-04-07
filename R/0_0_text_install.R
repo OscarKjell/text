@@ -95,7 +95,11 @@ textrpp_install <- function(conda = "auto",
     # validate that we have conda
     if (!have_conda) {
       cat("No conda was found in the system. ")
-      ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda in ~/miniconda?")
+      if (prompt) {
+        ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda in ~/miniconda?")
+      } else {
+        ans <- 2 # When no prompt is set to false, default to install miniconda.
+      }
       if (ans == 2) {
 
         reticulate::install_miniconda(update = update_conda)
