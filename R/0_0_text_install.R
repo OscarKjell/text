@@ -95,7 +95,7 @@ textrpp_install <- function(conda = "auto",
     # validate that we have conda
     if (!have_conda) {
       cat("No conda was found in the system. ")
-      ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda in ~/miniconda?")
+      ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda using reticulate::install_miniconda()?")
       if (ans == 2) {
 
         reticulate::install_miniconda(update = update_conda)
@@ -181,8 +181,8 @@ process_textrpp_installation_conda <- function(conda,
                                                pip = FALSE) {
   conda_envs <- reticulate::conda_list(conda = conda)
   if (prompt) {
-    ans <- utils::menu(c("No", "Yes"), title = "Do you want to set up a new conda environment?")
-    if (ans == 1) stop("condaenv setup is cancelled by user", call. = FALSE)
+    ans <- utils::menu(c("Confirm", "Cancel"), title = "Confirm that a new conda environment will be set up.")
+    if (ans == 2) stop("condaenv setup is cancelled by user", call. = FALSE)
   }
   conda_env <- subset(conda_envs, conda_envs$name == envname)
   if (nrow(conda_env) == 1) {
