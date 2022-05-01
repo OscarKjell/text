@@ -44,7 +44,7 @@ textSimilarity <- function(x, y) {
 #' @param embedding Word embeddings (e.g., from textEmbed).
 #' @return A matrix of semantic similarity scores
 #' @examples
-#' similarity_scores <- textSimilarityMatrix(word_embeddings_4$harmonytext)
+#' similarity_scores <- textSimilarityMatrix(word_embeddings_4$harmonytext[1:3,])
 #' round(similarity_scores, 3)
 #' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 #' @export

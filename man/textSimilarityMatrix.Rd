@@ -16,7 +16,7 @@ A matrix of semantic similarity scores
 Compute semantic similarity scores between all combinations in a word embedding
 }
 \examples{
-similarity_scores <- textSimilarityMatrix(word_embeddings_4$harmonytext)
+similarity_scores <- textSimilarityMatrix(word_embeddings_4$harmonytext[1:3,])
 round(similarity_scores, 3)
 }
 \seealso{
