@@ -1,6 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+
+# text 0.9.60
+
+- textSimilarityMatrix() compute semantic similarity among all combinations in a given word embedding. 
+
 # text 0.9.54
 
 - textDescriptives() get options to remove NA and compute total scores.

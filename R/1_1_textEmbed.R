@@ -217,6 +217,17 @@ grep_col_by_name_in_list <- function(l, pattern) {
 }
 
 
+#.rs.restartR()
+#x = "hello world"
+#contexts = TRUE
+#decontexts = TRUE
+#model = "xlm-roberta-large"
+#layers = 11
+#return_tokens = TRUE
+#device = "cpu"
+#print_python_warnings = FALSE
+#tokenizer_parallelism = FALSE
+
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
 #' @param contexts Provide word embeddings based on word contexts
@@ -278,7 +289,7 @@ textEmbedLayersOutput <- function(x,
     x <- data_character_variables
     sorted_layers_ALL_variables <- list()
     sorted_layers_ALL_variables$context <- list()
-    # Loop over all character variables; i_variables = 1
+    # Loop over all character variables; i_variables = 1 library(tidyverse) help(py_capture_output)
     for (i_variables in seq_len(length(data_character_variables))) {
 
       # Python file function to HuggingFace
@@ -290,7 +301,8 @@ textEmbedLayersOutput <- function(x,
           return_tokens = return_tokens,
           device = device,
           tokenizer_parallelism = tokenizer_parallelism
-        )
+        ),
+        type = "stderr"
       )
 
       variable_x <- sortingLayers(x = hg_embeddings, layers = layers, return_tokens = return_tokens)

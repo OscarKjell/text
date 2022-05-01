@@ -18,8 +18,8 @@ cosines <- function(x, y) {
 #' @examples
 #' library(dplyr)
 #' word_embeddings <- word_embeddings_4
-#' similiarty_scores <- textSimilarity(word_embeddings$harmonytext, word_embeddings$satisfactiontext)
-#' comment(similiarty_scores)
+#' similarity_scores <- textSimilarity(word_embeddings$harmonytext, word_embeddings$satisfactiontext)
+#' comment(similarity_scores)
 #' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 #' @export
 textSimilarity <- function(x, y) {
@@ -37,6 +37,29 @@ textSimilarity <- function(x, y) {
     sep = ".", collapse = " "
   )
   ss
+}
+
+
+#' Compute semantic similarity scores between all combinations in a word embedding
+#' @param embedding Word embeddings (e.g., from textEmbed).
+#' @return A matrix of semantic similarity scores
+#' @examples
+#' similarity_scores <- textSimilarityMatrix(word_embeddings_4$harmonytext)
+#' round(similarity_scores, 3)
+#' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+#' @export
+textSimilarityMatrix <- function(embedding){
+
+  ss_matrix <- matrix(nrow=nrow(embedding), ncol=nrow(embedding))
+
+  for (i in seq_len(nrow(embedding))){
+
+    for (j in seq_len(nrow(embedding))){
+      ss_matrix[i,j] <- text::textSimilarity(embedding[i,],
+                                             embedding[j,])
+    }
+  }
+  ss_matrix
 }
 
 #' Compute the semantic similarity between a text variable and a word norm
