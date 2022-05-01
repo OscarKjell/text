@@ -5,7 +5,6 @@
 
 <!-- badges: start -->
 
-[![codecov](https://app.codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://app.codecov.io/gh/oscarkjell/text)
 [![CRAN
 Status](https://www.r-pkg.org/badges/version/text)](https://CRAN.R-project.org/package=text)
 [![Github build
@@ -17,6 +16,7 @@ developed](https://www.repostatus.org/badges/latest/active.svg)](https://www.rep
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing-1)
 [![CRAN
 Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-project.org/package=text)
+[![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://app.codecov.io/gh/oscarkjell/text)
 
 <!-- badges: end -->
 
@@ -106,8 +106,6 @@ Multilingual language models can also represent several languages;
 multilingual BERT comprises *104 different languages*.
 
 *Table 1. Some of the available language models*
-
-    #> Warning: package 'magrittr' was built under R version 4.0.5
 
 | Models                         | References                                               | Layers | Dimensions | Language                                                                             |
 |:-------------------------------|:---------------------------------------------------------|:-------|:-----------|:-------------------------------------------------------------------------------------|

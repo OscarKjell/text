@@ -17,12 +17,12 @@ knitr::opts_chunk$set(
 # text <img src="man/figures/text_logo_animation.gif" align="right" alt="" width="330" />
 
 <!-- badges: start -->
-[![codecov](https://app.codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://app.codecov.io/gh/oscarkjell/text)
 [![CRAN Status](https://www.r-pkg.org/badges/version/text)](https://CRAN.R-project.org/package=text)
 [![Github build status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing-1)
 [![CRAN Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-project.org/package=text)
+[![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://app.codecov.io/gh/oscarkjell/text)
 
 <!-- badges: end -->
 

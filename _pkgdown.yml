@@ -56,9 +56,10 @@ reference:
   contents:
     - textPredict
     - textPredictTest
-- title: Semantic Similairties
+- title: Semantic Similarities
   contents:
     - textSimilarity
+    - textSimilarityMatrix
     - textSimilarityNorm
     - textSimilarityTest
 - title: Plot words in the word embedding space
@@ -71,6 +72,9 @@ reference:
     - textCentralityPlot
     - textPCA
     - textPCAPlot
+- title: Miscellaneous
+  contents:
+    - textDescriptives
 - title: Example Data
   contents:
     - Language_based_assessment_data_8
