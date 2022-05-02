@@ -89,6 +89,7 @@ articles:
   navbar: ~
   contents:
   - Extended Installation Guide
+  - Singularity_Container
   - Computer_Capacity
   - Removing_Cache_Files
 - title: Tutorials

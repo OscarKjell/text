@@ -1,0 +1,96 @@
+---
+title: "Creating a Singularity Container"
+output: github_document #rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Singularity_Container}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+[Singularity](https://apptainer.org/) is a container engine alternative to Docker. Singularity containers are well suited for the requirements of High Performance Computing (HPC) workloads.
+
+A container contains all code as well as *all* its dependencies so that the an application runs reliably on different computers (or different computing environments). It can be used to run on servers or as a way to ensure computational reproducibility (that the code run on other systems, and in the future). For an introduction to the concept of containers see [Computational Reproducibility via Containers in Psychology](https://open.lnu.se/index.php/metapsychology/article/view/892/). Below is code to build a Singularity container for running the ```text```-package.
+
+## Code to build a singularity container
+``` 
+
+Bootstrap: docker
+From: ubuntu:20.04
+
+%environment
+  export LANG=C.UTF-8 LC_ALL=C.UTF-8
+  export XDG_RUNTIME_DIR=/tmp/.run_$(uuidgen)
+
+%post
+    # Install
+    apt-get -y update
+
+    export R_VERSION=4.1.3
+    echo "export R_VERSION=${R_VERSION}" >> $SINGULARITY_ENVIRONMENT
+
+     # Install R
+     apt-get update
+     apt-get install -y --no-install-recommends software-properties-common dirmngr  wget uuid-runtime
+     wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | \
+       tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+     add-apt-repository \
+       "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+     apt-get install -y --no-install-recommends \
+     r-base=${R_VERSION}* \
+     r-base-core=${R_VERSION}* \
+     r-base-dev=${R_VERSION}* \
+     r-recommended=${R_VERSION}* \
+     r-base-html=${R_VERSION}* \
+     r-doc-html=${R_VERSION}* \
+     libcurl4-openssl-dev \
+     libssl-dev \
+     libxml2-dev \
+     libcairo2-dev \
+     libxt-dev \
+     libopenblas-dev
+
+    # Add a default CRAN mirror
+    echo "options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl')" >> /usr/lib/R/etc/Rprofile.site
+
+    # Fix R package libpaths (helps RStudio Server find the right directories)
+    mkdir -p /usr/lib64/R/etc
+    echo "R_LIBS_USER='/usr/lib64/R/library'" >> /usr/lib64/R/etc/Renviron
+    echo "R_LIBS_SITE='${R_PACKAGE_DIR}'" >> /usr/lib64/R/etc/Renviron
+    # Clean up
+    rm -rf /var/lib/apt/lists/*
+
+    # Install python3
+    apt-get -y install python3 wget
+    apt-get -y clean
+
+    # Install Miniconda
+    cd /
+    wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /miniconda
+
+/bin/bash <<EOF
+    rm Miniconda3-latest-Linux-x86_64.sh
+    source /miniconda/etc/profile.d/conda.sh
+    conda update -y conda
+    # Install reticulate and text
+    Rscript -e 'install.packages("reticulate")'
+    Rscript -e 'install.packages("devtools")'
+    Rscript -e 'install.packages("glmnet")'
+    Rscript -e 'devtools::install_github("oscarkjell/text")'
+    # Create the Conda environment at a system folder
+    Rscript -e 'text::textrpp_install(prompt = FALSE)'
+    Rscript -e 'text::textrpp_initialize(save_profile = TRUE, prompt = FALSE, textEmbed_test = TRUE)'
+EOF
+
+
+
+```
+
+ 
