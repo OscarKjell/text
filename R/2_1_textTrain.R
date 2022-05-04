@@ -231,10 +231,10 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation).
 #' @param y Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
 #' categorical variables.
-#' @param force_train_method Default is automatic; see also "regression" and "random_forest".
+#' @param force_train_method Default is "automatic"; see also "regression" and "random_forest".
 #' @param save_output Option not to save all output; default "all". see also "only_results"
 #' and "only_results_predictions".
-#' @param method_cor  Default "Pearson".
+#' @param method_cor  A character string describing type of correlation (default "Pearson").
 #' @param model  Type of model to use in regression; default is "regression"; see also "logistic".
 #' (To set different random forest algorithms see extremely_randomised_splitrule parameter in textTrainRandomForest)
 #' @param eval_measure  Type of evaluative measure to assess models on.
