@@ -8,7 +8,7 @@ home:
   title: text
   description: An r-package for analyzing text using NLP and deep learning.
   links:
-  - text: Ask a question about text
+  - text: Ask a question about text using the r-text tag
     href: https://stackoverflow.com/
 
 template:
