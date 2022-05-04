@@ -20,16 +20,6 @@ wordsMeanValue <- function(words, target_word, x_value, case_insensitive) {
 }
 
 
-#words = BestVSTop_Tib$allwords
-#single_word_embeddings = WE_BestVSTop$singlewords_we
-#x = BestVSTop_Tib$dummy
-#y = BestVSTop_Tib$dummy
-#seed = 1003
-#case_insensitive = TRUE
-
-
-
-
 #' Compute predictions based on single words for plotting words. The word embeddings of
 #' single words are trained to predict the mean value associated with that word. P-values does
 #' NOT work yet.
