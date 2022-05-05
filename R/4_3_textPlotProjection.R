@@ -763,6 +763,6 @@ textProjectionPlot <- function(word_data,
     scaling = scaling
   )
 
-  plot$warning <- "This function will be depracted: instead use textPlot()"
+#  plot$warning <- "This function will be depracted: instead use textPlot()"
   return(plot)
 }
