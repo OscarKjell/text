@@ -5,15 +5,18 @@
 \title{Compute the semantic similarity between a text variable and a word norm
 (i.e., a text represented by one word embedding that represent a construct).}
 \usage{
-textSimilarityNorm(x, y)
+textSimilarityNorm(x, y, method = "cosine")
 }
 \arguments{
 \item{x}{Word embeddings from textEmbed (with several rows of text).}
 
 \item{y}{Word embedding from textEmbed (from only one text).}
+
+\item{method}{Character string describing type of measure to be computed; default is "cosine" (see also
+measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
 }
 \value{
-A vector comprising cosine semantic similarity scores.
+A vector comprising semantic similarity scores.
 }
 \description{
 Compute the semantic similarity between a text variable and a word norm

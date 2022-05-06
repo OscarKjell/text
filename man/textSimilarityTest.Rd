@@ -8,6 +8,7 @@
 textSimilarityTest(
   x,
   y,
+  similarity_method = "cosine",
   Npermutations = 10000,
   method = "paired",
   alternative = c("two_sided", "less", "greater"),
@@ -20,6 +21,9 @@ textSimilarityTest(
 \item{x}{Set of word embeddings from textEmbed.}
 
 \item{y}{Set of word embeddings from textEmbed.}
+
+\item{similarity_method}{Character string describing type of measure to be computed; default is "cosine" (see also
+measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
 
 \item{Npermutations}{Number of permutations (default 1000).}
 

@@ -2,27 +2,29 @@
 % Please edit documentation in R/3_1_textSimilarity.R
 \name{textSimilarity}
 \alias{textSimilarity}
-\title{Compute the cosine semantic similarity between two text variables.}
+\title{Compute the semantic similarity between two text variables.}
 \usage{
-textSimilarity(x, y)
+textSimilarity(x, y, method = "cosine")
 }
 \arguments{
 \item{x}{Word embeddings from textEmbed.}
 
 \item{y}{Word embeddings from textEmbed.}
+
+\item{method}{Character string describing type of measure to be computed; default is "cosine" (see also
+measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
 }
 \value{
 A vector comprising cosine semantic similarity scores.
 }
 \description{
-Compute the cosine semantic similarity between two text variables.
+Compute the semantic similarity between two text variables.
 }
 \examples{
 library(dplyr)
-word_embeddings <- word_embeddings_4
-similarity_scores <- textSimilarity(word_embeddings$harmonytext, word_embeddings$satisfactiontext)
+similarity_scores <- textSimilarity(word_embeddings_4$harmonytext, word_embeddings_4$satisfactiontext)
 comment(similarity_scores)
 }
 \seealso{
-see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+see \code{\link{textDistance}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 }

@@ -1,8 +1,11 @@
 
+
 #' Test whether there is a significant difference in meaning between two sets of texts
 #' (i.e., between their word embeddings).
 #' @param x Set of word embeddings from textEmbed.
 #' @param y Set of word embeddings from textEmbed.
+#' @param similarity_method Character string describing type of measure to be computed; default is "cosine" (see also
+#' measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
 #' @param Npermutations Number of permutations (default 1000).
 #' @param method Compute a "paired" or an "unpaired" test.
 #' @param alternative Use a two or one-sided test (select one of: "two_sided", "less", "greater").
@@ -25,6 +28,7 @@
 #' @export
 textSimilarityTest <- function(x,
                                y,
+                               similarity_method = "cosine",
                                Npermutations = 10000,
                                method = "paired",
                                alternative = c("two_sided", "less", "greater"),
@@ -38,7 +42,9 @@ textSimilarityTest <- function(x,
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
   }
   alternative <- match.arg(alternative)
-  results <- c("cosine_estimate" = NA, "p.value" = NA)
+  results_title <- paste(similarity_method, "_estimate", sep="")
+  results <- tibble::tibble("title1" = NA, "title2" = NA)
+  colnames(results) <- c(results_title, "p.value")
 
   # Select variables beginning with V
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
@@ -46,24 +52,20 @@ textSimilarityTest <- function(x,
 
   if (method == "paired") {
     # Compute cosine between all pairs
-    cosine_observed <- cosines(x1, y1)
+    cosine_observed <- textSimilarity(x1, y1, method = similarity_method)
     # Compute the data's mean of the cosine
-    results["cosine_estimate"] <- mean(abs(cosine_observed))
+    results[1] <- mean(abs(cosine_observed))
   }
 
   if (method == "unpaired") {
-    X_all <- textEmbeddingAggregation(x1, aggregation = "mean")
-    Y_all <- textEmbeddingAggregation(y1, aggregation = "mean")
-    # Compute cosine between the summed word embedding
+    X_all <- tibble::as_tibble_row(textEmbeddingAggregation(x1, aggregation = "mean"))
+    Y_all <- tibble::as_tibble_row(textEmbeddingAggregation(y1, aggregation = "mean"))
 
-    # This is to make it work with the cosines function that require several word embeddings
-    X_all <- rbind(X_all, X_all)
-    Y_all <- rbind(Y_all, Y_all)
-
-    cosine_observed <- cosines(X_all, Y_all)
+    # Compute similarity between the summed word embedding
+    cosine_observed <- textSimilarity(X_all, Y_all, method = similarity_method)
 
     # Compute the data's mean of the cosine
-    results["cosine_estimate"] <- mean(abs(cosine_observed))
+    results[1] <- mean(abs(cosine_observed))
   }
 
   ### Compute comparison distribution of cosine based on randomly drawn word embeddings from both groups
@@ -87,14 +89,12 @@ textSimilarityTest <- function(x,
         return(mean(abs(rcosines)))
       }
       if (method == "unpaired") {
-        R1_all <- textEmbeddingAggregation(rdata1, aggregation = "mean")
-        R2_all <- textEmbeddingAggregation(rdata2, aggregation = "mean")
+        R1_all <- tibble::as_tibble_row(textEmbeddingAggregation(rdata1, aggregation = "mean"))
+        R2_all <- tibble::as_tibble_row(textEmbeddingAggregation(rdata2, aggregation = "mean"))
         # Compute cosine between the summed word embedding
 
-        # This is to make it work with the cosines function that require several word embeddings
-        R1_all <- rbind(R1_all, R1_all)
-        R2_all <- rbind(R2_all, R2_all)
-        rcosines <- cosines(R1_all, R2_all)
+        # Compute similarity between the summed word embedding
+        rcosines <- textSimilarity(R1_all, R2_all, method = similarity_method)
 
         # Compute the data's mean of the cosine
         return(abs(rcosines))
@@ -106,7 +106,7 @@ textSimilarityTest <- function(x,
 
   # Examine how the ordered data's mean of the cosine compare with the random data's, null comparison distribution
   p_value <- p_value_comparing_with_Null(NULLresults,
-                                         Observedresult = results["cosine_estimate"],
+                                         Observedresult = results[[1]],
                                          alternative = alternative)
   results["p.value"] <- p_value
   results <- as.list(results)
