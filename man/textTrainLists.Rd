@@ -25,12 +25,12 @@ textTrainLists(
 \item{y}{Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
 categorical variables.}
 
-\item{force_train_method}{Default is automatic; see also "regression" and "random_forest".}
+\item{force_train_method}{Default is "automatic"; see also "regression" and "random_forest".}
 
 \item{save_output}{Option not to save all output; default "all". see also "only_results"
 and "only_results_predictions".}
 
-\item{method_cor}{Default "Pearson".}
+\item{method_cor}{A character string describing type of correlation (default "Pearson").}
 
 \item{model}{Type of model to use in regression; default is "regression"; see also "logistic".
 (To set different random forest algorithms see extremely_randomised_splitrule parameter in textTrainRandomForest)}

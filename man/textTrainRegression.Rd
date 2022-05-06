@@ -32,7 +32,8 @@ textTrainRegression(
 )
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation).}
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are provided in a list
+they will be concatenated.}
 
 \item{y}{Numeric variable to predict.}
 
