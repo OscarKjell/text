@@ -418,7 +418,8 @@ summarize_tune_results <- function(object,
 
 #' Train word embeddings to a numeric variable.
 #'
-#' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation).
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are provided in a list
+#' they will be concatenated.
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops
