@@ -27,7 +27,7 @@ cosines <- function(x, y) {
 #' @param y Word embeddings from textEmbed.
 #' @param method Character string describing type of measure to be computed; default is "cosine" (see also
 #' measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
-#' @return A vector comprising cosine semantic similarity scores.
+#' @return A vector comprising semantic similarity scores.
 #' @examples
 #' library(dplyr)
 #' similarity_scores <- textSimilarity(word_embeddings_4$harmonytext, word_embeddings_4$satisfactiontext)
@@ -68,7 +68,7 @@ textSimilarity <- function(x, y, method = "cosine") {
 #' @param y Word embeddings (from textEmbed).
 #' @param method Character string describing type of measure to be computed; default is "euclidean" (see also
 #' measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
-#' @return A vector comprising cosine semantic similarity scores.
+#' @return A vector comprising semantic distance scores.
 #' @examples
 #' library(dplyr)
 #' similarity_scores <- textSimilarity(word_embeddings_4$harmonytext, word_embeddings_4$satisfactiontext)
@@ -161,7 +161,7 @@ textSimilarityNorm <- function(x, y, method = "cosine") {
   y2 <- y1 %>%
     dplyr::slice(rep(dplyr::row_number(), nrow(x1)))
 
-  # Apply the cosines functions
+  # Compute similairty
   ss <- textSimilarity(x1, y2, method = method)
 
   # Add information about the used embeddings

@@ -38,7 +38,7 @@ measures from textDistance (here computed as 1 - textDistance()) including "eucl
 \item{seed}{Set different seed.}
 }
 \value{
-A list with a p-value, cosine_estimate and permuted values if output.permutations=TRUE.
+A list with a p-value, similarity score estimate and permuted values if output.permutations=TRUE.
 }
 \description{
 Test whether there is a significant difference in meaning between two sets of texts

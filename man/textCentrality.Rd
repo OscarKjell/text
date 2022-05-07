@@ -2,13 +2,14 @@
 % Please edit documentation in R/4_1_textPlotCentrality.R
 \name{textCentrality}
 \alias{textCentrality}
-\title{Compute cosine semantic similarity score between single words' word embeddings
+\title{Compute semantic similarity score between single words' word embeddings
 and the aggregated word embedding of all words.}
 \usage{
 textCentrality(
   words,
   word_embeddings,
   single_word_embeddings = single_word_embeddings_df,
+  similarity_method = "cosine",
   aggregation = "mean",
   min_freq_words_test = 0
 )
@@ -22,29 +23,30 @@ textCentrality(
 \item{single_word_embeddings}{Word embeddings from textEmbed for individual words
 (i.e., the decontextualized word embeddings).}
 
+\item{similarity_method}{Character string describing type of measure to be computed; default is "cosine" (see also
+measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
+
 \item{aggregation}{Method to aggregate the word embeddings
 (default = "mean"; see also "min", "max" or "[CLS]").}
 
 \item{min_freq_words_test}{Option to  select words that have at least occurred a specified
 number of times (default = 0); when creating the semantic similarity
-scores within cosine similarity.}
+scores.}
 }
 \value{
 A dataframe with variables (e.g., including semantic similarity, frequencies)
 for the individual words that are used for the plotting in the textCentralityPlot function.
 }
 \description{
-Compute cosine semantic similarity score between single words' word embeddings
+Compute semantic similarity score between single words' word embeddings
 and the aggregated word embedding of all words.
 }
 \examples{
-word_embeddings <- word_embeddings_4
-data <- Language_based_assessment_data_8
 \dontrun{
 df_for_plotting <- textCentrality(
-  data$harmonywords,
-  word_embeddings$harmonywords,
-  word_embeddings$singlewords_we
+  words = Language_based_assessment_data_8$harmonywords,
+  word_embeddings = word_embeddings_4$harmonywords,
+  single_word_embeddings = word_embeddings_4$singlewords_we
 )
 df_for_plotting
 }

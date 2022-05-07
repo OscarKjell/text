@@ -15,7 +15,7 @@ textDistance(x, y, method = "euclidean")
 measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".}
 }
 \value{
-A vector comprising cosine semantic similarity scores.
+A vector comprising semantic distance scores.
 }
 \description{
 Compute the semantic distance between two text variables.

@@ -148,14 +148,11 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
 test_that("textCentrality produces a tibble with character variable and numeric variable.", {
   skip_on_cran()
 
-  word_embeddings <- word_embeddings_4
-  data <- Language_based_assessment_data_8
   df_for_plotting <- textCentrality(
-    data$harmonywords[1:2],
-    word_embeddings$harmonywords[1:2, ],
-    word_embeddings$singlewords_we
+    Language_based_assessment_data_8$harmonywords[1:2],
+    word_embeddings_4$harmonywords[1:2, 1:8],
+    word_embeddings_4$singlewords_we
   )
-
 
   expect_is(df_for_plotting$words[1], "character")
   expect_is(df_for_plotting$n[1], "integer")
@@ -208,7 +205,7 @@ test_that("textCentrality produces a tibble with character variable and numeric 
   expect_true(tibble::is_tibble(df_for_plotting2d))
 })
 
-test_that("textCentralityPlot produces a plot.", {
+test_that("textPCAPlot produces a plot.", {
   skip_on_cran()
 
   # Plot

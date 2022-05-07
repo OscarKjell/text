@@ -15,7 +15,7 @@ textSimilarity(x, y, method = "cosine")
 measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
 }
 \value{
-A vector comprising cosine semantic similarity scores.
+A vector comprising semantic similarity scores.
 }
 \description{
 Compute the semantic similarity between two text variables.

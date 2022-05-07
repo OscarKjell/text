@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlotCentrality.R
 \name{textCentralityPlot}
 \alias{textCentralityPlot}
-\title{Plot words according to cosine semantic similarity to the aggregated word embedding.}
+\title{Plot words according to semantic similarity to the aggregated word embedding.}
 \usage{
 textCentralityPlot(
   word_data,
@@ -11,7 +11,7 @@ textCentralityPlot(
   plot_n_word_frequency = 10,
   plot_n_words_middle = 10,
   titles_color = "#61605e",
-  x_axes = "central_cosine",
+  x_axes = "central_semantic_similarity",
   title_top = "Semantic Centrality Plot",
   x_axes_label = "Semantic Centrality",
   scale_x_axes_lim = NULL,
@@ -54,14 +54,14 @@ Supervised Dimension Projection value.
 
 \item{titles_color}{Color for all the titles (default: "#61605e").}
 
-\item{x_axes}{Variable to be plotted on the x-axes (default is "central_cosine").}
+\item{x_axes}{Variable to be plotted on the x-axes (default is "central_semantic_similarity").}
 
 \item{title_top}{Title (default "  ").}
 
 \item{x_axes_label}{Label on the x-axes.}
 
 \item{scale_x_axes_lim}{Length of the x-axes (default: NULL, which uses
-c(min(word_data$central_cosine)-0.05, max(word_data$central_cosine)+0.05);
+c(min(word_data$central_semantic_similarity)-0.05, max(word_data$central_semantic_similarity)+0.05);
 change this by e.g., try c(-5, 5)).}
 
 \item{scale_y_axes_lim}{Length of the y-axes (default: NULL, which uses c(-1, 1);
@@ -108,11 +108,11 @@ plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000
 \item{seed}{Set different seed.}
 }
 \value{
-A 1-dimensional word plot based on cosine similarity to the aggregated word embedding,
-as well as tibble with processed data used to plot..
+A 1-dimensional word plot based on similarity to the aggregated word embedding,
+as well as tibble with processed data used to plot.
 }
 \description{
-Plot words according to cosine semantic similarity to the aggregated word embedding.
+Plot words according to semantic similarity to the aggregated word embedding.
 }
 \examples{
 # The test-data included in the package is called: centrality_data_harmony
@@ -125,7 +125,7 @@ names(centrality_data_harmony)
 #  plot_n_word_frequency = 10,
 #  plot_n_words_middle = 10,
 #  titles_color = "#61605e",
-#  x_axes = "central_cosine",
+#  x_axes = "central_semantic_similarity",
 #
 #  title_top = "Semantic Centrality Plot",
 #  x_axes_label = "Semantic Centrality",
