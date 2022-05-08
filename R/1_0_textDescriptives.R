@@ -3,7 +3,7 @@
 #'
 #' @param words One or several character variables; if its a tibble or dataframe, all the character variables will be selected.
 #' @param compute_total If words is a tibble or dataframe with several character variables, a total variable is computed.
-#' For more infomration see the entropy package and specifically its entropy.plugin function.
+#' For more information see the entropy package and specifically its entropy.plugin function.
 #' That is, the text columns are combined using the dplyr unite function.
 #' @param entropy_unit  The unit entropy is measured in. The default is to used bits (i.e., log2; see also, "log", "log10").
 #' @param na.rm Option to remove NAs when computing mean, median etc (see under return).

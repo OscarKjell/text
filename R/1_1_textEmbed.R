@@ -217,17 +217,6 @@ grep_col_by_name_in_list <- function(l, pattern) {
 }
 
 
-#.rs.restartR()
-#x = "hello world"
-#contexts = TRUE
-#decontexts = TRUE
-#model = "xlm-roberta-large"
-#layers = 11
-#return_tokens = TRUE
-#device = "cpu"
-#print_python_warnings = FALSE
-#tokenizer_parallelism = FALSE
-
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
 #' @param contexts Provide word embeddings based on word contexts

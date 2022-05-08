@@ -8,8 +8,7 @@
 #' (i.e., the aggregated word embeddings for the "words" variable).
 #' @param single_word_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., the decontextualized word embeddings).
-#' @param method Character string describing type of measure to be computed; default is "cosine" (see also
-#' measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
+#' @inheritParams textSimilarity
 #' @param aggregation Method to aggregate the word embeddings
 #' (default = "mean"; see also "min", "max" or "[CLS]").
 #' @param min_freq_words_test Option to  select words that have at least occurred a specified

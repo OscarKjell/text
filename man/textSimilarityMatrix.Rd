@@ -4,13 +4,13 @@
 \alias{textSimilarityMatrix}
 \title{Compute semantic similarity scores between all combinations in a word embedding}
 \usage{
-textSimilarityMatrix(embedding, method = "cosine")
+textSimilarityMatrix(x, method = "cosine")
 }
 \arguments{
-\item{embedding}{Word embeddings (e.g., from textEmbed).}
+\item{x}{Word embeddings from textEmbed.}
 
-\item{method}{Character string describing type of measure to be computed; default is "cosine" (see also
-measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
+\item{method}{Character string describing type of measure to be computed. Default is "cosine" (see also
+measures from textDistance() (which here is computed as 1 - textDistance) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
 }
 \value{
 A matrix of semantic similarity scores

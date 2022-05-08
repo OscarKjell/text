@@ -23,8 +23,8 @@ textCentrality(
 \item{single_word_embeddings}{Word embeddings from textEmbed for individual words
 (i.e., the decontextualized word embeddings).}
 
-\item{method}{Character string describing type of measure to be computed; default is "cosine" (see also
-measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
+\item{method}{Character string describing type of measure to be computed. Default is "cosine" (see also
+measures from textDistance() (which here is computed as 1 - textDistance) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
 
 \item{aggregation}{Method to aggregate the word embeddings
 (default = "mean"; see also "min", "max" or "[CLS]").}

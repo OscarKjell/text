@@ -25,8 +25,8 @@ cosines <- function(x, y) {
 #'
 #' @param x Word embeddings from textEmbed.
 #' @param y Word embeddings from textEmbed.
-#' @param method Character string describing type of measure to be computed; default is "cosine" (see also
-#' measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
+#' @param method Character string describing type of measure to be computed. Default is "cosine" (see also
+#' measures from textDistance() (which here is computed as 1 - textDistance) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
 #' @return A vector comprising semantic similarity scores.
 #' @examples
 #' library(dplyr)
@@ -70,7 +70,7 @@ textSimilarity <- function(x, y, method = "cosine") {
 #' @return A vector comprising semantic distance scores.
 #' @examples
 #' library(dplyr)
-#' similarity_scores <- textSimilarity(word_embeddings_4$harmonytext, word_embeddings_4$satisfactiontext)
+#' distance_scores <- textDistance(word_embeddings_4$harmonytext, word_embeddings_4$satisfactiontext)
 #' comment(similarity_scores)
 #' @seealso see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 #' @export
@@ -100,16 +100,14 @@ textDistance <- function(x, y, method = "euclidean") {
 
 
 #' Compute semantic similarity scores between all combinations in a word embedding
-#' @param embedding Word embeddings (e.g., from textEmbed).
-#' @param method Character string describing type of measure to be computed; default is "cosine" (see also
-#' measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
+#' @inheritParams textSimilarity
 #' @return A matrix of semantic similarity scores
 #' @examples
 #' similarity_scores <- textSimilarityMatrix(word_embeddings_4$harmonytext[1:3,])
 #' round(similarity_scores, 3)
 #' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 #' @export
-textSimilarityMatrix <- function(embedding,
+textSimilarityMatrix <- function(x,
                                  method = "cosine"){
 
   ss_matrix <- matrix(nrow=nrow(embedding), ncol=nrow(embedding))
@@ -127,10 +125,8 @@ textSimilarityMatrix <- function(embedding,
 
 #' Compute the semantic similarity between a text variable and a word norm
 #' (i.e., a text represented by one word embedding that represent a construct).
-#' @param x Word embeddings from textEmbed (with several rows of text).
 #' @param y Word embedding from textEmbed (from only one text).
-#' @param method Character string describing type of measure to be computed; default is "cosine" (see also
-#' measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
+#' @inheritParams textSimilarity
 #' @return A vector comprising semantic similarity scores.
 #' @examples
 #' \dontrun{
