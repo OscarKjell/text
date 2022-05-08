@@ -2,11 +2,15 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # text 0.9.70
+### New Features
 - Inclusion of textDistance() with distance measures
-- Adding more measures to textSimilarity
-- Adding functionality from textSimilarity() in textSimilarityTest, textProjection and textCentrality for plotting
-- Adding information about how textTrainRegression() concatenate word embeddings when provided with a list of several word embeddings.
-- added two dimensions to single word embeddings to match the 10 of the contextualised embeddings. 
+- Adding more measures to textSimilarity()
+- Adding functionality from textSimilarity() in textSimilarityTest(), textProjection() and textCentrality() for plotting
+- Adding information about how textTrainRegression() concatenates word embeddings when provided with a list of several word embeddings.
+- added two word embedding dimensions to example data of single word embeddings to match the 10 of the contextualised embeddings. 
+
+### Bug Fixes
+- In textCentrality, words to be plotted are selected  with word_data1_all$extremes_all_x >= 1 (rather than ==1).
 
 # text 0.9.60
 
