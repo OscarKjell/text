@@ -9,7 +9,7 @@ A data frame with 2,146 and 4 variables:
 \describe{
   \item{words}{unique words}
   \item{n}{overall word frequency}
-  \item{central_cosine}{cosine semantic similarity to the aggregated word embedding}
+  \item{central_semantic_similarity}{cosine semantic similarity to the aggregated word embedding}
   \item{n_percent}{frequency in percent}
 }
 }

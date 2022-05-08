@@ -169,6 +169,3 @@ plot_projection
     #> #   check_extreme_min_x <dbl>, check_extreme_frequency_x <dbl>,
     #> #   check_middle_x <dbl>, extremes_all_x <dbl>, check_p_y_pos <dbl>,
     #> #   check_p_y_neg <dbl>, check_extreme_max_y <dbl>, …
-    #> 
-    #> $warning
-    #> [1] "This function will be depracted: instead use textPlot()"

@@ -102,7 +102,7 @@
 #' \describe{
 #'   \item{words}{unique words}
 #'   \item{n}{overall word frequency}
-#'   \item{central_cosine}{cosine semantic similarity to the aggregated word embedding}
+#'   \item{central_semantic_similarity}{cosine semantic similarity to the aggregated word embedding}
 #'   \item{n_percent}{frequency in percent}
 #' }
 #' @source \url{https://link.springer.com/article/10.1007/s11205-015-0903-z}
