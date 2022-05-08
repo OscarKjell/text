@@ -16,11 +16,12 @@ test_that("textSimilarity produces similarity scores", {
 })
 
 
-test_that("textSimilarityMatrix produces similarity scores", {
+test_that("textSimilarityMatrix produces euclidean similarity scores", {
   skip_on_cran()
 
   similarity_scores <- textSimilarityMatrix(
-    word_embeddings_4$harmonytexts[1:3,]
+    word_embeddings_4$harmonytexts[1:3,],
+    method = "euclidean"
   )
   expect_that(similarity_scores[[2]], is_a("numeric"))
 })

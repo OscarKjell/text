@@ -152,7 +152,7 @@ test_that("textCentrality produces a tibble with character variable and numeric 
     Language_based_assessment_data_8$harmonywords[1:2],
     word_embeddings_4$harmonywords[1:2,],
     word_embeddings_4$singlewords_we,
-    similarity_method = "euclidean"
+    method = "euclidean"
   )
 
   expect_is(df_for_plotting$words[1], "character")
