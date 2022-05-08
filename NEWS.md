@@ -1,14 +1,20 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.70
+- Inclusion of textDistance() with distance measures
+- Adding more measures to textSimilarity
+- Adding functionality from textSimilarity() in textSimilarityTest, textProjection and textCentrality for plotting
+- Adding information about how textTrainRegression() concatenate word embeddings when provided with a list of several word embeddings.
+- added two dimensions to single word embeddings to match the 10 of the contextualised embeddings. 
 
 # text 0.9.60
 
-- textSimilarityMatrix() compute semantic similarity among all combinations in a given word embedding. 
+- textSimilarityMatrix() computes semantic similarity among all combinations in a given word embedding. 
 
 # text 0.9.54
 
-- textDescriptives() get options to remove NA and compute total scores.
+- textDescriptives() gets options to remove NA and compute total scores.
 
 # text 0.9.53
 

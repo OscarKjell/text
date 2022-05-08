@@ -150,19 +150,24 @@ test_that("textCentrality produces a tibble with character variable and numeric 
 
   df_for_plotting <- textCentrality(
     Language_based_assessment_data_8$harmonywords[1:2],
-    word_embeddings_4$harmonywords[1:2, 1:8],
-    word_embeddings_4$singlewords_we
+    word_embeddings_4$harmonywords[1:2,],
+    word_embeddings_4$singlewords_we,
+    similarity_method = "euclidean"
   )
 
   expect_is(df_for_plotting$words[1], "character")
   expect_is(df_for_plotting$n[1], "integer")
   expect_true(tibble::is_tibble(df_for_plotting))
+
+  textCentralityPlot(df_for_plotting,
+                     x_axes="central_semantic_similarity")
+
 })
 
 test_that("textCentralityPlot produces a plot.", {
   skip_on_cran()
 
-  # Plot
+  # Plot help(textCentralityPlot)
   centrality_plot <- textCentralityPlot(
     word_data = centrality_data_harmony,
     min_freq_words_test = 10,
@@ -170,7 +175,7 @@ test_that("textCentralityPlot produces a plot.", {
     plot_n_word_frequency = 10,
     plot_n_words_middle = 10,
     titles_color = "#61605e",
-    x_axes = "central_cosine",
+   # x_axes = "central_cosine",
 
     title_top = "Semantic Centrality Plot",
     x_axes_label = "Semantic Centrality",

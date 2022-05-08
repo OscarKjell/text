@@ -68,7 +68,6 @@ textCentrality <- function(words,
 }
 # End Semantic Centrality Plot data
 
-
 #' Plot words according to semantic similarity to the aggregated word embedding.
 #' @param word_data Tibble from textPlotData.
 #' @param min_freq_words_test Select words to significance test that have occurred
@@ -82,7 +81,7 @@ textCentrality <- function(words,
 #' (i.e., even if not significant; duplicates are removed).
 #' @param title_top Title (default "  ").
 #' @param titles_color Color for all the titles (default: "#61605e").
-#' @param x_axes Variable to be plotted on the x-axes (default is "central_semantic_similarity").
+#' @param x_axes Variable to be plotted on the x-axes (default is "central_semantic_similarity", could also select "n", "n_percent").
 #' @param x_axes_label Label on the x-axes.
 #' @param scale_x_axes_lim Length of the x-axes (default: NULL, which uses
 #' c(min(word_data$central_semantic_similarity)-0.05, max(word_data$central_semantic_similarity)+0.05);
@@ -207,11 +206,11 @@ textCentralityPlot <- function(word_data,
 
   # Select plot_n_word_extreme and Select plot_n_word_frequency
   word_data1_extrem_max_x <- word_data1 %>%
-    dplyr::arrange(-central_semantic_similarity) %>%
+    dplyr::arrange(-.data[[x_axes]]) %>%
     dplyr::slice(0:plot_n_word_extreme)
 
   word_data1_extrem_min_x <- word_data1 %>%
-    dplyr::arrange(central_semantic_similarity) %>%
+    dplyr::arrange(.data[[x_axes]]) %>%
     dplyr::slice(0:plot_n_word_extreme)
 
   word_data1_frequency_x <- word_data1 %>%
@@ -219,11 +218,12 @@ textCentralityPlot <- function(word_data,
     dplyr::slice(0:plot_n_word_frequency)
 
   # Select the middle range, order according to frequency and then select the plot_n_words_middle = 5
-  mean_m_sd_x <- mean(word_data1$central_semantic_similarity, na.rm = TRUE) - (sd(word_data1$central_semantic_similarity, na.rm = TRUE) / 10)
-  mean_p_sd_x <- mean(word_data1$central_semantic_similarity, na.rm = TRUE) + (sd(word_data1$central_semantic_similarity, na.rm = TRUE) / 10)
+  mean_m_sd_x <- mean(word_data1[[eval(x_axes)]], na.rm = TRUE) - (sd(word_data1[[eval(x_axes)]], na.rm = TRUE) / 1)
+  mean_p_sd_x <- mean(word_data1[[eval(x_axes)]], na.rm = TRUE) + (sd(word_data1[[eval(x_axes)]], na.rm = TRUE) / 1)
 
   word_data1_middle_x <- word_data1 %>%
-    dplyr::filter(dplyr::between(word_data1$central_semantic_similarity, mean_m_sd_x, mean_p_sd_x)) %>%
+    dplyr::filter(dplyr::between(word_data1[[eval(x_axes)]],
+                                 mean_m_sd_x, mean_p_sd_x)) %>%
     dplyr::arrange(-n) %>%
     dplyr::slice(0:plot_n_words_middle)
 
@@ -241,7 +241,7 @@ textCentralityPlot <- function(word_data,
       check_extreme_frequency_x, check_middle_x
     ), na.rm = T))
 
-  # Categorise words to apply specific color
+  # Categorise words to apply specific color View(word_data1_all)
   word_data1_all <- word_data1_all %>%
     dplyr::mutate(colour_categories = dplyr::case_when(
       check_extreme_min_x == 1 ~ centrality_color_codes[1],
@@ -251,7 +251,8 @@ textCentralityPlot <- function(word_data,
     ))
 
   if (is.null(scale_x_axes_lim)) {
-    scale_x_axes_lim <- c(min(word_data1$central_semantic_similarity) - 0.05, max(word_data1$central_semantic_similarity) + 0.05)
+    scale_x_axes_lim <- c(min(word_data1[[eval(x_axes)]], na.rm = T) -
+                            0.05, max(word_data1[[eval(x_axes)]], na.rm=T) + 0.05)
   }
   if (is.null(scale_y_axes_lim)) {
     scale_y_axes_lim <- c(-1, 1)
@@ -264,7 +265,9 @@ textCentralityPlot <- function(word_data,
   # Plot
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
-    ggplot2::ggplot(data = word_data1_all, ggplot2::aes(!!rlang::sym(x_axes), !!rlang::sym(y_axes), label = words)) +
+    ggplot2::ggplot(data = word_data1_all, ggplot2::aes(!!rlang::sym(x_axes),
+                                                        !!rlang::sym(y_axes),
+                                                        label = words)) +
     ggplot2::geom_point(
       data = word_data1_all,
       size = points_without_words_size,
@@ -274,7 +277,7 @@ textCentralityPlot <- function(word_data,
 
     # ggrepel geom, make arrows transparent, color by rank, size by n
     ggrepel::geom_text_repel(
-      data = word_data1_all[word_data1_all$extremes_all_x == 1, ],
+      data = word_data1_all[word_data1_all$extremes_all_x >= 1, ],
       segment.alpha  = arrow_transparency,
       position = ggplot2::position_jitter(h = position_jitter_hight, w = position_jitter_width),
       ggplot2::aes(color = colour_categories, size = n, family = word_font),
@@ -283,7 +286,7 @@ textCentralityPlot <- function(word_data,
 
     # Decide size and color of the points
     ggplot2::geom_point(
-      data = word_data1_all[word_data1_all$extremes_all_x == 1, ],
+      data = word_data1_all[word_data1_all$extremes_all_x >= 1, ],
       size = point_size,
       ggplot2::aes(color = colour_categories)
     ) +
@@ -321,6 +324,7 @@ textCentralityPlot <- function(word_data,
       axis.title.x = ggplot2::element_text(color = titles_color),
       axis.title.y = ggplot2::element_text(color = titles_color)
     )
+  plot
   final_plot <- plot
 
   output_plot_data <- list(final_plot, textCentralityPlot_comment, word_data1_all)

@@ -54,7 +54,7 @@ Supervised Dimension Projection value.
 
 \item{titles_color}{Color for all the titles (default: "#61605e").}
 
-\item{x_axes}{Variable to be plotted on the x-axes (default is "central_semantic_similarity").}
+\item{x_axes}{Variable to be plotted on the x-axes (default is "central_semantic_similarity", could also select "n", "n_percent").}
 
 \item{title_top}{Title (default "  ").}
 
