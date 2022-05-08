@@ -61,7 +61,6 @@ textSimilarity <- function(x, y, method = "cosine") {
 }
 
 
-
 #' Compute the semantic distance between two text variables.
 #'
 #' @param x Word embeddings (from textEmbed).
@@ -98,8 +97,6 @@ textDistance <- function(x, y, method = "euclidean") {
   )
   ss
 }
-
-
 
 
 #' Compute semantic similarity scores between all combinations in a word embedding
