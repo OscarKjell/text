@@ -33,7 +33,7 @@ objectives:
     scientists.
 
 <figure>
-<img src="man/figures/modular_end_solution.png" style="width:75.0%" alt="Modular and End-to-End Solution" /><figcaption aria-hidden="true">Modular and End-to-End Solution</figcaption>
+<img src="man/figures/modular_end_solution.png" style="width:85.0%" alt="Modular and End-to-End Solution" /><figcaption aria-hidden="true">Modular and End-to-End Solution</figcaption>
 </figure>
 
 *Text* is created through a collaboration between psychology and
