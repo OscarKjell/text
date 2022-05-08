@@ -8,7 +8,7 @@
 #' (i.e., the aggregated word embeddings for the "words" variable).
 #' @param single_word_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., the decontextualized word embeddings).
-#' @param similarity_method Character string describing type of measure to be computed; default is "cosine" (see also
+#' @param method Character string describing type of measure to be computed; default is "cosine" (see also
 #' measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
 #' @param aggregation Method to aggregate the word embeddings
 #' (default = "mean"; see also "min", "max" or "[CLS]").
@@ -33,14 +33,14 @@
 textCentrality <- function(words,
                            word_embeddings,
                            single_word_embeddings = single_word_embeddings_df,
-                           similarity_method = "cosine",
+                           method = "cosine",
                            aggregation = "mean",
                            min_freq_words_test = 0) {
 
   textCentrality_description <- paste("words =", substitute(words),
     "word_embeddings =", comment(word_embeddings),
     "single_word_embeddings =", comment(single_word_embeddings),
-    "similarity_method =", similarity_method,
+    "method =", method,
     "aggregation =", aggregation,
     "min_freq_words_test =", min_freq_words_test,
     collapse = " "
@@ -60,7 +60,7 @@ textCentrality <- function(words,
 
   # Compute similarity to Central Point
   Central_Point_df <- tibble::as_tibble(t(replicate(nrow(all_single_wordembedding_a1), Central_Point)))
-  central_semantic_similarity <- textSimilarity(all_single_wordembedding_a1, Central_Point_df, method = similarity_method)
+  central_semantic_similarity <- textSimilarity(all_single_wordembedding_a1, Central_Point_df, method = method)
   cenrtal_sss_df <- tibble::tibble(all_unique_freq_words_min_freq[, 1:2], central_semantic_similarity)
   cenrtal_sss_df$n_percent <- cenrtal_sss_df$n / sum(cenrtal_sss_df$n)
   comment(cenrtal_sss_df) <- textCentrality_description
