@@ -1,4 +1,4 @@
-#note: I think layer 0 is the input embedding. 
+#note: I think layer 0 is the input embedding.
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -20,14 +20,15 @@ import os
 
 def hgTransformerGetEmbedding(text_strings,
                               model = 'bert-base-uncased',
-                              layers = 'all',  
+                              layers = 'all',
                               return_tokens = True,
                               max_token_to_sentence = 4,
                               device = 'cpu',
-                              tokenizer_parallelism = False):
+                              tokenizer_parallelism = False,
+                              model_max_length = None):
     """
     Simple Python method for embedding text with pretained Hugging Face models
-    
+
     Parameters
     ----------
     text_strings : list
@@ -44,7 +45,7 @@ def hgTransformerGetEmbedding(text_strings,
         sentence by sentence
     device : str
         name of device: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
-    
+
     Returns
     -------
     all_embs : list
@@ -52,7 +53,7 @@ def hgTransformerGetEmbedding(text_strings,
     all_toks : list, optional
         tokenized version of text_strings
     """
-    
+
     if tokenizer_parallelism:
         os.environ["TOKENIZERS_PARALLELISM"] = "true"
     else:
@@ -106,12 +107,15 @@ def hgTransformerGetEmbedding(text_strings,
     all_embs = []
     all_toks = []
 
-    for text_string in text_strings: 
+    for text_string in text_strings:
         # if length of text_string is > max_token_to_sentence*4
         # embedd each sentence separately
         if len(text_string) > max_token_to_sentence*4:
             sentence_batch = [s for s in sent_tokenize(text_string)]
-            batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True)
+            if model_max_length is None:
+                batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True)
+            else:
+                batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True, max_length=model_max_length)
             input_ids = torch.tensor(batch["input_ids"])
             attention_mask = torch.tensor(batch['attention_mask'])
             if device != 'cpu':
@@ -126,7 +130,7 @@ def hgTransformerGetEmbedding(text_strings,
 
             with torch.no_grad():
                 hidden_states = transformer_model(input_ids,attention_mask=attention_mask)[-1]
-                if layers != 'all': 
+                if layers != 'all':
                     hidden_states = [hidden_states[l] for l in layers]
                 hidden_states = [h.tolist() for h in hidden_states]
 
@@ -151,7 +155,7 @@ def hgTransformerGetEmbedding(text_strings,
 
             with torch.no_grad():
                 hidden_states = transformer_model(input_ids)[-1]
-                if layers != 'all': 
+                if layers != 'all':
                     hidden_states = [hidden_states[l] for l in layers]
                 hidden_states = [h.tolist() for h in hidden_states]
                 all_embs.append(hidden_states)
