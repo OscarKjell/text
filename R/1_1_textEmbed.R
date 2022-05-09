@@ -227,6 +227,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #device = "cpu"
 #print_python_warnings = FALSE
 #tokenizer_parallelism = FALSE
+#model_max_length = NULL
 
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
@@ -250,6 +251,8 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @param print_python_warnings bolean; when TRUE any warnings from python environment are printed
 #'  to the console. (Either way warnings are saved in the comment of the embedding)
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
+#' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
+#' (default the value stored for the associated model).
 #' @return A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
 #' input embedding to the transformer, and should normally not be used.
 #' @examples
@@ -271,7 +274,8 @@ textEmbedLayersOutput <- function(x,
                                   return_tokens = TRUE,
                                   device = "cpu",
                                   print_python_warnings = FALSE,
-                                  tokenizer_parallelism = FALSE) {
+                                  tokenizer_parallelism = FALSE,
+                                  model_max_length = NULL) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
@@ -300,7 +304,8 @@ textEmbedLayersOutput <- function(x,
           layers = layers,
           return_tokens = return_tokens,
           device = device,
-          tokenizer_parallelism = tokenizer_parallelism
+          tokenizer_parallelism = tokenizer_parallelism,
+          model_max_length = model_max_length
         ),
         type = "stderr"
       )
@@ -342,7 +347,8 @@ textEmbedLayersOutput <- function(x,
         layers = layers,
         return_tokens = return_tokens,
         device = device,
-        tokenizer_parallelism = tokenizer_parallelism
+        tokenizer_parallelism = tokenizer_parallelism,
+        model_max_length = model_max_length
       )
     )
 
@@ -563,6 +569,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' such as [CLS] and [SEP] for the decontext embeddings.
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
 #' @param print_python_warnings bolean; when true any warnings from python environment are printed to the console.
+#' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
+#' (default the value stored for the associated model).
 #' @return A tibble with tokens, a column for layer identifier and word embeddings.
 #' Note that layer 0 is the input embedding to the transformer
 #' @examples
@@ -595,7 +603,8 @@ textEmbed <- function(x,
                       decontext_tokens_select = NULL,
                       decontext_tokens_deselect = NULL,
                       device = "cpu",
-                      print_python_warnings = FALSE) {
+                      print_python_warnings = FALSE,
+                      model_max_length = NULL) {
   T1_textEmbed <- Sys.time()
 
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
@@ -608,7 +617,8 @@ textEmbed <- function(x,
     layers = layers,
     return_tokens = FALSE,
     device = device,
-    print_python_warnings = print_python_warnings
+    print_python_warnings = print_python_warnings,
+    model_max_length = model_max_length
   )
 
   # Aggregate context layers

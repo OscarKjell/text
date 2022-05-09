@@ -13,7 +13,8 @@ textEmbedLayersOutput(
   return_tokens = TRUE,
   device = "cpu",
   print_python_warnings = FALSE,
-  tokenizer_parallelism = FALSE
+  tokenizer_parallelism = FALSE,
+  model_max_length = NULL
 )
 }
 \arguments{
@@ -46,6 +47,9 @@ or all by setting this parameter to "all". Layer 0 is the decontextualized input
 to the console. (Either way warnings are saved in the comment of the embedding)}
 
 \item{tokenizer_parallelism}{If TRUE this will turn on tokenizer parallelism. Default FALSE.}
+
+\item{model_max_length}{The maximum length (in number of tokens) for the inputs to the transformer model
+(default the value stored for the associated model).}
 }
 \value{
 A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
