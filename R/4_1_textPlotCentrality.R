@@ -140,7 +140,7 @@ textCentrality <- function(words,
 #' @importFrom dplyr arrange slice filter between left_join transmute mutate case_when
 #' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme
 #' theme_void theme_minimal aes labs scale_color_identity
-#' @importFrom rlang sym
+#' @importFrom rlang sym .data
 #' @export
 textCentralityPlot <- function(word_data,
                                min_freq_words_test = 1,

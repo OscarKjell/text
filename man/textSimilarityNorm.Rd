@@ -13,7 +13,8 @@ textSimilarityNorm(x, y, method = "cosine")
 \item{y}{Word embedding from textEmbed (from only one text).}
 
 \item{method}{Character string describing type of measure to be computed. Default is "cosine" (see also
-measures from textDistance() (which here is computed as 1 - textDistance) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
+measures from textDistance() (which here is computed as 1 - textDistance) including "euclidean", "maximum",
+"manhattan", "canberra", "binary" and "minkowski").}
 }
 \value{
 A vector comprising semantic similarity scores.

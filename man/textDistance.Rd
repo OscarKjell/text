@@ -22,8 +22,9 @@ Compute the semantic distance between two text variables.
 }
 \examples{
 library(dplyr)
-distance_scores <- textDistance(word_embeddings_4$harmonytext, word_embeddings_4$satisfactiontext)
-comment(similarity_scores)
+distance_scores <- textDistance(word_embeddings_4$harmonytext,
+word_embeddings_4$satisfactiontext)
+comment(distance_scores)
 }
 \seealso{
 see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
