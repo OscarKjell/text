@@ -181,7 +181,7 @@ test_that("textCentralityPlot produces a plot.", {
     x_axes_label = "Semantic Centrality",
 
     word_font = NULL,
-    centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#000000"),
+    centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d"),
     word_size_range = c(3, 8),
     point_size = 0.5,
     arrow_transparency = 0.1,

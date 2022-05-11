@@ -90,7 +90,7 @@ textCentrality <- function(words,
 #' @param word_font Type of font (default: NULL).
 #' @param centrality_color_codes Colors of the words selected as plot_n_word_extreme
 #' (minimum values), plot_n_words_middle, plot_n_word_extreme (maximum values) and
-#' plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000"), respectively.
+#' plot_n_word_frequency; the default is c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d", respectively.
 #' @param word_size_range Vector with minimum and maximum font size (default: c(3, 8)).
 #' @param position_jitter_hight Jitter height (default: .0).
 #' @param position_jitter_width Jitter width (default: .03).
@@ -129,7 +129,7 @@ textCentrality <- function(words,
 #' #  x_axes_label = "Semantic Centrality",
 #' #
 #' #  word_font = NULL,
-#' #  centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9", "#000000"),
+#' #  centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d"),
 #' #  word_size_range = c(3, 8),
 #' #  point_size = 0.5,
 #' #  arrow_transparency = 0.1,

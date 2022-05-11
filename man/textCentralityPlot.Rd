@@ -71,7 +71,7 @@ change e.g., by trying c(-5, 5)).}
 
 \item{centrality_color_codes}{Colors of the words selected as plot_n_word_extreme
 (minimum values), plot_n_words_middle, plot_n_word_extreme (maximum values) and
-plot_n_word_frequency; the default is c("#EAEAEA","#85DB8E", "#398CF9", "#000000"), respectively.}
+plot_n_word_frequency; the default is c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d"), respectively.}
 
 \item{word_size_range}{Vector with minimum and maximum font size (default: c(3, 8)).}
 
@@ -131,7 +131,7 @@ names(centrality_data_harmony)
 #  x_axes_label = "Semantic Centrality",
 #
 #  word_font = NULL,
-#  centrality_color_codes = c("#EAEAEA","#85DB8E", "#398CF9", "#000000"),
+#  centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d"),
 #  word_size_range = c(3, 8),
 #  point_size = 0.5,
 #  arrow_transparency = 0.1,
