@@ -6,7 +6,7 @@
 #' @param y Set of word embeddings from textEmbed.
 #' @param similarity_method Character string describing type of measure to be computed; default is "cosine" (see also
 #' measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
-#' @param Npermutations Number of permutations (default 1000).
+#' @param Npermutations Number of permutations (default 10000).
 #' @param method Compute a "paired" or an "unpaired" test.
 #' @param alternative Use a two or one-sided test (select one of: "two_sided", "less", "greater").
 #' @param output.permutations If TRUE, returns permuted values in output.
