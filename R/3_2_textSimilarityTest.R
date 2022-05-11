@@ -6,7 +6,7 @@
 #' @param y Set of word embeddings from textEmbed.
 #' @param similarity_method Character string describing type of measure to be computed; default is "cosine" (see also
 #' measures from textDistance (here computed as 1 - textDistance()) including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
-#' @param Npermutations Number of permutations (default 1000).
+#' @param Npermutations Number of permutations (default 10000).
 #' @param method Compute a "paired" or an "unpaired" test.
 #' @param alternative Use a two or one-sided test (select one of: "two_sided", "less", "greater").
 #' @param output.permutations If TRUE, returns permuted values in output.
@@ -79,7 +79,7 @@ textSimilarityTest <- function(x,
   distribution_mean_ss_permutated <- parallel::mclapply(splitix, function(x, xx, yy) {
     mean_ss_permutated <- sapply(x, function(x, xx, yy) {
       # Get indixes for how to randomly split the word embeddings.
-      indices <- sample(c((rep(TRUE, nrow(x1y1) / 2)), (rep(FALSE, nrow(x1y1) / 2))), nrow(x1y1), replace = FALSE)
+      indices <- sample(c((rep(TRUE, ceiling(nrow(x1y1) / 2))), (rep(FALSE, floor(nrow(x1y1) / 2)))), nrow(x1y1), replace = FALSE)
       # Randomly select word embeddings into two different data frames.
       rdata1 <- x1y1[indices, ]
       rdata2 <- x1y1[!indices, ]
