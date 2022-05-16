@@ -76,7 +76,7 @@ def hgTransformerGetEmbedding(text_strings,
             if device == 'gpu':
                 for device_num in range(0,torch.cuda.device_count()):
                     try:
-                        transformer_model.to(device=device_num)
+                        transformer_model.to(device=f"cuda:{device_num}")
                         attached = True
                         break
                     except:
@@ -84,7 +84,7 @@ def hgTransformerGetEmbedding(text_strings,
             else: # assign to specific gpu device number
                 device_num = int(device.split(":")[-1])
                 try:
-                    transformer_model.to(device=device_num)
+                    transformer_model.to(device=f"cuda:{device_num}")
                     attached = True
                 except:
                     pass
