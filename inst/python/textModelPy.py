@@ -75,7 +75,7 @@ def textModelsRMPy(target="default"):
         if os.path.exists(file[0:toDelete] + ".json"): os.remove(file[0:toDelete] + ".json")
         if os.path.exists(file[0:toDelete] + ".lock"): os.remove(file[0:toDelete] + ".lock")
     if targetFind == 0:
-        print("Models " + target + " do/does not exist!")
+        print("Model(s) " + target + " do/does not exist!")
 
     return 0
 
