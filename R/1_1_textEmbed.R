@@ -653,13 +653,13 @@ textEmbed <- function(x,
   all_embeddings
 }
 
-#' Check models.
-#' @return List of names of models on your machine
+#' Check downloaded, available models.
+#' @return List of names of models and tokenizers
 #' @examples
 #' \donttest{
 #' textModel()
 #' }
-#' @seealso see \code{\link{textModelsRM}}
+#' @seealso see \code{\link{textModelsRemove}}
 #' @export
 textModels <- function(){
   reticulate::source_python(system.file("python",
@@ -671,13 +671,18 @@ textModels <- function(){
 
   models <- textModelsPy()
 
+  names(models) <- c("Downloaded_models", "Downloaded_tokenizers")
+
   return (models)
 }
 
-#' Delete huggingface models
+
+#' Delete a specified model and model associated files.
+#' @param target_model Character string of the model name that you want to delete.
+#' @return Confirmation whether the model has been deleted.
 #' @examples
 #' \donttest{
-#' textModelsRM("name-of-model")
+#' textModelsRemove("name-of-model")
 #' }
 #' @seealso see \code{\link{textModels}}
 #' @export
@@ -689,10 +694,16 @@ textModelsRemove <- function(target_model){
                                         mustWork = TRUE
   ))
 
-  if (is.character(target_model)){
-    textModelsRMPy(target_model)
-    #return (reticulate::py_to_r(textModelsRMPy(target_model)))
-  }else{
-    return (list("Model name error!"))
+  # Check that target_models exist among existing models
+  models <- textModels()
+  if(target_model %in% models$Downloaded_models == FALSE){
+    stop(paste("Model name error. ", target_model, " was not found, and could not be deleted", sep=""))
   }
+
+  # Delete the model
+  textModelsRMPy(target_model)
+
+  message(colourise(
+    paste(target_model, " was successfully deleted.", sep=""),
+    fg = "green", bg = NULL))
 }

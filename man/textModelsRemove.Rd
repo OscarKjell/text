@@ -2,16 +2,22 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textModelsRemove}
 \alias{textModelsRemove}
-\title{Delete huggingface models}
+\title{Delete a specified model and model associated files.}
 \usage{
 textModelsRemove(target_model)
 }
+\arguments{
+\item{target_model}{Character string of the model name that you want to delete.}
+}
+\value{
+Confirmation whether the model has been deleted.
+}
 \description{
-Delete huggingface models
+Delete a specified model and model associated files.
 }
 \examples{
 \donttest{
-textModelsRM("name-of-model")
+textModelsRemove("name-of-model")
 }
 }
 \seealso{

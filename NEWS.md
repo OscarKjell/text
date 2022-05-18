@@ -1,6 +1,15 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.80
+#### New feature
+- Option to set model_max_length in textEmbed().
+- textModels() show downloaded models.
+- textModelsRemove() deletes specified models.
+
+### Bug Fixes
+- Fixed error for unpaired textSimilarityTest() when uneven number of cases are tested. 
+
 # text 0.9.70
 ### New Features
 - Inclusion of textDistance() function with distance measures.

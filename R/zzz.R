@@ -7,7 +7,7 @@
   }
 
   packageStartupMessage(colourise(
-    "This is text (version 0.9.70). \n",
+    "This is text (version 0.9.80). \n",
     fg = "blue", bg = NULL
   ), colourise("Text is new and still rapidly improving.
                \nNewer versions may have improved functions

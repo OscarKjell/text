@@ -2,15 +2,15 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textModels}
 \alias{textModels}
-\title{Check models.}
+\title{Check downloaded, available models.}
 \usage{
 textModels()
 }
 \value{
-List of names of models on your machine
+List of names of models and tokenizers
 }
 \description{
-Check models.
+Check downloaded, available models.
 }
 \examples{
 \donttest{
@@ -18,5 +18,5 @@ textModel()
 }
 }
 \seealso{
-see \code{\link{textModelsRM}}
+see \code{\link{textModelsRemove}}
 }
