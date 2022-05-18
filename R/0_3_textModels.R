@@ -1,7 +1,7 @@
 #' Check downloaded, available models.
 #' @return List of names of models and tokenizers
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' textModels()
 #' }
 #' @seealso see \code{\link{textModelsRemove}}
@@ -26,8 +26,8 @@ textModels <- function(){
 #' @param target_model Character string of the model name that you want to delete.
 #' @return Confirmation whether the model has been deleted.
 #' @examples
-#' \donttest{
-#' textModelsRemove("name-of-model")
+#' \dontrun{
+#' textModelsRemove("name-of-model-to-delete")
 #' }
 #' @seealso see \code{\link{textModels}}
 #' @export

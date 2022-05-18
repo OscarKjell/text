@@ -2,46 +2,46 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # text 0.9.80
-#### New feature
-- Option to set model_max_length in textEmbed().
-- textModels() show downloaded models.
-- textModelsRemove() deletes specified models.
+### New feature
+- Option to set `model_max_length` in `textEmbed()`.
+- `textModels()` show downloaded models.
+- `textModelsRemove()` deletes specified models.
 
 ### Bug Fixes
-- Fixed error for unpaired textSimilarityTest() when uneven number of cases are tested. 
+- Fixed error for unpaired `textSimilarityTest()` when uneven number of cases are tested. 
 
 # text 0.9.70
 ### New Features
-- Inclusion of textDistance() function with distance measures.
-- Adding more measures to textSimilarity().
-- Adding functionality from textSimilarity() in textSimilarityTest(), textProjection() and textCentrality() for plotting.
-- Adding information about how textTrainRegression() concatenates word embeddings when provided with a list of several word embeddings.
-- Adding two word embedding dimensions to example data of single word embeddings to match the 10 of the contextualised embeddings in word_embeddings_4$singlewords_we. 
+- Inclusion of `textDistance()` function with distance measures.
+- Adding more measures to `textSimilarity()`.
+- Adding functionality from `textSimilarity()` in `textSimilarityTest()`, `textProjection()` and `textCentrality()` for plotting.
+- Adding information about how `textTrainRegression()` concatenates word embeddings when provided with a list of several word embeddings.
+- Adding two word embedding dimensions to example data of single word embeddings to match the 10 of the contextualized embeddings in `word_embeddings_4$singlewords_we`. 
 
 ### Bug Fixes
-- In textCentrality, words to be plotted are selected  with word_data1_all$extremes_all_x >= 1 (rather than ==1).
+- In `textCentrality()`, words to be plotted are selected  with `word_data1_all$extremes_all_x >= 1` (rather than `==1`).
 
 # text 0.9.60
 
-- textSimilarityMatrix() computes semantic similarity among all combinations in a given word embedding. 
+- `textSimilarityMatrix()` computes semantic similarity among all combinations in a given word embedding. 
 
 # text 0.9.54
 
-- textDescriptives() gets options to remove NA and compute total scores.
+- `textDescriptives()` gets options to remove NA and compute total scores.
 
 # text 0.9.53
 
-- inclusion of textDescriptives()
+- inclusion of `textDescriptives()`
 
 
 # text 0.9.52
 
-- prompt option added to textrpp_initiate()
+- prompt option added to `textrpp_initiate()`
 
 
 # text 0.9.51
 
-- tokenization is made with NLTK from python.
+- `tokenization` is made with `NLTK` from python.
 
 
 
@@ -51,32 +51,32 @@
 
 # text 0.9.20
 ### New Features
-- New functions being tested: textWordPredictions() (which has a trial period/not fully developed and might be removed in future versions); p-values are not yet implemented.
-- Possibility to use textPlot() for objects from both textProjection() and textWordPredictions()
+- New functions being tested: `textWordPredictions()` (which has a trial period/not fully developed and might be removed in future versions); p-values are not yet implemented.
+- Possibility to use `textPlot()` for objects from both `textProjection()` and `textWordPredictions()`
 
 
 ### Minor changes
 - Changed wordembeddigs to word_embeddings through out the code/package.
 
 ### Bug Fixes
-- Warnings about seed when using multi cores on Mac is addressed. 
+- Warnings about seed when using multi-cores on Mac is addressed. 
 
 # text 0.9.17
 ### New Features
-- textrpp_initiate() runs automatically in library(text) when default environment exits
+- `textrpp_initiate()` runs automatically in `library(text)` when default environment exits
 - Python warnings a captured in embedding comments
 - Option to print python options to console
-- Updated the permutation test for plotting and textSimilarityTest.  
+- Updated the permutation test for plotting and `textSimilarityTest()`.  
 
 ### Minor changes
-- Changed from stringr to stringi (and removed tokenizer) as imported package
+- Changed from `stringr` to `stringi` (and removed tokenizer) as imported package
 
 # text 0.9.16
 ### New Features
-- `textrpp_install()` installs a conda environment with text required python packages.
+- `textrpp_install()` installs a `conda` environment with text required python packages.
 - `textrpp_install_virtualenv()` install a virtual environment with text required python packages.
 - `textrpp_initialize()` initializes installed environment. 
-- `textrpp_uninstall()` uninstalls conda environment.
+- `textrpp_uninstall()` uninstalls `conda` environment.
 
 # text 0.9.13
 ### New Features
@@ -86,20 +86,20 @@
 # text 0.9.12
 
 ### New Features
-- In `textProjetion` and `textProjetionPlot` it now possible to add points of the aggregated word embeddings in the plot
-- In `textProjetion` it now possible to manually add words to the plot in order to explore them in the word embedding space.
-- In `textProjetion` it is possible to add color or remove words that are more frequent on the opposite "side" of its dot product projection. 
-- In `textProjection` with `split == quartile`, the comparison distribution is now based on the quartile data (rather than the data for mean)
+- In `textProjetion()` and `textProjetionPlot()` it now possible to add points of the aggregated word embeddings in the plot
+- In `textProjetion()` it now possible to manually add words to the plot in order to explore them in the word embedding space.
+- In `textProjetion()` it is possible to add color or remove words that are more frequent on the opposite "side" of its dot product projection. 
+- In `textProjection()` with `split == quartile`, the comparison distribution is now based on the quartile data (rather than the data for mean)
 
 ### Bug Fixes
 - If any of the tokens to remove is "[CLS]", subtract 1 on token_id so that it works with layer_aggregation_helper. 0.9.11
-- Can now submit one word to `textEmbed` with `decontexts=TRUE`. 
+- Can now submit one word to `textEmbed()` with `decontexts=TRUE`. 
 
 # text 0.9.11 
-- `textSimilarityTest` is not giving error when using method = unpaired, with unequal number of participants in each group. 
+- `textSimilarityTest()` is not giving error when using method = unpaired, with unequal number of participants in each group. 
 
 ### New Features
-- `textPredictTest` function to significance test correlations of different models. 0.9.11 
+- `textPredictTest()` function to significance test correlations of different models. 0.9.11 
 
 ### Bug Fixes
 - If any of the tokens to remove is "[CLS]", subtract 1 on token_id so that it works with layer_aggregation_helper. 0.9.11
@@ -110,7 +110,7 @@ This version is now on CRAN.
 - Adding option to deselect the `step_centre` and `step_scale` in training.
 - Cross-validation method in `textTrainRegression()` and `textTrainRandomForrest()` have two options `cv_folds` and `validation_split`. (0.9.02)
 - Better handling of `NA` in `step_naomit` in training. 
-- DistilBert model works (0.9.03)
+- `DistilBert` model works (0.9.03)
 
 ### Major changes
 

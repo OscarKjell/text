@@ -25,7 +25,7 @@ conda_args <- reticulate:::conda_args
 #' package manager with conda-forge channel will be used for installing rpp.
 #' @param rpp_version character; default is "rpp_version_system_specific_defaults", because diffent systems require
 #' different combinations of python version and packages. It is also possible to
-#' specify your own, such s c('torch==0.4.1', 'transformers==3.3.1').
+#' specify your own, such as c('torch==0.4.1', 'transformers==3.3.1').
 #' @param python_version character; default is "python_version_system_specific_defaults". You can specify your
 #' Python version for the condaenv yourself.
 #'   installation.

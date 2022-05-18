@@ -13,7 +13,7 @@ List of names of models and tokenizers
 Check downloaded, available models.
 }
 \examples{
-\donttest{
+\dontrun{
 textModels()
 }
 }

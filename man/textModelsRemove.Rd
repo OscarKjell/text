@@ -16,8 +16,8 @@ Confirmation whether the model has been deleted.
 Delete a specified model and model associated files.
 }
 \examples{
-\donttest{
-textModelsRemove("name-of-model")
+\dontrun{
+textModelsRemove("name-of-model-to-delete")
 }
 }
 \seealso{

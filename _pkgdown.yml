@@ -46,6 +46,10 @@ reference:
   - textEmbedLayersOutput
   - textEmbedLayerAggregation
   - textEmbedStatic
+- title: View or delete downloaded models
+  contents:
+  - textModels
+  - textModelsRemove
 - title: Train word embeddings
   contents:
     - textTrain
@@ -56,9 +60,10 @@ reference:
   contents:
     - textPredict
     - textPredictTest
-- title: Semantic Similarities
+- title: Semantic similarities and distance
   contents:
     - textSimilarity
+    - textDistance
     - textSimilarityMatrix
     - textSimilarityNorm
     - textSimilarityTest
