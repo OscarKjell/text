@@ -71,7 +71,7 @@ change e.g., by trying c(-5, 5)).}
 
 \item{centrality_color_codes}{Colors of the words selected as plot_n_word_extreme
 (minimum values), plot_n_words_middle, plot_n_word_extreme (maximum values) and
-plot_n_word_frequency; the default is c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d"), respectively.}
+plot_n_word_frequency; the default is c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d", respectively.}
 
 \item{word_size_range}{Vector with minimum and maximum font size (default: c(3, 8)).}
 

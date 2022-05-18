@@ -653,7 +653,14 @@ textEmbed <- function(x,
   all_embeddings
 }
 
-# Huggingface models display
+#' Check models.
+#' @return List of names of models on your machine
+#' @examples
+#' \donttest{
+#' textModel()
+#' }
+#' @seealso see \code{\link{textModelsRM}}
+#' @export
 textModels <- function(){
   reticulate::source_python(system.file("python",
     "textModelPy.py",
@@ -661,10 +668,19 @@ textModels <- function(){
     package = "text",
     mustWork = TRUE
   ))
-  return (reticulate::py_to_r(textModelsPy()))
+
+  models <- textModelsPy()
+
+  return (models)
 }
-                            
-# Delete huggingface models
+
+#' Delete huggingface models
+#' @examples
+#' \donttest{
+#' textModelsRM("name-of-model")
+#' }
+#' @seealso see \code{\link{textModels}}
+#' @export
 textModelsRM <- function(target_model){
     if (is.character(target_model)){
         reticulate::source_python(system.file("python",
