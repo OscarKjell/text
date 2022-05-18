@@ -666,7 +666,7 @@ textModels <- function(){
                             
 # Delete huggingface models
 textModelsRM <- function(target_model){
-    if (is.character(target_model){
+    if (is.character(target_model)){
         reticulate::source_python(system.file("python",
                                                "textModelPy.py",
                                                # envir = NULL,
