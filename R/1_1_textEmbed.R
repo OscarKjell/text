@@ -655,7 +655,7 @@ textEmbed <- function(x,
 
 # Huggingface models display
 textModels <- function(){
-  reticulate::source_python((system.file("python",
+  reticulate::source_python(system.file("python",
     "textModelPy.py",
     # envir = NULL,
     package = "text",
@@ -666,14 +666,15 @@ textModels <- function(){
                             
 # Delete huggingface models
 textModelsRM <- function(target_model){
-  if (is.character(target_model){
-    reticulate::source_python((system.file("python",
-      "textModelPy.py",
-      # envir = NULL,
-      package = "text",
-      mustWork = TRUE
-    ))
-    return (reticulate::py_to_r(textModelsRMPy(target_model)))
-  }else{
-    return (list("Model name error!"))
+    if (is.character(target_model){
+        reticulate::source_python(system.file("python",
+                                               "textModelPy.py",
+                                               # envir = NULL,
+                                               package = "text",
+                                               mustWork = TRUE
+        ))
+        return (reticulate::py_to_r(textModelsRMPy(target_model)))
+    }else{
+        return (list("Model name error!"))
+    }
 }
