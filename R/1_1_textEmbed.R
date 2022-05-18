@@ -654,7 +654,7 @@ textEmbed <- function(x,
 }
 
 #' Check models.
-#' @return List of names of models on your machine
+#' @return R List object of model name list (1st) and tokenizer name list (2nd) on your machine
 #' @examples
 #' \donttest{
 #' textModel()
