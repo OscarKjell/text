@@ -63,7 +63,8 @@ def textModelsRMPy(target="default"):
 
     # transformerLists = textModelsPy()
     metaFiles = glob.glob(TRANSFORMERS_CACHE + '/*.json')
-    
+
+    toDelete = 0
     targetFind = 0
     for file in metaFiles:
         with open(file) as j:
@@ -72,8 +73,9 @@ def textModelsRMPy(target="default"):
                 if data['url'].find(target) != -1:
                     toDelete = file.find(".json")
                     targetFind += 1
-        if os.path.exists(file[0:toDelete] + ".json"): os.remove(file[0:toDelete] + ".json")
-        if os.path.exists(file[0:toDelete] + ".lock"): os.remove(file[0:toDelete] + ".lock")
+        if toDelete != 0:
+            if os.path.exists(file[0:toDelete] + ".json"): os.remove(file[0:toDelete] + ".json")
+            if os.path.exists(file[0:toDelete] + ".lock"): os.remove(file[0:toDelete] + ".lock")
     if targetFind == 0:
         print("Model(s) " + target + " do/does not exist!")
 
