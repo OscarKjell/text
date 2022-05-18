@@ -681,16 +681,18 @@ textModels <- function(){
 #' }
 #' @seealso see \code{\link{textModels}}
 #' @export
-textModelsRM <- function(target_model){
-    if (is.character(target_model)){
-        reticulate::source_python(system.file("python",
-                                               "textModelPy.py",
-                                               # envir = NULL,
-                                               package = "text",
-                                               mustWork = TRUE
-        ))
-        return (reticulate::py_to_r(textModelsRMPy(target_model)))
-    }else{
-        return (list("Model name error!"))
-    }
+textModelsRemove <- function(target_model){
+  reticulate::source_python(system.file("python",
+                                        "textModelPy.py",
+                                        # envir = NULL,
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
+
+  if (is.character(target_model)){
+    textModelsRMPy(target_model)
+    #return (reticulate::py_to_r(textModelsRMPy(target_model)))
+  }else{
+    return (list("Model name error!"))
+  }
 }
