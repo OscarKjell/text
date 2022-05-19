@@ -2,10 +2,10 @@
 #' Compute descriptive statistics of character variables.
 #'
 #' @param words One or several character variables; if its a tibble or dataframe, all the character variables will be selected.
-#' @param compute_total If words is a tibble or dataframe with several character variables, a total variable is computed.
-#' For more information see the entropy package and specifically its entropy.plugin function.
-#' That is, the text columns are combined using the dplyr unite function.
+#' @param compute_total Boolean. If the input (words) is a tibble/dataframe with several character variables, a total variable is computed.
 #' @param entropy_unit  The unit entropy is measured in. The default is to used bits (i.e., log2; see also, "log", "log10").
+#' If a total score for several varaibles is computed,the text columns are combined using the dplyr unite function.
+#' For more information about the entropy see the entropy package and specifically its entropy.plugin function.
 #' @param na.rm Option to remove NAs when computing mean, median etc (see under return).
 #' @return A tibble with descriptive statistics, including
 #' variable = the variable names of input "words";
