@@ -71,12 +71,12 @@ def hgTransformerGetEmbedding(text_strings,
     transformer_model = AutoModel.from_pretrained(model, config=config)
 
     if device != 'cpu':
+        attached = False
         if torch.cuda.is_available():
-            attached = False
             if device == 'gpu':
                 for device_num in range(0,torch.cuda.device_count()):
                     try:
-                        transformer_model.to(device=f"cuda:{device_num}")
+                        transformer_model.to(device="cuda:{device_num}".format(device_num=device_num))
                         attached = True
                         break
                     except:
@@ -84,14 +84,13 @@ def hgTransformerGetEmbedding(text_strings,
             else: # assign to specific gpu device number
                 device_num = int(device.split(":")[-1])
                 try:
-                    transformer_model.to(device=f"cuda:{device_num}")
+                    transformer_model.to(device="cuda:{device_num}".format(device_num=device_num))
                     attached = True
                 except:
                     pass
-            if not attached:
-                print("Unable to use CUDA (GPU), using CPU")
-        else:
+        if not attached:
             print("Unable to use CUDA (GPU), using CPU")
+            device = "cpu"
 
     max_tokens = tokenizer.max_len_sentences_pair
 
@@ -167,12 +166,12 @@ def hgTransformerGetEmbedding(text_strings,
     else:
         return all_embs
 
-#EXAMPLE TEST CODE:
-#if __name__   == '__main__':
-#    embeddings, tokens = hgTransformerGetEmbedding("Here is one sentence.", layers=[0,10])
+### EXAMPLE TEST CODE:
+# if __name__   == '__main__':
+#    embeddings, tokens = hgTransformerGetEmbedding("Here is one sentence.", layers=[0,10], device="gpu")
 #    print(np.array(embeddings).shape)
 #    print(tokens)
-#
-#    embeddings, tokens = hgTransformerGetEmbedding("Here is more sentences. But why is not . and , and ? indicated with SEP?", layers=[0,10])
+
+#    embeddings, tokens = hgTransformerGetEmbedding("Here is more sentences. But why is not . and , and ? indicated with SEP?", layers=[0,10], device="gpu")
 #    print(np.array(embeddings).shape)
 #    print(tokens)
