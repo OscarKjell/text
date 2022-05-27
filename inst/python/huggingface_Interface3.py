@@ -4,6 +4,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
 from transformers import AutoConfig, AutoModel, AutoTokenizer
+from transformers.utils import logging
 import numpy as np
 
 import nltk
@@ -19,13 +20,14 @@ import os, sys
 
 
 def hgTransformerGetEmbedding(text_strings,
-                              model = 'bert-base-uncased',
+                              model = 'bert-large-uncased',
                               layers = 'all',
                               return_tokens = True,
                               max_token_to_sentence = 4,
                               device = 'cpu',
                               tokenizer_parallelism = False,
-                              model_max_length = None):
+                              model_max_length = None,
+                              logging_level = 'warning'):
     """
     Simple Python method for embedding text with pretained Hugging Face models
 
@@ -45,6 +47,12 @@ def hgTransformerGetEmbedding(text_strings,
         sentence by sentence
     device : str
         name of device: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+    tokenizer_parallelism :  bool
+        something
+    model_max_length : int
+        maximum length of the tokenized text
+    logging_level : str
+        set logging level, options: critical, error, warning, info, debug
 
     Returns
     -------
@@ -53,6 +61,21 @@ def hgTransformerGetEmbedding(text_strings,
     all_toks : list, optional
         tokenized version of text_strings
     """
+
+    logging_level = logging_level.lower()
+    # default level is warning, which is in between "error" and "info"
+    if logging_level not in ['warn', 'warning']:
+        if logging_level == "critical":
+            logging.set_verbosity_critical()
+        elif logging_level == "error":
+            logging.set_verbosity_error()
+        elif logging_level == "info":
+            logging.set_verbosity_info()
+        elif logging_level == "debug":
+            logging.set_verbosity_debug()
+        else:
+            print("Warning: Logging level {l} is not an option.".format(l=logging_level))
+            print("\tUse one of: ")
 
     if tokenizer_parallelism:
         os.environ["TOKENIZERS_PARALLELISM"] = "true"
@@ -182,11 +205,11 @@ def hgTransformerGetEmbedding(text_strings,
         return all_embs
 
 ### EXAMPLE TEST CODE:
-# if __name__   == '__main__':
-#    embeddings, tokens = hgTransformerGetEmbedding("Here is one sentence.", layers=[0,10], device="gpu")
-#    print(np.array(embeddings).shape)
-#    print(tokens)
+if __name__   == '__main__':
+   embeddings, tokens = hgTransformerGetEmbedding("Here is one sentence.", layers=[0,10], device="gpu", logging_level="warn")
+   print(np.array(embeddings).shape)
+   print(tokens)
 
-#    embeddings, tokens = hgTransformerGetEmbedding("Here is more sentences. But why is not . and , and ? indicated with SEP?", layers=[0,10], device="gpu")
-#    print(np.array(embeddings).shape)
-#    print(tokens)
+   embeddings, tokens = hgTransformerGetEmbedding("Here is more sentences. But why is not . and , and ? indicated with SEP?", layers=[0,10], device="gpu")
+   print(np.array(embeddings).shape)
+   print(tokens)

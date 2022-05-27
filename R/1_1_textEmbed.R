@@ -241,6 +241,8 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
 #' (default the value stored for the associated model).
+#' @param logging_level Set the logging level. Default: "warning".
+#' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @return A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
 #' input embedding to the transformer, and should normally not be used.
 #' @examples
@@ -263,7 +265,8 @@ textEmbedLayersOutput <- function(x,
                                   device = "cpu",
                                   print_python_warnings = FALSE,
                                   tokenizer_parallelism = FALSE,
-                                  model_max_length = NULL) {
+                                  model_max_length = NULL,
+                                  logging_level = "warning") {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
@@ -293,7 +296,8 @@ textEmbedLayersOutput <- function(x,
           return_tokens = return_tokens,
           device = device,
           tokenizer_parallelism = tokenizer_parallelism,
-          model_max_length = model_max_length
+          model_max_length = model_max_length,
+          logging_level = logging_level
         ),
         type = "stderr"
       )
@@ -336,7 +340,8 @@ textEmbedLayersOutput <- function(x,
         return_tokens = return_tokens,
         device = device,
         tokenizer_parallelism = tokenizer_parallelism,
-        model_max_length = model_max_length
+        model_max_length = model_max_length,
+        logging_level = logging_level
       )
     )
 
@@ -559,6 +564,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' @param print_python_warnings bolean; when true any warnings from python environment are printed to the console.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
 #' (default the value stored for the associated model).
+#' @param logging_level Set the logging level. Default: "warning".
+#' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @return A tibble with tokens, a column for layer identifier and word embeddings.
 #' Note that layer 0 is the input embedding to the transformer
 #' @examples
@@ -592,7 +599,8 @@ textEmbed <- function(x,
                       decontext_tokens_deselect = NULL,
                       device = "cpu",
                       print_python_warnings = FALSE,
-                      model_max_length = NULL) {
+                      model_max_length = NULL,
+                      logging_level = "warning") {
   T1_textEmbed <- Sys.time()
 
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
@@ -606,7 +614,8 @@ textEmbed <- function(x,
     return_tokens = FALSE,
     device = device,
     print_python_warnings = print_python_warnings,
-    model_max_length = model_max_length
+    model_max_length = model_max_length,
+    logging_level = logging_level
   )
 
   # Aggregate context layers
