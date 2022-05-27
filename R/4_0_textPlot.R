@@ -296,7 +296,7 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
 }
 
 #' Computes the dot product projection for added data.
-#' @return Word_data_all_yadjusted with added infomration for the added words.
+#' @return Word_data_all_yadjusted with added information for the added words.
 #' @noRd
 textOwnWordsProjection <- function(word_data = word_data,
                                    word_data_all = word_data_all,
