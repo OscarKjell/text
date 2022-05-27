@@ -4,6 +4,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
 from transformers import AutoConfig, AutoModel, AutoTokenizer
+from transformers.utils import logging
 import numpy as np
 
 import nltk
@@ -14,18 +15,19 @@ except:
 
 from nltk.tokenize import sent_tokenize
 
-import os
+import os, sys
 
 
 
 def hgTransformerGetEmbedding(text_strings,
-                              model = 'bert-base-uncased',
+                              model = 'bert-large-uncased',
                               layers = 'all',
                               return_tokens = True,
                               max_token_to_sentence = 4,
                               device = 'cpu',
                               tokenizer_parallelism = False,
-                              model_max_length = None):
+                              model_max_length = None,
+                              logging_level = 'warning'):
     """
     Simple Python method for embedding text with pretained Hugging Face models
 
@@ -45,6 +47,12 @@ def hgTransformerGetEmbedding(text_strings,
         sentence by sentence
     device : str
         name of device: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+    tokenizer_parallelism :  bool
+        something
+    model_max_length : int
+        maximum length of the tokenized text
+    logging_level : str
+        set logging level, options: critical, error, warning, info, debug
 
     Returns
     -------
@@ -53,6 +61,21 @@ def hgTransformerGetEmbedding(text_strings,
     all_toks : list, optional
         tokenized version of text_strings
     """
+
+    logging_level = logging_level.lower()
+    # default level is warning, which is in between "error" and "info"
+    if logging_level not in ['warn', 'warning']:
+        if logging_level == "critical":
+            logging.set_verbosity_critical()
+        elif logging_level == "error":
+            logging.set_verbosity_error()
+        elif logging_level == "info":
+            logging.set_verbosity_info()
+        elif logging_level == "debug":
+            logging.set_verbosity_debug()
+        else:
+            print("Warning: Logging level {l} is not an option.".format(l=logging_level))
+            print("\tUse one of: ")
 
     if tokenizer_parallelism:
         os.environ["TOKENIZERS_PARALLELISM"] = "true"
@@ -66,17 +89,32 @@ def hgTransformerGetEmbedding(text_strings,
         print("Trying CPUs")
         device = 'cpu'
 
-    config = AutoConfig.from_pretrained(model, output_hidden_states=True)
-    tokenizer = AutoTokenizer.from_pretrained(model)
-    transformer_model = AutoModel.from_pretrained(model, config=config)
+    if "megatron-bert" in model:
+        try:
+            from transformers import BertTokenizer, MegatronBertForMaskedLM
+        except:
+            print("WARNING: You must install transformers>4.10 to use MegatronBertForMaskedLM")
+            print("\tPlease try another model.")
+            sys.exit()
+
+        config = AutoConfig.from_pretrained(model, output_hidden_states=True)
+        if "megatron-bert-cased" in model:
+            tokenizer = BertTokenizer.from_pretrained('nvidia/megatron-bert-cased-345m')
+        else:
+            tokenizer = BertTokenizer.from_pretrained('nvidia/megatron-bert-uncased-345m')
+        transformer_model = MegatronBertForMaskedLM.from_pretrained(model, config=config)
+    else:
+        config = AutoConfig.from_pretrained(model, output_hidden_states=True)
+        tokenizer = AutoTokenizer.from_pretrained(model)
+        transformer_model = AutoModel.from_pretrained(model, config=config)
 
     if device != 'cpu':
+        attached = False
         if torch.cuda.is_available():
-            attached = False
             if device == 'gpu':
                 for device_num in range(0,torch.cuda.device_count()):
                     try:
-                        transformer_model.to(device=f"cuda:{device_num}")
+                        transformer_model.to(device="cuda:{device_num}".format(device_num=device_num))
                         attached = True
                         break
                     except:
@@ -84,14 +122,13 @@ def hgTransformerGetEmbedding(text_strings,
             else: # assign to specific gpu device number
                 device_num = int(device.split(":")[-1])
                 try:
-                    transformer_model.to(device=f"cuda:{device_num}")
+                    transformer_model.to(device="cuda:{device_num}".format(device_num=device_num))
                     attached = True
                 except:
                     pass
-            if not attached:
-                print("Unable to use CUDA (GPU), using CPU")
-        else:
+        if not attached:
             print("Unable to use CUDA (GPU), using CPU")
+            device = "cpu"
 
     max_tokens = tokenizer.max_len_sentences_pair
 
@@ -167,12 +204,12 @@ def hgTransformerGetEmbedding(text_strings,
     else:
         return all_embs
 
-#EXAMPLE TEST CODE:
-#if __name__   == '__main__':
-#    embeddings, tokens = hgTransformerGetEmbedding("Here is one sentence.", layers=[0,10])
-#    print(np.array(embeddings).shape)
-#    print(tokens)
-#
-#    embeddings, tokens = hgTransformerGetEmbedding("Here is more sentences. But why is not . and , and ? indicated with SEP?", layers=[0,10])
-#    print(np.array(embeddings).shape)
-#    print(tokens)
+### EXAMPLE TEST CODE:
+if __name__   == '__main__':
+   embeddings, tokens = hgTransformerGetEmbedding("Here is one sentence.", layers=[0,10], device="gpu", logging_level="warn")
+   print(np.array(embeddings).shape)
+   print(tokens)
+
+   embeddings, tokens = hgTransformerGetEmbedding("Here is more sentences. But why is not . and , and ? indicated with SEP?", layers=[0,10], device="gpu")
+   print(np.array(embeddings).shape)
+   print(tokens)
