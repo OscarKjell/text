@@ -1,6 +1,17 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.90
+### New feature
+- Visualization of download process of language models
+- Can set error level from python
+- `Logistic` regression is default for classification in textTrain.
+- Megatron language model functionality 
+
+### Bug Fixes
+- When GPU is not found, CPU is used.
+
+
 # text 0.9.80
 ### New feature
 - Option to set `model_max_length` in `textEmbed()`.
