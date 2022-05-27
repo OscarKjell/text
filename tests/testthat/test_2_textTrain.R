@@ -360,14 +360,14 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     penalty = c(2),
     mixture = c(0),
     force_train_method = "automatic",
-    model = "logistic",
+   # model = "logistic",
     eval_measure = "default",
     save_output = "only_results_predictions",
     multi_cores = "multi_cores_sys_default"
   )
 
-  testthat::expect_that(results_or_p, testthat::is_a("list"))
-  testthat::expect_is(results_or_p$results$.estimate[1], "numeric")
+  testthat::expect_that(results_list_logistic, testthat::is_a("list"))
+  testthat::expect_is(results_list_logistic$results[[2]][1], "character")
 
 
   results_list_logistic <- textTrain(word_embedding,
@@ -384,8 +384,8 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     multi_cores = "multi_cores_sys_default"
   )
 
-  testthat::expect_that(results_or_p, testthat::is_a("list"))
-  testthat::expect_is(results_or_p$results$.estimate[1], "numeric")
+  testthat::expect_that(results_list_logistic, testthat::is_a("list"))
+  testthat::expect_is(results_list_logistic$results[[2]][[1]], "integer")
 })
 
 
@@ -400,7 +400,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
   results_rf_et <- textTrain(x,
     y,
-    force_train_method = "automatic",
+    force_train_method = "random_forest",
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -420,7 +420,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
   results_rf <- textTrain(x,
     y,
-    force_train_method = "automatic",
+    force_train_method = "random_forest",
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -439,7 +439,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
   results_rf_or_p <- textTrain(x,
     y,
-    # force_train_method = "random_forest",
+    force_train_method = "random_forest",
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -459,7 +459,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
   results_rf_or <- textTrain(x,
     y,
-    # force_train_method = "random_forest",
+    force_train_method = "random_forest",
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
