@@ -88,8 +88,9 @@ such as [CLS] and [SEP] for the decontext embeddings.}
 \item{model_max_length}{The maximum length (in number of tokens) for the inputs to the transformer model
 (default the value stored for the associated model).}
 
-\item{logging_level}{The Transformers logging level. Default: "warning". 
-Options (ordered from less logging to more logging): critical, error, warning, info, debug.}
+\item{logging_level}{Set the logging level. Default: "warning".
+Options (ordered from less logging to more logging): critical, error, warning, info, debug}
+}
 \value{
 A tibble with tokens, a column for layer identifier and word embeddings.
 Note that layer 0 is the input embedding to the transformer

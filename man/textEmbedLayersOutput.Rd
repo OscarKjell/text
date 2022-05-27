@@ -14,7 +14,8 @@ textEmbedLayersOutput(
   device = "cpu",
   print_python_warnings = FALSE,
   tokenizer_parallelism = FALSE,
-  model_max_length = NULL
+  model_max_length = NULL,
+  logging_level = "warning"
 )
 }
 \arguments{
@@ -50,6 +51,9 @@ to the console. (Either way warnings are saved in the comment of the embedding)}
 
 \item{model_max_length}{The maximum length (in number of tokens) for the inputs to the transformer model
 (default the value stored for the associated model).}
+
+\item{logging_level}{Set the logging level. Default: "warning".
+Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 }
 \value{
 A tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the

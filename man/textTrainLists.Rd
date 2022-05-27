@@ -13,7 +13,6 @@ textTrainLists(
   force_train_method = "automatic",
   save_output = "all",
   method_cor = "pearson",
-  model = "regression",
   eval_measure = "rmse",
   p_adjust_method = "holm",
   ...
@@ -31,9 +30,6 @@ categorical variables.}
 and "only_results_predictions".}
 
 \item{method_cor}{A character string describing type of correlation (default "Pearson").}
-
-\item{model}{Type of model to use in regression; default is "regression"; see also "logistic".
-(To set different random forest algorithms see extremely_randomised_splitrule parameter in textTrainRandomForest)}
 
 \item{eval_measure}{Type of evaluative measure to assess models on.}
 

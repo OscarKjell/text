@@ -15,6 +15,8 @@ textProjection(
   split = "quartile",
   word_weight_power = 1,
   min_freq_words_test = 0,
+  mean_centering = FALSE,
+  mean_centering2 = FALSE,
   Npermutations = 10000,
   n_per_split = 50000,
   seed = 1003
@@ -51,6 +53,11 @@ group low (1) and group high (2). This increases the weight of more frequent wor
 \item{min_freq_words_test}{Option to select words that have occurred a specified number of
 times (default = 0); when creating the Supervised Dimension Projection line
 (i.e., single words receive Supervised Dimension Projection and p-value).}
+
+\item{mean_centering}{Boolean; separately mean centering the Group 1 split aggregation embedding,
+and the Group 2 split aggregation embedding}
+
+\item{mean_centering2}{Boolean; separately mean centering the G1 and G2 split aggregation embeddings}
 
 \item{Npermutations}{Number of permutations in the creation of the null distribution.}
 
