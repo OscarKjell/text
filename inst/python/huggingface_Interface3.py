@@ -14,7 +14,7 @@ except:
 
 from nltk.tokenize import sent_tokenize
 
-import os
+import os, sys
 
 
 
@@ -66,9 +66,24 @@ def hgTransformerGetEmbedding(text_strings,
         print("Trying CPUs")
         device = 'cpu'
 
-    config = AutoConfig.from_pretrained(model, output_hidden_states=True)
-    tokenizer = AutoTokenizer.from_pretrained(model)
-    transformer_model = AutoModel.from_pretrained(model, config=config)
+    if "megatron-bert" in model:
+        try:
+            from transformers import BertTokenizer, MegatronBertForMaskedLM
+        except:
+            print("WARNING: You must install transformers>4.10 to use MegatronBertForMaskedLM")
+            print("\tPlease try another model.")
+            sys.exit()
+
+        config = AutoConfig.from_pretrained(model, output_hidden_states=True)
+        if "megatron-bert-cased" in model:
+            tokenizer = BertTokenizer.from_pretrained('nvidia/megatron-bert-cased-345m')
+        else:
+            tokenizer = BertTokenizer.from_pretrained('nvidia/megatron-bert-uncased-345m')
+        transformer_model = MegatronBertForMaskedLM.from_pretrained(model, config=config)
+    else:
+        config = AutoConfig.from_pretrained(model, output_hidden_states=True)
+        tokenizer = AutoTokenizer.from_pretrained(model)
+        transformer_model = AutoModel.from_pretrained(model, config=config)
 
     if device != 'cpu':
         attached = False
