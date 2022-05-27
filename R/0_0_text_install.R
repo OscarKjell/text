@@ -3,6 +3,7 @@
 
 conda_args <- reticulate:::conda_args
 
+
 #' Install text required python packages in conda or virtualenv environment
 #'
 #' @description Install text required python packages (rpp) in a self-contained environment.
@@ -80,7 +81,7 @@ textrpp_install <- function(conda = "auto",
   # verify 64-bit
   if (.Machine$sizeof.pointer != 8) {
     stop(
-      "Unable to install Text on this platform.",
+      "Unable to install the text-package on this platform.",
       "Binary installation is only available for 64-bit platforms."
     )
   }
