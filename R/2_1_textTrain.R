@@ -38,7 +38,7 @@ textTrain <- function(x,
   if (is.numeric(y) == TRUE & force_train_method == "automatic") {
     train_method <- "regression"
   } else if (is.factor(y) == TRUE & force_train_method == "automatic") {
-    train_method <- "random_forest"
+    train_method <- "logistic"
   } else if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "automatic") {
 
     # Create a dataframe with only one type (numeric or categorical) depending on most frequent type
@@ -52,7 +52,7 @@ textTrain <- function(x,
       train_method <- "regression"
     } else if (length(y_n) < length(y_f)) {
       y <- y_f
-      train_method <- "random_forest"
+      train_method <- "logistic"
     }
   } else if (((tibble::is_tibble(y) | is.data.frame(y)) & length(y) > 1) & force_train_method == "regression") {
     y <- dplyr::select_if(y, is.numeric)
@@ -67,13 +67,13 @@ textTrain <- function(x,
   }
 
   # Analyze according to train_method decided above.
-  if (train_method == "regression") {
+  if (train_method == "regression" | train_method == "logistic") {
     # textTrainLists x; if more than one wordembedding list; or more than one column of numeric/categorical variable
     if ((!tibble::is_tibble(x) & length(x) > 1) | ((tibble::is_tibble(y) | is.data.frame(y)) & length(y) > 1)) {
       repression_output <- textTrainLists(
         x = x,
         y = y,
-        force_train_method = "regression",
+        force_train_method = train_method,
         ...
       )
       repression_output
@@ -81,6 +81,7 @@ textTrain <- function(x,
       repression_output <- textTrainRegression(
         x = x,
         y = y,
+        model = train_method,
         ...
       )
       repression_output
@@ -110,6 +111,7 @@ textTrain <- function(x,
 #' @param output output from mapply of textTrainRegression or textTrainRandomForest
 #' @param method_cor type of measure as output; default is pearson, see also spearman, kendall.
 #' @param save_output including "all", "only_restuls_predictions" or "only_results".
+#' @param descriptions description.
 #' @return A list with result output depending on save_output setting.
 #' @noRd
 sort_regression_output_list <- function(output, method_cor, save_output, descriptions, ...) {
@@ -161,18 +163,18 @@ sort_regression_output_list <- function(output, method_cor, save_output, descrip
   results
 }
 
-
 #' Sorts out the output from a classification for the list format.
 #' This is a function because it is needed in both regression for logistic and for
 #' Random forest
 #'
 #' @param output output from mapply of textTrainRegression or textTrainRandomForest
 #' @param save_output including "all", "only_restuls_predictions" or "only_results".
+#' @param train_method method used to train the models.
 #' @return A list with result output depending on save_output setting.
 #' @importFrom purrr reduce
 #' @importFrom dplyr full_join
 #' @noRd
-sort_classification_output_list <- function(output, save_output, descriptions, ...) {
+sort_classification_output_list <- function(output, save_output, descriptions, train_method, ...) {
   output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[1]][[1]])))
   output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[2]][[1]])))
   output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[3]][[1]])))
@@ -196,10 +198,10 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
   output1 <- purrr::map(output, ~ purrr::discard(.x, names(.x) == "predictions"))
 
 
-  # Get and sort the Prediction scores
+  # Get and sort the Prediction scores; names(output$harmonywords_factors2)
   if (save_output == "all" | save_output == "only_results_predictions") {
-    output_predscore <- lapply(output, "[[", "truth_predictions")
-
+    if (train_method == "random_forest") output_predscore <- lapply(output, "[[", "truth_predictions")
+    if (train_method == "logistic")      output_predscore <- lapply(output, "[[", "predictions")
     # Append dataframe name to each of its columns within a list of dataframes
     output_predscore <- purrr::imap(output_predscore, ~ dplyr::rename_with(.x, function(x) paste(.y, x, sep = "_")))
 
@@ -223,7 +225,6 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
   results
 }
 
-
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables.
 #' It is possible to have  word embeddings from one text variable and several numeric/categprical variables;
 #' or vice verse, word embeddings from several text variables to one numeric/categorical variable.
@@ -235,8 +236,6 @@ sort_classification_output_list <- function(output, save_output, descriptions, .
 #' @param save_output Option not to save all output; default "all". see also "only_results"
 #' and "only_results_predictions".
 #' @param method_cor  A character string describing type of correlation (default "Pearson").
-#' @param model  Type of model to use in regression; default is "regression"; see also "logistic".
-#' (To set different random forest algorithms see extremely_randomised_splitrule parameter in textTrainRandomForest)
 #' @param eval_measure  Type of evaluative measure to assess models on.
 #' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons
 #' (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
@@ -264,7 +263,7 @@ textTrainLists <- function(x,
                            force_train_method = "automatic",
                            save_output = "all",
                            method_cor = "pearson",
-                           model = "regression",
+                          # model = "regression",
                            eval_measure = "rmse",
                            p_adjust_method = "holm",
                            ...) {
@@ -288,7 +287,7 @@ textTrainLists <- function(x,
   } else if (force_train_method == "regression") {
     train_method <- "regression"
   } else if (is.factor(y) == TRUE & force_train_method == "automatic") {
-    train_method <- "random_forest"
+    train_method <- "logistic"
   } else if (force_train_method == "random_forest") {
     train_method <- "random_forest"
   } else if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "automatic") {
@@ -304,7 +303,7 @@ textTrainLists <- function(x,
       train_method <- "regression"
     } else if (length(y_n) < length(y_f)) {
       y <- y_f
-      train_method <- "random_forest"
+      train_method <- "logistic"
     }
   } else if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "regression") {
     y <- dplyr::select_if(y, is.numeric)
@@ -327,32 +326,39 @@ textTrainLists <- function(x,
   # Creating descriptions of which variables are used in training, which is  added to the output.
   descriptions <- paste(rep(names(x), length(y)), "_", names(y1), sep = "")
 
-  if (train_method == "regression") {
+  if (train_method == "regression" | train_method == "logistic") {
     # Using mapply to loop over the word embeddings and the outcome variables to train the different combinations
 
     output <- mapply(textTrainRegression, x, y1, MoreArgs = list(
       method_cor = method_cor,
       save_output = save_output,
-      model = model,
+      model = train_method,
       ...
     ), SIMPLIFY = FALSE)
 
-    if (model == "regression") {
+    if (train_method == "regression") {
       results <- sort_regression_output_list(output,
                                              method_cor = method_cor,
                                              save_output = save_output,
                                              descriptions = descriptions)
-    } else if (model == "logistic") {
+    } else if (train_method == "logistic") {
       results <- sort_classification_output_list(output = output,
                                                  save_output = save_output,
-                                                 descriptions = descriptions)
+                                                 descriptions = descriptions,
+                                                 train_method = train_method)
     }
   } else if (train_method == "random_forest") {
 
     # Apply textTrainRandomForest function between each list element and sort outcome.
-    output <- mapply(textTrainRandomForest, x, y1, MoreArgs = list(save_output = save_output, ...), SIMPLIFY = FALSE)
+    output <- mapply(textTrainRandomForest, x, y1, MoreArgs = list(
+      save_output = save_output,
+      ...),
+      SIMPLIFY = FALSE)
 
-    results <- sort_classification_output_list(output = output, save_output = save_output, descriptions = descriptions)
+    results <- sort_classification_output_list(output = output,
+                                               save_output = save_output,
+                                               descriptions = descriptions,
+                                               train_method = train_method)
     results$results$p_value_corrected <- stats::p.adjust(as.numeric(results$results$p_value), method = p_adjust_method)
     # Combine output
     #
@@ -372,7 +378,6 @@ textTrainLists <- function(x,
   comment(results) <- time_date
   results
 }
-
 
 #' Predict scores or classification from, e.g., textTrain.
 #'
