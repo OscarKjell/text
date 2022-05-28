@@ -37,9 +37,6 @@
 #' @param fg foreground colour, defaults to white
 #' @param bg background colour, defaults to transparent
 # @examples
-# print(colourise("Red", "red"))
-# cat(colourise("Red", "red"), "\n")
-# cat(colourise("White on red", "white", "red"), "\n")
 #' @noRd
 colourise <- function(text, fg = "black", bg = NULL) {
   term <- Sys.getenv()["TERM"]

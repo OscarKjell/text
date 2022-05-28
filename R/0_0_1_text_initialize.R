@@ -123,7 +123,7 @@ find_textrpp <- function(ask) {
   }
 
   df_python_check <- tibble::tibble(py_execs, textrpp_found = 0)
-  for (i in seq_len(nrow(df_python_check))) { #
+  for (i in seq_len(nrow(df_python_check))) {
     py_exec <- df_python_check[i, ]
     sys_message <- check_textrpp_model(py_exec) #
     if (sys_message == "OK") {

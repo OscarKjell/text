@@ -136,8 +136,6 @@ textWordPrediction <- function(words,
   }
 
   #### Sorting output ####
-  # words_mean_y
-  # word_data <- dplyr::bind_cols(words_sorted_1, mean_word_value_x, embedding_prediction_x, p_value_x)
   word_data <- dplyr::bind_cols(words_mean_x, embedding_prediction_x, p_value_x)
   if (!is.null(y)) {
     word_data <- dplyr::bind_cols(words_mean_y, embedding_prediction_y, p_value_y)

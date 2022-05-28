@@ -97,7 +97,8 @@ textrpp_install <- function(conda = "auto",
     if (!have_conda) {
       cat("No conda was found in the system. ")
       if (prompt) {
-        ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download miniconda using reticulate::install_miniconda()?")
+        ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download
+                           miniconda using reticulate::install_miniconda()?")
       } else {
         ans <- 2 # When no prompt is set to false, default to install miniconda.
       }
@@ -195,7 +196,6 @@ process_textrpp_installation_conda <- function(conda,
       "\ntext:",
       paste(rpp_version, collapse = ", "), "will be installed.  "
     )
-    # python <- conda_env$python
   } else {
     cat(
       "A new conda environment", paste0('"', envname, '"'), "will be created and \npython required packages:",
@@ -417,7 +417,7 @@ conda_get_version <- function(major_version = NA, conda, envname) {
   regex <- "^(\\S+)\\s?(.*)$"
   cmd1 <- sub(regex, "\\1", cmd)
   cmd2 <- sub(regex, "\\2", cmd)
-  # oldw <- getOption("warn")
+
   result <- system2(cmd1, cmd2, stdout = TRUE, stderr = TRUE)
   result <- sub("\\S+\\s+(\\S+)\\s.+", "\\1", result)
   if (!is.na(major_version)) {

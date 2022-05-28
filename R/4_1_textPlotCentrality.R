@@ -79,7 +79,8 @@ textCentrality <- function(words,
 #' (i.e., even if not significant; duplicates are removed).
 #' @param title_top Title (default "  ").
 #' @param titles_color Color for all the titles (default: "#61605e").
-#' @param x_axes Variable to be plotted on the x-axes (default is "central_semantic_similarity", could also select "n", "n_percent").
+#' @param x_axes Variable to be plotted on the x-axes (default is "central_semantic_similarity",
+#' could also select "n", "n_percent").
 #' @param x_axes_label Label on the x-axes.
 #' @param scale_x_axes_lim Length of the x-axes (default: NULL, which uses
 #' c(min(word_data$central_semantic_similarity)-0.05, max(word_data$central_semantic_similarity)+0.05);

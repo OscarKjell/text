@@ -217,7 +217,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
         dplyr::select(y, id_nr))
 
     holdout_pred$.pred_class <- holdout_pred_class$.pred_class
-    class <- colnames(holdout_pred[2])
+    # class <- colnames(holdout_pred[2])
 
     # Get RMSE; eval_measure = "rmse"
     eval_result <- select_eval_measure_val(eval_measure,
@@ -598,8 +598,6 @@ textTrainRegression <- function(x,
   xy$id_nr <- c(seq_len(nrow(xy)))
 
   # complete.cases is not neccassary
-  # xy <- tibble::as_tibble(xy[stats::complete.cases(xy), ])
-
   # Cross-Validation help(nested_cv) help(vfold_cv) help(validation_split) inside_folds = 3/4
   if (cv_method == "cv_folds") {
     results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,

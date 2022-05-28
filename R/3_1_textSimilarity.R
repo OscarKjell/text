@@ -10,17 +10,6 @@ cosines <- function(x, y) {
   rowSums(x * y, na.rm = TRUE) / (sqrt(rowSums(x * x, na.rm = TRUE)) * sqrt(rowSums(y * y, na.rm = TRUE)))
 }
 
-# https://www.r-bloggers.com/2021/11/how-to-calculate-jaccard-similarity-in-r/
-# jaccard <- function(x, y) {
-#  intersection = length(intersect(x, y))
-#  union = length(x) + length(y) - intersection
-#  return (intersection/union)
-# }
-#
-# x <- word_embeddings_4$harmonytext
-# y <- word_embeddings_4$satisfactiontext
-# jaccard(as.vector(x[1,]), y[1,])
-
 #' Compute the semantic similarity between two text variables.
 #'
 #' @param x Word embeddings from textEmbed.

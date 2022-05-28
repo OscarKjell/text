@@ -18,12 +18,6 @@ unique_freq_words <- function(words) {
   tokenizerNLTK <- nltk$tokenize$word_tokenize
   words_group <- unlist(lapply(words, tokenizerNLTK))
 
-  # words_group1 <- data.frame(unlist(strsplit(tolower(words), " ")))
-  # Remove empty cells (otherwise all words are put within " ",
-  # which create problems in getUniqueWordsAndFreq or textCentrality)
-  # words_group <- words_group1[words_group1 != ""]
-  # words_group <- as.character(words_group)
-
   words_groupb <- tibble::as_tibble(words_group)
   sort(words_groupb$value)
   words_groupb <- table(words_groupb)
@@ -618,71 +612,6 @@ adjust_for_plot_type <- function(word_data, y_axes) {
   return(word_data)
 }
 
-
-
-# word_data = proj
-# k_n_words_to_test = FALSE
-# min_freq_words_test = 1
-# min_freq_words_plot = 1
-# plot_n_words_square = 3
-# plot_n_words_p = 5
-# plot_n_word_extreme = 5
-# plot_n_word_frequency = 5
-# plot_n_words_middle = 5
-# titles_color = "#61605e"
-## x_axes = TRUE
-# y_axes = FALSE
-# p_alpha = 0.05
-# p_adjust_method = "none"
-# title_top = "Supervised Dimension Projection"
-# x_axes_label = "Supervised Dimension Projection (SDP)"
-# y_axes_label = "Supervised Dimension Projection (SDP)"
-# scale_x_axes_lim = NULL
-# scale_y_axes_lim = NULL
-# word_font = NULL
-# bivariate_color_codes = c(
-#  "#398CF9", "#60A1F7", "#5dc688",
-#  "#e07f6a", "#EAEAEA", "#40DD52",
-#  "#FF0000", "#EA7467", "#85DB8E"
-# )
-# word_size_range = c(3, 8)
-# position_jitter_hight = .0
-# position_jitter_width = .03
-# point_size = 0.5
-# arrow_transparency = 0.1
-# points_without_words_size = 0.2
-# points_without_words_alpha = 0.2
-# legend_title = "SDP"
-# legend_x_axes_label = "x"
-# legend_y_axes_label = "y"
-# legend_x_position = 0.02
-# legend_y_position = 0.02
-# legend_h_size = 0.2
-# legend_w_size = 0.2
-# legend_title_size = 7
-# legend_number_size = 2
-# group_embeddings1 = FALSE
-# group_embeddings2 = FALSE
-# projection_embedding = FALSE
-# aggregated_point_size = 0.8
-# aggregated_shape = 8
-# aggregated_color_G1 = "black"
-# aggregated_color_G2 = "black"
-# projection_color = "blue"
-# seed = 1005
-# explore_words = NULL
-# explore_words_color = "#ad42f5"
-# explore_words_point = "ALL_1"
-# explore_words_aggregation = "mean"
-# remove_words = NULL
-# n_contrast_group_color = NULL
-# n_contrast_group_remove = FALSE
-# space = NULL
-# scaling = FALSE
-# explore_words = c("happy joy", "happy joy")
-
-
-
 #' Plot words from textProjection() or textWordPrediction().
 #' @param word_data Dataframe from textProjection
 #' @param k_n_words_to_test Select the k most frequent words to significance
@@ -961,7 +890,8 @@ textPlot <- function(word_data,
   if (is.null(y_axes_1) == FALSE) {
     # Computing adjusted p-values
     word_data1_padjusted_y <- word_data1[word_data1$n >= min_freq_words_test, ]
-    word_data1_padjusted_y$adjusted_p_values.y <- stats::p.adjust(purrr::as_vector(word_data1_padjusted_y[, "p_values_y"]),
+    word_data1_padjusted_y$adjusted_p_values.y <- stats::p.adjust(
+      purrr::as_vector(word_data1_padjusted_y[, "p_values_y"]),
       method = p_adjust_method
     )
     word_data1 <- left_join(word_data1, word_data1_padjusted_y[, c("words", "adjusted_p_values.y")], by = "words")
