@@ -23,8 +23,10 @@ Compute the semantic similarity between two text variables.
 }
 \examples{
 library(dplyr)
-similarity_scores <- textSimilarity(word_embeddings_4$harmonytext,
-word_embeddings_4$satisfactiontext)
+similarity_scores <- textSimilarity(
+  word_embeddings_4$harmonytext,
+  word_embeddings_4$satisfactiontext
+)
 comment(similarity_scores)
 }
 \seealso{

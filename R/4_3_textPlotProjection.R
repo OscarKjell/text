@@ -34,15 +34,13 @@
 #' for the individual words that is used for the plotting in the textProjectionPlot function.
 #' @examples
 #' # Data
-#' word_embeddings <- word_embeddings_4
-#' raw_data <- Language_based_assessment_data_8
 #' # Pre-processing data for plotting
 #' \dontrun{
 #' df_for_plotting <- textProjection(
-#'   words = raw_data$harmonywords,
-#'   word_embeddings = word_embeddings$harmonywords,
-#'   single_word_embeddings = word_embeddings$singlewords_we,
-#'   x = raw_data$hilstotal,
+#'   words = Language_based_assessment_data_8$harmonywords,
+#'   word_embeddings = word_embeddings_4$harmonywords,
+#'   single_word_embeddings = word_embeddings_4$singlewords_we,
+#'   x = Language_based_assessment_data_8$hilstotal,
 #'   split = "mean",
 #'   Npermutations = 10,
 #'   n_per_split = 1
@@ -143,7 +141,7 @@ textProjection <- function(words,
     x2 <- tibble::as_tibble(cbind(x1, word_embeddings))
 
 
-    # Preprocessing: Create Projection embedding ####
+    # Pre-processing: Create Projection embedding ####
 
     # 1. Responses are divided into two groups (G1 and G2 ####
     if (split == "mean" | split == "quartile") {
