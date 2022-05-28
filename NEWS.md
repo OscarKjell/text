@@ -3,7 +3,7 @@
 
 # text 0.9.90
 ### New feature
-- Visualization of download process of language models
+- Visualization of the download process of language models
 - Can set error level from python
 - `Logistic` regression is default for classification in textTrain.
 - Megatron language model functionality 

@@ -236,8 +236,6 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #'  be aggregated in the textEmbedLayerAggregation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
-#' @param print_python_warnings bolean; when TRUE any warnings from python environment are printed
-#'  to the console. (Either way warnings are saved in the comment of the embedding)
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
 #' (default the value stored for the associated model).
@@ -263,10 +261,9 @@ textEmbedLayersOutput <- function(x,
                                   layers = 11,
                                   return_tokens = TRUE,
                                   device = "cpu",
-                                  print_python_warnings = FALSE,
                                   tokenizer_parallelism = FALSE,
                                   model_max_length = NULL,
-                                  logging_level = "warning") {
+                                  logging_level = "error") {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
@@ -288,7 +285,6 @@ textEmbedLayersOutput <- function(x,
     for (i_variables in seq_len(length(data_character_variables))) {
 
       # Python file function to HuggingFace
-      textrpp_py_warnings_text_context <- reticulate::py_capture_output(
         hg_embeddings <- hgTransformerGetEmbedding(
           text_strings = x[[i_variables]],
           model = model,
@@ -298,9 +294,7 @@ textEmbedLayersOutput <- function(x,
           tokenizer_parallelism = tokenizer_parallelism,
           model_max_length = model_max_length,
           logging_level = logging_level
-        ),
-        type = "stderr"
-      )
+        )
 
       variable_x <- sortingLayers(x = hg_embeddings, layers = layers, return_tokens = return_tokens)
 
@@ -310,14 +304,10 @@ textEmbedLayersOutput <- function(x,
       # Adding informative comment help(comment)
       layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
 
-      if (!exists("textrpp_py_warnings_text_context")) {
-        textrpp_py_warnings_text_context <- "There were no python warnings."
-      }
-
       comment(sorted_layers_ALL_variables$context) <- paste("Information about the embeddings. textEmbedLayersOutput: ",
         "model:", model, "; ",
         "layers:", layers_string, ".",
-        "Warnings from python: ", textrpp_py_warnings_text_context,
+       # "Warnings from python: ", textrpp_py_warnings_text_context,
         collapse = "\n"
       )
     }
@@ -332,7 +322,7 @@ textEmbedLayersOutput <- function(x,
     list_words <- sapply(singlewords$words, list)
     names(list_words) <- NULL
 
-    textrpp_py_warnings_text_decontext <- reticulate::py_capture_output(
+
       hg_decontexts_embeddings <- hgTransformerGetEmbedding(
         text_strings = list_words,
         model = model,
@@ -343,7 +333,6 @@ textEmbedLayersOutput <- function(x,
         model_max_length = model_max_length,
         logging_level = logging_level
       )
-    )
 
     # Sort out layers as above
     sorted_layers_All_decontexts$decontext$single_we$single_we <- sortingLayers(
@@ -371,16 +360,6 @@ textEmbedLayersOutput <- function(x,
     ))
 
     sorted_layers_All_decontexts
-  }
-
-  if (print_python_warnings == TRUE) {
-    if (contexts == TRUE) {
-      cat(textrpp_py_warnings_text_context)
-    }
-
-    if (decontexts == TRUE) {
-      cat(textrpp_py_warnings_text_decontext)
-    }
   }
 
   # Combine previous list and word list
@@ -561,7 +540,6 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' @param decontext_tokens_deselect option to deselect embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the decontext embeddings.
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
-#' @param print_python_warnings bolean; when true any warnings from python environment are printed to the console.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
 #' (default the value stored for the associated model).
 #' @param logging_level Set the logging level. Default: "warning".
@@ -598,9 +576,8 @@ textEmbed <- function(x,
                       decontext_tokens_select = NULL,
                       decontext_tokens_deselect = NULL,
                       device = "cpu",
-                      print_python_warnings = FALSE,
                       model_max_length = NULL,
-                      logging_level = "warning") {
+                      logging_level = "error") {
   T1_textEmbed <- Sys.time()
 
   reticulate::source_python(system.file("python", "huggingface_Interface3.py", package = "text", mustWork = TRUE))
@@ -613,7 +590,6 @@ textEmbed <- function(x,
     layers = layers,
     return_tokens = FALSE,
     device = device,
-    print_python_warnings = print_python_warnings,
     model_max_length = model_max_length,
     logging_level = logging_level
   )
@@ -636,7 +612,6 @@ textEmbed <- function(x,
     tokens_select = decontext_tokens_select,
     tokens_deselect = decontext_tokens_deselect
   )
-
 
   # Combine the words for each decontextualized embedding
   decontextualised_embeddings_words <- dplyr::bind_cols(all_wanted_layers$decontext$single_words,

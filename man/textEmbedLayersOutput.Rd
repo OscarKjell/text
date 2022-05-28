@@ -12,10 +12,9 @@ textEmbedLayersOutput(
   layers = 11,
   return_tokens = TRUE,
   device = "cpu",
-  print_python_warnings = FALSE,
   tokenizer_parallelism = FALSE,
   model_max_length = NULL,
-  logging_level = "warning"
+  logging_level = "error"
 )
 }
 \arguments{
@@ -43,9 +42,6 @@ or all by setting this parameter to "all". Layer 0 is the decontextualized input
 \item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
-
-\item{print_python_warnings}{bolean; when TRUE any warnings from python environment are printed
-to the console. (Either way warnings are saved in the comment of the embedding)}
 
 \item{tokenizer_parallelism}{If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 
