@@ -164,7 +164,6 @@ fit_model_accuracy_rf <- function(object,
 
     # Recipe for multiple word embedding input (with possibility of separate PCAs)
   } else {
-
     xy_recipe <- rsample::analysis(object) %>%
       recipes::recipe(y ~ .) %>%
       # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
@@ -238,22 +237,24 @@ fit_model_accuracy_rf <- function(object,
   # Apply model on new data
   holdout_pred_class <-
     stats::predict(mod, xy_testing %>%
-                     dplyr::select(-y), type = c("class")) %>%
+      dplyr::select(-y), type = c("class")) %>%
     dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
   holdout_pred <-
     stats::predict(mod, xy_testing %>%
-                     dplyr::select(-y), type = c("prob")) %>%
+      dplyr::select(-y), type = c("prob")) %>%
     dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
   holdout_pred$.pred_class <- holdout_pred_class$.pred_class
   class <- colnames(holdout_pred[2])
 
-  eval_measure_val <- select_eval_measure_val(eval_measure = eval_measure,
-                                              holdout_pred = holdout_pred,
-                                              truth = y,
-                                              estimate = .pred_class,
-                                              class = class)
+  eval_measure_val <- select_eval_measure_val(
+    eval_measure = eval_measure,
+    holdout_pred = holdout_pred,
+    truth = y,
+    estimate = .pred_class,
+    class = class
+  )
 
   # Sort output of RMSE, predictions and truth (observed y)
   output <- list(
@@ -700,9 +701,11 @@ textTrainRandomForest <- function(x,
 
 
   # Function to get the lowest eval_measure_val library(tidyverse)
-  if (eval_measure %in% c("accuracy", "bal_accuracy", "sens", "spec",
-                          "precision", "kappa", "f_measure", "roc_auc",
-                          "rsq", "cor_test")) {
+  if (eval_measure %in% c(
+    "accuracy", "bal_accuracy", "sens", "spec",
+    "precision", "kappa", "f_measure", "roc_auc",
+    "rsq", "cor_test"
+  )) {
     bestParameters <- function(dat) dat[which.max(dat$eval_measure), ]
   } else if (eval_measure == "rmse") {
     bestParameters <- function(dat) dat[which.min(dat$eval_measure), ]
@@ -767,24 +770,26 @@ textTrainRandomForest <- function(x,
     }
 
     # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
-    final_recipe <- final_recipe %>% {
-      if (!is.na(preprocess_PCA[1])) {
-        if (preprocess_PCA[1] >= 1) {
-          recipes::step_pca(., recipes::all_predictors(),
-                            num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
-        } else if (preprocess_PCA[1] < 1) {
-          recipes::step_pca(., recipes::all_predictors(),
-                            threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+    final_recipe <- final_recipe %>%
+      {
+        if (!is.na(preprocess_PCA[1])) {
+          if (preprocess_PCA[1] >= 1) {
+            recipes::step_pca(., recipes::all_predictors(),
+              num_comp = statisticalMode(results_split_parameter$preprocess_PCA)
+            )
+          } else if (preprocess_PCA[1] < 1) {
+            recipes::step_pca(., recipes::all_predictors(),
+              threshold = statisticalMode(results_split_parameter$preprocess_PCA)
+            )
+          } else {
+            .
+          }
         } else {
           .
         }
-      } else {
-        .
       }
-    }
     ######### More than one word embeddings as input
   } else {
-
     final_recipe <- recipes::recipe(y ~ ., xy_all[0, ]) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
@@ -857,7 +862,6 @@ textTrainRandomForest <- function(x,
 
     with(
       env_final_model,
-
       final_predictive_model_spec <-
         parsnip::rand_forest(
           mode = mode_rf,
@@ -905,10 +909,14 @@ textTrainRandomForest <- function(x,
   mode_rf_description <- paste("mode =", mode_rf)
   trees_description <- paste("trees in final model =", statisticalMode(results_split_parameter$trees))
   trees_fold_description <- paste("trees in each fold =", deparse(results_split_parameter$trees))
-  preprocess_PCA_description <- paste("preprocess_PCA in final model = ",
-                                      statisticalMode(results_split_parameter$preprocess_PCA))
-  preprocess_PCA_fold_description <- paste("preprocess_PCA in each fold = ",
-                                           deparse(results_split_parameter$preprocess_PCA))
+  preprocess_PCA_description <- paste(
+    "preprocess_PCA in final model = ",
+    statisticalMode(results_split_parameter$preprocess_PCA)
+  )
+  preprocess_PCA_fold_description <- paste(
+    "preprocess_PCA in each fold = ",
+    deparse(results_split_parameter$preprocess_PCA)
+  )
   eval_measure <- paste("eval_measure = ", eval_measure)
 
   preprocess_step_center <- paste("preprocess_step_center_setting = ", deparse(preprocess_step_center))
@@ -935,9 +943,11 @@ textTrainRandomForest <- function(x,
   # Getting time and date
   T2_textTrainRandomForest <- Sys.time()
   Time_textTrainRandomForest <- T2_textTrainRandomForest - T1_textTrainRandomForest
-  Time_textTrainRandomForest <- sprintf("Duration to train text: %f %s",
-                                        Time_textTrainRandomForest,
-                                        units(Time_textTrainRandomForest))
+  Time_textTrainRandomForest <- sprintf(
+    "Duration to train text: %f %s",
+    Time_textTrainRandomForest,
+    units(Time_textTrainRandomForest)
+  )
   Date_textTrainRandomForest <- Sys.time()
   time_date <- paste(Time_textTrainRandomForest,
     "; Date created: ", Date_textTrainRandomForest,

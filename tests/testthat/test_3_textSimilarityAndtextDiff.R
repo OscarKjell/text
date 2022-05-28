@@ -33,7 +33,7 @@ test_that("textSimilarityMatrix produces euclidean similarity scores", {
   skip_on_cran()
 
   similarity_scores <- textSimilarityMatrix(
-    word_embeddings_4$harmonytexts[1:3,],
+    word_embeddings_4$harmonytexts[1:3, ],
     method = "euclidean"
   )
   expect_that(similarity_scores[[2]], is_a("numeric"))
@@ -48,7 +48,6 @@ test_that("textDistance produces distance scores", {
     word_embeddings_4$satisfactiontexts
   )
   expect_that(distance_scores, is_a("numeric"))
-
 })
 
 test_that("textSimilarityTest paired results in list with numeric output", {
@@ -98,13 +97,10 @@ test_that("textSimilarityTest unpaired euclidean results in list with numeric ou
   skip_on_cran()
 
   test_diff_results <- textSimilarityTest(word_embeddings_4$harmonytexts, word_embeddings_4$satisfactiontexts,
-                                          method = "unpaired", Npermutations = 100, N_cluster_nodes = 1,
-                                          similarity_method = "euclidean"
+    method = "unpaired", Npermutations = 100, N_cluster_nodes = 1,
+    similarity_method = "euclidean"
   )
 
   expect_that(test_diff_results, is_a("list"))
   expect_is(test_diff_results$p.value[[1]], "numeric")
 })
-
-
-

@@ -10,16 +10,16 @@ cosines <- function(x, y) {
   rowSums(x * y, na.rm = TRUE) / (sqrt(rowSums(x * x, na.rm = TRUE)) * sqrt(rowSums(y * y, na.rm = TRUE)))
 }
 
-#https://www.r-bloggers.com/2021/11/how-to-calculate-jaccard-similarity-in-r/
-#jaccard <- function(x, y) {
+# https://www.r-bloggers.com/2021/11/how-to-calculate-jaccard-similarity-in-r/
+# jaccard <- function(x, y) {
 #  intersection = length(intersect(x, y))
 #  union = length(x) + length(y) - intersection
 #  return (intersection/union)
-#}
+# }
 #
-#x <- word_embeddings_4$harmonytext
-#y <- word_embeddings_4$satisfactiontext
-#jaccard(as.vector(x[1,]), y[1,])
+# x <- word_embeddings_4$harmonytext
+# y <- word_embeddings_4$satisfactiontext
+# jaccard(as.vector(x[1,]), y[1,])
 
 #' Compute the semantic similarity between two text variables.
 #'
@@ -31,8 +31,10 @@ cosines <- function(x, y) {
 #' @return A vector comprising semantic similarity scores.
 #' @examples
 #' library(dplyr)
-#' similarity_scores <- textSimilarity(word_embeddings_4$harmonytext,
-#' word_embeddings_4$satisfactiontext)
+#' similarity_scores <- textSimilarity(
+#'   word_embeddings_4$harmonytext,
+#'   word_embeddings_4$satisfactiontext
+#' )
 #' comment(similarity_scores)
 #' @seealso see \code{\link{textDistance}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 #' @export
@@ -42,12 +44,14 @@ textSimilarity <- function(x, y, method = "cosine") {
   y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
 
   # Compute cosines
-  if(method == "cosine"){
+  if (method == "cosine") {
     ss <- cosines(x1, y1)
   }
 
-  if(method %in% c("euclidean", "maximum", "manhattan",
-                   "canberra", "binary", "minkowski")) {
+  if (method %in% c(
+    "euclidean", "maximum", "manhattan",
+    "canberra", "binary", "minkowski"
+  )) {
     ss <- 1 - textDistance(x1, y1, method = method)
   }
 
@@ -72,8 +76,10 @@ textSimilarity <- function(x, y, method = "cosine") {
 #' @return A vector comprising semantic distance scores.
 #' @examples
 #' library(dplyr)
-#' distance_scores <- textDistance(word_embeddings_4$harmonytext,
-#' word_embeddings_4$satisfactiontext)
+#' distance_scores <- textDistance(
+#'   word_embeddings_4$harmonytext,
+#'   word_embeddings_4$satisfactiontext
+#' )
 #' comment(distance_scores)
 #' @seealso see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 #' @export
@@ -85,8 +91,8 @@ textDistance <- function(x, y, method = "euclidean") {
   # Compute distance method = "euclidean"
   ss1 <- list()
   for (i in seq_len(nrow(x1))) {
-      dist_df <- dplyr::bind_rows(x1[i,],y1[i,])
-      ss1[i] <- stats::dist(dist_df, method = method)[1]
+    dist_df <- dplyr::bind_rows(x1[i, ], y1[i, ])
+    ss1[i] <- stats::dist(dist_df, method = method)[1]
   }
   ss <- unlist(ss1)
 
@@ -94,9 +100,9 @@ textDistance <- function(x, y, method = "euclidean") {
   embedding_descriptions_x <- comment(x)
   embedding_descriptions_y <- comment(y)
   comment(ss) <- paste("x embedding = ", embedding_descriptions_x,
-                       "y embedding = ", embedding_descriptions_y,
-                       method,
-                       sep = ".", collapse = " "
+    "y embedding = ", embedding_descriptions_y,
+    method,
+    sep = ".", collapse = " "
   )
   ss
 }
@@ -106,21 +112,21 @@ textDistance <- function(x, y, method = "euclidean") {
 #' @inheritParams textSimilarity
 #' @return A matrix of semantic similarity scores
 #' @examples
-#' similarity_scores <- textSimilarityMatrix(word_embeddings_4$harmonytext[1:3,])
+#' similarity_scores <- textSimilarityMatrix(word_embeddings_4$harmonytext[1:3, ])
 #' round(similarity_scores, 3)
 #' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 #' @export
 textSimilarityMatrix <- function(x,
-                                 method = "cosine"){
+                                 method = "cosine") {
+  ss_matrix <- matrix(nrow = nrow(x), ncol = nrow(x))
 
-  ss_matrix <- matrix(nrow=nrow(x), ncol=nrow(x))
-
-  for (i in seq_len(nrow(x))){
-
-    for (j in seq_len(nrow(x))){
-      ss_matrix[i,j] <- text::textSimilarity(x[i,],
-                                             x[j,],
-                                             method)
+  for (i in seq_len(nrow(x))) {
+    for (j in seq_len(nrow(x))) {
+      ss_matrix[i, j] <- text::textSimilarity(
+        x[i, ],
+        x[j, ],
+        method
+      )
     }
   }
   ss_matrix

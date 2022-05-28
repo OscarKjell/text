@@ -35,7 +35,6 @@ textCentrality <- function(words,
                            method = "cosine",
                            aggregation = "mean",
                            min_freq_words_test = 0) {
-
   textCentrality_description <- paste("words =", substitute(words),
     "word_embeddings =", comment(word_embeddings),
     "single_word_embeddings =", comment(single_word_embeddings),
@@ -221,8 +220,10 @@ textCentralityPlot <- function(word_data,
   mean_p_sd_x <- mean(word_data1[[eval(x_axes)]], na.rm = TRUE) + (sd(word_data1[[eval(x_axes)]], na.rm = TRUE) / 1)
 
   word_data1_middle_x <- word_data1 %>%
-    dplyr::filter(dplyr::between(word_data1[[eval(x_axes)]],
-                                 mean_m_sd_x, mean_p_sd_x)) %>%
+    dplyr::filter(dplyr::between(
+      word_data1[[eval(x_axes)]],
+      mean_m_sd_x, mean_p_sd_x
+    )) %>%
     dplyr::arrange(-n) %>%
     dplyr::slice(0:plot_n_words_middle)
 
@@ -251,7 +252,7 @@ textCentralityPlot <- function(word_data,
 
   if (is.null(scale_x_axes_lim)) {
     scale_x_axes_lim <- c(min(word_data1[[eval(x_axes)]], na.rm = T) -
-                            0.05, max(word_data1[[eval(x_axes)]], na.rm=T) + 0.05)
+      0.05, max(word_data1[[eval(x_axes)]], na.rm = T) + 0.05)
   }
   if (is.null(scale_y_axes_lim)) {
     scale_y_axes_lim <- c(-1, 1)
@@ -265,8 +266,9 @@ textCentralityPlot <- function(word_data,
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
     ggplot2::ggplot(data = word_data1_all, ggplot2::aes(!!rlang::sym(x_axes),
-                                                        !!rlang::sym(y_axes),
-                                                        label = words)) +
+      !!rlang::sym(y_axes),
+      label = words
+    )) +
     ggplot2::geom_point(
       data = word_data1_all,
       size = points_without_words_size,

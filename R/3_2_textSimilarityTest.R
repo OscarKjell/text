@@ -42,7 +42,7 @@ textSimilarityTest <- function(x,
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
   }
   alternative <- match.arg(alternative)
-  results_title <- paste(similarity_method, "_estimate", sep="")
+  results_title <- paste(similarity_method, "_estimate", sep = "")
   results <- tibble::tibble("title1" = NA, "title2" = NA)
   colnames(results) <- c(results_title, "p.value")
 
@@ -105,8 +105,9 @@ textSimilarityTest <- function(x,
 
   # Examine how the ordered data's mean of the similarity scores compare with the random data's, null comparison distribution
   p_value <- p_value_comparing_with_Null(NULLresults,
-                                         Observedresult = results[[1]],
-                                         alternative = alternative)
+    Observedresult = results[[1]],
+    alternative = alternative
+  )
   results["p.value"] <- p_value
   results <- as.list(results)
 
@@ -125,8 +126,10 @@ textSimilarityTest <- function(x,
   # Time
   T2_textSimilarityTest <- Sys.time()
   Time_textSimilarityTest <- T2_textSimilarityTest - T1_textSimilarityTest
-  Time_textSimilarityTest <- sprintf("Duration to run the test: %f %s", Time_textSimilarityTest,
-                                     units(Time_textSimilarityTest))
+  Time_textSimilarityTest <- sprintf(
+    "Duration to run the test: %f %s", Time_textSimilarityTest,
+    units(Time_textSimilarityTest)
+  )
   Date_textSimilarityTest <- Sys.time()
   time_date <- paste(Time_textSimilarityTest,
     "; Date created: ", Date_textSimilarityTest,
@@ -135,10 +138,10 @@ textSimilarityTest <- function(x,
   )
 
   test_description <- paste("permutations = ", Npermutations,
-                            "similarity_method = ", similarity_method,
-                            "method = ", method,
-                            "alternative = ", alternative,
-                            collapse = " "
+    "similarity_method = ", similarity_method,
+    "method = ", method,
+    "alternative = ", alternative,
+    collapse = " "
   )
 
   descriptions <- c(

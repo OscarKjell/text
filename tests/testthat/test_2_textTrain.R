@@ -360,7 +360,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     penalty = c(2),
     mixture = c(0),
     force_train_method = "automatic",
-   # model = "logistic",
+    # model = "logistic",
     eval_measure = "default",
     save_output = "only_results_predictions",
     multi_cores = "multi_cores_sys_default"
