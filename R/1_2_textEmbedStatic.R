@@ -2,7 +2,7 @@
 #' semanticrepresentation
 #' Function to apply an aggregated semantic representation for ALL words in a "CELL";
 #' and if there are no words return a vector with NAs. The function is using above
-#'applysemrep function.
+#' applysemrep function.
 #' @param x words
 #' @param single_word_embeddings2 used to get number of dimensions in embedding/space.
 #' @param aggregate Method to aggregate the word embeddings (see mean, min, max and concatenate).
@@ -25,11 +25,10 @@ semanticrepresentation <- function(x, single_word_embeddings2, aggregate = "min"
     x1 <- map(x, applysemrep, single_word_embeddings1 = single_word_embeddings2) # , ...
     x2 <- bind_rows(x1)
     # If more than one semrep; Sum all the semantic representations; if not return it as is,
-    #so that NAs etc is returned/kept
+    # so that NAs etc is returned/kept
     x2 <- textEmbeddingAggregation(x2, aggregation = aggregate)
     # If all values are 0 they should be NA instead; otherwise return the semantic representation.
     if (all(x2 == 0 | x2 == Inf | x2 == -Inf | is.nan(x2)) == TRUE) {
-
       dim_length <- length(single_word_embeddings2 %>%
         dplyr::select(dplyr::starts_with("Dim")))
 
