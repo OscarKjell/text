@@ -59,19 +59,20 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     }
 
     # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
-    xy_recipe <- xy_recipe %>% {
-      if (!is.na(preprocess_PCA)) {
-        if (preprocess_PCA >= 1) {
-          recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
-        } else if (preprocess_PCA < 1) {
-          recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+    xy_recipe <- xy_recipe %>%
+      {
+        if (!is.na(preprocess_PCA)) {
+          if (preprocess_PCA >= 1) {
+            recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
+          } else if (preprocess_PCA < 1) {
+            recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
+          } else {
+            .
+          }
         } else {
           .
         }
-      } else {
-        .
       }
-    }
     xy_recipe_prep <- recipes::prep(xy_recipe)
 
 
@@ -139,12 +140,17 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
   # Ridge and/or Lasso
   if (nr_predictors > 1) {
     # Create and fit model
-    mod_spec <- {
+    mod_spec <-
+      {
         if (model == "regression") {
           parsnip::linear_reg(penalty = penalty, mixture = mixture)
-        } else if (model == "logistic") parsnip::logistic_reg(mode = "classification",
-                                                              penalty = penalty,
-                                                              mixture = mixture)
+        } else if (model == "logistic") {
+          parsnip::logistic_reg(
+            mode = "classification",
+            penalty = penalty,
+            mixture = mixture
+          )
+        }
       } %>%
       parsnip::set_engine("glmnet")
 
@@ -189,11 +195,15 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
         dplyr::select(y, id_nr))
 
     # Get RMSE; eval_measure = "rmse" library(tidyverse)
-    eval_result <- select_eval_measure_val(eval_measure, holdout_pred = holdout_pred,
-                                           truth = y, estimate = .pred)$.estimate
+    eval_result <- select_eval_measure_val(eval_measure,
+      holdout_pred = holdout_pred,
+      truth = y, estimate = .pred
+    )$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
-    output <- list(list(eval_result), list(holdout_pred$.pred), list(holdout_pred$y), list(preprocess_PCA),
-                   list(holdout_pred$id_nr))
+    output <- list(
+      list(eval_result), list(holdout_pred$.pred), list(holdout_pred$y), list(preprocess_PCA),
+      list(holdout_pred$id_nr)
+    )
     names(output) <- c("eval_result", "predictions", "y", "preprocess_PCA", "id_nr")
   } else if (model == "logistic") {
     holdout_pred_class <-
@@ -210,8 +220,10 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     class <- colnames(holdout_pred[2])
 
     # Get RMSE; eval_measure = "rmse"
-    eval_result <- select_eval_measure_val(eval_measure, holdout_pred = holdout_pred,
-                                           truth = y, estimate = .pred_class)$.estimate
+    eval_result <- select_eval_measure_val(eval_measure,
+      holdout_pred = holdout_pred,
+      truth = y, estimate = .pred_class
+    )$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
     output <- list(
       list(eval_result),
@@ -675,9 +687,11 @@ textTrainRegression <- function(x,
   }
 
   # Function to get the lowest eval_measure_val
-  if (eval_measure %in% c("accuracy", "bal_accuracy", "sens", "spec",
-                          "precision", "kappa", "f_measure", "roc_auc",
-                          "rsq", "cor_test")) {
+  if (eval_measure %in% c(
+    "accuracy", "bal_accuracy", "sens", "spec",
+    "precision", "kappa", "f_measure", "roc_auc",
+    "rsq", "cor_test"
+  )) {
     bestParameters <- function(dat) dat[which.max(dat$eval_result), ]
   } else if (eval_measure == "rmse") {
     bestParameters <- function(dat) dat[which.min(dat$eval_result), ]
@@ -781,21 +795,24 @@ textTrainRegression <- function(x,
       final_recipe <- recipes::step_scale(final_recipe, recipes::all_predictors())
     }
     # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
-    final_recipe <- final_recipe %>% {
-      if (!is.na(preprocess_PCA[1])) {
-        if (preprocess_PCA[1] >= 1) {
-          recipes::step_pca(., recipes::all_predictors(),
-                            num_comp = statisticalMode(results_split_parameter$preprocess_PCA))
-        } else if (preprocess_PCA[1] < 1) {
-          recipes::step_pca(., recipes::all_predictors(),
-                            threshold = statisticalMode(results_split_parameter$preprocess_PCA))
+    final_recipe <- final_recipe %>%
+      {
+        if (!is.na(preprocess_PCA[1])) {
+          if (preprocess_PCA[1] >= 1) {
+            recipes::step_pca(., recipes::all_predictors(),
+              num_comp = statisticalMode(results_split_parameter$preprocess_PCA)
+            )
+          } else if (preprocess_PCA[1] < 1) {
+            recipes::step_pca(., recipes::all_predictors(),
+              threshold = statisticalMode(results_split_parameter$preprocess_PCA)
+            )
+          } else {
+            .
+          }
         } else {
           .
         }
-      } else {
-        .
       }
-    }
 
     ######### More than one word embeddings as input
   } else {
@@ -880,12 +897,17 @@ textTrainRegression <- function(x,
       env_final_model,
       if (nr_predictors > 3) {
         # Create and fit model; penalty=NULL mixture = NULL
-        final_predictive_model_spec <- {
+        final_predictive_model_spec <-
+          {
             if (model == "regression") {
               parsnip::linear_reg(penalty = penalty_mode, mixture = mixture_mode)
-            } else if (model == "logistic") parsnip::logistic_reg(mode = "classification",
-                                                                  penalty = penalty_mode,
-                                                                  mixture = mixture_mode)
+            } else if (model == "logistic") {
+              parsnip::logistic_reg(
+                mode = "classification",
+                penalty = penalty_mode,
+                mixture = mixture_mode
+              )
+            }
           } %>%
           parsnip::set_engine("glmnet")
 
@@ -947,15 +969,23 @@ textTrainRegression <- function(x,
   mixture_description <- paste("mixture in final model = ", deparse(statisticalMode(results_split_parameter$mixture)))
   mixture_fold_description <- paste("mixture in each fold = ", deparse(results_split_parameter$mixture))
 
-  preprocess_PCA_description <- paste("preprocess_PCA in final model = ",
-                                      deparse(statisticalMode(results_split_parameter$preprocess_PCA)))
-  preprocess_PCA_fold_description <- paste("preprocess_PCA in each fold = ",
-                                           deparse(results_split_parameter$preprocess_PCA))
+  preprocess_PCA_description <- paste(
+    "preprocess_PCA in final model = ",
+    deparse(statisticalMode(results_split_parameter$preprocess_PCA))
+  )
+  preprocess_PCA_fold_description <- paste(
+    "preprocess_PCA in each fold = ",
+    deparse(results_split_parameter$preprocess_PCA)
+  )
 
-  first_n_predictors_description <- paste("first_n_predictors in final model = ",
-                                          deparse(statisticalMode(results_split_parameter$first_n_predictors)))
-  first_n_predictors_fold_description <- paste("first_n_predictors in each fold = ",
-                                               deparse(results_split_parameter$first_n_predictors))
+  first_n_predictors_description <- paste(
+    "first_n_predictors in final model = ",
+    deparse(statisticalMode(results_split_parameter$first_n_predictors))
+  )
+  first_n_predictors_fold_description <- paste(
+    "first_n_predictors in each fold = ",
+    deparse(results_split_parameter$first_n_predictors)
+  )
 
   preprocess_step_center <- paste("preprocess_step_center_setting = ", deparse(preprocess_step_center))
   preprocess_step_scale <- paste("preprocess_step_scale_setting = ", deparse(preprocess_step_scale))
@@ -965,9 +995,11 @@ textTrainRegression <- function(x,
   # Getting time and date
   T2_textTrainRegression <- Sys.time()
   Time_textTrainRegression <- T2_textTrainRegression - T1_textTrainRegression
-  Time_textTrainRegression <- sprintf("Duration to train text: %f %s",
-                                      Time_textTrainRegression,
-                                      units(Time_textTrainRegression))
+  Time_textTrainRegression <- sprintf(
+    "Duration to train text: %f %s",
+    Time_textTrainRegression,
+    units(Time_textTrainRegression)
+  )
   Date_textTrainRegression <- Sys.time()
   time_date <- paste(Time_textTrainRegression,
     "; Date created: ", Date_textTrainRegression,
