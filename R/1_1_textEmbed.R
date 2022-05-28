@@ -285,16 +285,16 @@ textEmbedLayersOutput <- function(x,
     for (i_variables in seq_len(length(data_character_variables))) {
 
       # Python file function to HuggingFace
-        hg_embeddings <- hgTransformerGetEmbedding(
-          text_strings = x[[i_variables]],
-          model = model,
-          layers = layers,
-          return_tokens = return_tokens,
-          device = device,
-          tokenizer_parallelism = tokenizer_parallelism,
-          model_max_length = model_max_length,
-          logging_level = logging_level
-        )
+      hg_embeddings <- hgTransformerGetEmbedding(
+        text_strings = x[[i_variables]],
+        model = model,
+        layers = layers,
+        return_tokens = return_tokens,
+        device = device,
+        tokenizer_parallelism = tokenizer_parallelism,
+        model_max_length = model_max_length,
+        logging_level = logging_level
+      )
 
       variable_x <- sortingLayers(x = hg_embeddings, layers = layers, return_tokens = return_tokens)
 
@@ -307,7 +307,7 @@ textEmbedLayersOutput <- function(x,
       comment(sorted_layers_ALL_variables$context) <- paste("Information about the embeddings. textEmbedLayersOutput: ",
         "model:", model, "; ",
         "layers:", layers_string, ".",
-       # "Warnings from python: ", textrpp_py_warnings_text_context,
+        # "Warnings from python: ", textrpp_py_warnings_text_context,
         collapse = "\n"
       )
     }
@@ -323,16 +323,16 @@ textEmbedLayersOutput <- function(x,
     names(list_words) <- NULL
 
 
-      hg_decontexts_embeddings <- hgTransformerGetEmbedding(
-        text_strings = list_words,
-        model = model,
-        layers = layers,
-        return_tokens = return_tokens,
-        device = device,
-        tokenizer_parallelism = tokenizer_parallelism,
-        model_max_length = model_max_length,
-        logging_level = logging_level
-      )
+    hg_decontexts_embeddings <- hgTransformerGetEmbedding(
+      text_strings = list_words,
+      model = model,
+      layers = layers,
+      return_tokens = return_tokens,
+      device = device,
+      tokenizer_parallelism = tokenizer_parallelism,
+      model_max_length = model_max_length,
+      logging_level = logging_level
+    )
 
     # Sort out layers as above
     sorted_layers_All_decontexts$decontext$single_we$single_we <- sortingLayers(
@@ -470,8 +470,9 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 
     # Aggregate (Remove all tokens and layers; but create a cell with the information abt layers, aggregation)
     selected_layers_tokens_aggregated <- lapply(selected_layers_aggregated,
-                                                textEmbeddingAggregation,
-                                                aggregation = aggregate_tokens)
+      textEmbeddingAggregation,
+      aggregation = aggregate_tokens
+    )
 
     # Sort output
     selected_layers_aggregated_tibble[[variable_list_i]] <- dplyr::bind_rows(selected_layers_tokens_aggregated)
@@ -614,8 +615,10 @@ textEmbed <- function(x,
   )
 
   # Combine the words for each decontextualized embedding
-  decontextualised_embeddings_words <- dplyr::bind_cols(all_wanted_layers$decontext$single_words,
-                                                        decontextualised_embeddings)
+  decontextualised_embeddings_words <- dplyr::bind_cols(
+    all_wanted_layers$decontext$single_words,
+    decontextualised_embeddings
+  )
 
   if (decontexts == TRUE) {
     comment(decontextualised_embeddings_words) <- comment(decontextualised_embeddings[[1]])
@@ -636,4 +639,3 @@ textEmbed <- function(x,
   )
   all_embeddings
 }
-
