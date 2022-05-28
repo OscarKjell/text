@@ -196,8 +196,7 @@ process_textrpp_installation_conda <- function(conda,
       paste(rpp_version, collapse = ", "), "will be installed.  "
     )
     # python <- conda_env$python
-  }
-  else {
+  } else {
     cat(
       "A new conda environment", paste0('"', envname, '"'), "will be created and \npython required packages:",
       paste(rpp_version, collapse = ", "), "will be installed.  "
