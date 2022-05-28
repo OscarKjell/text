@@ -201,7 +201,7 @@ sort_classification_output_list <- function(output, save_output, descriptions, t
   # Get and sort the Prediction scores; names(output$harmonywords_factors2)
   if (save_output == "all" | save_output == "only_results_predictions") {
     if (train_method == "random_forest") output_predscore <- lapply(output, "[[", "truth_predictions")
-    if (train_method == "logistic")      output_predscore <- lapply(output, "[[", "predictions")
+    if (train_method == "logistic") output_predscore <- lapply(output, "[[", "predictions")
     # Append dataframe name to each of its columns within a list of dataframes
     output_predscore <- purrr::imap(output_predscore, ~ dplyr::rename_with(.x, function(x) paste(.y, x, sep = "_")))
 
@@ -263,7 +263,7 @@ textTrainLists <- function(x,
                            force_train_method = "automatic",
                            save_output = "all",
                            method_cor = "pearson",
-                          # model = "regression",
+                           # model = "regression",
                            eval_measure = "rmse",
                            p_adjust_method = "holm",
                            ...) {
@@ -338,27 +338,35 @@ textTrainLists <- function(x,
 
     if (train_method == "regression") {
       results <- sort_regression_output_list(output,
-                                             method_cor = method_cor,
-                                             save_output = save_output,
-                                             descriptions = descriptions)
+        method_cor = method_cor,
+        save_output = save_output,
+        descriptions = descriptions
+      )
     } else if (train_method == "logistic") {
-      results <- sort_classification_output_list(output = output,
-                                                 save_output = save_output,
-                                                 descriptions = descriptions,
-                                                 train_method = train_method)
+      results <- sort_classification_output_list(
+        output = output,
+        save_output = save_output,
+        descriptions = descriptions,
+        train_method = train_method
+      )
     }
   } else if (train_method == "random_forest") {
 
     # Apply textTrainRandomForest function between each list element and sort outcome.
-    output <- mapply(textTrainRandomForest, x, y1, MoreArgs = list(
-      save_output = save_output,
-      ...),
-      SIMPLIFY = FALSE)
+    output <- mapply(textTrainRandomForest, x, y1,
+      MoreArgs = list(
+        save_output = save_output,
+        ...
+      ),
+      SIMPLIFY = FALSE
+    )
 
-    results <- sort_classification_output_list(output = output,
-                                               save_output = save_output,
-                                               descriptions = descriptions,
-                                               train_method = train_method)
+    results <- sort_classification_output_list(
+      output = output,
+      save_output = save_output,
+      descriptions = descriptions,
+      train_method = train_method
+    )
     results$results$p_value_corrected <- stats::p.adjust(as.numeric(results$results$p_value), method = p_adjust_method)
     # Combine output
     #
@@ -417,7 +425,9 @@ textPredict <- function(model_info,
     # handled separately in the PCAs
     for (i in 1:Nword_variables) {
       colnames(new_datalist[[i]]) <- paste("Dim_we", i, ".", names(new_datalist[i]),
-                                           colnames(new_datalist[[i]]), sep = "")
+        colnames(new_datalist[[i]]),
+        sep = ""
+      )
     }
 
     # Make vector with each index so that we can allocate them separately for the PCAs
