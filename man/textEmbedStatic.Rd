@@ -10,7 +10,8 @@ textEmbedStatic(df, space, tk_df = "null", aggregate = "mean")
 \arguments{
 \item{df}{dataframe that at least contains one character column.}
 
-\item{space}{decontextualized/static space (from textSpace, which is not included in the current text package).}
+\item{space}{decontextualized/static space with a column called "words" and the semantic
+representations are in columns called Dim1, Dim2 (or V1, V2, ...) and so on (from textSpace, which is not included in the current text package).}
 
 \item{tk_df}{default "null"; option to use either the "tk" of "df" space (if using textSpace, which has
 not been implemented yet).}
