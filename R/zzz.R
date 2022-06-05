@@ -6,10 +6,12 @@
             system is not 64-bit.")
   }
 
-  packageStartupMessage(colourise(
-    "This is text (version 0.9.90). \n",
+  packageStartupMessage(
+    colourise(
+    paste("This is text (version ",installed.packages()['text', 'Version'], "). \n", sep=""),
     fg = "blue", bg = NULL
-  ), colourise("Text is new and still rapidly improving.
+  ),
+  colourise("Text is new and still rapidly improving.
                \nNewer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art.
                \nPlease send us feedback based on your experience.",
     fg = "green", bg = NULL
