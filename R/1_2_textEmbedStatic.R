@@ -76,7 +76,8 @@ applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
 #' from Latent Semantic Analyses) to all character variables
 #'
 #' @param df dataframe that at least contains one character column.
-#' @param space decontextualized/static space (from textSpace, which is not included in the current text package).
+#' @param space decontextualized/static space with a column called "words" and the semantic
+#' representations are in columns called Dim1, Dim2 (or V1, V2, ...) and so on (from textSpace, which is not included in the current text package).
 #' @param tk_df default "null"; option to use either the "tk" of "df" space (if using textSpace, which has
 #' not been implemented yet).
 #' @param aggregate method to aggregate semantic representation when their are more than a single word.
