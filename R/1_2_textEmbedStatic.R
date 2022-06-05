@@ -92,8 +92,12 @@ textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean") {
 
   # Select the tk or dk matrrix derived from the lsa (svd)
   if (tk_df == "tk") {
+    # If variable names start with V (as in V1) rename to Dim1
+    colnames(space$tk) <- sub("V", "Dim", colnames(space$tk))
     space <- tibble::as_tibble(space$tk, .name_repair = "check_unique")
   } else if (tk_df == "df") {
+    # If variable names start with V (as in V1) rename to Dim1
+    colnames(space$df) <- sub("V", "Dim", colnames(space$df))
     space <- tibble::as_tibble(space$df, .name_repair = "check_unique")
   } else if (tk_df == "null") {
     space
