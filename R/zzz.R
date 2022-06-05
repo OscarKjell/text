@@ -1,4 +1,6 @@
 
+#' @importFrom utils packageVersion
+#' @noRd
 .onAttach <- function(libname, pkgname) {
   if (!grepl(x = R.Version()$arch, pattern = "64")) {
     warning("The text package requires running R on a 64-bit systems
@@ -6,9 +8,21 @@
             system is not 64-bit.")
   }
 
+  text_version_nr <-  tryCatch(
+    {
+      text_version_nr1 <- paste(" (version ", packageVersion("text"), ") ", sep="")
+    },
+    error = function(e)
+    {
+      text_version_nr1 <-  ""
+    }
+  )
+
   packageStartupMessage(
     colourise(
-    paste("This is text (version ",installed.packages()['text', 'Version'], "). \n", sep=""),
+    paste("This is text",
+          text_version_nr,
+          ".\n", sep=""),
     fg = "blue", bg = NULL
   ),
   colourise("Text is new and still rapidly improving.

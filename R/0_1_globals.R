@@ -2,6 +2,7 @@
 # Global settings (these avoids the note (warning) "no visible binding for global variable ‘XXX’
 # https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-variable-note/28887
 utils::globalVariables(c(
+  "text_version_nr",
   "layer_index", "token_index",
   "SS", "p_values.x", "p_values.y", "words", "n.x", "n.y",
   "addEqualNrNArows", "applysemrep", "single_word_embeddings_df", "Ndim",
