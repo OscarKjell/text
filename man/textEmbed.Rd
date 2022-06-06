@@ -9,6 +9,7 @@ textEmbed(
   model = "bert-base-uncased",
   layers = 11:12,
   contexts = TRUE,
+  single_context_embeddings = FALSE,
   context_layers = layers,
   context_aggregation_layers = "concatenate",
   context_aggregation_tokens = "mean",
@@ -42,6 +43,8 @@ These layers can then be aggregated in the textEmbedLayerAggregation function. I
 
 \item{contexts}{Provide word embeddings based on word contexts
 (standard method; default = TRUE).}
+
+\item{single_context_embeddings}{Aggregated word embeddings for each token in the dataset}
 
 \item{context_layers}{Specify the layers that should be aggregated (default the number of layers extracted above).
 Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)

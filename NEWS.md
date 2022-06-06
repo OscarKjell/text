@@ -1,5 +1,15 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 0.9.91
+
+### New feature
+- text version is printed from DESCRIPTION-file (rather than manual update)
+- `textPredict` related functions are located in its own file
+- textEmbed comment includes text version number
+- `textEmbedLayersOutput` and `textEmbed` can provide `single_context_embeddings`
+
+### Fixes
+- Removed `return_tokens` option from textEmbed (since it is only relevant for textEmbedLayersOutput)
 
 # text 0.9.90
 ### New feature

@@ -158,7 +158,8 @@ test_that("textEmbed", {
 
   embeddings_decontextsT <- textEmbed(x,
     model = "bert-base-uncased",
-    decontexts = TRUE
+    decontexts = TRUE,
+    single_context_embeddings = FALSE
   )
 
   embeddings_decontextsF <- textEmbed(x,

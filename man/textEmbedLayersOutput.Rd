@@ -7,6 +7,7 @@
 textEmbedLayersOutput(
   x,
   contexts = TRUE,
+  single_context_embeddings = FALSE,
   decontexts = TRUE,
   model = "bert-base-uncased",
   layers = 11,
@@ -22,6 +23,8 @@ textEmbedLayersOutput(
 
 \item{contexts}{Provide word embeddings based on word contexts
 (standard method; default = TRUE).}
+
+\item{single_context_embeddings}{Aggregated word embeddings for each token in the dataset}
 
 \item{decontexts}{Provide word embeddings of single words as input
 (embeddings used for plotting; default = TRUE).}
