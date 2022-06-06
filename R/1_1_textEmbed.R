@@ -216,6 +216,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
   u[grep(pattern, names(u))]
 }
 
+# library(tidyverse)
 #x = c("hello you", "I'm you")
 #contexts = TRUE
 #single_context_embeddings = TRUE
@@ -337,8 +338,9 @@ textEmbedLayersOutput <- function(x,
     individual_tokens$tokens <- list()
 
     # 1. Group individual tokens help(bind_rows)
-    individual_tokens$single_we$context <- dplyr::bind_rows(sorted_layers_ALL_variables$context) %>%
-       dplyr::group_split(tokens)
+    i_we <- suppressWarnings(dplyr::bind_rows(sorted_layers_ALL_variables$context))
+    i_we2 <- dplyr::group_split(i_we, tokens)
+    individual_tokens$single_we$context <- i_we2
 
     # Specify which token layers go together and ensure that the token_id starts with 1
     # (for textLayersAggregation to know which layers are linked);
@@ -692,7 +694,6 @@ textEmbed <- function(x,
     decontexts = decontexts,
     model = model,
     layers = layers,
-    return_tokens = return_tokens,
     device = device,
     model_max_length = model_max_length,
     logging_level = logging_level
