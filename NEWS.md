@@ -5,11 +5,13 @@
 ### New feature
 - text version is printed from DESCRIPTION-file (rather than manual update)
 - `textPredict` related functions are located in its own file
-- textEmbed comment includes text version number
+- textEmbed comment includes `text_version` number
 - `textEmbedLayersOutput` and `textEmbed` can provide `single_context_embeddings`
 
 ### Fixes
 - Removed `return_tokens` option from textEmbed (since it is only relevant for textEmbedLayersOutput)
+- removed the empty list `$single_we` when `decontexts` is `FALSE`.
+
 
 # text 0.9.90
 ### New feature

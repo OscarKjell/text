@@ -162,12 +162,19 @@ test_that("textEmbed", {
     single_context_embeddings = FALSE
   )
 
+  single_context_embeddingsT <- textEmbed(x,
+                                      model = "bert-base-uncased",
+                                      decontexts = FALSE,
+                                      single_context_embeddings = TRUE
+  )
+
   embeddings_decontextsF <- textEmbed(x,
     model = "bert-base-uncased",
     decontexts = FALSE
   )
 
   expect_that(embeddings_decontextsT, is_a("list"))
+  expect_that(single_context_embeddingsT, is_a("list"))
   expect_that(embeddings_decontextsF, is_a("list"))
 
 

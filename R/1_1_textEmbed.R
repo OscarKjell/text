@@ -699,7 +699,6 @@ textEmbed <- function(x,
     logging_level = logging_level
   )
 
-
   # Aggregate context layers
   contextualised_embeddings <- textEmbedLayerAggregation(
     word_embeddings_layers = all_wanted_layers$context,
@@ -711,22 +710,24 @@ textEmbed <- function(x,
 
   # Aggregate Single words embeddings
   # DEcontext layers (in case they should be added differently from context) decontext_layers = 11
-  if (single_context_embeddings){
-    individual_word_embeddings_layers <- all_wanted_layers$single_we
-    individual_words <- all_wanted_layers$tokens
-  }
-  if (decontexts) {
-    individual_word_embeddings_layers <- all_wanted_layers$decontext$single_we
-    individual_words <- all_wanted_layers$decontext$single_words
+  if (decontexts == TRUE | single_context_embeddings == TRUE) {
+    if (single_context_embeddings){
+      individual_word_embeddings_layers <- all_wanted_layers$single_we
+      individual_words <- all_wanted_layers$tokens
   }
 
-  individual_word_embeddings <- textEmbedLayerAggregation(
-    word_embeddings_layers = individual_word_embeddings_layers, # all_wanted_layers$decontext$single_we,
-    layers = decontext_layers,
-    aggregate_layers = decontext_aggregation_layers,
-    aggregate_tokens = decontext_aggregation_tokens,
-    tokens_select = decontext_tokens_select,
-    tokens_deselect = decontext_tokens_deselect
+    if (decontexts) {
+      individual_word_embeddings_layers <- all_wanted_layers$decontext$single_we
+      individual_words <- all_wanted_layers$decontext$single_words
+  }
+
+    individual_word_embeddings <- textEmbedLayerAggregation(
+      word_embeddings_layers = individual_word_embeddings_layers, # all_wanted_layers$decontext$single_we,
+      layers = decontext_layers,
+      aggregate_layers = decontext_aggregation_layers,
+      aggregate_tokens = decontext_aggregation_tokens,
+      tokens_select = decontext_tokens_select,
+      tokens_deselect = decontext_tokens_deselect
   )
 
   # Combine the words for each decontextualized embedding
@@ -735,8 +736,7 @@ textEmbed <- function(x,
     individual_word_embeddings
   )
 
-  if (decontexts == TRUE | single_context_embeddings == TRUE) {
-    comment(individual_word_embeddings_words) <- comment(individual_word_embeddings[[1]])
+  comment(individual_word_embeddings_words) <- comment(individual_word_embeddings[[1]])
   }
 
   T2_textEmbed <- Sys.time()
@@ -745,10 +745,14 @@ textEmbed <- function(x,
   Date_textEmbed <- Sys.time()
   # Adding embeddings to one list
   all_embeddings <- contextualised_embeddings
-  all_embeddings$singlewords_we <- individual_word_embeddings_words
+
+  if (decontexts == TRUE | single_context_embeddings == TRUE) {
+    all_embeddings$singlewords_we <- individual_word_embeddings_words
+  }
 
   comment(all_embeddings) <- paste(Time_textEmbed,
     "; Date created: ", Date_textEmbed,
+    "; text_version: ", packageVersion("text"), ".",
     sep = "",
     collapse = " "
   )
