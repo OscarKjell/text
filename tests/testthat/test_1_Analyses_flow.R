@@ -22,6 +22,9 @@ test_that("Testing textEmbed as well as train", {
     decontext_layers = c(11),
   )
 
+  expect_equal(harmony_word_embeddings$satisfactiontexts$Dim1[1], 0.3403273)
+  expect_equal(harmony_word_embeddings$satisfactiontexts$Dim1[2], 0.1531016, tolerance = 0.0000001)
+
   # help(textProjection)
   proj <- textProjection(
     words = Language_based_assessment_data_8[1],
@@ -40,6 +43,7 @@ test_that("Testing textEmbed as well as train", {
   )
 
   expect_that(proj[[1]][[1]][[1]][[1]], is_a("numeric"))
+  expect_equal(proj[[1]][[1]][[1]][[1]], -0.404467, tolerance = 0.0000001)
 
   # help(textProjectionPlot)
   plot_proj <- textProjectionPlot(proj,
@@ -48,6 +52,7 @@ test_that("Testing textEmbed as well as train", {
   )
 
   expect_that(plot_proj$processed_word_data$n[1], is_a("numeric"))
+  expect_equal(plot_proj$processed_word_data$n[1], 1)
 
   # help(textWordPrediction)
   #  pred_word <- textWordPrediction(words = Language_based_assessment_data_8[1],
@@ -77,6 +82,7 @@ test_that("Testing textEmbed as well as train", {
 
   expect_that(text_train_results$results$estimate[1], is_a("numeric"))
   expect_gt(text_train_results$results$estimate[1], 0.3)
+  expect_equal(text_train_results$results$estimate[[1]], 0.5393638, tolerance = 0.0000001)
 
 
   # Predict
@@ -86,4 +92,5 @@ test_that("Testing textEmbed as well as train", {
   )
 
   expect_that(hils_predicted_scores1$.pred[1], is_a("numeric"))
+  expect_equal(hils_predicted_scores1$.pred[1], 15.58392, tolerance = 0.000001)
 })
