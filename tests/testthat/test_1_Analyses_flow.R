@@ -23,7 +23,7 @@ test_that("Testing textEmbed as well as train", {
   )
 
   expect_equal(harmony_word_embeddings$satisfactiontexts$Dim1[1], 0.3403273)
-  expect_equal(harmony_word_embeddings$satisfactiontexts$Dim1[2], 0.1531016, tolerance = 0.0000001)
+  expect_equal(harmony_word_embeddings$satisfactiontexts$Dim1[2], 0.1531016, tolerance = 0.00001)
 
   # help(textProjection)
   proj <- textProjection(
@@ -63,7 +63,6 @@ test_that("Testing textEmbed as well as train", {
   #                        explore_words = c("happy"),
   #                        y_axes = FALSE)
   #
-
 
 
   text_train_results <- textTrain(

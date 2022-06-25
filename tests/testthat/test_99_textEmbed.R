@@ -22,15 +22,16 @@ skip_if_no_torch <- function() {
 test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
   skip_on_cran()
 
-  aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
+  aggregated_embeddings1 <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 0:1,
     aggregate_layers = "mean",
     aggregate_tokens = "normalize"
   )
 
-  expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")
-  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
-  length_dims_mean <- length(aggregated_embeddings[[1]])
+  expect_is(aggregated_embeddings1$harmonywords[[1]][1], "numeric")
+  expect_true(tibble::is_tibble(aggregated_embeddings1$harmonywords))
+  expect_equal(aggregated_embeddings1$harmonywords[1][[1]][1], 0.007959422, tolerance = 0.0001)
+  length_dims_mean <- length(aggregated_embeddings1[[1]])
 
   aggregated_embeddings_con <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 0:1,
@@ -39,6 +40,7 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
   )
   length_dims_con <- length(aggregated_embeddings_con[[1]])
   expect_true(2 * length_dims_mean == length_dims_con)
+  expect_equal(aggregated_embeddings_con$harmonywords[1][[1]][1], -0.07345252, tolerance = 0.0001)
 
   # Expect error
   expect_error(aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
@@ -51,29 +53,33 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
 test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
   skip_on_cran()
 
-  aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
+  aggregated_embeddings2 <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 1:2,
     aggregate_layers = "concatenate",
     aggregate_tokens = "min",
     tokens_select = "[CLS]"
   )
 
-  expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")
-  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
+  expect_is(aggregated_embeddings2$harmonywords[[1]][1], "numeric")
+  expect_true(tibble::is_tibble(aggregated_embeddings2$harmonywords))
+  expect_equal(aggregated_embeddings2$harmonywords[1][[1]][1], 0.1291003, tolerance = 0.0001)
+
 })
 
 test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
   skip_on_cran()
 
   # skip_on_cran() library(purrr)
-  aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
+  aggregated_embeddings3 <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = "all",
     aggregate_tokens = "max",
     tokens_deselect = c("[CLS]")
   )
 
-  expect_is(aggregated_embeddings$harmonywords[[1]][1], "numeric")
-  expect_true(tibble::is_tibble(aggregated_embeddings$harmonywords))
+  expect_is(aggregated_embeddings3$harmonywords[[1]][1], "numeric")
+  expect_true(tibble::is_tibble(aggregated_embeddings3$harmonywords))
+  expect_equal(aggregated_embeddings3$harmonywords[1][[1]][1], 2.129543, tolerance = 0.0001)
+
 })
 
 test_that("textEmbedStatic with example space", {
@@ -98,6 +104,7 @@ test_that("textEmbedStatic with example space", {
 
   expect_is(test_result$word_response[[1]][[1]], "numeric")
   expect_is(test_result, "list")
+  expect_equal(test_result$word_response$Dim1[[1]], 0.1)
 })
 
 # Potentially below works on GitHUB but not on Mac?
@@ -111,7 +118,7 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   text_to_test_import2 <- c("I am happy", "Let us go")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
-  embeddings <- textEmbedLayersOutput(x,
+  embeddings1 <- textEmbedLayersOutput(x,
     model = "bert-base-uncased",
     contexts = TRUE,
     decontexts = FALSE,
@@ -120,10 +127,11 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   )
 
   # Is the first value there and numeric
-  expect_that(embeddings[[1]][[1]][[1]][[1]][[1]], is.character)
+  expect_that(embeddings1[[1]][[1]][[1]][[1]][[1]], is.character)
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
-  expect_that(ncol(embeddings[[1]][[1]][[1]]), equals(771))
+  expect_that(ncol(embeddings1[[1]][[1]][[1]]), equals(771))
+  expect_equal(embeddings1[[1]][[1]][[1]]$Dim1[1], 0.1685506, tolerance = 0.0001)
 })
 
 test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {
@@ -134,19 +142,21 @@ test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = 
   text_to_test_import2 <- c("ön är vacker", "molnen svävar")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
-  embeddings <- textEmbedLayersOutput(x,
+  embeddings2 <- textEmbedLayersOutput(x,
     model = "bert-base-uncased",
     contexts = FALSE,
     decontexts = TRUE,
     layers = "all"
   )
-  expect_that(embeddings, is_a("list"))
+  expect_that(embeddings2, is_a("list"))
 
   # Is the first value there and numeric
-  expect_that(embeddings[[1]][[1]][[1]][[1]][[1]], is.character)
+  expect_that(embeddings2[[1]][[1]][[1]][[1]][[1]], is.character)
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
-  expect_that(ncol(embeddings[[1]][[1]][[1]][[1]]), equals(771))
+  expect_that(ncol(embeddings2[[1]][[1]][[1]][[1]]), equals(771))
+  expect_equal(embeddings2[[1]][[1]][[1]][[1]]$Dim1[2], 0.4537115, tolerance = 0.0001)
+
 })
 
 test_that("textEmbed", {
@@ -176,7 +186,7 @@ test_that("textEmbed", {
   expect_that(embeddings_decontextsT, is_a("list"))
   expect_that(single_context_embeddingsT, is_a("list"))
   expect_that(embeddings_decontextsF, is_a("list"))
-
+  expect_equal(embeddings_decontextsF[[1]][[1]][[1]][[1]], -0.002111321, tolerance = 0.0001)
 
 
   long_text_test <- c("Humour (British English) or humor (American English; see spelling differences) is the tendency to experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
@@ -191,4 +201,5 @@ test_that("textEmbed", {
   )
 
   expect_that(long_text_embedding, is_a("list"))
+  expect_equal(long_text_embedding[[1]][[1]][[1]][[1]], -0.01866776, tolerance = 0.0001)
 })

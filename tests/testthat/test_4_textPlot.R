@@ -1,6 +1,7 @@
 
 library(tibble)
 library(dplyr)
+library(text)
 library(testthat)
 
 context("textPlot Functions")
@@ -8,24 +9,22 @@ context("textPlot Functions")
 test_that("textProjection MEAN and PCA produces a tibble with character variable and numeric variable.", {
   skip_on_cran()
 
-  # Data
-  word_embeddings <- word_embeddings_4
-  data <- Language_based_assessment_data_8
   # Pre-processing data for plotting
-  df_for_plotting <- textProjection(
-    data$harmonywords[1:5],
-    word_embeddings$harmonywords[1:5, ],
-    word_embeddings$singlewords_we,
-    data$hilstotal[1:5],
+  df_for_plotting1 <- textProjection(
+    Language_based_assessment_data_8$harmonywords[1:5],
+    word_embeddings_4$harmonywords[1:5, ],
+    word_embeddings_4$singlewords_we,
+    Language_based_assessment_data_8$hilstotal[1:5],
     split = "mean",
     Npermutations = 2,
     n_per_split = 1,
     pca = 2
   )
 
-  expect_true(tibble::is_tibble(df_for_plotting[[2]]))
-  expect_is(df_for_plotting[[2]]$words[1], "character")
-  expect_is(df_for_plotting[[2]]$n[1], "numeric")
+  expect_true(tibble::is_tibble(df_for_plotting1[[2]]))
+  expect_is(df_for_plotting1[[2]]$words[1], "character")
+  expect_is(df_for_plotting1[[2]]$n[1], "numeric")
+  expect_equal(df_for_plotting1[[2]]$dot.x[1], -0.455, tolerance = 0.001)
 })
 
 test_that("textProjection with QUARTILE, 0.9 PCA and
@@ -33,36 +32,29 @@ test_that("textProjection with QUARTILE, 0.9 PCA and
           variable and numeric variable.", {
   skip_on_cran()
 
-  # Data
-  word_embeddings <- word_embeddings_4
-  data <- Language_based_assessment_data_8
-  harmonywords <- data$harmonywords[1:12]
-  harmonyword_embeddings <- word_embeddings$harmonywords[1:12, ]
-  word_embeddingssinglewords_we <- word_embeddings$singlewords_we
-  hilstotal <- data$hilstotal[1:12]
-  swlstotal <- data$swlstotal[1:12]
   # Pre-processing data for plotting
-  df_for_plotting <- textProjection(harmonywords,
-    harmonyword_embeddings,
-    word_embeddingssinglewords_we,
-    hilstotal,
-    swlstotal,
+  df_for_plotting2 <- textProjection(Language_based_assessment_data_8$harmonywords[1:12],
+                                    word_embeddings_4$harmonywords[1:12, ],
+                                    word_embeddings_4$singlewords_we,
+    Language_based_assessment_data_8$hilstotal[1:12],
+    Language_based_assessment_data_8$swlstotal[1:12],
     split = "quartile",
     Npermutations = 2,
     n_per_split = 3,
     pca = 0.9
   )
 
-  expect_true(tibble::is_tibble(df_for_plotting[[2]]))
-  expect_is(df_for_plotting[[2]]$words[1], "character")
-  expect_is(df_for_plotting[[2]]$n[1], "numeric")
+  expect_true(tibble::is_tibble(df_for_plotting2[[2]]))
+  expect_is(df_for_plotting2[[2]]$words[1], "character")
+  expect_is(df_for_plotting2[[2]]$n[1], "numeric")
+  expect_equal(df_for_plotting2[[2]]$dot.x[3],1.37, tolerance = 0.001)
 })
 
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   skip_on_cran()
 
   # Dot Product Projection Plot help(textProjectionPlot)
-  p <- textProjectionPlot(
+  p1 <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
     k_n_words_to_test = TRUE,
     min_freq_words_test = 1,
@@ -84,7 +76,8 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
     projection_embedding = F
   )
 
-  expect_true(ggplot2::is.ggplot(p$final_plot))
+  expect_true(ggplot2::is.ggplot(p1$final_plot))
+  expect_equal(p1$processed_word_data$dot.y[1],2.988819, tolerance = 0.00001)
 })
 
 
@@ -92,7 +85,7 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   skip_on_cran()
 
   # Dot Product Projection Plot
-  p <- textProjectionPlot(
+  p2 <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
     k_n_words_to_test = TRUE,
     min_freq_words_test = 1,
@@ -114,7 +107,8 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
     projection_embedding = T,
   )
 
-  expect_true(ggplot2::is.ggplot(p$final_plot))
+  expect_true(ggplot2::is.ggplot(p2$final_plot))
+  expect_equal(p2$processed_word_data$x_plotted[1], 1.415753, tolerance = 0.0001)
 })
 
 
@@ -122,7 +116,7 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
   skip_on_cran()
 
   # Dot Product Projection Plot
-  p <- textProjectionPlot(
+  p3 <- textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
     k_n_words_to_test = FALSE,
     min_freq_words_test = 1,
@@ -141,7 +135,8 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
     scale_y_axes_lim = NULL
   )
 
-  expect_true(ggplot2::is.ggplot(p$final_plot))
+  expect_true(ggplot2::is.ggplot(p3$final_plot))
+  expect_equal(p3$processed_word_data$x_plotted[2], 0.7323493, tolerance = 0.0001)
 })
 
 
@@ -158,10 +153,13 @@ test_that("textCentrality produces a tibble with character variable and numeric 
   expect_is(df_for_plotting$words[1], "character")
   expect_is(df_for_plotting$n[1], "integer")
   expect_true(tibble::is_tibble(df_for_plotting))
+  expect_equal(df_for_plotting$n[1], 1)
 
-  textCentralityPlot(df_for_plotting,
+  plot_c <- textCentralityPlot(df_for_plotting,
     x_axes = "central_semantic_similarity"
   )
+
+  expect_true(ggplot2::is.ggplot(plot_c$final_plot))
 })
 
 test_that("textCentralityPlot produces a plot.", {
@@ -189,6 +187,7 @@ test_that("textCentralityPlot produces a plot.", {
   )
 
   expect_true(ggplot2::is.ggplot(centrality_plot$final_plot))
+  expect_equal(centrality_plot$processed_word_data$n[2], 21)
 })
 
 
@@ -201,12 +200,12 @@ test_that("textCentrality produces a tibble with character variable and numeric 
     words = Language_based_assessment_data_8$harmonywords,
     single_word_embeddings = word_embeddings_4$singlewords_we
   )
-  df_for_plotting2d
 
 
   expect_is(df_for_plotting2d$words[1], "character")
   expect_is(df_for_plotting2d$n[1], "integer")
   expect_true(tibble::is_tibble(df_for_plotting2d))
+  expect_equal(df_for_plotting2d$n[1], 2)
 })
 
 test_that("textPCAPlot produces a plot.", {
@@ -217,4 +216,5 @@ test_that("textPCAPlot produces a plot.", {
   # principle_component_plot_projection
 
   expect_true(ggplot2::is.ggplot(principle_component_plot_projection$final_plot))
+  expect_equal(principle_component_plot_projection$processed_word_data$n[2], 2)
 })
