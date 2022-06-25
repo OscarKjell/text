@@ -354,7 +354,8 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
   testthat::expect_that(results_or_p2, testthat::is_a("list"))
   testthat::expect_is(results_or_p2$results$.estimate[1], "numeric")
-  testthat::expect_equal(results_or_p2$results$.estimate[1], 0.425, tolerance = 0.001)
+  #testthat::expect_equal(results_or_p2$results$.estimate[1], 0.425, tolerance = 0.001)
+  testthat::expect_equal(results_or_p2$results$.estimate[1], 0.45, tolerance = 0.001)
 
 
   factors1 <- as.factor(Language_based_assessment_data_8$gender)

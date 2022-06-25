@@ -52,7 +52,8 @@ test_that("Testing textEmbed as well as train", {
   )
 
   expect_that(plot_proj$processed_word_data$n[1], is_a("numeric"))
-  expect_equal(plot_proj$processed_word_data$n[1], 2)
+  #expect_equal(plot_proj$processed_word_data$n[1], 2)
+  expect_equal(plot_proj$processed_word_data$n[1], 1)
 
   # help(textWordPrediction)
   #  pred_word <- textWordPrediction(words = Language_based_assessment_data_8[1],
