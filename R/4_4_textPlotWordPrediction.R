@@ -102,7 +102,7 @@ textWordPrediction <- function(words,
     words_mean_y <- words_mean_y[complete.cases(words_mean_y$word_mean_value_y), ]
   }
 
-  # Get word embeddings for each word library(tidyverse)
+  # Get word embeddings for each word
   uniques_words_all_wordembedding <- sapply(words_mean_x$words, applysemrep, single_word_embeddings)
   uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 

@@ -142,6 +142,7 @@ test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = 
   text_to_test_import2 <- c("ön är vacker", "molnen svävar")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
+  #textModelsRemove("bert-base-uncased")
   embeddings2 <- textEmbedLayersOutput(x,
     model = "bert-base-uncased",
     contexts = FALSE,

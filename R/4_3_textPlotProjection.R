@@ -57,7 +57,7 @@
 #' @export
 textProjection <- function(words,
                            word_embeddings,
-                           single_word_embeddings = single_word_embeddings_df,
+                           single_word_embeddings = single_word_embeddings_df, # aggregated embedding for all uses of the word
                            x,
                            y = NULL,
                            pca = NULL,
