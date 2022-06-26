@@ -142,7 +142,6 @@ test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = 
   text_to_test_import2 <- c("ön är vacker", "molnen svävar")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
-  #textModelsRemove("bert-base-uncased")
   embeddings2 <- textEmbedLayersOutput(x,
     model = "bert-base-uncased",
     contexts = FALSE,
@@ -156,11 +155,15 @@ test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = 
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
   expect_that(ncol(embeddings2[[1]][[1]][[1]][[1]]), equals(771))
-  expect_equal(embeddings2$decontext$single_we$single_we[[1]]$Dim1[2], 0.4537115, tolerance = 0.0001)
+
+  # Mac OS and Ubuntu give different results below
+  # expect_equal(embeddings2$decontext$single_we$single_we[[1]]$Dim1[2], 0.4537115, tolerance = 0.0001)
   # expect_equal(embeddings2[[1]][[1]][[1]][[1]]$Dim1[2], 0.109, tolerance = 0.001)
   # expect_equal(embeddings2[[1]][[1]][[1]][[1]]$Dim1[2], 0.454, tolerance = 0.001)
 
-})
+  single_we1 <- textEmbedLayerAggregation(embeddings2$decontext$single_we, layers = 0:12)
+  expect_equal(single_we1$single_we$Dim1[1], 0.04692233, tolerance = 0.0001)
+  })
 
 test_that("textEmbed", {
   skip_on_cran()
