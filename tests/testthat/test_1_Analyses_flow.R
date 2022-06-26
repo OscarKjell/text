@@ -53,8 +53,11 @@ test_that("Testing textEmbed as well as train", {
   plot_proj$processed_word_data$n[1]
   expect_that(plot_proj$processed_word_data$n[1], is_a("numeric"))
   #expect_equal(plot_proj$processed_word_data$n[1], 2)
-  expect_equal(plot_proj$processed_word_data$n[1], 1)
+  #expect_equal(plot_proj$processed_word_data$n[1], 1)
 
+  one_character <- plot_proj$processed_word_data %>%
+    dplyr::filter(words == "-")
+  expect_equal(one_character$n, 1)
   # help(textWordPrediction)
   #  pred_word <- textWordPrediction(words = Language_based_assessment_data_8[1],
   #                                  single_word_embeddings = harmony_word_embeddings$singlewords_we,
