@@ -50,7 +50,7 @@ test_that("Testing textEmbed as well as train", {
     explore_words = c("happy"),
     y_axes = TRUE
   )
-
+  plot_proj$processed_word_data$n[1]
   expect_that(plot_proj$processed_word_data$n[1], is_a("numeric"))
   #expect_equal(plot_proj$processed_word_data$n[1], 2)
   expect_equal(plot_proj$processed_word_data$n[1], 1)
