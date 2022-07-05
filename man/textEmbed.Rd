@@ -9,6 +9,7 @@ textEmbed(
   model = "bert-base-uncased",
   layers = 11:12,
   contexts = TRUE,
+  dim_name = FALSE,
   single_context_embeddings = FALSE,
   context_layers = layers,
   context_aggregation_layers = "concatenate",
@@ -43,6 +44,9 @@ These layers can then be aggregated in the textEmbedLayerAggregation function. I
 
 \item{contexts}{Provide word embeddings based on word contexts
 (standard method; default = TRUE).}
+
+\item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
+(This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)}
 
 \item{single_context_embeddings}{Aggregated word embeddings for each token in the dataset}
 

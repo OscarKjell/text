@@ -22,8 +22,8 @@ test_that("Testing textEmbed as well as train", {
     decontext_layers = c(11),
   )
 
-  expect_equal(harmony_word_embeddings$satisfactiontexts$Dim1[1], 0.3403273, tolerance = 0.0001)
-  expect_equal(harmony_word_embeddings$satisfactiontexts$Dim1[2], 0.1531016, tolerance = 0.00001)
+  expect_equal(harmony_word_embeddings$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
+  expect_equal(harmony_word_embeddings$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
 
   # help(textProjection)
   proj <- textProjection(
