@@ -107,9 +107,6 @@ test_that("textEmbedStatic with example space", {
   expect_equal(test_result$word_response$Dim1[[1]], 0.1)
 })
 
-# Potentially below works on GitHUB but not on Mac?
-
-
 
 test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a list", {
   skip_on_cran()
@@ -131,7 +128,7 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
   expect_that(ncol(embeddings1[[1]][[1]][[1]]), equals(771))
-  expect_equal(embeddings1[[1]][[1]][[1]]$Dim1[1], 0.1685506, tolerance = 0.0001)
+  expect_equal(embeddings1[[1]][[1]][[1]][[4]][1], 0.1685506, tolerance = 0.0001)
 })
 
 test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {
@@ -158,8 +155,10 @@ test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = 
 
   # Mac OS and Ubuntu give different results below
   # expect_equal(embeddings2$decontext$single_we$single_we[[1]]$Dim1[2], 0.4537115, tolerance = 0.0001)
-  # expect_equal(embeddings2[[1]][[1]][[1]][[1]]$Dim1[2], 0.109, tolerance = 0.001)
-  # expect_equal(embeddings2[[1]][[1]][[1]][[1]]$Dim1[2], 0.454, tolerance = 0.001)
+  # expect_equal(embeddings2[[1]][[1]][[1]][[1]][[4]][2], 0.109, tolerance = 0.001)
+
+  # works on Mac:
+  # expect_equal(embeddings2[[1]][[1]][[1]][[1]][[4]][2], 0.454, tolerance = 0.001)
 
   single_we1 <- textEmbedLayerAggregation(embeddings2$decontext$single_we, layers = 0:12)
   expect_equal(single_we1$single_we$Dim1[1], 0.04692233, tolerance = 0.0001)
@@ -172,13 +171,14 @@ test_that("textEmbed", {
   text_to_test_import2 <- c("I am happy", "Let us go")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
+  ### testing for me
   embeddings_decontextsT <- textEmbed(x,
     model = "bert-base-uncased",
     decontexts = TRUE,
     single_context_embeddings = FALSE
   )
 
-  single_context_embeddingsT <- textEmbed(x,
+  single_context_embeddingsT <- textEmbed(x[1],
                                       model = "bert-base-uncased",
                                       decontexts = FALSE,
                                       single_context_embeddings = TRUE
@@ -192,7 +192,10 @@ test_that("textEmbed", {
   expect_that(embeddings_decontextsT, is_a("list"))
   expect_that(single_context_embeddingsT, is_a("list"))
   expect_that(embeddings_decontextsF, is_a("list"))
-  expect_equal(embeddings_decontextsF[[1]][[1]][[1]][[1]], -0.002111321, tolerance = 0.0001)
+  expect_equal(embeddings_decontextsF[[1]][[1]][[1]], -0.002111321, tolerance = 0.0001)
+  expect_equal(embeddings_decontextsF[[1]][[1]][[2]], 0.579, tolerance = 0.001)
+  expect_equal(embeddings_decontextsF[[1]][[2]][[1]], -0.2463575, tolerance = 0.0001)
+  expect_equal(embeddings_decontextsF[[1]][[2]][[2]], -0.2368967, tolerance = 0.001)
 
 
   long_text_test <- c("Humour (British English) or humor (American English; see spelling differences) is the tendency to experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.

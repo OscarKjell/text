@@ -12,6 +12,7 @@ textEmbedLayersOutput(
   model = "bert-base-uncased",
   layers = 11,
   return_tokens = TRUE,
+  dim_name = FALSE,
   device = "cpu",
   tokenizer_parallelism = FALSE,
   model_max_length = NULL,
@@ -24,7 +25,8 @@ textEmbedLayersOutput(
 \item{contexts}{Provide word embeddings based on word contexts
 (standard method; default = TRUE).}
 
-\item{single_context_embeddings}{Aggregated word embeddings for each token in the dataset}
+\item{single_context_embeddings}{Aggregated contextualized word embeddings for each token in the text variables (only works for one
+text-variable at the time).}
 
 \item{decontexts}{Provide word embeddings of single words as input
 (embeddings used for plotting; default = TRUE).}
@@ -43,6 +45,9 @@ or all by setting this parameter to "all". Layer 0 is the decontextualized input
  be aggregated in the textEmbedLayerAggregation function.}
 
 \item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
+
+\item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
+(This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 
