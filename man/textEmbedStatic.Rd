@@ -5,7 +5,13 @@
 \title{Applies word embeddings from a given decontextualized static space (such as
 from Latent Semantic Analyses) to all character variables}
 \usage{
-textEmbedStatic(df, space, tk_df = "null", aggregate = "mean")
+textEmbedStatic(
+  df,
+  space,
+  tk_df = "null",
+  aggregate = "mean",
+  dim_name = FALSE
+)
 }
 \arguments{
 \item{df}{dataframe that at least contains one character column.}
@@ -18,6 +24,9 @@ not been implemented yet).}
 
 \item{aggregate}{method to aggregate semantic representation when their are more than a single word.
 (default is "mean"; see also "min" and "max", "concatenate" and "normalize")}
+
+\item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
+(This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)}
 }
 \value{
 A list with tibbles for each character variable. Each tibble comprises a column with the text, followed by
