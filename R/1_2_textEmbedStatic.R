@@ -7,6 +7,8 @@
 #' @param single_word_embeddings2 used to get number of dimensions in embedding/space.
 #' @param aggregate Method to aggregate the word embeddings (see mean, min, max and concatenate).
 #' @return semantic representations for all words in a cell.
+#' @importFrom purrr map
+#' @importFrom dplyr starts_with select
 #' @noRd
 semanticrepresentation <- function(x, single_word_embeddings2, aggregate = "min", ...) {
   x <- tolower(x)
@@ -22,7 +24,7 @@ semanticrepresentation <- function(x, single_word_embeddings2, aggregate = "min"
     x2 <- as.numeric(x2)
   } else {
     # Create a matrix with all the semantic representations using the function above
-    x1 <- map(x, applysemrep, single_word_embeddings1 = single_word_embeddings2) # , ...
+    x1 <- purrr::map(x, applysemrep, single_word_embeddings1 = single_word_embeddings2) # , ...
     x2 <- bind_rows(x1)
     # If more than one semrep; Sum all the semantic representations; if not return it as is,
     # so that NAs etc is returned/kept
@@ -49,6 +51,8 @@ semanticrepresentation <- function(x, single_word_embeddings2, aggregate = "min"
 #' @param x A word.
 #' @param single_word_embeddings Used to get number of dimensions in embedding/space
 #' @return semantic representation (word embedding) from a matrix.
+#' @importFrom purrr as_vector
+#' @importFrom dplyr select starts_with
 #' @noRd
 applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
   # If semrep is found get it; if not return NA vector of dimensions
@@ -98,6 +102,7 @@ applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
 #' @seealso see \code{\link{textEmbed}}
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr select_if bind_cols
+#' @importFrom purrr map
 #' @export
 textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean", dim_name = FALSE) {
 
@@ -133,7 +138,7 @@ textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean", dim_n
 
 
     list_semrep[[i]] <- df_output %>%
-      dplyr::mutate(dplyr::across(dplyr::everything(), unlist)) %>% # dplyr ok?
+      dplyr::mutate(dplyr::across(dplyr::everything(), unlist)) %>%
       tibble::as_tibble(.name_repair = "unique")
 
     if(dim_name == TRUE){
@@ -142,15 +147,12 @@ textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean", dim_n
                                            "static",
                                            "_",
                                            names(df_characters[i]))
-
     }
-
-
   }
 
   # Add single word embeddings used for plotting
   singlewords <- getUniqueWordsAndFreq(df_characters)
-  output_vectors_sw <- map(singlewords$words, applysemrep, single_word_embeddings1)
+  output_vectors_sw <- purrr::map(singlewords$words, applysemrep, single_word_embeddings1)
   names(output_vectors_sw) <- singlewords$words
   output_vectors_sw2 <- dplyr::bind_cols(output_vectors_sw)
   output_vectors_sw3 <- data.frame(t(output_vectors_sw2))
