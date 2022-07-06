@@ -198,3 +198,69 @@ textPredictTest <- function(y1,
   }
   output
 }
+
+
+#' Predict from several models, selecting the correct input
+#' @param models Object containing several models.
+#' @param word_embeddings List of word embeddings (if using word embeddings from more than one
+#' text-variable use dim_names = TRUE throughout the pipeline).
+#' @param data A tibble/dataframe with additional variables used in the training of the models (optional).
+#' @return A tibble with predictions.
+#' @examples
+#' \donttest{
+#' # x <- Language_based_assessment_data_8[1:2, 1:2]
+#' # word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
+#' }
+#' @seealso see \code{\link{textPredict}} and \code{\link{textTrain}}
+#' @importFrom dplyr bind_cols select all_of
+textPredictAll <- function(models, word_embeddings, data){
+
+  output_predictions <- list()
+
+  # If textTrain has created many models at the same time, select them from "all_output".
+  if(!is.null(models$all_output)){
+    models <- models$all_output
+  }
+
+  all_embeddings <- dplyr::bind_cols(word_embeddings)
+  # i = 1
+  for(i in 1:length(models)){
+
+    # Select the predictor variables needed for the prediction
+    target_variables_names <- models[[i]]$final_recipe$var_info$variable[models[[i]]$final_recipe$var_info$role == "predictor"]
+
+    # select all Dim0
+    dims0 <- target_variables_names[grep("^Dim0",
+                                         target_variables_names)]
+
+    # select everything after the first _
+    v_colnames <- substring(dims0, regexpr("_", dims0) + 1)
+
+    # Select those names from the "data"
+    x_variables <- data %>% dplyr::select(dplyr::all_of(v_colnames))
+
+    # Change the name to include Dim01_
+    variables_embeddings <- add_variables_to_we(all_embeddings,
+                                                x_variables)
+
+    input_x <- variables_embeddings %>%
+      dplyr::select(dplyr::all_of(target_variables_names))
+
+
+    preds <- textPredict(models[[i]],
+                         input_x)$.pred
+
+    pred1 <- as_tibble(preds)
+    colnames(pred1) <- paste(names(word_embeddings[i]), "_pred", sep="")
+    output_predictions[[i]] <- pred1
+  }
+  output_predictions1 <- dplyr::bind_cols(output_predictions)
+  return(output_predictions1)
+}
+
+
+
+
+
+
+
