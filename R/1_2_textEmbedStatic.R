@@ -71,6 +71,14 @@ applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
   }
 }
 
+#df <- Language_based_assessment_data_8[1:2, 1:2]
+#space <- readRDS("/Users/oscarkjell/Desktop/1 Projects/2 WordDiagnostics/Deploy text/Space/sv_space_300.rds")
+#tk_df = "tk"
+#aggregate = "mean"
+#
+#textEmbedStatic(df,
+#                space,
+#                dim_name = TRUE)
 
 #' Applies word embeddings from a given decontextualized static space (such as
 #' from Latent Semantic Analyses) to all character variables
@@ -82,6 +90,8 @@ applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
 #' not been implemented yet).
 #' @param aggregate method to aggregate semantic representation when their are more than a single word.
 #' (default is "mean"; see also "min" and "max", "concatenate" and "normalize")
+#' @param dim_name Boolean, if TRUE append the variable name after all variable-names in the output.
+#' (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)
 #' @return A list with tibbles for each character variable. Each tibble comprises a column with the text, followed by
 #' columns representing the semantic representations of the text.
 #' The tibbles are called the same as the original variable.
@@ -89,9 +99,9 @@ applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr select_if bind_cols
 #' @export
-textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean") {
+textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean", dim_name = FALSE) {
 
-  # Select the tk or dk matrrix derived from the lsa (svd)
+  # Select the tk or dk matrix derived from the lsa (svd)
   if (tk_df == "tk") {
     # If variable names start with V (as in V1) rename to Dim1
     colnames(space$tk) <- sub("V", "Dim", colnames(space$tk))
@@ -111,7 +121,7 @@ textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean") {
   # Send the space to Semantic representation function as single_word_embeddings2
   single_word_embeddings2 <- space
   single_word_embeddings1 <- space
-  # For loop that apply the semrep to each character variable
+  # For loop that apply the semrep to each character variable i = 1
   for (i in seq_len(length(df_characters))) {
     # Apply the semantic representation function to all rows; transpose the resulting matrix and making a tibble
     df_output <- data.frame(t(sapply(df_characters[[i]],
@@ -125,6 +135,17 @@ textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean") {
     list_semrep[[i]] <- df_output %>%
       dplyr::mutate(dplyr::across(dplyr::everything(), unlist)) %>% # dplyr ok?
       tibble::as_tibble(.name_repair = "unique")
+
+    if(dim_name == TRUE){
+
+      colnames(list_semrep[[i]]) <- paste0(colnames(list_semrep[[i]]),
+                                           "static",
+                                           "_",
+                                           names(df_characters[i]))
+
+    }
+
+
   }
 
   # Add single word embeddings used for plotting
