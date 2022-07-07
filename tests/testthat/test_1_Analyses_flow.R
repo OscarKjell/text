@@ -15,15 +15,69 @@ test_that("Testing textEmbed as well as train", {
   descr2 <- textDescriptives(Language_based_assessment_data_8[1:2])
   expect_that(descr2[[2]][[1]], is_a("integer"))
 
-  harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1],
+  harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",
-    layers = c(11),
-    context_layers = c(11),
-    decontext_layers = c(11),
+    dim_name = TRUE,
+    layers = c(11:12),
+    context_layers = c(11:12),
+    decontext_layers = c(11:12)
   )
+  #saveRDS(harmony_word_embeddings, "harmony_word_embeddings.rds")
+  #harmony_word_embeddings <-readRDS("harmony_word_embeddings.rds")
 
   expect_equal(harmony_word_embeddings$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
   expect_equal(harmony_word_embeddings$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
+
+  # Below should not work since it does not have the same number og
+  text_train_results1 <- textTrainRegression(
+    x = harmony_word_embeddings$satisfactiontexts,
+    y = Language_based_assessment_data_8$hilstotal[1:20],
+    cv_method = "cv_folds",
+    outside_folds = 2,
+    inside_folds = 2,
+    outside_strata_y = NULL,
+    inside_strata_y = NULL,
+    # preprocess_PCA = c(0.20),
+    preprocess_PCA = NA,
+    penalty = 1e-16,
+    multi_cores = "multi_cores_sys_default"
+  )
+
+  expect_that(text_train_results1$results$estimate[1], is_a("numeric"))
+  expect_gt(text_train_results1$results$estimate[1], .3)
+  expect_equal(text_train_results1$results$estimate[[1]], 0.3273128, tolerance = 0.0000001)
+
+  # Train with x_variable
+  text_train_results2 <- textTrain(
+    x = harmony_word_embeddings[1],
+    x_add = Language_based_assessment_data_8[1:20, 6],
+    y = Language_based_assessment_data_8[1:20, 5],
+    cv_method = "cv_folds",
+    outside_folds = 2,
+    inside_folds = 2,
+    outside_strata_y = NULL,
+    inside_strata_y = NULL,
+    # preprocess_PCA = c(0.20),
+    preprocess_PCA = NA,
+    penalty = 1e-16,
+    multi_cores = "multi_cores_sys_default"
+  )
+
+  # Predict
+  hils_predicted_scores1 <- textPredict(
+    model_info = text_train_results1,
+    new_data = harmony_word_embeddings$satisfactiontexts
+  )
+
+  expect_that(hils_predicted_scores1$.pred[1], is_a("numeric"))
+  expect_equal(hils_predicted_scores1$.pred[1], 11.89, tolerance = 0.1)
+
+ # Predict ALl
+  all_predictions <- textPredictAll(models = list(text_train_results1, text_train_results2),
+                                    word_embeddings = harmony_word_embeddings,
+                                    x_add = Language_based_assessment_data_8[1:20, 5:8])
+
+  # comment(all_predictions)
 
   # help(textProjection)
   proj <- textProjection(
@@ -43,7 +97,7 @@ test_that("Testing textEmbed as well as train", {
   )
 
   expect_that(proj[[1]][[1]][[1]][[1]], is_a("numeric"))
-  expect_equal(proj[[1]][[1]][[1]][[1]], -0.404467, tolerance = 0.0000001)
+  expect_equal(proj[[1]][[1]][[1]][[1]], -0.402433, tolerance = 0.0000001)
 
   # help(textProjectionPlot)
   plot_proj <- textProjectionPlot(proj,
@@ -71,7 +125,7 @@ test_that("Testing textEmbed as well as train", {
 
   text_train_results <- textTrain(
     x = harmony_word_embeddings$satisfactiontexts,
-    y = Language_based_assessment_data_8$hilstotal,
+    y = Language_based_assessment_data_8$hilstotal[1:20],
     cv_method = "cv_folds",
     outside_folds = 2,
     inside_folds = 2,
@@ -85,7 +139,7 @@ test_that("Testing textEmbed as well as train", {
 
   expect_that(text_train_results$results$estimate[1], is_a("numeric"))
   expect_gt(text_train_results$results$estimate[1], 0.3)
-  expect_equal(text_train_results$results$estimate[[1]], 0.5393638, tolerance = 0.0000001)
+  expect_equal(text_train_results$results$estimate[[1]], 0.3273128, tolerance = 0.0000001)
 
 
   # Predict
@@ -95,5 +149,5 @@ test_that("Testing textEmbed as well as train", {
   )
 
   expect_that(hils_predicted_scores1$.pred[1], is_a("numeric"))
-  expect_equal(hils_predicted_scores1$.pred[1], 15.58392, tolerance = 0.000001)
+  expect_equal(hils_predicted_scores1$.pred[1], 11.89219, tolerance = 0.000001)
 })

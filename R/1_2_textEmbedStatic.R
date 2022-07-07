@@ -104,7 +104,11 @@ applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
 #' @importFrom dplyr select_if bind_cols
 #' @importFrom purrr map
 #' @export
-textEmbedStatic <- function(df, space, tk_df = "null", aggregate = "mean", dim_name = FALSE) {
+textEmbedStatic <- function(df,
+                            space,
+                            tk_df = "null",
+                            aggregate = "mean",
+                            dim_name = FALSE) {
 
   # Select the tk or dk matrix derived from the lsa (svd)
   if (tk_df == "tk") {

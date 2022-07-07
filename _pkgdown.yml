@@ -6,7 +6,7 @@ development:
 
 home:
   title: text
-  description: An r-package for analyzing text using NLP and deep learning.
+  description: Analyses of Text using Transformers from HuggingFace, Natural Language Processing and Machine Learning.
   links:
   - text: Ask a question about text using the r-text tag
     href: https://stackoverflow.com/
@@ -40,13 +40,13 @@ reference:
   - textrpp_install_virtualenv
   - textrpp_uninstall
   - textrpp_initialize
-- title: Transform text to word embeddings
+- title: Transformers that transform text to word embeddings
   contents:
   - textEmbed
   - textEmbedLayersOutput
   - textEmbedLayerAggregation
   - textEmbedStatic
-- title: View or delete downloaded models
+- title: View or delete downloaded HuggingFace models
   contents:
   - textModels
   - textModelsRemove
@@ -60,6 +60,7 @@ reference:
   contents:
     - textPredict
     - textPredictTest
+    - textPredictAll
 - title: Semantic similarities and distance
   contents:
     - textSimilarity

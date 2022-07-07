@@ -161,7 +161,7 @@ test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = 
   # expect_equal(embeddings2[[1]][[1]][[1]][[1]][[4]][2], 0.454, tolerance = 0.001)
 
   single_we1 <- textEmbedLayerAggregation(embeddings2$decontext$single_we, layers = 0:12)
-  expect_equal(single_we1$single_we$Dim1[1], 0.04692233, tolerance = 0.0001)
+  expect_equal(single_we1$single_we$Dim1[1], 0.04692233, tolerance = 0.001)
   })
 
 test_that("textEmbed", {

@@ -200,11 +200,15 @@ textPredictTest <- function(y1,
 }
 
 
+#models = list(text_train_results1, text_train_results2)
+#word_embeddings = harmony_word_embeddings
+#x_add = Language_based_assessment_data_8[1:20, 5:8]
+
 #' Predict from several models, selecting the correct input
 #' @param models Object containing several models.
 #' @param word_embeddings List of word embeddings (if using word embeddings from more than one
 #' text-variable use dim_names = TRUE throughout the pipeline).
-#' @param data A tibble/dataframe with additional variables used in the training of the models (optional).
+#' @param x_add A tibble/dataframe with additional variables used in the training of the models (optional).
 #' @return A tibble with predictions.
 #' @examples
 #' \donttest{
@@ -213,7 +217,10 @@ textPredictTest <- function(y1,
 #' }
 #' @seealso see \code{\link{textPredict}} and \code{\link{textTrain}}
 #' @importFrom dplyr bind_cols select all_of
-textPredictAll <- function(models, word_embeddings, data){
+#' @export
+textPredictAll <- function(models,
+                           word_embeddings,
+                           x_add = NULL){
 
   output_predictions <- list()
 
@@ -222,8 +229,13 @@ textPredictAll <- function(models, word_embeddings, data){
     models <- models$all_output
   }
 
+  # Remove singlewords_we if it exist
+  if(!is.null(word_embeddings$singlewords_we)){
+    word_embeddings$singlewords_we <- NULL
+  }
+
   all_embeddings <- dplyr::bind_cols(word_embeddings)
-  # i = 1
+  # i = 2
   for(i in 1:length(models)){
 
     # Select the predictor variables needed for the prediction
@@ -237,7 +249,7 @@ textPredictAll <- function(models, word_embeddings, data){
     v_colnames <- substring(dims0, regexpr("_", dims0) + 1)
 
     # Select those names from the "data"
-    x_variables <- data %>% dplyr::select(dplyr::all_of(v_colnames))
+    if(!is.null(x_add)) x_variables <- x_add %>% dplyr::select(dplyr::all_of(v_colnames))
 
     # Change the name to include Dim01_
     variables_embeddings <- add_variables_to_we(all_embeddings,

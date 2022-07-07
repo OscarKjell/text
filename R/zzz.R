@@ -10,7 +10,7 @@
 
   text_version_nr <-  tryCatch(
     {
-      text_version_nr1 <- paste(" (version ", packageVersion("text"), ") ", sep="")
+      text_version_nr1 <- paste(" (version ", packageVersion("text"), ")", sep="")
     },
     error = function(e)
     {

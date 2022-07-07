@@ -6,6 +6,7 @@
 \usage{
 textTrainRegression(
   x,
+  x_add = NULL,
   y,
   cv_method = "validation_split",
   outside_folds = 10,
@@ -34,6 +35,8 @@ textTrainRegression(
 \arguments{
 \item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are provided in a list
 they will be concatenated.}
+
+\item{x_add}{Variables to be added to the word embeddings (x).}
 
 \item{y}{Numeric variable to predict.}
 

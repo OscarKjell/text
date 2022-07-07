@@ -20,20 +20,28 @@ Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-p
 
 <!-- badges: end -->
 
+An R-package for analyzing text using Transformers from HuggingFace
+using Natural Language Processing and Machine Learning.
+
 The language that individuals use contains a wealth of psychological
 information interesting for research. The *text*-package has two main
 objectives:
 
 -   First, to serve R-users as a *point solution* for transforming text
     to state-of-the-art word embeddings that are ready to be used for
-    downstream tasks.
+    downstream tasks. The package provides a user-friendly link to
+    language models based on transformers from [Hugging
+    Face](https://huggingface.co/).
 
 -   Second, to serve as an *end-to-end solution* that provides
     state-of-the-art AI techniques tailored for social and behavioral
     scientists.
 
 <figure>
-<img src="man/figures/modular_end_solution.png" style="width:85.0%" alt="Modular and End-to-End Solution" /><figcaption aria-hidden="true">Modular and End-to-End Solution</figcaption>
+<img src="man/figures/modular_end_solution.png" style="width:85.0%"
+alt="Modular and End-to-End Solution" />
+<figcaption aria-hidden="true">Modular and End-to-End
+Solution</figcaption>
 </figure>
 
 *Text* is created through a collaboration between psychology and

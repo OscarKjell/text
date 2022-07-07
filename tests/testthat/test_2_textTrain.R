@@ -9,8 +9,9 @@ test_that("textTrain Regression produces list of results with prediction being n
   skip_on_cran()
   x <- word_embeddings_4[1]
   y <- Language_based_assessment_data_8[6]
-  trained_min_halving <- textTrainRegression(word_embeddings_4[1],
-    Language_based_assessment_data_8[6],
+  trained_min_halving <- textTrainRegression(
+    x=word_embeddings_4[1],
+    y=Language_based_assessment_data_8[6],
     cv_method = "cv_folds",
     outside_folds = 2,
     inside_folds = 2,
@@ -244,8 +245,8 @@ test_that("textTrainRandomForest with Extremely
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2
   ))
-  trained_rf_3 <- textTrainRandomForest(word_embeddings_4$harmonytext,
-    example_categories,
+  trained_rf_3 <- textTrainRandomForest(x=word_embeddings_4$harmonytext,
+    y=example_categories,
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -265,8 +266,8 @@ test_that("textTrainRandomForest with Extremely
   testthat::expect_equal(trained_rf_3$truth_predictions$.pred_1[1], 0.107)
 
   example_categories_tibble <- tibble::as_tibble_col(example_categories)
-  trained_rf_NA <- textTrainRandomForest(word_embeddings_4[1],
-    example_categories_tibble,
+  trained_rf_NA <- textTrainRandomForest(x=word_embeddings_4[1],
+    y=example_categories_tibble,
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -290,8 +291,9 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   skip_on_cran()
 
   # One word embedding and two rating scales help(textTrainRegression)
-  results_or <- textTrainLists(word_embeddings_4$harmonywords,
-    Language_based_assessment_data_8[5:6],
+  results_or <- textTrainLists(
+    x=word_embeddings_4$harmonywords,
+    y=Language_based_assessment_data_8[5:6],
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -504,8 +506,9 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 test_that("textTrainRegression adding word_embedding together", {
   skip_on_cran()
 
-  multi_we_PCA_09 <- textTrainRegression(word_embeddings_4[1:2],
-    Language_based_assessment_data_8$hilstotal,
+  multi_we_PCA_09 <- textTrainRegression(
+     x= word_embeddings_4[1:2],
+    y = Language_based_assessment_data_8$hilstotal,
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -526,8 +529,9 @@ test_that("textTrainRegression adding word_embedding together", {
   testthat::expect_equal(predictions_multi$.pred[[1]], 19.70077, tolerance = 0.0001)
 
 
-  multi_we_PCA_3 <- textTrainRegression(word_embeddings_4[1:2],
-    Language_based_assessment_data_8$hilstotal,
+  multi_we_PCA_3 <- textTrainRegression(
+    x= word_embeddings_4[1:2],
+    y= Language_based_assessment_data_8$hilstotal,
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -542,8 +546,9 @@ test_that("textTrainRegression adding word_embedding together", {
   testthat::expect_equal(multi_we_PCA_3$results[[1]][[1]], 1.456567, tolerance = 0.0001)
 
 
-  multi_we_PCA_NA <- textTrainRegression(word_embeddings_4[1:2],
-    Language_based_assessment_data_8$hilstotal,
+  multi_we_PCA_NA <- textTrainRegression(
+    x=word_embeddings_4[1:2],
+    y=Language_based_assessment_data_8$hilstotal,
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -560,10 +565,11 @@ test_that("textTrainRegression adding word_embedding together", {
 
 
 test_that("textTrainRandomForest adding word_embedding together", {
-  y <- as.factor(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2))
+  y <- as.factor(rep(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), 4))
 
-  multi_we_RF_PCA_09 <- textTrainRandomForest(word_embeddings_4[1:2],
-    y,
+  multi_we_RF_PCA_09 <- textTrainRandomForest(
+    x=word_embeddings_4[1:2],
+    y=y,
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -579,8 +585,9 @@ test_that("textTrainRandomForest adding word_embedding together", {
   testthat::expect_equal(multi_we_RF_PCA_09$results$.estimate[[1]], 0.4)
 
 
-  multi_we_RF_PCA_3 <- textTrainRandomForest(word_embeddings_4[1:2],
-    y,
+  multi_we_RF_PCA_3 <- textTrainRandomForest(
+    x=word_embeddings_4[1:2],
+    y=y,
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -596,8 +603,9 @@ test_that("textTrainRandomForest adding word_embedding together", {
   testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.35)
 
 
-  multi_we_RF_PCA_NA <- textTrainRandomForest(word_embeddings_4[1:2],
-    y,
+  multi_we_RF_PCA_NA <- textTrainRandomForest(
+    x=word_embeddings_4[1:2],
+    y=y,
     outside_folds = 2,
     inside_folds = 2 / 3,
     outside_strata_y = NULL,
@@ -618,6 +626,7 @@ test_that("textTrainRandomForest adding word_embedding together", {
 
 test_that("textPredictTest t-test and bootstrapped test", {
 
+  set.seed(1)
   # Test data
   y1 <- runif(10)
   yhat1 <- runif(10)
@@ -630,6 +639,6 @@ test_that("textPredictTest t-test and bootstrapped test", {
 
   boot_test2 <- textPredictTest(y1 = y1, yhat1, y2 = NULL, yhat2)
   testthat::expect_that(boot_test2, testthat::is_a("list"))
-  testthat::expect_equal(boot_test2$Test$statistic[[1]], -0.5421806, tolerance = 0.0001)
-  testthat::expect_equal(boot_test2$Effect_size, 0.2786792, tolerance = 0.0001)
+  testthat::expect_equal(boot_test2$Test$statistic[[1]], 0.233267, tolerance = 0.0001)
+  testthat::expect_equal(boot_test2$Effect_size, 0.06198192, tolerance = 0.0001)
 })

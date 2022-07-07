@@ -428,10 +428,51 @@ summarize_tune_results <- function(object,
 }
 
 
+
+#x = word_embeddings_4[1]
+#x_variables = Language_based_assessment_data_8[7]
+#y = Language_based_assessment_data_8[5]
+#cv_method = "validation_split"
+#outside_folds = 10
+#outside_strata_y = "y"
+#outside_breaks = 4
+#inside_folds = 3 / 4
+#inside_strata_y = "y"
+#inside_breaks = 4
+#model = "regression"
+#eval_measure = "default"
+#preprocess_step_center = TRUE
+#preprocess_step_scale = TRUE
+#preprocess_PCA = NA
+#penalty = 10^seq(-16, 16)
+#mixture = c(0)
+#first_n_predictors = NA
+#impute_missing = FALSE
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#seed = 2020
+##
+##
+#x = harmony_word_embeddings[1]
+#x_add = Language_based_assessment_data_8[1:20, 7]
+#y = Language_based_assessment_data_8[1:20, 5]
+#cv_method = "cv_folds"
+#outside_folds = 2
+#inside_folds = 2
+#outside_strata_y = NULL
+#inside_strata_y = NULL
+## preprocess_PCA = c(0.20)
+#preprocess_PCA = NA
+#penalty = 1e-16
+#multi_cores = "multi_cores_sys_default"
+
 #' Train word embeddings to a numeric variable.
 #'
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are provided in a list
 #' they will be concatenated.
+#' @param x_add Variables to be added to the word embeddings (x).
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops
@@ -488,7 +529,7 @@ summarize_tune_results <- function(object,
 #' @seealso see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
 #' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
 #' @importFrom stats cor.test na.omit lm
-#' @importFrom dplyr select starts_with filter all_of
+#' @importFrom dplyr bind_cols select starts_with filter all_of
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
 #' @importFrom rsample vfold_cv
 #' @importFrom parsnip linear_reg set_engine
@@ -499,6 +540,7 @@ summarize_tune_results <- function(object,
 #' @importFrom workflows workflow add_model add_recipe
 #' @export
 textTrainRegression <- function(x,
+                                x_add = NULL,
                                 y,
                                 cv_method = "validation_split",
                                 outside_folds = 10,
@@ -555,10 +597,11 @@ textTrainRegression <- function(x,
 
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
-    y <- y[[1]]
+    #y <- y[[1]]
+    y <- tibble::as_tibble_col(y[[1]], column_name = "y")
   } else {
     y_name <- deparse(substitute(y))
-    y <- y
+    y <- tibble::as_tibble_col(y, column_name = "y")
   }
 
 
@@ -592,9 +635,18 @@ textTrainRegression <- function(x,
   ############ End for multiple word embeddings ############
   ##########################################################
 
+  #### Add other variables to word embeddings x_add=NULL
+  if(!is.null(x_add)){
+    x1 <- add_variables_to_we(word_embeddings = x1,
+                              data = x_add) # ...
+  }
+  # Get names for the added variables to save to description
+  x_add_names <- names(x_add)
+
+
   x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
-  xy <- cbind(x2, y)
-  xy <- tibble::as_tibble(xy)
+  xy <- dplyr::bind_cols(x2, y)
+  #xy <- tibble::as_tibble(xy) xy[1537]
   xy$id_nr <- c(seq_len(nrow(xy)))
 
   # complete.cases is not neccassary
@@ -949,6 +1001,9 @@ textTrainRegression <- function(x,
   ##########  DESCRIBING THE MODEL  ##########
   ############################################
 
+  x_name_description <- paste("x word_embeddings = ", x_name)
+  x_add_names_description <- paste("x_add = ", x_add_names)
+  y_name_description <- paste("y = ", y_name)
   cv_method_description <- paste("cv_method = ", deparse(cv_method))
   outside_folds_description <- paste("outside_folds = ", deparse(outside_folds))
   outside_strata_y_description <- paste("outside_strata_y = ", deparse(outside_strata_y))
@@ -1005,10 +1060,12 @@ textTrainRegression <- function(x,
     collapse = " "
   )
 
+
   # Describe model; adding user's-description + the name of the x and y
   model_description_detail <- c(
-    x_name,
-    y_name,
+    x_name_description,
+    x_add_names_description,
+    y_name_description,
     cv_method_description,
     outside_folds_description,
     outside_strata_y_description,
@@ -1102,6 +1159,7 @@ textTrainRegression <- function(x,
   # check sizes: sort(sapply(ls(),function(x){object.size(get(x))}))
   remove(x)
   remove(x1)
+  remove(x_add)
   remove(y)
   remove(x2)
   remove(xy)

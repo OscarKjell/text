@@ -6,6 +6,7 @@
 \usage{
 textTrainRandomForest(
   x,
+  x_add = NULL,
   y,
   cv_method = "validation_split",
   outside_folds = 10,
@@ -32,6 +33,8 @@ textTrainRandomForest(
 }
 \arguments{
 \item{x}{Word embeddings from textEmbed.}
+
+\item{x_add}{Variables to be added to the word embeddings (x).}
 
 \item{y}{Categorical variable to predict.}
 
@@ -109,8 +112,8 @@ Train word embeddings to a categorical variable using random forrest.
 \examples{
 \donttest{
 results <- textTrainRandomForest(
-  word_embeddings_4$harmonywords,
-  as.factor(Language_based_assessment_data_8$gender),
+  x=word_embeddings_4$harmonywords,
+  y=as.factor(Language_based_assessment_data_8$gender),
   trees = c(1000, 1500),
   mtry  = c(1), # this is short because of testing
   min_n = c(1), # this is short because of testing

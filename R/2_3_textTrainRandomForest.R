@@ -440,9 +440,35 @@ summarize_tune_results_rf <- function(object,
 }
 
 
+
+#x = word_embeddings_4$harmonytext
+#x_add = NULL
+#y = example_categories
+#cv_method = "validation_split"
+#outside_folds = 10
+#outside_strata_y = "y"
+#outside_breaks = 4
+#inside_folds = 3 / 4
+#inside_strata_y = "y"
+#inside_breaks = 4
+#mode_rf = "classification"
+#preprocess_step_center = FALSE
+#preprocess_scale_center = FALSE
+#preprocess_PCA = NA
+#extremely_randomised_splitrule = "extratrees"
+#mtry = c(1, 10, 20, 40)
+#min_n = c(1, 10, 20, 40)
+#trees = c(1000)
+#eval_measure = "bal_accuracy"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#seed = 2020
+
 #' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Word embeddings from textEmbed.
+#' @param x_add Variables to be added to the word embeddings (x).
 #' @param y Categorical variable to predict.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and
 #' inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
@@ -492,8 +518,8 @@ summarize_tune_results_rf <- function(object,
 #' @examples
 #' \donttest{
 #' results <- textTrainRandomForest(
-#'   word_embeddings_4$harmonywords,
-#'   as.factor(Language_based_assessment_data_8$gender),
+#'   x=word_embeddings_4$harmonywords,
+#'   y=as.factor(Language_based_assessment_data_8$gender),
 #'   trees = c(1000, 1500),
 #'   mtry  = c(1), # this is short because of testing
 #'   min_n = c(1), # this is short because of testing
@@ -502,7 +528,8 @@ summarize_tune_results_rf <- function(object,
 #' }
 #' @seealso see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
 #' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
-#' @importFrom dplyr select starts_with filter arrange rename
+#' @importFrom dplyr select bind_cols starts_with filter arrange rename
+#' @importFrom tibble as_tibble
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca
 #' @importFrom rsample vfold_cv
 #' @importFrom parsnip linear_reg set_engine rand_forest
@@ -514,6 +541,7 @@ summarize_tune_results_rf <- function(object,
 #' @importFrom yardstick accuracy bal_accuracy sens spec precision kap f_meas
 #' @export
 textTrainRandomForest <- function(x,
+                                  x_add = NULL,
                                   y,
                                   cv_method = "validation_split",
                                   outside_folds = 10,
@@ -565,10 +593,11 @@ textTrainRandomForest <- function(x,
 
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
-    y <- y[[1]]
+    #y <- y[[1]]
+    y <- tibble::as_tibble_col(y[[1]], column_name = "y")
   } else {
     y_name <- deparse(substitute(y))
-    y <- y
+    y <- tibble::as_tibble_col(y, column_name = "y")
   }
 
   ############ Arranging word embeddings to be concatenated from different texts ############
@@ -599,14 +628,21 @@ textTrainRandomForest <- function(x,
   ############ End for multiple word embeddings ############
   ##########################################################
 
+  #### Add other variables to word embeddings x_add=NULL
+  if(!is.null(x_add)){
+    x1 <- add_variables_to_we(word_embeddings = x1,
+                              data = x_add) # ...
+  }
+  # Get names for the added variables to save to description
+  x_add_names <- names(x_add)
 
   x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
 
   if (!mode_rf == "regression") {
-    y <- as.factor(y)
+    y$y <- as.factor(y[[1]])
   }
-  xy <- cbind(x1, y)
-  xy <- as_tibble(xy)
+  xy <- dplyr::bind_cols(x1, y)
+  xy <- tibble::as_tibble(xy)
 
 
   xy$id_nr <- c(seq_len(nrow(xy)))

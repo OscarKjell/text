@@ -57,6 +57,7 @@ p_value_comparing_with_Null <- function(Observedresult,
   return(p_value)
 }
 
+
 # Help functions
 #' Add numeric variables to word embeddings
 #' @param word_embeddings Word embeddings to add variables to.
@@ -73,15 +74,15 @@ p_value_comparing_with_Null <- function(Observedresult,
 #' @importFrom purrr map
 #' @importFrom tibble as_tibble
 #' @noRd
-add_variables_to_we <- function(word_embeddings, data, first=TRUE){
+add_variables_to_we <- function(word_embeddings,
+                                data,
+                                first=TRUE){
 
   # Add Names to new Variables
   colnames(data) <- paste("Dim0", 1:ncol(data), "_", colnames(data), sep="")
 
   # Remove single_we if exist
-  if(is.list(word_embeddings$singlewords_we) == TRUE){
-    word_embeddings$singlewords_we <- NULL
-  }
+  word_embeddings$singlewords_we <- NULL
 
   # If list of word embeddings
   if(!is.data.frame(word_embeddings)){
