@@ -76,7 +76,7 @@ p_value_comparing_with_Null <- function(Observedresult,
 #' @noRd
 add_variables_to_we <- function(word_embeddings,
                                 data,
-                                first=TRUE){
+                                first=FALSE){
 
   # Add Names to new Variables
   colnames(data) <- paste("Dim0", 1:ncol(data), "_", colnames(data), sep="")

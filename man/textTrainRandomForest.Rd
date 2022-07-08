@@ -6,8 +6,8 @@
 \usage{
 textTrainRandomForest(
   x,
-  x_add = NULL,
   y,
+  x_append = NULL,
   cv_method = "validation_split",
   outside_folds = 10,
   outside_strata_y = "y",
@@ -34,9 +34,10 @@ textTrainRandomForest(
 \arguments{
 \item{x}{Word embeddings from textEmbed.}
 
-\item{x_add}{Variables to be added to the word embeddings (x).}
-
 \item{y}{Categorical variable to predict.}
+
+\item{x_append}{Variables to be appended after the word embeddings (x); if wanting to preappend them before the word embeddings
+use the option first = TRUE.}
 
 \item{cv_method}{Cross-validation method to use within a pipeline of nested outer and
 inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the

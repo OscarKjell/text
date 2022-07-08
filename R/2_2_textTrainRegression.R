@@ -456,7 +456,7 @@ summarize_tune_results <- function(object,
 ##
 ##
 #x = harmony_word_embeddings[1]
-#x_add = Language_based_assessment_data_8[1:20, 7]
+#x_append = Language_based_assessment_data_8[1:20, 7]
 #y = Language_based_assessment_data_8[1:20, 5]
 #cv_method = "cv_folds"
 #outside_folds = 2
@@ -472,7 +472,8 @@ summarize_tune_results <- function(object,
 #'
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are provided in a list
 #' they will be concatenated.
-#' @param x_add Variables to be added to the word embeddings (x).
+#' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before the word embeddings
+#' use the option first = TRUE.
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops
@@ -540,8 +541,8 @@ summarize_tune_results <- function(object,
 #' @importFrom workflows workflow add_model add_recipe
 #' @export
 textTrainRegression <- function(x,
-                                x_add = NULL,
                                 y,
+                                x_append = NULL,
                                 cv_method = "validation_split",
                                 outside_folds = 10,
                                 outside_strata_y = "y",
@@ -635,13 +636,13 @@ textTrainRegression <- function(x,
   ############ End for multiple word embeddings ############
   ##########################################################
 
-  #### Add other variables to word embeddings x_add=NULL
-  if(!is.null(x_add)){
+  #### Add other variables to word embeddings x_append=NULL
+  if(!is.null(x_append)){
     x1 <- add_variables_to_we(word_embeddings = x1,
-                              data = x_add) # ...
+                              data = x_append, ...) # ...
   }
   # Get names for the added variables to save to description
-  x_add_names <- names(x_add)
+  x_append_names <- names(x_append)
 
 
   x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
@@ -1002,7 +1003,7 @@ textTrainRegression <- function(x,
   ############################################
 
   x_name_description <- paste("x word_embeddings = ", x_name)
-  x_add_names_description <- paste("x_add = ", x_add_names)
+  x_append_names_description <- paste("x_append = ", x_append_names)
   y_name_description <- paste("y = ", y_name)
   cv_method_description <- paste("cv_method = ", deparse(cv_method))
   outside_folds_description <- paste("outside_folds = ", deparse(outside_folds))
@@ -1064,7 +1065,7 @@ textTrainRegression <- function(x,
   # Describe model; adding user's-description + the name of the x and y
   model_description_detail <- c(
     x_name_description,
-    x_add_names_description,
+    x_append_names_description,
     y_name_description,
     cv_method_description,
     outside_folds_description,
@@ -1159,7 +1160,7 @@ textTrainRegression <- function(x,
   # check sizes: sort(sapply(ls(),function(x){object.size(get(x))}))
   remove(x)
   remove(x1)
-  remove(x_add)
+  remove(x_append)
   remove(y)
   remove(x2)
   remove(xy)

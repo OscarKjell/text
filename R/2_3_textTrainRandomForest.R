@@ -442,7 +442,7 @@ summarize_tune_results_rf <- function(object,
 
 
 #x = word_embeddings_4$harmonytext
-#x_add = NULL
+#x_append = NULL
 #y = example_categories
 #cv_method = "validation_split"
 #outside_folds = 10
@@ -468,8 +468,9 @@ summarize_tune_results_rf <- function(object,
 #' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Word embeddings from textEmbed.
-#' @param x_add Variables to be added to the word embeddings (x).
 #' @param y Categorical variable to predict.
+#' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before the word embeddings
+#' use the option first = TRUE.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and
 #' inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
 #' outside folds and "validation_split" using rsample::validation_split in the inner loop to
@@ -541,8 +542,8 @@ summarize_tune_results_rf <- function(object,
 #' @importFrom yardstick accuracy bal_accuracy sens spec precision kap f_meas
 #' @export
 textTrainRandomForest <- function(x,
-                                  x_add = NULL,
                                   y,
+                                  x_append = NULL,
                                   cv_method = "validation_split",
                                   outside_folds = 10,
                                   outside_strata_y = "y",
@@ -628,13 +629,13 @@ textTrainRandomForest <- function(x,
   ############ End for multiple word embeddings ############
   ##########################################################
 
-  #### Add other variables to word embeddings x_add=NULL
-  if(!is.null(x_add)){
+  #### Add other variables to word embeddings x_append=NULL
+  if(!is.null(x_append)){
     x1 <- add_variables_to_we(word_embeddings = x1,
-                              data = x_add) # ...
+                              data = x_append, ...) # ...
   }
   # Get names for the added variables to save to description
-  x_add_names <- names(x_add)
+  x_append_names <- names(x_append)
 
   x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
 
@@ -964,6 +965,7 @@ textTrainRandomForest <- function(x,
     extremely_randomised_splitrule <- c("NA")
   }
 
+  x_append_names_description <- paste("x_append = ", x_append_names)
   cv_method_description <- paste("cv_method = ", deparse(cv_method))
   outside_folds_description <- paste("outside_folds = ", deparse(outside_folds))
   outside_strata_y_description <- paste("outside_strata_y = ", deparse(outside_strata_y))
