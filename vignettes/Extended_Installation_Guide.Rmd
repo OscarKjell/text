@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-*Text* uses the R-package [reticulate](https://rstudio.github.io/reticulate/) as an interface to [Python](https://www.python.org/), and the python packages [torch](https://pytorch.org/) and [transformers](https://huggingface.co/docs/transformers/index). So it's important to install both the text-package and a python environment with the text required python packages that the text-package can use.
+*Text* enables users access to HuggingFace Transformers in R through the R-package [reticulate](https://rstudio.github.io/reticulate/) as an interface to [Python](https://www.python.org/), and the python packages [torch](https://pytorch.org/) and [transformers](https://huggingface.co/docs/transformers/index). So it's important to install both the text-package and a python environment with the text required python packages that the text-package can use.
 </br></br>
 The recommended way is to use ```textrpp_install()``` to install a conda environment with text required python packages, and ```textrpp_initialize``` to initialize it.
 

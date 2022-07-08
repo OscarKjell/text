@@ -45,7 +45,7 @@ test_that("Testing textEmbed as well as train", {
 
   expect_that(text_train_results1$results$estimate[1], is_a("numeric"))
   expect_gt(text_train_results1$results$estimate[1], .3)
-  expect_equal(text_train_results1$results$estimate[[1]], 0.3273128, tolerance = 0.0000001)
+  expect_equal(text_train_results1$results$estimate[[1]], 0.3273128, tolerance = 0.00001)
 
   # Train with x_variable
   text_train_results2 <- textTrain(
@@ -139,7 +139,7 @@ test_that("Testing textEmbed as well as train", {
 
   expect_that(text_train_results$results$estimate[1], is_a("numeric"))
   expect_gt(text_train_results$results$estimate[1], 0.3)
-  expect_equal(text_train_results$results$estimate[[1]], 0.3273128, tolerance = 0.0000001)
+  expect_equal(text_train_results$results$estimate[[1]], 0.3273128, tolerance = 0.0001)
 
 
   # Predict

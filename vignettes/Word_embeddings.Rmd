@@ -1,5 +1,5 @@
 ---
-title: "Word Embeddings: Defaults and Specifications"
+title: "HuggingFace Transformers in R: Word Embeddings Defaults and Specifications"
 output: github_document #rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Word_Embeddings}
@@ -14,13 +14,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-A word embedding comprises values that represent the latent meaning of a word. The numbers may be seen as coordinates in a space that comprises several hundred dimensions. The more similar two words’ embeddings are, the closer positioned they are in this embedding space, and thus, the more similar the words are in meaning. Hence, embeddings reflect the relationships among words, where proximity in the embedding space represents similarity in latent meaning. ```Text``` uses already existing language models to map text data to high quality word embeddings.
+A word embedding comprises values that represent the latent meaning of a word. The numbers may be seen as coordinates in a space that comprises several hundred dimensions. The more similar two words’ embeddings are, the closer positioned they are in this embedding space, and thus, the more similar the words are in meaning. Hence, embeddings reflect the relationships among words, where proximity in the embedding space represents similarity in latent meaning. ```Text``` enables you to use already existing Transformers (language models (from Hugging Face) to map text data to high quality word embeddings.
 
 To represent several words, sentences and paragraphs, word embeddings of single words may be combined or aggregated into one word embedding. This can be achieved by taking the mean, minimum or maximum value of each dimension of the embeddings.
 
 This tutorial focuses on how to *retrieve* layers and how to *aggregate* them to receive word embeddings in ```text```. The focus will be on the actual functions.  
 
-For more detailed information about word embeddings and the language models in regard to ```text``` please see *text: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning*; and for more comprehensive information about the inner workings of the language models, for example see [Illustrated BERT](https://jalammar.github.io/illustrated-bert/) or the references given in Table 1.
+For more detailed information about word embeddings and the language models in regard to ```text``` please see [text: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://psyarxiv.com/293kt/); and for more comprehensive information about the inner workings of the language models, for example see [Illustrated BERT](https://jalammar.github.io/illustrated-bert/) or the references given in Table 1.
 
 Table 1 show some of the more common language models; for more detailed information see [HuggingFace](https://huggingface.co/)
 
@@ -65,11 +65,9 @@ knitr::kable(Tables_short, caption="", bootstrap_options = c("hover"), full_widt
 
 
 ## textEmbed: Reflecting standards and state-of-the-arts
-The main function to transform text to word embeddings is ```textEmbed()```. First, provide a tibble containing the text-variable(s) that you want to transform (note that it is OK to submit other variables too; the function will only grab the character variables). Second, set the language ```model```; using a setting among the options for ```model``` ensures that you use a model that have been tested with *text*. 
+The main function to transform text to word embeddings is ```textEmbed()```. First, provide a tibble containing the text-variable(s) that you want to transform (note that it is OK to submit other variables too; the function will only grab the character variables). Second, set the language ```model```; using a setting among the options for ```model``` ensures that you use a model that have been tested with *text*.
 
-Setting the advanced options ```pretrained_weights``` (e.g., to ```pretrained_weights = 'bert-base-uncased'```), ```tokenizer_class``` (e.g., to ```tokenizer_class = BertTokenizer```) and ```model_class``` (e.g., to ```model_class = BertModel```; and ```model = NULL```); allows you to set a model directly with the HuggingFace interface. Make sure that the pretrained_weights, tokenizer_class, and model_class fit together (otherwise you will get an error).  
-
-Third, decide whether you want contextualized and/or decontextualized word embeddings; by setting the ```contexts``` ans ```deconext``` parameters to TRUE/FALSE. Contextualized word embeddings are standard and return word embeddings that have taken into account the context in which the word was used; the decontextualized word embeddings do not take into account the context of how the word was used (and are used in the plot functions).  
+Second, decide whether you want contextualized and/or decontextualized word embeddings; by setting the ```contexts``` ans ```deconext``` parameters to TRUE/FALSE. Contextualized word embeddings are standard and return word embeddings that have taken into account the context in which the word was used; the decontextualized word embeddings do not take into account the context of how the word was used (and are used in the plot functions).  
 
 Last, select the number of layers you want to use and the way you want to aggregate them.  
 
