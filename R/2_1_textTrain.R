@@ -20,8 +20,8 @@
 #' word_embeddings <- word_embeddings_4
 #' ratings_data <- Language_based_assessment_data_8
 #' results <- textTrain(
-#'   word_embeddings$harmonytext,
-#'   ratings_data$hilstotal
+#'   x = word_embeddings$harmonytext,
+#'   y = ratings_data$hilstotal
 #' )
 #' }
 #' @seealso \code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
@@ -267,8 +267,8 @@ sort_classification_output_list <- function(output, save_output, descriptions, t
 #' word_embeddings <- word_embeddings_4[1:2]
 #' ratings_data <- Language_based_assessment_data_8[5:6]
 #' results <- textTrainLists(
-#'   word_embeddings,
-#'   ratings_data
+#'   x = word_embeddings,
+#'   y = ratings_data
 #' )
 #' results
 #' comment(results)

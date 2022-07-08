@@ -112,8 +112,8 @@ Train word embeddings to a categorical variable using random forrest.
 \examples{
 \donttest{
 results <- textTrainRandomForest(
-  x=word_embeddings_4$harmonywords,
-  y=as.factor(Language_based_assessment_data_8$gender),
+  x = word_embeddings_4$harmonywords,
+  y = as.factor(Language_based_assessment_data_8$gender),
   trees = c(1000, 1500),
   mtry  = c(1), # this is short because of testing
   min_n = c(1), # this is short because of testing

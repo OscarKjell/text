@@ -521,8 +521,8 @@ summarize_tune_results <- function(object,
 #' @examples
 #' \donttest{
 #' results <- textTrainRegression(
-#'   word_embeddings_4$harmonytext,
-#'   Language_based_assessment_data_8$hilstotal,
+#'   x = word_embeddings_4$harmonytext,
+#'   y = Language_based_assessment_data_8$hilstotal,
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
 #' }
