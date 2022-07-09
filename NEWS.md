@@ -1,10 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.93
+- New function: `textSentiment()`.
+
 # text 0.9.92
 - Option `dim_names` to set unique dimension names in `textEmbed()` and `textEmbedStatic()`.
 - `textPreictAll()` function that can take several models, word embeddings, and variables as input to provide multiple outputs.
-- option to add variables to the embeddings in `textTrain()` functions with `x_add`.
+- option to add variables to the embeddings in `textTrain()` functions with `x_append`.
 
 # text 0.9.91
 
