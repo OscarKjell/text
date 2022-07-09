@@ -273,7 +273,7 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' # word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
-#' @importFrom reticulate source_python py_capture_output
+#' @importFrom reticulate source_python
 #' @importFrom dplyr %>% bind_rows group_split
 #' @importFrom tibble tibble as_tibble
 #' @importFrom magrittr set_colnames

@@ -15,6 +15,12 @@ test_that("Testing textEmbed as well as train", {
   descr2 <- textDescriptives(Language_based_assessment_data_8[1:2])
   expect_that(descr2[[2]][[1]], is_a("integer"))
 
+  # bert-base-uncased
+  sen1 <- textSentiment("I like you. I love you",
+                        model = "distilbert-base-uncased-finetuned-sst-2-english")
+
+  expect_equal(sen1$score_x, 0.9998739, tolerance = 0.0001)
+
   harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",
     dim_name = TRUE,
