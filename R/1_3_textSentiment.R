@@ -11,6 +11,11 @@
 #                       model = "distilbert-base-uncased-finetuned-sst-2-english")
 #
 
+x = "hello sunshine"
+model  = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+device = "cpu"
+tokenizer_parallelism = FALSE
+logging_level = "error"
 
 #' Predict label and score of a text using huggingface model
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
@@ -35,9 +40,9 @@
 #' @export
 textSentiment <- function(x,
                           model,
-                          device = 'cpu',
+                          device = "cpu",
                           tokenizer_parallelism = FALSE,
-                          logging_level = 'warning'){
+                          logging_level = "error"){
 
   #set.seed(seed)
   T1_textSentiment <- Sys.time()

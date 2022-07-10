@@ -9,7 +9,7 @@ textSentiment(
   model,
   device = "cpu",
   tokenizer_parallelism = FALSE,
-  logging_level = "warning"
+  logging_level = "error"
 )
 }
 \arguments{

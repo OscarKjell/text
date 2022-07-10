@@ -236,6 +236,17 @@ grep_col_by_name_in_list <- function(l, pattern) {
   u[grep(pattern, names(u))]
 }
 
+contexts = TRUE
+single_context_embeddings = FALSE
+decontexts = TRUE
+model = "bert-base-uncased"
+layers = 11
+return_tokens = TRUE
+dim_name = FALSE
+device = "cpu"
+tokenizer_parallelism = FALSE
+model_max_length = NULL
+logging_level = "error"
 
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
@@ -317,7 +328,7 @@ textEmbedLayersOutput <- function(x,
     sorted_layers_ALL_variables$context <- list()
     # Loop over all character variables; i_variables = 1
     for (i_variables in seq_len(length(data_character_variables))) {
-
+      T1_variable <- Sys.time()
       # Python file function to HuggingFace
       hg_embeddings <- hgTransformerGetEmbedding(
         text_strings = x[[i_variables]],
@@ -340,9 +351,10 @@ textEmbedLayersOutput <- function(x,
 
         for(i_row in seq_len(length(sorted_layers_ALL_variables$context[[i_variables]]))) {
 
-          colnames(sorted_layers_ALL_variables$context[[i_variables]][[i_row]]) <- paste0(names(sorted_layers_ALL_variables$context[[i_variables]][[i_row]]),
-                                                                                    "_",
-                                                                                    names(x)[[i_variables]])
+          colnames(sorted_layers_ALL_variables$context[[i_variables]][[i_row]]) <- paste0(
+            names(sorted_layers_ALL_variables$context[[i_variables]][[i_row]]),
+            "_",
+            names(x)[[i_variables]])
         }
       }
       # Adding informative comment help(comment)
@@ -354,9 +366,26 @@ textEmbedLayersOutput <- function(x,
         "single_context_embeddings: ", single_context_embeddings, "; ",
         "text_version: ", packageVersion("text"), ".",
         sep = "",
-        # "Warnings from python: ", textrpp_py_warnings_text_context,
         collapse = "\n"
       )
+
+      ## Timing
+      T2_variable <- Sys.time()
+      variable_time <- T2_variable - T1_variable
+      variable_time <- sprintf("duration: %f %s).",
+                               variable_time,
+                               units(variable_time))
+
+      version_seq <- paste(i_variables, "/", length(data_character_variables), sep="")
+
+      loop_text <- paste("Completed layers output for ",
+                         names(x)[[i_variables]], " (variable: ",
+                         version_seq, ", ",
+                         variable_time,
+                         "\n",
+                         sep = "")
+
+      cat(colourise(loop_text, "green"))
     }
   }
 
@@ -400,6 +429,9 @@ textEmbedLayersOutput <- function(x,
     n <- tibble::as_tibble_col(n, column_name = "n")
     single_words_n <- dplyr::bind_cols(single_words, n)
     individual_tokens$tokens <-  single_words_n
+
+    sing_text <- c("Completed layers aggregation for single_context_embeddings. \n")
+    cat(colourise(sing_text, "green"))
   }
 
   # Decontextualized embeddings for individual words
@@ -447,6 +479,9 @@ textEmbedLayersOutput <- function(x,
       "layers:", layers_string, ".",
       collapse = "; "
     ))
+
+    de_text <- c("Completed layers aggregation for decontexts embeddings. \n")
+    cat(colourise(de_text, "green"))
 
     sorted_layers_All_decontexts
   }
@@ -515,6 +550,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
   # Loop over the list of variables; variable_list_i = 1; variable_list_i = 2; remove(variable_list_i)
   selected_layers_aggregated_tibble <- list()
   for (variable_list_i in seq_len(length(word_embeddings_layers))) {
+    T1_variable <- Sys.time()
+
     x <- word_embeddings_layers[[variable_list_i]]
 
     # This is to ensure x is in a list (this is to make it work for single word embedddings that are contextualised)
@@ -573,23 +610,12 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
     selected_layers_aggregated <- lapply(selected_layers,
                                          layer_aggregation_helper,
                                          aggregation = aggregate_layers)
-##### test selected_layers_aggregatedT selected_layers_aggregatedF
 
     # Aggregate (Remove all tokens and layers; but create a cell with the information abt layers, aggregation)
     selected_layers_tokens_aggregated <- lapply(selected_layers_aggregated,
       textEmbeddingAggregation,
       aggregation = aggregate_tokens
     )
-
-##### test selected_layers_tokens_aggregatedT selected_layers_tokens_aggregatedF
-##### test length(selected_layers_tokens_aggregatedF)
-##### test help(as_tibble)
-##### test selected_layers_tokens_aggregatedF[[1]][1]
-##### test selected_layers_tokens_aggregatedF[[2]][1]
-##### test
-##### test selected_layers_tokens_aggregatedT[[1]][1]
-##### test selected_layers_tokens_aggregatedT[[2]][1]
-
     # Sort output
     selected_layers_aggregated_tibble[[variable_list_i]] <- dplyr::bind_rows(selected_layers_tokens_aggregated)
     # Add informative comments
@@ -608,7 +634,29 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
       tokens_deselect,
       collapse = ";"
     )
+
+    ## Timing
+    T2_variable <- Sys.time()
+    variable_time <- T2_variable - T1_variable
+    variable_time <- sprintf("duration: %f %s).",
+                             variable_time,
+                             units(variable_time))
+
+    version_seq <- paste(variable_list_i, "/", length(word_embeddings_layers), sep="")
+
+    loop_text <- paste("Completed layers aggregation", " (variable ",
+                       version_seq, ", ",
+                       variable_time,
+                       "\n",
+                       sep = "")
+
+    cat(colourise(loop_text, "blue"))
   }
+
+
+
+
+
   names(selected_layers_aggregated_tibble) <- names(word_embeddings_layers)
   selected_layers_aggregated_tibble
 }
@@ -720,8 +768,6 @@ textEmbed <- function(x,
     model_max_length = model_max_length,
     logging_level = logging_level
   )
-  #all_wanted_layersF
-  #all_wanted_layersT
 
   # Aggregate context layers
   contextualised_embeddings <- textEmbedLayerAggregation(
@@ -736,6 +782,12 @@ textEmbed <- function(x,
   # DEcontext layers (in case they should be added differently from context) decontext_layers = 11
   if (decontexts == TRUE | single_context_embeddings == TRUE) {
     if (single_context_embeddings){
+      single_context_text <- paste("Embedding single context embeddings.",
+                         "\n",
+                         sep = "")
+
+      cat(colourise(single_context_text, "purple"))
+
       individual_word_embeddings_layers <- all_wanted_layers$single_we
       individual_words <- all_wanted_layers$tokens
   }
@@ -761,6 +813,7 @@ textEmbed <- function(x,
   )
 
   comment(individual_word_embeddings_words) <- comment(individual_word_embeddings[[1]])
+  cat(colourise("Done! \n", "purple"))
   }
 
   T2_textEmbed <- Sys.time()

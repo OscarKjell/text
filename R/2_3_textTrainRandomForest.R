@@ -394,7 +394,7 @@ tune_over_cost_rf <- function(object,
   tune_accuracy <- (dplyr::bind_rows(tune_outputlist$eval_measure_val$eval_measure_val))$.estimate
   # Add accuracy to the grid
   grid_inner_accuracy <- grid_inner %>%
-    dplyr::mutate(eval_measure = tune_accuracy)
+    dplyr::mutate(eval_results = tune_accuracy)
 
   grid_inner_accuracy
 }
@@ -422,28 +422,48 @@ summarize_tune_results_rf <- function(object,
                                       eval_measure,
                                       extremely_randomised_splitrule) {
 
+  T1 <- Sys.time()
+
   # Return row-bound tibble containing the INNER results
-  purrr::map_df(
-    .x = object$splits,
-    .f = tune_over_cost_rf,
-    mode_rf = mode_rf,
-    mtry = mtry,
-    min_n = min_n,
-    trees = trees,
-    preprocess_step_center = preprocess_step_center,
-    preprocess_scale_center = preprocess_scale_center,
-    preprocess_PCA = preprocess_PCA,
-    variable_name_index_pca = variable_name_index_pca,
-    eval_measure = eval_measure,
-    extremely_randomised_splitrule = extremely_randomised_splitrule
+  results <- purrr::map_df(
+              .x = object$splits,
+              .f = tune_over_cost_rf,
+              mode_rf = mode_rf,
+              mtry = mtry,
+              min_n = min_n,
+              trees = trees,
+              preprocess_step_center = preprocess_step_center,
+              preprocess_scale_center = preprocess_scale_center,
+              preprocess_PCA = preprocess_PCA,
+              variable_name_index_pca = variable_name_index_pca,
+              eval_measure = eval_measure,
+              extremely_randomised_splitrule = extremely_randomised_splitrule
   )
+
+  best_eval <- bestParameters(data = results,
+                              eval_measure = eval_measure)
+
+  T2 <- Sys.time()
+  time <- T2-T1
+  variable_time <- sprintf("(duration: %f %s).",
+                           time,
+                           units(time))
+
+  description_text <- paste("Fold:", eval_measure,
+                            round(best_eval$eval_result, digits= 3),
+                            variable_time, "\n")
+
+  cat(colourise(description_text, "green"))
+
+  return(results)
+
 }
 
 
 
 #x = word_embeddings_4$harmonytext
 #x_append = NULL
-#y = example_categories
+#y = as.factor(Language_based_assessment_data_8$gender)
 #cv_method = "validation_split"
 #outside_folds = 10
 #outside_strata_y = "y"
@@ -565,6 +585,7 @@ textTrainRandomForest <- function(x,
                                   save_output = "all",
                                   seed = 2020,
                                   ...) {
+
   T1_textTrainRandomForest <- Sys.time()
   set.seed(seed)
 
@@ -737,22 +758,22 @@ textTrainRandomForest <- function(x,
   }
 
 
-  # Function to get the lowest eval_measure_val library(tidyverse)
-  if (eval_measure %in% c(
-    "accuracy", "bal_accuracy", "sens", "spec",
-    "precision", "kappa", "f_measure", "roc_auc",
-    "rsq", "cor_test"
-  )) {
-    bestParameters <- function(dat) dat[which.max(dat$eval_measure), ]
-  } else if (eval_measure == "rmse") {
-    bestParameters <- function(dat) dat[which.min(dat$eval_measure), ]
-  }
+#  # Function to get the lowest eval_measure_val library(tidyverse)
+#  if (eval_measure %in% c(
+#    "accuracy", "bal_accuracy", "sens", "spec",
+#    "precision", "kappa", "f_measure", "roc_auc",
+#    "rsq", "cor_test"
+#  )) {
+#    bestParameters <- function(dat) dat[which.max(dat$eval_measure), ]
+#  } else if (eval_measure == "rmse") {
+#    bestParameters <- function(dat) dat[which.min(dat$eval_measure), ]
+#  }
 
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
   hyper_parameter_vals <-
     tuning_results %>%
-    purrr::map_df(bestParameters)
+    purrr::map_df(bestParameters, eval_measure)
 
   # Bind best results
   results_split_parameter <-
