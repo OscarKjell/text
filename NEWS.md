@@ -3,6 +3,7 @@
 
 # text 0.9.93
 - New function: `textSentiment()`.
+- add progression for time consuming functions including `textEmbed()`, `textTrainRegression()`, `textTrainRandomForest()` and `textProjection()`. 
 
 # text 0.9.92
 - Option `dim_names` to set unique dimension names in `textEmbed()` and `textEmbedStatic()`.
