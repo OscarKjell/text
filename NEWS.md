@@ -2,7 +2,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # text 0.9.93
-- New function: `textSentiment()`.
+- New function: `textSentiment()`, from huggingface transformers models.
 - add progression for time consuming functions including `textEmbed()`, `textTrainRegression()`, `textTrainRandomForest()` and `textProjection()`. 
 
 # text 0.9.92

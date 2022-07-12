@@ -15,7 +15,7 @@ template:
   opengraph:
     image:
       src: man/figures/logo.png
-      alt: "text analyzes text"
+      alt: "text analyzes using huggingface transformers"
     twitter:
       creator: "@oscarkjell"
 #      site: "@rstudio"
@@ -95,20 +95,20 @@ articles:
 - title: Set-up
   navbar: ~
   contents:
-  - Extended Installation Guide
-  - Singularity_Container
-  - Computer_Capacity
-  - Removing_Cache_Files
+  - huggingface_in_r_extended_installation_guide
+  - singularity_transformers_container
+  - huggingface_in_r_and_computer_capacity
+  - removing_huggingface_transformers_cache_files
 - title: Tutorials
   desc: >
     These tutorials go into detail about various text-analyses.
   contents:
-  - Word_embeddings
+  - huggingface_in_r
 - title: Comments
   desc: >
     General comments about text-analyses.
   contents:
-  - Pre-registration
+  - pre-registration_and_transformers
 
 news:
 # releases:
