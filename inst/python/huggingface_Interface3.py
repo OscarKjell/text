@@ -18,6 +18,8 @@ from nltk.tokenize import sent_tokenize
 
 import os, sys
 
+ACCEPTED_TASKS = ["text-classification", "sentiment-analysis", "question-answering", "translation", 
+    "summarization", "token-classification", "ner", "text-generation", "zero-shot-classification"]
 
 def set_logging_level(logging_level):
     """
@@ -41,7 +43,7 @@ def set_logging_level(logging_level):
             logging.set_verbosity_debug()
         else:
             print("Warning: Logging level {l} is not an option.".format(l=logging_level))
-            print("\tUse one of: ")
+            print("\tUse one of: critical, error, warning, info, debug")
 
 def set_tokenizer_parallelism(tokenizer_parallelism):
     if tokenizer_parallelism:
@@ -56,7 +58,8 @@ def get_device(device):
     Parameters
     ----------
     device : str
-        name of device: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+        name of device: 'cpu', 'gpu', 'cuda', or of the form 'gpu:k' or 'cuda:k' 
+        where k is a specific device number
 
     Returns
     -------
@@ -78,11 +81,13 @@ def get_device(device):
         if torch.cuda.is_available():
             if device == 'gpu' or device == 'cuda': 
                 # assign to first gpu device number
+                device = 'cuda'
                 device_num = list(range(torch.cuda.device_count()))[0]
                 attached = True
             else: # assign to specific gpu device number
                 try:
                     device_num = int(device.split(":")[-1])
+                    device = 'cuda:' + str(device_num)
                     attached = True
                 except:
                     pass
@@ -129,18 +134,24 @@ def get_model(model):
         transformer_model = AutoModel.from_pretrained(model, config=config)
     return config, tokenizer, transformer_model
 
-def hgTransformerGetSentiment(text_strings,
+def hgTransformerGetPipeline(text_strings,
+                            task = '',
                             model = '',
                             device = 'cpu',
                             tokenizer_parallelism = False,
-                            logging_level = 'warning'):
+                            logging_level = 'warning',
+                            **kwargs):
     """
-    Simple interface getting sentiment scores from text
+    Simple interface getting Huggingface Pipeline
+    https://huggingface.co/docs/transformers/main_classes/pipelines
 
     Parameters
     ----------
     text_strings : list
         list of strings, each is embedded separately
+    task : str
+        String representing task
+        Task descriptions https://huggingface.co/docs/transformers/v4.20.1/en/task_summary
     model : str
         shortcut name for Hugging Face pretained model
         Full list https://huggingface.co/transformers/pretrained_models.html
@@ -167,17 +178,154 @@ def hgTransformerGetSentiment(text_strings,
 
     if model:
         config, tokenizer, transformer_model = get_model(model)
-        if device_num > 0:
-            sentiment_pipeline = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer, device=device_num)
+        if device_num >= 0:
+            task_pipeline = pipeline(task, model=model, tokenizer=tokenizer, device=device_num)
         else:
-            sentiment_pipeline = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+            task_pipeline = pipeline(task, model=model, tokenizer=tokenizer)
     else:
-        if device_num > 0:
-            sentiment_pipeline = pipeline("sentiment-analysis", device=device_num)
+        if device_num >= 0:
+            task_pipeline = pipeline(task, device=device_num)
         else:
-            sentiment_pipeline = pipeline("sentiment-analysis")
-    sentiment_scores = sentiment_pipeline(text_strings)
+            task_pipeline = pipeline(task)
+    
+    task_scores = []
+    if task in ACCEPTED_TASKS or task.startswith("translation"):
+        if task == 'question-answering':
+            task_scores = task_pipeline(**kwargs)
+        else:
+            task_scores = task_pipeline(text_strings, **kwargs)
+    else:
+        print("Task {t} is not recognized".format(t=task))
+    return task_scores
+
+def hgTransformerGetTextGeneration(text_strings,
+                            model = '',
+                            device = 'cpu',
+                            tokenizer_parallelism = False,
+                            logging_level = 'warning',
+                            return_tensors = False,
+                            return_text = True,
+                            return_full_text = True,
+                            clean_up_tokenization_spaces = False,
+                            prefix = '', 
+                            handle_long_generation = None):
+    
+    generated_texts = hgTransformerGetPipeline(text_strings = text_strings,
+                            task = 'text-generation',
+                            model = model,
+                            device = device,
+                            tokenizer_parallelism = tokenizer_parallelism,
+                            logging_level = logging_level,
+                            return_tensors = return_tensors, 
+                            return_text = return_text, 
+                            return_full_text = return_full_text, 
+                            clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
+                            prefix = prefix,
+                            handle_long_generation = handle_long_generation)
+    return generated_texts
+
+def hgTransformerGetNER(text_strings,
+                            model = '',
+                            device = 'cpu',
+                            tokenizer_parallelism = False,
+                            logging_level = 'warning'):
+    ner_scores = hgTransformerGetPipeline(text_strings = text_strings,
+                            task = 'ner',
+                            model = model,
+                            device = device,
+                            tokenizer_parallelism = tokenizer_parallelism,
+                            logging_level = logging_level)
+    return ner_scores
+
+def hgTransformerGetSentiment(text_strings,
+                            model = '',
+                            device = 'cpu',
+                            tokenizer_parallelism = False,
+                            logging_level = 'warning',
+                            top_k = 1,
+                            function_to_apply = "default"):
+    sentiment_scores = hgTransformerGetPipeline(text_strings = text_strings,
+                            task = 'sentiment-analysis',
+                            model = model,
+                            device = device,
+                            tokenizer_parallelism = tokenizer_parallelism,
+                            logging_level = logging_level,
+                            top_k = top_k,
+                            function_to_apply = function_to_apply)
     return sentiment_scores
+
+def hgTransformerGetSummarization(text_strings,
+                            model = '',
+                            device = 'cpu',
+                            tokenizer_parallelism = False,
+                            logging_level = 'warning',
+                            return_text = True,
+                            return_tensors = False,
+                            clean_up_tokenization_spaces = False):
+    summarizations = hgTransformerGetPipeline(text_strings = text_strings,
+                            task = 'summarization',
+                            model = model,
+                            device = device,
+                            tokenizer_parallelism = tokenizer_parallelism,
+                            logging_level = logging_level,
+                            return_text = return_text, 
+                            return_tensors = return_tensors, 
+                            clean_up_tokenization_spaces = clean_up_tokenization_spaces)
+    return summarizations
+
+def hgTransformerGetQA(question,
+                        context,
+                        model = '',
+                        device = 'cpu',
+                        tokenizer_parallelism = False,
+                        logging_level = 'warning',
+                        topk = 1,
+                        doc_stride = 128,
+                        max_answer_len = 15,
+                        max_seq_len = 384,
+                        max_question_len = 64,
+                        handle_impossible_answer = False):
+    qas = hgTransformerGetPipeline(text_strings = [],
+                            task = 'question-answering',
+                            model = model,
+                            device = device,
+                            tokenizer_parallelism = tokenizer_parallelism,
+                            logging_level = logging_level,
+                            question = question, 
+                            context = context, 
+                            topk = topk, 
+                            doc_stride = doc_stride, 
+                            max_answer_len = max_answer_len, 
+                            max_seq_len = max_seq_len, 
+                            max_question_len = max_question_len, 
+                            handle_impossible_answer = handle_impossible_answer)
+    return qas
+
+def hgTransformerGetTranslation(text_strings,
+                            model = '',
+                            device = 'cpu',
+                            tokenizer_parallelism = False,
+                            logging_level = 'warning',
+                            source_lang = '',
+                            target_lang = '',
+                            return_tensors = False,
+                            return_text = True,
+                            clean_up_tokenization_spaces = False):
+    task = 'translation'
+    if source_lang and target_lang:
+        task = "translation_{s}_to_{t}".format(s=source_lang, t=target_lang)
+    translations = hgTransformerGetPipeline(text_strings = text_strings,
+                            task = task,
+                            model = model,
+                            device = device,
+                            tokenizer_parallelism = tokenizer_parallelism,
+                            logging_level = logging_level,
+                            src_lang = source_lang,
+                            tgt_lang = target_lang,
+                            return_tensors = return_tensors,
+                            return_text = return_text,
+                            clean_up_tokenization_spaces = clean_up_tokenization_spaces)
+    return translations
 
 def hgTransformerGetEmbedding(text_strings,
                               model = 'bert-large-uncased',
@@ -226,18 +374,10 @@ def hgTransformerGetEmbedding(text_strings,
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
 
-    device = device.lower()
-    if not device.startswith('cpu') and not device.startswith('gpu') and not device.startswith('cuda'):
-        print("device must be 'cpu', 'gpu', 'cuda', or of the form 'gpu:k' or 'cuda:k'")
-        print("\twhere k is an integer value for the device")
-        print("Trying CPUs")
-        device = 'cpu'
-
     config, tokenizer, transformer_model = get_model(model)
-    device, device_num = get_device(device)
 
     if device != 'cpu':
-        transformer_model.to(device="cuda:{device_num}".format(device_num=device_num))
+        transformer_model.to(device)
 
     max_tokens = tokenizer.max_len_sentences_pair
 
@@ -265,8 +405,8 @@ def hgTransformerGetEmbedding(text_strings,
             input_ids = torch.tensor(batch["input_ids"])
             attention_mask = torch.tensor(batch['attention_mask'])
             if device != 'cpu':
-                input_ids = input_ids.to(device=device_num)
-                attention_mask = attention_mask.to(device=device_num)
+                input_ids = input_ids.to(device)
+                attention_mask = attention_mask.to(device)
 
             if return_tokens:
                 tokens = []
@@ -295,7 +435,7 @@ def hgTransformerGetEmbedding(text_strings,
                 tokens = tokenizer.convert_ids_to_tokens(input_ids)
 
             if device != 'cpu':
-                input_ids = torch.tensor([input_ids]).to(device=device_num)
+                input_ids = torch.tensor([input_ids]).to(device)
             else:
                 input_ids = torch.tensor([input_ids])
 
