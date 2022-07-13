@@ -21,6 +21,18 @@ import os, sys
 ACCEPTED_TASKS = ["text-classification", "sentiment-analysis", "question-answering", "translation", 
     "summarization", "token-classification", "ner", "text-generation", "zero-shot-classification"]
 
+PIPELINE_RESULTS_BY_TASK = {
+    "text-classification": ["POSITIVE", "NEGATIVE"], 
+    "sentiment-analysis": ["POSITIVE", "NEGATIVE"], 
+    "question-answering": ["answer"], 
+    "translation": ["translation_text"], 
+    "summarization": ["summary_text"], 
+    "token-classification": ["entity"], 
+    "ner": ["entity"], 
+    "text-generation": ["generated_text"], 
+    "zero-shot-classification": [""], 
+}
+
 def set_logging_level(logging_level):
     """
     Set the logging level
@@ -140,6 +152,7 @@ def hgTransformerGetPipeline(text_strings,
                             device = 'cpu',
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
+                            return_incorrect_results = True,
                             **kwargs):
     """
     Simple interface getting Huggingface Pipeline
@@ -196,6 +209,14 @@ def hgTransformerGetPipeline(text_strings,
             task_scores = task_pipeline(text_strings, **kwargs)
     else:
         print("Task {t} is not recognized".format(t=task))
+    
+    if len(task_scores) > 0 and not any(k in PIPELINE_RESULTS_BY_TASK[task] for k in list(task_scores[0]).keys()):
+        print("WARNING: Results do not match the defaults for the task")
+        print("\tBy default, one of the following should be in the results for this task: {t}".format(t=", ".join(PIPELINE_RESULTS_BY_TASK[task])))
+        print("\tYou may want to try a different model or the default model for the task")
+        # todo add list of defaults and print the task default in warning
+        if not return_incorrect_results:
+            task_scores = []
     return task_scores
 
 def hgTransformerGetTextGeneration(text_strings,
