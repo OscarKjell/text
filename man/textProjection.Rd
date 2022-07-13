@@ -61,8 +61,9 @@ and the Group 2 split aggregation embedding}
 
 \item{Npermutations}{Number of permutations in the creation of the null distribution.}
 
-\item{n_per_split}{A setting to split Npermutations to avoid reaching computer memory limits;
-the higher the faster, but too high may lead to abortion.}
+\item{n_per_split}{Setting to split Npermutations to avoid reaching computer memory limits;
+set it lower than Npermutations <- and the higher it is set the faster the computation completes,
+ but too high may lead to abortion.}
 
 \item{seed}{Set different seed.}
 }

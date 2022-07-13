@@ -27,8 +27,9 @@
 #' and the Group 2 split aggregation embedding
 #' @param mean_centering2 Boolean; separately mean centering the G1 and G2 split aggregation embeddings
 #' @param Npermutations Number of permutations in the creation of the null distribution.
-#' @param n_per_split A setting to split Npermutations to avoid reaching computer memory limits;
-#' the higher the faster, but too high may lead to abortion.
+#' @param n_per_split Setting to split Npermutations to avoid reaching computer memory limits;
+#' set it lower than Npermutations <- and the higher it is set the faster the computation completes,
+#'  but too high may lead to abortion.
 #' @param seed Set different seed.
 #' @return A dataframe with variables (e.g., including Supervised Dimension Projection, frequencies, p-values)
 #' for the individual words that is used for the plotting in the textProjectionPlot function.
@@ -389,6 +390,7 @@ textProjection <- function(words,
     dot_null_distribution <- list()
 
     for (i in 1:forloops) {
+      T1 <- Sys.time()
       ### Create new Projected embedding
       # Randomly split word embeddings into two groups: words_group1_2_agg_single_wordembedding_e1
       ind <- sample(c(TRUE, FALSE), nrow(words_group1_2_agg_single_wordembedding_e1), replace = TRUE)
@@ -425,6 +427,20 @@ textProjection <- function(words,
       dot_products_null <- tibble::as_tibble(rowSums(words_positioned_embeddings_random * projected_embedding_random_long))
 
       dot_null_distribution[i] <- dot_products_null
+
+      # Progression text
+      T2 <- Sys.time()
+      time <- T2-T1
+      variable_time <- sprintf("(duration: %f %s).\n",
+                               time,
+                               units(time))
+      seq_text <- paste(i, "/", forloops, sep="")
+      description_text <- paste("Creating null distribution.",
+                                seq_text, "of permutations computed.",
+                                variable_time,
+                                sep=" ")
+      cat(colourise(description_text, "green"))
+
       dot_null_distribution
     }
     dot_null_distribution <- tibble::as_tibble(unlist(dot_null_distribution))

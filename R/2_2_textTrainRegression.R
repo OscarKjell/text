@@ -257,7 +257,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
 #' @param mixture hyperparameter for ridge regression.
 #' @param preprocess_PCA threshold for pca
 #' @param variable_name_index_pca variable with names to know how to keep variables
-#' from same word embedding together in separate pcas.
+#' from same word embedding together in separate pca:s.
 #' @return RMSE.
 #' @noRd
 fit_model_rmse_wrapper <- function(penalty = penalty,
@@ -382,10 +382,29 @@ tune_over_cost <- function(object,
   # Add RMSE to the grid
   grid_inner_eval_result <- grid_inner %>%
     dplyr::mutate(eval_result = tune_eval_result)
-
   grid_inner_eval_result
 }
 
+
+
+#' Function to get the lowest eval_measure_val
+#' @param data the data with parameters
+#' @param eval_measure the evaluation measure which decide if min or max value should be selected
+#' @return The row with the best evaluation measure.
+#' @noRd
+bestParameters <- function(data, eval_measure){
+  if (eval_measure %in% c(
+    "accuracy", "bal_accuracy", "sens", "spec",
+    "precision", "kappa", "f_measure", "roc_auc",
+    "rsq", "cor_test"
+  )) {
+    bestParametersFunction <- function(data) data[which.max(data$eval_result), ]
+  } else if (eval_measure == "rmse") {
+    bestParametersFunction <- function(data) data[which.min(data$eval_result), ]
+  }
+  results <- bestParametersFunction(data)
+  return(results)
+}
 
 #' # Since this will be called across the set of OUTER cross-validation splits, another wrapper is required:
 #'
@@ -410,8 +429,10 @@ summarize_tune_results <- function(object,
                                    preprocess_step_scale = preprocess_step_scale,
                                    impute_missing = impute_missing) {
 
+  T1 <- Sys.time()
+
   # Return row-bound tibble containing the INNER results
-  purrr::map_df(
+  results <- purrr::map_df(
     .x = object$splits,
     .f = tune_over_cost,
     penalty = penalty,
@@ -425,12 +446,28 @@ summarize_tune_results <- function(object,
     preprocess_step_scale = preprocess_step_scale,
     impute_missing = impute_missing
   )
+
+  best_eval <- bestParameters(data = results,
+                              eval_measure = eval_measure)
+
+  T2 <- Sys.time()
+  time <- T2-T1
+  variable_time <- sprintf("(duration: %f %s).",
+                           time,
+                           units(time))
+
+  description_text <- paste("Fold:", eval_measure,
+            round(best_eval$eval_result, digits= 3),
+            variable_time, "\n")
+
+  cat(colourise(description_text, "green"))
+
+  return(results)
 }
 
-
-
 #x = word_embeddings_4[1]
-#x_variables = Language_based_assessment_data_8[7]
+#x_append = Language_based_assessment_data_8[7]
+#x_append = NULL
 #y = Language_based_assessment_data_8[5]
 #cv_method = "validation_split"
 #outside_folds = 10
@@ -453,8 +490,8 @@ summarize_tune_results <- function(object,
 #multi_cores = "multi_cores_sys_default"
 #save_output = "all"
 #seed = 2020
-##
-##
+
+#
 #x = harmony_word_embeddings[1]
 #x_append = Language_based_assessment_data_8[1:20, 7]
 #y = Language_based_assessment_data_8[1:20, 5]
@@ -738,21 +775,21 @@ textTrainRegression <- function(x,
   }
 
   # Function to get the lowest eval_measure_val
-  if (eval_measure %in% c(
-    "accuracy", "bal_accuracy", "sens", "spec",
-    "precision", "kappa", "f_measure", "roc_auc",
-    "rsq", "cor_test"
-  )) {
-    bestParameters <- function(dat) dat[which.max(dat$eval_result), ]
-  } else if (eval_measure == "rmse") {
-    bestParameters <- function(dat) dat[which.min(dat$eval_result), ]
-  }
+ # if (eval_measure %in% c(
+ #   "accuracy", "bal_accuracy", "sens", "spec",
+ #   "precision", "kappa", "f_measure", "roc_auc",
+ #   "rsq", "cor_test"
+ # )) {
+ #   bestParameters <- function(dat) dat[which.max(dat$eval_result), ]
+ # } else if (eval_measure == "rmse") {
+ #   bestParameters <- function(dat) dat[which.min(dat$eval_result), ]
+ # }
 
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
   hyper_parameter_vals <-
     tuning_results %>%
-    purrr::map_df(bestParameters) %>%
+    purrr::map_df(bestParameters, eval_measure) %>%
     dplyr::select(c(penalty, mixture, preprocess_PCA, first_n_predictors))
 
   # Bind best results
