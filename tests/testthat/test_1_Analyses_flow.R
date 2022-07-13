@@ -16,7 +16,7 @@ test_that("Testing textEmbed as well as train", {
   expect_that(descr2[[2]][[1]], is_a("integer"))
 
   # bert-base-uncased
-  sen1 <- textSentiment("I like you. I love you",
+  sen1 <- textClassify("I like you. I love you",
                         model = "distilbert-base-uncased-finetuned-sst-2-english")
 
   expect_equal(sen1$score_x, 0.9998739, tolerance = 0.0001)

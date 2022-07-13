@@ -45,7 +45,7 @@ reference:
   - textEmbed
   - textEmbedLayersOutput
   - textEmbedLayerAggregation
-  - textSentiment
+  - textClassify
   - textEmbedStatic
 - title: View or delete downloaded HuggingFace models
   contents:

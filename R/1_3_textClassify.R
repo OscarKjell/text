@@ -1,28 +1,10 @@
 
-
-#
-## sen1 <- textSentiment("hello sunshine",
-##            model = "distilbert-base-uncased-finetuned-sst-2-english")
-## comment(sen1)
-# sen2 <- textSentiment(Language_based_assessment_data_8[1:2,1],
-#                       model = "bert-base-uncased")
-#
-# sen3 <- textSentiment(Language_based_assessment_data_8[1:2,1:2],
-#                       model = "distilbert-base-uncased-finetuned-sst-2-english")
-#
-
-x = "hello sunshine"
-model  = "cardiffnlp/twitter-roberta-base-sentiment-latest"
-device = "cpu"
-tokenizer_parallelism = FALSE
-logging_level = "error"
-
-#' Predict label and score of a text using huggingface model
+#' Predict label and probability of a text using a pretrained classifier language model.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
-#' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
-#'  For full list of options see pretrained models at
+#' @param model Character string specifying a pre-trained classifier language model.
+#'  For full list of options see pretrained classifier models at
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
-#'  For example use "...".
+#'  For example use "cardiffnlp/twitter-roberta-base-sentiment", "distilbert-base-uncased-finetuned-sst-2-english".
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param logging_level Set the logging level. Default: "warning".
@@ -31,14 +13,15 @@ logging_level = "error"
 #' The comment of the object show the model-name and computation time.
 #' @examples
 #' \donttest{
-#' # x <- Language_based_assessment_data_8[1:2, 1:2]
-#' # word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
+#' classifications <- textClassify(x = Language_based_assessment_data_8[1:2, 1:2])
+#' classifications
+#' comment(classifications)
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python
 #' @importFrom dplyr bind_cols bind_rows
 #' @export
-textSentiment <- function(x,
+textClassify <- function(x,
                           model,
                           device = "cpu",
                           tokenizer_parallelism = FALSE,
@@ -115,7 +98,3 @@ textSentiment <- function(x,
     )
     return(ALL_sentiments1)
   }
-
-
-
-
