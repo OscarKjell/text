@@ -289,13 +289,15 @@ def hgTransformerGetSentiment(text_strings,
                             device = 'cpu',
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
-                            function_to_apply = "default"):
+                            return_all_scores = False,
+                            function_to_apply = "none"):
     sentiment_scores = hgTransformerGetPipeline(text_strings = text_strings,
                             task = 'sentiment-analysis',
                             model = model,
                             device = device,
                             tokenizer_parallelism = tokenizer_parallelism,
                             logging_level = logging_level,
+                            return_all_scores = return_all_scores,
                             function_to_apply = function_to_apply)
     return sentiment_scores
 
