@@ -257,7 +257,6 @@ def hgTransformerGetTextGeneration(text_strings,
                             clean_up_tokenization_spaces = False,
                             prefix = '', 
                             handle_long_generation = None):
-    
     generated_texts = hgTransformerGetPipeline(text_strings = text_strings,
                             task = 'text-generation',
                             model = model,
@@ -297,7 +296,6 @@ def hgTransformerGetSentiment(text_strings,
                             device = device,
                             tokenizer_parallelism = tokenizer_parallelism,
                             logging_level = logging_level,
-                            top_k = top_k,
                             function_to_apply = function_to_apply)
     return sentiment_scores
 
