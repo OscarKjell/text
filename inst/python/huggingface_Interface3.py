@@ -157,7 +157,7 @@ def hgTransformerGetPipeline(text_strings,
     """
     Simple interface getting Huggingface Pipeline
     https://huggingface.co/docs/transformers/main_classes/pipelines
-
+    
     Parameters
     ----------
     text_strings : list
@@ -174,21 +174,26 @@ def hgTransformerGetPipeline(text_strings,
         something
     logging_level : str
         set logging level, options: critical, error, warning, info, debug
-
+    kwargs : dict
+        pipeline task specific arguments
+    
     Returns
     -------
     sentiment_scores : list
         list of dictionaries with sentiment scores and labels
     """
 
+    if not (task in ACCEPTED_TASKS or task.startswith("translation")):
+        print("Task {t} is not recognized".format(t=task))
+        return []
+
     set_logging_level(logging_level)
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
-
+    
     # check and adjust input types
     if not isinstance(text_strings, list):
         text_strings = [text_strings]
-
     if model:
         config, tokenizer, transformer_model = get_model(model)
         if device_num >= 0:
@@ -202,15 +207,36 @@ def hgTransformerGetPipeline(text_strings,
             task_pipeline = pipeline(task)
     
     task_scores = []
-    if task in ACCEPTED_TASKS or task.startswith("translation"):
-        if task == 'question-answering':
-            task_scores = task_pipeline(**kwargs)
-        else:
-            task_scores = task_pipeline(text_strings, **kwargs)
+    if task == 'question-answering':
+        task_scores = task_pipeline(**kwargs)
     else:
-        print("Task {t} is not recognized".format(t=task))
+        task_scores = task_pipeline(text_strings, **kwargs)
+
+    if len(task_scores) == 0 or (isinstance(task_scores, list) and len(task_scores[0]) == 0):
+        return task_scores
     
-    if len(task_scores) > 0 and not any(k in PIPELINE_RESULTS_BY_TASK[task] for k in list(task_scores[0].keys())):
+    results_check = {}
+    if isinstance(task_scores, dict):
+        results_check = task_scores
+        task_scores = [task_scores]
+    elif isinstance(task_scores[0], dict):
+        results_check = task_scores[0]
+    elif isinstance(task_scores[0][0], dict):
+        results_check = task_scores[0][0]
+        task_scores = task_scores[0]
+   
+    if task.startswith("translation"):
+        default_result_keys = PIPELINE_RESULTS_BY_TASK["translation"]
+    else:
+        default_result_keys = PIPELINE_RESULTS_BY_TASK[task]
+    
+    print_warning = False
+    if task in ["text-classification", "sentiment-analysis"]:
+        if results_check['label'] not in default_result_keys:
+            print_warning = True
+    elif len(task_scores) > 0 and not any(k in default_result_keys for k in list(results_check.keys())):
+        print_warning = True
+    if print_warning:
         print("WARNING: Results do not match the defaults for the task")
         print("\tBy default, one of the following should be in the results for this task: {t}".format(t=", ".join(PIPELINE_RESULTS_BY_TASK[task])))
         print("\tYou may want to try a different model or the default model for the task")
@@ -218,6 +244,7 @@ def hgTransformerGetPipeline(text_strings,
         if not return_incorrect_results:
             task_scores = []
     return task_scores
+
 
 def hgTransformerGetTextGeneration(text_strings,
                             model = '',
@@ -263,7 +290,6 @@ def hgTransformerGetSentiment(text_strings,
                             device = 'cpu',
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
-                            top_k = 1,
                             function_to_apply = "default"):
     sentiment_scores = hgTransformerGetPipeline(text_strings = text_strings,
                             task = 'sentiment-analysis',
