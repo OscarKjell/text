@@ -210,7 +210,7 @@ def hgTransformerGetPipeline(text_strings,
     else:
         print("Task {t} is not recognized".format(t=task))
     
-    if len(task_scores) > 0 and not any(k in PIPELINE_RESULTS_BY_TASK[task] for k in list(task_scores[0]).keys()):
+    if len(task_scores) > 0 and not any(k in PIPELINE_RESULTS_BY_TASK[task] for k in list(task_scores[0].keys())):
         print("WARNING: Results do not match the defaults for the task")
         print("\tBy default, one of the following should be in the results for this task: {t}".format(t=", ".join(PIPELINE_RESULTS_BY_TASK[task])))
         print("\tYou may want to try a different model or the default model for the task")
