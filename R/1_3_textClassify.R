@@ -22,7 +22,7 @@
 #' @importFrom dplyr bind_cols bind_rows
 #' @export
 textClassify <- function(x,
-                          model,
+                          model = "cardiffnlp/twitter-roberta-base-sentiment",
                           device = "cpu",
                           tokenizer_parallelism = FALSE,
                           logging_level = "error"){

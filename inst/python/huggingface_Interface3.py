@@ -152,7 +152,7 @@ def hgTransformerGetPipeline(text_strings,
                             device = 'cpu',
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
-                            return_incorrect_results = True,
+                            return_incorrect_results = False,
                             **kwargs):
     """
     Simple interface getting Huggingface Pipeline

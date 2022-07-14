@@ -19,7 +19,8 @@ test_that("Testing textEmbed as well as train", {
   sen1 <- textClassify("I like you. I love you",
                         model = "distilbert-base-uncased-finetuned-sst-2-english")
 
-  expect_equal(sen1$score_x, 0.9998739, tolerance = 0.0001)
+  #expect_equal(sen1$score_x, 0.9998739, tolerance = 0.0001)
+  expect_equal(sen1$score_x, 4.67502, tolerance = 0.001)
 
   harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",
