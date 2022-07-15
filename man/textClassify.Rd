@@ -6,10 +6,13 @@
 \usage{
 textClassify(
   x,
-  model,
+  model = "cardiffnlp/twitter-roberta-base-sentiment",
   device = "cpu",
   tokenizer_parallelism = FALSE,
-  logging_level = "error"
+  logging_level = "error",
+  return_incorrect_results = FALSE,
+  return_all_scores = FALSE,
+  function_to_apply = "none"
 )
 }
 \arguments{
@@ -24,8 +27,15 @@ For example use "cardiffnlp/twitter-roberta-base-sentiment", "distilbert-base-un
 
 \item{tokenizer_parallelism}{If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 
-\item{logging_level}{Set the logging level. Default: "warning".
+\item{logging_level}{String; Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
+
+\item{return_incorrect_results}{Many models are not created to be able to provide classifications - this setting
+stops them from returning incorrect results.}
+
+\item{return_all_scores}{Boolean;}
+
+\item{function_to_apply}{string; "none"}
 }
 \value{
 A tibble with predicted labels and scores for each text variable.

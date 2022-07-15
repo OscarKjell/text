@@ -17,8 +17,17 @@ test_that("Testing textEmbed as well as train", {
 
   # bert-base-uncased
   sen1 <- textClassify("I like you. I love you",
-                        model = "distilbert-base-uncased-finetuned-sst-2-english")
+                        model = "distilbert-base-uncased-finetuned-sst-2-english",
+                       return_incorrect_results = FALSE,
+                       return_all_scores = FALSE,
+                       function_to_apply = "none")
 
+ # sen1 <- textClassify("I like you. I love you",
+ #                      model = "bert-base-uncased",
+ #                      return_incorrect_results = TRUE,
+ #                      return_all_scores = FALSE,
+ #                      function_to_apply = "none")
+#
   #expect_equal(sen1$score_x, 0.9998739, tolerance = 0.0001)
   expect_equal(sen1$score_x, 4.67502, tolerance = 0.001)
 

@@ -7,8 +7,12 @@
 #'  For example use "cardiffnlp/twitter-roberta-base-sentiment", "distilbert-base-uncased-finetuned-sst-2-english".
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
-#' @param logging_level Set the logging level. Default: "warning".
+#' @param logging_level String; Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
+#' @param return_incorrect_results Many models are not created to be able to provide classifications - this setting
+#' stops them from returning incorrect results.
+#' @param return_all_scores Boolean;
+#' @param function_to_apply string; "none"
 #' @return A tibble with predicted labels and scores for each text variable.
 #' The comment of the object show the model-name and computation time.
 #' @examples
@@ -25,9 +29,11 @@ textClassify <- function(x,
                           model = "cardiffnlp/twitter-roberta-base-sentiment",
                           device = "cpu",
                           tokenizer_parallelism = FALSE,
-                          logging_level = "error"){
+                          logging_level = "error",
+                          return_incorrect_results = FALSE,
+                          return_all_scores = FALSE,
+                          function_to_apply = "none"){
 
-  #set.seed(seed)
   T1_textSentiment <- Sys.time()
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
