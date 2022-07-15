@@ -277,14 +277,14 @@ def hgTransformerGetNER(text_strings,
                             model = '',
                             device = 'cpu',
                             tokenizer_parallelism = False,
-                            logging_level = 'warning'
+                            logging_level = 'warning',
                             return_incorrect_results = False):
     ner_scores = hgTransformerGetPipeline(text_strings = text_strings,
                             task = 'ner',
                             model = model,
                             device = device,
                             tokenizer_parallelism = tokenizer_parallelism,
-                            logging_level = logging_level
+                            logging_level = logging_level,
                             return_incorrect_results = return_incorrect_results)
     return ner_scores
 
@@ -313,7 +313,6 @@ def hgTransformerGetSummarization(text_strings,
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
                             return_incorrect_results = False,
-                            return_incorrect_results = return_incorrect_results,
                             return_text = True,
                             return_tensors = False,
                             clean_up_tokenization_spaces = False):
