@@ -50,6 +50,9 @@ reference:
   contents:
   - textClassify
   - textGeneration
+  - textNER
+  - textSum
+  - textQA
 - title: View or delete downloaded HuggingFace models in R
   contents:
   - textModels

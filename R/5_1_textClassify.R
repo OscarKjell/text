@@ -32,9 +32,10 @@
 #' The comment of the object show the model-name and computation time.
 #' @examples
 #' \donttest{
-#' classifications <- textClassify(x = Language_based_assessment_data_8[1:2, 1:2])
-#' classifications
-#' comment(classifications)
+#' Language_based_assessment_data_8[1:2, 1:2]
+#' #classifications <- textClassify(x = Language_based_assessment_data_8[1:2, 1:2])
+#' #classifications
+#' #comment(classifications)
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python

@@ -17,6 +17,7 @@ test_that("textClassify tests", {
 #                       return_all_scores = TRUE,
 #                       function_to_apply = "none")
 
+
   sen2 <- textClassify("I like you. I love you",
                         model = "distilbert-base-uncased-finetuned-sst-2-english",
                         return_incorrect_results = TRUE,

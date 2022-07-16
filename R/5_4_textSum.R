@@ -1,12 +1,12 @@
-x = "Happiness is something that people seek to find, yet what defines happiness can vary from one person to the next. When most people talk about happiness, they might be talking about how they feel in the present moment, or they might be referring to a more general sense of how they feel about life overall."
-model = 't5-small'
-device = 'cpu'
-tokenizer_parallelism = FALSE
-logging_level = 'warning'
-return_incorrect_results = FALSE
-return_text = TRUE
-return_tensors = FALSE
-clean_up_tokenization_spaces = FALSE
+#x = "Happiness is something that people seek to find, yet what defines happiness can vary from one person to the next. When most people talk about happiness, they might be talking about how they feel in the present moment, or they might be referring to a more general sense of how they feel about life overall."
+#model = 't5-small'
+#device = 'cpu'
+#tokenizer_parallelism = FALSE
+#logging_level = 'warning'
+#return_incorrect_results = FALSE
+#return_text = TRUE
+#return_tensors = FALSE
+#clean_up_tokenization_spaces = FALSE
 
 #' Summarize text such as news articles.
 #' @param x (string)  A character variable or a tibble/dataframe with at least one character variable.
@@ -24,8 +24,7 @@ clean_up_tokenization_spaces = FALSE
 #' @return A tibble with.
 #' @examples
 #' \donttest{
-#' ner_example <- textNER("The meaning of life is")
-#' ner_example
+#' sum_example <- textSum("The meaning of life is")
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python
