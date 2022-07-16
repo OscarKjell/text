@@ -38,7 +38,7 @@ test_that("textGeneration test", {
 })
 
 
-test_that("textGeneration test", {
+test_that("textNER test", {
   skip_on_cran()
 
 
@@ -50,4 +50,13 @@ test_that("textGeneration test", {
 
 })
 
+test_that("textSum test", {
+  skip_on_cran()
 
+
+  sum_example <- textSum("Oscar plays football with August")
+  sum_example
+
+  #expect_equal(sum_example$score, 0.998, tolerance = 0.001)
+
+})

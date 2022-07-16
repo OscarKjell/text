@@ -70,7 +70,7 @@ textGeneration <- function(x,
   data_character_variables <- select_character_v_utf8(x)
 
 
-  hg_generated <- hgTransformerGetTextGeneration(text_strings = data_character_variables,
+  hg_generated <- hgTransformerGetTextGeneration(text_strings = data_character_variables[[1]],
                                  model = model,
                                  device = device,
                                  tokenizer_parallelism = tokenizer_parallelism,

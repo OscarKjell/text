@@ -130,3 +130,4 @@ cohens_d <- function(x, y) {
   # Cohen's d
   cd
 }
+
