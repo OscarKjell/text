@@ -21,8 +21,11 @@ textQA(
 )
 }
 \arguments{
-\item{model}{(string)  Specify a pre-trained language model that have been fine-tuned on a token classification task
-(e.g., see "dslim/bert-base-NER").}
+\item{question}{(string)  A character variable or a tibble/dataframe with at least one character variable.}
+
+\item{context}{(string)  The context(s) where the model will look for the answer.}
+
+\item{model}{(string)  Specify a pre-trained language model that have been fine-tuned on a question answering task.}
 
 \item{device}{(string)  Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 
@@ -34,7 +37,19 @@ Options (ordered from less logging to more logging): critical, error, warning, i
 \item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide classifications - this setting
 stops them from returning incorrect results.}
 
-\item{x}{(string)  A character variable or a tibble/dataframe with at least one character variable.}
+\item{topk}{(integer) (int)  Indicates number of possible answer span(s) to get from the model output.}
+
+\item{doc_stride}{(integer)   If the context is too long to fit with the question for the model, it will be split into overlapping chunks.
+This setting controls the overlap size.}
+
+\item{max_answer_len}{(integer)  Max answer size to be extracted from the model’s output.}
+
+\item{max_seq_len}{(integer)  The max total sentence length (context + question) in tokens of each chunk passed to the model.
+If needed, the context is split in chunks (using doc_stride as overlap).}
+
+\item{max_question_len}{(integer)   The max question length after tokenization. It will be truncated if needed.}
+
+\item{handle_impossible_answer}{(boolean)  Whether or not impossible is accepted as an answer.}
 }
 \value{
 A tibble with.
