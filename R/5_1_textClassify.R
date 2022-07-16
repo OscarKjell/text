@@ -1,18 +1,33 @@
 
-#' Predict label and probability of a text using a pretrained classifier language model.
-#' @param x A character variable or a tibble/dataframe with at least one character variable.
-#' @param model Character string specifying a pre-trained classifier language model.
+#x = "I like you. I love you"
+#model = "distilbert-base-uncased-finetuned-sst-2-english"
+#device = "cpu"
+#tokenizer_parallelism = FALSE
+#logging_level = "error"
+#return_incorrect_results = FALSE
+#return_all_scores = FALSE
+#function_to_apply = "none"
+
+
+#' Predict label and probability of a text using a pretrained classifier language model. STILL UNDER DEVELOPMENT
+#' @param x (string)  A character variable or a tibble/dataframe with at least one character variable.
+#' @param model (string)  Character string specifying a pre-trained classifier language model.
 #'  For full list of options see pretrained classifier models at
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "cardiffnlp/twitter-roberta-base-sentiment", "distilbert-base-uncased-finetuned-sst-2-english".
-#' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
-#' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
-#' @param logging_level String; Set the logging level. Default: "warning".
+#' @param device (string)  Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+#' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism. Default FALSE.
+#' @param logging_level (string)  Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param return_incorrect_results Many models are not created to be able to provide classifications - this setting
+#' @param return_incorrect_results (boolean)  Many models are not created to be able to provide classifications - this setting
 #' stops them from returning incorrect results.
-#' @param return_all_scores Boolean;
-#' @param function_to_apply string; "none"
+#' @param return_all_scores (boolean)  Whether to return all prediction scores or just the one of the predicted class.
+#' @param function_to_apply (string)  The function to apply to the model outputs to retrieve the scores.
+#' There are four different values:
+#' "default": if the model has a single label, will apply the sigmoid function on the output. If the model has several labels, will apply the softmax function on the output.
+#' "sigmoid": Applies the sigmoid function on the output.
+#' "softmax": Applies the softmax function on the output.
+#' "none": Does not apply any function on the output.
 #' @return A tibble with predicted labels and scores for each text variable.
 #' The comment of the object show the model-name and computation time.
 #' @examples
@@ -26,13 +41,13 @@
 #' @importFrom dplyr bind_cols bind_rows
 #' @export
 textClassify <- function(x,
-                          model = "cardiffnlp/twitter-roberta-base-sentiment",
-                          device = "cpu",
-                          tokenizer_parallelism = FALSE,
-                          logging_level = "error",
-                          return_incorrect_results = FALSE,
-                          return_all_scores = FALSE,
-                          function_to_apply = "none"){
+                         model = "distilbert-base-uncased-finetuned-sst-2-english",
+                         device = "cpu",
+                         tokenizer_parallelism = FALSE,
+                         logging_level = "error",
+                         return_incorrect_results = FALSE,
+                         return_all_scores = FALSE,
+                         function_to_apply = "none"){
 
   T1_textSentiment <- Sys.time()
 

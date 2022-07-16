@@ -40,14 +40,17 @@ reference:
   - textrpp_install_virtualenv
   - textrpp_uninstall
   - textrpp_initialize
-- title: Transformers that transform text to word embeddings
+- title: Transform text to word embeddings
   contents:
   - textEmbed
   - textEmbedLayersOutput
   - textEmbedLayerAggregation
-  - textClassify
   - textEmbedStatic
-- title: View or delete downloaded HuggingFace models
+- title: Tasks
+  contents:
+  - textClassify
+  - textGeneration
+- title: View or delete downloaded HuggingFace models in R
   contents:
   - textModels
   - textModelsRemove
