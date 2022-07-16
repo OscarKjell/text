@@ -24,7 +24,7 @@
 #' @return A tibble with.
 #' @examples
 #' \donttest{
-#' sum_example <- textSum("The meaning of life is")
+#' # sum_example <- textSum("The meaning of life is")
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python

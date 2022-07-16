@@ -37,8 +37,8 @@
 #' @return A tibble with generated text.
 #' @examples
 #' \donttest{
-#' generated_text <- textGeneration("The meaning of life is")
-#' generated_text
+#' # generated_text <- textGeneration("The meaning of life is")
+#' # generated_text
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python

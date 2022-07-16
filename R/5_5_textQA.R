@@ -2,9 +2,7 @@
 
 
 
-#' Named Entity Recognition STILL UNDER DEVELOPMENT
-#' Uses any Model for token classification.
-#' for predicting the classes of tokens in a sequence: person, organisation, location or miscellaneous).
+#' Question Answer STILL UNDER DEVELOPMENT
 #' @param x (string)  A character variable or a tibble/dataframe with at least one character variable.
 #' @param model (string)  Specify a pre-trained language model that have been fine-tuned on a token classification task
 #' (e.g., see "dslim/bert-base-NER").
@@ -17,8 +15,7 @@
 #' @return A tibble with.
 #' @examples
 #' \donttest{
-#' ner_example <- textQA(question = "why are the ")
-#' ner_example
+#' # qa_example <- textQA(question = "why are the ")
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python

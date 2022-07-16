@@ -236,17 +236,17 @@ grep_col_by_name_in_list <- function(l, pattern) {
   u[grep(pattern, names(u))]
 }
 
-contexts = TRUE
-single_context_embeddings = FALSE
-decontexts = TRUE
-model = "bert-base-uncased"
-layers = 11
-return_tokens = TRUE
-dim_name = FALSE
-device = "cpu"
-tokenizer_parallelism = FALSE
-model_max_length = NULL
-logging_level = "error"
+#contexts = TRUE
+#single_context_embeddings = FALSE
+#decontexts = TRUE
+#model = "bert-base-uncased"
+#layers = 11
+#return_tokens = TRUE
+#dim_name = FALSE
+#device = "cpu"
+#tokenizer_parallelism = FALSE
+#model_max_length = NULL
+#logging_level = "error"
 
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.

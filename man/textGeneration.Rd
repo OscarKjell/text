@@ -53,8 +53,8 @@ Predicts the words that will follow a specified text prompt. STILL UNDER DEVELOP
 }
 \examples{
 \donttest{
-generated_text <- textGeneration("The meaning of life is")
-generated_text
+# generated_text <- textGeneration("The meaning of life is")
+# generated_text
 }
 }
 \seealso{

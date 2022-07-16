@@ -46,7 +46,7 @@ Summarize text such as news articles.
 }
 \examples{
 \donttest{
-sum_example <- textSum("The meaning of life is")
+# sum_example <- textSum("The meaning of life is")
 }
 }
 \seealso{

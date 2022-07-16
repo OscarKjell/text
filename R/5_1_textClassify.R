@@ -32,7 +32,6 @@
 #' The comment of the object show the model-name and computation time.
 #' @examples
 #' \donttest{
-#' Language_based_assessment_data_8[1:2, 1:2]
 #' #classifications <- textClassify(x = Language_based_assessment_data_8[1:2, 1:2])
 #' #classifications
 #' #comment(classifications)

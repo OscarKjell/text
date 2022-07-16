@@ -2,9 +2,7 @@
 % Please edit documentation in R/5_5_textQA.R
 \name{textQA}
 \alias{textQA}
-\title{Named Entity Recognition STILL UNDER DEVELOPMENT
-Uses any Model for token classification.
-for predicting the classes of tokens in a sequence: person, organisation, location or miscellaneous).}
+\title{Question Answer STILL UNDER DEVELOPMENT}
 \usage{
 textQA(
   question,
@@ -42,14 +40,11 @@ stops them from returning incorrect results.}
 A tibble with.
 }
 \description{
-Named Entity Recognition STILL UNDER DEVELOPMENT
-Uses any Model for token classification.
-for predicting the classes of tokens in a sequence: person, organisation, location or miscellaneous).
+Question Answer STILL UNDER DEVELOPMENT
 }
 \examples{
 \donttest{
-ner_example <- textQA(question = "why are the ")
-ner_example
+# qa_example <- textQA(question = "why are the ")
 }
 }
 \seealso{

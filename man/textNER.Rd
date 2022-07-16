@@ -41,8 +41,8 @@ for predicting the classes of tokens in a sequence: person, organisation, locati
 }
 \examples{
 \donttest{
-ner_example <- textNER("The meaning of life is")
-ner_example
+# ner_example <- textNER("The meaning of life is")
+# ner_example
 }
 }
 \seealso{

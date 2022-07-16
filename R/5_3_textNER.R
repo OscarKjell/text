@@ -22,8 +22,8 @@
 #' @return A tibble with.
 #' @examples
 #' \donttest{
-#' ner_example <- textNER("The meaning of life is")
-#' ner_example
+#' # ner_example <- textNER("The meaning of life is")
+#' # ner_example
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
 #' @importFrom reticulate source_python
