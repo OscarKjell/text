@@ -34,5 +34,5 @@ utils::globalVariables(c(
   "word_data_extrem_min_PC1", "word_data_extrem_min_PC2", "word_data_frequency", "n_g1.x", "n_g2.x",
   "centrality", "projection", "superviced",
   "x_plotted", "y_plotted", "mixture_mode", "penalty_mode",
-  "textModelsPy", "textModelsRMPy", "tokens", "hgTransformerGetSentiment"
+  "textModelsPy", "textModelsRMPy", "tokens", "hgTransformerGetSentiment", "hgTransformerGetTextGeneration"
 ))

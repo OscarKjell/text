@@ -7,7 +7,7 @@ library(text)
 context("Testing tasks")
 
 
-test_that("textClassify", {
+test_that("textClassify tests", {
   skip_on_cran()
 
   # help(textClassify)
@@ -28,7 +28,7 @@ test_that("textClassify", {
 
 })
 
-test_that("textClassify", {
+test_that("textGeneration test", {
   skip_on_cran()
 
   generated_text <- textGeneration("The meaning of life is")
@@ -36,3 +36,18 @@ test_that("textClassify", {
   expect_that(generated_text$generatedtext, is_a("character"))
 
 })
+
+
+test_that("textGeneration test", {
+  skip_on_cran()
+
+
+  ner_example <- textNER("Oscar plays football with August",
+                         mode = "dslim/bert-base-NER")
+  ner_example
+
+  expect_equal(ner_example$score, 0.998, tolerance = 0.001)
+
+})
+
+
