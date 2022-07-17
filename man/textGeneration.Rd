@@ -15,23 +15,24 @@ textGeneration(
   return_text = TRUE,
   return_full_text = TRUE,
   clean_up_tokenization_spaces = FALSE,
-  prefix = ""
+  prefix = "",
+  handle_long_generation = NULL
 )
 }
 \arguments{
-\item{x}{(string)  A character variable or a tibble/dataframe with at least one character variable.}
+\item{x}{(string)  A variable or a tibble/dataframe with at least one character variable.}
 
-\item{model}{(string)  Specify a pre-trained language model that have been trained with an autoregressive language modeling
+\item{model}{(string)  Specification of a pre-trained language model that have been trained with an autoregressive language modeling
 objective, which includes the uni-directional models (e.g., gpt2).}
 
-\item{device}{(string)  Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
+\item{device}{(string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 
-\item{tokenizer_parallelism}{(boolean)  If TRUE this will turn on tokenizer parallelism. Default FALSE.}
+\item{tokenizer_parallelism}{(boolean)  If TRUE this will turn on tokenizer parallelism.}
 
-\item{logging_level}{(string)  Set the logging level. Default: "warning".
+\item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide classifications - this setting
+\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide generation - this setting
 stops them from returning incorrect results.}
 
 \item{return_tensors}{(boolean)  Whether or not the output should include the prediction tensors (as token indices).}
@@ -44,6 +45,13 @@ stops them from returning incorrect results.}
 \item{clean_up_tokenization_spaces}{(boolean)  Option to clean up the potential extra spaces in the returned text.}
 
 \item{prefix}{(string) Option to add a prefix to prompt.}
+
+\item{handle_long_generation}{By default, this function does not handle long generation (those that exceed the model maximum length).
+(more info :https://github.com/huggingface/transformers/issues/14033#issuecomment-948385227).
+This setting provides some ways to work around the problem:
+None: default way, where no particular strategy is applied.
+"hole": Truncates left of input, and leaves a gap that is wide enough to let generation happen.
+(this might truncate a lot of the prompt and not suitable when generation exceed the model capacity)}
 }
 \value{
 A tibble with generated text.
@@ -58,5 +66,6 @@ Predicts the words that will follow a specified text prompt. STILL UNDER DEVELOP
 }
 }
 \seealso{
-see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
+see \code{\link{textClassify}}, \code{\link{textNER}},
+ \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
 }

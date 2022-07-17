@@ -315,7 +315,9 @@ def hgTransformerGetSummarization(text_strings,
                             return_incorrect_results = False,
                             return_text = True,
                             return_tensors = False,
-                            clean_up_tokenization_spaces = False):
+                            clean_up_tokenization_spaces = False, 
+                            min_length = 10,
+                            max_length = 200):
     summarizations = hgTransformerGetPipeline(text_strings = text_strings,
                             task = 'summarization',
                             model = model,
@@ -324,7 +326,9 @@ def hgTransformerGetSummarization(text_strings,
                             logging_level = logging_level,
                             return_text = return_text, 
                             return_tensors = return_tensors, 
-                            clean_up_tokenization_spaces = clean_up_tokenization_spaces)
+                            clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
+                            min_length = min_length,
+                            max_length = max_length)
     return summarizations
 
 def hgTransformerGetQA(question,

@@ -2,9 +2,7 @@
 % Please edit documentation in R/5_3_textNER.R
 \name{textNER}
 \alias{textNER}
-\title{Named Entity Recognition STILL UNDER DEVELOPMENT
-Uses any Model for token classification.
-for predicting the classes of tokens in a sequence: person, organisation, location or miscellaneous).}
+\title{Named Entity Recognition STILL UNDER DEVELOPMENT}
 \usage{
 textNER(
   x,
@@ -16,35 +14,34 @@ textNER(
 )
 }
 \arguments{
-\item{x}{(string)  A character variable or a tibble/dataframe with at least one character variable.}
+\item{x}{(string)  A  variable or a tibble/dataframe with at least one character variable.}
 
-\item{model}{(string)  Specify a pre-trained language model that have been fine-tuned on a token classification task
-(e.g., see "dslim/bert-base-NER").}
+\item{model}{(string)  Specification of a pre-trained language model for token classification that have been fine-tuned on a NER task
+(e.g., see "dslim/bert-base-NER"). Use for predicting the classes of tokens in a sequence: person, organisation, location or miscellaneous).}
 
-\item{device}{(string)  Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
+\item{device}{(string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 
-\item{tokenizer_parallelism}{(boolean)  If TRUE this will turn on tokenizer parallelism. Default FALSE.}
+\item{tokenizer_parallelism}{(boolean)  If TRUE this will turn on tokenizer parallelism.}
 
-\item{logging_level}{(string)  Set the logging level. Default: "warning".
+\item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide classifications - this setting
+\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide NER classifications - this setting
 stops them from returning incorrect results.}
 }
 \value{
-A tibble with.
+A tibble with NER classifications.
 }
 \description{
 Named Entity Recognition STILL UNDER DEVELOPMENT
-Uses any Model for token classification.
-for predicting the classes of tokens in a sequence: person, organisation, location or miscellaneous).
 }
 \examples{
 \donttest{
-# ner_example <- textNER("The meaning of life is")
+# ner_example <- textNER("Arnes plays football with Daniel")
 # ner_example
 }
 }
 \seealso{
-see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
+see \code{\link{textClassify}}, \code{\link{textGeneration}}, \code{\link{textNER}},
+ \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
 }

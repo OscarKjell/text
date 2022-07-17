@@ -2,7 +2,7 @@
 % Please edit documentation in R/5_5_textQA.R
 \name{textQA}
 \alias{textQA}
-\title{Question Answer STILL UNDER DEVELOPMENT}
+\title{Question Answering STILL UNDER DEVELOPMENT}
 \usage{
 textQA(
   question,
@@ -21,20 +21,20 @@ textQA(
 )
 }
 \arguments{
-\item{question}{(string)  A character variable or a tibble/dataframe with at least one character variable.}
+\item{question}{(string)  A question}
 
 \item{context}{(string)  The context(s) where the model will look for the answer.}
 
-\item{model}{(string)  Specify a pre-trained language model that have been fine-tuned on a question answering task.}
+\item{model}{(string)  HuggingFace name of a pre-trained language model that have been fine-tuned on a question answering task.}
 
-\item{device}{(string)  Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
+\item{device}{(string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 
-\item{tokenizer_parallelism}{(boolean)  If TRUE this will turn on tokenizer parallelism. Default FALSE.}
+\item{tokenizer_parallelism}{(boolean)  If TRUE this will turn on tokenizer parallelism.}
 
-\item{logging_level}{(string)  Set the logging level. Default: "warning".
+\item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide classifications - this setting
+\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide question -- answering, so this setting
 stops them from returning incorrect results.}
 
 \item{topk}{(integer) (int)  Indicates number of possible answer span(s) to get from the model output.}
@@ -52,16 +52,18 @@ If needed, the context is split in chunks (using doc_stride as overlap).}
 \item{handle_impossible_answer}{(boolean)  Whether or not impossible is accepted as an answer.}
 }
 \value{
-A tibble with.
+Answers.
 }
 \description{
-Question Answer STILL UNDER DEVELOPMENT
+Question Answering STILL UNDER DEVELOPMENT
 }
 \examples{
 \donttest{
-# qa_example <- textQA(question = "why are the ")
+#   qa_examples <- textQA(question = "Which colour have trees?",
+#     context = "Trees typically have leaves, are mostly green and like water.")
 }
 }
 \seealso{
-see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
+see \code{\link{textClassify}}, \code{\link{textGeneration}}, \code{\link{textNER}},
+ \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
 }

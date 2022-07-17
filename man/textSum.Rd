@@ -2,11 +2,13 @@
 % Please edit documentation in R/5_4_textSum.R
 \name{textSum}
 \alias{textSum}
-\title{Summarize text such as news articles.}
+\title{Summarize texts}
 \usage{
 textSum(
   x,
-  model = "",
+  min_length = 10L,
+  max_length = 20L,
+  model = "t5-small",
   device = "cpu",
   tokenizer_parallelism = FALSE,
   logging_level = "warning",
@@ -17,19 +19,24 @@ textSum(
 )
 }
 \arguments{
-\item{x}{(string)  A character variable or a tibble/dataframe with at least one character variable.}
+\item{x}{(string)  A variable or a tibble/dataframe with at least one character variable.}
 
-\item{model}{(string)  Specify a pre-trained language model that have been fine-tuned on a summarization task,
+\item{min_length}{(explicit integer; e.g., 10L)  The minimum number of tokens in the summed output.}
+
+\item{max_length}{(explicit integer higher than min_length; e.g., 20L)  The maximum number of tokens
+in the summed output.}
+
+\item{model}{(string)  Specififcation of a pre-trained language model that have been fine-tuned on a summarization task,
 such as ’bart-large-cnn’, ’t5-small’, ’t5-base’, ’t5-large’, ’t5-3b’, ’t5-11b’.}
 
-\item{device}{(string)  Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
+\item{device}{(string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number.}
 
-\item{tokenizer_parallelism}{(boolean)  If TRUE this will turn on tokenizer parallelism. Default FALSE.}
+\item{tokenizer_parallelism}{(boolean)  If TRUE this will turn on tokenizer parallelism.}
 
-\item{logging_level}{(string)  Set the logging level. Default: "warning".
+\item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide classifications - this setting
+\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide summerization - this setting
 stops them from returning incorrect results.}
 
 \item{return_text}{(boolean)  Whether or not the outputs should include the decoded text.}
@@ -39,16 +46,19 @@ stops them from returning incorrect results.}
 \item{clean_up_tokenization_spaces}{(boolean)  Option to clean up the potential extra spaces in the returned text.}
 }
 \value{
-A tibble with.
+A tibble with summed text(s).
 }
 \description{
-Summarize text such as news articles.
+Summarize texts
 }
 \examples{
 \donttest{
-# sum_example <- textSum("The meaning of life is")
+  # sum_examples <- textSum(Language_based_assessment_data_8[1:2,1:2],
+  # min_length = 5L,
+  # max_length = 10L)
 }
 }
 \seealso{
-see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
+see \code{\link{textClassify}}, \code{\link{textGeneration}}, \code{\link{textNER}},
+ \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
 }

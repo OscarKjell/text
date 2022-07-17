@@ -15,6 +15,7 @@ utils::globalVariables(c(
   # PYTHON FUNCTIONS
   "hgTransformerGetEmbedding", "hgTransformerGetSentiment", "hgTransformerGetTextGeneration",
   "hgTransformerGetNER", "hgTransformerGetSummarization", "hgTransformerGetQA",
+  "hgTransformerGetTranslation",
 
   "textModelsPy", "textModelsRMPy",
 

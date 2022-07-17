@@ -2,17 +2,28 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # text 0.9.93
+### New features
+  - textClassify (under development)
+  - textGeneration (under development)
+  - textNER (under development)
+  - textSum (under development)
+  - textQA (under development)
+  - textTranslate (under development)
+
+# text 0.9.93
+### New features
 - New function: `textSentiment()`, from huggingface transformers models.
 - add progression for time consuming functions including `textEmbed()`, `textTrainRegression()`, `textTrainRandomForest()` and `textProjection()`. 
 
 # text 0.9.92
+### New features
 - Option `dim_names` to set unique dimension names in `textEmbed()` and `textEmbedStatic()`.
 - `textPreictAll()` function that can take several models, word embeddings, and variables as input to provide multiple outputs.
 - option to add variables to the embeddings in `textTrain()` functions with `x_append`.
 
 # text 0.9.91
 
-### New feature
+### New features
 - text version is printed from DESCRIPTION-file (rather than manual update)
 - `textPredict` related functions are located in its own file
 - textEmbed comment includes `text_version` number
@@ -24,7 +35,7 @@
 
 
 # text 0.9.90
-### New feature
+### New features
 - Visualization of the download process of language models
 - Can set error level from python
 - `Logistic` regression is default for classification in textTrain.
@@ -35,7 +46,7 @@
 
 
 # text 0.9.80
-### New feature
+### New features
 - Option to set `model_max_length` in `textEmbed()`.
 - `textModels()` show downloaded models.
 - `textModelsRemove()` deletes specified models.

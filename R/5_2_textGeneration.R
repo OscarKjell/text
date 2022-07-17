@@ -13,14 +13,14 @@
 # handle_long_generation = "None"
 
 #' Predicts the words that will follow a specified text prompt. STILL UNDER DEVELOPMENT
-#' @param x (string)  A character variable or a tibble/dataframe with at least one character variable.
-#' @param model (string)  Specify a pre-trained language model that have been trained with an autoregressive language modeling
+#' @param x (string)  A variable or a tibble/dataframe with at least one character variable.
+#' @param model (string)  Specification of a pre-trained language model that have been trained with an autoregressive language modeling
 #' objective, which includes the uni-directional models (e.g., gpt2).
-#' @param device (string)  Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
-#' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism. Default FALSE.
-#' @param logging_level (string)  Set the logging level. Default: "warning".
+#' @param device (string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+#' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism.
+#' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param return_incorrect_results (boolean)  Many models are not created to be able to provide classifications - this setting
+#' @param return_incorrect_results (boolean)  Many models are not created to be able to provide generation - this setting
 #' stops them from returning incorrect results.
 #' @param return_tensors (boolean)  Whether or not the output should include the prediction tensors (as token indices).
 #' @param return_text (boolean)  Whether or not the outputs should include the decoded text.
@@ -28,19 +28,20 @@
 #'  (This setting is only meaningful if return_text is set to TRUE)
 #' @param clean_up_tokenization_spaces (boolean)  Option to clean up the potential extra spaces in the returned text.
 #' @param prefix (string) Option to add a prefix to prompt.
-# @param handle_long_generation  By default, this function does not handle long generation (those that exceed the model maximum length).
-# (more info :https://github.com/huggingface/transformers/issues/14033#issuecomment-948385227).
-# This setting provides some ways to work around the problem:
-# None: default way, where no particular strategy is applied.
-# "hole": Truncates left of input, and leaves a gap that is wide enough to let generation happen.
-# (this might truncate a lot of the prompt and not suitable when generation exceed the model capacity)
+#' @param handle_long_generation  By default, this function does not handle long generation (those that exceed the model maximum length).
+#' (more info :https://github.com/huggingface/transformers/issues/14033#issuecomment-948385227).
+#' This setting provides some ways to work around the problem:
+#' None: default way, where no particular strategy is applied.
+#' "hole": Truncates left of input, and leaves a gap that is wide enough to let generation happen.
+#' (this might truncate a lot of the prompt and not suitable when generation exceed the model capacity)
 #' @return A tibble with generated text.
 #' @examples
 #' \donttest{
 #' # generated_text <- textGeneration("The meaning of life is")
 #' # generated_text
 #' }
-#' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
+#' @seealso see \code{\link{textClassify}}, \code{\link{textNER}},
+#'  \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
 #' @importFrom reticulate source_python
 #' @importFrom tibble as_tibble_col
 #' @export
@@ -54,8 +55,8 @@ textGeneration <- function(x,
                            return_text = TRUE,
                            return_full_text = TRUE,
                            clean_up_tokenization_spaces = FALSE,
-                           prefix = ''
-                           #handle_long_generation = "hole"
+                           prefix = '',
+                           handle_long_generation = NULL
                            ){
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
@@ -80,8 +81,8 @@ textGeneration <- function(x,
                                  return_text = return_text,
                                  return_full_text = return_full_text,
                                  clean_up_tokenization_spaces = clean_up_tokenization_spaces,
-                                 prefix = prefix
-                                 #handle_long_generation = handle_long_generation
+                                 prefix = prefix,
+                                 handle_long_generation = handle_long_generation
                                  )
 
   hg_generated1 <- tibble::as_tibble_col(hg_generated[[1]]$generated_text,

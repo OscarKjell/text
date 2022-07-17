@@ -53,6 +53,7 @@ reference:
   - textNER
   - textSum
   - textQA
+  - textTranslate
 - title: View or delete downloaded HuggingFace models in R
   contents:
   - textModels

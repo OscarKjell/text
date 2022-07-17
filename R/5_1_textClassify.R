@@ -1,6 +1,7 @@
 
 #x = "I like you. I love you"
 #model = "distilbert-base-uncased-finetuned-sst-2-english"
+#model = "cardiffnlp/twitter-roberta-base-sentiment"
 #device = "cpu"
 #tokenizer_parallelism = FALSE
 #logging_level = "error"
@@ -11,20 +12,21 @@
 
 #' Predict label and probability of a text using a pretrained classifier language model. STILL UNDER DEVELOPMENT
 #' @param x (string)  A character variable or a tibble/dataframe with at least one character variable.
-#' @param model (string)  Character string specifying a pre-trained classifier language model.
+#' @param model (string)  Specification of a pre-trained classifier language model.
 #'  For full list of options see pretrained classifier models at
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "cardiffnlp/twitter-roberta-base-sentiment", "distilbert-base-uncased-finetuned-sst-2-english".
-#' @param device (string)  Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
-#' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism. Default FALSE.
-#' @param logging_level (string)  Set the logging level. Default: "warning".
+#' @param device (string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number.
+#' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism.
+#' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param return_incorrect_results (boolean)  Many models are not created to be able to provide classifications - this setting
 #' stops them from returning incorrect results.
 #' @param return_all_scores (boolean)  Whether to return all prediction scores or just the one of the predicted class.
 #' @param function_to_apply (string)  The function to apply to the model outputs to retrieve the scores.
 #' There are four different values:
-#' "default": if the model has a single label, will apply the sigmoid function on the output. If the model has several labels, will apply the softmax function on the output.
+#' "default": if the model has a single label, will apply the sigmoid function on the output. If the model has several labels,
+#' the softmax function will be applied on the output.
 #' "sigmoid": Applies the sigmoid function on the output.
 #' "softmax": Applies the softmax function on the output.
 #' "none": Does not apply any function on the output.
@@ -36,7 +38,8 @@
 #' #classifications
 #' #comment(classifications)
 #' }
-#' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
+#' @seealso see \code{\link{textGeneration}}, \code{\link{textNER}},
+#'  \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
 #' @importFrom reticulate source_python
 #' @importFrom dplyr bind_cols bind_rows
 #' @export
@@ -71,7 +74,10 @@ textClassify <- function(x,
                                                model = model,
                                                device = device,
                                                tokenizer_parallelism = tokenizer_parallelism,
-                                               logging_level = logging_level)
+                                               logging_level = logging_level,
+                                               return_incorrect_results = return_incorrect_results,
+                                               return_all_scores = return_all_scores,
+                                               function_to_apply = function_to_apply)
 
     # Sort output into tidy-format
     output1 <- map(hg_sentiments, dplyr::bind_cols) %>%
