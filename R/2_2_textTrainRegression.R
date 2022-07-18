@@ -603,11 +603,12 @@ textTrainRegression <- function(x,
   x_append_names <- paste(names(x_append), collapse=", ")
   # Possibility to train without word embeddings
   if(is.null(x)){
-    x <- x_append
+    x1 <- x_append
     x_append <- NULL
-    colnames(x) <- paste0("Dim", "_",
-                          colnames(x))
+    colnames(x1) <- paste0("Dim", "_",
+                          colnames(x1))
     x_name <- NULL
+    embedding_description <- NULL
   }
 
 

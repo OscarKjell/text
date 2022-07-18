@@ -9,7 +9,7 @@
 # return_tensors = FALSE
 # clean_up_tokenization_spaces = FALSE
 
-#' Summarize texts
+#' Summarize texts STILL UNDER DEVELOPMENT
 #' @param x (string)  A variable or a tibble/dataframe with at least one character variable.
 #' @param min_length (explicit integer; e.g., 10L)  The minimum number of tokens in the summed output.
 #' @param max_length (explicit integer higher than min_length; e.g., 20L)  The maximum number of tokens

@@ -34,11 +34,11 @@ test_that("textClassify tests", {
 #                       function_to_apply = "softmax")
 #
 #  # Test another model
-#  sen2 <- textClassify("I like you. I love you",
-#                       model = "cardiffnlp/twitter-roberta-base-sentiment",
-#                       return_incorrect_results = FALSE,
-#                       return_all_scores = TRUE,
-#                       function_to_apply = "none")
+  sen2 <- textClassify("I like you. I love you",
+                       model = "cardiffnlp/twitter-roberta-base-sentiment",
+                       return_incorrect_results = TRUE, # need to set to TRUE to get results
+                       return_all_scores = TRUE,
+                       function_to_apply = "none")
 #
 })
 

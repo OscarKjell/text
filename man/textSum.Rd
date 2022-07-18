@@ -2,7 +2,7 @@
 % Please edit documentation in R/5_4_textSum.R
 \name{textSum}
 \alias{textSum}
-\title{Summarize texts}
+\title{Summarize texts STILL UNDER DEVELOPMENT}
 \usage{
 textSum(
   x,
@@ -49,7 +49,7 @@ stops them from returning incorrect results.}
 A tibble with summed text(s).
 }
 \description{
-Summarize texts
+Summarize texts STILL UNDER DEVELOPMENT
 }
 \examples{
 \donttest{
