@@ -615,7 +615,7 @@ textTrainRandomForest <- function(x,
   }
 
   # Get names for the added variables to save to description
-  x_append_names <- stringr::str_c(names(x_append), collapse=", ")
+  x_append_names <- paste(names(x_append), collapse=", ")
   # Possibility to train without word embeddings
   if(is.null(x)){
     x <- x_append

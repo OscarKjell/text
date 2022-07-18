@@ -539,7 +539,6 @@ summarize_tune_results <- function(object,
 #' @importFrom future plan multisession
 #' @importFrom furrr future_map
 #' @importFrom workflows workflow add_model add_recipe
-#' @importFrom stringr str_c
 #' @export
 textTrainRegression <- function(x,
                                 y,
@@ -601,7 +600,7 @@ textTrainRegression <- function(x,
   }
 
   # Get names for the added variables to save to description
-  x_append_names <- stringr::str_c(names(x_append), collapse=", ")
+  x_append_names <- paste(names(x_append), collapse=", ")
   # Possibility to train without word embeddings
   if(is.null(x)){
     x <- x_append
