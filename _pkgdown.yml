@@ -46,7 +46,7 @@ reference:
   - textEmbedLayersOutput
   - textEmbedLayerAggregation
   - textEmbedStatic
-- title: Tasks
+- title: Language Model Tasks
   contents:
   - textClassify
   - textGeneration
@@ -54,10 +54,6 @@ reference:
   - textSum
   - textQA
   - textTranslate
-- title: View or delete downloaded HuggingFace models in R
-  contents:
-  - textModels
-  - textModelsRemove
 - title: Train word embeddings
   contents:
     - textTrain
@@ -69,7 +65,7 @@ reference:
     - textPredict
     - textPredictTest
     - textPredictAll
-- title: Semantic similarities and distance
+- title: Semantic similarities and distances
   contents:
     - textSimilarity
     - textDistance
@@ -86,6 +82,10 @@ reference:
     - textCentralityPlot
     - textPCA
     - textPCAPlot
+- title: View or delete downloaded HuggingFace models in R
+  contents:
+  - textModels
+  - textModelsRemove
 - title: Miscellaneous
   contents:
     - textDescriptives

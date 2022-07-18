@@ -39,7 +39,7 @@ they will be concatenated.}
 \item{y}{Numeric variable to predict.}
 
 \item{x_append}{Variables to be appended after the word embeddings (x); if wanting to preappend them before the word embeddings
-use the option first = TRUE.}
+use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.}
 
 \item{cv_method}{Cross-validation method to use within a pipeline of nested outer and inner loops
 of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"

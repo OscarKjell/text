@@ -657,3 +657,24 @@ test_that("textPredictTest t-test and bootstrapped test", {
   testthat::expect_equal(boot_test2$Test$statistic[[1]], 0.233267, tolerance = 0.0001)
   testthat::expect_equal(boot_test2$Effect_size, 0.06198192, tolerance = 0.0001)
 })
+
+
+test_that("training with only x_append (without word embeddings)", {
+
+
+  test1 <- text::textTrainRegression(x = NULL,
+                               x_append = Language_based_assessment_data_8[6:7],
+                               y = Language_based_assessment_data_8[5],
+                               outside_folds = 2)
+
+  testthat::expect_that(test1, testthat::is_a("list"))
+
+  test2 <- text::textTrainRandomForest(x = NULL,
+                                     x_append = Language_based_assessment_data_8[6:7],
+                                     y = Language_based_assessment_data_8[8],
+                                     outside_folds = 2)
+
+  testthat::expect_that(test2, testthat::is_a("list"))
+})
+
+

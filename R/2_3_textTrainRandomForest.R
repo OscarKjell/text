@@ -490,7 +490,7 @@ summarize_tune_results_rf <- function(object,
 #' @param x Word embeddings from textEmbed.
 #' @param y Categorical variable to predict.
 #' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before the word embeddings
-#' use the option first = TRUE.
+#' use the option first = TRUE.  If not wanting to train with word embeddings, set x = NULL.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and
 #' inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
 #' outside folds and "validation_split" using rsample::validation_split in the inner loop to
@@ -591,25 +591,38 @@ textTrainRandomForest <- function(x,
 
   variable_name_index_pca <- NA
 
-  # In case the embedding is in list form get the tibble form
-  if (!tibble::is_tibble(x) & length(x) == 1) {
-    x1 <- x[[1]]
-    # Get names for description
-    x_name <- names(x)
-    # Get embedding info to save for model description
-    embedding_description <- comment(x[[1]])
-    # In case there are several embeddings in list form get the x_names and embedding description for model description
-  } else if (!tibble::is_tibble(x) & length(x) > 1) {
-    x_name <- names(x)
-    x_name <- paste(x_name, sep = " ", collapse = " & ")
-    x_name <- paste("input:", x_name, sep = " ", collapse = " ")
+  if(!is.null(x)){
+    # In case the embedding is in list form get the tibble form
+    if (!tibble::is_tibble(x) & length(x) == 1) {
+      x1 <- x[[1]]
+      # Get names for description
+      x_name <- names(x)
+      # Get embedding info to save for model description
+      embedding_description <- comment(x[[1]])
+      # In case there are several embeddings in list form get the x_names and embedding description for model description
+    } else if (!tibble::is_tibble(x) & length(x) > 1) {
+      x_name <- names(x)
+      x_name <- paste(x_name, sep = " ", collapse = " & ")
+      x_name <- paste("input:", x_name, sep = " ", collapse = " ")
 
-    embedding_description <- comment(x[[1]])
-    # In case it is just one word embedding as tibble
-  } else {
-    x1 <- x
-    x_name <- deparse(substitute(x))
-    embedding_description <- comment(x)
+      embedding_description <- comment(x[[1]])
+      # In case it is just one word embedding as tibble
+    } else {
+      x1 <- x
+      x_name <- deparse(substitute(x))
+      embedding_description <- comment(x)
+    }
+  }
+
+  # Get names for the added variables to save to description
+  x_append_names <- stringr::str_c(names(x_append), collapse=", ")
+  # Possibility to train without word embeddings
+  if(is.null(x)){
+    x <- x_append
+    x_append <- NULL
+    colnames(x) <- paste0("Dim", "_",
+                          colnames(x))
+    x_name <-  NULL
   }
 
 
@@ -655,8 +668,6 @@ textTrainRandomForest <- function(x,
     x1 <- add_variables_to_we(word_embeddings = x1,
                               data = x_append, ...) # ...
   }
-  # Get names for the added variables to save to description
-  x_append_names <- names(x_append)
 
   x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
 

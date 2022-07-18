@@ -465,52 +465,15 @@ summarize_tune_results <- function(object,
   return(results)
 }
 
-#x = word_embeddings_4[1]
-#x_append = Language_based_assessment_data_8[7]
-#x_append = NULL
-#y = Language_based_assessment_data_8[5]
-#cv_method = "validation_split"
-#outside_folds = 10
-#outside_strata_y = "y"
-#outside_breaks = 4
-#inside_folds = 3 / 4
-#inside_strata_y = "y"
-#inside_breaks = 4
-#model = "regression"
-#eval_measure = "default"
-#preprocess_step_center = TRUE
-#preprocess_step_scale = TRUE
-#preprocess_PCA = NA
-#penalty = 10^seq(-16, 16)
-#mixture = c(0)
-#first_n_predictors = NA
-#impute_missing = FALSE
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
 
-#
-#x = harmony_word_embeddings[1]
-#x_append = Language_based_assessment_data_8[1:20, 7]
-#y = Language_based_assessment_data_8[1:20, 5]
-#cv_method = "cv_folds"
-#outside_folds = 2
-#inside_folds = 2
-#outside_strata_y = NULL
-#inside_strata_y = NULL
-## preprocess_PCA = c(0.20)
-#preprocess_PCA = NA
-#penalty = 1e-16
-#multi_cores = "multi_cores_sys_default"
+
 
 #' Train word embeddings to a numeric variable.
 #'
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are provided in a list
 #' they will be concatenated.
 #' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before the word embeddings
-#' use the option first = TRUE.
+#' use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops
@@ -576,6 +539,7 @@ summarize_tune_results <- function(object,
 #' @importFrom future plan multisession
 #' @importFrom furrr future_map
 #' @importFrom workflows workflow add_model add_recipe
+#' @importFrom stringr str_c
 #' @export
 textTrainRegression <- function(x,
                                 y,
@@ -613,25 +577,41 @@ textTrainRegression <- function(x,
     eval_measure <- "bal_accuracy"
   }
 
-  # In case one embedding is in list form get the tibble form
-  if (!tibble::is_tibble(x) & length(x) == 1) {
-    x1 <- x[[1]]
-    # Get names for description
-    x_name <- names(x)
-    embedding_description <- comment(x[[1]])
-    # In case there are several embeddings in list form get the x_names and embedding description for model description
-  } else if (!tibble::is_tibble(x) & length(x) > 1) {
-    x_name <- names(x)
-    x_name <- paste(x_name, sep = " ", collapse = " & ")
-    x_name <- paste("input:", x_name, sep = " ", collapse = " ")
 
-    embedding_description <- comment(x[[1]])
-    # In case it is just one word embedding as tibble
-  } else {
-    x1 <- x
-    x_name <- deparse(substitute(x))
-    embedding_description <- comment(x)
+  if(!is.null(x)){
+    # In case one embedding is in list form get the tibble form
+      if (!tibble::is_tibble(x) & length(x) == 1) {
+      x1 <- x[[1]]
+      # Get names for description
+      x_name <- names(x)
+      embedding_description <- comment(x[[1]])
+      # In case there are several embeddings in list form get the x_names and embedding description for model description
+    } else if (!tibble::is_tibble(x) & length(x) > 1) {
+      x_name <- names(x)
+      x_name <- paste(x_name, sep = " ", collapse = " & ")
+      x_name <- paste("input:", x_name, sep = " ", collapse = " ")
+
+      embedding_description <- comment(x[[1]])
+      # In case it is just one word embedding as tibble
+    } else {
+      x1 <- x
+      x_name <- deparse(substitute(x))
+      embedding_description <- comment(x)
+    }
   }
+
+  # Get names for the added variables to save to description
+  x_append_names <- stringr::str_c(names(x_append), collapse=", ")
+  # Possibility to train without word embeddings
+  if(is.null(x)){
+    x <- x_append
+    x_append <- NULL
+    colnames(x) <- paste0("Dim", "_",
+                          colnames(x))
+    x_name <- NULL
+  }
+
+
 
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
@@ -678,8 +658,7 @@ textTrainRegression <- function(x,
     x1 <- add_variables_to_we(word_embeddings = x1,
                               data = x_append, ...) # ...
   }
-  # Get names for the added variables to save to description
-  x_append_names <- names(x_append)
+
 
 
   x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
