@@ -202,13 +202,13 @@ textPredictTest <- function(y1,
 
 #models = list(text_train_results1, text_train_results2)
 #word_embeddings = harmony_word_embeddings
-#x_add = Language_based_assessment_data_8[1:20, 5:8]
+#x_append = Language_based_assessment_data_8[1:20, 5:8]
 
 #' Predict from several models, selecting the correct input
 #' @param models Object containing several models.
 #' @param word_embeddings List of word embeddings (if using word embeddings from more than one
 #' text-variable use dim_names = TRUE throughout the pipeline).
-#' @param x_add A tibble/dataframe with additional variables used in the training of the models (optional).
+#' @param x_append A tibble/dataframe with additional variables used in the training of the models (optional).
 #' @return A tibble with predictions.
 #' @examples
 #' \donttest{
@@ -220,7 +220,7 @@ textPredictTest <- function(y1,
 #' @export
 textPredictAll <- function(models,
                            word_embeddings,
-                           x_add = NULL){
+                           x_append = NULL){
 
   output_predictions <- list()
 
@@ -249,7 +249,7 @@ textPredictAll <- function(models,
     v_colnames <- substring(dims0, regexpr("_", dims0) + 1)
 
     # Select those names from the "data"
-    if(!is.null(x_add)) x_variables <- x_add %>% dplyr::select(dplyr::all_of(v_colnames))
+    if(!is.null(x_append)) x_variables <- x_append %>% dplyr::select(dplyr::all_of(v_colnames))
 
     # Change the name to include Dim01_
     variables_embeddings <- add_variables_to_we(all_embeddings,
