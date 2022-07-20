@@ -102,9 +102,9 @@ textPredict <- function(model_info,
 }
 
 
-models<- readRDS("/Users/oscarkjell/Desktop/layer1_models.rds")
-word_embeddings<- readRDS("/Users/oscarkjell/Desktop/we.rds")
-x_append<- readRDS("/Users/oscarkjell/Desktop/ratings.rds")
+#models<- readRDS("/Users/oscarkjell/Desktop/layer1_models.rds")
+#word_embeddings<- readRDS("/Users/oscarkjell/Desktop/we.rds")
+#x_append<- readRDS("/Users/oscarkjell/Desktop/ratings.rds")
 #models = list(text_train_results1, text_train_results2)
 #word_embeddings = harmony_word_embeddings
 #x_append = Language_based_assessment_data_8[1:20, 5:8]
