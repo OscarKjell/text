@@ -1,7 +1,16 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# text 0.9.93
+# text 0.9.96
+### New features
+  - harmonizing `x_add` to `x_append` across functions
+
+### Code changes
+- abstracting function for sorting out `x'` in training and prediction
+- `textPredict` does not take `word_embeddings` and `x_append` (not `new_data`)
+
+
+# text 0.9.95
 ### New features
   - textClassify (under development)
   - textGeneration (under development)

@@ -23,7 +23,7 @@ test_that("Testing textEmbed as well as train", {
     decontext_layers = c(11:12)
   )
   #saveRDS(harmony_word_embeddings, "harmony_word_embeddings.rds")
-  #harmony_word_embeddings <-readRDS("harmony_word_embeddings.rds")
+  #harmony_word_embeddings <-readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/harmony_word_embeddings.rds")
 
   expect_equal(harmony_word_embeddings$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
   expect_equal(harmony_word_embeddings$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
@@ -43,14 +43,28 @@ test_that("Testing textEmbed as well as train", {
     multi_cores = "multi_cores_sys_default"
   )
 
+  text_train_results1 <- textTrainRegression(
+    x = harmony_word_embeddings["satisfactiontexts"],
+    y = Language_based_assessment_data_8["hilstotal"][1:20,],
+    cv_method = "cv_folds",
+    outside_folds = 2,
+    inside_folds = 2,
+    outside_strata_y = NULL,
+    inside_strata_y = NULL,
+    # preprocess_PCA = c(0.20),
+    preprocess_PCA = NA,
+    penalty = 1e-16,
+    multi_cores = "multi_cores_sys_default"
+  )
+
   expect_that(text_train_results1$results$estimate[1], is_a("numeric"))
   expect_gt(text_train_results1$results$estimate[1], .3)
   expect_equal(text_train_results1$results$estimate[[1]], 0.3273128, tolerance = 0.00001)
 
   # Train with x_variable
-  text_train_results2 <- textTrain(
-    x = harmony_word_embeddings[1],
-    x_add = Language_based_assessment_data_8[1:20, 6],
+  text_train_results2 <- text::textTrainRegression(
+    x = harmony_word_embeddings[1:2],
+    x_append = Language_based_assessment_data_8[1:20, 6:7],
     y = Language_based_assessment_data_8[1:20, 5],
     cv_method = "cv_folds",
     outside_folds = 2,
@@ -66,18 +80,41 @@ test_that("Testing textEmbed as well as train", {
   # Predict
   hils_predicted_scores1 <- textPredict(
     model_info = text_train_results1,
-    new_data = harmony_word_embeddings$satisfactiontexts
+    word_embeddings = harmony_word_embeddings$satisfactiontexts,
+    dim_names = FALSE
   )
 
-  expect_that(hils_predicted_scores1$.pred[1], is_a("numeric"))
-  expect_equal(hils_predicted_scores1$.pred[1], 11.89, tolerance = 0.1)
+  expect_that(hils_predicted_scores1[[1]], is_a("numeric"))
+  expect_equal(hils_predicted_scores1[[1]][1], 11.89, tolerance = 0.1)
 
- # Predict ALl
-  all_predictions <- textPredictAll(models = list(text_train_results1, text_train_results2),
+  # Same as above with different input
+  hils_predicted_scores1b <- textPredict(
+    model_info = text_train_results1,
+    word_embeddings = harmony_word_embeddings,
+    dim_names = TRUE
+  )
+  expect_that(hils_predicted_scores1b[[1]], is_a("numeric"))
+  expect_equal(hils_predicted_scores1b[[1]][1], 11.89, tolerance = 0.1)
+
+  # Predict
+  hils_predicted_scores1 <- textPredict(
+    model_info = text_train_results2,
+    word_embeddings = harmony_word_embeddings,
+    x_append = Language_based_assessment_data_8[1:20,],
+    dim_names = TRUE
+  )
+  expect_equal(hils_predicted_scores1[[1]][1], 10.404, tolerance = 0.01)
+
+
+ # Predict ALL
+  models_1_2 <- list(text_train_results1, text_train_results2)
+  all_predictions <- textPredictAll(models = models_1_2,
                                     word_embeddings = harmony_word_embeddings,
-                                    x_add = Language_based_assessment_data_8[1:20, 5:8])
+                                    x_append =  Language_based_assessment_data_8[1:20, 5:8])
 
-  # comment(all_predictions)
+  expect_equal(all_predictions[[1]][1], 11.89, tolerance = 0.1)
+  expect_equal(all_predictions[[2]][1], 10.404, tolerance = 0.01)
+
 
   # help(textProjection)
   proj <- textProjection(
@@ -145,9 +182,9 @@ test_that("Testing textEmbed as well as train", {
   # Predict
   hils_predicted_scores1 <- textPredict(
     model_info = text_train_results,
-    new_data = harmony_word_embeddings$satisfactiontexts
+    word_embeddings = harmony_word_embeddings
   )
 
-  expect_that(hils_predicted_scores1$.pred[1], is_a("numeric"))
-  expect_equal(hils_predicted_scores1$.pred[1], 11.89219, tolerance = 0.000001)
+  expect_that(hils_predicted_scores1[[1]][1], is_a("numeric"))
+  expect_equal(hils_predicted_scores1[[1]][1], 11.89219, tolerance = 0.000001)
 })

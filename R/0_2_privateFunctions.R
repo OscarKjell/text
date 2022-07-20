@@ -79,12 +79,12 @@ add_variables_to_we <- function(word_embeddings,
                                 first=FALSE){
 
   # Add Names to new Variables
-  colnames(data) <- paste("Dim0", 1:ncol(data), "_", colnames(data), sep="")
+  colnames(data) <- paste("Dim0", "_", colnames(data), sep="") # 1:ncol(data),
 
   # Remove single_we if exist
   word_embeddings$singlewords_we <- NULL
 
-  # If list of word embeddings
+  # If not list of word embeddings
   if(!is.data.frame(word_embeddings)){
 
     # Add first

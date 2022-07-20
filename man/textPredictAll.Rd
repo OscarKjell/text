@@ -4,7 +4,7 @@
 \alias{textPredictAll}
 \title{Predict from several models, selecting the correct input}
 \usage{
-textPredictAll(models, word_embeddings, x_append = NULL)
+textPredictAll(models, word_embeddings, x_append = NULL, ...)
 }
 \arguments{
 \item{models}{Object containing several models.}
@@ -13,6 +13,8 @@ textPredictAll(models, word_embeddings, x_append = NULL)
 text-variable use dim_names = TRUE throughout the pipeline).}
 
 \item{x_append}{A tibble/dataframe with additional variables used in the training of the models (optional).}
+
+\item{...}{Settings from textPredict.}
 }
 \value{
 A tibble with predictions.

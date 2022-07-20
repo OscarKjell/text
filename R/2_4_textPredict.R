@@ -1,10 +1,18 @@
+#model_info = multi_we_PCA_09
+#word_embeddings = harmony_word_embeddings[1:2]
+#x_append = Language_based_assessment_data_8[6:8]
 
+# model_info <- models[[1]]
 #' Predict scores or classification from, e.g., textTrain.
 #'
-#' @param model_info Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
-#' @param new_data Word embeddings from new data to be predicted from.
-#' @param  type Type of prediction; e.g., "prob", "class".
-#' @param ... Setting from stats::predict can be called.
+#' @param model_info  Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
+# @param new_data Word embeddings from new data to be predicted from.
+#' @param word_embeddings  Word embeddings
+#' @param x_append  Variables to be appended after the word embeddings (x).
+#' @param dim_names Account for specific dimension names from textEmbed
+#' (rather than generic names including Dim1, Dim2 etc.).
+#' @param type  Type of prediction; e.g., "prob", "class".
+#' @param ...  Setting from stats::predict can be called.
 #' @return Predicted scores from word embeddings.
 #' @examples
 #' word_embeddings <- word_embeddings_4
@@ -16,69 +24,134 @@
 #' @importFrom tibble is_tibble as_tibble_col
 #' @export
 textPredict <- function(model_info,
-                        new_data,
-                        type = NULL, ...) {
+                        word_embeddings,
+                        x_append = NULL,
+                        type = NULL,
+                        dim_names = TRUE,
+                        ...) {
 
-  # In case the embedding is in list form get the tibble form
-  if (!tibble::is_tibble(new_data) & length(new_data) == 1) {
-    new_data1 <- new_data[[1]]
+  # Get the right word embeddings
+  if(dim_names == TRUE){
+    # Select the predictor variables needed for the prediction
+    target_variables_names <- model_info$final_recipe$var_info$variable[model_info$final_recipe$var_info$role == "predictor"]
+    #target_variables_names[1830:1836]
+    ## Get Word Embedding Names
+    # remove those starting with Dim0
+    We_names1 <- target_variables_names[!grepl("^Dim0", target_variables_names)]
 
-    new_data1$id_nr <- c(seq_len(nrow(new_data1)))
-    new_data_id_nr_col <- tibble::as_tibble_col(seq_len(nrow(new_data1)), column_name = "id_nr")
+    # Get everything after "_"
+    We_names1_v_colnames <- substring(We_names1, regexpr("_", We_names1) + 1)
+    # Get unique (keep the order the same)
+    word_embeddings_names <- unique(We_names1_v_colnames)
 
-    # In case there are several different word embeddings (from different responses)
-  } else if (!tibble::is_tibble(new_data) & length(new_data) > 1) {
-    new_datalist <- lapply(new_data, function(X) {
-      X <- dplyr::select(X, dplyr::starts_with("Dim"))
-    })
-
-    Nword_variables <- length(new_datalist)
-    # Give each column specific names with indexes so that they can be
-    # handled separately in the PCAs
-    for (i in 1:Nword_variables) {
-      colnames(new_datalist[[i]]) <- paste("Dim_we", i, ".", names(new_datalist[i]),
-                                           colnames(new_datalist[[i]]),
-                                           sep = ""
-      )
-    }
-
-    # Make vector with each index so that we can allocate them separately for the PCAs
-    variable_name_index_pca <- list()
-    for (i in 1:Nword_variables) {
-      variable_name_index_pca[i] <- paste("Dim_we", i, sep = "")
-    }
-
-    # Make one df rather than list.
-    new_data1 <- dplyr::bind_cols(new_datalist)
-
-
-    # Add ID
-    new_data1$id_nr <- c(seq_len(nrow(new_data1)))
-    new_data_id_nr_col <- tibble::as_tibble_col(seq_len(nrow(new_data1)), column_name = "id_nr")
-
-    # Removing NAs for the analyses (here we could potentially impute missing values; e.g., mean of each dimension)
-    new_data1 <- new_data1[complete.cases(new_data1), ]
+    # Select the word embeddings
+    word_embeddings <- word_embeddings[word_embeddings_names]
   } else {
-    new_data1 <- new_data
-
-    new_data1$id_nr <- c(seq_len(nrow(new_data1)))
-    new_data_id_nr_col <- tibble::as_tibble_col(seq_len(nrow(new_data1)), column_name = "id_nr")
+    word_embeddings_names <- "word_embeddings"
   }
 
-  # Load prepared_with_recipe
+  if(!is.null(x_append)){
+    ### Sort a_append: select all Dim0 (i.e., x_append variables)
+    dims0 <- target_variables_names[grep("^Dim0",
+                                         target_variables_names)]
+
+  # select everything after the first _
+  variable_names <- substring(dims0, regexpr("_", dims0) + 1)
+
+  # Select those names from the "data"
+  x_append_target <- x_append %>% dplyr::select(dplyr::all_of(variable_names))
+  } else {
+    variable_names <- NULL
+  }
+
+  # Adding embeddings and x_append (if any)
+  new_data1 <- sorting_xs_and_x_append(x = word_embeddings,
+                                       x_append = x_append, ...)
+  new_data1 <- new_data1$x1
+
+  # Dealing with NAs
+  new_data1$id_nr <- c(seq_len(nrow(new_data1)))
+  new_data1 <- new_data1[complete.cases(new_data1), ]
+  new_data_id_nr_col <- tibble::as_tibble_col(seq_len(nrow(new_data1)), column_name = "id_nr")
+
+  #### Load prepared_with_recipe
   data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data1)
 
   # Get column names to be removed
   colnames_to_b_removed <- colnames(data_prepared_with_recipe)
   colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed == "id_nr"]
 
-  # Get Prediction scores help(predict)
+  # Get Prediction scores
   predicted_scores2 <- data_prepared_with_recipe %>%
     bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type), ...) %>%
     select(-!!colnames_to_b_removed) %>%
     full_join(new_data_id_nr_col, by = "id_nr") %>%
     arrange(id_nr) %>%
     select(-id_nr)
+
+  we_names <- paste(word_embeddings_names, collapse = "_", sep="")
+  v_names  <- paste(variable_names, collapse = "_", sep="")
+
+  y_name <- model_info$model_description[3]
+  y_name <- gsub("[[:space:]]", "", y_name)
+  y_name <- gsub("y=", "", y_name)
+
+  colnames(predicted_scores2) <- paste(we_names, "_", v_names, "_", y_name, "pred", sep = "")
+
+  return(predicted_scores2)
+}
+
+
+models<- readRDS("/Users/oscarkjell/Desktop/layer1_models.rds")
+word_embeddings<- readRDS("/Users/oscarkjell/Desktop/we.rds")
+x_append<- readRDS("/Users/oscarkjell/Desktop/ratings.rds")
+#models = list(text_train_results1, text_train_results2)
+#word_embeddings = harmony_word_embeddings
+#x_append = Language_based_assessment_data_8[1:20, 5:8]
+
+#' Predict from several models, selecting the correct input
+#' @param models Object containing several models.
+#' @param word_embeddings List of word embeddings (if using word embeddings from more than one
+#' text-variable use dim_names = TRUE throughout the pipeline).
+#' @param x_append A tibble/dataframe with additional variables used in the training of the models (optional).
+#' @param ...  Settings from textPredict.
+#' @return A tibble with predictions.
+#' @examples
+#' \donttest{
+#' # x <- Language_based_assessment_data_8[1:2, 1:2]
+#' # word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
+#' }
+#' @seealso see \code{\link{textPredict}} and \code{\link{textTrain}}
+#' @importFrom dplyr bind_cols select all_of
+#' @export
+textPredictAll <- function(models,
+                           word_embeddings,
+                           x_append = NULL,
+                           ...){
+
+  output_predictions <- list()
+
+  # If textTrain has created many models at the same time, select them from "all_output".
+  if(!is.null(models$all_output)){
+    models <- models$all_output
+  }
+
+  # Remove singlewords_we if it exist
+#  if(!is.null(word_embeddings$singlewords_we)){
+#    word_embeddings$singlewords_we <- NULL
+#  }
+
+  #i=1
+  for(i in 1:length(models)){
+
+    preds <- textPredict(models[[i]],
+                         word_embeddings,
+                         x_append) #, ...
+
+    output_predictions[[i]] <- preds
+  }
+  output_predictions1 <- dplyr::bind_cols(output_predictions)
+  return(output_predictions1)
 }
 
 
@@ -198,79 +271,6 @@ textPredictTest <- function(y1,
   }
   output
 }
-
-
-#models = list(text_train_results1, text_train_results2)
-#word_embeddings = harmony_word_embeddings
-#x_append = Language_based_assessment_data_8[1:20, 5:8]
-
-#' Predict from several models, selecting the correct input
-#' @param models Object containing several models.
-#' @param word_embeddings List of word embeddings (if using word embeddings from more than one
-#' text-variable use dim_names = TRUE throughout the pipeline).
-#' @param x_append A tibble/dataframe with additional variables used in the training of the models (optional).
-#' @return A tibble with predictions.
-#' @examples
-#' \donttest{
-#' # x <- Language_based_assessment_data_8[1:2, 1:2]
-#' # word_embeddings_with_layers <- textEmbedLayersOutput(x, layers = 11:12)
-#' }
-#' @seealso see \code{\link{textPredict}} and \code{\link{textTrain}}
-#' @importFrom dplyr bind_cols select all_of
-#' @export
-textPredictAll <- function(models,
-                           word_embeddings,
-                           x_append = NULL){
-
-  output_predictions <- list()
-
-  # If textTrain has created many models at the same time, select them from "all_output".
-  if(!is.null(models$all_output)){
-    models <- models$all_output
-  }
-
-  # Remove singlewords_we if it exist
-  if(!is.null(word_embeddings$singlewords_we)){
-    word_embeddings$singlewords_we <- NULL
-  }
-
-  all_embeddings <- dplyr::bind_cols(word_embeddings)
-  # i = 2
-  for(i in 1:length(models)){
-
-    # Select the predictor variables needed for the prediction
-    target_variables_names <- models[[i]]$final_recipe$var_info$variable[models[[i]]$final_recipe$var_info$role == "predictor"]
-
-    # select all Dim0
-    dims0 <- target_variables_names[grep("^Dim0",
-                                         target_variables_names)]
-
-    # select everything after the first _
-    v_colnames <- substring(dims0, regexpr("_", dims0) + 1)
-
-    # Select those names from the "data"
-    if(!is.null(x_append)) x_variables <- x_append %>% dplyr::select(dplyr::all_of(v_colnames))
-
-    # Change the name to include Dim01_
-    variables_embeddings <- add_variables_to_we(all_embeddings,
-                                                x_variables)
-
-    input_x <- variables_embeddings %>%
-      dplyr::select(dplyr::all_of(target_variables_names))
-
-
-    preds <- textPredict(models[[i]],
-                         input_x)$.pred
-
-    pred1 <- as_tibble(preds)
-    colnames(pred1) <- paste(names(word_embeddings[i]), "_pred", sep="")
-    output_predictions[[i]] <- pred1
-  }
-  output_predictions1 <- dplyr::bind_cols(output_predictions)
-  return(output_predictions1)
-}
-
-
 
 
 

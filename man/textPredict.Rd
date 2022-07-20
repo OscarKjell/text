@@ -4,14 +4,26 @@
 \alias{textPredict}
 \title{Predict scores or classification from, e.g., textTrain.}
 \usage{
-textPredict(model_info, new_data, type = NULL, ...)
+textPredict(
+  model_info,
+  word_embeddings,
+  x_append = NULL,
+  type = NULL,
+  dim_names = TRUE,
+  ...
+)
 }
 \arguments{
 \item{model_info}{Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).}
 
-\item{new_data}{Word embeddings from new data to be predicted from.}
+\item{word_embeddings}{Word embeddings}
+
+\item{x_append}{Variables to be appended after the word embeddings (x).}
 
 \item{type}{Type of prediction; e.g., "prob", "class".}
+
+\item{dim_names}{Account for specific dimension names from textEmbed
+(rather than generic names including Dim1, Dim2 etc.).}
 
 \item{...}{Setting from stats::predict can be called.}
 }

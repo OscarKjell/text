@@ -567,7 +567,6 @@ textTrainRegression <- function(x,
                                 ...) {
   T1_textTrainRegression <- Sys.time()
   set.seed(seed)
-  variable_name_index_pca <- NA
 
   # Select correct eval_measure depending on model when default
   if (model == "regression" & eval_measure == "default") {
@@ -576,43 +575,7 @@ textTrainRegression <- function(x,
     eval_measure <- "bal_accuracy"
   }
 
-
-  if(!is.null(x)){
-    # In case one embedding is in list form get the tibble form
-      if (!tibble::is_tibble(x) & length(x) == 1) {
-      x1 <- x[[1]]
-      # Get names for description
-      x_name <- names(x)
-      embedding_description <- comment(x[[1]])
-      # In case there are several embeddings in list form get the x_names and embedding description for model description
-    } else if (!tibble::is_tibble(x) & length(x) > 1) {
-      x_name <- names(x)
-      x_name <- paste(x_name, sep = " ", collapse = " & ")
-      x_name <- paste("input:", x_name, sep = " ", collapse = " ")
-
-      embedding_description <- comment(x[[1]])
-      # In case it is just one word embedding as tibble
-    } else {
-      x1 <- x
-      x_name <- deparse(substitute(x))
-      embedding_description <- comment(x)
-    }
-  }
-
-  # Get names for the added variables to save to description
-  x_append_names <- paste(names(x_append), collapse=", ")
-  # Possibility to train without word embeddings
-  if(is.null(x)){
-    x1 <- x_append
-    x_append <- NULL
-    colnames(x1) <- paste0("Dim", "_",
-                          colnames(x1))
-    x_name <- NULL
-    embedding_description <- NULL
-  }
-
-
-
+  # Sorting out y
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
     #y <- y[[1]]
@@ -622,46 +585,15 @@ textTrainRegression <- function(x,
     y <- tibble::as_tibble_col(y, column_name = "y")
   }
 
+  # Sorting out x's
+  variables_and_names <- sorting_xs_and_x_append(x = x, x_append = x_append, ...)
+  x2 <- variables_and_names$x1
+  x_name <- variables_and_names$x_name
+  embedding_description <- variables_and_names$embedding_description
+  x_append_names <- variables_and_names$x_append_names
+  variable_name_index_pca <- variables_and_names$variable_name_index_pca
+  rm(variables_and_names)
 
-  ############ Arranging word embeddings to be concatenated from different texts ############
-  ##################################################
-
-  if (!tibble::is_tibble(x) & length(x) > 1) {
-
-    # Select all variables that starts with Dim in each dataframe of the list.
-    xlist <- lapply(x, function(X) {
-      X <- dplyr::select(X, dplyr::starts_with("Dim"))
-    })
-    Nword_variables <- length(xlist)
-
-    # Give each column specific names with indexes so that they can be handled separately in the PCAs
-    for (i in 1:Nword_variables) {
-      colnames(xlist[[i]]) <- paste("Dim_we", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep = "")
-
-      # Get the name of the first column for the PCA
-    }
-
-    # Make vector with each index so that we can allocate them separately for the PCAs
-    variable_name_index_pca <- list()
-    for (i in 1:Nword_variables) {
-      variable_name_index_pca[i] <- paste("Dim_we", i, sep = "")
-    }
-
-    # Make one df rather then list.
-    x1 <- dplyr::bind_cols(xlist)
-  }
-  ############ End for multiple word embeddings ############
-  ##########################################################
-
-  #### Add other variables to word embeddings x_append=NULL
-  if(!is.null(x_append)){
-    x1 <- add_variables_to_we(word_embeddings = x1,
-                              data = x_append, ...) # ...
-  }
-
-
-
-  x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
   xy <- dplyr::bind_cols(x2, y)
   #xy <- tibble::as_tibble(xy) xy[1537]
   xy$id_nr <- c(seq_len(nrow(xy)))
@@ -1175,7 +1107,6 @@ textTrainRegression <- function(x,
   # Remove object to minimize model size when saved to rds; use this to
   # check sizes: sort(sapply(ls(),function(x){object.size(get(x))}))
   remove(x)
-  remove(x1)
   remove(x_append)
   remove(y)
   remove(x2)

@@ -460,6 +460,99 @@ summarize_tune_results_rf <- function(object,
 }
 
 
+#' Sorting out word_embeddings and x_append for training and predictions
+#'
+#' @param x word embeddings
+#' @param x_append other variables than word embeddings used in training (e.g., age)
+#' @return List with sorted tibble of variables, x_name, embedding_description,
+#' x_append_names, and variable_name_index_pca.
+#' @noRd
+sorting_xs_and_x_append <- function(x, x_append, ...){
+
+  variable_name_index_pca <- NA
+
+  if(!is.null(x)){
+    # In case the embedding is in list form get the tibble form
+    if (!tibble::is_tibble(x) & length(x) == 1) {
+      x1 <- x[[1]]
+      # Get names for description
+      x_name <- names(x)
+      # Get embedding info to save for model description
+      embedding_description <- comment(x[[1]])
+      # In case there are several embeddings in list form get the x_names and embedding description for model description
+    } else if (!tibble::is_tibble(x) & length(x) > 1) {
+      x_name <- names(x)
+      x_name <- paste(x_name, sep = " ", collapse = " & ")
+      x_name <- paste("input:", x_name, sep = " ", collapse = " ")
+
+      embedding_description <- comment(x[[1]])
+      # In case it is just one word embedding as tibble
+    } else {
+      x1 <- x
+      x_name <- deparse(substitute(x))
+      embedding_description <- comment(x)
+    }
+  }
+
+  # Get names for the added variables to save to description
+  x_append_names <- paste(names(x_append), collapse=", ")
+  # Possibility to train without word embeddings
+  if(is.null(x)){
+    x1 <- x_append
+    x_append <- NULL
+    colnames(x1) <- paste0("Dim", "_",
+                           colnames(x1))
+    x_name <-  NULL
+    embedding_description <- NULL
+  }
+
+  ############ Arranging word embeddings to be concatenated from different texts ############
+  ##################################################
+
+  if (!tibble::is_tibble(x) & length(x) > 1) {
+
+    # Select all variables that starts with Dim in each dataframe of the list.
+    xlist <- lapply(x, function(X) {
+      X <- dplyr::select(X, dplyr::starts_with("Dim"))
+    })
+
+    Nword_variables <- length(xlist)
+    # Give each column specific names with indexes so that they can be handled separately in the PCAs
+    for (i in 1:Nword_variables) {
+      # we_names <- names(xlist[i])
+      # remove any "_", since the first "_" is later used as a sign to select all after it to get the name
+      # we_names <- gsub("_", ".", we_names)
+      colnames(xlist[[i]]) <- paste("DimWs", i, ".", colnames(xlist[[i]]), sep = "")
+    }
+
+    # Make vector with each index so that we can allocate them separately for the PCAs
+    variable_name_index_pca <- list()
+    for (i in 1:Nword_variables) {
+      variable_name_index_pca[i] <- paste("DimWs", i, sep = "")
+    }
+
+    # Make one df rather then list.
+    x1 <- dplyr::bind_cols(xlist)
+  }
+  ############ End for multiple word embeddings ############
+  ##########################################################
+
+  #### Add other variables to word embeddings x_append=NULL
+  if(!is.null(x_append)){
+    x1 <- add_variables_to_we(word_embeddings = x1,
+                              data = x_append, ...)
+  }
+
+  x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
+  variables_names <- list(x1, x_name, embedding_description,
+                          x_append_names, variable_name_index_pca)
+  names(variables_names) <- c("x1", "x_name", "embedding_description",
+                              "x_append_names", "variable_name_index_pca")
+
+  return(variables_names)
+}
+
+
 #' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Word embeddings from textEmbed.
@@ -564,44 +657,7 @@ textTrainRandomForest <- function(x,
   T1_textTrainRandomForest <- Sys.time()
   set.seed(seed)
 
-  variable_name_index_pca <- NA
-
-  if(!is.null(x)){
-    # In case the embedding is in list form get the tibble form
-    if (!tibble::is_tibble(x) & length(x) == 1) {
-      x1 <- x[[1]]
-      # Get names for description
-      x_name <- names(x)
-      # Get embedding info to save for model description
-      embedding_description <- comment(x[[1]])
-      # In case there are several embeddings in list form get the x_names and embedding description for model description
-    } else if (!tibble::is_tibble(x) & length(x) > 1) {
-      x_name <- names(x)
-      x_name <- paste(x_name, sep = " ", collapse = " & ")
-      x_name <- paste("input:", x_name, sep = " ", collapse = " ")
-
-      embedding_description <- comment(x[[1]])
-      # In case it is just one word embedding as tibble
-    } else {
-      x1 <- x
-      x_name <- deparse(substitute(x))
-      embedding_description <- comment(x)
-    }
-  }
-
-  # Get names for the added variables to save to description
-  x_append_names <- paste(names(x_append), collapse=", ")
-  # Possibility to train without word embeddings
-  if(is.null(x)){
-    x1 <- x_append
-    x_append <- NULL
-    colnames(x1) <- paste0("Dim", "_",
-                          colnames(x1))
-    x_name <-  NULL
-    embedding_description <- NULL
-  }
-
-
+  # Sorting out y
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
     #y <- y[[1]]
@@ -611,41 +667,15 @@ textTrainRandomForest <- function(x,
     y <- tibble::as_tibble_col(y, column_name = "y")
   }
 
-  ############ Arranging word embeddings to be concatenated from different texts ############
-  ##################################################
+  # sorting out x's
+  variables_and_names <- sorting_xs_and_x_append(x = x, x_append = x_append, ...)
+  x1 <- variables_and_names$x1
+  x_name <- variables_and_names$x_name
+  embedding_description <- variables_and_names$embedding_description
+  x_append_names <- variables_and_names$x_append_names
+  variable_name_index_pca <- variables_and_names$variable_name_index_pca
+  rm(variables_and_names)
 
-  if (!tibble::is_tibble(x) & length(x) > 1) {
-
-    # Select all variables that starts with Dim in each dataframe of the list.
-    xlist <- lapply(x, function(X) {
-      X <- dplyr::select(X, dplyr::starts_with("Dim"))
-    })
-
-    Nword_variables <- length(xlist)
-    # Give each column specific names with indexes so that they can be handled separately in the PCAs
-    for (i in 1:Nword_variables) {
-      colnames(xlist[[i]]) <- paste("Dim_we", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep = "")
-    }
-
-    # Make vector with each index so that we can allocate them separately for the PCAs
-    variable_name_index_pca <- list()
-    for (i in 1:Nword_variables) {
-      variable_name_index_pca[i] <- paste("Dim_we", i, sep = "")
-    }
-
-    # Make one df rather then list.
-    x1 <- dplyr::bind_cols(xlist)
-  }
-  ############ End for multiple word embeddings ############
-  ##########################################################
-
-  #### Add other variables to word embeddings x_append=NULL
-  if(!is.null(x_append)){
-    x1 <- add_variables_to_we(word_embeddings = x1,
-                              data = x_append, ...) # ...
-  }
-
-  x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
 
   if (!mode_rf == "regression") {
     y$y <- as.factor(y[[1]])
@@ -849,7 +879,7 @@ textTrainRandomForest <- function(x,
       final_recipe <- recipes::step_scale(final_recipe, recipes::all_predictors())
     }
 
-    # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
+    # Adding a PCA in each loop; first selecting all variables starting with i="DimWs1"; and then "DimWs2" etc
     if (!is.na(preprocess_PCA)) {
       if (preprocess_PCA >= 1) {
         for (i in variable_name_index_pca) {
