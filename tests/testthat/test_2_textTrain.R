@@ -7,9 +7,8 @@ context("Training Functions")
 
 test_that("textTrain Regression produces list of results with prediction being numeric", {
   skip_on_cran()
-  x <- word_embeddings_4[1]
-  y <- Language_based_assessment_data_8[6]
-  trained_min_halving <- textTrainRegression(
+
+  trained_min_halving <- text::textTrainRegression(
     x=word_embeddings_4[1],
     y=Language_based_assessment_data_8[6],
     cv_method = "cv_folds",
@@ -70,7 +69,6 @@ test_that("textTrain Regression produces list of results with prediction being n
   testthat::expect_that(trained_logistic2, is_a("list"))
   testthat::expect_is(trained_logistic2$results_metrics$.estimate[[1]], "numeric")
   testthat::expect_equal(trained_logistic2$results_metrics$.estimate[[1]], 0.525)
-
 
 
   # testing with one component; and thus a standard logistic.
@@ -222,7 +220,7 @@ test_that("textTrainRandomForest with Extremely
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2
   ))
-  trained_rf_95 <- textTrainRandomForest(
+  trained_rf_95 <- text::textTrainRandomForest(
     x = word_embeddings_4$harmonytext,
     y = example_categories,
     outside_folds = 2,

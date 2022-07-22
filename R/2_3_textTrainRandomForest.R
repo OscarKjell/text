@@ -8,6 +8,10 @@
 #' @param estimate name of the predicted estimate
 #' @return  tibble with .metric column (i.e., type of evaluation measure), .estimator (e.g., binary)
 #' and .estimate (i.e., the resulting value).
+#' @importFrom  dplyr all_of
+#' @importFrom  yardstick accuracy bal_accuracy sens spec precision kap f_meas roc_auc rmse rsq
+#' @importFrom  tibble tibble
+#' @importFrom  stats cor.test
 #' @noRd
 select_eval_measure_val <- function(eval_measure = "bal_accuracy",
                                     holdout_pred = NULL,
@@ -30,17 +34,17 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
     eval_measure_val <- yardstick::f_meas(holdout_pred, truth = y, estimate = .pred_class)
   } else if (eval_measure == "roc_auc") {
     class1_name <- eval(class)
-    eval_measure_val <- yardstick::roc_auc(holdout_pred, truth = y, class1_name)
+    eval_measure_val <- yardstick::roc_auc(holdout_pred, truth = y, dplyr::all_of(class1_name))
   } else if (eval_measure == "rmse") {
     eval_measure_val <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)
   } else if (eval_measure == "rsq") {
     eval_measure_val <- yardstick::rsq(holdout_pred, truth = y, estimate = .pred)
   } else if (eval_measure == "cor_test") {
-    cor_testing <- cor.test(holdout_pred$y, holdout_pred$.pred, na.action = na.omit)
+    cor_testing <- stats::cor.test(holdout_pred$y, holdout_pred$.pred, na.action = na.omit)
     estimate1 <- cor_testing[[4]][[1]]
     metric <- "cor_test"
     estimator <- "standard"
-    eval_measure_val <- tibble(metric, estimator, as.numeric(estimate1))
+    eval_measure_val <- tibble::tibble(metric, estimator, as.numeric(estimate1))
     colnames(eval_measure_val) <- c(".metric", ".estimator", ".estimate")
   }
   eval_measure_val
@@ -50,6 +54,12 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
 #'
 #' @param outputlist_results_outer Results from outer predictions.
 #' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
+#' @importFrom  tidyr unnest
+#' @importFrom  tibble is_tibble
+#' @importFrom  dplyr full_join arrange bind_rows
+#' @importFrom  stats fisher.test
+#' @importFrom  yardstick accuracy bal_accuracy sens spec precision kap f_meas roc_auc rmse rsq
+#' @importFrom  ggplot2 autoplot
 #' @noRd
 classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
   # Unnest predictions and y
@@ -340,6 +350,9 @@ tune_over_cost_rf <- function(object,
                               variable_name_index_pca,
                               eval_measure,
                               extremely_randomised_splitrule) {
+  T1 <- Sys.time()
+
+
   if (!is.na(preprocess_PCA[1])) {
     # Number of components or percent of variance to attain; min_halving;
     if (preprocess_PCA[1] == "min_halving") {
@@ -396,7 +409,24 @@ tune_over_cost_rf <- function(object,
   grid_inner_accuracy <- grid_inner %>%
     dplyr::mutate(eval_results = tune_accuracy)
 
-  grid_inner_accuracy
+  # Progression output
+  best_eval <- bestParameters(data = grid_inner_accuracy,
+                              eval_measure = eval_measure)
+
+  T2 <- Sys.time()
+  time <- T2-T1
+  variable_time <- sprintf("(duration: %s %s).",
+                           round(time, digits = 3),
+                           units(time))
+
+  description_text <- paste("Fold:", eval_measure,
+                            round(best_eval$eval_result, digits= 3),
+                            variable_time,
+                            "\n")
+
+  cat(colourise(description_text, "green"))
+
+  return(grid_inner_accuracy)
 }
 
 
@@ -422,8 +452,6 @@ summarize_tune_results_rf <- function(object,
                                       eval_measure,
                                       extremely_randomised_splitrule) {
 
-  T1 <- Sys.time()
-
   # Return row-bound tibble containing the INNER results
   results <- purrr::map_df(
               .x = object$splits,
@@ -440,23 +468,8 @@ summarize_tune_results_rf <- function(object,
               extremely_randomised_splitrule = extremely_randomised_splitrule
   )
 
-  best_eval <- bestParameters(data = results,
-                              eval_measure = eval_measure)
-
-  T2 <- Sys.time()
-  time <- T2-T1
-  variable_time <- sprintf("(duration: %f %s).",
-                           time,
-                           units(time))
-
-  description_text <- paste("Fold:", eval_measure,
-                            round(best_eval$eval_result, digits= 3),
-                            variable_time, "\n")
-
-  cat(colourise(description_text, "green"))
 
   return(results)
-
 }
 
 

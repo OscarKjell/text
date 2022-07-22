@@ -309,6 +309,8 @@ tune_over_cost <- function(object,
                            preprocess_step_scale = preprocess_step_scale,
                            impute_missing = impute_missing) {
 
+  T1 <- Sys.time()
+
   # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
   if (!is.na(preprocess_PCA[1])) {
     if (preprocess_PCA[1] == "min_halving") {
@@ -353,7 +355,7 @@ tune_over_cost <- function(object,
     first_n_predictors = first_n_predictors
   )
 
-  # Test models with the different hyperparameters for the inner samples
+  #  Test models with the different hyperparameters for the inner samples
   tune_results <- purrr::pmap(list(
     grid_inner$penalty,
     grid_inner$mixture,
@@ -382,7 +384,27 @@ tune_over_cost <- function(object,
   # Add RMSE to the grid
   grid_inner_eval_result <- grid_inner %>%
     dplyr::mutate(eval_result = tune_eval_result)
-  grid_inner_eval_result
+
+
+  # Progression output
+  best_eval <- bestParameters(data = grid_inner_eval_result,
+                              eval_measure = eval_measure)
+
+  T2 <- Sys.time()
+  time <- round(T2-T1, digits = 2)
+
+  variable_time <- sprintf("(duration: %s %s).",
+                           time,
+                           units(time))
+
+  description_text <- paste("Fold:", eval_measure,
+                            round(best_eval$eval_result, digits= 3),
+                            variable_time, "\n")
+
+  cat(colourise(description_text, "green"))
+
+
+  return(grid_inner_eval_result)
 }
 
 
@@ -429,8 +451,6 @@ summarize_tune_results <- function(object,
                                    preprocess_step_scale = preprocess_step_scale,
                                    impute_missing = impute_missing) {
 
-  T1 <- Sys.time()
-
   # Return row-bound tibble containing the INNER results
   results <- purrr::map_df(
     .x = object$splits,
@@ -447,25 +467,33 @@ summarize_tune_results <- function(object,
     impute_missing = impute_missing
   )
 
-  best_eval <- bestParameters(data = results,
-                              eval_measure = eval_measure)
-
-  T2 <- Sys.time()
-  time <- T2-T1
-  variable_time <- sprintf("(duration: %f %s).",
-                           time,
-                           units(time))
-
-  description_text <- paste("Fold:", eval_measure,
-            round(best_eval$eval_result, digits= 3),
-            variable_time, "\n")
-
-  cat(colourise(description_text, "green"))
-
   return(results)
 }
 
-
+#x=word_embeddings_4[1]
+#y=Language_based_assessment_data_8[6]
+#x_append = NULL
+#cv_method = "validation_split"
+#outside_folds = 10
+#outside_strata_y = "y"
+#outside_breaks = 4
+#inside_folds = 3 / 4
+#inside_strata_y = "y"
+#inside_breaks = 4
+#model = "regression"
+#eval_measure = "default"
+#preprocess_step_center = TRUE
+#preprocess_step_scale = TRUE
+#preprocess_PCA = NA
+#penalty = 10^seq(-16, 16)
+#mixture = c(0)
+#first_n_predictors = NA
+#impute_missing = FALSE
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#seed = 2020
 
 
 #' Train word embeddings to a numeric variable.
