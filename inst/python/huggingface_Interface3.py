@@ -266,7 +266,25 @@ def hgTransformerGetTextGeneration(text_strings,
                             clean_up_tokenization_spaces = False,
                             prefix = '', 
                             handle_long_generation = None):
-    generated_texts = hgTransformerGetPipeline(text_strings = text_strings,
+    if return_tensors:
+        if return_text or return_full_text:
+            print("Warning: you set return_tensors and return_text (or return_full_text)")
+            print("         Returning tensors only, as you cannot return both tensors and text.")
+            print("         Please set return_tensors = FALSE if you need the generated text.")
+        generated_texts = hgTransformerGetPipeline(text_strings = text_strings,
+                            task = 'text-generation',
+                            model = model,
+                            device = device,
+                            tokenizer_parallelism = tokenizer_parallelism,
+                            logging_level = logging_level,
+                            return_incorrect_results = return_incorrect_results,
+                            set_seed = set_seed,
+                            return_tensors = return_tensors, 
+                            clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
+                            prefix = prefix,
+                            handle_long_generation = handle_long_generation)
+    else:
+        generated_texts = hgTransformerGetPipeline(text_strings = text_strings,
                             task = 'text-generation',
                             model = model,
                             device = device,
