@@ -141,6 +141,17 @@ def get_model(model):
         else:
             tokenizer = BertTokenizer.from_pretrained('nvidia/megatron-bert-uncased-345m')
         transformer_model = MegatronBertForMaskedLM.from_pretrained(model, config=config)
+    elif "bigscience/bloom" in model:
+        try:
+            from transformers import BloomTokenizerFast, BloomModel, BloomConfig
+        except:
+            print("WARNING: You must install transformers>4.21.0 to use BloomModel")
+            print("\tPlease try another model.")
+            sys.exit()
+        
+        config = BloomConfig()
+        tokenizer = BloomTokenizerFast.from_pretrained(model)
+        transformer_model = BloomModel.from_pretrained(model, config=config)
     else:
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
         tokenizer = AutoTokenizer.from_pretrained(model)
