@@ -29,7 +29,7 @@ PIPELINE_RESULTS_BY_TASK = {
     "summarization": ["summary_text"], 
     "token-classification": ["entity"], 
     "ner": ["entity"], 
-    "text-generation": ["generated_text"], 
+    "text-generation": ["generated_text", "generated_token_ids"], 
     "zero-shot-classification": [""], 
 }
 
@@ -44,18 +44,19 @@ def set_logging_level(logging_level):
     """
     logging_level = logging_level.lower()
     # default level is warning, which is in between "error" and "info"
-    if logging_level not in ['warn', 'warning']:
-        if logging_level == "critical":
-            logging.set_verbosity_critical()
-        elif logging_level == "error":
-            logging.set_verbosity_error()
-        elif logging_level == "info":
-            logging.set_verbosity_info()
-        elif logging_level == "debug":
-            logging.set_verbosity_debug()
-        else:
-            print("Warning: Logging level {l} is not an option.".format(l=logging_level))
-            print("\tUse one of: critical, error, warning, info, debug")
+    if logging_level in ['warn', 'warning']:
+        logging.set_verbosity_warning()
+    elif logging_level == "critical":
+        logging.set_verbosity_critical()
+    elif logging_level == "error":
+        logging.set_verbosity_error()
+    elif logging_level == "info":
+        logging.set_verbosity_info()
+    elif logging_level == "debug":
+        logging.set_verbosity_debug()
+    else:
+        print("Warning: Logging level {l} is not an option.".format(l=logging_level))
+        print("\tUse one of: critical, error, warning, info, debug")
 
 def set_tokenizer_parallelism(tokenizer_parallelism):
     if tokenizer_parallelism:
@@ -153,6 +154,7 @@ def hgTransformerGetPipeline(text_strings,
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
                             return_incorrect_results = False,
+                            set_seed = None,
                             **kwargs):
     """
     Simple interface getting Huggingface Pipeline
@@ -174,6 +176,10 @@ def hgTransformerGetPipeline(text_strings,
         something
     logging_level : str
         set logging level, options: critical, error, warning, info, debug
+    return_incorrect_results : bool
+        return results if they are not properly formatted for the task
+    set_seed : int
+        integer value for manually setting seed
     kwargs : dict
         pipeline task specific arguments
     
@@ -186,7 +192,8 @@ def hgTransformerGetPipeline(text_strings,
     if not (task in ACCEPTED_TASKS or task.startswith("translation")):
         print("Task {t} is not recognized".format(t=task))
         return []
-
+    if isinstance(set_seed, int):
+        torch.manual_seed(set_seed)
     set_logging_level(logging_level)
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
@@ -252,6 +259,7 @@ def hgTransformerGetTextGeneration(text_strings,
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
                             return_incorrect_results = False,
+                            set_seed = None,
                             return_tensors = False,
                             return_text = True,
                             return_full_text = True,
@@ -265,6 +273,7 @@ def hgTransformerGetTextGeneration(text_strings,
                             tokenizer_parallelism = tokenizer_parallelism,
                             logging_level = logging_level,
                             return_incorrect_results = return_incorrect_results,
+                            set_seed = set_seed,
                             return_tensors = return_tensors, 
                             return_text = return_text, 
                             return_full_text = return_full_text, 
@@ -278,14 +287,16 @@ def hgTransformerGetNER(text_strings,
                             device = 'cpu',
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
-                            return_incorrect_results = False):
+                            return_incorrect_results = False,
+                            set_seed = None):
     ner_scores = hgTransformerGetPipeline(text_strings = text_strings,
                             task = 'ner',
                             model = model,
                             device = device,
                             tokenizer_parallelism = tokenizer_parallelism,
                             logging_level = logging_level,
-                            return_incorrect_results = return_incorrect_results)
+                            return_incorrect_results = return_incorrect_results,
+                            set_seed = set_seed)
     return ner_scores
 
 def hgTransformerGetSentiment(text_strings,
@@ -294,6 +305,7 @@ def hgTransformerGetSentiment(text_strings,
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
                             return_incorrect_results = False,
+                            set_seed = None,
                             return_all_scores = False,
                             function_to_apply = "none"):
     sentiment_scores = hgTransformerGetPipeline(text_strings = text_strings,
@@ -303,6 +315,7 @@ def hgTransformerGetSentiment(text_strings,
                             tokenizer_parallelism = tokenizer_parallelism,
                             logging_level = logging_level,
                             return_incorrect_results = return_incorrect_results,
+                            set_seed = set_seed,
                             return_all_scores = return_all_scores,
                             function_to_apply = function_to_apply)
     return sentiment_scores
@@ -313,6 +326,7 @@ def hgTransformerGetSummarization(text_strings,
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
                             return_incorrect_results = False,
+                            set_seed = None,
                             return_text = True,
                             return_tensors = False,
                             clean_up_tokenization_spaces = False, 
@@ -324,6 +338,8 @@ def hgTransformerGetSummarization(text_strings,
                             device = device,
                             tokenizer_parallelism = tokenizer_parallelism,
                             logging_level = logging_level,
+                            return_incorrect_results = return_incorrect_results,
+                            set_seed = set_seed,
                             return_text = return_text, 
                             return_tensors = return_tensors, 
                             clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
@@ -338,6 +354,7 @@ def hgTransformerGetQA(question,
                         tokenizer_parallelism = False,
                         logging_level = 'warning',
                         return_incorrect_results = False,
+                        set_seed = None,
                         topk = 1,
                         doc_stride = 128,
                         max_answer_len = 15,
@@ -351,6 +368,7 @@ def hgTransformerGetQA(question,
                             tokenizer_parallelism = tokenizer_parallelism,
                             logging_level = logging_level,
                             return_incorrect_results = return_incorrect_results,
+                            set_seed = set_seed,
                             question = question, 
                             context = context, 
                             topk = topk, 
@@ -367,6 +385,7 @@ def hgTransformerGetTranslation(text_strings,
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
                             return_incorrect_results = False,
+                            set_seed = None,
                             source_lang = '',
                             target_lang = '',
                             return_tensors = False,
@@ -382,6 +401,7 @@ def hgTransformerGetTranslation(text_strings,
                             tokenizer_parallelism = tokenizer_parallelism,
                             logging_level = logging_level,
                             return_incorrect_results = return_incorrect_results,
+                            set_seed = set_seed,
                             src_lang = source_lang,
                             tgt_lang = target_lang,
                             return_tensors = return_tensors,
