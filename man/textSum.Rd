@@ -15,7 +15,8 @@ textSum(
   return_incorrect_results = FALSE,
   return_text = TRUE,
   return_tensors = FALSE,
-  clean_up_tokenization_spaces = FALSE
+  clean_up_tokenization_spaces = FALSE,
+  set_seed = 202208
 )
 }
 \arguments{
@@ -44,6 +45,8 @@ stops them from returning incorrect results.}
 \item{return_tensors}{(boolean)  Whether or not the output should include the prediction tensors (as token indices).}
 
 \item{clean_up_tokenization_spaces}{(boolean)  Option to clean up the potential extra spaces in the returned text.}
+
+\item{set_seed}{(Integer) Set seed.}
 }
 \value{
 A tibble with summed text(s).

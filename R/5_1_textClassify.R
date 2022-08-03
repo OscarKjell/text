@@ -24,6 +24,7 @@
 #' stops them from returning incorrect results.
 #' @param return_all_scores (boolean)  Whether to return all prediction scores or just the one of the predicted class.
 #' @param function_to_apply (string)  The function to apply to the model outputs to retrieve the scores.
+#' @param set_seed (Integer) Set seed.
 #' There are four different values:
 #' "default": if the model has a single label, will apply the sigmoid function on the output. If the model has several labels,
 #' the softmax function will be applied on the output.
@@ -50,7 +51,8 @@ textClassify <- function(x,
                          logging_level = "error",
                          return_incorrect_results = FALSE,
                          return_all_scores = FALSE,
-                         function_to_apply = "none"){
+                         function_to_apply = "none",
+                         set_seed = 202208){
 
   T1_textSentiment <- Sys.time()
 
@@ -77,7 +79,8 @@ textClassify <- function(x,
                                                logging_level = logging_level,
                                                return_incorrect_results = return_incorrect_results,
                                                return_all_scores = return_all_scores,
-                                               function_to_apply = function_to_apply)
+                                               function_to_apply = function_to_apply,
+                                               set_seed = set_seed)
 
     # Sort output into tidy-format
     output1 <- map(hg_sentiments, dplyr::bind_cols) %>%

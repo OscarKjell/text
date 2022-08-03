@@ -17,7 +17,8 @@ textQA(
   max_answer_len = 15,
   max_seq_len = 384,
   max_question_len = 64,
-  handle_impossible_answer = FALSE
+  handle_impossible_answer = FALSE,
+  set_seed = 202208
 )
 }
 \arguments{
@@ -50,6 +51,8 @@ If needed, the context is split in chunks (using doc_stride as overlap).}
 \item{max_question_len}{(integer)   The max question length after tokenization. It will be truncated if needed.}
 
 \item{handle_impossible_answer}{(boolean)  Whether or not impossible is accepted as an answer.}
+
+\item{set_seed}{(Integer) Set seed.}
 }
 \value{
 Answers.

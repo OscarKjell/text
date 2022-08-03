@@ -12,7 +12,8 @@ textClassify(
   logging_level = "error",
   return_incorrect_results = FALSE,
   return_all_scores = FALSE,
-  function_to_apply = "none"
+  function_to_apply = "none",
+  set_seed = 202208
 )
 }
 \arguments{
@@ -35,7 +36,9 @@ stops them from returning incorrect results.}
 
 \item{return_all_scores}{(boolean)  Whether to return all prediction scores or just the one of the predicted class.}
 
-\item{function_to_apply}{(string)  The function to apply to the model outputs to retrieve the scores.
+\item{function_to_apply}{(string)  The function to apply to the model outputs to retrieve the scores.}
+
+\item{set_seed}{(Integer) Set seed.
 There are four different values:
 "default": if the model has a single label, will apply the sigmoid function on the output. If the model has several labels,
 the softmax function will be applied on the output.

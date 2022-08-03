@@ -20,12 +20,10 @@ Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-p
 
 <!-- badges: end -->
 
-An R-package for analyzing text using Transformers from HuggingFace
-using Natural Language Processing and Machine Learning.
+An R-package for analyzing natural language with transformers from
+HuggingFace using Natural Language Processing and Machine Learning.
 
-The language that individuals use contains a wealth of psychological
-information interesting for research. The *text*-package has two main
-objectives:
+The *text*-package has two main objectives:
 
 -   First, to serve R-users as a *point solution* for transforming text
     to state-of-the-art word embeddings that are ready to be used for
@@ -58,7 +56,7 @@ Windows using the latest stable R version.
 Most users simply need to run below installation code. For those
 experiencing problems or want more alternatives, please see the
 [Extended Installation
-Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
+Guide](https://www.r-text.org/articles/huggingface_in_r_extended_installation_guide.html/).
 
 For the text-package to work, you first have to install the text-package
 in R, and then make it work with text required python packages.

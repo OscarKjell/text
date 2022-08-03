@@ -13,6 +13,7 @@
 #max_seq_len = 384
 #max_question_len = 64
 #handle_impossible_answer = FALSE
+#set_seed = 202208
 
 #' Question Answering STILL UNDER DEVELOPMENT
 #' @param question (string)  A question
@@ -32,6 +33,7 @@
 #'  If needed, the context is split in chunks (using doc_stride as overlap).
 #' @param max_question_len (integer)   The max question length after tokenization. It will be truncated if needed.
 #' @param handle_impossible_answer (boolean)  Whether or not impossible is accepted as an answer.
+#' @param set_seed (Integer) Set seed.
 #' @return Answers.
 #' @examples
 #' \donttest{
@@ -55,7 +57,8 @@ textQA <- function(question,
                    max_answer_len = 15,
                    max_seq_len = 384,
                    max_question_len = 64,
-                   handle_impossible_answer = FALSE){
+                   handle_impossible_answer = FALSE,
+                   set_seed = 202208){
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
@@ -72,11 +75,12 @@ textQA <- function(question,
                               tokenizer_parallelism = tokenizer_parallelism,
                               logging_level = logging_level,
                               return_incorrect_results = return_incorrect_results,
-                              topk = topk,
-                              doc_stride = doc_stride,
+                             # topk = topk,
+                             # doc_stride = doc_stride,
                               max_answer_len = max_answer_len,
-                              max_seq_len = max_seq_len,
+                             # max_seq_len = max_seq_len,
                               max_question_len = max_question_len,
-                              handle_impossible_answer = handle_impossible_answer)
+                              handle_impossible_answer = handle_impossible_answer,
+                              set_seed = set_seed)
   return(hg_QA)
 }

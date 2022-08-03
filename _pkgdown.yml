@@ -46,7 +46,7 @@ reference:
   - textEmbedLayersOutput
   - textEmbedLayerAggregation
   - textEmbedStatic
-- title: Language Model Tasks
+- title: Language Analysis Tasks
   contents:
   - textClassify
   - textGeneration

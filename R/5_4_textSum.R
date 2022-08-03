@@ -25,6 +25,7 @@
 #' @param return_text (boolean)  Whether or not the outputs should include the decoded text.
 #' @param return_tensors (boolean)  Whether or not the output should include the prediction tensors (as token indices).
 #' @param clean_up_tokenization_spaces (boolean)  Option to clean up the potential extra spaces in the returned text.
+#' @param set_seed (Integer) Set seed.
 #' @return A tibble with summed text(s).
 #' @examples
 #' \donttest{
@@ -47,7 +48,8 @@ textSum <- function(x,
                     return_incorrect_results = FALSE,
                     return_text = TRUE,
                     return_tensors = FALSE,
-                    clean_up_tokenization_spaces = FALSE){
+                    clean_up_tokenization_spaces = FALSE,
+                    set_seed = 202208){
 
   T1_text_all <- Sys.time()
 
@@ -78,7 +80,8 @@ textSum <- function(x,
                                    return_tensors = return_tensors,
                                    clean_up_tokenization_spaces = clean_up_tokenization_spaces,
                                    min_length = min_length,
-                                   max_length = max_length)
+                                   max_length = max_length,
+                                   set_seed =  set_seed)
 
      output1 <- dplyr::bind_rows(hg_sum)
 

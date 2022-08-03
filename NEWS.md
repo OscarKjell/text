@@ -4,6 +4,7 @@
 # text 0.9.96
 ### New features
   - harmonizing `x_add` to `x_append` across functions
+  - adding `set_seed` to language analysis tasks
 
 ### Code changes
 - abstracting function for sorting out `x'` in training and prediction

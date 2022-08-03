@@ -15,7 +15,8 @@ textTranslate(
   return_incorrect_results = FALSE,
   return_tensors = FALSE,
   return_text = TRUE,
-  clean_up_tokenization_spaces = FALSE
+  clean_up_tokenization_spaces = FALSE,
+  set_seed = 202208
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ stops them from returning incorrect results.}
 \item{return_text}{(boolean)  Whether or not to also output the decoded texts.}
 
 \item{clean_up_tokenization_spaces}{(boolean)  Whether or not to clean the output from potential extra spaces.}
+
+\item{set_seed}{(Integer) Set seed.}
 }
 \value{
 A tibble with.

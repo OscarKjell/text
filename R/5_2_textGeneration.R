@@ -1,3 +1,17 @@
+#x = "The meaning of life is"
+#model = 'gpt2'
+#device = 'cpu'
+#tokenizer_parallelism = FALSE
+#logging_level = 'warning'
+#return_incorrect_results = FALSE
+#return_tensors = TRUE
+#return_text = FALSE
+#return_full_text = FALSE
+#clean_up_tokenization_spaces = FALSE
+#prefix = ''
+#handle_long_generation = "hole"
+
+
 
 # x = "meaning in life is"
 # model = 'gpt2'
@@ -29,6 +43,7 @@
 #' @param clean_up_tokenization_spaces (boolean)  Option to clean up the potential extra spaces in the returned text.
 #' @param prefix (string) Option to add a prefix to prompt.
 #' @param handle_long_generation  By default, this function does not handle long generation (those that exceed the model maximum length).
+#' @param set_seed (Integer) Set seed.
 #' (more info :https://github.com/huggingface/transformers/issues/14033#issuecomment-948385227).
 #' This setting provides some ways to work around the problem:
 #' None: default way, where no particular strategy is applied.
@@ -56,7 +71,8 @@ textGeneration <- function(x,
                            return_full_text = TRUE,
                            clean_up_tokenization_spaces = FALSE,
                            prefix = '',
-                           handle_long_generation = NULL
+                           handle_long_generation = NULL,
+                           set_seed = 202208
                            ){
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
@@ -82,10 +98,18 @@ textGeneration <- function(x,
                                  return_full_text = return_full_text,
                                  clean_up_tokenization_spaces = clean_up_tokenization_spaces,
                                  prefix = prefix,
-                                 handle_long_generation = handle_long_generation
+                                 handle_long_generation = handle_long_generation,
+                                 set_seed = set_seed
                                  )
 
+  if (return_tensors ==  FALSE){
   hg_generated1 <- tibble::as_tibble_col(hg_generated[[1]]$generated_text,
-                                    column_name = "generatedtext")
+                                         column_name = "generatedtext")
+  }
+
+  if (return_tensors ==  TRUE){
+    hg_generated1 <- tibble::as_tibble_col(hg_generated[[1]]$generated_token_ids,
+                                           column_name = "generatedtext_token_ids")
+  }
   return(hg_generated1)
 }

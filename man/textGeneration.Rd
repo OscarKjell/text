@@ -16,7 +16,8 @@ textGeneration(
   return_full_text = TRUE,
   clean_up_tokenization_spaces = FALSE,
   prefix = "",
-  handle_long_generation = NULL
+  handle_long_generation = NULL,
+  set_seed = 202208
 )
 }
 \arguments{
@@ -46,7 +47,9 @@ stops them from returning incorrect results.}
 
 \item{prefix}{(string) Option to add a prefix to prompt.}
 
-\item{handle_long_generation}{By default, this function does not handle long generation (those that exceed the model maximum length).
+\item{handle_long_generation}{By default, this function does not handle long generation (those that exceed the model maximum length).}
+
+\item{set_seed}{(Integer) Set seed.
 (more info :https://github.com/huggingface/transformers/issues/14033#issuecomment-948385227).
 This setting provides some ways to work around the problem:
 None: default way, where no particular strategy is applied.

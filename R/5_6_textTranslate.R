@@ -29,6 +29,7 @@
 #' @param return_tensors (boolean)  Whether or not to include the predictions' tensors as token indices in the outputs.
 #' @param return_text (boolean)  Whether or not to also output the decoded texts.
 #' @param clean_up_tokenization_spaces (boolean)  Whether or not to clean the output from potential extra spaces.
+#' @param set_seed (Integer) Set seed.
 #' @return A tibble with.
 #' @examples
 #' \donttest{
@@ -53,7 +54,8 @@ textTranslate <- function(x,
                           return_incorrect_results = FALSE,
                           return_tensors = FALSE,
                           return_text = TRUE,
-                          clean_up_tokenization_spaces = FALSE){
+                          clean_up_tokenization_spaces = FALSE,
+                          set_seed = 202208){
 
   T1_text_all <- Sys.time()
   # Run python file with HunggingFace interface to state-of-the-art transformers
@@ -83,7 +85,8 @@ textTranslate <- function(x,
                                       return_incorrect_results = return_incorrect_results,
                                       return_tensors = return_tensors,
                                       return_text = return_text,
-                                      clean_up_tokenization_spaces = clean_up_tokenization_spaces)
+                                      clean_up_tokenization_spaces = clean_up_tokenization_spaces,
+                                      set_seed = set_seed)
 
     # Sort output into tidy-format
     output1 <- dplyr::bind_rows(hg_translatiton)

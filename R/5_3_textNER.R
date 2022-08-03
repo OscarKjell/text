@@ -17,6 +17,7 @@
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param return_incorrect_results (boolean)  Many models are not created to be able to provide NER classifications - this setting
 #' stops them from returning incorrect results.
+#' @param set_seed (Integer) Set seed.
 #' @return A tibble with NER classifications.
 #' @examples
 #' \donttest{
@@ -33,7 +34,8 @@ textNER <- function(x,
                     device = 'cpu',
                     tokenizer_parallelism = FALSE,
                     logging_level = 'warning',
-                    return_incorrect_results = FALSE) {
+                    return_incorrect_results = FALSE,
+                    set_seed = 202208) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
@@ -51,7 +53,8 @@ textNER <- function(x,
                                 device = device,
                                 tokenizer_parallelism = tokenizer_parallelism,
                                 logging_level = logging_level,
-                                return_incorrect_results = return_incorrect_results)
+                                return_incorrect_results = return_incorrect_results,
+                                set_seed = set_seed)
 
 
   hg_NER1 <- hg_NER %>%

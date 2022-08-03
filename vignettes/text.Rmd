@@ -92,7 +92,7 @@ The plotting is made in two steps: First the ```textProjection``` function is pr
 ```{r, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 
-# Pre-process word data to be plotted with textPlotViz-function
+# Pre-process word data to be plotted 
 # word_embeddings_4 and Language_based_assessment_data_8  contain example data provided with the package.
 
 # Pre-process data

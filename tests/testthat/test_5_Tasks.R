@@ -10,7 +10,7 @@ context("Testing tasks")
 test_that("textClassify tests", {
   skip_on_cran()
 
-  # String example
+  # String example help(textClassify)
   sen1 <- textClassify("I like you. I love you",
                        model = "distilbert-base-uncased-finetuned-sst-2-english",
                        return_incorrect_results = TRUE,
@@ -51,7 +51,7 @@ test_that("textGeneration test", {
                                    tokenizer_parallelism = FALSE,
                                    logging_level = 'warning',
                                    return_incorrect_results = FALSE,
-                                   return_tensors = TRUE,
+                                   return_tensors = FALSE,
                                    return_text = TRUE,
                                    return_full_text = TRUE,
                                    clean_up_tokenization_spaces = FALSE,
@@ -59,14 +59,26 @@ test_that("textGeneration test", {
                                    handle_long_generation = "hole"
                                    )
 
+ # Set_seed does not seem to work.
+  # expect_equal(generated_text$generatedtext, "The meaning of life is the very fact that it is good for us to be good, with whom to serve and what to avoid. Every human being has a part to play in this world. We must think, and act. It is the end")
   expect_that(generated_text$generatedtext, is_a("character"))
+  # Return token IDs
+  generated_text2 <- text::textGeneration(x = "The meaning of life is",
+                                   model = 'gpt2',
+                                   device = 'cpu',
+                                   tokenizer_parallelism = FALSE,
+                                   logging_level = 'warning',
+                                   return_incorrect_results = FALSE,
+                                   return_tensors = TRUE,
+                                   return_text = FALSE,
+                                   return_full_text = FALSE,
+                                   clean_up_tokenization_spaces = FALSE,
+                                   prefix = '',
+                                   handle_long_generation = "hole"
+  )
 
-#  # Testing return_incorrect_results = FALSE
-#  gen_err <- textGeneration(x = "The meaning of life is",
-#                            model = 'bert-base-uncased',
-#                            return_incorrect_results = FALSE)
-#  gen_err
-
+  #expect_equal(generated_text2$generatedtext_token_ids[1], 464)
+  expect_that(generated_text2$generatedtext_token_ids[1], is_a("integer"))
   })
 
 
@@ -96,7 +108,7 @@ test_that("textSum test", {
                           max_length = 4L)
   sum_examples
   expect_that(sum_examples$sum_satisfactiontexts, is_a("character"))
-
+  expect_equal(sum_examples$sum_satisfactiontexts[1], "I am not")
 #  sum_examples_err <- textSum(Language_based_assessment_data_8[1,1],
 #                          min_length = 2L,
 #                          max_length = 4L,
@@ -107,28 +119,28 @@ test_that("textSum test", {
 })
 
 
-test_that("textQA test", {
-  skip_on_cran()
-
-
-#  textQA(context="Oh, Yeah, For Now, But The Beeper's Gonna Be Making A Comeback. Technology's Cyclical.",
-#  question="Who is Liz Lemon?")
+# test_that("textQA test", {
+#   skip_on_cran()
 #
-#  qa_examples <- textQA(question = "Which colour have trees?",
-#                         context = "Trees are mostly green and like water")
-#  qa_examples
-#  expect_that(sum_examples$sum_satisfactiontexts, is_a("character"))
+#
+# # textQA(context="Oh, Yeah, For Now, But The Beeper's Gonna Be Making A Comeback. Technology's Cyclical.",
+# # question="Who is Liz Lemon?")
+# #
+# # qa_examples <- textQA(question = "Which colour have trees?",
+# #                        context = "Trees are mostly green and like water")
+# # qa_examples
+# # expect_that(sum_examples$sum_satisfactiontexts, is_a("character"))
+#
+#   #  sum_examples_err <- textSum(Language_based_assessment_data_8[1,1],
+#   #                          min_length = 2L,
+#   #                          max_length = 4L,
+#   #                          model = "bert-base-uncased",
+#   #                          return_incorrect_results = FALSE)
+#   #  sum_examples_err
+#
+# })
 
-  #  sum_examples_err <- textSum(Language_based_assessment_data_8[1,1],
-  #                          min_length = 2L,
-  #                          max_length = 4L,
-  #                          model = "bert-base-uncased",
-  #                          return_incorrect_results = FALSE)
-  #  sum_examples_err
-
-})
-
-
+Language_based_assessment_data_8[1,1]
 test_that("textTranslate test", {
   skip_on_cran()
 
@@ -139,6 +151,7 @@ test_that("textTranslate test", {
     model = "t5-base")
   translation_example
   expect_that(translation_example$en_to_fr_satisfactiontexts, is_a("character"))
+  expect_equal(translation_example$en_to_fr_satisfactiontexts[1], "Je ne suis pas satisfait de ma vie. Je suis reconnaissante de ce que j'ai et de l'endroit où je suis parce que la situation peut toujours être pire. Je veux une carrière et un diplôme, je veux perdre du poids et je n'ai pas encore atteint ces objectifs. Je ne suis donc pas satisfait de ma vie à l'heure actuelle.")
 
 #  translation_err <- text::textTranslate(
 #    Language_based_assessment_data_8[1,1:2],

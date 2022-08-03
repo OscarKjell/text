@@ -10,7 +10,8 @@ textNER(
   device = "cpu",
   tokenizer_parallelism = FALSE,
   logging_level = "warning",
-  return_incorrect_results = FALSE
+  return_incorrect_results = FALSE,
+  set_seed = 202208
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ Options (ordered from less logging to more logging): critical, error, warning, i
 
 \item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide NER classifications - this setting
 stops them from returning incorrect results.}
+
+\item{set_seed}{(Integer) Set seed.}
 }
 \value{
 A tibble with NER classifications.
