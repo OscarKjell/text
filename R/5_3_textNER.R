@@ -15,8 +15,8 @@
 #' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism.
 #' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param return_incorrect_results (boolean)  Many models are not created to be able to provide NER classifications - this setting
-#' stops them from returning incorrect results.
+#' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+#' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").
 #' @param set_seed (Integer) Set seed.
 #' @return A tibble with NER classifications.
 #' @examples
@@ -35,7 +35,7 @@ textNER <- function(x,
                     tokenizer_parallelism = FALSE,
                     logging_level = 'warning',
                     return_incorrect_results = FALSE,
-                    set_seed = 202208) {
+                    set_seed = 202208L) {
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",

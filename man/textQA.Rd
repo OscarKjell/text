@@ -12,13 +12,13 @@ textQA(
   tokenizer_parallelism = FALSE,
   logging_level = "warning",
   return_incorrect_results = FALSE,
-  topk = 1,
-  doc_stride = 128,
-  max_answer_len = 15,
-  max_seq_len = 384,
-  max_question_len = 64,
+  top_k = 1L,
+  doc_stride = 128L,
+  max_answer_len = 15L,
+  max_seq_len = 384L,
+  max_question_len = 64L,
   handle_impossible_answer = FALSE,
-  set_seed = 202208
+  set_seed = 202208L
 )
 }
 \arguments{
@@ -35,10 +35,10 @@ textQA(
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide question -- answering, so this setting
-stops them from returning incorrect results.}
+\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
 
-\item{topk}{(integer) (int)  Indicates number of possible answer span(s) to get from the model output.}
+\item{top_k}{(integer) (int)  Indicates number of possible answer span(s) to get from the model output.}
 
 \item{doc_stride}{(integer)   If the context is too long to fit with the question for the model, it will be split into overlapping chunks.
 This setting controls the overlap size.}

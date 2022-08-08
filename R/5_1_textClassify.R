@@ -20,8 +20,8 @@
 #' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism.
 #' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param return_incorrect_results (boolean)  Many models are not created to be able to provide classifications - this setting
-#' stops them from returning incorrect results.
+#' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+#' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").
 #' @param return_all_scores (boolean)  Whether to return all prediction scores or just the one of the predicted class.
 #' @param function_to_apply (string)  The function to apply to the model outputs to retrieve the scores.
 #' @param set_seed (Integer) Set seed.

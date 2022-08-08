@@ -17,7 +17,7 @@ textGeneration(
   clean_up_tokenization_spaces = FALSE,
   prefix = "",
   handle_long_generation = NULL,
-  set_seed = 202208
+  set_seed = 202208L
 )
 }
 \arguments{
@@ -33,8 +33,8 @@ objective, which includes the uni-directional models (e.g., gpt2).}
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide generation - this setting
-stops them from returning incorrect results.}
+\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
 
 \item{return_tensors}{(boolean)  Whether or not the output should include the prediction tensors (as token indices).}
 

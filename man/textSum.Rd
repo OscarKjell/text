@@ -16,7 +16,7 @@ textSum(
   return_text = TRUE,
   return_tensors = FALSE,
   clean_up_tokenization_spaces = FALSE,
-  set_seed = 202208
+  set_seed = 202208L
 )
 }
 \arguments{
@@ -37,8 +37,8 @@ such as ’bart-large-cnn’, ’t5-small’, ’t5-base’, ’t5-large’, ’
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide summerization - this setting
-stops them from returning incorrect results.}
+\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
 
 \item{return_text}{(boolean)  Whether or not the outputs should include the decoded text.}
 

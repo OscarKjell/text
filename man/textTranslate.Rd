@@ -16,7 +16,7 @@ textTranslate(
   return_tensors = FALSE,
   return_text = TRUE,
   clean_up_tokenization_spaces = FALSE,
-  set_seed = 202208
+  set_seed = 202208L
 )
 }
 \arguments{
@@ -36,8 +36,8 @@ using ISO 639-1 Code, such as: "en", "zh", "es", "fr", "de", "it", "sv", "da", "
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Many models are not created to be able to provide translation, so this setting
-stops them from returning incorrect results.}
+\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
 
 \item{return_tensors}{(boolean)  Whether or not to include the predictions' tensors as token indices in the outputs.}
 

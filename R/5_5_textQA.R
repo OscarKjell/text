@@ -23,9 +23,9 @@
 #' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism.
 #' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param return_incorrect_results (boolean)  Many models are not created to be able to provide question -- answering, so this setting
-#' stops them from returning incorrect results.
-#' @param topk (integer) (int)  Indicates number of possible answer span(s) to get from the model output.
+#' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+#' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").
+#' @param top_k (integer) (int)  Indicates number of possible answer span(s) to get from the model output.
 #' @param doc_stride (integer)   If the context is too long to fit with the question for the model, it will be split into overlapping chunks.
 #' This setting controls the overlap size.
 #' @param max_answer_len (integer)  Max answer size to be extracted from the model’s output.
@@ -52,13 +52,13 @@ textQA <- function(question,
                    tokenizer_parallelism = FALSE,
                    logging_level = 'warning',
                    return_incorrect_results = FALSE,
-                   topk = 1,
-                   doc_stride = 128,
-                   max_answer_len = 15,
-                   max_seq_len = 384,
-                   max_question_len = 64,
+                   top_k = 1L,
+                   doc_stride = 128L,
+                   max_answer_len = 15L,
+                   max_seq_len = 384L,
+                   max_question_len = 64L,
                    handle_impossible_answer = FALSE,
-                   set_seed = 202208){
+                   set_seed = 202208L){
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
@@ -75,12 +75,13 @@ textQA <- function(question,
                               tokenizer_parallelism = tokenizer_parallelism,
                               logging_level = logging_level,
                               return_incorrect_results = return_incorrect_results,
-                             # topk = topk,
-                             # doc_stride = doc_stride,
+                              top_k = top_k,
+                              doc_stride = doc_stride,
                               max_answer_len = max_answer_len,
-                             # max_seq_len = max_seq_len,
+                              max_seq_len = max_seq_len,
                               max_question_len = max_question_len,
                               handle_impossible_answer = handle_impossible_answer,
-                              set_seed = set_seed)
+                              set_seed = set_seed)[[1]]
+
   return(hg_QA)
 }

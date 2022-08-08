@@ -74,9 +74,9 @@ test_that("textGeneration test", {
                                    return_full_text = FALSE,
                                    clean_up_tokenization_spaces = FALSE,
                                    prefix = '',
-                                   handle_long_generation = "hole"
+                                   handle_long_generation = "hole",
+                                   set_seed = 22L
   )
-
   #expect_equal(generated_text2$generatedtext_token_ids[1], 464)
   expect_that(generated_text2$generatedtext_token_ids[1], is_a("integer"))
   })
@@ -93,10 +93,6 @@ test_that("textNER test", {
 
   expect_equal(ner_example$score[1], 0.9987748, tolerance = 0.001)
 
-#  ner_err <- textNER("Arnes plays football with Daniel",
-#                         mode = "bert-base-uncased",
-#                         return_incorrect_results = FALSE)
-#  ner_err
 
 })
 
@@ -109,36 +105,18 @@ test_that("textSum test", {
   sum_examples
   expect_that(sum_examples$sum_satisfactiontexts, is_a("character"))
   expect_equal(sum_examples$sum_satisfactiontexts[1], "I am not")
-#  sum_examples_err <- textSum(Language_based_assessment_data_8[1,1],
-#                          min_length = 2L,
-#                          max_length = 4L,
-#                          model = "bert-base-uncased",
-#                          return_incorrect_results = FALSE)
-#  sum_examples_err
 
 })
 
 
-# test_that("textQA test", {
-#   skip_on_cran()
-#
-#
-# # textQA(context="Oh, Yeah, For Now, But The Beeper's Gonna Be Making A Comeback. Technology's Cyclical.",
-# # question="Who is Liz Lemon?")
-# #
-# # qa_examples <- textQA(question = "Which colour have trees?",
-# #                        context = "Trees are mostly green and like water")
-# # qa_examples
-# # expect_that(sum_examples$sum_satisfactiontexts, is_a("character"))
-#
-#   #  sum_examples_err <- textSum(Language_based_assessment_data_8[1,1],
-#   #                          min_length = 2L,
-#   #                          max_length = 4L,
-#   #                          model = "bert-base-uncased",
-#   #                          return_incorrect_results = FALSE)
-#   #  sum_examples_err
-#
-# })
+ test_that("textQA test", {
+   skip_on_cran()
+
+  qa_examples <- textQA(question = "Which colour have trees?",
+                         context = "Trees are mostly green and like water")
+  expect_equal(qa_examples$answer, "green")
+
+ })
 
 Language_based_assessment_data_8[1,1]
 test_that("textTranslate test", {
