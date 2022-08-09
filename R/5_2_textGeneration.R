@@ -1,32 +1,6 @@
-#x = "The meaning of life is"
-#model = 'gpt2'
-#device = 'cpu'
-#tokenizer_parallelism = FALSE
-#logging_level = 'warning'
-#return_incorrect_results = FALSE
-#return_tensors = TRUE
-#return_text = FALSE
-#return_full_text = FALSE
-#clean_up_tokenization_spaces = FALSE
-#prefix = ''
-#handle_long_generation = "hole"
 
 
-
-# x = "meaning in life is"
-# model = 'gpt2'
-# device = 'cpu'
-# tokenizer_parallelism = FALSE
-# logging_level = 'warning'
-# return_incorrect_results = FALSE
-# return_tensors = FALSE
-# return_text = TRUE
-# return_full_text = TRUE
-# clean_up_tokenization_spaces = FALSE
-# prefix = ''
-# handle_long_generation = "None"
-
-#' Predicts the words that will follow a specified text prompt. STILL UNDER DEVELOPMENT
+#' Predicts the words that will follow a specified text prompt. (experimental)
 #' @param x (string)  A variable or a tibble/dataframe with at least one character variable.
 #' @param model (string)  Specification of a pre-trained language model that have been trained with an autoregressive language modeling
 #' objective, which includes the uni-directional models (e.g., gpt2).
@@ -75,6 +49,7 @@ textGeneration <- function(x,
                            set_seed = 202208L
                            ){
 
+  T1_text_all <- Sys.time()
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
                                         "huggingface_Interface3.py",
@@ -86,8 +61,15 @@ textGeneration <- function(x,
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(x)
 
+  ALL_output <- list()
+  # Loop over all character variables; i_variables = 1
+  for (i_variables in seq_len(length(data_character_variables))) {
+    T1_variable <- Sys.time()
 
-  hg_generated <- hgTransformerGetTextGeneration(text_strings = data_character_variables[[1]],
+
+  hg_generated <- apply(data_character_variables[i_variables],
+                        1,
+                        hgTransformerGetTextGeneration,
                                  model = model,
                                  device = device,
                                  tokenizer_parallelism = tokenizer_parallelism,
@@ -100,16 +82,56 @@ textGeneration <- function(x,
                                  prefix = prefix,
                                  handle_long_generation = handle_long_generation,
                                  set_seed = set_seed
-                                 )
+  )
 
+  # Sort output into tidy-format
   if (return_tensors ==  FALSE){
-  hg_generated1 <- tibble::as_tibble_col(hg_generated[[1]]$generated_text,
-                                         column_name = "generatedtext")
+    output1 <- dplyr::bind_rows(hg_generated)
+    output1
   }
 
   if (return_tensors ==  TRUE){
-    hg_generated1 <- tibble::as_tibble_col(hg_generated[[1]]$generated_token_ids,
-                                           column_name = "generatedtext_token_ids")
+    output1 <- hg_generated
   }
-  return(hg_generated1)
+
+  # Add the text variable name to variable names
+  x_name <- names(data_character_variables[i_variables])
+  names(output1) <- paste0(x_name, "_generated")
+
+  ALL_output[[i_variables]] <- output1
+  T2_variable <- Sys.time()
+  variable_time <- T2_variable - T1_variable
+  variable_time <- sprintf("Duration: %f %s",
+                           variable_time,
+                           units(variable_time))
+
+  loop_text <- paste(x_name, "completed:",
+                     variable_time,
+                     "\n",
+                     sep = " ")
+
+  cat(colourise(loop_text, "green"))
+
+  }
+
+  ALL_output1 <- dplyr::bind_cols(ALL_output)
+
+  #Time to complete all variables
+  T2_text_all <- Sys.time()
+  all_time <- T2_text_all - T1_text_all
+  all_time <- sprintf("Duration to translate all variables: %f %s",
+                      all_time,
+                      units(all_time))
+
+
+  # Adding informative comment help(comment)
+  comment(ALL_output1) <- paste("Information about the textGeneration settings.  ",
+                                "model: ", model, "; ",
+                                "time: ", all_time, "; ",
+                                "text_version: ", packageVersion("text"), ".",
+                                sep = "",
+                                collapse = "\n"
+  )
+
+  return(ALL_output1)
 }

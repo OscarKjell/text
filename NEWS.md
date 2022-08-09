@@ -1,5 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 0.9.97
+ - updating textClassify, textGeneration, textNER, textSum, textQA, and textTranslate
+
 
 # text 0.9.96
 ### New features

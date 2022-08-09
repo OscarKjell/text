@@ -1,21 +1,6 @@
 
 
-#context = "Oh, Yeah, For Now, But The Beeper's Gonna Be Making A Comeback. Technology's Cyclical."
-#question = "Who is Liz Lemon?"
-#model = ''
-#device = 'cpu'
-#tokenizer_parallelism = FALSE
-#logging_level = 'warning'
-#return_incorrect_results = FALSE
-#topk = 1
-#doc_stride = 128
-#max_answer_len = 15
-#max_seq_len = 384
-#max_question_len = 64
-#handle_impossible_answer = FALSE
-#set_seed = 202208
-
-#' Question Answering STILL UNDER DEVELOPMENT
+#' Question Answering. (experimental)
 #' @param question (string)  A question
 #' @param context (string)  The context(s) where the model will look for the answer.
 #' @param model (string)  HuggingFace name of a pre-trained language model that have been fine-tuned on a question answering task.
@@ -60,6 +45,8 @@ textQA <- function(question,
                    handle_impossible_answer = FALSE,
                    set_seed = 202208L){
 
+  T1_text_all <- Sys.time()
+
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
                                         "huggingface_Interface3.py",
@@ -68,20 +55,62 @@ textQA <- function(question,
                                         mustWork = TRUE
   ))
 
-  hg_QA <- hgTransformerGetQA(question = question,
-                              context = context,
-                              model = model,
-                              device = device,
-                              tokenizer_parallelism = tokenizer_parallelism,
-                              logging_level = logging_level,
-                              return_incorrect_results = return_incorrect_results,
-                              top_k = top_k,
-                              doc_stride = doc_stride,
-                              max_answer_len = max_answer_len,
-                              max_seq_len = max_seq_len,
-                              max_question_len = max_question_len,
-                              handle_impossible_answer = handle_impossible_answer,
-                              set_seed = set_seed)[[1]]
+  ALL_output <- list()
+  # Loop over all character variables; i_variables = 1
+  for (i_variables in seq_len(length(question))) {
+    T1_variable <- Sys.time()
 
-  return(hg_QA)
+    hg_QA <- hgTransformerGetQA(question = question[[i_variables]],
+                                context = context[[i_variables]],
+                                model = model,
+                                device = device,
+                                tokenizer_parallelism = tokenizer_parallelism,
+                                logging_level = logging_level,
+                                return_incorrect_results = return_incorrect_results,
+                                top_k = top_k,
+                                doc_stride = doc_stride,
+                                max_answer_len = max_answer_len,
+                                max_seq_len = max_seq_len,
+                                max_question_len = max_question_len,
+                                handle_impossible_answer = handle_impossible_answer,
+                                set_seed = set_seed)[[1]]
+
+    output1 <- dplyr::bind_rows(hg_QA)
+
+    ALL_output[[i_variables]] <- output1
+
+    T2_variable <- Sys.time()
+    variable_time <- T2_variable - T1_variable
+    variable_time <- sprintf("Duration: %f %s",
+                             variable_time,
+                             units(variable_time))
+
+    loop_text <- paste(question[[i_variables]], "completed:",
+                       variable_time,
+                       "\n",
+                       sep = " ")
+
+    cat(colourise(loop_text, "green"))
+
+  }
+
+  ALL_output <- dplyr::bind_rows(ALL_output)
+
+  #Time to complete all variables
+  T2_text_all <- Sys.time()
+  all_time <- T2_text_all - T1_text_all
+  all_time <- sprintf("Duration to predict all variables: %f %s",
+                      all_time,
+                      units(all_time))
+
+
+  # Adding informative comment help(comment)
+  comment(ALL_output) <- paste("Information about the textSum  ",
+                                "model: ", model, "; ",
+                                "time: ", all_time, ";",
+                                "text_version: ", packageVersion("text"), ".",
+                                sep = "",
+                                collapse = "\n"
+  )
+  return(ALL_output)
 }

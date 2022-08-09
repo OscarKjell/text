@@ -34,6 +34,9 @@ utils::globalVariables(c(
   "data_train",
   "textTrainCVpredictions", "textTrainCVpredictionsRF",
 
+  # Language Tasks
+  "NamesNer",
+
   # PLOTTING OBJECTS
   "n", "n1", "n1_e", "dot2", "adjusted_p_values.x", "dot.x", "plot_n_word_extreme",
   "plot_n_word_frequency", "plot_n_words_middle", "n_all.x", "adjusted_p_values.y", "dot.y",

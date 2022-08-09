@@ -1,20 +1,6 @@
 
-#library(tidyverse)
-#
-#x = text::Language_based_assessment_data_8[1:2, 1]
-#model = ''
-#device = 'cpu'
-#tokenizer_parallelism = FALSE
-#logging_level = 'warning'
-#return_incorrect_results = FALSE
-#source_lang = "en"
-#target_lang = "de"
-#return_tensors = FALSE
-#return_text = TRUE
-#clean_up_tokenization_spaces = FALSE
 
-
-#' Translation STILL UNDER DEVELOPMENT
+#' Translation. (experimental)
 #' @param x (string)  The text to be translated.
 #' @param source_lang (string)  The input language. Might be needed for multilingual models (it will not have any effect for single pair translation models).
 #' using ISO 639-1 Code, such as: "en", "zh", "es", "fr", "de", "it", "sv", "da", "nn".

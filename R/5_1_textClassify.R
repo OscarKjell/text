@@ -1,16 +1,5 @@
 
-#x = "I like you. I love you"
-#model = "distilbert-base-uncased-finetuned-sst-2-english"
-#model = "cardiffnlp/twitter-roberta-base-sentiment"
-#device = "cpu"
-#tokenizer_parallelism = FALSE
-#logging_level = "error"
-#return_incorrect_results = FALSE
-#return_all_scores = FALSE
-#function_to_apply = "none"
-
-
-#' Predict label and probability of a text using a pretrained classifier language model. STILL UNDER DEVELOPMENT
+#' Predict label and probability of a text using a pretrained classifier language model. (experimental)
 #' @param x (string)  A character variable or a tibble/dataframe with at least one character variable.
 #' @param model (string)  Specification of a pre-trained classifier language model.
 #'  For full list of options see pretrained classifier models at

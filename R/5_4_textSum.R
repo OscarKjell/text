@@ -1,15 +1,6 @@
-# x = "Happiness is something that people seek to find, yet what defines happiness can vary from one person to the next. When most people talk about happiness, they might be talking about how they feel in the present moment, or they might be referring to a more general sense of how they feel about life overall."
-# x = Language_based_assessment_data_8[1:2,1:2]
-# model = 't5-small'
-# device = 'cpu'
-# tokenizer_parallelism = FALSE
-# logging_level = 'warning'
-# return_incorrect_results = FALSE
-# return_text = TRUE
-# return_tensors = FALSE
-# clean_up_tokenization_spaces = FALSE
 
-#' Summarize texts STILL UNDER DEVELOPMENT
+
+#' Summarize texts. (experimental)
 #' @param x (string)  A variable or a tibble/dataframe with at least one character variable.
 #' @param min_length (explicit integer; e.g., 10L)  The minimum number of tokens in the summed output.
 #' @param max_length (explicit integer higher than min_length; e.g., 20L)  The maximum number of tokens

@@ -1,5 +1,4 @@
 
-
 library(testthat)
 library(tibble)
 library(text)
@@ -18,21 +17,6 @@ test_that("textClassify tests", {
                        function_to_apply = "none")
   expect_equal(sen1$score_x, 4.67502, tolerance = 0.001)
 
-#  # Tibble example
-#  sen2 <- textClassify(Language_based_assessment_data_8[1:2,1:2],
-#                       model = "distilbert-base-uncased-finetuned-sst-2-english",
-#                       return_incorrect_results = TRUE,
-#                       return_all_scores = FALSE,
-#                       function_to_apply = "softmax")
-#  sen2
-#
-#  # return_incorrect_results
-#  sen_err <- textClassify("I like you. I love you",
-#                       model = "bert-base-uncased",
-#                       return_incorrect_results = FALSE,
-#                       return_all_scores = FALSE,
-#                       function_to_apply = "softmax")
-#
 #  # Test another model
   sen2 <- textClassify("I like you. I love you",
                        model = "cardiffnlp/twitter-roberta-base-sentiment",
@@ -59,9 +43,9 @@ test_that("textGeneration test", {
                                    handle_long_generation = "hole"
                                    )
 
- # Set_seed does not seem to work.
-  # expect_equal(generated_text$generatedtext, "The meaning of life is the very fact that it is good for us to be good, with whom to serve and what to avoid. Every human being has a part to play in this world. We must think, and act. It is the end")
-  expect_that(generated_text$generatedtext, is_a("character"))
+  expect_equal(generated_text$x_generated, "The meaning of life is self-improvement. We do this the right way. It is an exercise in self-improvement. The better part of the day we try to do that is to stop thinking about doing things to the level most people")
+  expect_that(generated_text$x_generated, is_a("character"))
+
   # Return token IDs
   generated_text2 <- text::textGeneration(x = "The meaning of life is",
                                    model = 'gpt2',
@@ -77,22 +61,27 @@ test_that("textGeneration test", {
                                    handle_long_generation = "hole",
                                    set_seed = 22L
   )
-  #expect_equal(generated_text2$generatedtext_token_ids[1], 464)
-  expect_that(generated_text2$generatedtext_token_ids[1], is_a("integer"))
+  expect_equal(generated_text2$generated_token_ids[1], 464)
+  expect_that(generated_text2$generated_token_ids[1], is_a("integer"))
   })
 
 
 test_that("textNER test", {
   skip_on_cran()
 
-
   ner_example <- textNER("Arnes plays football with Daniel",
                          mode = "dslim/bert-base-NER",
                          return_incorrect_results = FALSE)
   ner_example
 
-  expect_equal(ner_example$score[1], 0.9987748, tolerance = 0.001)
+  expect_equal(ner_example$x_NER$score[1], 0.9987748, tolerance = 0.001)
 
+
+  ner_example2 <- textNER(Language_based_assessment_data_8[1:2,1],
+                         mode = "dslim/bert-base-NER",
+                         return_incorrect_results = FALSE)
+  ner_example2
+  expect_equal(ner_example2$satisfactiontexts_NER$score[2], 0.976, tolerance = 0.01)
 
 })
 
@@ -131,12 +120,5 @@ test_that("textTranslate test", {
   expect_that(translation_example$en_to_fr_satisfactiontexts, is_a("character"))
   expect_equal(translation_example$en_to_fr_satisfactiontexts[1], "Je ne suis pas satisfait de ma vie. Je suis reconnaissante de ce que j'ai et de l'endroit où je suis parce que la situation peut toujours être pire. Je veux une carrière et un diplôme, je veux perdre du poids et je n'ai pas encore atteint ces objectifs. Je ne suis donc pas satisfait de ma vie à l'heure actuelle.")
 
-#  translation_err <- text::textTranslate(
-#    Language_based_assessment_data_8[1,1:2],
-#    source_lang = "en",
-#    target_lang = "sv",
-#    model = "t5-base",
-#    return_incorrect_results = FALSE)
-#  translation_err
 
 })

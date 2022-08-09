@@ -2,7 +2,7 @@
 % Please edit documentation in R/5_6_textTranslate.R
 \name{textTranslate}
 \alias{textTranslate}
-\title{Translation STILL UNDER DEVELOPMENT}
+\title{Translation. (experimental)}
 \usage{
 textTranslate(
   x,
@@ -51,7 +51,7 @@ All it does is to ensure the returned results are formatted correctly (e.g., doe
 A tibble with.
 }
 \description{
-Translation STILL UNDER DEVELOPMENT
+Translation. (experimental)
 }
 \examples{
 \donttest{

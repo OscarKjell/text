@@ -2,14 +2,14 @@
 % Please edit documentation in R/5_3_textNER.R
 \name{textNER}
 \alias{textNER}
-\title{Named Entity Recognition STILL UNDER DEVELOPMENT}
+\title{Named Entity Recognition. (experimental)}
 \usage{
 textNER(
   x,
   model = "dslim/bert-base-NER",
   device = "cpu",
   tokenizer_parallelism = FALSE,
-  logging_level = "warning",
+  logging_level = "error",
   return_incorrect_results = FALSE,
   set_seed = 202208L
 )
@@ -33,10 +33,10 @@ All it does is to ensure the returned results are formatted correctly (e.g., doe
 \item{set_seed}{(Integer) Set seed.}
 }
 \value{
-A tibble with NER classifications.
+A list with tibble(s) with NER classifications for each column.
 }
 \description{
-Named Entity Recognition STILL UNDER DEVELOPMENT
+Named Entity Recognition. (experimental)
 }
 \examples{
 \donttest{

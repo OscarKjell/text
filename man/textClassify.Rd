@@ -2,7 +2,7 @@
 % Please edit documentation in R/5_1_textClassify.R
 \name{textClassify}
 \alias{textClassify}
-\title{Predict label and probability of a text using a pretrained classifier language model. STILL UNDER DEVELOPMENT}
+\title{Predict label and probability of a text using a pretrained classifier language model. (experimental)}
 \usage{
 textClassify(
   x,
@@ -51,7 +51,7 @@ A tibble with predicted labels and scores for each text variable.
 The comment of the object show the model-name and computation time.
 }
 \description{
-Predict label and probability of a text using a pretrained classifier language model. STILL UNDER DEVELOPMENT
+Predict label and probability of a text using a pretrained classifier language model. (experimental)
 }
 \examples{
 \donttest{

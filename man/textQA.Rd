@@ -2,7 +2,7 @@
 % Please edit documentation in R/5_5_textQA.R
 \name{textQA}
 \alias{textQA}
-\title{Question Answering STILL UNDER DEVELOPMENT}
+\title{Question Answering. (experimental)}
 \usage{
 textQA(
   question,
@@ -58,7 +58,7 @@ If needed, the context is split in chunks (using doc_stride as overlap).}
 Answers.
 }
 \description{
-Question Answering STILL UNDER DEVELOPMENT
+Question Answering. (experimental)
 }
 \examples{
 \donttest{
