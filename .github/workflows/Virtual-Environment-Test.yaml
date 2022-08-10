@@ -76,6 +76,8 @@ jobs:
           sudo apt-get install libcurl4-gnutls-dev
           sudo apt-get install libxml2-dev
           sudo apt install libfontconfig1-dev
+          sudo apt install libharfbuzz-dev
+          sudo apt install libfribidi-dev
 
       - name: Install dependencies
         run: |
