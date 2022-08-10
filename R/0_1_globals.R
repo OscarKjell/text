@@ -16,7 +16,6 @@ utils::globalVariables(c(
   "hgTransformerGetEmbedding", "hgTransformerGetSentiment", "hgTransformerGetTextGeneration",
   "hgTransformerGetNER", "hgTransformerGetSummarization", "hgTransformerGetQA",
   "hgTransformerGetTranslation",
-
   "textModelsPy", "textModelsRMPy",
 
   # EMBEDDINGS OBJECTS
@@ -25,7 +24,6 @@ utils::globalVariables(c(
   # TRAINING OBJECTS
   "id_nr",
   "mod_spec", "wf", "xy", "xy1",
-
   "penalty", "mixture", "trees",
   "id1", "y.y", "id",
   ".pred", ".", "analysis", "assessment", "df3_glmn_grid",
@@ -47,12 +45,10 @@ utils::globalVariables(c(
   "check_extreme_min_y", "check_extreme_frequency_y",
   "check_middle_y", "extremes_all_x", "extremes_all_y",
   "central_cosine",
-
   "SS", "p_values.x", "p_values.y", "words", "n.x", "n.y",
   "single_word_embeddings_df", "Ndim",
   "semanticrepresentation", "single_word_embeddings2",
   "guide_legend", "Dim1",
-
   "Dim_PC1", "Dim_PC2", "check_extreme_frequency", "check_extreme_max_PC1",
   "check_extreme_max_PC2", "check_extreme_min_PC1", "check_extreme_min_PC2",
   "check_middle_PC1", "check_middle_PC2",
