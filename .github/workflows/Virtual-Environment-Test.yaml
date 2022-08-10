@@ -71,9 +71,13 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "16.04"), sep = "\n")')
           sudo apt-get install libcurl4-openssl-dev
+          sudo apt-get -y install libcurl4-openssl-dev
           sudo apt-get install libssl-dev
           sudo apt-get install libcurl4-gnutls-dev
           sudo apt-get install libxml2-dev
+          sudo apt-get build-dep libxml2-dev
+          sudo apt-get -y build-dep libcurl4-gnutls-dev
+          sudo apt-get -y install libcurl4-gnutls-dev
 
       - name: Install dependencies
         run: |
