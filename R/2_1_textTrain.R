@@ -226,26 +226,6 @@ sort_classification_output_list <- function(output, save_output, descriptions, t
 }
 
 
-
-# x=word_embeddings_4$harmonywords
-# y=Language_based_assessment_data_8[5:6]
-# outside_folds = 2
-# inside_folds = 2 / 3
-# outside_strata_y = NULL
-# inside_strata_y = NULL
-# preprocess_PCA = c(0.90)
-# # outside_strata_y = NULL,
-# # inside_strata_y = NULL,
-# penalty = c(2)
-# mixture = c(0)
-# force_train_method = "regression"
-# save_output = "only_results"
-# method_cor = "kendall"
-# multi_cores = "multi_cores_sys_default"
-
-
-
-
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables.
 #' It is possible to have  word embeddings from one text variable and several numeric/categprical variables;
 #' or vice verse, word embeddings from several text variables to one numeric/categorical variable.
@@ -350,7 +330,7 @@ textTrainLists <- function(x,
   if (train_method == "regression" | train_method == "logistic") {
     # Using mapply to loop over the word embeddings and the outcome variables to train the different combinations
 
-    output <- mapply(textTrainRegression, x=x, y = y1, MoreArgs = list(
+    output <- mapply(textTrainRegression, x = x, y = y1, MoreArgs = list(
       method_cor = method_cor,
       save_output = save_output,
       model = train_method,
@@ -374,7 +354,8 @@ textTrainLists <- function(x,
   } else if (train_method == "random_forest") {
 
     # Apply textTrainRandomForest function between each list element and sort outcome.
-    output <- mapply(textTrainRandomForest, x=x, y = y1,
+    output <- mapply(textTrainRandomForest,
+      x = x, y = y1,
       MoreArgs = list(
         save_output = save_output,
         ...
@@ -407,4 +388,3 @@ textTrainLists <- function(x,
   comment(results) <- time_date
   results
 }
-

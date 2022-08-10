@@ -22,8 +22,6 @@ test_that("Testing textEmbed as well as train", {
     context_layers = c(11:12),
     decontext_layers = c(11:12)
   )
-  #saveRDS(harmony_word_embeddings, "harmony_word_embeddings.rds")
-  #harmony_word_embeddings <-readRDS("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/harmony_word_embeddings.rds")
 
   expect_equal(harmony_word_embeddings$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
   expect_equal(harmony_word_embeddings$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
@@ -45,7 +43,7 @@ test_that("Testing textEmbed as well as train", {
 
   text_train_results1 <- textTrainRegression(
     x = harmony_word_embeddings["satisfactiontexts"],
-    y = Language_based_assessment_data_8["hilstotal"][1:20,],
+    y = Language_based_assessment_data_8["hilstotal"][1:20, ],
     cv_method = "cv_folds",
     outside_folds = 2,
     inside_folds = 2,
@@ -100,23 +98,24 @@ test_that("Testing textEmbed as well as train", {
   hils_predicted_scores1 <- textPredict(
     model_info = text_train_results2,
     word_embeddings = harmony_word_embeddings,
-    x_append = Language_based_assessment_data_8[1:20,],
+    x_append = Language_based_assessment_data_8[1:20, ],
     dim_names = TRUE
   )
   expect_equal(hils_predicted_scores1[[1]][1], 10.404, tolerance = 0.01)
 
 
- # Predict ALL
+  # Predict ALL
   models_1_2 <- list(text_train_results1, text_train_results2)
-  all_predictions <- textPredictAll(models = models_1_2,
-                                    word_embeddings = harmony_word_embeddings,
-                                    x_append =  Language_based_assessment_data_8[1:20, 5:8])
+  all_predictions <- textPredictAll(
+    models = models_1_2,
+    word_embeddings = harmony_word_embeddings,
+    x_append = Language_based_assessment_data_8[1:20, 5:8]
+  )
 
   expect_equal(all_predictions[[1]][1], 11.89, tolerance = 0.1)
   expect_equal(all_predictions[[2]][1], 10.404, tolerance = 0.01)
 
 
-  # help(textProjection)
   proj <- textProjection(
     words = Language_based_assessment_data_8[1],
     word_embeddings = harmony_word_embeddings$satisfactiontexts,
@@ -143,8 +142,8 @@ test_that("Testing textEmbed as well as train", {
   )
   plot_proj$processed_word_data$n[1]
   expect_that(plot_proj$processed_word_data$n[1], is_a("numeric"))
-  #expect_equal(plot_proj$processed_word_data$n[1], 2)
-  #expect_equal(plot_proj$processed_word_data$n[1], 1)
+  # expect_equal(plot_proj$processed_word_data$n[1], 2)
+  # expect_equal(plot_proj$processed_word_data$n[1], 1)
 
   one_character <- plot_proj$processed_word_data %>%
     dplyr::filter(words == "-")

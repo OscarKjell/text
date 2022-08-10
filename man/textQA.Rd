@@ -26,7 +26,8 @@ textQA(
 
 \item{context}{(string)  The context(s) where the model will look for the answer.}
 
-\item{model}{(string)  HuggingFace name of a pre-trained language model that have been fine-tuned on a question answering task.}
+\item{model}{(string)  HuggingFace name of a pre-trained language model that have been fine-tuned
+on a question answering task.}
 
 \item{device}{(string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 
@@ -35,18 +36,20 @@ textQA(
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
-All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
+\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
+This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
+dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
 
 \item{top_k}{(integer) (int)  Indicates number of possible answer span(s) to get from the model output.}
 
-\item{doc_stride}{(integer)   If the context is too long to fit with the question for the model, it will be split into overlapping chunks.
-This setting controls the overlap size.}
+\item{doc_stride}{(integer)   If the context is too long to fit with the question for the model, it will be split
+into overlapping chunks. This setting controls the overlap size.}
 
 \item{max_answer_len}{(integer)  Max answer size to be extracted from the model’s output.}
 
-\item{max_seq_len}{(integer)  The max total sentence length (context + question) in tokens of each chunk passed to the model.
-If needed, the context is split in chunks (using doc_stride as overlap).}
+\item{max_seq_len}{(integer)  The max total sentence length (context + question) in tokens of each chunk
+passed to the model. If needed, the context is split in chunks (using doc_stride as overlap).}
 
 \item{max_question_len}{(integer)   The max question length after tokenization. It will be truncated if needed.}
 

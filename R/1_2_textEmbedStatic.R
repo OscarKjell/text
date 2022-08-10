@@ -75,21 +75,14 @@ applysemrep <- function(x, single_word_embeddings1 = single_word_embeddings2) {
   }
 }
 
-#df <- Language_based_assessment_data_8[1:2, 1:2]
-#space <- readRDS("/Users/oscarkjell/Desktop/1 Projects/2 WordDiagnostics/Deploy text/Space/sv_space_300.rds")
-#tk_df = "tk"
-#aggregate = "mean"
-#
-#textEmbedStatic(df,
-#                space,
-#                dim_name = TRUE)
 
 #' Applies word embeddings from a given decontextualized static space (such as
 #' from Latent Semantic Analyses) to all character variables
 #'
 #' @param df dataframe that at least contains one character column.
 #' @param space decontextualized/static space with a column called "words" and the semantic
-#' representations are in columns called Dim1, Dim2 (or V1, V2, ...) and so on (from textSpace, which is not included in the current text package).
+#' representations are in columns called Dim1, Dim2 (or V1, V2, ...) and so on (from textSpace,
+#' which is not included in the current text package).
 #' @param tk_df default "null"; option to use either the "tk" of "df" space (if using textSpace, which has
 #' not been implemented yet).
 #' @param aggregate method to aggregate semantic representation when their are more than a single word.
@@ -145,12 +138,13 @@ textEmbedStatic <- function(df,
       dplyr::mutate(dplyr::across(dplyr::everything(), unlist)) %>%
       tibble::as_tibble(.name_repair = "unique")
 
-    if(dim_name == TRUE){
-
-      colnames(list_semrep[[i]]) <- paste0(colnames(list_semrep[[i]]),
-                                           "static",
-                                           "_",
-                                           names(df_characters[i]))
+    if (dim_name == TRUE) {
+      colnames(list_semrep[[i]]) <- paste0(
+        colnames(list_semrep[[i]]),
+        "static",
+        "_",
+        names(df_characters[i])
+      )
     }
   }
 

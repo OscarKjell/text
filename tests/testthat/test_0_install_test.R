@@ -6,7 +6,7 @@ test_that("installing text", {
 
   textrpp_install(prompt = FALSE)
 
-  textrpp_initialize(textEmbed_test=FALSE)
+  textrpp_initialize(textEmbed_test = FALSE)
 
   text_test <- textEmbed("hello")
 

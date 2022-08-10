@@ -410,19 +410,25 @@ tune_over_cost_rf <- function(object,
     dplyr::mutate(eval_results = tune_accuracy)
 
   # Progression output
-  best_eval <- bestParameters(data = grid_inner_accuracy,
-                              eval_measure = eval_measure)
+  best_eval <- bestParameters(
+    data = grid_inner_accuracy,
+    eval_measure = eval_measure
+  )
 
   T2 <- Sys.time()
-  time <- T2-T1
-  variable_time <- sprintf("(duration: %s %s).",
-                           round(time, digits = 3),
-                           units(time))
+  time <- T2 - T1
+  variable_time <- sprintf(
+    "(duration: %s %s).",
+    round(time, digits = 3),
+    units(time)
+  )
 
-  description_text <- paste("Fold:", eval_measure,
-                            round(best_eval$eval_result, digits= 3),
-                            variable_time,
-                            "\n")
+  description_text <- paste(
+    "Fold:", eval_measure,
+    round(best_eval$eval_result, digits = 3),
+    variable_time,
+    "\n"
+  )
 
   cat(colourise(description_text, "green"))
 
@@ -454,18 +460,18 @@ summarize_tune_results_rf <- function(object,
 
   # Return row-bound tibble containing the INNER results
   results <- purrr::map_df(
-              .x = object$splits,
-              .f = tune_over_cost_rf,
-              mode_rf = mode_rf,
-              mtry = mtry,
-              min_n = min_n,
-              trees = trees,
-              preprocess_step_center = preprocess_step_center,
-              preprocess_scale_center = preprocess_scale_center,
-              preprocess_PCA = preprocess_PCA,
-              variable_name_index_pca = variable_name_index_pca,
-              eval_measure = eval_measure,
-              extremely_randomised_splitrule = extremely_randomised_splitrule
+    .x = object$splits,
+    .f = tune_over_cost_rf,
+    mode_rf = mode_rf,
+    mtry = mtry,
+    min_n = min_n,
+    trees = trees,
+    preprocess_step_center = preprocess_step_center,
+    preprocess_scale_center = preprocess_scale_center,
+    preprocess_PCA = preprocess_PCA,
+    variable_name_index_pca = variable_name_index_pca,
+    eval_measure = eval_measure,
+    extremely_randomised_splitrule = extremely_randomised_splitrule
   )
 
 
@@ -478,8 +484,9 @@ summarize_tune_results_rf <- function(object,
 #'
 #' @param x Word embeddings from textEmbed.
 #' @param y Categorical variable to predict.
-#' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before the word embeddings
-#' use the option first = TRUE.  If not wanting to train with word embeddings, set x = NULL.
+#' @param x_append Variables to be appended after the word embeddings (x);
+#' if wanting to preappend them before the word embeddings use the option
+#' first = TRUE.  If not wanting to train with word embeddings, set x = NULL.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and
 #' inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
 #' outside folds and "validation_split" using rsample::validation_split in the inner loop to
@@ -531,7 +538,7 @@ summarize_tune_results_rf <- function(object,
 #'   x = word_embeddings_4$harmonywords,
 #'   y = as.factor(Language_based_assessment_data_8$gender),
 #'   trees = c(1000, 1500),
-#'   mtry  = c(1), # this is short because of testing
+#'   mtry = c(1), # this is short because of testing
 #'   min_n = c(1), # this is short because of testing
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
@@ -574,14 +581,13 @@ textTrainRandomForest <- function(x,
                                   save_output = "all",
                                   seed = 2020,
                                   ...) {
-
   T1_textTrainRandomForest <- Sys.time()
   set.seed(seed)
 
   # Sorting out y
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
-    #y <- y[[1]]
+    # y <- y[[1]]
     y <- tibble::as_tibble_col(y[[1]], column_name = "y")
   } else {
     y_name <- deparse(substitute(y))
@@ -696,17 +702,7 @@ textTrainRandomForest <- function(x,
   }
 
 
-#  # Function to get the lowest eval_measure_val library(tidyverse)
-#  if (eval_measure %in% c(
-#    "accuracy", "bal_accuracy", "sens", "spec",
-#    "precision", "kappa", "f_measure", "roc_auc",
-#    "rsq", "cor_test"
-#  )) {
-#    bestParameters <- function(dat) dat[which.max(dat$eval_measure), ]
-#  } else if (eval_measure == "rmse") {
-#    bestParameters <- function(dat) dat[which.min(dat$eval_measure), ]
-#  }
-
+  # Function to get the lowest eval_measure_val library(tidyverse)
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
   hyper_parameter_vals <-
@@ -924,7 +920,6 @@ textTrainRandomForest <- function(x,
     extremely_randomised_splitrule <- c("NA")
   }
 
-  x_append_names_description <- paste("x_append = ", x_append_names)
   cv_method_description <- paste("cv_method = ", deparse(cv_method))
   outside_folds_description <- paste("outside_folds = ", deparse(outside_folds))
   outside_strata_y_description <- paste("outside_strata_y = ", deparse(outside_strata_y))

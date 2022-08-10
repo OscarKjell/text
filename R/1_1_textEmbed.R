@@ -45,7 +45,7 @@ normalizeV <- function(x) {
     x / sqrt(sum(x^2, na.rm = TRUE))
 }
 
-# x = x2
+
 #' Function to take min, max, mean or the CLS
 #' (which comes from BERT models; not Static spaces) from list of vectors
 #' @param x word embeddings to be aggregated
@@ -234,24 +234,13 @@ grep_col_by_name_in_list <- function(l, pattern) {
   u[grep(pattern, names(u))]
 }
 
-# contexts = TRUE
-# single_context_embeddings = FALSE
-# decontexts = TRUE
-# model = "bert-base-uncased"
-# layers = 11
-# return_tokens = TRUE
-# dim_name = FALSE
-# device = "cpu"
-# tokenizer_parallelism = FALSE
-# model_max_length = NULL
-# logging_level = "error"
 
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param x A character variable or a tibble/dataframe with at least one character variable.
 #' @param contexts Provide word embeddings based on word contexts
 #' (standard method; default = TRUE).
-#' @param single_context_embeddings Aggregated contextualized word embeddings for each token in the text variables (only works for one
-#' text-variable at the time).
+#' @param single_context_embeddings Aggregated contextualized word embeddings for each token in the text variables
+#' (only works for one text-variable at the time).
 #' @param decontexts Provide word embeddings of single words as input
 #' (embeddings used for plotting; default = TRUE).
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
@@ -405,7 +394,6 @@ textEmbedLayersOutput <- function(x,
     # Specify which token layers go together and ensure that the token_id starts with 1
     # (for textLayersAggregation to know which layers are linked);
     num_layers <- length(layers)
-    individual_tokens1 <- individual_tokens
 
     # Look over all token list objects to adjust the token_id
     for (i_context in seq_len(length(individual_tokens$single_we$context))) {
@@ -418,7 +406,6 @@ textEmbedLayersOutput <- function(x,
       individual_tokens$single_we$context[[i_context]][, grep("^token_id", names(token_id_df))][[1]] <- token_id
     }
 
-    # single_words <- getUniqueWordsAndFreq(data_character_variables)
     # Get first element from each list.
     single_words <- sapply(individual_tokens$single_we$context, function(x) x[[1]][1])
     single_words <- tibble::as_tibble_col(single_words, column_name = "words")

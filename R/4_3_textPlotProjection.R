@@ -58,7 +58,7 @@
 #' @export
 textProjection <- function(words,
                            word_embeddings,
-                           single_word_embeddings = single_word_embeddings_df, # aggregated embedding for all uses of the word
+                           single_word_embeddings = single_word_embeddings_df,
                            x,
                            y = NULL,
                            pca = NULL,
@@ -304,9 +304,11 @@ textProjection <- function(words,
 
     # 3. The aggregated word embeddings of the two groups are computed:
     Aggregated_word_embedding_group1 <- textEmbeddingAggregation(Aggregated_word_embedding_group1a,
-                                                                 aggregation = aggregation)
+      aggregation = aggregation
+    )
     Aggregated_word_embedding_group2 <- textEmbeddingAggregation(Aggregated_word_embedding_group2a,
-                                                                 aggregation = aggregation)
+      aggregation = aggregation
+    )
 
     if (mean_centering2 == TRUE) {
       Aggregated_word_embedding_group1_and2 <- dplyr::bind_rows(
@@ -314,8 +316,9 @@ textProjection <- function(words,
         Aggregated_word_embedding_group2
       )
       Aggregated_word_embedding_group1_and2_scale <- scale(Aggregated_word_embedding_group1_and2,
-                                                           center = TRUE,
-                                                           scale = FALSE)
+        center = TRUE,
+        scale = FALSE
+      )
 
       Aggregated_word_embedding_group1 <- Aggregated_word_embedding_group1_and2_scale[1, ]
       Aggregated_word_embedding_group2 <- Aggregated_word_embedding_group1_and2_scale[2, ]
@@ -430,15 +433,18 @@ textProjection <- function(words,
 
       # Progression text
       T2 <- Sys.time()
-      time <- T2-T1
-      variable_time <- sprintf("(duration: %f %s).\n",
-                               time,
-                               units(time))
-      seq_text <- paste(i, "/", forloops, sep="")
+      time <- T2 - T1
+      variable_time <- sprintf(
+        "(duration: %f %s).\n",
+        time,
+        units(time)
+      )
+      seq_text <- paste(i, "/", forloops, sep = "")
       description_text <- paste("Creating null distribution.",
-                                seq_text, "of permutations computed.",
-                                variable_time,
-                                sep=" ")
+        seq_text, "of permutations computed.",
+        variable_time,
+        sep = " "
+      )
       cat(colourise(description_text, "green"))
 
       dot_null_distribution
@@ -575,9 +581,10 @@ textProjection <- function(words,
 #' @param min_freq_words_plot Select words to plot that has occurred at least min_freq_words_plot times.
 #' @param plot_n_words_square Select number of significant words in each square of the figure to plot. The significant
 #' words, in each square is selected according to most frequent words.
-#' @param plot_n_words_p Number of significant words to plot on each(positive and negative) side of the x-axes and y-axes,
-#' (where duplicates are removed); selects first according to lowest p-value and then according to frequency. Hence, on a two
-#' dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.
+#' @param plot_n_words_p Number of significant words to plot on each(positive and negative) side of
+#' the x-axes and y-axes, (where duplicates are removed); selects first according to lowest p-value
+#' and then according to frequency. Hence, on a two dimensional plot it is possible that
+#' plot_n_words_p = 1 yield 4 words.
 #' @param plot_n_word_extreme Number of words that are extreme on Supervised Dimension Projection per dimension.
 #' (i.e., even if not significant; per dimensions, where duplicates are removed).
 #' @param plot_n_word_frequency Number of words based on being most frequent.

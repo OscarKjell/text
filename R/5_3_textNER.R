@@ -2,14 +2,17 @@
 
 #' Named Entity Recognition. (experimental)
 #' @param x (string)  A  variable or a tibble/dataframe with at least one character variable.
-#' @param model (string)  Specification of a pre-trained language model for token classification that have been fine-tuned on a NER task
-#' (e.g., see "dslim/bert-base-NER"). Use for predicting the classes of tokens in a sequence: person, organisation, location or miscellaneous).
+#' @param model (string)  Specification of a pre-trained language model for token classification
+#' that have been fine-tuned on a NER task (e.g., see "dslim/bert-base-NER").
+#' Use for predicting the classes of tokens in a sequence: person, organisation, location or miscellaneous).
 #' @param device (string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
 #' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism.
 #' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
-#' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").
+#' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results.
+#' This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+#' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
+#' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").
 #' @param set_seed (Integer) Set seed.
 #' @return A list with tibble(s) with NER classifications for each column.
 #' @examples
@@ -25,20 +28,19 @@
 #' @export
 textNER <- function(x,
                     model = "dslim/bert-base-NER",
-                    device = 'cpu',
+                    device = "cpu",
                     tokenizer_parallelism = FALSE,
-                    logging_level = 'error',
+                    logging_level = "error",
                     return_incorrect_results = FALSE,
                     set_seed = 202208L) {
-
   T1_text_all <- Sys.time()
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
-                                        "huggingface_Interface3.py",
-                                        # envir = NULL,
-                                        package = "text",
-                                        mustWork = TRUE
+    "huggingface_Interface3.py",
+    # envir = NULL,
+    package = "text",
+    mustWork = TRUE
   ))
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
@@ -50,24 +52,25 @@ textNER <- function(x,
     T1_variable <- Sys.time()
 
     hg_NER <- purrr::map(data_character_variables[[i_variables]],
-                    hgTransformerGetNER,
-                    model = model,
-                    device = device,
-                    tokenizer_parallelism = tokenizer_parallelism,
-                    logging_level = logging_level,
-                    return_incorrect_results = return_incorrect_results,
-                    set_seed = set_seed)
+      hgTransformerGetNER,
+      model = model,
+      device = device,
+      tokenizer_parallelism = tokenizer_parallelism,
+      logging_level = logging_level,
+      return_incorrect_results = return_incorrect_results,
+      set_seed = set_seed
+    )
 
 
     ## Sort output into tidy-format
-     # Name each hg_NER output to get below to work
+    # Name each hg_NER output to get below to work
     names(hg_NER) <- paste0("variable_row", 1:length(hg_NER))
-     # Make each portion of the objects in the list tibbles
+    # Make each portion of the objects in the list tibbles
     output1 <- purrr::map(hg_NER, dplyr::bind_rows)
-     # Combine the tibbles to one tibble (and include NA if the result is empty)
+    # Combine the tibbles to one tibble (and include NA if the result is empty)
     output <- dplyr::bind_rows(output1, .id = "NamesNer") %>%
-                 tidyr::complete(NamesNer = names(hg_NER)) %>%
-                 select(-NamesNer)
+      tidyr::complete(NamesNer = names(hg_NER)) %>%
+      select(-NamesNer)
 
     ALL_output[[i_variables]] <- output
     # Add the text variable name to variable names
@@ -75,36 +78,40 @@ textNER <- function(x,
 
     T2_variable <- Sys.time()
     variable_time <- T2_variable - T1_variable
-    variable_time <- sprintf("Duration: %f %s",
-                             variable_time,
-                             units(variable_time))
+    variable_time <- sprintf(
+      "Duration: %f %s",
+      variable_time,
+      units(variable_time)
+    )
 
     loop_text <- paste(x_name, "completed:",
-                       variable_time,
-                       "\n",
-                       sep = " ")
+      variable_time,
+      "\n",
+      sep = " "
+    )
 
     cat(colourise(loop_text, "green"))
-
   }
 
   names(ALL_output) <- paste0(names(data_character_variables), "_NER")
 
-  #Time to complete all variables
+  # Time to complete all variables
   T2_text_all <- Sys.time()
   all_time <- T2_text_all - T1_text_all
-  all_time <- sprintf("Duration to predict all variables: %f %s",
-                      all_time,
-                      units(all_time))
+  all_time <- sprintf(
+    "Duration to predict all variables: %f %s",
+    all_time,
+    units(all_time)
+  )
 
 
   # Adding informative comment help(comment)
   comment(ALL_output) <- paste("Information about the textNER.  ",
-                                "model: ", model, "; ",
-                                "time: ", all_time, ";",
-                                "text_version: ", packageVersion("text"), ".",
-                                sep = "",
-                                collapse = "\n"
+    "model: ", model, "; ",
+    "time: ", all_time, ";",
+    "text_version: ", packageVersion("text"), ".",
+    sep = "",
+    collapse = "\n"
   )
   return(ALL_output)
-  }
+}

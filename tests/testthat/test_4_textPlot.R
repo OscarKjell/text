@@ -34,8 +34,8 @@ test_that("textProjection with QUARTILE, 0.9 PCA and
 
   # Pre-processing data for plotting
   df_for_plotting2 <- textProjection(Language_based_assessment_data_8$harmonywords[1:12],
-                                    word_embeddings_4$harmonywords[1:12, ],
-                                    word_embeddings_4$singlewords_we,
+    word_embeddings_4$harmonywords[1:12, ],
+    word_embeddings_4$singlewords_we,
     Language_based_assessment_data_8$hilstotal[1:12],
     Language_based_assessment_data_8$swlstotal[1:12],
     split = "quartile",
@@ -47,7 +47,7 @@ test_that("textProjection with QUARTILE, 0.9 PCA and
   expect_true(tibble::is_tibble(df_for_plotting2[[2]]))
   expect_is(df_for_plotting2[[2]]$words[1], "character")
   expect_is(df_for_plotting2[[2]]$n[1], "numeric")
-  expect_equal(df_for_plotting2[[2]]$dot.x[3],1.37, tolerance = 0.001)
+  expect_equal(df_for_plotting2[[2]]$dot.x[3], 1.37, tolerance = 0.001)
 })
 
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
@@ -77,7 +77,7 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   )
 
   expect_true(ggplot2::is.ggplot(p1$final_plot))
-  expect_equal(p1$processed_word_data$dot.y[1],2.988819, tolerance = 0.00001)
+  expect_equal(p1$processed_word_data$dot.y[1], 2.988819, tolerance = 0.00001)
 })
 
 

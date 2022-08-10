@@ -25,8 +25,8 @@ textEmbedLayersOutput(
 \item{contexts}{Provide word embeddings based on word contexts
 (standard method; default = TRUE).}
 
-\item{single_context_embeddings}{Aggregated contextualized word embeddings for each token in the text variables (only works for one
-text-variable at the time).}
+\item{single_context_embeddings}{Aggregated contextualized word embeddings for each token in the text variables
+(only works for one text-variable at the time).}
 
 \item{decontexts}{Provide word embeddings of single words as input
 (embeddings used for plotting; default = TRUE).}

@@ -38,7 +38,7 @@ test_that("textSimilarityMatrix produces euclidean similarity scores", {
     word_embeddings_4$harmonytexts[1:3, ],
     method = "euclidean"
   )
-  expect_equal(similarity_scores2[1,2], 0.29414779, tolerance = 0.0001 )
+  expect_equal(similarity_scores2[1, 2], 0.29414779, tolerance = 0.0001)
 })
 
 

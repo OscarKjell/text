@@ -126,7 +126,8 @@ sorting_xs_and_x_append <- function(x, x_append, ...) {
       x_name <- names(x)
       # Get embedding info to save for model description
       embedding_description <- comment(x[[1]])
-      # In case there are several embeddings in list form get the x_names and embedding description for model description
+      # In case there are several embeddings in list form get the x_names and
+      # embedding description for model description
     } else if (!tibble::is_tibble(x) & length(x) > 1) {
       x_name <- names(x)
       x_name <- paste(x_name, sep = " ", collapse = " & ")
@@ -168,9 +169,6 @@ sorting_xs_and_x_append <- function(x, x_append, ...) {
     Nword_variables <- length(xlist)
     # Give each column specific names with indexes so that they can be handled separately in the PCAs
     for (i in 1:Nword_variables) {
-      # we_names <- names(xlist[i])
-      # remove any "_", since the first "_" is later used as a sign to select all after it to get the name
-      # we_names <- gsub("_", ".", we_names)
       colnames(xlist[[i]]) <- paste("DimWs", i, ".", colnames(xlist[[i]]), sep = "")
     }
 

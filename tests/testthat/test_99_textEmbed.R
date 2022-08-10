@@ -63,7 +63,6 @@ test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces 
   expect_is(aggregated_embeddings2$harmonywords[[1]][1], "numeric")
   expect_true(tibble::is_tibble(aggregated_embeddings2$harmonywords))
   expect_equal(aggregated_embeddings2$harmonywords[1][[1]][1], 0.1291003, tolerance = 0.0001)
-
 })
 
 test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
@@ -79,7 +78,6 @@ test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produce
   expect_is(aggregated_embeddings3$harmonywords[[1]][1], "numeric")
   expect_true(tibble::is_tibble(aggregated_embeddings3$harmonywords))
   expect_equal(aggregated_embeddings3$harmonywords[1][[1]][1], 2.129543, tolerance = 0.0001)
-
 })
 
 test_that("textEmbedStatic with example space", {
@@ -153,16 +151,9 @@ test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = 
   # so that 770 needs to be something else
   expect_that(ncol(embeddings2[[1]][[1]][[1]][[1]]), equals(771))
 
-  # Mac OS and Ubuntu give different results below
-  # expect_equal(embeddings2$decontext$single_we$single_we[[1]]$Dim1[2], 0.4537115, tolerance = 0.0001)
-  # expect_equal(embeddings2[[1]][[1]][[1]][[1]][[4]][2], 0.109, tolerance = 0.001)
-
-  # works on Mac:
-  # expect_equal(embeddings2[[1]][[1]][[1]][[1]][[4]][2], 0.454, tolerance = 0.001)
-
   single_we1 <- textEmbedLayerAggregation(embeddings2$decontext$single_we, layers = 0:12)
   # expect_equal(single_we1$single_we$Dim1[1], 0.04692233, tolerance = 0.001)
-  })
+})
 
 test_that("textEmbed", {
   skip_on_cran()
@@ -179,9 +170,9 @@ test_that("textEmbed", {
   )
 
   single_context_embeddingsT <- textEmbed(x[1],
-                                      model = "bert-base-uncased",
-                                      decontexts = FALSE,
-                                      single_context_embeddings = TRUE
+    model = "bert-base-uncased",
+    decontexts = FALSE,
+    single_context_embeddings = TRUE
   )
 
   embeddings_decontextsF <- textEmbed(x,

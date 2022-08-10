@@ -33,13 +33,13 @@ textTrainRegression(
 )
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are provided in a list
-they will be concatenated.}
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
+provided in a list they will be concatenated.}
 
 \item{y}{Numeric variable to predict.}
 
-\item{x_append}{Variables to be appended after the word embeddings (x); if wanting to preappend them before the word embeddings
-use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.}
+\item{x_append}{Variables to be appended after the word embeddings (x); if wanting to preappend them before
+the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.}
 
 \item{cv_method}{Cross-validation method to use within a pipeline of nested outer and inner loops
 of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
@@ -51,14 +51,16 @@ uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.}
 
 \item{outside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{outside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the outer cross-validation loop.}
+\item{outside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the
+outer cross-validation loop.}
 
 \item{inside_folds}{The proportion of data to be used for modeling/analysis; (default proportion = 3/4). For more information
 see validation_split in rsample.}
 
 \item{inside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the inner cross-validation loop.}
+\item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the inner
+cross-validation loop.}
 
 \item{model}{Type of model. Default is "regression"; see also "logistic" for classification.}
 
@@ -84,8 +86,9 @@ preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(5
 
 \item{first_n_predictors}{by default this setting is turned off (i.e., NA). To use this method,
 set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
-using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1, then multiplying by 1.3 and finally
-rounding to the nearest integer (e.g., 1, 3, 5, 8). This option is currently only possible for one embedding at the time.}
+using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
+then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
+This option is currently only possible for one embedding at the time.}
 
 \item{impute_missing}{default FALSE (can be set to TRUE if something else than word_embeddings are trained).}
 
@@ -98,7 +101,8 @@ can set to "spearman" or "kendall").}
 (i.e., only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
 "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.}
 
-\item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
+\item{save_output}{Option not to save all output; default "all". see also "only_results"
+and "only_results_predictions".}
 
 \item{seed}{Set different seed.}
 

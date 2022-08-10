@@ -22,10 +22,12 @@ textTranslate(
 \arguments{
 \item{x}{(string)  The text to be translated.}
 
-\item{source_lang}{(string)  The input language. Might be needed for multilingual models (it will not have any effect for single pair translation models).
-using ISO 639-1 Code, such as: "en", "zh", "es", "fr", "de", "it", "sv", "da", "nn".}
+\item{source_lang}{(string)  The input language. Might be needed for multilingual models
+(it will not have any effect for single pair translation models). using ISO 639-1 Code,
+such as: "en", "zh", "es", "fr", "de", "it", "sv", "da", "nn".}
 
-\item{target_lang}{(string)  The desired language output. Might be required for multilingual models (will not have any effect for single pair translation models).}
+\item{target_lang}{(string)  The desired language output. Might be required for multilingual models
+(will not have any effect for single pair translation models).}
 
 \item{model}{(string)  Specify a pre-trained language model that have been fine-tuned on a translation task.}
 
@@ -36,8 +38,10 @@ using ISO 639-1 Code, such as: "en", "zh", "es", "fr", "de", "it", "sv", "da", "
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
-All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
+\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
+This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
+dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
 
 \item{return_tensors}{(boolean)  Whether or not to include the predictions' tensors as token indices in the outputs.}
 

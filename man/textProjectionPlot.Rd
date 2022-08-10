@@ -76,9 +76,10 @@ test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.}
 \item{plot_n_words_square}{Select number of significant words in each square of the figure to plot. The significant
 words, in each square is selected according to most frequent words.}
 
-\item{plot_n_words_p}{Number of significant words to plot on each(positive and negative) side of the x-axes and y-axes,
-(where duplicates are removed); selects first according to lowest p-value and then according to frequency. Hence, on a two
-dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.}
+\item{plot_n_words_p}{Number of significant words to plot on each(positive and negative) side of
+the x-axes and y-axes, (where duplicates are removed); selects first according to lowest p-value
+and then according to frequency. Hence, on a two dimensional plot it is possible that
+plot_n_words_p = 1 yield 4 words.}
 
 \item{plot_n_word_extreme}{Number of words that are extreme on Supervised Dimension Projection per dimension.
 (i.e., even if not significant; per dimensions, where duplicates are removed).}

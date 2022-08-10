@@ -2,21 +2,24 @@
 
 #' Predicts the words that will follow a specified text prompt. (experimental)
 #' @param x (string)  A variable or a tibble/dataframe with at least one character variable.
-#' @param model (string)  Specification of a pre-trained language model that have been trained with an autoregressive language modeling
-#' objective, which includes the uni-directional models (e.g., gpt2).
+#' @param model (string)  Specification of a pre-trained language model that have been trained with an
+#' autoregressive language modeling objective, which includes the uni-directional models (e.g., gpt2).
 #' @param device (string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
 #' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism.
 #' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
-#' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").
+#' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results.
+#' This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+#' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
+#' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").
 #' @param return_tensors (boolean)  Whether or not the output should include the prediction tensors (as token indices).
 #' @param return_text (boolean)  Whether or not the outputs should include the decoded text.
 #' @param return_full_text (boolean) If FALSE only the added text is returned, otherwise the full text is returned.
 #'  (This setting is only meaningful if return_text is set to TRUE)
 #' @param clean_up_tokenization_spaces (boolean)  Option to clean up the potential extra spaces in the returned text.
 #' @param prefix (string) Option to add a prefix to prompt.
-#' @param handle_long_generation  By default, this function does not handle long generation (those that exceed the model maximum length).
+#' @param handle_long_generation  By default, this function does not handle long generation
+#' (those that exceed the model maximum length).
 #' @param set_seed (Integer) Set seed.
 #' (more info :https://github.com/huggingface/transformers/issues/14033#issuecomment-948385227).
 #' This setting provides some ways to work around the problem:
@@ -35,27 +38,25 @@
 #' @importFrom tibble as_tibble_col
 #' @export
 textGeneration <- function(x,
-                           model = 'gpt2',
-                           device = 'cpu',
+                           model = "gpt2",
+                           device = "cpu",
                            tokenizer_parallelism = FALSE,
-                           logging_level = 'warning',
+                           logging_level = "warning",
                            return_incorrect_results = FALSE,
                            return_tensors = FALSE,
                            return_text = TRUE,
                            return_full_text = TRUE,
                            clean_up_tokenization_spaces = FALSE,
-                           prefix = '',
+                           prefix = "",
                            handle_long_generation = NULL,
-                           set_seed = 202208L
-                           ){
-
+                           set_seed = 202208L) {
   T1_text_all <- Sys.time()
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
-                                        "huggingface_Interface3.py",
-                                        # envir = NULL,
-                                        package = "text",
-                                        mustWork = TRUE
+    "huggingface_Interface3.py",
+    # envir = NULL,
+    package = "text",
+    mustWork = TRUE
   ))
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
@@ -67,70 +68,74 @@ textGeneration <- function(x,
     T1_variable <- Sys.time()
 
 
-  hg_generated <- apply(data_character_variables[i_variables],
-                        1,
-                        hgTransformerGetTextGeneration,
-                                 model = model,
-                                 device = device,
-                                 tokenizer_parallelism = tokenizer_parallelism,
-                                 logging_level = logging_level,
-                                 return_incorrect_results = return_incorrect_results,
-                                 return_tensors = return_tensors,
-                                 return_text = return_text,
-                                 return_full_text = return_full_text,
-                                 clean_up_tokenization_spaces = clean_up_tokenization_spaces,
-                                 prefix = prefix,
-                                 handle_long_generation = handle_long_generation,
-                                 set_seed = set_seed
-  )
+    hg_generated <- apply(data_character_variables[i_variables],
+      1,
+      hgTransformerGetTextGeneration,
+      model = model,
+      device = device,
+      tokenizer_parallelism = tokenizer_parallelism,
+      logging_level = logging_level,
+      return_incorrect_results = return_incorrect_results,
+      return_tensors = return_tensors,
+      return_text = return_text,
+      return_full_text = return_full_text,
+      clean_up_tokenization_spaces = clean_up_tokenization_spaces,
+      prefix = prefix,
+      handle_long_generation = handle_long_generation,
+      set_seed = set_seed
+    )
 
-  # Sort output into tidy-format
-  if (return_tensors ==  FALSE){
-    output1 <- dplyr::bind_rows(hg_generated)
-    output1
-  }
+    # Sort output into tidy-format
+    if (return_tensors == FALSE) {
+      output1 <- dplyr::bind_rows(hg_generated)
+      output1
+    }
 
-  if (return_tensors ==  TRUE){
-    output1 <- hg_generated
-  }
+    if (return_tensors == TRUE) {
+      output1 <- hg_generated
+    }
 
-  # Add the text variable name to variable names
-  x_name <- names(data_character_variables[i_variables])
-  names(output1) <- paste0(x_name, "_generated")
+    # Add the text variable name to variable names
+    x_name <- names(data_character_variables[i_variables])
+    names(output1) <- paste0(x_name, "_generated")
 
-  ALL_output[[i_variables]] <- output1
-  T2_variable <- Sys.time()
-  variable_time <- T2_variable - T1_variable
-  variable_time <- sprintf("Duration: %f %s",
-                           variable_time,
-                           units(variable_time))
+    ALL_output[[i_variables]] <- output1
+    T2_variable <- Sys.time()
+    variable_time <- T2_variable - T1_variable
+    variable_time <- sprintf(
+      "Duration: %f %s",
+      variable_time,
+      units(variable_time)
+    )
 
-  loop_text <- paste(x_name, "completed:",
-                     variable_time,
-                     "\n",
-                     sep = " ")
+    loop_text <- paste(x_name, "completed:",
+      variable_time,
+      "\n",
+      sep = " "
+    )
 
-  cat(colourise(loop_text, "green"))
-
+    cat(colourise(loop_text, "green"))
   }
 
   ALL_output1 <- dplyr::bind_cols(ALL_output)
 
-  #Time to complete all variables
+  # Time to complete all variables
   T2_text_all <- Sys.time()
   all_time <- T2_text_all - T1_text_all
-  all_time <- sprintf("Duration to translate all variables: %f %s",
-                      all_time,
-                      units(all_time))
+  all_time <- sprintf(
+    "Duration to translate all variables: %f %s",
+    all_time,
+    units(all_time)
+  )
 
 
   # Adding informative comment help(comment)
   comment(ALL_output1) <- paste("Information about the textGeneration settings.  ",
-                                "model: ", model, "; ",
-                                "time: ", all_time, "; ",
-                                "text_version: ", packageVersion("text"), ".",
-                                sep = "",
-                                collapse = "\n"
+    "model: ", model, "; ",
+    "time: ", all_time, "; ",
+    "text_version: ", packageVersion("text"), ".",
+    sep = "",
+    collapse = "\n"
   )
 
   return(ALL_output1)

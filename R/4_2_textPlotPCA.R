@@ -179,11 +179,9 @@ textPCAPlot <- function(word_data,
   # Sorting out axes
   x_axes_1 <- "Dim_PC1"
   y_axes_1 <- "Dim_PC2"
-  y_axes_values_hide <- FALSE
 
   ### Selecting words to plot
   # Select min_freq_words_test
-  word_data_original <- word_data
   word_data <- word_data[word_data$n >= min_freq_words_test, ]
 
   # Select plot_n_word_extreme and Select plot_n_word_frequency; plot_n_word_extreme=5

@@ -217,7 +217,6 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
         dplyr::select(y, id_nr))
 
     holdout_pred$.pred_class <- holdout_pred_class$.pred_class
-    # class <- colnames(holdout_pred[2])
 
     # Get RMSE; eval_measure = "rmse"
     eval_result <- select_eval_measure_val(eval_measure,
@@ -308,7 +307,6 @@ tune_over_cost <- function(object,
                            preprocess_step_center = preprocess_step_center,
                            preprocess_step_scale = preprocess_step_scale,
                            impute_missing = impute_missing) {
-
   T1 <- Sys.time()
 
   # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
@@ -332,7 +330,9 @@ tune_over_cost <- function(object,
   }
 
   ## Sequence to select dimensions from the semreps. SM-article state:
-  # "Adding 1, then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8, where the next number of dimensions to be tested are the first 12; in other words ([8 +􏰄 1*] 􏱡 1.3)
+  # "Adding 1, then multiplying by 1.3 and finally rounding to the nearest
+  # integer (e.g., 1, 3, 5, 8, where the next number of dimensions to be tested are the first 12;
+  # in other words ([8 +􏰄 1*] 􏱡 1.3)
   if (!is.na(first_n_predictors)) {
     stop <- first_n_predictors
     new_num <- 1
@@ -387,19 +387,25 @@ tune_over_cost <- function(object,
 
 
   # Progression output
-  best_eval <- bestParameters(data = grid_inner_eval_result,
-                              eval_measure = eval_measure)
+  best_eval <- bestParameters(
+    data = grid_inner_eval_result,
+    eval_measure = eval_measure
+  )
 
   T2 <- Sys.time()
-  time <- round(T2-T1, digits = 2)
+  time <- round(T2 - T1, digits = 2)
 
-  variable_time <- sprintf("(duration: %s %s).",
-                           time,
-                           units(time))
+  variable_time <- sprintf(
+    "(duration: %s %s).",
+    time,
+    units(time)
+  )
 
-  description_text <- paste("Fold:", eval_measure,
-                            round(best_eval$eval_result, digits= 3),
-                            variable_time, "\n")
+  description_text <- paste(
+    "Fold:", eval_measure,
+    round(best_eval$eval_result, digits = 3),
+    variable_time, "\n"
+  )
 
   cat(colourise(description_text, "green"))
 
@@ -414,7 +420,7 @@ tune_over_cost <- function(object,
 #' @param eval_measure the evaluation measure which decide if min or max value should be selected
 #' @return The row with the best evaluation measure.
 #' @noRd
-bestParameters <- function(data, eval_measure){
+bestParameters <- function(data, eval_measure) {
   if (eval_measure %in% c(
     "accuracy", "bal_accuracy", "sens", "spec",
     "precision", "kappa", "f_measure", "roc_auc",
@@ -470,38 +476,13 @@ summarize_tune_results <- function(object,
   return(results)
 }
 
-#x=word_embeddings_4[1]
-#y=Language_based_assessment_data_8[6]
-#x_append = NULL
-#cv_method = "validation_split"
-#outside_folds = 10
-#outside_strata_y = "y"
-#outside_breaks = 4
-#inside_folds = 3 / 4
-#inside_strata_y = "y"
-#inside_breaks = 4
-#model = "regression"
-#eval_measure = "default"
-#preprocess_step_center = TRUE
-#preprocess_step_scale = TRUE
-#preprocess_PCA = NA
-#penalty = 10^seq(-16, 16)
-#mixture = c(0)
-#first_n_predictors = NA
-#impute_missing = FALSE
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
-
 
 #' Train word embeddings to a numeric variable.
 #'
-#' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are provided in a list
-#' they will be concatenated.
-#' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before the word embeddings
-#' use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
+#' provided in a list they will be concatenated.
+#' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before
+#' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops
@@ -511,11 +492,13 @@ summarize_tune_results <- function(object,
 #' uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.
 #' @param outside_folds Number of folds for the outer folds (default = 10).
 #' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param outside_breaks The number of bins wanted to stratify a numeric stratification variable in the outer cross-validation loop.
+#' @param outside_breaks The number of bins wanted to stratify a numeric stratification variable in the
+#' outer cross-validation loop.
 #' @param inside_folds The proportion of data to be used for modeling/analysis; (default proportion = 3/4). For more information
 #' see validation_split in rsample.
 #' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner cross-validation loop.
+#' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner
+#' cross-validation loop.
 #' @param eval_measure Type of evaluative measure to select models from. Default = "rmse" for regression and "bal_accuracy"
 #' for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy", "bal_accuracy", "sens", "spec",
 #' "precision", "kappa", "f_measure", or "roc_auc",(for more details see the yardstick package).
@@ -532,8 +515,9 @@ summarize_tune_results <- function(object,
 #' @param mixture hyper parameter that is tuned default = 0 (hence a pure ridge regression).
 #' @param first_n_predictors by default this setting is turned off (i.e., NA). To use this method,
 #' set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
-#' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1, then multiplying by 1.3 and finally
-#' rounding to the nearest integer (e.g., 1, 3, 5, 8). This option is currently only possible for one embedding at the time.
+#' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
+#' then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
+#' This option is currently only possible for one embedding at the time.
 #' @param method_cor Type of correlation used in evaluation (default "pearson";
 #' can set to "spearman" or "kendall").
 #' @param impute_missing default FALSE (can be set to TRUE if something else than word_embeddings are trained).
@@ -541,7 +525,8 @@ summarize_tune_results <- function(object,
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it
 #'  (i.e., only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
 #'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
-#' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
+#' @param save_output Option not to save all output; default "all". see also "only_results"
+#'  and "only_results_predictions".
 #' @param seed Set different seed.
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A (one-sided) correlation test between predicted and observed values; tibble
@@ -606,7 +591,7 @@ textTrainRegression <- function(x,
   # Sorting out y
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
-    #y <- y[[1]]
+    # y <- y[[1]]
     y <- tibble::as_tibble_col(y[[1]], column_name = "y")
   } else {
     y_name <- deparse(substitute(y))
@@ -623,7 +608,7 @@ textTrainRegression <- function(x,
   rm(variables_and_names)
 
   xy <- dplyr::bind_cols(x2, y)
-  #xy <- tibble::as_tibble(xy) xy[1537]
+  # xy <- tibble::as_tibble(xy) xy[1537]
   xy$id_nr <- c(seq_len(nrow(xy)))
 
   # complete.cases is not neccassary
@@ -714,16 +699,6 @@ textTrainRegression <- function(x,
   }
 
   # Function to get the lowest eval_measure_val
- # if (eval_measure %in% c(
- #   "accuracy", "bal_accuracy", "sens", "spec",
- #   "precision", "kappa", "f_measure", "roc_auc",
- #   "rsq", "cor_test"
- # )) {
- #   bestParameters <- function(dat) dat[which.max(dat$eval_result), ]
- # } else if (eval_measure == "rmse") {
- #   bestParameters <- function(dat) dat[which.min(dat$eval_result), ]
- # }
-
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
   hyper_parameter_vals <-

@@ -36,8 +36,9 @@ textTrainRandomForest(
 
 \item{y}{Categorical variable to predict.}
 
-\item{x_append}{Variables to be appended after the word embeddings (x); if wanting to preappend them before the word embeddings
-use the option first = TRUE.  If not wanting to train with word embeddings, set x = NULL.}
+\item{x_append}{Variables to be appended after the word embeddings (x);
+if wanting to preappend them before the word embeddings use the option
+first = TRUE.  If not wanting to train with word embeddings, set x = NULL.}
 
 \item{cv_method}{Cross-validation method to use within a pipeline of nested outer and
 inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
@@ -116,7 +117,7 @@ results <- textTrainRandomForest(
   x = word_embeddings_4$harmonywords,
   y = as.factor(Language_based_assessment_data_8$gender),
   trees = c(1000, 1500),
-  mtry  = c(1), # this is short because of testing
+  mtry = c(1), # this is short because of testing
   min_n = c(1), # this is short because of testing
   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 )

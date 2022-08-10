@@ -23,8 +23,8 @@ textGeneration(
 \arguments{
 \item{x}{(string)  A variable or a tibble/dataframe with at least one character variable.}
 
-\item{model}{(string)  Specification of a pre-trained language model that have been trained with an autoregressive language modeling
-objective, which includes the uni-directional models (e.g., gpt2).}
+\item{model}{(string)  Specification of a pre-trained language model that have been trained with an
+autoregressive language modeling objective, which includes the uni-directional models (e.g., gpt2).}
 
 \item{device}{(string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 
@@ -33,8 +33,10 @@ objective, which includes the uni-directional models (e.g., gpt2).}
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
-All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
+\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
+This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
+dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
 
 \item{return_tensors}{(boolean)  Whether or not the output should include the prediction tensors (as token indices).}
 
@@ -47,7 +49,8 @@ All it does is to ensure the returned results are formatted correctly (e.g., doe
 
 \item{prefix}{(string) Option to add a prefix to prompt.}
 
-\item{handle_long_generation}{By default, this function does not handle long generation (those that exceed the model maximum length).}
+\item{handle_long_generation}{By default, this function does not handle long generation
+(those that exceed the model maximum length).}
 
 \item{set_seed}{(Integer) Set seed.
 (more info :https://github.com/huggingface/transformers/issues/14033#issuecomment-948385227).

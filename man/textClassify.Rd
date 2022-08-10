@@ -31,8 +31,10 @@ For example use "cardiffnlp/twitter-roberta-base-sentiment", "distilbert-base-un
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results. This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
-All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
+\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
+This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
+dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
 
 \item{return_all_scores}{(boolean)  Whether to return all prediction scores or just the one of the predicted class.}
 
@@ -40,7 +42,8 @@ All it does is to ensure the returned results are formatted correctly (e.g., doe
 
 \item{set_seed}{(Integer) Set seed.
 There are four different values:
-"default": if the model has a single label, will apply the sigmoid function on the output. If the model has several labels,
+"default": if the model has a single label, will apply the sigmoid function on the output.
+If the model has several labels,
 the softmax function will be applied on the output.
 "sigmoid": Applies the sigmoid function on the output.
 "softmax": Applies the softmax function on the output.
@@ -55,9 +58,9 @@ Predict label and probability of a text using a pretrained classifier language m
 }
 \examples{
 \donttest{
-#classifications <- textClassify(x = Language_based_assessment_data_8[1:2, 1:2])
-#classifications
-#comment(classifications)
+# classifications <- textClassify(x = Language_based_assessment_data_8[1:2, 1:2])
+# classifications
+# comment(classifications)
 }
 }
 \seealso{
