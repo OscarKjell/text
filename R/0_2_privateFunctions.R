@@ -67,8 +67,9 @@ p_value_comparing_with_Null <- function(Observedresult,
 #' @examples
 #' \donttest{
 #' embeddings_with_variables <- add_variables_to_we(word_embeddings_4[1],
-#' Language_based_assessment_data_8[c(6,7)],
-#' first = TRUE)
+#'   Language_based_assessment_data_8[c(6, 7)],
+#'   first = TRUE
+#' )
 #' }
 #' @importFrom dplyr bind_cols
 #' @importFrom purrr map
@@ -76,32 +77,32 @@ p_value_comparing_with_Null <- function(Observedresult,
 #' @noRd
 add_variables_to_we <- function(word_embeddings,
                                 data,
-                                first=FALSE){
+                                first = FALSE) {
 
   # Add Names to new Variables
-  colnames(data) <- paste("Dim0", "_", colnames(data), sep="") # 1:ncol(data),
+  colnames(data) <- paste("Dim0", "_", colnames(data), sep = "") # 1:ncol(data),
 
   # Remove single_we if exist
   word_embeddings$singlewords_we <- NULL
 
   # If not list of word embeddings
-  if(!is.data.frame(word_embeddings)){
+  if (!is.data.frame(word_embeddings)) {
 
     # Add first
-    if(first == TRUE) ratings_embeddings <- purrr::map(word_embeddings, ~cbind(data, .x))
+    if (first == TRUE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(data, .x))
     # Add last
-    if(first == FALSE) ratings_embeddings <- purrr::map(word_embeddings, ~cbind(.x, data))
+    if (first == FALSE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(.x, data))
 
     ratings_embeddings_tibble <- lapply(ratings_embeddings, tibble::as_tibble)
   }
 
   # If list of word embeddings
-  if(is.data.frame(word_embeddings)){
+  if (is.data.frame(word_embeddings)) {
 
     # Add first
-    if(first == TRUE) ratings_embeddings_tibble <- dplyr::bind_cols(data, word_embeddings)
+    if (first == TRUE) ratings_embeddings_tibble <- dplyr::bind_cols(data, word_embeddings)
     # Add last
-    if(first == FALSE) ratings_embeddings_tibble <- dplyr::bind_cols(word_embeddings, data)
+    if (first == FALSE) ratings_embeddings_tibble <- dplyr::bind_cols(word_embeddings, data)
   }
 
   return(ratings_embeddings_tibble)
@@ -114,11 +115,10 @@ add_variables_to_we <- function(word_embeddings,
 #' @return List with sorted tibble of variables, x_name, embedding_description,
 #' x_append_names, and variable_name_index_pca.
 #' @noRd
-sorting_xs_and_x_append <- function(x, x_append, ...){
-
+sorting_xs_and_x_append <- function(x, x_append, ...) {
   variable_name_index_pca <- NA
 
-  if(!is.null(x)){
+  if (!is.null(x)) {
     # In case the embedding is in list form get the tibble form
     if (!tibble::is_tibble(x) & length(x) == 1) {
       x1 <- x[[1]]
@@ -142,14 +142,16 @@ sorting_xs_and_x_append <- function(x, x_append, ...){
   }
 
   # Get names for the added variables to save to description
-  x_append_names <- paste(names(x_append), collapse=", ")
+  x_append_names <- paste(names(x_append), collapse = ", ")
   # Possibility to train without word embeddings
-  if(is.null(x)){
+  if (is.null(x)) {
     x1 <- x_append
     x_append <- NULL
-    colnames(x1) <- paste0("Dim", "_",
-                           colnames(x1))
-    x_name <-  NULL
+    colnames(x1) <- paste0(
+      "Dim", "_",
+      colnames(x1)
+    )
+    x_name <- NULL
     embedding_description <- NULL
   }
 
@@ -185,16 +187,22 @@ sorting_xs_and_x_append <- function(x, x_append, ...){
   ##########################################################
 
   #### Add other variables to word embeddings x_append=NULL
-  if(!is.null(x_append)){
-    x1 <- add_variables_to_we(word_embeddings = x1,
-                              data = x_append, ...)
+  if (!is.null(x_append)) {
+    x1 <- add_variables_to_we(
+      word_embeddings = x1,
+      data = x_append, ...
+    )
   }
 
   x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
-  variables_names <- list(x1, x_name, embedding_description,
-                          x_append_names, variable_name_index_pca)
-  names(variables_names) <- c("x1", "x_name", "embedding_description",
-                              "x_append_names", "variable_name_index_pca")
+  variables_names <- list(
+    x1, x_name, embedding_description,
+    x_append_names, variable_name_index_pca
+  )
+  names(variables_names) <- c(
+    "x1", "x_name", "embedding_description",
+    "x_append_names", "variable_name_index_pca"
+  )
 
   return(variables_names)
 }
@@ -222,4 +230,3 @@ cohens_d <- function(x, y) {
   # Cohen's d
   cd
 }
-
