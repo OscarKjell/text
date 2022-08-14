@@ -298,6 +298,7 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
   legend
 }
 
+
 #' Computes the dot product projection for added data.
 #' @return Word_data_all_yadjusted with added information for the added words.
 #' @noRd
@@ -317,26 +318,37 @@ textOwnWordsProjection <- function(word_data = word_data,
   forloops_add_w <- length(explore_words)
   added_words_information <- list()
 
+  # i_add_w = 1
   for (i_add_w in 1:forloops_add_w) {
 
     # If using a contextualized language model
     if (is.null(space) == TRUE) {
 
-
       # Creating word embeddings for the words.
       model_text <- sub(".*model: ", "", text_plot_comment)
-      model_name <- sub(" layer.*", "", model_text)
+      model_name <- sub(" ;.*", "", model_text)
       layers_text <- sub(".*layers: ", "", text_plot_comment)
-      layers_number <- sub(" . textEmbedLayerAggregation.*", "", layers_text)
+      layers_number <- sub(" ;.*", "", layers_text)
       layers_number_split <- stringi::stri_split_boundaries(layers_number,
         type = "word",
         skip_word_none = TRUE,
         skip_word_number = FALSE
       )
 
+      aggregate_layers_text <- sub(".*aggregate_layers =  ", "", text_plot_comment)
+      aggregate_layers_type <- sub(" aggregate_tokens.*", "", aggregate_layers_text)
+      aggregate_layers_type
+
+
+      context_aggregation_tokens_text <- sub(".*aggregate_tokens =  ", "", text_plot_comment)
+      context_aggregation_tokens_type <- sub(" tokens_select.*", "", context_aggregation_tokens_text)
+      context_aggregation_tokens_type
+
       explore_words_embeddings <- textEmbed(explore_words[i_add_w],
         model = model_name,
-        layers = dput(as.numeric(layers_number_split[[1]]))
+        layers = as.numeric(layers_number_split[[1]]),
+        context_aggregation_layers = aggregate_layers_type,
+        context_aggregation_tokens = context_aggregation_tokens_type
       )
     }
     # If using a static/decontextualized language model
@@ -611,6 +623,7 @@ adjust_for_plot_type <- function(word_data, y_axes) {
   }
   return(word_data)
 }
+
 
 #' Plot words from textProjection() or textWordPrediction().
 #' @param word_data Dataframe from textProjection
@@ -1161,7 +1174,7 @@ textPlot <- function(word_data,
   }
 
 
-  ##### Adding/exploring words MANUALY ######
+  ##### Adding/exploring words MANUALY ###### explore_words = "happy"
 
   if (!is.null(explore_words) == TRUE) {
     if (plot_type_name == "textProjection") {

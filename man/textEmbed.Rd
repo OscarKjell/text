@@ -9,20 +9,20 @@ textEmbed(
   model = "bert-base-uncased",
   layers = 11:12,
   contexts = TRUE,
-  dim_name = FALSE,
-  single_context_embeddings = FALSE,
+  dim_name = TRUE,
+  single_context_embeddings = TRUE,
   context_layers = layers,
   context_aggregation_layers = "concatenate",
   context_aggregation_tokens = "mean",
   context_tokens_select = NULL,
   context_tokens_deselect = NULL,
-  decontexts = TRUE,
+  decontexts = FALSE,
   decontext_layers = layers,
   decontext_aggregation_layers = "concatenate",
   decontext_aggregation_tokens = "mean",
   decontext_tokens_select = NULL,
   decontext_tokens_deselect = NULL,
-  device = "cpu",
+  device = "gpu",
   model_max_length = NULL,
   logging_level = "error"
 )
@@ -46,7 +46,8 @@ These layers can then be aggregated in the textEmbedLayerAggregation function. I
 (standard method; default = TRUE).}
 
 \item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
-(This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)}
+(This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name).
+see \code{\link{textDimName}} to change names back and forth.}
 
 \item{single_context_embeddings}{Aggregated word embeddings for each token in the dataset}
 
@@ -68,8 +69,8 @@ such as [CLS] and [SEP] for the context embeddings.}
 \item{context_tokens_deselect}{Option to deselect embeddings linked to specific tokens
 such as [CLS] and [SEP] for the context embeddings.}
 
-\item{decontexts}{Provide word embeddings of single words as input
-(embeddings, e.g., used for plotting; default = TRUE).}
+\item{decontexts}{(Boolean) Provide word embeddings of single words as input to the model
+(these embeddings are, e.g., used for plotting; default is to use ). If using this, then set single_context_embeddings to FALSE.}
 
 \item{decontext_layers}{Layers to aggregate for the decontext embeddings  the number of layers extracted above.}
 
@@ -116,5 +117,6 @@ Extract layers and aggregate them to word embeddings, for all character variable
 }
 }
 \seealso{
-see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbedLayersOutput}}
+see \code{\link{textEmbedLayerAggregation}}, \code{\link{textEmbedLayersOutput}} and
+\code{\link{textDimName}}
 }

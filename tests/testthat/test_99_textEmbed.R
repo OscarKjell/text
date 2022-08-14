@@ -203,3 +203,20 @@ test_that("textEmbed", {
   expect_that(long_text_embedding, is_a("list"))
   expect_equal(long_text_embedding[[1]][[1]][[1]][[1]], -0.01866776, tolerance = 0.0001)
 })
+
+
+
+
+test_that("textDimName", {
+  skip_on_cran()
+
+  w_e_T <- textDimName(word_embeddings_4)
+  expect_equal(colnames(w_e_T$harmonywords)[1], "Dim1_harmonywords")
+
+  w_e_F <- textDimName(w_e_T, dim_names = FALSE)
+  expect_equal(colnames(w_e_F$harmonywords)[1], "Dim1")
+
+})
+
+
+

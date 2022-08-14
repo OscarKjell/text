@@ -255,8 +255,8 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' (i.e., not comprising hidden states) and thus should normally not be used. These layers can then
 #'  be aggregated in the textEmbedLayerAggregation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
-#' @param dim_name Boolean, if TRUE append the variable name after all variable-names in the output.
-#' (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)
+# @param dim_name Boolean, if TRUE append the variable name after all variable-names in the output.
+# (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
@@ -283,17 +283,30 @@ textEmbedLayersOutput <- function(x,
                                   model = "bert-base-uncased",
                                   layers = 11,
                                   return_tokens = TRUE,
-                                  dim_name = FALSE,
+                                  #dim_name = FALSE,
                                   device = "cpu",
                                   tokenizer_parallelism = FALSE,
                                   model_max_length = NULL,
                                   logging_level = "error") {
-  if (single_context_embeddings && ncol(x) > 1) {
-    # Below is because currently it is only possible to plot on text-variable at the time.
+
+
+  if(single_context_embeddings & decontexts){
     stop(cat(
-      colourise("Single contextualised embeddings are currently not supported for multiple text-variables", fg = "red"),
-      colourise("Please only embedd one text-variable at the time.", fg = "green")
+      colourise("Cannot set both single_context_embeddings = TRUE and decontexts = TRUE. \n",
+                fg="red"),
+      colourise("Set only one to TRUE.",
+                fg = "green")
     ))
+  }
+
+  # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
+  data_character_variables <- select_character_v_utf8(x)
+
+  if (single_context_embeddings && ncol(data_character_variables) > 1) {
+    cat(
+      colourise("Please note that the single_context_embeddings are based on several text-variables as input (i.e., the words in the different text-variables will influence each other). \n",
+                fg = "blue")
+    )
   }
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
@@ -304,8 +317,6 @@ textEmbedLayersOutput <- function(x,
     mustWork = TRUE
   ))
 
-  # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
-  data_character_variables <- select_character_v_utf8(x)
 
   # This gives sorted word embeddings based on context (i.e., the entire text is sent to the transformer model)
   if (contexts | single_context_embeddings) {
@@ -332,23 +343,14 @@ textEmbedLayersOutput <- function(x,
       sorted_layers_ALL_variables$context[[i_variables]] <- variable_x
       names(sorted_layers_ALL_variables$context)[[i_variables]] <- names(x)[[i_variables]]
 
-      # Add the text variable names to the end of the Dim_variable names
-      if (dim_name) {
-        for (i_row in seq_len(length(sorted_layers_ALL_variables$context[[i_variables]]))) {
-          colnames(sorted_layers_ALL_variables$context[[i_variables]][[i_row]]) <- paste0(
-            names(sorted_layers_ALL_variables$context[[i_variables]][[i_row]]),
-            "_",
-            names(x)[[i_variables]]
-          )
-        }
-      }
+
       # Adding informative comment help(comment)
       layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
 
       comment(sorted_layers_ALL_variables$context) <- paste("Information about the embeddings. textEmbedLayersOutput: ",
-        "model: ", model, "; ",
-        "layers: ", layers_string, "; ",
-        "single_context_embeddings: ", single_context_embeddings, "; ",
+        "model: ", model, " ; ",
+        "layers: ", layers_string, " ; ",
+        "single_context_embeddings: ", single_context_embeddings, " ; ",
         "text_version: ", packageVersion("text"), ".",
         sep = "",
         collapse = "\n"
@@ -395,7 +397,7 @@ textEmbedLayersOutput <- function(x,
     # (for textLayersAggregation to know which layers are linked);
     num_layers <- length(layers)
 
-    # Look over all token list objects to adjust the token_id
+    # Look over all token list objects to adjust the token_id. i_context = 1
     for (i_context in seq_len(length(individual_tokens$single_we$context))) {
       token_id_df <- individual_tokens$single_we$context[[i_context]]
 
@@ -422,8 +424,8 @@ textEmbedLayersOutput <- function(x,
 
   # Decontextualized embeddings for individual words
   if (decontexts) {
-    sorted_layers_All_decontexts <- list()
-    sorted_layers_All_decontexts$decontext <- list()
+    individual_tokens <- list()
+    individual_tokens$decontext <- list()
     # Get word embeddings for all individual words (which is used for the word plot).
     singlewords <- getUniqueWordsAndFreq(data_character_variables)
     list_words <- sapply(singlewords$words, list)
@@ -442,48 +444,50 @@ textEmbedLayersOutput <- function(x,
     )
 
     # Sort out layers as above
-    sorted_layers_All_decontexts$decontext$single_we$single_we <- sortingLayers(
+    individual_tokens$decontext$single_we$single_we <- sortingLayers(
       x = hg_decontexts_embeddings,
       layers = layers,
       return_tokens = return_tokens
     )
-    names(sorted_layers_All_decontexts$decontext$single_we$single_we) <- NULL
-    sorted_layers_All_decontexts$decontext$single_words <- singlewords
+    names(individual_tokens$decontext$single_we$single_we) <- NULL
+    individual_tokens$decontext$single_words <- singlewords
 
     # Adding informative data
     layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
-    comment(sorted_layers_All_decontexts$decontext$single_we) <- c(paste("Information about the embeddings.
+    comment(individual_tokens$decontext$single_we) <- c(paste("Information about the embeddings.
                                                                          textEmbedLayersOutput: ",
       "model:", model,
       "layers:", layers_string, ".",
-      collapse = "; "
+      collapse = " ; "
     ))
 
-    comment(sorted_layers_All_decontexts$decontext$single_words) <- c(paste("Information about the embeddings.
+    comment(individual_tokens$decontext$single_words) <- c(paste("Information about the embeddings.
                                                                             textEmbedLayersOutput: ",
       "model:", model,
       "layers:", layers_string, ".",
-      collapse = "; "
+      collapse = " ; "
     ))
 
     de_text <- c("Completed layers aggregation for decontexts embeddings. \n")
     cat(colourise(de_text, "green"))
 
-    sorted_layers_All_decontexts
+    individual_tokens
   }
 
   # Combine previous list and word list
-  if (contexts == TRUE & decontexts == TRUE) {
-    word_embeddings_with_layers <- c(sorted_layers_ALL_variables, sorted_layers_All_decontexts)
+  if (contexts == TRUE & (decontexts == TRUE | single_context_embeddings == TRUE)) {
+    word_embeddings_with_layers <- c(sorted_layers_ALL_variables, individual_tokens)
+
   } else if (contexts == TRUE & decontexts == FALSE & single_context_embeddings == FALSE) {
     word_embeddings_with_layers <- c(sorted_layers_ALL_variables)
-  } else if (contexts == FALSE & decontexts == TRUE & single_context_embeddings == FALSE) {
-    word_embeddings_with_layers <- c(sorted_layers_All_decontexts)
-  } else if (contexts == TRUE & decontexts == FALSE & single_context_embeddings == TRUE) {
-    word_embeddings_with_layers <- c(sorted_layers_ALL_variables, individual_tokens)
+
+  } else if (contexts == FALSE) {
+    word_embeddings_with_layers <- c(individual_tokens)
   }
+
   return(word_embeddings_with_layers)
 }
+
 
 
 #' Select and aggregate layers of hidden states to form a word embeddings.
@@ -611,6 +615,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
     )
     # Sort output
     selected_layers_aggregated_tibble[[variable_list_i]] <- dplyr::bind_rows(selected_layers_tokens_aggregated)
+
     # Add informative comments
     original_comment <- comment(word_embeddings_layers)
     layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
@@ -625,7 +630,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
       tokens_select,
       "tokens_deselect = ",
       tokens_deselect,
-      collapse = ";"
+      collapse = " ; "
     )
 
     ## Timing
@@ -649,10 +654,6 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
     cat(colourise(loop_text, "blue"))
   }
 
-
-
-
-
   names(selected_layers_aggregated_tibble) <- names(word_embeddings_layers)
   selected_layers_aggregated_tibble
 }
@@ -673,13 +674,12 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' @param contexts Provide word embeddings based on word contexts
 #' (standard method; default = TRUE).
 #' @param dim_name Boolean, if TRUE append the variable name after all variable-names in the output.
-#' (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)
+#' (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name).
+#' see \code{\link{textDimName}} to change names back and forth.
 #' @param single_context_embeddings Aggregated word embeddings for each token in the dataset
 # @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
-#' @param decontexts Provide word embeddings of single words as input
-#' (embeddings, e.g., used for plotting; default = TRUE).
-# @param pretrained_weights advanced parameter submitted to the HuggingFace interface to get models not yet officially
-# incorporated into text. Default = NULL. for details see https://huggingface.co/.
+#' @param decontexts (Boolean) Provide word embeddings of single words as input to the model
+#' (these embeddings are, e.g., used for plotting; default is to use ). If using this, then set single_context_embeddings to FALSE.
 #' @param context_layers Specify the layers that should be aggregated (default the number of layers extracted above).
 #' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states)
 #' and thus advised not to be used.
@@ -723,26 +723,27 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' # Example 2
 #' # word_embeddings <- textEmbed(x, layers = "all", context_layers = "all", decontext_layers = "all")
 #' }
-#' @seealso see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbedLayersOutput}}
+#' @seealso see \code{\link{textEmbedLayerAggregation}}, \code{\link{textEmbedLayersOutput}} and
+#' \code{\link{textDimName}}
 #' @export
 textEmbed <- function(x,
                       model = "bert-base-uncased",
                       layers = 11:12,
                       contexts = TRUE,
-                      dim_name = FALSE,
-                      single_context_embeddings = FALSE,
+                      dim_name = TRUE,
+                      single_context_embeddings = TRUE,
                       context_layers = layers,
                       context_aggregation_layers = "concatenate",
                       context_aggregation_tokens = "mean",
                       context_tokens_select = NULL,
                       context_tokens_deselect = NULL,
-                      decontexts = TRUE, # avarage_word_embedding
+                      decontexts = FALSE,
                       decontext_layers = layers,
                       decontext_aggregation_layers = "concatenate",
                       decontext_aggregation_tokens = "mean",
                       decontext_tokens_select = NULL,
                       decontext_tokens_deselect = NULL,
-                      device = "cpu",
+                      device = "gpu",
                       model_max_length = NULL,
                       logging_level = "error") {
   T1_textEmbed <- Sys.time()
@@ -756,7 +757,6 @@ textEmbed <- function(x,
   # Get hidden states/layers for all text; both context and decontext
   all_wanted_layers <- textEmbedLayersOutput(x,
     contexts = contexts,
-    dim_name = dim_name,
     single_context_embeddings = single_context_embeddings,
     decontexts = decontexts,
     model = model,
@@ -778,12 +778,12 @@ textEmbed <- function(x,
   # Aggregate Single words embeddings
   # DEcontext layers (in case they should be added differently from context) decontext_layers = 11
   if (decontexts == TRUE | single_context_embeddings == TRUE) {
+
     if (single_context_embeddings) {
       single_context_text <- paste("Embedding single context embeddings.",
         "\n",
         sep = ""
       )
-
       cat(colourise(single_context_text, "purple"))
 
       individual_word_embeddings_layers <- all_wanted_layers$single_we
@@ -791,14 +791,20 @@ textEmbed <- function(x,
     }
 
     if (decontexts) {
+      single_context_text <- paste("Embedding decontextualised embeddings.",
+                                   "\n",
+                                   sep = ""
+      )
+      cat(colourise(single_context_text, "purple"))
+
       individual_word_embeddings_layers <- all_wanted_layers$decontext$single_we
       individual_words <- all_wanted_layers$decontext$single_words
     }
 
     individual_word_embeddings <- textEmbedLayerAggregation(
-      word_embeddings_layers = individual_word_embeddings_layers, # all_wanted_layers$decontext$single_we,
-      layers = decontext_layers,
-      aggregate_layers = decontext_aggregation_layers,
+      word_embeddings_layers = individual_word_embeddings_layers,
+      layers = decontext_layers, # decontext_layers = 11
+      aggregate_layers = decontext_aggregation_layers, # decontext_aggregation_layers = 11
       aggregate_tokens = decontext_aggregation_tokens,
       tokens_select = decontext_tokens_select,
       tokens_deselect = decontext_tokens_deselect
@@ -810,7 +816,9 @@ textEmbed <- function(x,
       individual_word_embeddings
     )
 
-    comment(individual_word_embeddings_words) <- comment(individual_word_embeddings[[1]])
+    comment(individual_word_embeddings_words) <- paste(comment(individual_word_embeddings[[1]]),
+                                                               " ; single_context_embeddings = ", single_context_embeddings,
+                                                               " ; decontexts = ", decontexts)
     cat(colourise("Done! \n", "purple"))
   }
 
@@ -825,6 +833,10 @@ textEmbed <- function(x,
     all_embeddings$singlewords_we <- individual_word_embeddings_words
   }
 
+  if (dim_name == TRUE){
+    all_embeddings <- textDimName(all_embeddings)
+  }
+
   comment(all_embeddings) <- paste(Time_textEmbed,
     "; Date created: ", Date_textEmbed,
     "; text_version: ", packageVersion("text"), ".",
@@ -833,3 +845,59 @@ textEmbed <- function(x,
   )
   all_embeddings
 }
+
+
+
+#' Change the names of the dimensions in the word embeddings.
+#' @param word_embeddings List of word embeddings
+#' @param dim_names (boolean) If TRUE the word embedding name will be attached to the name of each dimension;
+#' is FALSE, the attached part of the name will be removed.
+#' @return Word embeddings with changed names.
+#' @examples
+#' \donttest{
+#' w_e_T <- textDimName(word_embeddings_4)
+#'
+#' w_e_F <- textDimName(w_e_T, dim_names = FALSE)
+#' }
+#' @seealso see \code{\link{textEmbed}}
+#' @export
+textDimName <- function(word_embeddings,
+                         dim_names = TRUE) {
+
+  # Remove singlewords_we if it exist
+  if(!is.null(word_embeddings$singlewords_we)){
+    singlewords_we <- word_embeddings$singlewords_we
+    word_embeddings$singlewords_we <- NULL
+  }
+
+
+  # i_row = 1 dim_name=TRUE
+  if (dim_names) {
+    for (i_row in seq_len(length(word_embeddings))) {
+      colnames(word_embeddings[[i_row]]) <- paste0(
+        names(word_embeddings[[i_row]]),
+        "_",
+        names(word_embeddings)[[i_row]]
+      )
+    }
+  }
+
+  if (!dim_names) {
+    for (i_row in seq_len(length(word_embeddings))) {
+
+      target_variables_names <- colnames(word_embeddings[[i_row]])
+
+      # Select everything BEFORE the first _ (i.e., the Dim1, etc.)
+      variable_names <- sub("\\_.*", "", target_variables_names)
+
+      colnames(word_embeddings[[i_row]]) <- variable_names
+    }
+  }
+
+  # Attach word embeddings again
+  if(!is.null(singlewords_we)){
+    word_embeddings$singlewords_we <- singlewords_we
+  }
+  return(word_embeddings)
+}
+

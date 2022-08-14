@@ -1,7 +1,16 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# text 0.9.98
+ - adding `textDimName()`
+ - DEFAULT CHANGE in `textEmbed()`: `dim_name` = `TRUE`
+ - DEFAULT CHANGE in `textEmbed()`: `single_context_embeddings` = `TRUE`
+ - DEFAULT CHANGE in `textEmbed()`: device = "gpu"
+ - Adding specific layer aggregations for `explore_words` in `textPlot()`
+ - Adding `x_append_target` in `textPredict()` function
+
 # text 0.9.97
- - updating textClassify, textGeneration, textNER, textSum, textQA, and textTranslate
+ - updating `textClassify()`, `textGeneration()`, `textNER()`, `textSum()`, `textQA()`, and `textTranslate()`.
 
 
 # text 0.9.96
@@ -16,12 +25,12 @@
 
 # text 0.9.95
 ### New features
-  - textClassify (under development)
-  - textGeneration (under development)
-  - textNER (under development)
-  - textSum (under development)
-  - textQA (under development)
-  - textTranslate (under development)
+  - `textClassify()` (under development)
+  - `textGeneration()` (under development)
+  - `textNER()` (under development)
+  - `textSum()` (under development)
+  - `textQA()` (under development)
+  - `textTranslate()` (under development)
 
 # text 0.9.93
 ### New features

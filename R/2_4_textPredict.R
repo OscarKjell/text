@@ -1,8 +1,9 @@
-#model_info = multi_we_PCA_09
-#word_embeddings = harmony_word_embeddings[1:2]
-#x_append = Language_based_assessment_data_8[6:8]
 
-# model_info <- models[[1]]
+#model_info = text_train_results2
+#word_embeddings = harmony_word_embeddings
+#x_append = Language_based_assessment_data_8[1:20, ]
+#dim_names = TRUE
+
 #' Predict scores or classification from, e.g., textTrain.
 #'
 #' @param model_info  Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
@@ -22,6 +23,7 @@
 #' @importFrom recipes prep bake
 #' @importFrom stats predict
 #' @importFrom tibble is_tibble as_tibble_col
+#' @importFrom dplyr bind_cols select full_join arrange
 #' @export
 textPredict <- function(model_info,
                         word_embeddings,
@@ -31,10 +33,10 @@ textPredict <- function(model_info,
                         ...) {
 
   # Get the right word embeddings
-  if(dim_names == TRUE){
+  if (dim_names == TRUE) {
     # Select the predictor variables needed for the prediction
     target_variables_names <- model_info$final_recipe$var_info$variable[model_info$final_recipe$var_info$role == "predictor"]
-    #target_variables_names[1830:1836]
+
     ## Get Word Embedding Names
     # remove those starting with Dim0
     We_names1 <- target_variables_names[!grepl("^Dim0", target_variables_names)]
@@ -50,24 +52,31 @@ textPredict <- function(model_info,
     word_embeddings_names <- "word_embeddings"
   }
 
-  if(!is.null(x_append)){
+  if (!is.null(x_append)) {
     ### Sort a_append: select all Dim0 (i.e., x_append variables)
-    dims0 <- target_variables_names[grep("^Dim0",
-                                         target_variables_names)]
+    dims0 <- target_variables_names[grep(
+      "^Dim0",
+      target_variables_names
+    )]
 
-  # select everything after the first _
-  variable_names <- substring(dims0, regexpr("_", dims0) + 1)
+    # select everything after the first "_".
+    variable_names <- substring(dims0, regexpr("_", dims0) + 1)
 
-  # Select those names from the "data"
-  x_append_target <- x_append %>% dplyr::select(dplyr::all_of(variable_names))
+    # Select those names from the "data"
+    x_append_target <- x_append %>% dplyr::select(dplyr::all_of(variable_names))
+
   } else {
     variable_names <- NULL
+    x_append_target <- NULL
   }
 
   # Adding embeddings and x_append (if any)
-  new_data1 <- sorting_xs_and_x_append(x = word_embeddings,
-                                       x_append = x_append, ...)
+  new_data1 <- sorting_xs_and_x_append(
+    x = word_embeddings,
+    x_append = x_append_target, ...
+  )
   new_data1 <- new_data1$x1
+  #names(new_data1)[3000:3078]
 
   # Dealing with NAs
   new_data1$id_nr <- c(seq_len(nrow(new_data1)))
@@ -81,16 +90,16 @@ textPredict <- function(model_info,
   colnames_to_b_removed <- colnames(data_prepared_with_recipe)
   colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed == "id_nr"]
 
-  # Get Prediction scores
+  # Get Prediction scores help(arrange)
   predicted_scores2 <- data_prepared_with_recipe %>%
-    bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type), ...) %>%
-    select(-!!colnames_to_b_removed) %>%
-    full_join(new_data_id_nr_col, by = "id_nr") %>%
-    arrange(id_nr) %>%
-    select(-id_nr)
+    dplyr::bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type)) %>% #, ...
+    dplyr::select(-!!colnames_to_b_removed) %>%
+    dplyr::full_join(new_data_id_nr_col, by = "id_nr") %>%
+    dplyr::arrange(id_nr) %>%
+    dplyr::select(-id_nr)
 
-  we_names <- paste(word_embeddings_names, collapse = "_", sep="")
-  v_names  <- paste(variable_names, collapse = "_", sep="")
+  we_names <- paste(word_embeddings_names, collapse = "_", sep = "")
+  v_names <- paste(variable_names, collapse = "_", sep = "")
 
   y_name <- model_info$model_description[3]
   y_name <- gsub("[[:space:]]", "", y_name)
@@ -101,13 +110,6 @@ textPredict <- function(model_info,
   return(predicted_scores2)
 }
 
-
-#models<- readRDS("/Users/oscarkjell/Desktop/layer1_models.rds")
-#word_embeddings<- readRDS("/Users/oscarkjell/Desktop/we.rds")
-#x_append<- readRDS("/Users/oscarkjell/Desktop/ratings.rds")
-#models = list(text_train_results1, text_train_results2)
-#word_embeddings = harmony_word_embeddings
-#x_append = Language_based_assessment_data_8[1:20, 5:8]
 
 #' Predict from several models, selecting the correct input
 #' @param models Object containing several models.
@@ -127,26 +129,26 @@ textPredict <- function(model_info,
 textPredictAll <- function(models,
                            word_embeddings,
                            x_append = NULL,
-                           ...){
-
+                           ...) {
   output_predictions <- list()
 
   # If textTrain has created many models at the same time, select them from "all_output".
-  if(!is.null(models$all_output)){
+  if (!is.null(models$all_output)) {
     models <- models$all_output
   }
 
   # Remove singlewords_we if it exist
-#  if(!is.null(word_embeddings$singlewords_we)){
-#    word_embeddings$singlewords_we <- NULL
-#  }
+  if (!is.null(word_embeddings$singlewords_we)) {
+    word_embeddings$singlewords_we <- NULL
+  }
 
-  #i=1
-  for(i in 1:length(models)){
-
-    preds <- textPredict(models[[i]],
-                         word_embeddings,
-                         x_append) #, ...
+  #
+  for (i in seq_len(length(models))) {
+    preds <- textPredict(
+      models[[i]],
+      word_embeddings,
+      x_append, ...
+    )
 
     output_predictions[[i]] <- preds
   }
@@ -210,8 +212,8 @@ textPredictTest <- function(y1,
 
     # T-test
     t_test_results <- stats::t.test(yhat1_absolut_error,
-                                    yhat2_absolut_error,
-                                    paired = paired, ...
+      yhat2_absolut_error,
+      paired = paired, ...
     ) # , ... Double check
     # Effect size
     cohensD <- cohens_d(
@@ -271,8 +273,3 @@ textPredictTest <- function(y1,
   }
   output
 }
-
-
-
-
-

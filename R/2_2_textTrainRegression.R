@@ -139,7 +139,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
 
   # Ridge and/or Lasso
   if (nr_predictors > 1) {
-    # Create and fit model
+    # Create and fit model help(linear_reg)
     mod_spec <-
       {
         if (model == "regression") {
@@ -512,7 +512,10 @@ summarize_tune_results <- function(object,
 #' in the data. The formula is:
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
 #' @param penalty hyper parameter that is tuned
-#' @param mixture hyper parameter that is tuned default = 0 (hence a pure ridge regression).
+#' @param mixture A number between 0 and 1 (inclusive) that reflects the proportion of L1 regularization
+#' (i.e. lasso) in the model (for more information see the linear_reg-function in the parsnip-package).
+#' When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
+#' used (specific engines only).
 #' @param first_n_predictors by default this setting is turned off (i.e., NA). To use this method,
 #' set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
 #' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,

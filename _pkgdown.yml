@@ -43,6 +43,7 @@ reference:
 - title: Transform text to word embeddings
   contents:
   - textEmbed
+  - textDimName
   - textEmbedLayersOutput
   - textEmbedLayerAggregation
   - textEmbedStatic
