@@ -30,7 +30,7 @@ PIPELINE_RESULTS_BY_TASK = {
     "token-classification": ["entity"], 
     "ner": ["entity"], 
     "text-generation": ["generated_text", "generated_token_ids"], 
-    "zero-shot-classification": [""], 
+    "zero-shot-classification": ["scores"], 
 }
 
 def set_logging_level(logging_level):
@@ -225,7 +225,7 @@ def hgTransformerGetPipeline(text_strings,
             task_pipeline = pipeline(task)
     
     task_scores = []
-    if task == 'question-answering':
+    if task in ['question-answering', 'zero-shot-classification']:
         task_scores = task_pipeline(**kwargs)
     else:
         task_scores = task_pipeline(text_strings, **kwargs)
@@ -327,6 +327,30 @@ def hgTransformerGetNER(text_strings,
                             return_incorrect_results = return_incorrect_results,
                             set_seed = set_seed)
     return ner_scores
+
+def hgTransformerGetZeroShot(sequences,
+                            candidate_labels,
+                            model = '',
+                            device = 'cpu',
+                            tokenizer_parallelism = False,
+                            logging_level = 'warning',
+                            return_incorrect_results = False,
+                            set_seed = None,
+                            hypothesis_template = "This example is {}.",
+                            multi_label = False):
+    classifier_output = hgTransformerGetPipeline(text_strings = [],
+                            task = 'zero-shot-classification',
+                            model = model,
+                            device = device,
+                            tokenizer_parallelism = tokenizer_parallelism,
+                            logging_level = logging_level,
+                            return_incorrect_results = return_incorrect_results,
+                            set_seed = set_seed,
+                            sequences = sequences,
+                            candidate_labels = candidate_labels,
+                            hypothesis_template = hypothesis_template,
+                            multi_label = multi_label)
+    return classifier_output
 
 def hgTransformerGetSentiment(text_strings,
                             model = '',
