@@ -4,7 +4,10 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
 from transformers import AutoConfig, AutoModel, AutoTokenizer
-from transformers.utils import logging
+try:
+    from transformers.utils import logging
+except ImportError:
+    print("Warning: Unable to importing transformers.utils logging")
 from transformers import pipeline
 import numpy as np
 
@@ -588,6 +591,88 @@ def hgTransformerGetEmbedding(text_strings,
     else:
         return all_embs
 
+def hgTokenizerGetTokens(text_strings,
+                              model = 'bert-large-uncased',
+                              max_token_to_sentence = 4,
+                              device = 'cpu',
+                              tokenizer_parallelism = False,
+                              model_max_length = None,
+                              logging_level = 'warning'):
+    """
+    Simple Python method for embedding text with pretained Hugging Face models
+
+    Parameters
+    ----------
+    text_strings : list
+        list of strings, each is embedded separately
+    model : str
+        shortcut name for Hugging Face pretained model
+        Full list https://huggingface.co/transformers/pretrained_models.html
+    max_token_to_sentence : int
+        maximum number of tokens in a string to handle before switching to embedding text
+        sentence by sentence
+    device : str
+        name of device: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+    tokenizer_parallelism :  bool
+        something
+    model_max_length : int
+        maximum length of the tokenized text
+    logging_level : str
+        set logging level, options: critical, error, warning, info, debug
+
+    Returns
+    -------
+    all_embs : list
+        embeddings for each item in text_strings
+    all_toks : list, optional
+        tokenized version of text_strings
+    """
+    try:
+        set_logging_level(logging_level)
+    except NameError:
+        pass
+    set_tokenizer_parallelism(tokenizer_parallelism)
+    device, device_num = get_device(device)
+
+    config, tokenizer, _ = get_model(model)#TODO: change to get_tokenizer_model that doesn't bother returning the transformer model
+
+    if device != 'cpu':
+        tokenizer.to(device)
+
+    max_tokens = tokenizer.max_len_sentences_pair
+
+    # check and adjust input types
+    if not isinstance(text_strings, list):
+        text_strings = [text_strings]
+
+    all_toks = []
+
+    for text_string in text_strings:
+        # if length of text_string is > max_token_to_sentence*4
+        # embedd each sentence separately
+        if len(text_string) > max_token_to_sentence*4:
+            sentence_batch = [s for s in sent_tokenize(text_string)]
+            if model_max_length is None:
+                batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True)
+            else:
+                batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True, max_length=model_max_length)
+            input_ids = torch.tensor(batch["input_ids"])
+
+            tokens = []
+            for ids in input_ids:
+                tokens.extend([token for token in tokenizer.convert_ids_to_tokens(ids) if token != '[PAD]'])
+            all_toks.append(tokens)
+
+        else:
+            input_ids = tokenizer.encode(text_string, add_special_tokens=True)
+            tokens = tokenizer.convert_ids_to_tokens(input_ids)
+
+            all_toks.append(tokens)
+
+    return all_toks
+
+
+    
 ### EXAMPLE TEST CODE:
 #if __name__   == '__main__':
 #   embeddings, tokens = hgTransformerGetEmbedding("Here is one sentence.", layers=[0,10], device="gpu", logging_level="warn")
