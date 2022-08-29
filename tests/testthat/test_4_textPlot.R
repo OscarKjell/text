@@ -198,7 +198,7 @@ test_that("textCentrality produces a tibble with character variable and numeric 
 
   df_for_plotting2d <- textPCA(
     words = Language_based_assessment_data_8$harmonywords,
-    single_word_embeddings = word_embeddings_4$singlewords_we
+    word_types_embeddings = word_embeddings_4$singlewords_we
   )
 
 

@@ -22,10 +22,11 @@ skip_if_no_torch <- function() {
 test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
   skip_on_cran()
 
-  aggregated_embeddings1 <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
+  aggregated_embeddings1 <- textEmbedLayerAggregation(word_embeddings_layers = embeddings_from_huggingface2$context,
     layers = 0:1,
-    aggregate_layers = "mean",
-    aggregate_tokens = "normalize"
+    aggregation_from_layers_to_tokens = "mean",
+    aggregation_from_tokens_to_texts = "normalize",
+    return_tokens = FALSE # If this is true there is an error!
   )
 
   expect_is(aggregated_embeddings1$harmonywords[[1]][1], "numeric")
@@ -35,8 +36,9 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
 
   aggregated_embeddings_con <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 0:1,
-    aggregate_layers = "concatenate",
-    aggregate_tokens = "mean"
+    aggregation_from_layers_to_tokens = "concatenate",
+    aggregation_from_tokens_to_texts = "mean",
+    return_tokens = FALSE #
   )
   length_dims_con <- length(aggregated_embeddings_con[[1]])
   expect_true(2 * length_dims_mean == length_dims_con)
@@ -45,8 +47,8 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
   # Expect error
   expect_error(aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 0:3,
-    aggregate_layers = "mean",
-    aggregate_tokens = "mean"
+    aggregation_from_layers_to_tokens = "mean",
+    aggregation_from_tokens_to_texts = "mean"
   ))
 })
 
@@ -55,9 +57,10 @@ test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces 
 
   aggregated_embeddings2 <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = 1:2,
-    aggregate_layers = "concatenate",
-    aggregate_tokens = "min",
-    tokens_select = "[CLS]"
+    aggregation_from_layers_to_tokens = "concatenate",
+    aggregation_from_tokens_to_texts = "min",
+    tokens_select = "[CLS]",
+    return_tokens = FALSE
   )
 
   expect_is(aggregated_embeddings2$harmonywords[[1]][1], "numeric")
@@ -71,8 +74,9 @@ test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produce
   # skip_on_cran() library(purrr)
   aggregated_embeddings3 <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
     layers = "all",
-    aggregate_tokens = "max",
-    tokens_deselect = c("[CLS]")
+    aggregation_from_tokens_to_texts = "max",
+    tokens_deselect = c("[CLS]"),
+    return_tokens = FALSE
   )
 
   expect_is(aggregated_embeddings3$harmonywords[[1]][1], "numeric")
@@ -97,7 +101,10 @@ test_that("textEmbedStatic with example space", {
   tibble_response
 
   # Test function
-  test_result <- textEmbedStatic(df = tibble_response, space = test_space, tk_df = "null", aggregate = "mean")
+  test_result <- textEmbedStatic(df = tibble_response,
+                                 space = test_space,
+                                 tk_df = "null",
+                                 aggregation_from_tokens_to_texts = "mean")
   test_result
 
   expect_is(test_result$word_response[[1]][[1]], "numeric")
@@ -106,17 +113,17 @@ test_that("textEmbedStatic with example space", {
 })
 
 
-test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a list", {
+test_that("textEmbedRawLayers contexts=TRUE, decontextualize = FALSE returns a list", {
   skip_on_cran()
 
   text_to_test_import1 <- c("test this", "hope it works")
   text_to_test_import2 <- c("I am happy", "Let us go")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
-  embeddings1 <- textEmbedLayersOutput(x,
+  embeddings1 <- text::textEmbedRawLayers(x,
     model = "bert-base-uncased",
-    contexts = TRUE,
-    decontexts = FALSE,
+    #contexts = TRUE,
+    decontextualize = FALSE,
     return_tokens = TRUE,
     layers = "all"
   )
@@ -129,7 +136,7 @@ test_that("textEmbedLayersOutput contexts=TRUE, decontexts = FALSE returns a lis
   expect_equal(embeddings1[[1]][[1]][[1]][[4]][1], 0.1685506, tolerance = 0.0001)
 })
 
-test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {
+test_that("textEmbedRawLayers bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {
   skip_on_cran()
 
 
@@ -137,10 +144,11 @@ test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = 
   text_to_test_import2 <- c("ön är vacker", "molnen svävar")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
-  embeddings2 <- textEmbedLayersOutput(x,
+  embeddings2 <- text::textEmbedRawLayers(x,
     model = "bert-base-uncased",
-    contexts = FALSE,
-    decontexts = TRUE,
+    word_type_embeddings = TRUE,
+    #contexts = FALSE,
+    decontextualize = TRUE,
     layers = "all"
   )
   expect_that(embeddings2, is_a("list"))
@@ -149,10 +157,8 @@ test_that("textEmbedLayersOutput bert-base-uncased contexts=FALSE, decontexts = 
   expect_that(embeddings2[[1]][[1]][[1]][[1]][[1]], is.character)
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
-  expect_that(ncol(embeddings2[[1]][[1]][[1]][[1]]), equals(771))
+  expect_that(ncol(embeddings2[[1]][[1]][[1]]), equals(771))
 
-  single_we1 <- textEmbedLayerAggregation(embeddings2$decontext$single_we, layers = 0:12)
-  # expect_equal(single_we1$single_we$Dim1[1], 0.04692233, tolerance = 0.001)
 })
 
 test_that("textEmbed", {
@@ -165,28 +171,33 @@ test_that("textEmbed", {
   ### testing for me
   embeddings_decontextsT <- textEmbed(x,
     model = "bert-base-uncased",
-    decontexts = TRUE,
-    single_context_embeddings = FALSE
+    aggregation_from_layers_to_tokens = "concatenate",
+    aggregation_from_tokens_to_texts = "mean",
+    aggregation_from_tokens_to_word_types = "mean",
+    decontextualize = FALSE#,
+    #single_context_embeddings = FALSE
   )
 
   single_context_embeddingsT <- textEmbed(x[1],
     model = "bert-base-uncased",
-    decontexts = FALSE,
-    single_context_embeddings = TRUE
+    #aggregation_from_layers_to_tokens = "concatenate",
+    #aggregation_from_tokens_to_texts = "mean",
+    decontextualize = FALSE#,
+    #single_context_embeddings = TRUE
   )
 
   embeddings_decontextsF <- textEmbed(x,
     model = "bert-base-uncased",
-    decontexts = FALSE
+    decontextualize = FALSE
   )
 
   expect_that(embeddings_decontextsT, is_a("list"))
   expect_that(single_context_embeddingsT, is_a("list"))
   expect_that(embeddings_decontextsF, is_a("list"))
-  expect_equal(embeddings_decontextsF[[1]][[1]][[1]], -0.002111321, tolerance = 0.0001)
-  expect_equal(embeddings_decontextsF[[1]][[1]][[2]], 0.579, tolerance = 0.001)
-  expect_equal(embeddings_decontextsF[[1]][[2]][[1]], -0.2463575, tolerance = 0.0001)
-  expect_equal(embeddings_decontextsF[[1]][[2]][[2]], -0.2368967, tolerance = 0.001)
+  expect_equal(embeddings_decontextsF[[2]][[1]][[1]][[1]], -0.002111321, tolerance = 0.0001)
+  expect_equal(embeddings_decontextsF[[2]][[1]][[1]][[2]], 0.579, tolerance = 0.001)
+  expect_equal(embeddings_decontextsF[[2]][[1]][[2]][[1]], -0.2463575, tolerance = 0.0001)
+  expect_equal(embeddings_decontextsF[[2]][[1]][[2]][[2]], -0.2368967, tolerance = 0.001)
 
 
   long_text_test <- c("Humour (British English) or humor (American English; see spelling differences) is the tendency to experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion.
@@ -201,7 +212,7 @@ test_that("textEmbed", {
   )
 
   expect_that(long_text_embedding, is_a("list"))
-  expect_equal(long_text_embedding[[1]][[1]][[1]][[1]], -0.01866776, tolerance = 0.0001)
+  expect_equal(long_text_embedding[[2]][[1]][[1]][[1]], -0.01866776, tolerance = 0.0001)
 })
 
 
@@ -215,6 +226,16 @@ test_that("textDimName", {
 
   w_e_F <- textDimName(w_e_T, dim_names = FALSE)
   expect_equal(colnames(w_e_F$harmonywords)[1], "Dim1")
+
+})
+
+
+test_that("textTokenize", {
+  skip_on_cran()
+
+  tokens <- textTokenize("hello are you?")
+  expect_equal(tokens[[1]]$tokens[2], "hello")
+
 
 })
 
