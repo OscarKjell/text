@@ -5,7 +5,7 @@
 #' @param words Word or text variable to be plotted.
 #' @param word_embeddings Word embeddings from textEmbed for the words to be plotted
 #' (i.e., the aggregated word embeddings for the "words" parameter).
-#' @param single_word_embeddings Word embeddings from textEmbed for individual words
+#' @param word_types_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., decontextualized embeddings).
 #' @param x Numeric variable that the words should be plotted according to on the x-axes.
 #' @param y Numeric variable that the words should be plotted according to on the y-axes (y=NULL).
@@ -40,7 +40,7 @@
 #' df_for_plotting <- textProjection(
 #'   words = Language_based_assessment_data_8$harmonywords,
 #'   word_embeddings = word_embeddings_4$harmonywords,
-#'   single_word_embeddings = word_embeddings_4$singlewords_we,
+#'   word_types_embeddings = word_embeddings_4$singlewords_we,
 #'   x = Language_based_assessment_data_8$hilstotal,
 #'   split = "mean",
 #'   Npermutations = 10,
@@ -58,7 +58,7 @@
 #' @export
 textProjection <- function(words,
                            word_embeddings,
-                           single_word_embeddings = single_word_embeddings_df,
+                           word_types_embeddings = word_types_embeddings_df,
                            x,
                            y = NULL,
                            pca = NULL,
@@ -77,7 +77,7 @@ textProjection <- function(words,
     "type = textProjection",
     "words =", substitute(words),
     "word_embeddings =", comment(word_embeddings),
-    "single_word_embeddings =", comment(single_word_embeddings),
+    "word_types_embeddings =", comment(word_types_embeddings),
     "x =", substitute(x),
     "y =", substitute(y),
     "pca =", as.character(pca),
@@ -91,11 +91,11 @@ textProjection <- function(words,
   )
 
   set.seed(seed)
-  # PCA on single_word_embeddings
+  # PCA on word_types_embeddings
   if (is.numeric(pca)) {
     # Select word embeddings to be included in plot
     uniques_words_all <- unique_freq_words(words)
-    uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, single_word_embeddings)
+    uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, word_types_embeddings)
     uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
     rec_pca <- recipes::recipe(~., data = uniques_words_all_wordembedding)
@@ -114,8 +114,8 @@ textProjection <- function(words,
     pca_data <- recipes::bake(pca_estimates, uniques_words_all_wordembedding)
 
     pca_data <- pca_data %>% stats::setNames(paste0("Dim", 1:length(pca_data)))
-    single_word_embeddings <- dplyr::bind_cols(uniques_words_all, pca_data)
-    single_word_embeddings
+    word_types_embeddings <- dplyr::bind_cols(uniques_words_all, pca_data)
+    word_types_embeddings
   }
 
   # Make dataframe (and combine x and y)
@@ -192,7 +192,7 @@ textProjection <- function(words,
       words_group1b_freq$n_g1_g2 <- words_group1b_freq$n * -1
 
       # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedStatic).
-      words_group1_single_wordembedding <- lapply(words_group1b_freq$words, applysemrep, single_word_embeddings)
+      words_group1_single_wordembedding <- lapply(words_group1b_freq$words, applysemrep, word_types_embeddings)
       words_group1_single_wordembedding_b <- dplyr::bind_rows(words_group1_single_wordembedding)
 
       # Group 2
@@ -200,7 +200,7 @@ textProjection <- function(words,
       words_group2b_freq <- words_group2b_freq[words_group2b_freq$n >= min_freq_words_test, ]
       words_group2b_freq$n_g1_g2 <- words_group2b_freq$n * 1
 
-      words_group2_single_wordembedding <- lapply(words_group2b_freq$words, applysemrep, single_word_embeddings)
+      words_group2_single_wordembedding <- lapply(words_group2b_freq$words, applysemrep, word_types_embeddings)
       words_group2_single_wordembedding_b <- dplyr::bind_rows(words_group2_single_wordembedding)
 
 
@@ -258,7 +258,7 @@ textProjection <- function(words,
         tidyr::separate_rows(words, sep = " ")
 
       # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
-      words_single_wordembedding <- lapply(words_values_sep$words, applysemrep, single_word_embeddings)
+      words_single_wordembedding <- lapply(words_values_sep$words, applysemrep, word_types_embeddings)
       words_single_wordembedding_b <- dplyr::bind_rows(words_single_wordembedding)
       words_single_wordembedding_c <- dplyr::bind_cols(words_values_sep, words_single_wordembedding_b)
 
@@ -334,7 +334,7 @@ textProjection <- function(words,
     # Position words in relation to Group 2 (High)
     all_unique_words_freq <- unique_freq_words(x2$words)
     # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
-    all_unique_words_we <- lapply(all_unique_words_freq$words, applysemrep, single_word_embeddings)
+    all_unique_words_we <- lapply(all_unique_words_freq$words, applysemrep, word_types_embeddings)
     all_unique_words_we_b <- dplyr::bind_rows(all_unique_words_we)
 
     if (split == "no") {

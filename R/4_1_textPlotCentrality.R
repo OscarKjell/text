@@ -6,7 +6,7 @@
 #' @param words Word or text variable to be plotted.
 #' @param word_embeddings Word embeddings from textEmbed for the words to be plotted
 #' (i.e., the aggregated word embeddings for the "words" variable).
-#' @param single_word_embeddings Word embeddings from textEmbed for individual words
+#' @param word_types_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., the decontextualized word embeddings).
 #' @inheritParams textSimilarity
 #' @param aggregation Method to aggregate the word embeddings
@@ -21,7 +21,7 @@
 #' df_for_plotting <- textCentrality(
 #'   words = Language_based_assessment_data_8$harmonywords,
 #'   word_embeddings = word_embeddings_4$harmonywords,
-#'   single_word_embeddings = word_embeddings_4$singlewords_we
+#'   word_types_embeddings = word_embeddings_4$singlewords_we
 #' )
 #' df_for_plotting
 #' }
@@ -31,13 +31,13 @@
 #' @export
 textCentrality <- function(words,
                            word_embeddings,
-                           single_word_embeddings = single_word_embeddings_df,
+                           word_types_embeddings = word_types_embeddings_df,
                            method = "cosine",
                            aggregation = "mean",
                            min_freq_words_test = 0) {
   textCentrality_description <- paste("words =", substitute(words),
     "word_embeddings =", comment(word_embeddings),
-    "single_word_embeddings =", comment(single_word_embeddings),
+    "word_types_embeddings =", comment(word_types_embeddings),
     "method =", method,
     "aggregation =", aggregation,
     "min_freq_words_test =", min_freq_words_test,
@@ -53,7 +53,7 @@ textCentrality <- function(words,
   all_unique_freq_words_min_freq <- all_unique_freq_words[all_unique_freq_words$n >= min_freq_words_test, ]
 
   # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
-  all_single_wordembedding_a <- lapply(all_unique_freq_words_min_freq$words, applysemrep, single_word_embeddings)
+  all_single_wordembedding_a <- lapply(all_unique_freq_words_min_freq$words, applysemrep, word_types_embeddings)
   all_single_wordembedding_a1 <- dplyr::bind_rows(all_single_wordembedding_a)
 
   # Compute similarity to Central Point

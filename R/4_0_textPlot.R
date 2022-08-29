@@ -299,6 +299,9 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
 }
 
 
+
+
+
 #' Computes the dot product projection for added data.
 #' @return Word_data_all_yadjusted with added information for the added words.
 #' @noRd
@@ -335,27 +338,29 @@ textOwnWordsProjection <- function(word_data = word_data,
         skip_word_number = FALSE
       )
 
-      aggregate_layers_text <- sub(".*aggregate_layers =  ", "", text_plot_comment)
-      aggregate_layers_type <- sub(" aggregate_tokens.*", "", aggregate_layers_text)
-      aggregate_layers_type
+      #
+      aggregate_layers_text <- sub(".*aggregation_from_layers_to_tokens =  ", "", text_plot_comment)
+      aggregate_layers_type <- sub(" aggregation_from_tokens_to_texts.*", "", aggregate_layers_text)
 
+      aggregation_tokens_text <- sub(".*aggregation_from_tokens_to_texts =  ", "", text_plot_comment)
+      aggregation_tokens_type <- sub(" tokens_select.*", "", aggregation_tokens_text)
 
-      context_aggregation_tokens_text <- sub(".*aggregate_tokens =  ", "", text_plot_comment)
-      context_aggregation_tokens_type <- sub(" tokens_select.*", "", context_aggregation_tokens_text)
-      context_aggregation_tokens_type
+      aggregation_word_text <- sub(".*aggregation_from_tokens_to_word_types =  ", "", text_plot_comment)
+      aggregation_word_type <- sub("  ; decontextualize.*", "", aggregation_word_text)
 
       explore_words_embeddings <- textEmbed(explore_words[i_add_w],
         model = model_name,
         layers = as.numeric(layers_number_split[[1]]),
-        context_aggregation_layers = aggregate_layers_type,
-        context_aggregation_tokens = context_aggregation_tokens_type
+        aggregation_from_layers_to_tokens = aggregate_layers_type,
+        aggregation_from_tokens_to_texts = aggregation_tokens_type,
+        aggregation_from_tokens_to_word_types = aggregation_word_type# NULL? # add aggregation_from_tokens_to_word_types and keep_token_embeddings = FALSE
       )
     }
     # If using a static/decontextualized language model
     if (!is.null(space) == TRUE) {
       explore_words_embeddings <- textEmbedStatic(data.frame(explore_words[i_add_w]),
         space = space,
-        aggregate = explore_words_aggregation
+        aggregation_from_tokens_to_texts = explore_words_aggregation
       )
     }
 
@@ -366,7 +371,7 @@ textOwnWordsProjection <- function(word_data = word_data,
 
     # Scaling embeddings before aggregation
     if (scaling == TRUE) {
-      singlewords_we_x <- dplyr::select(explore_words_embeddings$singlewords_we, dplyr::starts_with("Dim"))
+      singlewords_we_x <- dplyr::select(explore_words_embeddings$word_types, dplyr::starts_with("Dim"))
 
       # Applying scaling parameters to all the unique word's embeddings
       scale_center_weights <- word_data$background[[1]]$scale_centre.x %>%
@@ -377,7 +382,7 @@ textOwnWordsProjection <- function(word_data = word_data,
 
       singlewords_we_x_scaled <- tibble::as_tibble((singlewords_we_x - scale_center_weights) / scale_scale_weights)
 
-      singlewords_we_x_scaled_w_n <- bind_cols(explore_words_embeddings$singlewords_we[1:2], singlewords_we_x_scaled)
+      singlewords_we_x_scaled_w_n <- bind_cols(explore_words_embeddings$word_types[1:2], singlewords_we_x_scaled)
 
       #### Create token and aggregated word embeddings ####
       # Aggregate the words
@@ -390,13 +395,13 @@ textOwnWordsProjection <- function(word_data = word_data,
     } else {
       # Aggregate the words
       Aggregated_embedding_added_words <- tibble::as_tibble_row(textEmbeddingAggregation(dplyr::select(
-        explore_words_embeddings$singlewords_we,
+        explore_words_embeddings$word_types,
         dplyr::starts_with("Dim")
       ),
       aggregation = explore_words_aggregation
       ))
       Mean1 <- dplyr::bind_cols(words, n_words, Aggregated_embedding_added_words)
-      manual_words_mean1 <- bind_rows(explore_words_embeddings$singlewords_we, Mean1)
+      manual_words_mean1 <- bind_rows(explore_words_embeddings$word_types, Mean1)
     }
 
     #### Project embedding on the x axes ######
@@ -510,6 +515,7 @@ textOwnWordPrediction <- function(word_data = word_data,
   forloops_add_w <- length(explore_words)
   added_words_information <- list()
 
+
   for (i_add_w in 1:forloops_add_w) {
 
     # If using a contextualized language model
@@ -517,25 +523,39 @@ textOwnWordPrediction <- function(word_data = word_data,
 
       # Creating word embeddings for the words.
       model_text <- sub(".*model: ", "", text_plot_comment)
-      model_name <- sub(" layer.*", "", model_text)
+      model_name <- sub(" ; layer.*", "", model_text)
       layers_text <- sub(".*layers: ", "", text_plot_comment)
-      layers_number <- sub(" . textEmbedLayerAggregation.*", "", layers_text)
+      layers_number <- sub(" ; word_type_embeddings.*", "", layers_text)
       layers_number_split <- stringi::stri_split_boundaries(layers_number,
         type = "word",
         skip_word_none = TRUE,
         skip_word_number = FALSE
       )
 
+      #
+      aggregate_layers_text <- sub(".*aggregation_from_layers_to_tokens =  ", "", text_plot_comment)
+      aggregate_layers_type <- sub(" aggregation_from_tokens_to_texts.*", "", aggregate_layers_text)
+
+      aggregation_tokens_text <- sub(".*aggregation_from_tokens_to_texts =  ", "", text_plot_comment)
+      aggregation_tokens_type <- sub(" tokens_select.*", "", aggregation_tokens_text)
+
+      aggregation_word_text <- sub(".*aggregation_from_tokens_to_word_types =  ", "", text_plot_comment)
+      aggregation_word_type <- sub("  ; decontextualize.*", "", aggregation_word_text)
+
       explore_words_embeddings <- textEmbed(explore_words[i_add_w],
-        model = model_name,
-        layers = dput(as.numeric(layers_number_split[[1]]))
+                                            model = model_name,
+                                            layers = as.numeric(layers_number_split[[1]]),
+                                            aggregation_from_layers_to_tokens = aggregate_layers_type,
+                                            aggregation_from_tokens_to_texts = aggregation_tokens_type,
+                                            aggregation_from_tokens_to_word_types = aggregation_word_type# NULL? # add aggregation_from_tokens_to_word_types and keep_token_embeddings = FALSE
       )
+
     }
     # If using a static/decontextualized language model
     if (!is.null(space) == TRUE) {
       explore_words_embeddings <- textEmbedStatic(data.frame(explore_words[i_add_w]),
         space = space,
-        aggregate = explore_words_aggregation
+        aggregation_from_tokens_to_texts = explore_words_aggregation
       )
     }
 
@@ -547,13 +567,13 @@ textOwnWordPrediction <- function(word_data = word_data,
 
     # Aggregate the words
     Aggregated_embedding_added_words <- tibble::as_tibble_row(textEmbeddingAggregation(dplyr::select(
-      explore_words_embeddings$singlewords_we,
+      explore_words_embeddings$word_types,
       dplyr::starts_with("Dim")
     ),
     aggregation = explore_words_aggregation
     ))
     Mean1 <- dplyr::bind_cols(words, n_words, Aggregated_embedding_added_words)
-    manual_words_mean1 <- bind_rows(explore_words_embeddings$singlewords_we, Mean1)
+    manual_words_mean1 <- bind_rows(explore_words_embeddings$word_types, Mean1)
 
 
     prediction_x <- textPredict(word_data$model_x, manual_words_mean1)$.pred # , ...
@@ -624,6 +644,72 @@ adjust_for_plot_type <- function(word_data, y_axes) {
   return(word_data)
 }
 
+
+
+
+#word_data
+#k_n_words_to_test = FALSE
+#min_freq_words_test = 1
+#min_freq_words_plot = 1
+#plot_n_words_square = 3
+#plot_n_words_p = 5
+#plot_n_word_extreme = 5
+#plot_n_word_frequency = 5
+#plot_n_words_middle = 5
+#titles_color = "#61605e"
+## x_axes = TRUE
+#y_axes = FALSE
+#p_alpha = 0.05
+#p_adjust_method = "none"
+#title_top = "Supervised Dimension Projection"
+#x_axes_label = "Supervised Dimension Projection (SDP)"
+#y_axes_label = "Supervised Dimension Projection (SDP)"
+#scale_x_axes_lim = NULL
+#scale_y_axes_lim = NULL
+#word_font = NULL
+#bivariate_color_codes = c(
+#  "#398CF9", "#60A1F7", "#5dc688",
+#  "#e07f6a", "#EAEAEA", "#40DD52",
+#  "#FF0000", "#EA7467", "#85DB8E"
+#)
+#word_size_range = c(3, 8)
+#position_jitter_hight = .0
+#position_jitter_width = .03
+#point_size = 0.5
+#arrow_transparency = 0.1
+#points_without_words_size = 0.2
+#points_without_words_alpha = 0.2
+#legend_title = "SDP"
+#legend_x_axes_label = "x"
+#legend_y_axes_label = "y"
+#legend_x_position = 0.02
+#legend_y_position = 0.02
+#legend_h_size = 0.2
+#legend_w_size = 0.2
+#legend_title_size = 7
+#legend_number_size = 2
+#group_embeddings1 = FALSE
+#group_embeddings2 = FALSE
+#projection_embedding = FALSE
+#aggregated_point_size = 0.8
+#aggregated_shape = 8
+#aggregated_color_G1 = "black"
+#aggregated_color_G2 = "black"
+#projection_color = "blue"
+#seed = 1005
+#explore_words = NULL
+#explore_words_color = "#ad42f5"
+#explore_words_point = "ALL_1"
+#explore_words_aggregation = "mean"
+#remove_words = NULL
+#n_contrast_group_color = NULL
+#n_contrast_group_remove = FALSE
+#space = NULL
+#scaling = FALSE
+#
+#word_data = proj
+#explore_words = c("happy")
+#y_axes = TRUE
 
 #' Plot words from textProjection() or textWordPrediction().
 #' @param word_data Dataframe from textProjection
@@ -907,7 +993,7 @@ textPlot <- function(word_data,
       purrr::as_vector(word_data1_padjusted_y[, "p_values_y"]),
       method = p_adjust_method
     )
-    word_data1 <- left_join(word_data1, word_data1_padjusted_y[, c("words", "adjusted_p_values.y")], by = "words")
+    word_data1 <- dplyr::left_join(word_data1, word_data1_padjusted_y[, c("words", "adjusted_p_values.y")], by = "words")
   }
 
   # Select only min_freq_words_plot to plot (i.e., after correction of multiple comparison for sig. test)

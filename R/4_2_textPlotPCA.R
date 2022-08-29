@@ -3,7 +3,7 @@
 
 #' Compute 2 PCA dimensions of the word embeddings for individual words.
 #' @param words Word or text variable to be plotted.
-#' @param single_word_embeddings Word embeddings from textEmbed for individual words
+#' @param word_types_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., decontextualized embeddings).
 #' @param seed Set different seed.
 #' @return A dataframe with words, their frquency and two PCA dimensions from the word_embeddings
@@ -13,7 +13,7 @@
 #' # Data
 #' df_for_plotting2d <- textPCA(
 #'   words = Language_based_assessment_data_8$harmonywords,
-#'   single_word_embeddings = word_embeddings_4$singlewords_we
+#'   word_types_embeddings = word_embeddings_4$singlewords_we
 #' )
 #' df_for_plotting2d
 #' }
@@ -22,19 +22,19 @@
 #' @importFrom recipes recipe step_center step_scale step_naomit all_numeric prep bake
 #' @export
 textPCA <- function(words,
-                    single_word_embeddings = single_word_embeddings_df,
+                    word_types_embeddings = word_types_embeddings_df,
                     seed = 1010) {
   textPCA_comment <- paste(
     "words =", substitute(words),
-    "single_word_embeddings =", comment(single_word_embeddings)
+    "word_types_embeddings =", comment(word_types_embeddings)
   )
 
 
   set.seed(seed)
-  # PCA on single_word_embeddings
+  # PCA on word_types_embeddings
   # Select word embeddings to be included in plot
   uniques_words_all <- unique_freq_words(words)
-  uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, single_word_embeddings)
+  uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, word_types_embeddings)
   uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
   rec_pca <- recipes::recipe(~., data = uniques_words_all_wordembedding)
