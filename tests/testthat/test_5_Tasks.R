@@ -113,7 +113,18 @@ test_that("textQA test", {
   expect_equal(qa_examples$answer, "green")
 })
 
-Language_based_assessment_data_8[1, 1]
+
+
+test_that("textZeroShot test", {
+  skip_on_cran()
+
+  ZeroShot_example <- text::textZeroShot(sequences = c("I play football", "The forrest is wonderful"),
+                                         candidate_labels = c("sport", "nature", "research"),
+                                         model = "facebook/bart-large-mnli")
+
+  expect_equal(ZeroShot_example$scores_x_1[1], 0.9985854)
+})
+
 test_that("textTranslate test", {
   skip_on_cran()
 
