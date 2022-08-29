@@ -6,28 +6,31 @@
 \usage{
 textEmbedLayerAggregation(
   word_embeddings_layers,
-  layers = 11:12,
-  aggregate_layers = "concatenate",
-  aggregate_tokens = "mean",
+  layers = "all",
+  aggregation_from_layers_to_tokens = "concatenate",
+  aggregation_from_tokens_to_texts = "mean",
+  return_tokens = FALSE,
   tokens_select = NULL,
   tokens_deselect = NULL
 )
 }
 \arguments{
-\item{word_embeddings_layers}{Layers outputted from textEmbedLayersOutput.}
+\item{word_embeddings_layers}{Layers outputted from textEmbedRawLayers.}
 
 \item{layers}{The numbers of the layers to be aggregated
 (e.g., c(11:12) to aggregate the eleventh and twelfth).
 Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 Selecting 'all' thus removes layer 0.}
 
-\item{aggregate_layers}{Method to carry out the aggregation among the layers for each word/token,
+\item{aggregation_from_layers_to_tokens}{Method to carry out the aggregation among the layers for each word/token,
 including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
 or "concatenate", which links together each layer of the word embedding to one long row. Default is "concatenate"}
 
-\item{aggregate_tokens}{Method to carry out the aggregation among the word embeddings for the words/tokens,
+\item{aggregation_from_tokens_to_texts}{Method to carry out the aggregation among the word embeddings for the words/tokens,
 including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
 or "concatenate", which links together each layer of the word embedding to one long row.}
+
+\item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
 
 \item{tokens_select}{Option to only select embeddings linked to specific tokens
 such as "[CLS]" and "[SEP]" (default NULL).}
@@ -44,11 +47,11 @@ Select and aggregate layers of hidden states to form a word embeddings.
 }
 \examples{
 \donttest{
-# word_embeddings_layers <- textEmbedLayersOutput(Language_based_assessment_data_8$harmonywords[1],
+# word_embeddings_layers <- textEmbedRawLayers(Language_based_assessment_data_8$harmonywords[1],
 # layers = 11:12)
 # word_embeddings <- textEmbedLayerAggregation(word_embeddings_layers$context, layers = 11)
 }
 }
 \seealso{
-see \code{\link{textEmbedLayersOutput}} and \code{\link{textEmbed}}
+see \code{\link{textEmbedRawLayers}} and \code{\link{textEmbed}}
 }

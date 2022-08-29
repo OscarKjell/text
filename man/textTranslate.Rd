@@ -52,7 +52,7 @@ dictionary contain the key "answer", is sentiments from textClassify containing 
 \item{set_seed}{(Integer) Set seed.}
 }
 \value{
-A tibble with.
+A tibble with transalted text.
 }
 \description{
 Translation. (experimental)
@@ -68,5 +68,5 @@ Translation. (experimental)
 }
 \seealso{
 see \code{\link{textClassify}}, \code{\link{textGeneration}}, \code{\link{textNER}},
- \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
+ \code{\link{textSum}}, and \code{\link{textQA}}
 }

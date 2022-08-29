@@ -10,5 +10,5 @@ test_that("installing text", {
 
   text_test <- textEmbed("hello")
 
-  expect_that(ncol(text_test[[1]]), equals(1536))
+  expect_that(text_test$tokens$texts[[1]]$Dim1[[1]], equals(-0.95544952))
 })

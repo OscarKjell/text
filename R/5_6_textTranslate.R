@@ -20,7 +20,7 @@
 #' @param return_text (boolean)  Whether or not to also output the decoded texts.
 #' @param clean_up_tokenization_spaces (boolean)  Whether or not to clean the output from potential extra spaces.
 #' @param set_seed (Integer) Set seed.
-#' @return A tibble with.
+#' @return A tibble with transalted text.
 #' @examples
 #' \donttest{
 #' # translation_example <- text::textTranslate(
@@ -30,7 +30,7 @@
 #' #  model = "t5-base")
 #' }
 #' @seealso see \code{\link{textClassify}}, \code{\link{textGeneration}}, \code{\link{textNER}},
-#'  \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
+#'  \code{\link{textSum}}, and \code{\link{textQA}}
 #' @importFrom reticulate source_python
 #' @importFrom tibble as_tibble_col
 #' @export

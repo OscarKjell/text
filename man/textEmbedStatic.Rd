@@ -9,8 +9,9 @@ textEmbedStatic(
   df,
   space,
   tk_df = "null",
-  aggregate = "mean",
-  dim_name = FALSE
+  aggregation_from_tokens_to_texts = "mean",
+  dim_name = FALSE,
+  tolower = FALSE
 )
 }
 \arguments{
@@ -23,11 +24,13 @@ which is not included in the current text package).}
 \item{tk_df}{default "null"; option to use either the "tk" of "df" space (if using textSpace, which has
 not been implemented yet).}
 
-\item{aggregate}{method to aggregate semantic representation when their are more than a single word.
+\item{aggregation_from_tokens_to_texts}{method to aggregate semantic representation when their are more than a single word.
 (default is "mean"; see also "min" and "max", "concatenate" and "normalize")}
 
 \item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
 (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)}
+
+\item{tolower}{(boolean) Lower case input.}
 }
 \value{
 A list with tibbles for each character variable. Each tibble comprises a column with the text, followed by

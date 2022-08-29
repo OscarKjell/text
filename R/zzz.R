@@ -28,8 +28,11 @@
     ),
     colourise("Text is new and still rapidly improving.
                \nNewer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art.
-               \nPlease send us feedback based on your experience.",
+               Please send us feedback based on your experience.",
       fg = "green", bg = NULL
+    ),
+    colourise("\n\nPlease note that defaults has changed in the textEmbed-functions since last version; see help(textEmbed) or www.r-text.org for more details.",
+              fg = "purple", bg = NULL
     )
   )
 

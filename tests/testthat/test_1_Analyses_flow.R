@@ -15,21 +15,25 @@ test_that("Testing textEmbed as well as train", {
   descr2 <- textDescriptives(Language_based_assessment_data_8[1:2])
   expect_that(descr2[[2]][[1]], is_a("integer"))
 
+
   harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",
     dim_name = TRUE,
     layers = c(11:12),
-    context_layers = c(11:12),
-    decontext_layers = c(11:12)
+    aggregation_from_layers_to_tokens = "concatenate",
+    aggregation_from_tokens_to_texts = "mean",
+    aggregation_from_tokens_to_word_types = "mean",
+    #context_layers = c(11:12),
+    #decontext_layers = c(11:12)
   )
 
-  expect_equal(harmony_word_embeddings$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
-  expect_equal(harmony_word_embeddings$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
-  expect_equal(harmony_word_embeddings$singlewords_we[[3]][[1]], 0.2229673, tolerance = 0.00001)
+  expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
+  expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
+  expect_equal(harmony_word_embeddings$word_types[[3]][[1]], 0.2229673, tolerance = 0.00001)
 
 
   text_train_results1 <- textTrainRegression(
-    x = harmony_word_embeddings["satisfactiontexts"],
+    x = harmony_word_embeddings$texts["satisfactiontexts"],
     y = Language_based_assessment_data_8["hilstotal"][1:20, ],
     cv_method = "cv_folds",
     outside_folds = 2,
@@ -48,7 +52,7 @@ test_that("Testing textEmbed as well as train", {
 
   # Train with x_variable
   train_x_append <- text::textTrainRegression(
-    x = harmony_word_embeddings["satisfactiontexts"],
+    x = harmony_word_embeddings$texts["satisfactiontexts"],
     x_append = Language_based_assessment_data_8[1:20, 6:7],
     y = Language_based_assessment_data_8["hilstotal"][1:20, ],
     cv_method = "cv_folds",
@@ -65,7 +69,7 @@ test_that("Testing textEmbed as well as train", {
   # Predict
   hils_predicted_scores1 <- text::textPredict(
     model_info = text_train_results1,
-    word_embeddings = harmony_word_embeddings$satisfactiontexts,
+    word_embeddings = harmony_word_embeddings$texts$satisfactiontexts,
     dim_names = FALSE
   )
 
@@ -75,7 +79,7 @@ test_that("Testing textEmbed as well as train", {
   # Same as above with different input
   hils_predicted_scores1b <- textPredict(
     model_info = text_train_results1,
-    word_embeddings = harmony_word_embeddings,
+    word_embeddings = harmony_word_embeddings$texts,
     dim_names = TRUE
   )
   expect_that(hils_predicted_scores1b[[1]], is_a("numeric"))
@@ -84,7 +88,7 @@ test_that("Testing textEmbed as well as train", {
   # Including x_append
   hils_predicted_scores1 <- textPredict(
     model_info = train_x_append,
-    word_embeddings = harmony_word_embeddings,
+    word_embeddings = harmony_word_embeddings$texts,
    # x_append = Language_based_assessment_data_8[1:20, ], # sending all give same as below: 12.40038
    # x_append = Language_based_assessment_data_8[1:20, 6:7], # sending only swlstotal and age: 12.40038
    x_append = Language_based_assessment_data_8[1:20, c(7,6) ], # sending in the "wrong" order give same as above: 12.40038
@@ -98,7 +102,7 @@ test_that("Testing textEmbed as well as train", {
   models_1_2 <- list(text_train_results1, train_x_append)
   all_predictions <- textPredictAll(
     models = models_1_2,
-    word_embeddings = harmony_word_embeddings,
+    word_embeddings = harmony_word_embeddings$texts,
     x_append = Language_based_assessment_data_8[1:20, 5:8]
   )
 
@@ -108,8 +112,8 @@ test_that("Testing textEmbed as well as train", {
 
   proj <- textProjection(
     words = Language_based_assessment_data_8[1],
-    word_embeddings = harmony_word_embeddings$satisfactiontexts,
-    single_word_embeddings = harmony_word_embeddings$singlewords_we,
+    word_embeddings = harmony_word_embeddings$texts$satisfactiontexts,
+    word_types_embeddings = harmony_word_embeddings$word_type,
     x = Language_based_assessment_data_8$hilstotal,
     y = Language_based_assessment_data_8$swlstotal,
     pca = NULL,
@@ -130,7 +134,7 @@ test_that("Testing textEmbed as well as train", {
   # help(textProjectionPlot)
   #textProjectionPlot(proj)
 
-  plot_proj <- textProjectionPlot(proj,
+  plot_proj <- textProjectionPlot(word_data = proj,
     explore_words = c("happy"),
     y_axes = TRUE
   )
@@ -154,7 +158,7 @@ test_that("Testing textEmbed as well as train", {
 
 
   text_train_results <- textTrain(
-    x = harmony_word_embeddings$satisfactiontexts,
+    x = harmony_word_embeddings$texts$satisfactiontexts,
     y = Language_based_assessment_data_8$hilstotal[1:20],
     cv_method = "cv_folds",
     outside_folds = 2,
@@ -175,7 +179,7 @@ test_that("Testing textEmbed as well as train", {
   # Predict
   hils_predicted_scores1 <- textPredict(
     model_info = text_train_results,
-    word_embeddings = harmony_word_embeddings
+    word_embeddings = harmony_word_embeddings$texts
   )
 
   expect_that(hils_predicted_scores1[[1]][1], is_a("numeric"))
