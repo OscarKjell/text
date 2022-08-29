@@ -15,8 +15,9 @@ utils::globalVariables(c(
   # PYTHON FUNCTIONS
   "hgTransformerGetEmbedding", "hgTransformerGetSentiment", "hgTransformerGetTextGeneration",
   "hgTransformerGetNER", "hgTransformerGetSummarization", "hgTransformerGetQA",
-  "hgTransformerGetTranslation",
+  "hgTransformerGetTranslation", "hgTokenizerGetTokens", "hgTransformerGetZeroShot",
   "textModelsPy", "textModelsRMPy",
+
 
   # EMBEDDINGS OBJECTS
   "layer_index", "token_index",
@@ -34,6 +35,7 @@ utils::globalVariables(c(
 
   # Language Tasks
   "NamesNer",
+  "no", "scores", #in textZeropShot
 
   # PLOTTING OBJECTS
   "n", "n1", "n1_e", "dot2", "adjusted_p_values.x", "dot.x", "plot_n_word_extreme",
@@ -46,7 +48,7 @@ utils::globalVariables(c(
   "check_middle_y", "extremes_all_x", "extremes_all_y",
   "central_cosine",
   "SS", "p_values.x", "p_values.y", "words", "n.x", "n.y",
-  "single_word_embeddings_df", "Ndim",
+  "word_types_embeddings_df", "Ndim",
   "semanticrepresentation", "single_word_embeddings2",
   "guide_legend", "Dim1",
   "Dim_PC1", "Dim_PC2", "check_extreme_frequency", "check_extreme_max_PC1",

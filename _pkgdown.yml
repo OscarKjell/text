@@ -44,7 +44,7 @@ reference:
   contents:
   - textEmbed
   - textDimName
-  - textEmbedLayersOutput
+  - textEmbedRawLayers
   - textEmbedLayerAggregation
   - textEmbedStatic
 - title: Language Analysis Tasks
@@ -55,6 +55,7 @@ reference:
   - textSum
   - textQA
   - textTranslate
+  - textZeroShot
 - title: Train word embeddings
   contents:
     - textTrain
@@ -90,6 +91,7 @@ reference:
 - title: Miscellaneous
   contents:
     - textDescriptives
+    - textTokenize
 - title: Example Data
   contents:
     - Language_based_assessment_data_8

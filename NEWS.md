@@ -1,6 +1,31 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.99
+
+## DEFAULT CHANGES
+- The default setting of textEmbed() is not providing token-level embeddings and text-level embeddings. Word_type embeddings are optional. 
+- In `textEmbed()` `layers = 11:12` is now `layers = 11`.
+- In `textEmbedLayerAggregation()`  `layers = 11:12` is now `layers = "all"`.
+- In `textEmbed()` and `textEmbedRawLayers()` `x` is now called `texts`.
+- `textEmbedLayerAggregation()` now uses `layers = "all"`, `aggregation_from_layers_to_tokens`, `aggregation_from_tokens_to_texts`. 
+
+
+## New Function
+- `textZeroShot()` is implemented.
+
+## New Setting
+`max_token_to_sentence` in `textEmbed()`
+
+## Setting name changes
+- `aggregate_layers` is now called `aggregation_from_layers_to_tokens`.
+- `aggregate_tokens` is now called `aggregation_from_tokens_to_texts`.
+`single_word_embeddings` is now called `word_types_embeddings`
+
+## Function name changes
+- `textEmbedLayersOutput()` is now called `textEmbedRawLayers()`
+
+
 # text 0.9.98
  - adding `textDimName()`
  - DEFAULT CHANGE in `textEmbed()`: `dim_name` = `TRUE`
