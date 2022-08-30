@@ -7,7 +7,7 @@
 textProjection(
   words,
   word_embeddings,
-  word_types_embeddings = word_types_embeddings_df,
+  word_types_embeddings,
   x,
   y = NULL,
   pca = NULL,
@@ -80,8 +80,8 @@ Compute Supervised Dimension Projection and related variables for plotting words
 \dontrun{
 df_for_plotting <- textProjection(
   words = Language_based_assessment_data_8$harmonywords,
-  word_embeddings = word_embeddings_4$harmonywords,
-  word_types_embeddings = word_embeddings_4$singlewords_we,
+  word_embeddings = word_embeddings_4$texts$harmonywords,
+  word_types_embeddings = word_embeddings_4$word_types,
   x = Language_based_assessment_data_8$hilstotal,
   split = "mean",
   Npermutations = 10,

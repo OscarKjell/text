@@ -24,8 +24,8 @@ Compute the semantic similarity between two text variables.
 \examples{
 library(dplyr)
 similarity_scores <- textSimilarity(
-  word_embeddings_4$harmonytext,
-  word_embeddings_4$satisfactiontext
+  x = word_embeddings_4$texts$harmonytext,
+  y = word_embeddings_4$texts$satisfactiontext
 )
 comment(similarity_scores)
 }

@@ -53,11 +53,6 @@ semanticrepresentation <- function(x,
   }
 }
 
-#x = text_tokens[[1]][[1]][[2]]
-#x = "adsfdg"
-#x = text_tokens[[1]][[1]][[1]]
-#single_word_embeddings1 = decontext_space
-#decontext_space$words
 
 #' applysemrep
 #' Function to apply the semantic representation (or word embeddings)  to ONE word from
@@ -124,8 +119,6 @@ applysemrep_over_words <- function(word_col,
 
   return(output_vectors_sw3)
 }
-
-
 
 
 #' Applies word embeddings from a given decontextualized static space (such as
@@ -204,7 +197,7 @@ textEmbedStatic <- function(df,
   }
 
   # Add single word embeddings used for plotting
-  singlewords <- getUniqueWordsAndFreq(df_characters, hg_tokenizer = FALSE)
+  singlewords <- getUniqueWordsAndFreq(df_characters, hg_tokenizer = NULL)
   output_vectors_sw3 <- applysemrep_over_words(word_col = list(singlewords),
                                                space =  single_word_embeddings1,
                                                tolower = tolower)

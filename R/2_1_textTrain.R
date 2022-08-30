@@ -17,11 +17,9 @@
 #'  tibble of predicted values.
 #' @examples
 #' \dontrun{
-#' word_embeddings <- word_embeddings_4
-#' ratings_data <- Language_based_assessment_data_8
 #' results <- textTrain(
-#'   x = word_embeddings$harmonytext,
-#'   y = ratings_data$hilstotal
+#'   x = word_embeddings_4$texts$harmonytext,
+#'   y = Language_based_assessment_data_8$hilstotal
 #' )
 #' }
 #' @seealso \code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
@@ -244,7 +242,7 @@ sort_classification_output_list <- function(output, save_output, descriptions, t
 #' @return Correlations between predicted and observed values.
 #' @examples
 #' \dontrun{
-#' word_embeddings <- word_embeddings_4[1:2]
+#' word_embeddings <- word_embeddings_4$texts[1:2]
 #' ratings_data <- Language_based_assessment_data_8[5:6]
 #' results <- textTrainLists(
 #'   x = word_embeddings,

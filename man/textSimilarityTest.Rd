@@ -46,8 +46,8 @@ Test whether there is a significant difference in meaning between two sets of te
 (i.e., between their word embeddings).
 }
 \examples{
-x <- word_embeddings_4$harmonywords
-y <- word_embeddings_4$satisfactionwords
+x <- word_embeddings_4$texts$harmonywords
+y <- word_embeddings_4$texts$satisfactionwords
 textSimilarityTest(x,
   y,
   method = "paired",

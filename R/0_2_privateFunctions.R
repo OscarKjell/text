@@ -1,5 +1,34 @@
 
 
+
+#unique_freq_words(Language_based_assessment_data_8[1,1])
+#getUniqueWordsAndFreq(Language_based_assessment_data_8[1,1], hg_tokenizer = F)
+
+#' Takes all words as input and arrange them in column with an accompanying column with frequency.
+#' @param words Words
+#' @return Column with all words and an accompanying column with their frequency.
+#' @importFrom tibble as_tibble
+#' @noRd
+unique_freq_words <- function(words) {
+  # Make all words lower case
+  words <- tolower(words)
+
+  # separate words/tokens combined with /
+  words <- gsub("/", " ", words)
+
+  # Tokenize with nltk
+  nltk <- reticulate::import("nltk")
+  tokenizerNLTK <- nltk$tokenize$word_tokenize
+  words_group <- unlist(lapply(words, tokenizerNLTK))
+
+  words_groupb <- tibble::as_tibble(words_group)
+  sort(words_groupb$value)
+  words_groupb <- table(words_groupb)
+  words_groupb_freq <- tibble::as_tibble(words_groupb, .name_repair = make.names)
+  colnames(words_groupb_freq) <- c("words", "n")
+  words_groupb_freq
+}
+
 #' Make x and y into same length for when we will randomly draw K-folds from them
 #' Function to add rows of NA until y and x have the same number of rows.
 #' @param x a variable
@@ -228,3 +257,30 @@ cohens_d <- function(x, y) {
   # Cohen's d
   cd
 }
+
+
+#' Extract part of a comment
+#'
+#' @param comment (string) The comment
+#' @param part (string) The part to be extracted.
+#' @return string
+#' @noRd
+extract_comment <- function(comment, part){
+
+  if(part == "model"){
+    model_text <- sub(".*textEmbedRawLayers: model: ", "", comment)
+    output <- sub(" ; layers.*", "", model_text)
+  }
+
+  #aggregate_layers_text <- sub(".*aggregation_from_layers_to_tokens =  ", "", text_plot_comment)
+  #aggregate_layers_type <- sub(" aggregation_from_tokens_to_texts.*", "", aggregate_layers_text)
+  #
+  #aggregation_tokens_text <- sub(".*aggregation_from_tokens_to_texts =  ", "", text_plot_comment)
+  #aggregation_tokens_type <- sub(" tokens_select.*", "", aggregation_tokens_text)
+  #
+  #aggregation_word_text <- sub(".*aggregation_from_tokens_to_word_types =  ", "", text_plot_comment)
+  #aggregation_word_type <- sub("  ; decontextualize.*", "", aggregation_word_text)
+
+  return(output)
+}
+

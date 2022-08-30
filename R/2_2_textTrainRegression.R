@@ -21,9 +21,17 @@ statisticalMode <- function(x) {
 #' from same word embedding together in separate pca:s
 #' @return  RMSE.
 #' @noRd
-fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", penalty = 1, mixture = 0,
-                           preprocess_PCA = NA, variable_name_index_pca = NA, first_n_predictors = NA,
-                           preprocess_step_center = TRUE, preprocess_step_scale = TRUE, impute_missing = FALSE) {
+fit_model_rmse <- function(object,
+                           model = "regression",
+                           eval_measure = "rmse",
+                           penalty = 1,
+                           mixture = 0,
+                           preprocess_PCA = NA,
+                           variable_name_index_pca = NA,
+                           first_n_predictors = NA,
+                           preprocess_step_center = TRUE,
+                           preprocess_step_scale = TRUE,
+                           impute_missing = FALSE) {
   data_train <- rsample::analysis(object)
   data_train <- tibble::as_tibble(data_train)
 
@@ -36,8 +44,12 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     variable_names <- "id_nr"
   }
 
+  # Get number of embeddings provided
+  n_embeddings <- as.numeric(comment(eval_measure))
+
+
   # Recipe for one embedding input summary(xy_recipe) help(all_of) library(tidyverse) help(step_naomit)
-  if (colnames(data_train[1]) == "Dim1") {
+  if (n_embeddings == 1) {
     xy_recipe <- data_train %>%
       recipes::recipe(y ~ .) %>%
       recipes::update_role(dplyr::all_of(variable_names), new_role = "Not_predictors") %>%
@@ -477,6 +489,62 @@ summarize_tune_results <- function(object,
 }
 
 
+#x
+#y
+#x_append = NULL
+#cv_method = "validation_split"
+#outside_folds = 10
+#outside_strata_y = "y"
+#outside_breaks = 4
+#inside_folds = 3 / 4
+#inside_strata_y = "y"
+#inside_breaks = 4
+#model = "regression"
+#eval_measure = "default"
+#preprocess_step_center = TRUE
+#preprocess_step_scale = TRUE
+#preprocess_PCA = NA
+#penalty = 10^seq(-16, 16)
+#mixture = c(0)
+#first_n_predictors = NA
+#impute_missing = FALSE
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#seed = 2020
+#
+#x = word_embeddings_4$texts["harmonywords"]
+#y = Language_based_assessment_data_8[6]
+#cv_method = "cv_folds"
+#outside_folds = 2
+#inside_folds = 2
+#outside_strata_y = NULL
+#inside_strata_y = NULL
+#model = "regression"
+#eval_measure = "rmse"
+#penalty = c(1)
+#mixture = c(0)
+#preprocess_PCA = 1
+#multi_cores = FALSE
+## force_train_method = "automatic"
+#save_output = "only_results"
+#
+#x = word_embeddings_4$texts["harmonywords"]
+#y = as.factor(Language_based_assessment_data_8$gender)
+#cv_method = "validation_split"
+#outside_folds = 2
+#inside_folds = 3 / 4
+#outside_strata_y = NULL
+#inside_strata_y = NULL
+#model = "logistic"
+#eval_measure = "bal_accuracy"
+#penalty = c(1)
+#mixture = c(0)
+#preprocess_PCA = "min_halving"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "only_results"
+
 #' Train word embeddings to a numeric variable.
 #'
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
@@ -538,7 +606,7 @@ summarize_tune_results <- function(object,
 #' @examples
 #' \donttest{
 #' results <- textTrainRegression(
-#'   x = word_embeddings_4$harmonytext,
+#'   x = word_embeddings_4$texts$harmonytext,
 #'   y = Language_based_assessment_data_8$hilstotal,
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
@@ -591,6 +659,14 @@ textTrainRegression <- function(x,
     eval_measure <- "bal_accuracy"
   }
 
+  # The fit_model_rmse function need to number of word embeddings -- instead of
+  # sending a separate parameter number of embeddings are give as a comment in "model"
+  if(tibble::is_tibble(x)){
+    comment(eval_measure) <- "1"
+  }else {
+    comment(eval_measure) <- paste(length(x))
+  }
+
   # Sorting out y
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
@@ -615,7 +691,7 @@ textTrainRegression <- function(x,
   xy$id_nr <- c(seq_len(nrow(xy)))
 
   # complete.cases is not neccassary
-  # Cross-Validation help(nested_cv) help(vfold_cv) help(validation_split) inside_folds = 3/4
+  # Cross-Validation help(nested_cv) help(vfold_cv) help(validation_split) inside_folds = 3/4; results_nested_resampling[[1]][[1]][[1]]
   if (cv_method == "cv_folds") {
     results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
       outside = rsample::vfold_cv(
@@ -714,7 +790,7 @@ textTrainRegression <- function(x,
     dplyr::bind_cols(results_nested_resampling, hyper_parameter_vals)
 
 
-  # Compute the outer resampling results for each of the
+  # Compute the outer re-sampling results for each of the comment(model)
   # splits using the corresponding tuning parameter value from results_split_parameter.
   results_outer <- purrr::pmap(
     list(
@@ -725,7 +801,7 @@ textTrainRegression <- function(x,
       first_n_predictors = results_split_parameter$first_n_predictors,
       variable_name_index_pca = list(variable_name_index_pca),
       model = model,
-      eval_measure = eval_measure,
+      eval_measure = list(eval_measure),
       preprocess_step_center = preprocess_step_center,
       preprocess_step_scale = preprocess_step_scale,
       impute_missing = impute_missing
@@ -768,7 +844,8 @@ textTrainRegression <- function(x,
   xy_all <- xy
 
   ######### One word embedding as input
-  if (colnames(xy_all[1]) == "Dim1") {
+  n_embbeddings <-as.numeric(comment(eval_measure))
+  if (n_embbeddings == 1) {
 
     # If testing N first predictors help(step_scale) first_n_predictors = 3
     if (!is.na(first_n_predictors)) {
@@ -877,7 +954,8 @@ textTrainRegression <- function(x,
     )))
   }
 
-  preprocessing_recipe_save <- recipe_save_small_size(final_recipe = final_recipe, xy_all = xy_all)
+  preprocessing_recipe_save <- recipe_save_small_size(final_recipe = final_recipe,
+                                                      xy_all = xy_all)
 
   # Check number of predictors (to later decide standard or multiple regression)
   # To load the prepared training data into a variable juice() is used.
@@ -1134,3 +1212,4 @@ textTrainRegression <- function(x,
 
   final_results
 }
+

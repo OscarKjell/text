@@ -1,32 +1,6 @@
 
 #### Supervised Dimension Projection #####
 
-#' Takes all words as input and arrange them in column with an accompanying column with frequency.
-#' @param words Words
-#' @return Column with all words and an accompanying column with their frequency.
-#' @importFrom tibble as_tibble
-#' @noRd
-unique_freq_words <- function(words) {
-  # Make all words lower case
-  words <- tolower(words)
-
-  # separate words/tokens ombined with /
-  words <- gsub("/", " ", words)
-
-  # Tokenize with nltk
-  nltk <- reticulate::import("nltk")
-  tokenizerNLTK <- nltk$tokenize$word_tokenize
-  words_group <- unlist(lapply(words, tokenizerNLTK))
-
-  words_groupb <- tibble::as_tibble(words_group)
-  sort(words_groupb$value)
-  words_groupb <- table(words_groupb)
-  words_groupb_freq <- tibble::as_tibble(words_groupb, .name_repair = make.names)
-  colnames(words_groupb_freq) <- c("words", "n")
-  words_groupb_freq
-}
-
-
 #' Creates the plot object (except for the legend).
 #' @return A plot object.
 #' @noRd
@@ -644,72 +618,6 @@ adjust_for_plot_type <- function(word_data, y_axes) {
   return(word_data)
 }
 
-
-
-
-#word_data
-#k_n_words_to_test = FALSE
-#min_freq_words_test = 1
-#min_freq_words_plot = 1
-#plot_n_words_square = 3
-#plot_n_words_p = 5
-#plot_n_word_extreme = 5
-#plot_n_word_frequency = 5
-#plot_n_words_middle = 5
-#titles_color = "#61605e"
-## x_axes = TRUE
-#y_axes = FALSE
-#p_alpha = 0.05
-#p_adjust_method = "none"
-#title_top = "Supervised Dimension Projection"
-#x_axes_label = "Supervised Dimension Projection (SDP)"
-#y_axes_label = "Supervised Dimension Projection (SDP)"
-#scale_x_axes_lim = NULL
-#scale_y_axes_lim = NULL
-#word_font = NULL
-#bivariate_color_codes = c(
-#  "#398CF9", "#60A1F7", "#5dc688",
-#  "#e07f6a", "#EAEAEA", "#40DD52",
-#  "#FF0000", "#EA7467", "#85DB8E"
-#)
-#word_size_range = c(3, 8)
-#position_jitter_hight = .0
-#position_jitter_width = .03
-#point_size = 0.5
-#arrow_transparency = 0.1
-#points_without_words_size = 0.2
-#points_without_words_alpha = 0.2
-#legend_title = "SDP"
-#legend_x_axes_label = "x"
-#legend_y_axes_label = "y"
-#legend_x_position = 0.02
-#legend_y_position = 0.02
-#legend_h_size = 0.2
-#legend_w_size = 0.2
-#legend_title_size = 7
-#legend_number_size = 2
-#group_embeddings1 = FALSE
-#group_embeddings2 = FALSE
-#projection_embedding = FALSE
-#aggregated_point_size = 0.8
-#aggregated_shape = 8
-#aggregated_color_G1 = "black"
-#aggregated_color_G2 = "black"
-#projection_color = "blue"
-#seed = 1005
-#explore_words = NULL
-#explore_words_color = "#ad42f5"
-#explore_words_point = "ALL_1"
-#explore_words_aggregation = "mean"
-#remove_words = NULL
-#n_contrast_group_color = NULL
-#n_contrast_group_remove = FALSE
-#space = NULL
-#scaling = FALSE
-#
-#word_data = proj
-#explore_words = c("happy")
-#y_axes = TRUE
 
 #' Plot words from textProjection() or textWordPrediction().
 #' @param word_data Dataframe from textProjection

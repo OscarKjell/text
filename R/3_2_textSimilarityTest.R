@@ -1,5 +1,17 @@
 
 
+#x <- word_embeddings_4$texts$harmonywords
+#y <- word_embeddings_4$texts$satisfactionwords
+#similarity_method = "cosine"
+#Npermutations = 100
+#method = "paired"
+#alternative = "two_sided"
+#output.permutations = TRUE
+#N_cluster_nodes = 1
+#seed = 1001
+#
+
+
 #' Test whether there is a significant difference in meaning between two sets of texts
 #' (i.e., between their word embeddings).
 #' @param x Set of word embeddings from textEmbed.
@@ -15,8 +27,8 @@
 #' @param seed Set different seed.
 #' @return A list with a p-value, similarity score estimate and permuted values if output.permutations=TRUE.
 #' @examples
-#' x <- word_embeddings_4$harmonywords
-#' y <- word_embeddings_4$satisfactionwords
+#' x <- word_embeddings_4$texts$harmonywords
+#' y <- word_embeddings_4$texts$satisfactionwords
 #' textSimilarityTest(x,
 #'   y,
 #'   method = "paired",
@@ -38,6 +50,9 @@ textSimilarityTest <- function(x,
                                seed = 1001) {
   T1_textSimilarityTest <- Sys.time()
 
+  x1 <- textDimName(x, dim_names = FALSE)
+  y1 <- textDimName(y, dim_names = FALSE)
+
   set.seed(seed)
   if (method == "paired" & (nrow(x) != nrow(y))) {
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
@@ -47,9 +62,9 @@ textSimilarityTest <- function(x,
   results <- tibble::tibble("title1" = NA, "title2" = NA)
   colnames(results) <- c(results_title, "p.value")
 
-  # Select variables beginning with V
-  x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
-  y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
+  # Select variables beginning with Dim
+  x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
+  y1 <- dplyr::select(y1, dplyr::starts_with("Dim"))
 
   if (method == "paired") {
     # Compute similarity between all pairs

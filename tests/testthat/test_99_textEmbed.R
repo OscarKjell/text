@@ -22,8 +22,8 @@ skip_if_no_torch <- function() {
 test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
   skip_on_cran()
 
-  aggregated_embeddings1 <- textEmbedLayerAggregation(word_embeddings_layers = embeddings_from_huggingface2$context,
-    layers = 0:1,
+  aggregated_embeddings1 <- textEmbedLayerAggregation(word_embeddings_layers = raw_embeddings_1$context_tokens,
+    layers = 11:12,
     aggregation_from_layers_to_tokens = "mean",
     aggregation_from_tokens_to_texts = "normalize",
     return_tokens = FALSE # If this is true there is an error!
@@ -31,21 +31,21 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
 
   expect_is(aggregated_embeddings1$harmonywords[[1]][1], "numeric")
   expect_true(tibble::is_tibble(aggregated_embeddings1$harmonywords))
-  expect_equal(aggregated_embeddings1$harmonywords[1][[1]][1], 0.007959422, tolerance = 0.0001)
+  expect_equal(aggregated_embeddings1$harmonywords[1][[1]][1], 0.261539, tolerance = 0.0001)
   length_dims_mean <- length(aggregated_embeddings1[[1]])
 
-  aggregated_embeddings_con <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
-    layers = 0:1,
+  aggregated_embeddings_con <- textEmbedLayerAggregation(raw_embeddings_1$context_tokens,
+    layers = 11:12,
     aggregation_from_layers_to_tokens = "concatenate",
     aggregation_from_tokens_to_texts = "mean",
     return_tokens = FALSE #
   )
   length_dims_con <- length(aggregated_embeddings_con[[1]])
   expect_true(2 * length_dims_mean == length_dims_con)
-  expect_equal(aggregated_embeddings_con$harmonywords[1][[1]][1], -0.07345252, tolerance = 0.0001)
+  expect_equal(aggregated_embeddings_con$harmonywords[1][[1]][1], 0.05013836, tolerance = 0.0001)
 
   # Expect error
-  expect_error(aggregated_embeddings <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
+  expect_error(aggregated_embeddings <- textEmbedLayerAggregation(raw_embeddings_1$context_tokens,
     layers = 0:3,
     aggregation_from_layers_to_tokens = "mean",
     aggregation_from_tokens_to_texts = "mean"
@@ -55,8 +55,8 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
 test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces aggregated word embeddings", {
   skip_on_cran()
 
-  aggregated_embeddings2 <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
-    layers = 1:2,
+  aggregated_embeddings2 <- textEmbedLayerAggregation(raw_embeddings_1$context_tokens,
+    layers = 11:12,
     aggregation_from_layers_to_tokens = "concatenate",
     aggregation_from_tokens_to_texts = "min",
     tokens_select = "[CLS]",
@@ -65,14 +65,14 @@ test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces 
 
   expect_is(aggregated_embeddings2$harmonywords[[1]][1], "numeric")
   expect_true(tibble::is_tibble(aggregated_embeddings2$harmonywords))
-  expect_equal(aggregated_embeddings2$harmonywords[1][[1]][1], 0.1291003, tolerance = 0.0001)
+  expect_equal(aggregated_embeddings2$harmonywords[1][[1]][1], -0.4454989, tolerance = 0.0001)
 })
 
 test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
   skip_on_cran()
 
   # skip_on_cran() library(purrr)
-  aggregated_embeddings3 <- textEmbedLayerAggregation(embeddings_from_huggingface2$context,
+  aggregated_embeddings3 <- textEmbedLayerAggregation(raw_embeddings_1$context_tokens,
     layers = "all",
     aggregation_from_tokens_to_texts = "max",
     tokens_deselect = c("[CLS]"),
@@ -81,7 +81,7 @@ test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produce
 
   expect_is(aggregated_embeddings3$harmonywords[[1]][1], "numeric")
   expect_true(tibble::is_tibble(aggregated_embeddings3$harmonywords))
-  expect_equal(aggregated_embeddings3$harmonywords[1][[1]][1], 2.129543, tolerance = 0.0001)
+  expect_equal(aggregated_embeddings3$harmonywords[1][[1]][1], 1.916735, tolerance = 0.0001)
 })
 
 test_that("textEmbedStatic with example space", {
@@ -122,7 +122,6 @@ test_that("textEmbedRawLayers contexts=TRUE, decontextualize = FALSE returns a l
 
   embeddings1 <- text::textEmbedRawLayers(x,
     model = "bert-base-uncased",
-    #contexts = TRUE,
     decontextualize = FALSE,
     return_tokens = TRUE,
     layers = "all"
@@ -147,7 +146,6 @@ test_that("textEmbedRawLayers bert-base-uncased contexts=FALSE, decontexts = TRU
   embeddings2 <- text::textEmbedRawLayers(x,
     model = "bert-base-uncased",
     word_type_embeddings = TRUE,
-    #contexts = FALSE,
     decontextualize = TRUE,
     layers = "all"
   )
@@ -216,16 +214,14 @@ test_that("textEmbed", {
 })
 
 
-
-
 test_that("textDimName", {
   skip_on_cran()
 
-  w_e_T <- textDimName(word_embeddings_4)
-  expect_equal(colnames(w_e_T$harmonywords)[1], "Dim1_harmonywords")
+  w_e_T <- textDimName(word_embeddings_4$texts, dim_names = FALSE)
+  expect_equal(colnames(w_e_T$harmonywords)[1], "Dim1")
 
-  w_e_F <- textDimName(w_e_T, dim_names = FALSE)
-  expect_equal(colnames(w_e_F$harmonywords)[1], "Dim1")
+  w_e_F <- textDimName(w_e_T, dim_names = TRUE)
+  expect_equal(colnames(w_e_F$harmonywords)[1], "Dim1_harmonywords")
 
 })
 

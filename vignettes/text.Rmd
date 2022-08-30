@@ -34,20 +34,20 @@ The ```textEmbed()``` function automatically transforms character variables in a
 
 library(text)
 
-# Get example data including both text and numerical variables
-sq_data <- Language_based_assessment_data_8
+# View example data including both text and numerical variables
+Language_based_assessment_data_8
 
 # Transform the text data to BERT word embeddings
-wordembeddings <- textEmbed(sq_data)
+word_embeddings <- textEmbed(Language_based_assessment_data_8)
 
 # See how word embeddings are structured
-wordembeddings
+word_embeddings
 
 # Save the word embeddings to avoid having to import the text every time
-saveRDS(wordembeddings, "wordembeddings.rds")
+saveRDS(word_embeddings, "word_embeddings.rds")
 
 # Get the word embeddings again
-wordembeddings <- readRDS("_YOURPATH_/wordembeddings.rds")
+word_embeddings <- readRDS("_YOURPATH_/word_embeddings.rds")
 ```
 
 
@@ -81,7 +81,7 @@ library(text)
 # Compare the meaning between individuals' harmony in life and satisfaction with life answers
 textSimilarityTest(word_embeddings_4$harmonytexts, 
          word_embeddings_4$satisfactiontexts, 
-         Npermutations = 100, 
+         Npermutations = 10000, 
          output.permutations = FALSE)
 ```
 

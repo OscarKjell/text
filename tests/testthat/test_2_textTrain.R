@@ -9,7 +9,7 @@ test_that("textTrain Regression produces list of results with prediction being n
   skip_on_cran()
 
   trained_min_halving <- text::textTrainRegression(
-    x = word_embeddings_4[1],
+    x = word_embeddings_4$texts["harmonywords"],
     y = Language_based_assessment_data_8[6],
     cv_method = "cv_folds",
     outside_folds = 2,
@@ -30,8 +30,8 @@ test_that("textTrain Regression produces list of results with prediction being n
   testthat::expect_is(trained_min_halving$results$statistic[[1]], "numeric")
   testthat::expect_equal(trained_min_halving$results$statistic[[1]], 0.2979104, tolerance = 0.001)
 
-  trained_logistic <- textTrainRegression(
-    x = word_embeddings_4[1],
+  trained_logistic <- text::textTrainRegression(
+    x = word_embeddings_4$texts["harmonywords"],
     y = as.factor(Language_based_assessment_data_8$gender),
     cv_method = "validation_split",
     outside_folds = 2,
@@ -50,8 +50,8 @@ test_that("textTrain Regression produces list of results with prediction being n
   testthat::expect_is(trained_logistic$results_metrics$.estimate[[1]], "numeric")
   testthat::expect_equal(trained_logistic$results_metrics$.estimate[[1]], 0.475)
 
-  trained_logistic2 <- textTrainRegression(
-    x = word_embeddings_4[1],
+  trained_logistic2 <- text::textTrainRegression(
+    x = word_embeddings_4$texts[1],
     y = as.factor(Language_based_assessment_data_8$gender),
     cv_method = "cv_folds",
     outside_folds = 2,
@@ -72,8 +72,8 @@ test_that("textTrain Regression produces list of results with prediction being n
 
 
   # testing with one component; and thus a standard logistic.
-  trained_logistic_PCA1 <- textTrainRegression(
-    x = word_embeddings_4[1],
+  trained_logistic_PCA1 <- text::textTrainRegression(
+    x = word_embeddings_4$texts[1],
     y = as.factor(Language_based_assessment_data_8$gender),
     outside_folds = 2,
     # inside_folds = 2,
@@ -92,11 +92,13 @@ test_that("textTrain Regression produces list of results with prediction being n
   testthat::expect_is(trained_logistic_PCA1$results_metrics$.estimate[[1]], "numeric")
   testthat::expect_equal(trained_logistic_PCA1$results_metrics$.estimate[[1]], 0.525)
 
-  predict_list_form <- text::textPredict(trained_logistic_PCA1, word_embeddings_4[1], dim_names = FALSE)
+  predict_list_form <- text::textPredict(trained_logistic_PCA1,
+                                         word_embeddings_4$texts[1],
+                                         dim_names = FALSE)
   testthat::expect_is(predict_list_form[[1]][1], "factor")
 
-  trained_1 <- textTrain(
-    x = word_embeddings_4$harmonytext,
+  trained_1 <- text::textTrain(
+    x = word_embeddings_4$texts$harmonytext,
     y = Language_based_assessment_data_8$hilstotal,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -115,8 +117,8 @@ test_that("textTrain Regression produces list of results with prediction being n
   testthat::expect_equal(trained_1$prediction$predictions[1], 28.5811, tolerance = 0.001)
 
 
-  trained_NA <- textTrain(
-    x = word_embeddings_4$harmonytext,
+  trained_NA <- text::textTrain(
+    x = word_embeddings_4$texts$harmonytext,
     y = Language_based_assessment_data_8$hilstotal,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -145,8 +147,8 @@ test_that("textTrain Random Forest produces list of results with prediction bein
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2
   ))
-  trained1 <- textTrain(
-    x = word_embeddings_4$harmonytext,
+  trained1 <- text::textTrain(
+    x = word_embeddings_4$texts$harmonytext,
     y = example_categories,
     cv_method = "validation_split",
     outside_folds = 2,
@@ -166,8 +168,8 @@ test_that("textTrain Random Forest produces list of results with prediction bein
   testthat::expect_is(trained1$truth_predictions$truth[1], "factor")
   testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.329)
 
-  trained2 <- textTrain(
-    x = word_embeddings_4$harmonytext,
+  trained2 <- text::textTrain(
+    x = word_embeddings_4$texts$harmonytext,
     y = example_categories,
     outside_folds = 2,
     inside_folds = 3 / 4,
@@ -186,8 +188,8 @@ test_that("textTrain Random Forest produces list of results with prediction bein
   testthat::expect_is(trained2$truth_predictions$truth[1], "factor")
   testthat::expect_equal(trained2$truth_predictions$.pred_1[1], 0.303)
 
-  trained_NA <- textTrain(
-    x = word_embeddings_4$harmonytext,
+  trained_NA <- text::textTrain(
+    x = word_embeddings_4$texts$harmonytext,
     y = example_categories,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -221,7 +223,7 @@ test_that("textTrainRandomForest with Extremely
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2
   ))
   trained_rf_95 <- text::textTrainRandomForest(
-    x = word_embeddings_4$harmonytext,
+    x = word_embeddings_4$texts$harmonytext,
     y = example_categories,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -249,8 +251,8 @@ test_that("textTrainRandomForest with Extremely
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2
   ))
-  trained_rf_3 <- textTrainRandomForest(
-    x = word_embeddings_4$harmonytext,
+  trained_rf_3 <- text::textTrainRandomForest(
+    x = word_embeddings_4$texts$harmonytext,
     y = example_categories,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -271,8 +273,8 @@ test_that("textTrainRandomForest with Extremely
   testthat::expect_equal(trained_rf_3$truth_predictions$.pred_1[1], 0.107)
 
   example_categories_tibble <- tibble::as_tibble_col(example_categories)
-  trained_rf_NA <- textTrainRandomForest(
-    x = word_embeddings_4[1],
+  trained_rf_NA <- text::textTrainRandomForest(
+    x = word_embeddings_4$texts[1],
     y = example_categories_tibble,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -297,8 +299,8 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   skip_on_cran()
 
   # One word embedding and two rating scales help(textTrainRegression)
-  results_or <- textTrainLists(
-    x = word_embeddings_4$harmonywords,
+  results_or <- text::textTrainLists(
+    x = word_embeddings_4$texts$harmonywords,
     y = Language_based_assessment_data_8[5:6],
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -319,14 +321,14 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   testthat::expect_is(results_or$results$tau_correlation[1], "character")
   testthat::expect_equal(results_or$results$tau_correlation[1], "0.21297093352316")
 
-  word_embedding <- word_embeddings_4[1]
+  word_embedding <- word_embeddings_4$texts[1]
   ratings_data1 <- Language_based_assessment_data_8[5]
   ratings_data2 <- Language_based_assessment_data_8[6]
   factors1 <- tibble::as_tibble_col(as.factor(Language_based_assessment_data_8$gender))
   ratings_data <- cbind(ratings_data1, ratings_data2, factors1)
 
 
-  results_or_p1 <- textTrainLists(
+  results_or_p1 <- text::textTrainLists(
     x = word_embedding,
     y = ratings_data,
     preprocess_PCA = c(0.90),
@@ -343,10 +345,10 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
   testthat::expect_that(results_or_p1, testthat::is_a("list"))
   testthat::expect_is(results_or_p1$results$correlation[1], "character")
-  testthat::expect_equal(results_or_p1$results$correlation[1], "0.374436371225743")
+  testthat::expect_equal(results_or_p1$results$correlation[1], "0.374437383412246") #"0.374436371225743"
 
   # FORCE RANDOM FORREST Even though categorical variables are not most present
-  results_or_p2 <- textTrain(
+  results_or_p2 <- text::textTrain(
     x = word_embedding,
     y = ratings_data,
     preprocess_PCA = c(0.90),
@@ -375,8 +377,8 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   ratings_data_factors <- tibble::tibble(factors1, factors2, rating1)
 
   # Logistic
-  results_list_logistic1 <- textTrainLists(
-    x = word_embeddings_4[1],
+  results_list_logistic1 <- text::textTrainLists(
+    x = word_embeddings_4$texts[1],
     y = ratings_data_factors,
     preprocess_PCA = c(0.90),
     outside_folds = 2,
@@ -396,7 +398,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   testthat::expect_equal(results_list_logistic1$results[[2]][1], "0.538720538720539")
 
 
-  results_list_logistic <- textTrain(
+  results_list_logistic <- text::textTrain(
     x = word_embedding,
     y = ratings_data_factors,
     preprocess_PCA = c(0.90),
@@ -413,20 +415,20 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
   testthat::expect_that(results_list_logistic, testthat::is_a("list"))
   testthat::expect_is(results_list_logistic$results[[2]][[1]], "integer")
-  testthat::expect_equal(results_list_logistic$results[[3]][[1]], 0.008647702)
+  testthat::expect_equal(results_list_logistic$results[[3]][[1]], 0.008647702, tolerance = 0.0001)
 })
 
 
 test_that("textTrainLists randomForest produces list of results with prediction being numeric", {
   skip_on_cran()
 
-  x <- word_embeddings_4[1]
+  x <- word_embeddings_4$texts[1]
 
   y1 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
   y2 <- factor(rep(c("young", "old", "young", "old", "young", "old", "young", "old", "young", "old"), 4))
   y <- tibble::tibble(y1, y2)
 
-  results_rf_et <- textTrain(
+  results_rf_et <- text::textTrain(
     x = x,
     y = y,
     force_train_method = "random_forest",
@@ -448,7 +450,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
   testthat::expect_is(results_rf_et$results$p_value[1], "character")
   testthat::expect_equal(results_rf_et$results$precision[1], 0.4705882, tolerance = 0.0001)
 
-  results_rf <- textTrain(
+  results_rf <- text::textTrain(
     x = x,
     y = y,
     force_train_method = "random_forest",
@@ -469,7 +471,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
   testthat::expect_is(results_rf$results$p_value[1], "character")
   testthat::expect_equal(results_rf$results$p_value[1], "0.191418425237607")
 
-  results_rf_or_p <- textTrain(
+  results_rf_or_p <- text::textTrain(
     x = x,
     y = y,
     force_train_method = "random_forest",
@@ -491,7 +493,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
   testthat::expect_equal(results_rf_or_p$results$precision[1], 0.4705882, tolerance = 0.0001)
 
 
-  results_rf_or <- textTrain(
+  results_rf_or <- text::textTrain(
     x = x,
     y = y,
     force_train_method = "random_forest",
@@ -519,8 +521,8 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 test_that("textTrainRegression adding word_embedding together", {
   skip_on_cran()
 
-  multi_we_PCA_09 <- textTrainRegression(
-    x = word_embeddings_4[1:2],
+  multi_we_PCA_09 <- text::textTrainRegression(
+    x = word_embeddings_4$texts[1:2],
     y = Language_based_assessment_data_8$hilstotal,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -537,13 +539,13 @@ test_that("textTrainRegression adding word_embedding together", {
 
 
   # Prediction based on multiple we
-  predictions_multi <- text::textPredict(multi_we_PCA_09, word_embeddings_4[1:2], dim_names = FALSE)
+  predictions_multi <- text::textPredict(multi_we_PCA_09, word_embeddings_4$texts[1:2], dim_names = FALSE)
   testthat::expect_is(predictions_multi[[1]][[1]], "numeric")
   testthat::expect_equal(predictions_multi[[1]][[1]], 19.70077, tolerance = 0.0001)
 
 
-  multi_we_PCA_3 <- textTrainRegression(
-    x = word_embeddings_4[1:2],
+  multi_we_PCA_3 <- text::textTrainRegression(
+    x = word_embeddings_4$texts[1:2],
     y = Language_based_assessment_data_8$hilstotal,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -559,8 +561,8 @@ test_that("textTrainRegression adding word_embedding together", {
   testthat::expect_equal(multi_we_PCA_3$results[[1]][[1]], 1.456567, tolerance = 0.0001)
 
 
-  multi_we_PCA_NA <- textTrainRegression(
-    x = word_embeddings_4[1:2],
+  multi_we_PCA_NA <- text::textTrainRegression(
+    x = word_embeddings_4$texts[1:2],
     y = Language_based_assessment_data_8$hilstotal,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -580,8 +582,8 @@ test_that("textTrainRegression adding word_embedding together", {
 test_that("textTrainRandomForest adding word_embedding together", {
   y <- as.factor(rep(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), 4))
 
-  multi_we_RF_PCA_09 <- textTrainRandomForest(
-    x = word_embeddings_4[1:2],
+  multi_we_RF_PCA_09 <- text::textTrainRandomForest(
+    x = word_embeddings_4$texts[1:2],
     y = y,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -598,8 +600,8 @@ test_that("textTrainRandomForest adding word_embedding together", {
   testthat::expect_equal(multi_we_RF_PCA_09$results$.estimate[[1]], 0.4)
 
 
-  multi_we_RF_PCA_3 <- textTrainRandomForest(
-    x = word_embeddings_4[1:2],
+  multi_we_RF_PCA_3 <- text::textTrainRandomForest(
+    x = word_embeddings_4$texts[1:2],
     y = y,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -616,8 +618,8 @@ test_that("textTrainRandomForest adding word_embedding together", {
   testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.35)
 
 
-  multi_we_RF_PCA_NA <- textTrainRandomForest(
-    x = word_embeddings_4[1:2],
+  multi_we_RF_PCA_NA <- text::textTrainRandomForest(
+    x = word_embeddings_4$texts[1:2],
     y = y,
     outside_folds = 2,
     inside_folds = 2 / 3,
@@ -645,11 +647,11 @@ test_that("textPredictTest t-test and bootstrapped test", {
   y2 <- runif(10)
   yhat2 <- runif(10)
 
-  boot_test <- textPredictTest(y1, yhat1, y2, yhat2, bootstraps_times = 10)
+  boot_test <- text::textPredictTest(y1, yhat1, y2, yhat2, bootstraps_times = 10)
 
   testthat::expect_that(boot_test, testthat::is_a("list"))
 
-  boot_test2 <- textPredictTest(y1 = y1, yhat1, y2 = NULL, yhat2)
+  boot_test2 <- text::textPredictTest(y1 = y1, yhat1, y2 = NULL, yhat2)
   testthat::expect_that(boot_test2, testthat::is_a("list"))
   testthat::expect_equal(boot_test2$Test$statistic[[1]], 0.233267, tolerance = 0.0001)
   testthat::expect_equal(boot_test2$Effect_size, 0.06198192, tolerance = 0.0001)

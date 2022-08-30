@@ -94,16 +94,16 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
 #' where all text is transformed to lowercase and tokenized.
 #' Also give word frequencies.
 #' @param x_characters A character column in a tibble.
-#' @param hg_tokenizer (boolean) Wether to use textTokenize
+#' @param hg_tokenizer (boolean) Weather to use textTokenize
 #' @return A tibble with a unique words column and a column with their respective frequency.
 #' @importFrom tibble tibble
 #' @importFrom stringi stri_c stri_trans_tolower
 # @importFrom stringr str_c str_split stri_split_boundaries
 # @importFrom tokenizers tokenize_words
 #' @noRd
-getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer, ...) {
-  if(hg_tokenizer == FALSE){
+getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer = NULL, ...) {
 
+  if(is.null(hg_tokenizer)){
   # Unite all text variables into one
   x_characters2 <- tidyr::unite(x_characters, "x_characters2", seq_len(ncol(x_characters)), sep = " ")
 
@@ -120,8 +120,8 @@ getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer, ...) {
   x_characters5 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters4b), " ")))))
   }
 
-  if (hg_tokenizer == TRUE){
-    x_characters4b <- apply(x_characters, 1, textTokenize, ...)
+  if (!is.null(hg_tokenizer)){
+    x_characters4b <- lapply(list(x_characters), textTokenize, model=hg_tokenizer, ...)
     x_characters5 <- data.frame(sort(table(unlist(x_characters4b))))
   }
 
@@ -312,6 +312,25 @@ textTokenize <- function(texts,
 }
 
 
+#texts = x
+#model = "bert-base-uncased"
+#layers = 11
+#return_tokens = TRUE
+#word_type_embeddings = FALSE
+#decontextualize = FALSE
+#keep_token_embeddings = TRUE #whether to keep token embeddings when using texts or word_types aggregation
+#device = "cpu"
+#tokenizer_parallelism = FALSE
+#model_max_length = NULL
+#max_token_to_sentence = 4
+#logging_level = "error"
+#
+#
+#model = "bert-base-uncased"
+#word_type_embeddings = TRUE
+#decontextualize = TRUE
+#layers = "all"
+
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
@@ -496,10 +515,12 @@ textEmbedRawLayers <- function(texts,
   if (decontextualize) {
     individual_tokens <- list()
     individual_tokens$decontext <- list()
-    # Get word embeddings for all individual tokens/words (which is, e.g., used for the word plot).
-    singlewords <- getUniqueWordsAndFreq(data_character_variables,
-                                         hg_tokenizer = TRUE,
-                                         model = model)
+    # Get word embeddings for all individual tokens/words (which is, e.g., used for the word plot).help(bind_cols)
+    data_character_variables1 <- suppressMessages(apply(data_character_variables, 1, bind_cols)) %>%
+      bind_rows()
+
+   singlewords <- getUniqueWordsAndFreq(data_character_variables1[[1]],
+                                         hg_tokenizer = model)
     list_words <- sapply(singlewords$words, list)
     names(list_words) <- NULL
 
@@ -761,6 +782,31 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 }
 
 
+
+#texts = Language_based_assessment_data_8[1,1]
+#model = "bert-base-uncased"
+#layers = 11
+#dim_name = TRUE
+#aggregation_from_layers_to_tokens = "concatenate"
+#aggregation_from_tokens_to_texts = "mean"
+#aggregation_from_tokens_to_word_types = "mean"
+#keep_token_embeddings = FALSE
+#tokens_select = NULL
+#tokens_deselect = NULL
+#decontextualize = FALSE
+#model_max_length = NULL
+#max_token_to_sentence = 4
+#tokenizer_parallelism = FALSE
+#device = "gpu"
+#logging_level = "error"
+#
+#
+#model = "bert-base-uncased"
+#word_type_embeddings = TRUE
+##contexts = FALSE
+#decontextualize = TRUE
+#layers = "all"
+
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
@@ -945,9 +991,10 @@ textEmbed <- function(texts,
       individual_word_embeddings
     )
 
-    comment(individual_word_embeddings_words) <- paste(comment(individual_word_embeddings[[1]]),
-                                                               " ; aggregation_from_tokens_to_word_types = ", aggregation_from_tokens_to_word_types,
-                                                               " ; decontextualize = ", decontextualize)
+    comment(individual_word_embeddings_words) <- paste(comment(all_wanted_layers$context_tokens),
+                                                       comment(individual_word_embeddings),
+                                                       " ; aggregation_from_tokens_to_word_types = ", aggregation_from_tokens_to_word_types,
+                                                       " ; decontextualize = ", decontextualize)
     output$word_types <- individual_word_embeddings_words
     cat(colourise("Done! \n", "purple"))
   }
@@ -1229,7 +1276,6 @@ textEmbed <- function(texts,
 #
 
 
-
 #' Change the names of the dimensions in the word embeddings.
 #' @param word_embeddings List of word embeddings
 #' @param dim_names (boolean) If TRUE the word embedding name will be attached to the name of each dimension;
@@ -1247,6 +1293,9 @@ textDimName <- function(word_embeddings,
                          dim_names = TRUE) {
   tokens = NULL
   word_type = NULL
+
+  x_is_tibble <- tibble::is_tibble(word_embeddings)
+  if(x_is_tibble) word_embeddings <- list(word_embeddings)
 
   # Remove singlewords_we if it exist
   if(!is.null(word_embeddings$word_type)){
@@ -1290,6 +1339,10 @@ textDimName <- function(word_embeddings,
   if(!is.null(tokens)){
     word_embeddings$tokens <- tokens
   }
+
+  # Return tibble if x is a tibble (and not a list)
+  if(x_is_tibble) word_embeddings <- word_embeddings[[1]]
+
   return(word_embeddings)
 }
 

@@ -50,7 +50,7 @@ NOT work yet.
 \dontrun{
 df_for_plotting <- textWordPrediction(
   words = Language_based_assessment_data_8$harmonywords,
-  word_types_embeddings = word_embeddings_4$singlewords_we,
+  word_types_embeddings = word_embeddings_4$word_types,
   x = Language_based_assessment_data_8$hilstotal
 )
 df_for_plotting

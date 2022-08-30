@@ -34,20 +34,19 @@
 "Language_based_assessment_data_3_100"
 
 
-#' Word embeddings from textEmbedLayersOutput function
+#' Word embeddings from textEmbedRawLayers function
 #'
 #' The dataset is a shortened version of the data sets of Study 3-5
 #' from Kjell, Kjell, Garcia and Sikström 2018.
 #'
-#' @format A list with word embeddings for harmony words for only contexts. BERT-base embeddings based on
-#' mean aggregation of layer 1 and 2.
+#' @format A list with token-level word embeddings for harmony words.
 #' \describe{
 #'   \item{tokens}{words}
 #'   \item{layer_number }{layer of the transformer model}
-#'   \item{Dim1:Dim768}{Word embeddings dimensions}
+#'   \item{Dim1:Dim8}{Word embeddings dimensions}
 #' }
 #' @source \url{https://psyarxiv.com/er6t7/}
-"embeddings_from_huggingface2"
+"raw_embeddings_1"
 
 
 #' Word embeddings for 4 text variables for 40 participants

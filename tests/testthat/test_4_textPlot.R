@@ -10,21 +10,21 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
   skip_on_cran()
 
   # Pre-processing data for plotting
-  df_for_plotting1 <- textProjection(
-    Language_based_assessment_data_8$harmonywords[1:5],
-    word_embeddings_4$harmonywords[1:5, ],
-    word_embeddings_4$singlewords_we,
-    Language_based_assessment_data_8$hilstotal[1:5],
+  df_for_plotting1 <- text::textProjection(
+    words = Language_based_assessment_data_8$harmonywords[1:10],
+    word_embeddings = word_embeddings_4$texts$harmonywords[1:10, ],
+    word_embeddings_4$word_types,
+    Language_based_assessment_data_8$hilstotal[1:10],
     split = "mean",
     Npermutations = 2,
     n_per_split = 1,
     pca = 2
   )
 
-  expect_true(tibble::is_tibble(df_for_plotting1[[2]]))
-  expect_is(df_for_plotting1[[2]]$words[1], "character")
-  expect_is(df_for_plotting1[[2]]$n[1], "numeric")
-  expect_equal(df_for_plotting1[[2]]$dot.x[1], -0.455, tolerance = 0.001)
+  testthat::expect_true(tibble::is_tibble(df_for_plotting1[[2]]))
+  testthat::expect_is(df_for_plotting1[[2]]$words[1], "character")
+  testthat::expect_is(df_for_plotting1[[2]]$n[1], "numeric")
+  testthat::expect_equal(df_for_plotting1[[2]]$dot.x[1], -3.847934, tolerance = 0.001)
 })
 
 test_that("textProjection with QUARTILE, 0.9 PCA and
@@ -33,9 +33,9 @@ test_that("textProjection with QUARTILE, 0.9 PCA and
   skip_on_cran()
 
   # Pre-processing data for plotting
-  df_for_plotting2 <- textProjection(Language_based_assessment_data_8$harmonywords[1:12],
-    word_embeddings_4$harmonywords[1:12, ],
-    word_embeddings_4$singlewords_we,
+  df_for_plotting2 <- text::textProjection(words =  Language_based_assessment_data_8$harmonywords[1:12],
+                                           word_embeddings = word_embeddings_4$texts$harmonywords[1:12, ],
+                                           word_types_embeddings =word_embeddings_4$word_types,
     Language_based_assessment_data_8$hilstotal[1:12],
     Language_based_assessment_data_8$swlstotal[1:12],
     split = "quartile",
@@ -47,14 +47,14 @@ test_that("textProjection with QUARTILE, 0.9 PCA and
   expect_true(tibble::is_tibble(df_for_plotting2[[2]]))
   expect_is(df_for_plotting2[[2]]$words[1], "character")
   expect_is(df_for_plotting2[[2]]$n[1], "numeric")
-  expect_equal(df_for_plotting2[[2]]$dot.x[3], 1.37, tolerance = 0.001)
+  expect_equal(df_for_plotting2[[2]]$dot.x[3], 4.948596, tolerance = 0.001)
 })
 
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   skip_on_cran()
 
   # Dot Product Projection Plot help(textProjectionPlot)
-  p1 <- textProjectionPlot(
+  p1 <- text::textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
     k_n_words_to_test = TRUE,
     min_freq_words_test = 1,
@@ -85,7 +85,7 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   skip_on_cran()
 
   # Dot Product Projection Plot
-  p2 <- textProjectionPlot(
+  p2 <- text::textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
     k_n_words_to_test = TRUE,
     min_freq_words_test = 1,
@@ -116,7 +116,7 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
   skip_on_cran()
 
   # Dot Product Projection Plot
-  p3 <- textProjectionPlot(
+  p3 <- text::textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
     k_n_words_to_test = FALSE,
     min_freq_words_test = 1,
@@ -143,10 +143,10 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
 test_that("textCentrality produces a tibble with character variable and numeric variable.", {
   skip_on_cran()
 
-  df_for_plotting <- textCentrality(
+  df_for_plotting <- text::textCentrality(
     Language_based_assessment_data_8$harmonywords[1:2],
-    word_embeddings_4$harmonywords[1:2, ],
-    word_embeddings_4$singlewords_we,
+    word_embeddings_4$texts$harmonywords[1:2, ],
+    word_embeddings_4$word_types,
     method = "euclidean"
   )
 
@@ -155,7 +155,7 @@ test_that("textCentrality produces a tibble with character variable and numeric 
   expect_true(tibble::is_tibble(df_for_plotting))
   expect_equal(df_for_plotting$n[1], 1)
 
-  plot_c <- textCentralityPlot(df_for_plotting,
+  plot_c <- text::textCentralityPlot(df_for_plotting,
     x_axes = "central_semantic_similarity"
   )
 
@@ -166,7 +166,7 @@ test_that("textCentralityPlot produces a plot.", {
   skip_on_cran()
 
   # Plot help(textCentralityPlot)
-  centrality_plot <- textCentralityPlot(
+  centrality_plot <- text::textCentralityPlot(
     word_data = centrality_data_harmony,
     min_freq_words_test = 10,
     plot_n_word_extreme = 10,
@@ -196,9 +196,9 @@ test_that("textCentrality produces a tibble with character variable and numeric 
   skip_on_cran()
 
 
-  df_for_plotting2d <- textPCA(
+  df_for_plotting2d <- text::textPCA(
     words = Language_based_assessment_data_8$harmonywords,
-    word_types_embeddings = word_embeddings_4$singlewords_we
+    word_types_embeddings = word_embeddings_4$word_types
   )
 
 

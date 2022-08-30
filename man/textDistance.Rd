@@ -23,8 +23,8 @@ Compute the semantic distance between two text variables.
 \examples{
 library(dplyr)
 distance_scores <- textDistance(
-  word_embeddings_4$harmonytext,
-  word_embeddings_4$satisfactiontext
+  x = word_embeddings_4$texts$harmonytext,
+  y = word_embeddings_4$texts$satisfactiontext
 )
 comment(distance_scores)
 }
