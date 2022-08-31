@@ -31,10 +31,10 @@
 #' scores (numeric) The probabilities for each of the labels.
 #' @examples
 #' \donttest{
-#'  # ZeroShot_example <- text::textZeroShot(sequences = c("I play football",
-#'  "The forest is wonderful"),
-#'  # candidate_labels = c("sport", "nature", "research"),
-#'  # model = "facebook/bart-large-mnli")
+#' # ZeroShot_example <- text::textZeroShot(sequences = c("I play football",
+#' # "The forest is wonderful"),
+#' # candidate_labels = c("sport", "nature", "research"),
+#' # model = "facebook/bart-large-mnli")
 #' }
 #' @seealso see \code{\link{textClassify}}, \code{\link{textGeneration}}, \code{\link{textNER}},
 #'  \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
