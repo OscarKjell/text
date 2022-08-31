@@ -63,7 +63,8 @@ Zero Shot Classification (Experimental)
 }
 \examples{
 \donttest{
- # ZeroShot_example <- text::textZeroShot(sequences = c("I play football", "The forrest is wonderful"),
+ # ZeroShot_example <- text::textZeroShot(sequences = c("I play football",
+ "The forest is wonderful"),
  # candidate_labels = c("sport", "nature", "research"),
  # model = "facebook/bart-large-mnli")
 }

@@ -20,9 +20,13 @@ Change the names of the dimensions in the word embeddings.
 }
 \examples{
 \donttest{
-w_e_T <- textDimName(word_embeddings_4)
-
-w_e_F <- textDimName(w_e_T, dim_names = FALSE)
+# Note that dimensions are called Dim1_harmonytexts etc.
+word_embeddings_4$texts$harmonytexts
+# Here they are changed to just Dim
+w_e_T <- textDimName(word_embeddings_4$texts["harmonytexts"],
+                      dim_names = FALSE)
+# Here they are changed back
+w_e_F <- textDimName(w_e_T, dim_names = TRUE)
 }
 }
 \seealso{
