@@ -6,13 +6,13 @@
 
 #' Predict scores or classification from, e.g., textTrain.
 #'
-#' @param model_info  Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
+#' @param model_info (model object) Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
 # @param new_data Word embeddings from new data to be predicted from.
-#' @param word_embeddings  Word embeddings
-#' @param x_append  Variables to be appended after the word embeddings (x).
-#' @param dim_names Account for specific dimension names from textEmbed
+#' @param word_embeddings (tibble) Word embeddings
+#' @param x_append (tibble) Variables to be appended after the word embeddings (x).
+#' @param dim_names (boolean) Account for specific dimension names from textEmbed()
 #' (rather than generic names including Dim1, Dim2 etc.).
-#' @param type  Type of prediction; e.g., "prob", "class".
+#' @param type (string) Type of prediction; e.g., "prob", "class".
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predicted scores from word embeddings.
 #' @examples
@@ -49,6 +49,10 @@ textPredict <- function(model_info,
     # Select the word embeddings
     word_embeddings <- word_embeddings[word_embeddings_names]
   } else {
+    # Remove specific names in the word embeddings
+    word_embeddings <- textDimName(word_embeddings,
+                                   dim_names = FALSE)
+
     word_embeddings_names <- "word_embeddings"
   }
 
