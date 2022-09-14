@@ -13,6 +13,8 @@
 
 ## New Function
 - `textZeroShot()` is implemented.
+- `textDistanceNorm()` and `textDistanceMatrix()`
+- `textDistance()` can compute cosine `distance`. 
 
 ## New Setting
 `max_token_to_sentence` in `textEmbed()`

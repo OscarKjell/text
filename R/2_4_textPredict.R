@@ -11,7 +11,8 @@
 #' @param word_embeddings (tibble) Word embeddings
 #' @param x_append (tibble) Variables to be appended after the word embeddings (x).
 #' @param dim_names (boolean) Account for specific dimension names from textEmbed()
-#' (rather than generic names including Dim1, Dim2 etc.).
+#' (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
+#' word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.
 #' @param type (string) Type of prediction; e.g., "prob", "class".
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predicted scores from word embeddings.

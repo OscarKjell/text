@@ -991,7 +991,7 @@ textTrainRegression <- function(x,
                 mixture = mixture_mode
               )
             }
-          } %>%
+          } %>% #help(glmnet)
           parsnip::set_engine("glmnet")
 
         # Create Workflow (to know variable roles from recipes) help(workflow)

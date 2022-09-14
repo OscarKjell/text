@@ -72,7 +72,9 @@ reference:
     - textSimilarity
     - textDistance
     - textSimilarityMatrix
+    - textDistanceMatrix
     - textSimilarityNorm
+    - textDistanceNorm
     - textSimilarityTest
 - title: Plot words in the word embedding space
   contents:
@@ -96,6 +98,7 @@ reference:
   contents:
     - Language_based_assessment_data_8
     - word_embeddings_4
+    - raw_embeddings_1
     - Language_based_assessment_data_3_100
     - DP_projections_HILS_SWLS_100
     - centrality_data_harmony

@@ -12,7 +12,8 @@ textDistance(x, y, method = "euclidean")
 \item{y}{Word embeddings (from textEmbed).}
 
 \item{method}{Character string describing type of measure to be computed; default is "euclidean" (see also
-measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".}
+measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
+It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).}
 }
 \value{
 A vector comprising semantic distance scores.

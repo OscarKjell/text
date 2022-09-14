@@ -23,7 +23,8 @@ textPredict(
 \item{type}{(string) Type of prediction; e.g., "prob", "class".}
 
 \item{dim_names}{(boolean) Account for specific dimension names from textEmbed()
-(rather than generic names including Dim1, Dim2 etc.).}
+(rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
+word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.}
 
 \item{...}{Setting from stats::predict can be called.}
 }

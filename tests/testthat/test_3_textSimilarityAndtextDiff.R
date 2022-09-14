@@ -53,6 +53,38 @@ test_that("textDistance produces distance scores", {
   expect_equal(distance_scores[1], 0.6904026, tolerance = 0.0001)
 })
 
+test_that("textDistanceNorm produces distance scores", {
+  skip_on_cran()
+
+  # Example norm
+  harmonynorm <- word_embeddings_4$texts$harmonywords[1, ]
+
+  distance_norm_scores <- text::textDistanceNorm(
+    word_embeddings_4$texts$harmonytext[1:2, ],
+    harmonynorm,
+    method = "euclidean"
+  )
+
+  expect_that(distance_norm_scores, is_a("numeric"))
+  expect_equal(distance_norm_scores[1], 1.172088, tolerance = 0.001)
+})
+
+test_that("textDistanceMatrix produces euclidean distance scores", {
+  skip_on_cran()
+
+  distance_scores2 <- text::textDistanceMatrix(
+    word_embeddings_4$texts$harmonytexts[1:3, ],
+    method = "euclidean"
+  )
+  expect_equal(distance_scores2[1, 2], 0.7058523, tolerance = 0.0001)
+})
+
+
+
+
+
+
+
 test_that("textSimilarityTest paired results in list with numeric output", {
   skip_on_cran()
 

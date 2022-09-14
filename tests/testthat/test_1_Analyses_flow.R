@@ -69,8 +69,8 @@ test_that("Testing textEmbed as well as train", {
   # Predict
   hils_predicted_scores1 <- text::textPredict(
     model_info = text_train_results1,
-    word_embeddings = harmony_word_embeddings$texts$satisfactiontexts,
-    dim_names = FALSE
+    word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"],
+    dim_names = TRUE
   )
 
   expect_that(hils_predicted_scores1[[1]], is_a("numeric"))
@@ -130,9 +130,6 @@ test_that("Testing textEmbed as well as train", {
   expect_equal(proj[[1]][[1]][[1]][[1]], 0.2005167, tolerance = 0.0000001)
 
   # for decontexts = TRUE expect_equal(proj[[1]][[1]][[1]][[1]], -0.402433, tolerance = 0.0000001)
-
-  # help(textProjectionPlot)
-  #textProjectionPlot(proj)
 
   plot_proj <- textProjectionPlot(word_data = proj,
     explore_words = c("happy"),

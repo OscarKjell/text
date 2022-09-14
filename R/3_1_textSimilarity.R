@@ -64,6 +64,7 @@ textSimilarity <- function(x,
 #' @param y Word embeddings (from textEmbed).
 #' @param method Character string describing type of measure to be computed; default is "euclidean" (see also
 #' measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
+#' It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).
 #' @return A vector comprising semantic distance scores.
 #' @examples
 #' library(dplyr)
@@ -85,7 +86,12 @@ textDistance <- function(x,
   x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
   y1 <- dplyr::select(y1, dplyr::starts_with("Dim"))
 
-  # Compute distance method = "euclidean"
+  if(method == "cosine"){
+    # Compute cosine distacne
+      ss <- 1 - cosines(x1, y1)
+
+  } else{
+  # Compute distance method = "euclidean" help(dist)
   ss1 <- list()
   # i=1
   for (i in seq_len(nrow(x1))) {
@@ -93,6 +99,7 @@ textDistance <- function(x,
     ss1[i] <- stats::dist(dist_df, method = method)[1]
   }
   ss <- unlist(ss1)
+  }
 
   # Add information about the used embeddings
   embedding_descriptions_x <- comment(x)
@@ -129,6 +136,32 @@ textSimilarityMatrix <- function(x,
   }
   ss_matrix
 }
+
+#' Compute semantic distance scores between all combinations in a word embedding
+#' @inheritParams textDistance
+#' @return A matrix of semantic distance scores
+#' @examples
+#' distance_scores <- textDistanceMatrix(word_embeddings_4$texts$harmonytext[1:3, ])
+#' round(distance_scores, 3)
+#' @seealso see \code{\link{textDistanceNorm}} and \code{\link{textSimilarityTest}}
+#' @export
+textDistanceMatrix <- function(x,
+                                 method = "euclidean") {
+  ss_matrix <- matrix(nrow = nrow(x), ncol = nrow(x))
+
+  for (i in seq_len(nrow(x))) {
+    for (j in seq_len(nrow(x))) {
+      ss_matrix[i, j] <- text::textDistance(
+        x[i, ],
+        x[j, ],
+        method
+      )
+    }
+  }
+  ss_matrix
+}
+
+
 
 #' Compute the semantic similarity between a text variable and a word norm
 #' (i.e., a text represented by one word embedding that represent a construct).
@@ -174,3 +207,55 @@ textSimilarityNorm <- function(x, y, method = "cosine") {
   )
   ss
 }
+
+
+
+#' Compute the semantic distance between a text variable and a word norm
+#' (i.e., a text represented by one word embedding that represent a construct/concept).
+#' @param y Word embedding from textEmbed (from only one text).
+#' @inheritParams textDistance
+#' @return A vector comprising semantic distance scores.
+#' @examples
+#' \dontrun{
+#' library(dplyr)
+#' library(tibble)
+#' harmonynorm <- c("harmony peace ")
+#' satisfactionnorm <- c("satisfaction achievement")
+#'
+#' norms <- tibble::tibble(harmonynorm, satisfactionnorm)
+#' word_embeddings <- word_embeddings_4$texts
+#' word_embeddings_wordnorm <- textEmbed(norms)
+#' similarity_scores <- textDistanceNorm(
+#'   word_embeddings$harmonytext,
+#'   word_embeddings_wordnorm$harmonynorm
+#' )
+#' }
+#' @seealso see \code{\link{textDistance}} and \code{\link{textSimilarityTest}}
+#' @importFrom dplyr row_number slice select starts_with
+#' @export
+textDistanceNorm <- function(x, y, method = "euclidean") {
+  # Select Dimensions
+  x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
+  y1 <- dplyr::select(as_tibble(as.list(y)), dplyr::starts_with("Dim"))
+
+  y2 <- y1 %>%
+    dplyr::slice(rep(dplyr::row_number(), nrow(x1)))
+
+  # Compute similarity
+  ss <- textDistance(x1, y2, method = method)
+
+  # Add information about the used embeddings
+  embedding_descriptions_x <- comment(x)
+  embedding_descriptions_y <- comment(y)
+  comment(ss) <- paste("x embedding = ", embedding_descriptions_x,
+                       "y embedding = ", embedding_descriptions_y,
+                       method,
+                       sep = ".", collapse = " "
+  )
+  ss
+}
+
+
+
+
+

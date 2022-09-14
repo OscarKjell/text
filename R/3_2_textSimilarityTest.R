@@ -77,7 +77,7 @@ textSimilarityTest <- function(x,
     X_all <- tibble::as_tibble_row(textEmbeddingAggregation(x1, aggregation = "mean"))
     Y_all <- tibble::as_tibble_row(textEmbeddingAggregation(y1, aggregation = "mean"))
 
-    # Compute similarity between the summed word embedding
+    # Compute similarity between the aggregated word embedding
     ss_observed <- textSimilarity(X_all, Y_all, method = similarity_method)
 
     # Compute the data's mean of the similarity scores
