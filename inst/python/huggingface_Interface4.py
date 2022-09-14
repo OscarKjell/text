@@ -1,4 +1,7 @@
 import os, sys
+#print(os.listdir())
+sys.path.append('inst/python/')
+#sys.path.insert(0, 'inst/python/transformer_embs.py')
 from transformer_embs import transformer_embeddings
 import numpy as np 
 
@@ -52,15 +55,16 @@ def hgTransformerGetEmbedding(text_strings,
     print (f"Total number of messages: {totalMessages}")
 
     lengthWarned = False
+    num_cfs = 0
 
     text_strings = [[idx, str(x)] for idx, x in enumerate(text_strings)]
-    cfRows = list(lambda row: row[0], text_strings)
+    cfRows = list(map(lambda row: row[0], text_strings))
 
     msgsInBatch = 0
     cfGroups = [[]] #holds the list of cfIds that needs to batched together 1
     #Handle None here to maximise performance. 
     for cfRow in cfRows:
-        cfId = cfRow[0] #correl field id
+        cfId = cfRow #correl field id
         cfNumMsgs = 1 #Number of messages
         if msgsInBatch + cfNumMsgs > BATCH_SIZE and len(cfGroups[-1])>=1:
             cfGroups.append([])
@@ -69,7 +73,6 @@ def hgTransformerGetEmbedding(text_strings,
         msgsInBatch += cfNumMsgs
 
     cfGroups = [cfGrp for cfGrp in cfGroups if cfGrp]
-
     embs = []
             
     for cfGrp in cfGroups:
@@ -80,7 +83,7 @@ def hgTransformerGetEmbedding(text_strings,
         for cfId in cfGrp:  
             #grab sents by messages for that correl field:
             #Some messages might be None. Handled during tokenization
-            cfMsgRows = [cfId, text_strings[cfId]]
+            cfMsgRows = [[cfId, text_strings[cfId]]]
             groupedMessageRows.append([cfId, cfMsgRows])
         
         #TODO: write method for prepare messages
@@ -99,8 +102,8 @@ def hgTransformerGetEmbedding(text_strings,
         
         #TODO: Function call to embedding aggregation
         cf_reps, cfIds = cf_embedding_generator.aggregate(encSelectedLayers, msgId_seq, cfId_seq)
-        #print ([i.shape for i in cf_reps], len(cfIds))
-        #print (cfIds)
+        print ([i.shape for i in cf_reps], len(cfIds))
+        print (cfIds)
         
         #sys.exit()
         

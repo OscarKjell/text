@@ -20,7 +20,7 @@ except ImportError:
     print ("transformers library not present. Install transformers (github.com/huggingface/transformers) to run transformer embeddings command")
     sys.exit()
 
-from . import textCleaner as tc
+#from . import textCleaner as tc
 
 ######################
 ######################
@@ -54,7 +54,8 @@ class sentenceTokenizer:
         messages = list(map(lambda x: x[1], messageRows))
         parses = []
         for m_id, message in messageRows:
-            if message is not None: parses.append([m_id, json.dumps(self.sentDetector.tokenize(tc.removeNonUTF8(tc.treatNewlines(message.strip()))))])
+            if message is not None:
+              parses.append([m_id, json.dumps(self.sentDetector.tokenize(message[1].strip()))])
         return parses
         
 ######################
