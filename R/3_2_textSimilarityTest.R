@@ -1,18 +1,6 @@
 
 
-#x <- word_embeddings_4$texts$harmonywords
-#y <- word_embeddings_4$texts$satisfactionwords
-#similarity_method = "cosine"
-#Npermutations = 100
-#method = "paired"
-#alternative = "two_sided"
-#output.permutations = TRUE
-#N_cluster_nodes = 1
-#seed = 1001
-#
-
-
-#' Test whether there is a significant difference in meaning between two sets of texts
+#' EXPERIMENTAL: Test whether there is a significant difference in meaning between two sets of texts
 #' (i.e., between their word embeddings).
 #' @param x Set of word embeddings from textEmbed.
 #' @param y Set of word embeddings from textEmbed.
@@ -44,7 +32,7 @@ textSimilarityTest <- function(x,
                                similarity_method = "cosine",
                                Npermutations = 10000,
                                method = "paired",
-                               alternative = c("two_sided", "less", "greater"),
+                               alternative = "greater", # less = dissimalar; greater = similar; two-sided = a correlation; c("two_sided", "less", "greater"),
                                output.permutations = TRUE,
                                N_cluster_nodes = 1,
                                seed = 1001) {
@@ -70,7 +58,7 @@ textSimilarityTest <- function(x,
     # Compute similarity between all pairs
     ss_observed <- textSimilarity(x1, y1, method = similarity_method)
     # Compute the data's mean of the similarity scores
-    results[1] <- mean(abs(ss_observed))
+    results[1] <- mean(ss_observed) # removed abs(
   }
 
   if (method == "unpaired") {
@@ -81,7 +69,7 @@ textSimilarityTest <- function(x,
     ss_observed <- textSimilarity(X_all, Y_all, method = similarity_method)
 
     # Compute the data's mean of the similarity scores
-    results[1] <- mean(abs(ss_observed))
+    results[1] <- mean(ss_observed) #removed abso
   }
 
   ### Compute comparison distribution of similarity scores based on randomly drawn word embeddings from both groups
@@ -108,7 +96,7 @@ textSimilarityTest <- function(x,
       # Compute the semantic similarity between randomly drawn word embeddings and compute the mean.
       if (method == "paired") {
         rand_ss <- textSimilarity(rdata1, rdata2, method = similarity_method)
-        return(mean(abs(rand_ss)))
+        return(mean(rand_ss)) # removed abs(
       }
       if (method == "unpaired") {
         R1_all <- tibble::as_tibble_row(textEmbeddingAggregation(rdata1, aggregation = "mean"))
@@ -118,13 +106,12 @@ textSimilarityTest <- function(x,
         rand_ss <- textSimilarity(R1_all, R2_all, method = similarity_method)
 
         # Compute the data's mean of the similarity scores
-        return(abs(rand_ss))
+        return(rand_ss) # removed abs()
       }
     }, xx = xx, yy = yy)
     return(mean_ss_permutated)
   }, xx = x, yy = y)
   NULLresults <- unlist(distribution_mean_ss_permutated)
-
   # Examine how the ordered data's mean of the similarity scores compare with the random data's,
   # null comparison distribution
   p_value <- p_value_comparing_with_Null(NULLresults,

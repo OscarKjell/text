@@ -34,6 +34,10 @@ textSimilarity <- function(x,
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
 
+  # normalize
+  #x1 <- as_tibble(scale(x1, center = center, scale = scale))
+  #y1 <- as_tibble(scale(y1, center = center, scale = scale))
+
   # Compute cosines
   if (method == "cosine") {
     ss <- cosines(x1, y1)
