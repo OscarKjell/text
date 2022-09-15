@@ -114,7 +114,7 @@ def get_device(device):
 
     return device, device_num
 
-def get_model(model, tokenizer_only=False):
+def get_model(model, tokenizer_only=False, config_only=False):
     """
     Get model and tokenizer from model string
 
@@ -159,17 +159,22 @@ def get_model(model, tokenizer_only=False):
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
         tokenizer = AutoTokenizer.from_pretrained(model)
         transformer_model = AutoModel.from_pretrained(model, config=config)
-    
-    if tokenizer_only:
+    if config_only:
+        return config
+    elif tokenizer_only:
         return tokenizer
     else:
         return config, tokenizer, transformer_model
 
 def get_number_of_hidden_layers(model):
-    _, _, transformer_model = get_model(model)
+    """
+    Return the number of hidden layers for a given model.
+    Returns -1 if the model's config doesn't have the num_hidden_layers parameter
+    """
+    config = get_model(model, config_only=True)
     number_of_hidden_layers = -1
     try:
-        number_of_hidden_layers = transformer_model.config.num_hidden_layers
+        number_of_hidden_layers = config.num_hidden_layers
     except:
         print("Warning: Unable to get number of hidden layers")
         print("         num_hidden_layers is not a parameter of transformer_model.config")
