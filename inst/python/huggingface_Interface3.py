@@ -114,7 +114,7 @@ def get_device(device):
 
     return device, device_num
 
-def get_model(model):
+def get_model(model, tokenizer_only=False):
     """
     Get model and tokenizer from model string
 
@@ -159,7 +159,22 @@ def get_model(model):
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
         tokenizer = AutoTokenizer.from_pretrained(model)
         transformer_model = AutoModel.from_pretrained(model, config=config)
-    return config, tokenizer, transformer_model
+    
+    if tokenizer_only:
+        return tokenizer
+    else:
+        return config, tokenizer, transformer_model
+
+def get_number_of_hidden_layers(model):
+    _, _, transformer_model = get_model(model)
+    number_of_hidden_layers = -1
+    try:
+        number_of_hidden_layers = transformer_model.config.num_hidden_layers
+    except:
+        print("Warning: Unable to get number of hidden layers")
+        print("         num_hidden_layers is not a parameter of transformer_model.config")
+        pass
+    return number_of_hidden_layers
 
 def hgTransformerGetPipeline(text_strings,
                             task = '',
@@ -634,7 +649,7 @@ def hgTokenizerGetTokens(text_strings,
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
 
-    config, tokenizer, _ = get_model(model)#TODO: change to get_tokenizer_model that doesn't bother returning the transformer model
+    tokenizer = get_model(model, tokenizer_only=True)
 
     if device != 'cpu':
         tokenizer.to(device)
