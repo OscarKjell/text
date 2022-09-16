@@ -23,8 +23,8 @@ import sys
 from dataclasses import dataclass, field
 from typing import Optional
 
-sys.path.append("/inst/python/")
-
+#sys.path.append("inst/python/")
+#print(sys.path)
 import datasets
 import numpy as np
 from datasets import load_dataset
@@ -43,7 +43,8 @@ from transformers import (
     default_data_collator,
     set_seed,
 )
-from training_args import TrainingArguments
+print(os.listdir())
+from .inst.python.training_args import TrainingArguments
 from transformers.trainer_utils import get_last_checkpoint
 #from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
@@ -146,6 +147,8 @@ class DataTrainingArguments:
     test_file: Optional[str] = field(default=None, metadata={"help": "A csv or a json file containing the test data."})
 
     def __post_init__(self):
+        print("hello")
+        """
         if self.task_name is not None:
             self.task_name = self.task_name.lower()
             if self.task_name not in task_to_keys.keys():
@@ -161,7 +164,7 @@ class DataTrainingArguments:
             assert (
                 validation_extension == train_extension
             ), "`validation_file` should have the same extension (csv or json) as `train_file`."
-
+    """
 
 @dataclass
 class ModelArguments:
@@ -203,7 +206,8 @@ class ModelArguments:
         default=False,
         metadata={"help": "Will enable to load a pretrained model whose head dimensions are different."},
     )
-
+    def __post_init__(self):
+       print("hello 2")
 #TODO: Turn the args list below into a single dictionary
 def main(model_name_or_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, output_dir):
     # See all possible arguments in src/transformers/training_args.py
@@ -218,6 +222,7 @@ def main(model_name_or_path, text_outcome_df, text_outcome_df_val, text_outcome_
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
+    print("hello adi")
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
     # send_example_telemetry("run_glue", model_args, data_args)
@@ -246,7 +251,7 @@ def main(model_name_or_path, text_outcome_df, text_outcome_df_val, text_outcome_
     #Init the args into the parser
     training_args.output_dir = output_dir
     model_args.model_name_or_path = model_name_or_path
-
+    print(model_args)
 
     # Detecting last checkpoint.
     last_checkpoint = None
