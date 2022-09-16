@@ -1,8 +1,8 @@
 import os, sys
 #print(os.listdir())
 sys.path.append('inst/python/')
-#sys.path.insert(0, 'inst/python/transformer_embs.py')
 from transformer_embs import transformer_embeddings
+from task_finetune import main
 import numpy as np 
 
 BATCH_SIZE=32
@@ -121,3 +121,28 @@ def hgTransformerGetEmbedding(text_strings,
         print (num_cfs," cfs finished processing...")
 
     return embs
+
+def hgTransformerFineTune(model_name_or_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, output_dir):
+    """
+    Simple Python method for embedding text with pretained Hugging Face models
+
+    Parameters
+    ----------
+    text_strings : list
+        list of strings, each is embedded separately
+    model : str
+        shortcut name for Hugging Face pretained model
+        Full list https://huggingface.co/transformers/pretrained_models.html
+    model_max_length : int
+        maximum length of the tokenized text
+    
+
+    Returns
+    -------
+    
+    """
+
+    main(model_name_or_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, output_dir)
+    return 
+    
+
