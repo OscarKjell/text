@@ -139,11 +139,12 @@ def get_model(model, tokenizer_only=False, config_only=False):
             sys.exit()
 
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
-        if "megatron-bert-cased" in model:
-            tokenizer = BertTokenizer.from_pretrained('nvidia/megatron-bert-cased-345m')
-        else:
-            tokenizer = BertTokenizer.from_pretrained('nvidia/megatron-bert-uncased-345m')
-        transformer_model = MegatronBertForMaskedLM.from_pretrained(model, config=config)
+        if not config_only:
+            if "megatron-bert-cased" in model:
+                tokenizer = BertTokenizer.from_pretrained('nvidia/megatron-bert-cased-345m')
+            else:
+                tokenizer = BertTokenizer.from_pretrained('nvidia/megatron-bert-uncased-345m')
+            transformer_model = MegatronBertForMaskedLM.from_pretrained(model, config=config)
     elif "bigscience/bloom" in model:
         try:
             from transformers import BloomTokenizerFast, BloomModel, BloomConfig
@@ -153,12 +154,15 @@ def get_model(model, tokenizer_only=False, config_only=False):
             sys.exit()
         
         config = BloomConfig()
-        tokenizer = BloomTokenizerFast.from_pretrained(model)
-        transformer_model = BloomModel.from_pretrained(model, config=config)
+        if not config_only:
+            tokenizer = BloomTokenizerFast.from_pretrained(model)
+            transformer_model = BloomModel.from_pretrained(model, config=config)
     else:
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
-        tokenizer = AutoTokenizer.from_pretrained(model)
-        transformer_model = AutoModel.from_pretrained(model, config=config)
+        if not config_only:
+            tokenizer = AutoTokenizer.from_pretrained(model)
+            transformer_model = AutoModel.from_pretrained(model, config=config)
+            
     if config_only:
         return config
     elif tokenizer_only:
