@@ -4,8 +4,9 @@
 # text 0.9.99
 
 ## DEFAULT CHANGES
-- The default setting of textEmbed() is not providing token-level embeddings and text-level embeddings. Word_type embeddings are optional. 
-- In `textEmbed()` `layers = 11:12` is now `layers = 11`.
+- The default setting of textEmbed() is now providing token-level embeddings and text-level embeddings. Word_type embeddings are optional. 
+- In `textEmbed()` `layers = 11:12` is now `second_to_last`.
+- In `textEmbedRawLayers` default is now `second_to_last`.
 - In `textEmbedLayerAggregation()`  `layers = 11:12` is now `layers = "all"`.
 - In `textEmbed()` and `textEmbedRawLayers()` `x` is now called `texts`.
 - `textEmbedLayerAggregation()` now uses `layers = "all"`, `aggregation_from_layers_to_tokens`, `aggregation_from_tokens_to_texts`. 
@@ -14,7 +15,8 @@
 ## New Function
 - `textZeroShot()` is implemented.
 - `textDistanceNorm()` and `textDistanceMatrix()`
-- `textDistance()` can compute cosine `distance`. 
+- `textDistance()` can compute cosine `distance`.
+- `textModelLayers()` provides N layers for a given model
 
 ## New Setting
 `max_token_to_sentence` in `textEmbed()`
