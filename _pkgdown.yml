@@ -89,6 +89,7 @@ reference:
 - title: View or delete downloaded HuggingFace models in R
   contents:
   - textModels
+  - textModelLayers
   - textModelsRemove
 - title: Miscellaneous
   contents:

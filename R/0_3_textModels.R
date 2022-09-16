@@ -21,9 +21,33 @@ textModels <- function() {
   return(models)
 }
 
+#' Get the number of layers in a given model.
+#' @param target_model (string) The name of the model to know the number of layers of.
+#' @return Number of layers.
+#' @examples
+#' \dontrun{
+#' textModelLayers(target_model = "bert-base-uncased")
+#' }
+#' @seealso see \code{\link{textModels}}
+#' @export
+textModelLayers <- function(target_model){
+
+  reticulate::source_python(system.file("python",
+                                        "huggingface_interface3.py",
+                                        # envir = NULL,
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
+
+  n_layer <- get_number_of_hidden_layers(target_model,
+                                         logging_level = 'error')
+
+  return(n_layer)
+}
+
 
 #' Delete a specified model and model associated files.
-#' @param target_model Character string of the model name that you want to delete.
+#' @param target_model (string) The name of the model to be deleted.
 #' @return Confirmation whether the model has been deleted.
 #' @examples
 #' \dontrun{

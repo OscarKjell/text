@@ -94,7 +94,7 @@ test_that("textTrain Regression produces list of results with prediction being n
 
   predict_list_form <- text::textPredict(trained_logistic_PCA1,
                                          word_embeddings_4$texts[1],
-                                         dim_names = FALSE)
+                                         dim_names = TRUE)
   testthat::expect_is(predict_list_form[[1]][1], "factor")
 
   trained_1 <- text::textTrain(
@@ -539,7 +539,7 @@ test_that("textTrainRegression adding word_embedding together", {
 
 
   # Prediction based on multiple we
-  predictions_multi <- text::textPredict(multi_we_PCA_09, word_embeddings_4$texts[1:2], dim_names = FALSE)
+  predictions_multi <- text::textPredict(multi_we_PCA_09, word_embeddings_4$texts[1:2], dim_names = TRUE)
   testthat::expect_is(predictions_multi[[1]][[1]], "numeric")
   testthat::expect_equal(predictions_multi[[1]][[1]], 19.70077, tolerance = 0.0001)
 

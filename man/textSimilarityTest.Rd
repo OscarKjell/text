@@ -2,7 +2,7 @@
 % Please edit documentation in R/3_2_textSimilarityTest.R
 \name{textSimilarityTest}
 \alias{textSimilarityTest}
-\title{Test whether there is a significant difference in meaning between two sets of texts
+\title{EXPERIMENTAL: Test whether there is a significant difference in meaning between two sets of texts
 (i.e., between their word embeddings).}
 \usage{
 textSimilarityTest(
@@ -11,7 +11,7 @@ textSimilarityTest(
   similarity_method = "cosine",
   Npermutations = 10000,
   method = "paired",
-  alternative = c("two_sided", "less", "greater"),
+  alternative = "greater",
   output.permutations = TRUE,
   N_cluster_nodes = 1,
   seed = 1001
@@ -42,7 +42,7 @@ default is "cosine" (see also measures from textDistance (here computed as 1 - t
 A list with a p-value, similarity score estimate and permuted values if output.permutations=TRUE.
 }
 \description{
-Test whether there is a significant difference in meaning between two sets of texts
+EXPERIMENTAL: Test whether there is a significant difference in meaning between two sets of texts
 (i.e., between their word embeddings).
 }
 \examples{

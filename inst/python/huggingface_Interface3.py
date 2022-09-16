@@ -166,11 +166,12 @@ def get_model(model, tokenizer_only=False, config_only=False):
     else:
         return config, tokenizer, transformer_model
 
-def get_number_of_hidden_layers(model):
+def get_number_of_hidden_layers(model, logging_level = "error"):
     """
     Return the number of hidden layers for a given model.
     Returns -1 if the model's config doesn't have the num_hidden_layers parameter
     """
+    set_logging_level(logging_level)
     config = get_model(model, config_only=True)
     number_of_hidden_layers = -1
     try:

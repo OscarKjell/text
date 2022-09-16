@@ -7,7 +7,7 @@
 textEmbed(
   texts,
   model = "bert-base-uncased",
-  layers = 11,
+  layers = "second_to_last",
   dim_name = TRUE,
   aggregation_from_layers_to_tokens = "concatenate",
   aggregation_from_tokens_to_texts = "mean",
@@ -33,10 +33,11 @@ textEmbed(
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 "roberta-base", or "xlm-roberta-base".}
 
-\item{layers}{Specify the layers that should be extracted (default 11:12). It is more efficient to
-only extract the layers that you need (e.g., 12).
-Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
-These layers can then be aggregated in the textEmbedLayerAggregation function. If you want all layers then use 'all'.}
+\item{layers}{(string or numeric) Specify the layers that should be extracted (default "second_to_last"). It is more efficient
+to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
+or all by setting this parameter to "all". Layer 0 is the decontextualized input layer
+(i.e., not comprising hidden states) and thus should normally not be used. These layers can then
+ be aggregated in the textEmbedLayerAggregation function.}
 
 \item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
 (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name).

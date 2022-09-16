@@ -312,24 +312,6 @@ textTokenize <- function(texts,
 }
 
 
-#texts = x
-#model = "bert-base-uncased"
-#layers = 11
-#return_tokens = TRUE
-#word_type_embeddings = FALSE
-#decontextualize = FALSE
-#keep_token_embeddings = TRUE #whether to keep token embeddings when using texts or word_types aggregation
-#device = "cpu"
-#tokenizer_parallelism = FALSE
-#model_max_length = NULL
-#max_token_to_sentence = 4
-#logging_level = "error"
-#
-#
-#model = "bert-base-uncased"
-#word_type_embeddings = TRUE
-#decontextualize = TRUE
-#layers = "all"
 
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
@@ -339,7 +321,7 @@ textTokenize <- function(texts,
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base".
-#' @param layers Specify the layers that should be extracted (default 11). It is more efficient
+#' @param layers (string or numeric) Specify the layers that should be extracted (default "second_to_last"). It is more efficient
 #' to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
 #' or all by setting this parameter to "all". Layer 0 is the decontextualized input layer
 #' (i.e., not comprising hidden states) and thus should normally not be used. These layers can then
@@ -371,7 +353,7 @@ textTokenize <- function(texts,
 #' @export
 textEmbedRawLayers <- function(texts,
                                model = "bert-base-uncased",
-                               layers = 11,
+                               layers = "second_to_last",
                                return_tokens = TRUE,
                                word_type_embeddings = FALSE,
                                decontextualize = FALSE,
@@ -389,6 +371,17 @@ textEmbedRawLayers <- function(texts,
                 time as it would require to send the same decontextualised words to a transformer multiple times (whilst getting the same results over and over).
                 Consdier using rextEmbed, to get token embeddings as well as text embeddings.", fg = "green")
     ))
+  }
+
+
+  #if(is.numeric(layers)){
+  #  if(layers > textModelLayers(model)){
+  #    stop("You are trying to extract layers that do not exist in this model.")
+  #  }
+  #}
+
+  if(layers[1] == "second_to_last"){
+    layers <- textModelLayers(model) - 1
   }
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
@@ -782,31 +775,6 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 }
 
 
-
-#texts = Language_based_assessment_data_8[1,1]
-#model = "bert-base-uncased"
-#layers = 11
-#dim_name = TRUE
-#aggregation_from_layers_to_tokens = "concatenate"
-#aggregation_from_tokens_to_texts = "mean"
-#aggregation_from_tokens_to_word_types = "mean"
-#keep_token_embeddings = FALSE
-#tokens_select = NULL
-#tokens_deselect = NULL
-#decontextualize = FALSE
-#model_max_length = NULL
-#max_token_to_sentence = 4
-#tokenizer_parallelism = FALSE
-#device = "gpu"
-#logging_level = "error"
-#
-#
-#model = "bert-base-uncased"
-#word_type_embeddings = TRUE
-##contexts = FALSE
-#decontextualize = TRUE
-#layers = "all"
-
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
@@ -815,17 +783,14 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 #' "roberta-base", or "xlm-roberta-base".
-#' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient to
-#' only extract the layers that you need (e.g., 12).
-#' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
-#' These layers can then be aggregated in the textEmbedLayerAggregation function. If you want all layers then use 'all'.
-# @param contexts Provide word embeddings based on word contexts
-# (standard method; default = TRUE).
+#' @param layers (string or numeric) Specify the layers that should be extracted (default "second_to_last"). It is more efficient
+#' to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
+#' or all by setting this parameter to "all". Layer 0 is the decontextualized input layer
+#' (i.e., not comprising hidden states) and thus should normally not be used. These layers can then
+#'  be aggregated in the textEmbedLayerAggregation function.
 #' @param dim_name Boolean, if TRUE append the variable name after all variable-names in the output.
 #' (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name).
 #' see \code{\link{textDimName}} to change names back and forth.
-# @param single_context_embeddings Aggregated word embeddings for each token in the dataset
-# @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
 #' @param aggregation_from_layers_to_tokens (string) Aggregated layers of each token. Method to aggregate the contextualized layers (e.g., "mean", "min" or
 #' "max, which takes the minimum, maximum or mean, respectively, across each column; or "concatenate", which links
 #'  together each word embedding layer to one long row.
@@ -865,7 +830,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' @export
 textEmbed <- function(texts,
                       model = "bert-base-uncased",
-                      layers = 11,
+                      layers = "second_to_last",
                       dim_name = TRUE,
                       aggregation_from_layers_to_tokens = "concatenate",
                       aggregation_from_tokens_to_texts = "mean",

@@ -45,7 +45,7 @@ textSimilarityTest <- function(x,
   if (method == "paired" & (nrow(x) != nrow(y))) {
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
   }
-  alternative <- match.arg(alternative)
+  #alternative <- match.arg(alternative)
   results_title <- paste(similarity_method, "_estimate", sep = "")
   results <- tibble::tibble("title1" = NA, "title2" = NA)
   colnames(results) <- c(results_title, "p.value")
