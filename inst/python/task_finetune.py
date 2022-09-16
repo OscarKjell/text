@@ -23,6 +23,8 @@ import sys
 from dataclasses import dataclass, field
 from typing import Optional
 
+sys.path.append("/inst/python/")
+
 import datasets
 import numpy as np
 from datasets import load_dataset
@@ -38,10 +40,10 @@ from transformers import (
     HfArgumentParser,
     PretrainedConfig,
     Trainer,
-    TrainingArguments,
     default_data_collator,
     set_seed,
 )
+from training_args import TrainingArguments
 from transformers.trainer_utils import get_last_checkpoint
 #from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
