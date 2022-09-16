@@ -364,6 +364,14 @@ textEmbedRawLayers <- function(texts,
                                max_token_to_sentence = 4,
                                logging_level = "error") {
 
+  # Run python file with HunggingFace interface to state-of-the-art transformers
+  reticulate::source_python(system.file("python",
+                                        "huggingface_Interface3.py",
+                                        # envir = NULL,
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
+
   if (decontextualize == TRUE & word_type_embeddings == FALSE){
     stop(cat(
       colourise("decontextualize = TRUE & word_type_embeddings = FALSE has not been implemented in textEmbedRawLayers() at this stage.", fg = "red"),
@@ -386,14 +394,6 @@ textEmbedRawLayers <- function(texts,
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(texts)
-
-  # Run python file with HunggingFace interface to state-of-the-art transformers
-  reticulate::source_python(system.file("python",
-    "huggingface_Interface3.py",
-    # envir = NULL,
-    package = "text",
-    mustWork = TRUE
-  ))
 
 
   # Context (default): gives sorted word embeddings based on context (i.e., the entire text is sent to the transformer model)
@@ -844,6 +844,13 @@ textEmbed <- function(texts,
                       tokenizer_parallelism = FALSE,
                       device = "gpu",
                       logging_level = "error") {
+
+  reticulate::source_python(system.file("python",
+                                        "huggingface_Interface3.py",
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
+
   T1_textEmbed <- Sys.time()
 
   if (
@@ -858,11 +865,6 @@ textEmbed <- function(texts,
   }
   output <- list()
 
-  reticulate::source_python(system.file("python",
-    "huggingface_Interface3.py",
-    package = "text",
-    mustWork = TRUE
-  ))
 
   # Get hidden states/layers for output 1 and/or output 2 or decontextualsied;
   if (!is.null(aggregation_from_layers_to_tokens) |
