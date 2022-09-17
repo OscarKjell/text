@@ -11,6 +11,8 @@ textSimilarityTest(
   similarity_method = "cosine",
   Npermutations = 10000,
   method = "paired",
+  center = FALSE,
+  scale = FALSE,
   alternative = "greater",
   output.permutations = TRUE,
   N_cluster_nodes = 1,
@@ -29,6 +31,12 @@ default is "cosine" (see also measures from textDistance (here computed as 1 - t
 \item{Npermutations}{Number of permutations (default 10000).}
 
 \item{method}{Compute a "paired" or an "unpaired" test.}
+
+\item{center}{(boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
+(omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.}
+
+\item{scale}{(boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered) columns of x
+by their standard deviations if center is TRUE, and the root mean square otherwise.}
 
 \item{alternative}{Use a two or one-sided test (select one of: "two_sided", "less", "greater").}
 

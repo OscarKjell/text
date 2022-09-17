@@ -15,8 +15,12 @@ cosines <- function(x, y) {
 #' @param x Word embeddings from textEmbed.
 #' @param y Word embeddings from textEmbed.
 #' @param method Character string describing type of measure to be computed. Default is "cosine" (see also
-#' measures from textDistance() (which here is computed as 1 - textDistance) including "euclidean", "maximum",
-#' "manhattan", "canberra", "binary" and "minkowski").
+#' "spearmen", "pearson" as well as measures from textDistance() (which here is computed as 1 - textDistance)
+#' including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
+#' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
+#' (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.
+#' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered) columns of x
+#' by their standard deviations if center is TRUE, and the root mean square otherwise.
 #' @return A vector comprising semantic similarity scores.
 #' @examples
 #' library(dplyr)
@@ -29,18 +33,33 @@ cosines <- function(x, y) {
 #' @export
 textSimilarity <- function(x,
                            y,
-                           method = "cosine") {
+                           method = "cosine",
+                           center = TRUE,
+                           scale = FALSE) {
+
   # Select necessary columns
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
 
-  # normalize
-  #x1 <- as_tibble(scale(x1, center = center, scale = scale))
-  #y1 <- as_tibble(scale(y1, center = center, scale = scale))
+  # Normalize embeddings
+  x1 <- tibble::as_tibble(scale(x1, center = center, scale = scale))
+  y1 <- tibble::as_tibble(scale(y1, center = center, scale = scale))
 
   # Compute cosines
   if (method == "cosine") {
     ss <- cosines(x1, y1)
+  }
+
+  # Compute correlation
+  if (method == "spearman" | method == "pearson") {
+    # i =1
+    for(i in seq_len(nrow(x1))){
+      ss[[i]] <- cor(as_vector(x1[i,]),
+                     as_vector(y1[i,]),
+                     method = method)
+    }
+    ss <- unlist(ss)
+    ss
   }
 
   if (method %in% c(
@@ -53,13 +72,38 @@ textSimilarity <- function(x,
   # Add information about the used embeddings
   embedding_descriptions_x <- comment(x)
   embedding_descriptions_y <- comment(y)
-  comment(ss) <- paste("x embedding = ", embedding_descriptions_x,
+  comment(ss) <- paste(
+    "x embedding = ", embedding_descriptions_x,
     "y embedding = ", embedding_descriptions_y,
-    method,
+    "method = ", method,
+    "center = ", center,
+    "scale = ", scale,
     sep = ".", collapse = " "
   )
   ss
 }
+
+#x = word_embeddings_4$texts$harmonytext
+#y = word_embeddings_4$texts$satisfactiontext
+#
+#ss_cos <- textSimilarity(x, y,
+#                         method = "cosine",
+#                         center = TRUE,
+#                         scale = FALSE)
+#
+#ss_spearman <- textSimilarity(x, y,
+#                         method = "spearman",
+#                         center = TRUE,
+#                         scale = FALSE)
+#
+#ss_pearson <- textSimilarity(x, y,
+#                         method = "pearson",
+#                         center = TRUE,
+#                         scale = FALSE)
+#
+#mean(ss_cos)
+#mean(ss_spearman)
+#mean(ss_pearson)
 
 
 #' Compute the semantic distance between two text variables.
@@ -69,6 +113,10 @@ textSimilarity <- function(x,
 #' @param method Character string describing type of measure to be computed; default is "euclidean" (see also
 #' measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
 #' It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).
+#' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
+#' (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.
+#' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered) columns of x
+#' by their standard deviations if center is TRUE, and the root mean square otherwise.
 #' @return A vector comprising semantic distance scores.
 #' @examples
 #' library(dplyr)
@@ -81,7 +129,9 @@ textSimilarity <- function(x,
 #' @export
 textDistance <- function(x,
                          y,
-                         method = "euclidean") {
+                         method = "euclidean",
+                         center = FALSE,
+                         scale = FALSE) {
 
   x1 <- textDimName(x, dim_names = FALSE)
   y1 <- textDimName(y, dim_names = FALSE)
@@ -90,12 +140,16 @@ textDistance <- function(x,
   x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
   y1 <- dplyr::select(y1, dplyr::starts_with("Dim"))
 
+  # normalize
+  x1 <- as_tibble(scale(x1, center = center, scale = scale))
+  y1 <- as_tibble(scale(y1, center = center, scale = scale))
+
   if(method == "cosine"){
-    # Compute cosine distacne
+    # Compute cosine distance
       ss <- 1 - cosines(x1, y1)
 
   } else{
-  # Compute distance method = "euclidean" help(dist)
+  # Compute distance method = "euclidean"
   ss1 <- list()
   # i=1
   for (i in seq_len(nrow(x1))) {
@@ -108,9 +162,12 @@ textDistance <- function(x,
   # Add information about the used embeddings
   embedding_descriptions_x <- comment(x)
   embedding_descriptions_y <- comment(y)
-  comment(ss) <- paste("x embedding = ", embedding_descriptions_x,
+  comment(ss) <- paste(
+    "x embedding = ", embedding_descriptions_x,
     "y embedding = ", embedding_descriptions_y,
-    method,
+    "method = ", method,
+    "center = ", center,
+    "scale = ", scale,
     sep = ".", collapse = " "
   )
   ss
@@ -126,7 +183,9 @@ textDistance <- function(x,
 #' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
 #' @export
 textSimilarityMatrix <- function(x,
-                                 method = "cosine") {
+                                 method = "cosine",
+                                 center = FALSE,
+                                 scale = FALSE) {
   ss_matrix <- matrix(nrow = nrow(x), ncol = nrow(x))
 
   for (i in seq_len(nrow(x))) {
@@ -134,7 +193,9 @@ textSimilarityMatrix <- function(x,
       ss_matrix[i, j] <- text::textSimilarity(
         x[i, ],
         x[j, ],
-        method
+        method,
+        scale = scale,
+        center = center
       )
     }
   }
@@ -150,7 +211,9 @@ textSimilarityMatrix <- function(x,
 #' @seealso see \code{\link{textDistanceNorm}} and \code{\link{textSimilarityTest}}
 #' @export
 textDistanceMatrix <- function(x,
-                                 method = "euclidean") {
+                              method = "euclidean",
+                              center = FALSE,
+                              scale = FALSE) {
   ss_matrix <- matrix(nrow = nrow(x), ncol = nrow(x))
 
   for (i in seq_len(nrow(x))) {
@@ -158,7 +221,10 @@ textDistanceMatrix <- function(x,
       ss_matrix[i, j] <- text::textDistance(
         x[i, ],
         x[j, ],
-        method
+        method,
+        center = center,
+        scale = scale
+
       )
     }
   }
@@ -190,7 +256,12 @@ textDistanceMatrix <- function(x,
 #' @seealso see \code{\link{textSimilarity}} and \code{\link{textSimilarityTest}}
 #' @importFrom dplyr row_number slice select starts_with
 #' @export
-textSimilarityNorm <- function(x, y, method = "cosine") {
+textSimilarityNorm <- function(x,
+                               y,
+                               method = "cosine",
+                               center = FALSE,
+                               scale = FALSE
+                               ) {
   # Select Dimensions
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   y1 <- dplyr::select(as_tibble(as.list(y)), dplyr::starts_with("Dim"))
@@ -199,7 +270,10 @@ textSimilarityNorm <- function(x, y, method = "cosine") {
     dplyr::slice(rep(dplyr::row_number(), nrow(x1)))
 
   # Compute similarity
-  ss <- textSimilarity(x1, y2, method = method)
+  ss <- textSimilarity(x1, y2,
+                       method = method,
+                       center = center,
+                       scale = scale)
 
   # Add information about the used embeddings
   embedding_descriptions_x <- comment(x)
@@ -237,7 +311,11 @@ textSimilarityNorm <- function(x, y, method = "cosine") {
 #' @seealso see \code{\link{textDistance}} and \code{\link{textSimilarityTest}}
 #' @importFrom dplyr row_number slice select starts_with
 #' @export
-textDistanceNorm <- function(x, y, method = "euclidean") {
+textDistanceNorm <- function(x,
+                             y,
+                             method = "euclidean",
+                             center = FALSE,
+                             scale = FALSE) {
   # Select Dimensions
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   y1 <- dplyr::select(as_tibble(as.list(y)), dplyr::starts_with("Dim"))
@@ -246,7 +324,10 @@ textDistanceNorm <- function(x, y, method = "euclidean") {
     dplyr::slice(rep(dplyr::row_number(), nrow(x1)))
 
   # Compute similarity
-  ss <- textDistance(x1, y2, method = method)
+  ss <- textDistance(x1, y2,
+                     method = method,
+                     center = center,
+                     scale = scale)
 
   # Add information about the used embeddings
   embedding_descriptions_x <- comment(x)

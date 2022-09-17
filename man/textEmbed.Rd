@@ -7,7 +7,7 @@
 textEmbed(
   texts,
   model = "bert-base-uncased",
-  layers = "second_to_last",
+  layers = -2,
   dim_name = TRUE,
   aggregation_from_layers_to_tokens = "concatenate",
   aggregation_from_tokens_to_texts = "mean",
@@ -33,8 +33,8 @@ textEmbed(
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 "roberta-base", or "xlm-roberta-base".}
 
-\item{layers}{(string or numeric) Specify the layers that should be extracted (default "second_to_last"). It is more efficient
-to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
+\item{layers}{(string or numeric) Specify the layers that should be extracted (default -2 which give the second to last layer).
+ It is more efficient to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
 or all by setting this parameter to "all". Layer 0 is the decontextualized input layer
 (i.e., not comprising hidden states) and thus should normally not be used. These layers can then
  be aggregated in the textEmbedLayerAggregation function.}

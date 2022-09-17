@@ -4,7 +4,7 @@
 \alias{textDistance}
 \title{Compute the semantic distance between two text variables.}
 \usage{
-textDistance(x, y, method = "euclidean")
+textDistance(x, y, method = "euclidean", center = FALSE, scale = FALSE)
 }
 \arguments{
 \item{x}{Word embeddings (from textEmbed).}
@@ -14,6 +14,12 @@ textDistance(x, y, method = "euclidean")
 \item{method}{Character string describing type of measure to be computed; default is "euclidean" (see also
 measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
 It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).}
+
+\item{center}{(boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
+(omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.}
+
+\item{scale}{(boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered) columns of x
+by their standard deviations if center is TRUE, and the root mean square otherwise.}
 }
 \value{
 A vector comprising semantic distance scores.

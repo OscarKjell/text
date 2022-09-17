@@ -167,7 +167,7 @@ test_that("textEmbed", {
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
   ### testing for me
-  embeddings_decontextsT <- textEmbed(x,
+  embeddings_decontextsT <- text::textEmbed(x,
     model = "bert-base-uncased",
     aggregation_from_layers_to_tokens = "concatenate",
     aggregation_from_tokens_to_texts = "mean",
@@ -176,7 +176,7 @@ test_that("textEmbed", {
     #single_context_embeddings = FALSE
   )
 
-  single_context_embeddingsT <- textEmbed(x[1],
+  single_context_embeddingsT <- text::textEmbed(x[1],
     model = "bert-base-uncased",
     #aggregation_from_layers_to_tokens = "concatenate",
     #aggregation_from_tokens_to_texts = "mean",

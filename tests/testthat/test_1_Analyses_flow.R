@@ -22,9 +22,7 @@ test_that("Testing textEmbed as well as train", {
     layers = c(11:12),
     aggregation_from_layers_to_tokens = "concatenate",
     aggregation_from_tokens_to_texts = "mean",
-    aggregation_from_tokens_to_word_types = "mean",
-    #context_layers = c(11:12),
-    #decontext_layers = c(11:12)
+    aggregation_from_tokens_to_word_types = "mean"
   )
 
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)

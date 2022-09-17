@@ -4,7 +4,7 @@
 \alias{textSimilarity}
 \title{Compute the semantic similarity between two text variables.}
 \usage{
-textSimilarity(x, y, method = "cosine")
+textSimilarity(x, y, method = "cosine", center = TRUE, scale = FALSE)
 }
 \arguments{
 \item{x}{Word embeddings from textEmbed.}
@@ -12,8 +12,14 @@ textSimilarity(x, y, method = "cosine")
 \item{y}{Word embeddings from textEmbed.}
 
 \item{method}{Character string describing type of measure to be computed. Default is "cosine" (see also
-measures from textDistance() (which here is computed as 1 - textDistance) including "euclidean", "maximum",
-"manhattan", "canberra", "binary" and "minkowski").}
+"spearmen", "pearson" as well as measures from textDistance() (which here is computed as 1 - textDistance)
+including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
+
+\item{center}{(boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
+(omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.}
+
+\item{scale}{(boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered) columns of x
+by their standard deviations if center is TRUE, and the root mean square otherwise.}
 }
 \value{
 A vector comprising semantic similarity scores.

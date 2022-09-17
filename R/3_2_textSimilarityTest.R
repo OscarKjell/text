@@ -9,6 +9,10 @@
 #' "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
 #' @param Npermutations Number of permutations (default 10000).
 #' @param method Compute a "paired" or an "unpaired" test.
+#' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
+#' (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.
+#' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered) columns of x
+#' by their standard deviations if center is TRUE, and the root mean square otherwise.
 #' @param alternative Use a two or one-sided test (select one of: "two_sided", "less", "greater").
 #' @param output.permutations If TRUE, returns permuted values in output.
 #' @param N_cluster_nodes Number of cluster nodes to use (more makes computation faster; see parallel package).
@@ -32,6 +36,8 @@ textSimilarityTest <- function(x,
                                similarity_method = "cosine",
                                Npermutations = 10000,
                                method = "paired",
+                               center = FALSE,
+                               scale = FALSE,
                                alternative = "greater", # less = dissimalar; greater = similar; two-sided = a correlation; c("two_sided", "less", "greater"),
                                output.permutations = TRUE,
                                N_cluster_nodes = 1,
@@ -56,7 +62,10 @@ textSimilarityTest <- function(x,
 
   if (method == "paired") {
     # Compute similarity between all pairs
-    ss_observed <- textSimilarity(x1, y1, method = similarity_method)
+    ss_observed <- textSimilarity(x1, y1,
+                                  method = similarity_method,
+                                  center = center,
+                                  scale = scale)
     # Compute the data's mean of the similarity scores
     results[1] <- mean(ss_observed) # removed abs(
   }
@@ -66,7 +75,10 @@ textSimilarityTest <- function(x,
     Y_all <- tibble::as_tibble_row(textEmbeddingAggregation(y1, aggregation = "mean"))
 
     # Compute similarity between the aggregated word embedding
-    ss_observed <- textSimilarity(X_all, Y_all, method = similarity_method)
+    ss_observed <- textSimilarity(X_all, Y_all,
+                                  method = similarity_method,
+                                  center = center,
+                                  scale = scale)
 
     # Compute the data's mean of the similarity scores
     results[1] <- mean(ss_observed) #removed abso
@@ -95,7 +107,10 @@ textSimilarityTest <- function(x,
       rdata2 <- x1y1[!indices, ]
       # Compute the semantic similarity between randomly drawn word embeddings and compute the mean.
       if (method == "paired") {
-        rand_ss <- textSimilarity(rdata1, rdata2, method = similarity_method)
+        rand_ss <- textSimilarity(rdata1, rdata2,
+                                  method = similarity_method,
+                                  center = center,
+                                  scale = scale)
         return(mean(rand_ss)) # removed abs(
       }
       if (method == "unpaired") {
@@ -103,7 +118,10 @@ textSimilarityTest <- function(x,
         R2_all <- tibble::as_tibble_row(textEmbeddingAggregation(rdata2, aggregation = "mean"))
 
         # Compute similarity between the summed word embedding
-        rand_ss <- textSimilarity(R1_all, R2_all, method = similarity_method)
+        rand_ss <- textSimilarity(R1_all, R2_all,
+                                  method = similarity_method,
+                                  center = center,
+                                  scale = scale)
 
         # Compute the data's mean of the similarity scores
         return(rand_ss) # removed abs()
@@ -150,6 +168,8 @@ textSimilarityTest <- function(x,
   test_description <- paste("permutations = ", Npermutations,
     "similarity_method = ", similarity_method,
     "method = ", method,
+    "center = ", center,
+    "scale = ", scale,
     "alternative = ", alternative,
     collapse = " "
   )
