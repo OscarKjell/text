@@ -51,7 +51,7 @@ textSimilarityTest <- function(x,
   if (method == "paired" & (nrow(x) != nrow(y))) {
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
   }
-  #alternative <- match.arg(alternative)
+  # alternative <- match.arg(alternative)
   results_title <- paste(similarity_method, "_estimate", sep = "")
   results <- tibble::tibble("title1" = NA, "title2" = NA)
   colnames(results) <- c(results_title, "p.value")
@@ -63,9 +63,10 @@ textSimilarityTest <- function(x,
   if (method == "paired") {
     # Compute similarity between all pairs
     ss_observed <- textSimilarity(x1, y1,
-                                  method = similarity_method,
-                                  center = center,
-                                  scale = scale)
+      method = similarity_method,
+      center = center,
+      scale = scale
+    )
     # Compute the data's mean of the similarity scores
     results[1] <- mean(ss_observed) # removed abs(
   }
@@ -76,12 +77,13 @@ textSimilarityTest <- function(x,
 
     # Compute similarity between the aggregated word embedding
     ss_observed <- textSimilarity(X_all, Y_all,
-                                  method = similarity_method,
-                                  center = center,
-                                  scale = scale)
+      method = similarity_method,
+      center = center,
+      scale = scale
+    )
 
     # Compute the data's mean of the similarity scores
-    results[1] <- mean(ss_observed) #removed abso
+    results[1] <- mean(ss_observed) # removed abso
   }
 
   ### Compute comparison distribution of similarity scores based on randomly drawn word embeddings from both groups
@@ -108,9 +110,10 @@ textSimilarityTest <- function(x,
       # Compute the semantic similarity between randomly drawn word embeddings and compute the mean.
       if (method == "paired") {
         rand_ss <- textSimilarity(rdata1, rdata2,
-                                  method = similarity_method,
-                                  center = center,
-                                  scale = scale)
+          method = similarity_method,
+          center = center,
+          scale = scale
+        )
         return(mean(rand_ss)) # removed abs(
       }
       if (method == "unpaired") {
@@ -119,9 +122,10 @@ textSimilarityTest <- function(x,
 
         # Compute similarity between the summed word embedding
         rand_ss <- textSimilarity(R1_all, R2_all,
-                                  method = similarity_method,
-                                  center = center,
-                                  scale = scale)
+          method = similarity_method,
+          center = center,
+          scale = scale
+        )
 
         # Compute the data's mean of the similarity scores
         return(rand_ss) # removed abs()

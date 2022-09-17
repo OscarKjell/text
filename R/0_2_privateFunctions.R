@@ -1,8 +1,8 @@
 
 
 
-#unique_freq_words(Language_based_assessment_data_8[1,1])
-#getUniqueWordsAndFreq(Language_based_assessment_data_8[1,1], hg_tokenizer = F)
+# unique_freq_words(Language_based_assessment_data_8[1,1])
+# getUniqueWordsAndFreq(Language_based_assessment_data_8[1,1], hg_tokenizer = F)
 
 #' Takes all words as input and arrange them in column with an accompanying column with frequency.
 #' @param words Words
@@ -265,22 +265,20 @@ cohens_d <- function(x, y) {
 #' @param part (string) The part to be extracted.
 #' @return string
 #' @noRd
-extract_comment <- function(comment, part){
-
-  if(part == "model"){
+extract_comment <- function(comment, part) {
+  if (part == "model") {
     model_text <- sub(".*textEmbedRawLayers: model: ", "", comment)
     output <- sub(" ; layers.*", "", model_text)
   }
 
-  #aggregate_layers_text <- sub(".*aggregation_from_layers_to_tokens =  ", "", text_plot_comment)
-  #aggregate_layers_type <- sub(" aggregation_from_tokens_to_texts.*", "", aggregate_layers_text)
+  # aggregate_layers_text <- sub(".*aggregation_from_layers_to_tokens =  ", "", text_plot_comment)
+  # aggregate_layers_type <- sub(" aggregation_from_tokens_to_texts.*", "", aggregate_layers_text)
   #
-  #aggregation_tokens_text <- sub(".*aggregation_from_tokens_to_texts =  ", "", text_plot_comment)
-  #aggregation_tokens_type <- sub(" tokens_select.*", "", aggregation_tokens_text)
+  # aggregation_tokens_text <- sub(".*aggregation_from_tokens_to_texts =  ", "", text_plot_comment)
+  # aggregation_tokens_type <- sub(" tokens_select.*", "", aggregation_tokens_text)
   #
-  #aggregation_word_text <- sub(".*aggregation_from_tokens_to_word_types =  ", "", text_plot_comment)
-  #aggregation_word_type <- sub("  ; decontextualize.*", "", aggregation_word_text)
+  # aggregation_word_text <- sub(".*aggregation_from_tokens_to_word_types =  ", "", text_plot_comment)
+  # aggregation_word_type <- sub("  ; decontextualize.*", "", aggregation_word_text)
 
   return(output)
 }
-

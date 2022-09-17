@@ -87,11 +87,11 @@ test_that("Testing textEmbed as well as train", {
   hils_predicted_scores1 <- textPredict(
     model_info = train_x_append,
     word_embeddings = harmony_word_embeddings$texts,
-   # x_append = Language_based_assessment_data_8[1:20, ], # sending all give same as below: 12.40038
-   # x_append = Language_based_assessment_data_8[1:20, 6:7], # sending only swlstotal and age: 12.40038
-   x_append = Language_based_assessment_data_8[1:20, c(7,6) ], # sending in the "wrong" order give same as above: 12.40038
-   #x_append = Language_based_assessment_data_8[1:20, c(5,6) ], # missing one throws error
-   dim_names = TRUE
+    # x_append = Language_based_assessment_data_8[1:20, ], # sending all give same as below: 12.40038
+    # x_append = Language_based_assessment_data_8[1:20, 6:7], # sending only swlstotal and age: 12.40038
+    x_append = Language_based_assessment_data_8[1:20, c(7, 6)], # sending in the "wrong" order give same as above: 12.40038
+    # x_append = Language_based_assessment_data_8[1:20, c(5,6) ], # missing one throws error
+    dim_names = TRUE
   )
   expect_equal(hils_predicted_scores1[[1]][1], 12.40038, tolerance = 0.01)
 
@@ -129,7 +129,8 @@ test_that("Testing textEmbed as well as train", {
 
   # for decontexts = TRUE expect_equal(proj[[1]][[1]][[1]][[1]], -0.402433, tolerance = 0.0000001)
 
-  plot_proj <- textProjectionPlot(word_data = proj,
+  plot_proj <- textProjectionPlot(
+    word_data = proj,
     explore_words = c("happy"),
     y_axes = TRUE
   )

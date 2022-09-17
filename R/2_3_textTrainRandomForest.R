@@ -482,43 +482,43 @@ summarize_tune_results_rf <- function(object,
 }
 
 
-#x_append = NULL
-#cv_method = "validation_split"
-#outside_folds = 10
-#outside_strata_y = "y"
-#outside_breaks = 4
-#inside_folds = 3 / 4
-#inside_strata_y = "y"
-#inside_breaks = 4
-#mode_rf = "classification"
-#preprocess_step_center = FALSE
-#preprocess_scale_center = FALSE
-#preprocess_PCA = NA
-#extremely_randomised_splitrule = "extratrees"
-#mtry = c(1, 10, 20, 40)
-#min_n = c(1, 10, 20, 40)
-#trees = c(1000)
-#eval_measure = "bal_accuracy"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
-#x = word_embeddings_4$texts$harmonytext
-#y = example_categories
-#outside_folds = 2
-#inside_folds = 2 / 3
-#outside_strata_y = NULL
-#inside_strata_y = NULL
-#mode_rf = "classification"
-#mtry = c(1)
-#min_n = c(1)
-#trees = c(1000)
-#preprocess_PCA = c(0.95)
-#extremely_randomised_splitrule = NULL
-#multi_cores = "multi_cores_sys_default"
-#eval_measure = "roc_auc"
-#save_output = "only_results"
-#event_level = "second"
+# x_append = NULL
+# cv_method = "validation_split"
+# outside_folds = 10
+# outside_strata_y = "y"
+# outside_breaks = 4
+# inside_folds = 3 / 4
+# inside_strata_y = "y"
+# inside_breaks = 4
+# mode_rf = "classification"
+# preprocess_step_center = FALSE
+# preprocess_scale_center = FALSE
+# preprocess_PCA = NA
+# extremely_randomised_splitrule = "extratrees"
+# mtry = c(1, 10, 20, 40)
+# min_n = c(1, 10, 20, 40)
+# trees = c(1000)
+# eval_measure = "bal_accuracy"
+# model_description = "Consider writing a description of your model here"
+# multi_cores = "multi_cores_sys_default"
+# save_output = "all"
+# seed = 2020
+# x = word_embeddings_4$texts$harmonytext
+# y = example_categories
+# outside_folds = 2
+# inside_folds = 2 / 3
+# outside_strata_y = NULL
+# inside_strata_y = NULL
+# mode_rf = "classification"
+# mtry = c(1)
+# min_n = c(1)
+# trees = c(1000)
+# preprocess_PCA = c(0.95)
+# extremely_randomised_splitrule = NULL
+# multi_cores = "multi_cores_sys_default"
+# eval_measure = "roc_auc"
+# save_output = "only_results"
+# event_level = "second"
 
 #' Train word embeddings to a categorical variable using random forrest.
 #'
@@ -636,9 +636,9 @@ textTrainRandomForest <- function(x,
 
   # The fit_model_rmse function need to number of word embeddings -- instead of
   # sending a separate parameter number of embeddings are give as a comment in "model"
-  if(tibble::is_tibble(x)){
+  if (tibble::is_tibble(x)) {
     comment(eval_measure) <- "1"
-  }else {
+  } else {
     comment(eval_measure) <- paste(length(x))
   }
 
@@ -794,7 +794,7 @@ textTrainRandomForest <- function(x,
   xy_all <- xy
 
   ######### One word embedding as input
-  n_embbeddings <-as.numeric(comment(eval_measure))
+  n_embbeddings <- as.numeric(comment(eval_measure))
 
   if (n_embbeddings == 1) {
     final_recipe <- # xy %>%

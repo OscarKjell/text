@@ -489,61 +489,61 @@ summarize_tune_results <- function(object,
 }
 
 
-#x
-#y
-#x_append = NULL
-#cv_method = "validation_split"
-#outside_folds = 10
-#outside_strata_y = "y"
-#outside_breaks = 4
-#inside_folds = 3 / 4
-#inside_strata_y = "y"
-#inside_breaks = 4
-#model = "regression"
-#eval_measure = "default"
-#preprocess_step_center = TRUE
-#preprocess_step_scale = TRUE
-#preprocess_PCA = NA
-#penalty = 10^seq(-16, 16)
-#mixture = c(0)
-#first_n_predictors = NA
-#impute_missing = FALSE
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
+# x
+# y
+# x_append = NULL
+# cv_method = "validation_split"
+# outside_folds = 10
+# outside_strata_y = "y"
+# outside_breaks = 4
+# inside_folds = 3 / 4
+# inside_strata_y = "y"
+# inside_breaks = 4
+# model = "regression"
+# eval_measure = "default"
+# preprocess_step_center = TRUE
+# preprocess_step_scale = TRUE
+# preprocess_PCA = NA
+# penalty = 10^seq(-16, 16)
+# mixture = c(0)
+# first_n_predictors = NA
+# impute_missing = FALSE
+# method_cor = "pearson"
+# model_description = "Consider writing a description of your model here"
+# multi_cores = "multi_cores_sys_default"
+# save_output = "all"
+# seed = 2020
 #
-#x = word_embeddings_4$texts["harmonywords"]
-#y = Language_based_assessment_data_8[6]
-#cv_method = "cv_folds"
-#outside_folds = 2
-#inside_folds = 2
-#outside_strata_y = NULL
-#inside_strata_y = NULL
-#model = "regression"
-#eval_measure = "rmse"
-#penalty = c(1)
-#mixture = c(0)
-#preprocess_PCA = 1
-#multi_cores = FALSE
+# x = word_embeddings_4$texts["harmonywords"]
+# y = Language_based_assessment_data_8[6]
+# cv_method = "cv_folds"
+# outside_folds = 2
+# inside_folds = 2
+# outside_strata_y = NULL
+# inside_strata_y = NULL
+# model = "regression"
+# eval_measure = "rmse"
+# penalty = c(1)
+# mixture = c(0)
+# preprocess_PCA = 1
+# multi_cores = FALSE
 ## force_train_method = "automatic"
-#save_output = "only_results"
+# save_output = "only_results"
 #
-#x = word_embeddings_4$texts["harmonywords"]
-#y = as.factor(Language_based_assessment_data_8$gender)
-#cv_method = "validation_split"
-#outside_folds = 2
-#inside_folds = 3 / 4
-#outside_strata_y = NULL
-#inside_strata_y = NULL
-#model = "logistic"
-#eval_measure = "bal_accuracy"
-#penalty = c(1)
-#mixture = c(0)
-#preprocess_PCA = "min_halving"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "only_results"
+# x = word_embeddings_4$texts["harmonywords"]
+# y = as.factor(Language_based_assessment_data_8$gender)
+# cv_method = "validation_split"
+# outside_folds = 2
+# inside_folds = 3 / 4
+# outside_strata_y = NULL
+# inside_strata_y = NULL
+# model = "logistic"
+# eval_measure = "bal_accuracy"
+# penalty = c(1)
+# mixture = c(0)
+# preprocess_PCA = "min_halving"
+# multi_cores = "multi_cores_sys_default"
+# save_output = "only_results"
 
 #' Train word embeddings to a numeric variable.
 #'
@@ -661,9 +661,9 @@ textTrainRegression <- function(x,
 
   # The fit_model_rmse function need to number of word embeddings -- instead of
   # sending a separate parameter number of embeddings are give as a comment in "model"
-  if(tibble::is_tibble(x)){
+  if (tibble::is_tibble(x)) {
     comment(eval_measure) <- "1"
-  }else {
+  } else {
     comment(eval_measure) <- paste(length(x))
   }
 
@@ -844,7 +844,7 @@ textTrainRegression <- function(x,
   xy_all <- xy
 
   ######### One word embedding as input
-  n_embbeddings <-as.numeric(comment(eval_measure))
+  n_embbeddings <- as.numeric(comment(eval_measure))
   if (n_embbeddings == 1) {
 
     # If testing N first predictors help(step_scale) first_n_predictors = 3
@@ -954,8 +954,10 @@ textTrainRegression <- function(x,
     )))
   }
 
-  preprocessing_recipe_save <- recipe_save_small_size(final_recipe = final_recipe,
-                                                      xy_all = xy_all)
+  preprocessing_recipe_save <- recipe_save_small_size(
+    final_recipe = final_recipe,
+    xy_all = xy_all
+  )
 
   # Check number of predictors (to later decide standard or multiple regression)
   # To load the prepared training data into a variable juice() is used.
@@ -991,7 +993,7 @@ textTrainRegression <- function(x,
                 mixture = mixture_mode
               )
             }
-          } %>% #help(glmnet)
+          } %>% # help(glmnet)
           parsnip::set_engine("glmnet")
 
         # Create Workflow (to know variable roles from recipes) help(workflow)
@@ -1212,4 +1214,3 @@ textTrainRegression <- function(x,
 
   final_results
 }
-

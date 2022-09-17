@@ -1,8 +1,8 @@
 
-#model_info = text_train_results2
-#word_embeddings = harmony_word_embeddings
-#x_append = Language_based_assessment_data_8[1:20, ]
-#dim_names = TRUE
+# model_info = text_train_results2
+# word_embeddings = harmony_word_embeddings
+# x_append = Language_based_assessment_data_8[1:20, ]
+# dim_names = TRUE
 
 #' Predict scores or classification from, e.g., textTrain.
 #'
@@ -52,7 +52,8 @@ textPredict <- function(model_info,
   } else {
     # Remove specific names in the word embeddings
     word_embeddings <- textDimName(word_embeddings,
-                                   dim_names = FALSE)
+      dim_names = FALSE
+    )
 
     word_embeddings_names <- "word_embeddings"
   }
@@ -69,7 +70,6 @@ textPredict <- function(model_info,
 
     # Select those names from the "data"
     x_append_target <- x_append %>% dplyr::select(dplyr::all_of(variable_names))
-
   } else {
     variable_names <- NULL
     x_append_target <- NULL
@@ -81,7 +81,7 @@ textPredict <- function(model_info,
     x_append = x_append_target, ...
   )
   new_data1 <- new_data1$x1
-  #names(new_data1)[3000:3078]
+  # names(new_data1)[3000:3078]
 
   # Dealing with NAs
   new_data1$id_nr <- c(seq_len(nrow(new_data1)))
@@ -97,7 +97,7 @@ textPredict <- function(model_info,
 
   # Get Prediction scores help(arrange)
   predicted_scores2 <- data_prepared_with_recipe %>%
-    dplyr::bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type)) %>% #, ...
+    dplyr::bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type)) %>% # , ...
     dplyr::select(-!!colnames_to_b_removed) %>%
     dplyr::full_join(new_data_id_nr_col, by = "id_nr") %>%
     dplyr::arrange(id_nr) %>%

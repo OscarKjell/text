@@ -122,14 +122,16 @@ textDescriptives <- function(words,
     entropy <- entropy_plugin_text(collapse_text_df_freqs1, unit = entropy_unit)
 
     # Sorting output
-    output_list <- tibble::tibble(w_total,
-                                  w_mean,
-                                  w_median,
-                                  w_range_min,
-                                  w_range_max,
-                                  w_sd,
-                                  unique_tokens,
-                                  n_tokens, entropy)
+    output_list <- tibble::tibble(
+      w_total,
+      w_mean,
+      w_median,
+      w_range_min,
+      w_range_max,
+      w_sd,
+      unique_tokens,
+      n_tokens, entropy
+    )
     return(output_list)
   }
 

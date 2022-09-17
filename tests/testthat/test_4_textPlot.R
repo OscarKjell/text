@@ -33,9 +33,10 @@ test_that("textProjection with QUARTILE, 0.9 PCA and
   skip_on_cran()
 
   # Pre-processing data for plotting
-  df_for_plotting2 <- text::textProjection(words =  Language_based_assessment_data_8$harmonywords[1:12],
-                                           word_embeddings = word_embeddings_4$texts$harmonywords[1:12, ],
-                                           word_types_embeddings =word_embeddings_4$word_types,
+  df_for_plotting2 <- text::textProjection(
+    words = Language_based_assessment_data_8$harmonywords[1:12],
+    word_embeddings = word_embeddings_4$texts$harmonywords[1:12, ],
+    word_types_embeddings = word_embeddings_4$word_types,
     Language_based_assessment_data_8$hilstotal[1:12],
     Language_based_assessment_data_8$swlstotal[1:12],
     split = "quartile",

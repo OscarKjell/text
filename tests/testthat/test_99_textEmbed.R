@@ -22,7 +22,8 @@ skip_if_no_torch <- function() {
 test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
   skip_on_cran()
 
-  aggregated_embeddings1 <- textEmbedLayerAggregation(word_embeddings_layers = raw_embeddings_1$context_tokens,
+  aggregated_embeddings1 <- textEmbedLayerAggregation(
+    word_embeddings_layers = raw_embeddings_1$context_tokens,
     layers = 11:12,
     aggregation_from_layers_to_tokens = "mean",
     aggregation_from_tokens_to_texts = "normalize",
@@ -101,10 +102,12 @@ test_that("textEmbedStatic with example space", {
   tibble_response
 
   # Test function
-  test_result <- textEmbedStatic(df = tibble_response,
-                                 space = test_space,
-                                 tk_df = "null",
-                                 aggregation_from_tokens_to_texts = "mean")
+  test_result <- textEmbedStatic(
+    df = tibble_response,
+    space = test_space,
+    tk_df = "null",
+    aggregation_from_tokens_to_texts = "mean"
+  )
   test_result
 
   expect_is(test_result$word_response[[1]][[1]], "numeric")
@@ -156,7 +159,6 @@ test_that("textEmbedRawLayers bert-base-uncased contexts=FALSE, decontexts = TRU
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
   expect_that(ncol(embeddings2[[1]][[1]][[1]]), equals(771))
-
 })
 
 test_that("textEmbed", {
@@ -172,16 +174,16 @@ test_that("textEmbed", {
     aggregation_from_layers_to_tokens = "concatenate",
     aggregation_from_tokens_to_texts = "mean",
     aggregation_from_tokens_to_word_types = "mean",
-    decontextualize = FALSE#,
-    #single_context_embeddings = FALSE
+    decontextualize = FALSE # ,
+    # single_context_embeddings = FALSE
   )
 
   single_context_embeddingsT <- text::textEmbed(x[1],
     model = "bert-base-uncased",
-    #aggregation_from_layers_to_tokens = "concatenate",
-    #aggregation_from_tokens_to_texts = "mean",
-    decontextualize = FALSE#,
-    #single_context_embeddings = TRUE
+    # aggregation_from_layers_to_tokens = "concatenate",
+    # aggregation_from_tokens_to_texts = "mean",
+    decontextualize = FALSE # ,
+    # single_context_embeddings = TRUE
   )
 
   embeddings_decontextsF <- textEmbed(x,
@@ -222,7 +224,6 @@ test_that("textDimName", {
 
   w_e_F <- textDimName(w_e_T, dim_names = TRUE)
   expect_equal(colnames(w_e_F$harmonywords)[1], "Dim1_harmonywords")
-
 })
 
 
@@ -231,9 +232,4 @@ test_that("textTokenize", {
 
   tokens <- textTokenize("hello are you?")
   expect_equal(tokens[[1]]$tokens[2], "hello")
-
-
 })
-
-
-

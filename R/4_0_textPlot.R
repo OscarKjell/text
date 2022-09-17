@@ -327,7 +327,7 @@ textOwnWordsProjection <- function(word_data = word_data,
         layers = as.numeric(layers_number_split[[1]]),
         aggregation_from_layers_to_tokens = aggregate_layers_type,
         aggregation_from_tokens_to_texts = aggregation_tokens_type,
-        aggregation_from_tokens_to_word_types = aggregation_word_type# NULL? # add aggregation_from_tokens_to_word_types and keep_token_embeddings = FALSE
+        aggregation_from_tokens_to_word_types = aggregation_word_type # NULL? # add aggregation_from_tokens_to_word_types and keep_token_embeddings = FALSE
       )
     }
     # If using a static/decontextualized language model
@@ -517,13 +517,12 @@ textOwnWordPrediction <- function(word_data = word_data,
       aggregation_word_type <- sub("  ; decontextualize.*", "", aggregation_word_text)
 
       explore_words_embeddings <- textEmbed(explore_words[i_add_w],
-                                            model = model_name,
-                                            layers = as.numeric(layers_number_split[[1]]),
-                                            aggregation_from_layers_to_tokens = aggregate_layers_type,
-                                            aggregation_from_tokens_to_texts = aggregation_tokens_type,
-                                            aggregation_from_tokens_to_word_types = aggregation_word_type# NULL? # add aggregation_from_tokens_to_word_types and keep_token_embeddings = FALSE
+        model = model_name,
+        layers = as.numeric(layers_number_split[[1]]),
+        aggregation_from_layers_to_tokens = aggregate_layers_type,
+        aggregation_from_tokens_to_texts = aggregation_tokens_type,
+        aggregation_from_tokens_to_word_types = aggregation_word_type # NULL? # add aggregation_from_tokens_to_word_types and keep_token_embeddings = FALSE
       )
-
     }
     # If using a static/decontextualized language model
     if (!is.null(space) == TRUE) {

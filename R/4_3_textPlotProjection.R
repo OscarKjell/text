@@ -93,7 +93,7 @@
 #' @export
 textProjection <- function(words,
                            word_embeddings,
-                           word_types_embeddings, #= word_types_embeddings_df
+                           word_types_embeddings, # = word_types_embeddings_df
                            x,
                            y = NULL,
                            pca = NULL,
@@ -129,11 +129,13 @@ textProjection <- function(words,
   # PCA on word_types_embeddings
   if (is.numeric(pca)) {
     # Select word embeddings to be included in plot
-    model <- extract_comment(comment(word_types_embeddings), part="model")
+    model <- extract_comment(comment(word_types_embeddings), part = "model")
 
-    #uniques_words_all <- unique_freq_words(words)
-    uniques_words_all <- getUniqueWordsAndFreq(x_characters = words,
-                                               hg_tokenizer = model)
+    # uniques_words_all <- unique_freq_words(words)
+    uniques_words_all <- getUniqueWordsAndFreq(
+      x_characters = words,
+      hg_tokenizer = model
+    )
 
 
     uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, word_types_embeddings, tolower = FALSE)

@@ -30,17 +30,17 @@ textModels <- function() {
 #' }
 #' @seealso see \code{\link{textModels}}
 #' @export
-textModelLayers <- function(target_model){
-
+textModelLayers <- function(target_model) {
   reticulate::source_python(system.file("python",
-                                        "huggingface_interface3.py",
-                                        # envir = NULL,
-                                        package = "text",
-                                        mustWork = TRUE
+    "huggingface_interface3.py",
+    # envir = NULL,
+    package = "text",
+    mustWork = TRUE
   ))
 
   n_layer <- get_number_of_hidden_layers(target_model,
-                                         logging_level = 'error')
+    logging_level = "error"
+  )
 
   return(n_layer)
 }

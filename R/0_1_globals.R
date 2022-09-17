@@ -35,7 +35,7 @@ utils::globalVariables(c(
 
   # Language Tasks
   "NamesNer",
-  "no", "scores", #in textZeropShot
+  "no", "scores", # in textZeropShot
 
   # PLOTTING OBJECTS
   "n", "n1", "n1_e", "dot2", "adjusted_p_values.x", "dot.x", "plot_n_word_extreme",
