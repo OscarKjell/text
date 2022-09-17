@@ -11,8 +11,8 @@
 #' @param method Compute a "paired" or an "unpaired" test.
 #' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
 #' (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.
-#' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered) columns of x
-#' by their standard deviations if center is TRUE, and the root mean square otherwise.
+#' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the
+#' (centered) columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.
 #' @param alternative Use a two or one-sided test (select one of: "two_sided", "less", "greater").
 #' @param output.permutations If TRUE, returns permuted values in output.
 #' @param N_cluster_nodes Number of cluster nodes to use (more makes computation faster; see parallel package).
@@ -38,7 +38,8 @@ textSimilarityTest <- function(x,
                                method = "paired",
                                center = FALSE,
                                scale = FALSE,
-                               alternative = "greater", # less = dissimalar; greater = similar; two-sided = a correlation; c("two_sided", "less", "greater"),
+                               alternative = "greater",
+                               # less = dissimalar; greater = similar; two-sided = a correlation;
                                output.permutations = TRUE,
                                N_cluster_nodes = 1,
                                seed = 1001) {
@@ -51,7 +52,7 @@ textSimilarityTest <- function(x,
   if (method == "paired" & (nrow(x) != nrow(y))) {
     stop("x and y must have the same number of rows for a paired textSimilarityTest test.")
   }
-  # alternative <- match.arg(alternative)
+
   results_title <- paste(similarity_method, "_estimate", sep = "")
   results <- tibble::tibble("title1" = NA, "title2" = NA)
   colnames(results) <- c(results_title, "p.value")

@@ -89,7 +89,7 @@ test_that("Testing textEmbed as well as train", {
     word_embeddings = harmony_word_embeddings$texts,
     # x_append = Language_based_assessment_data_8[1:20, ], # sending all give same as below: 12.40038
     # x_append = Language_based_assessment_data_8[1:20, 6:7], # sending only swlstotal and age: 12.40038
-    x_append = Language_based_assessment_data_8[1:20, c(7, 6)], # sending in the "wrong" order give same as above: 12.40038
+    x_append = Language_based_assessment_data_8[1:20, c(7, 6)], # sending "wrong" order give: 12.40038
     # x_append = Language_based_assessment_data_8[1:20, c(5,6) ], # missing one throws error
     dim_names = TRUE
   )
@@ -142,7 +142,6 @@ test_that("Testing textEmbed as well as train", {
   one_character <- plot_proj$processed_word_data %>%
     dplyr::filter(words == "-")
   expect_equal(one_character$n, 1)
-  # help(textWordPrediction)
   #  pred_word <- textWordPrediction(words = Language_based_assessment_data_8[1],
   #                                  single_word_embeddings = harmony_word_embeddings$singlewords_we,
   #                                  x = Language_based_assessment_data_8$hilstotal)

@@ -488,63 +488,6 @@ summarize_tune_results <- function(object,
   return(results)
 }
 
-
-# x
-# y
-# x_append = NULL
-# cv_method = "validation_split"
-# outside_folds = 10
-# outside_strata_y = "y"
-# outside_breaks = 4
-# inside_folds = 3 / 4
-# inside_strata_y = "y"
-# inside_breaks = 4
-# model = "regression"
-# eval_measure = "default"
-# preprocess_step_center = TRUE
-# preprocess_step_scale = TRUE
-# preprocess_PCA = NA
-# penalty = 10^seq(-16, 16)
-# mixture = c(0)
-# first_n_predictors = NA
-# impute_missing = FALSE
-# method_cor = "pearson"
-# model_description = "Consider writing a description of your model here"
-# multi_cores = "multi_cores_sys_default"
-# save_output = "all"
-# seed = 2020
-#
-# x = word_embeddings_4$texts["harmonywords"]
-# y = Language_based_assessment_data_8[6]
-# cv_method = "cv_folds"
-# outside_folds = 2
-# inside_folds = 2
-# outside_strata_y = NULL
-# inside_strata_y = NULL
-# model = "regression"
-# eval_measure = "rmse"
-# penalty = c(1)
-# mixture = c(0)
-# preprocess_PCA = 1
-# multi_cores = FALSE
-## force_train_method = "automatic"
-# save_output = "only_results"
-#
-# x = word_embeddings_4$texts["harmonywords"]
-# y = as.factor(Language_based_assessment_data_8$gender)
-# cv_method = "validation_split"
-# outside_folds = 2
-# inside_folds = 3 / 4
-# outside_strata_y = NULL
-# inside_strata_y = NULL
-# model = "logistic"
-# eval_measure = "bal_accuracy"
-# penalty = c(1)
-# mixture = c(0)
-# preprocess_PCA = "min_halving"
-# multi_cores = "multi_cores_sys_default"
-# save_output = "only_results"
-
 #' Train word embeddings to a numeric variable.
 #'
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
@@ -562,17 +505,19 @@ summarize_tune_results <- function(object,
 #' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
 #' @param outside_breaks The number of bins wanted to stratify a numeric stratification variable in the
 #' outer cross-validation loop.
-#' @param inside_folds The proportion of data to be used for modeling/analysis; (default proportion = 3/4). For more information
-#' see validation_split in rsample.
+#' @param inside_folds The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
+#' For more information see validation_split in rsample.
 #' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
 #' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner
 #' cross-validation loop.
-#' @param eval_measure Type of evaluative measure to select models from. Default = "rmse" for regression and "bal_accuracy"
-#' for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy", "bal_accuracy", "sens", "spec",
-#' "precision", "kappa", "f_measure", or "roc_auc",(for more details see the yardstick package).
+#' @param eval_measure Type of evaluative measure to select models from. Default = "rmse" for regression and
+#' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
+#'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
+#'  the yardstick package).
 #' @param preprocess_step_center normalizes dimensions to have a mean of zero; default is set to TRUE.
 #' For more info see (step_center in recipes).
-#' @param preprocess_step_scale  normalize dimensions to have a standard deviation of one. For more info see (step_scale in recipes).
+#' @param preprocess_step_scale  normalize dimensions to have a standard deviation of one.
+#' For more info see (step_scale in recipes).
 #' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
 #' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function
@@ -670,7 +615,7 @@ textTrainRegression <- function(x,
   # Sorting out y
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
-    # y <- y[[1]]
+
     y <- tibble::as_tibble_col(y[[1]], column_name = "y")
   } else {
     y_name <- deparse(substitute(y))
@@ -691,7 +636,7 @@ textTrainRegression <- function(x,
   xy$id_nr <- c(seq_len(nrow(xy)))
 
   # complete.cases is not neccassary
-  # Cross-Validation help(nested_cv) help(vfold_cv) help(validation_split) inside_folds = 3/4; results_nested_resampling[[1]][[1]][[1]]
+  # Cross-Validation inside_folds = 3/4; results_nested_resampling[[1]][[1]][[1]]
   if (cv_method == "cv_folds") {
     results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
       outside = rsample::vfold_cv(
@@ -993,7 +938,7 @@ textTrainRegression <- function(x,
                 mixture = mixture_mode
               )
             }
-          } %>% # help(glmnet)
+          } %>%
           parsnip::set_engine("glmnet")
 
         # Create Workflow (to know variable roles from recipes) help(workflow)
@@ -1191,7 +1136,7 @@ textTrainRegression <- function(x,
   }
 
   # Remove object to minimize model size when saved to rds; use this to
-  # check sizes: sort(sapply(ls(),function(x){object.size(get(x))}))
+  # check sizes: sort(sapply(ls(),function(x) {object.size(get(x))}))
   remove(x)
   remove(x_append)
   remove(y)

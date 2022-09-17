@@ -1,4 +1,3 @@
-# x <- df_characters[[i]][1]
 
 #' semanticrepresentation
 #' Apply an aggregated semantic representation for ALL words in a "CELL";
@@ -131,8 +130,8 @@ applysemrep_over_words <- function(word_col,
 #' which is not included in the current text package).
 #' @param tk_df default "null"; option to use either the "tk" of "df" space (if using textSpace, which has
 #' not been implemented yet).
-#' @param aggregation_from_tokens_to_texts method to aggregate semantic representation when their are more than a single word.
-#' (default is "mean"; see also "min" and "max", "concatenate" and "normalize")
+#' @param aggregation_from_tokens_to_texts method to aggregate semantic representation when their
+#' are more than a single word. (default is "mean"; see also "min" and "max", "concatenate" and "normalize")
 #' @param dim_name Boolean, if TRUE append the variable name after all variable-names in the output.
 #' (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)
 #' @param tolower (boolean) Lower case input.

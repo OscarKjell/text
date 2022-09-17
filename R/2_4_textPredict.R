@@ -1,13 +1,9 @@
 
-# model_info = text_train_results2
-# word_embeddings = harmony_word_embeddings
-# x_append = Language_based_assessment_data_8[1:20, ]
-# dim_names = TRUE
 
 #' Predict scores or classification from, e.g., textTrain.
 #'
-#' @param model_info (model object) Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
-# @param new_data Word embeddings from new data to be predicted from.
+#' @param model_info (model object) Model info (e.g., saved output from textTrain,
+#' textTrainRegression or textRandomForest).
 #' @param word_embeddings (tibble) Word embeddings
 #' @param x_append (tibble) Variables to be appended after the word embeddings (x).
 #' @param dim_names (boolean) Account for specific dimension names from textEmbed()
@@ -81,7 +77,6 @@ textPredict <- function(model_info,
     x_append = x_append_target, ...
   )
   new_data1 <- new_data1$x1
-  # names(new_data1)[3000:3078]
 
   # Dealing with NAs
   new_data1$id_nr <- c(seq_len(nrow(new_data1)))

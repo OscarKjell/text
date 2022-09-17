@@ -174,16 +174,14 @@ test_that("textEmbed", {
     aggregation_from_layers_to_tokens = "concatenate",
     aggregation_from_tokens_to_texts = "mean",
     aggregation_from_tokens_to_word_types = "mean",
-    decontextualize = FALSE # ,
-    # single_context_embeddings = FALSE
+    decontextualize = FALSE
   )
 
   single_context_embeddingsT <- text::textEmbed(x[1],
     model = "bert-base-uncased",
     # aggregation_from_layers_to_tokens = "concatenate",
     # aggregation_from_tokens_to_texts = "mean",
-    decontextualize = FALSE # ,
-    # single_context_embeddings = TRUE
+    decontextualize = FALSE
   )
 
   embeddings_decontextsF <- textEmbed(x,

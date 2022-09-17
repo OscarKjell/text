@@ -19,8 +19,8 @@ cosines <- function(x, y) {
 #' including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
 #' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
 #' (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.
-#' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered) columns of x
-#' by their standard deviations if center is TRUE, and the root mean square otherwise.
+#' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered)
+#' columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.
 #' @return A vector comprising semantic similarity scores.
 #' @examples
 #' library(dplyr)
@@ -84,28 +84,6 @@ textSimilarity <- function(x,
   ss
 }
 
-# x = word_embeddings_4$texts$harmonytext
-# y = word_embeddings_4$texts$satisfactiontext
-#
-# ss_cos <- textSimilarity(x, y,
-#                         method = "cosine",
-#                         center = TRUE,
-#                         scale = FALSE)
-#
-# ss_spearman <- textSimilarity(x, y,
-#                         method = "spearman",
-#                         center = TRUE,
-#                         scale = FALSE)
-#
-# ss_pearson <- textSimilarity(x, y,
-#                         method = "pearson",
-#                         center = TRUE,
-#                         scale = FALSE)
-#
-# mean(ss_cos)
-# mean(ss_spearman)
-# mean(ss_pearson)
-
 
 #' Compute the semantic distance between two text variables.
 #'
@@ -116,8 +94,8 @@ textSimilarity <- function(x,
 #' It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).
 #' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
 #' (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.
-#' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered) columns of x
-#' by their standard deviations if center is TRUE, and the root mean square otherwise.
+#' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the
+#' (centered) columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.
 #' @return A vector comprising semantic distance scores.
 #' @examples
 #' library(dplyr)
@@ -150,7 +128,7 @@ textDistance <- function(x,
   } else {
     # Compute distance method = "euclidean"
     ss1 <- list()
-    # i=1
+
     for (i in seq_len(nrow(x1))) {
       dist_df <- dplyr::bind_rows(x1[i, ], y1[i, ])
       ss1[i] <- stats::dist(dist_df, method = method)[1]

@@ -295,7 +295,6 @@ textOwnWordsProjection <- function(word_data = word_data,
   forloops_add_w <- length(explore_words)
   added_words_information <- list()
 
-  # i_add_w = 1
   for (i_add_w in 1:forloops_add_w) {
 
     # If using a contextualized language model
@@ -327,7 +326,7 @@ textOwnWordsProjection <- function(word_data = word_data,
         layers = as.numeric(layers_number_split[[1]]),
         aggregation_from_layers_to_tokens = aggregate_layers_type,
         aggregation_from_tokens_to_texts = aggregation_tokens_type,
-        aggregation_from_tokens_to_word_types = aggregation_word_type # NULL? # add aggregation_from_tokens_to_word_types and keep_token_embeddings = FALSE
+        aggregation_from_tokens_to_word_types = aggregation_word_type
       )
     }
     # If using a static/decontextualized language model
@@ -521,7 +520,7 @@ textOwnWordPrediction <- function(word_data = word_data,
         layers = as.numeric(layers_number_split[[1]]),
         aggregation_from_layers_to_tokens = aggregate_layers_type,
         aggregation_from_tokens_to_texts = aggregation_tokens_type,
-        aggregation_from_tokens_to_word_types = aggregation_word_type # NULL? # add aggregation_from_tokens_to_word_types and keep_token_embeddings = FALSE
+        aggregation_from_tokens_to_word_types = aggregation_word_type
       )
     }
     # If using a static/decontextualized language model
