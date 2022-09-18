@@ -33,25 +33,29 @@ textEmbed(
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
 "roberta-base", or "xlm-roberta-base".}
 
-\item{layers}{(string or numeric) Specify the layers that should be extracted (default -2 which give the second to last layer).
- It is more efficient to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
-or all by setting this parameter to "all". Layer 0 is the decontextualized input layer
-(i.e., not comprising hidden states) and thus should normally not be used. These layers can then
- be aggregated in the textEmbedLayerAggregation function.}
+\item{layers}{(string or numeric) Specify the layers that should be extracted
+(default -2 which give the second to last layer). It is more efficient to only extract the layers
+that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this parameter
+to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and
+ thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation
+ function.}
 
 \item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
 (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name).
 see \code{\link{textDimName}} to change names back and forth.}
 
-\item{aggregation_from_layers_to_tokens}{(string) Aggregated layers of each token. Method to aggregate the contextualized layers (e.g., "mean", "min" or
-"max, which takes the minimum, maximum or mean, respectively, across each column; or "concatenate", which links
- together each word embedding layer to one long row.}
+\item{aggregation_from_layers_to_tokens}{(string) Aggregated layers of each token. Method to aggregate the
+contextualized layers (e.g., "mean", "min" or "max, which takes the minimum, maximum or mean, respectively,
+across each column; or "concatenate", which links  together each word embedding layer to one long row.}
 
-\item{aggregation_from_tokens_to_texts}{(string)  Aggregates to the individual text (i.e., the aggregation of all tokens/words given to the transformer).}
+\item{aggregation_from_tokens_to_texts}{(string)  Aggregates to the individual text (i.e., the aggregation of
+all tokens/words given to the transformer).}
 
-\item{aggregation_from_tokens_to_word_types}{(string) Aggregates to the word type (i.e., the individual words) rather than texts.}
+\item{aggregation_from_tokens_to_word_types}{(string) Aggregates to the word type (i.e., the individual words)
+rather than texts.}
 
-\item{keep_token_embeddings}{(boolean) Whether to also keep token embeddings when using texts or word types aggregation.}
+\item{keep_token_embeddings}{(boolean) Whether to also keep token embeddings when using texts or word
+types aggregation.}
 
 \item{tokens_select}{Option to select word embeddings linked to specific tokens
 such as [CLS] and [SEP] for the context embeddings.}
@@ -60,7 +64,8 @@ such as [CLS] and [SEP] for the context embeddings.}
 such as [CLS] and [SEP] for the context embeddings.}
 
 \item{decontextualize}{(boolean) Provide word embeddings of single words as input to the model
-(these embeddings are, e.g., used for plotting; default is to use ). If using this, then set single_context_embeddings to FALSE.}
+(these embeddings are, e.g., used for plotting; default is to use ). If using this, then set
+single_context_embeddings to FALSE.}
 
 \item{model_max_length}{The maximum length (in number of tokens) for the inputs to the transformer model
 (default the value stored for the associated model).}
@@ -84,15 +89,15 @@ Extract layers and aggregate them to word embeddings, for all character variable
 }
 \examples{
 \donttest{
-#word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
+# word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
 #                             layers = 10:11,
 #                             aggregation_from_layers_to_tokens = "concatenate",
 #                             aggregation_from_tokens_to_texts = "mean",
 #                             aggregation_from_tokens_to_word_types = "mean")
-##Show information about how the embeddings were constructed
-#comment(word_embeddings$texts$satisfactiontexts)
-#comment(word_embeddings$word_types)
-#comment(word_embeddings$tokens$satisfactiontexts)
+## Show information about how the embeddings were constructed
+# comment(word_embeddings$texts$satisfactiontexts)
+# comment(word_embeddings$word_types)
+# comment(word_embeddings$tokens$satisfactiontexts)
 }
 }
 \seealso{

@@ -26,8 +26,8 @@ Selecting 'all' thus removes layer 0.}
 including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
 or "concatenate", which links together each layer of the word embedding to one long row. Default is "concatenate"}
 
-\item{aggregation_from_tokens_to_texts}{Method to carry out the aggregation among the word embeddings for the words/tokens,
-including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+\item{aggregation_from_tokens_to_texts}{Method to carry out the aggregation among the word embeddings
+for the words/tokens, including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
 or "concatenate", which links together each layer of the word embedding to one long row.}
 
 \item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}

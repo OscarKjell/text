@@ -13,7 +13,7 @@ test_that("textSimilarity produces similarity scores", {
     word_embeddings_4$texts$satisfactiontexts
   )
   expect_that(similarity_scores1, is_a("numeric"))
-  expect_equal(similarity_scores1[1], 0.5487222, tolerance = 0.0001)
+  expect_equal(similarity_scores1[1], 0.8488173, tolerance = 0.0001)
 })
 
 test_that("textSimilarity produces similarity scores", {
@@ -28,7 +28,7 @@ test_that("textSimilarity produces similarity scores", {
   )
 
   expect_that(similarity_norm_scores, is_a("numeric"))
-  expect_equal(similarity_norm_scores[1], 0.4912521, tolerance = 0.001)
+  expect_equal(similarity_norm_scores[1], 0.4891852, tolerance = 0.001)
 })
 
 test_that("textSimilarityMatrix produces euclidean similarity scores", {
@@ -38,7 +38,7 @@ test_that("textSimilarityMatrix produces euclidean similarity scores", {
     word_embeddings_4$texts$harmonytexts[1:3, ],
     method = "euclidean"
   )
-  expect_equal(similarity_scores2[1, 2], 0.29414779, tolerance = 0.0001)
+  expect_equal(similarity_scores2[1, 2], 0.3342155, tolerance = 0.0001)
 })
 
 
@@ -78,8 +78,6 @@ test_that("textDistanceMatrix produces euclidean distance scores", {
   )
   expect_equal(distance_scores2[1, 2], 0.7058523, tolerance = 0.0001)
 })
-
-
 
 
 

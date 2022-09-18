@@ -4,7 +4,7 @@
 \alias{textSimilarityMatrix}
 \title{Compute semantic similarity scores between all combinations in a word embedding}
 \usage{
-textSimilarityMatrix(x, method = "cosine", center = FALSE, scale = FALSE)
+textSimilarityMatrix(x, method = "cosine", center = TRUE, scale = FALSE)
 }
 \arguments{
 \item{x}{Word embeddings from textEmbed.}
@@ -16,8 +16,8 @@ including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkows
 \item{center}{(boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
 (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.}
 
-\item{scale}{(boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered) columns of x
-by their standard deviations if center is TRUE, and the root mean square otherwise.}
+\item{scale}{(boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered)
+columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.}
 }
 \value{
 A matrix of semantic similarity scores

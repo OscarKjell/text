@@ -14,7 +14,8 @@ textPredict(
 )
 }
 \arguments{
-\item{model_info}{(model object) Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).}
+\item{model_info}{(model object) Model info (e.g., saved output from textTrain,
+textTrainRegression or textRandomForest).}
 
 \item{word_embeddings}{(tibble) Word embeddings}
 

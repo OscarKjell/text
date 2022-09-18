@@ -41,9 +41,9 @@ textSimilarity <- function(x,
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
 
-  # Normalize embeddings
-  x1 <- tibble::as_tibble(scale(x1, center = center, scale = scale))
-  y1 <- tibble::as_tibble(scale(y1, center = center, scale = scale))
+  # Normalize embeddings help(scale)
+  x1 <- tibble::as_tibble(t(scale(t(x1), center = center, scale = scale)))
+  y1 <- tibble::as_tibble(t(scale(t(y1), center = center, scale = scale)))
 
   # Compute cosines
   if (method == "cosine") {
@@ -52,6 +52,7 @@ textSimilarity <- function(x,
 
   # Compute correlation
   if (method == "spearman" | method == "pearson") {
+    ss <- list()
     # i =1
     for (i in seq_len(nrow(x1))) {
       ss[[i]] <- cor(as_vector(x1[i, ]),
@@ -119,8 +120,8 @@ textDistance <- function(x,
   y1 <- dplyr::select(y1, dplyr::starts_with("Dim"))
 
   # normalize
-  x1 <- as_tibble(scale(x1, center = center, scale = scale))
-  y1 <- as_tibble(scale(y1, center = center, scale = scale))
+  x1 <- as_tibble(t(scale(t(x1), center = center, scale = scale)))
+  y1 <- as_tibble(t(scale(t(y1), center = center, scale = scale)))
 
   if (method == "cosine") {
     # Compute cosine distance
@@ -161,7 +162,7 @@ textDistance <- function(x,
 #' @export
 textSimilarityMatrix <- function(x,
                                  method = "cosine",
-                                 center = FALSE,
+                                 center = TRUE,
                                  scale = FALSE) {
   ss_matrix <- matrix(nrow = nrow(x), ncol = nrow(x))
 
@@ -235,7 +236,7 @@ textDistanceMatrix <- function(x,
 textSimilarityNorm <- function(x,
                                y,
                                method = "cosine",
-                               center = FALSE,
+                               center = TRUE,
                                scale = FALSE) {
   # Select Dimensions
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
