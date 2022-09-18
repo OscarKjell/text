@@ -68,6 +68,12 @@ jobs:
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "16.04"), sep = "\n")')
           sudo apt install libharfbuzz-dev
           sudo apt install libfribidi-dev
+          sudo apt install libcurl4-doc
+          sudo apt install libidn11-dev
+          sudo apt install libkrb5-dev
+          sudo apt install libldap2-dev
+          sudo apt install librtmp-dev
+          sudo apt install libssh2-1-dev
 
       - name: Install dependencies
         run: |
