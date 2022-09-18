@@ -72,7 +72,7 @@ jobs:
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("rcmdcheck")
+          remotes::install_cran("rcmdcheck", force = TRUE)
         shell: Rscript {0}
 
       - name: Fix Conda permissions on macOS (SUDO)
