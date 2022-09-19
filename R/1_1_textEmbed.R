@@ -388,11 +388,11 @@ textEmbedRawLayers <- function(texts,
   }
 
 
-  if (is.numeric(layers)) {
-    if (max(layers) > textModelLayers(model)) {
-      stop("You are trying to extract layers that do not exist in this model.")
-    }
-  }
+#  if (is.numeric(layers)) {
+#    if (max(layers) > textModelLayers(model)) {
+#      stop("You are trying to extract layers that do not exist in this model.")
+#    }
+#  }
 
   if (layers[1] < 0) {
     n <- textModelLayers("bert-base-uncased")
