@@ -312,8 +312,6 @@ textTokenize <- function(texts,
   return(tokens1)
 }
 
-
-
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
@@ -368,8 +366,6 @@ textEmbedRawLayers <- function(texts,
                                max_token_to_sentence = 4,
                                logging_level = "error") {
 
-
-
   if (decontextualize == TRUE & word_type_embeddings == FALSE) {
     stop(cat(
       colourise("decontextualize = TRUE & word_type_embeddings = FALSE has not been implemented in textEmbedRawLayers() at this stage.",
@@ -401,7 +397,6 @@ textEmbedRawLayers <- function(texts,
     layers <- 1 + n + layers
     layers
   }
-
 
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
@@ -782,7 +777,6 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
   selected_layers_aggregated_tibble
 }
 
-
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
@@ -936,7 +930,7 @@ textEmbed <- function(texts,
   }
 
 
-  # 3. Aggregate Word Type (both decontextualised or not) aggregation_from_tokens_to_word_types = "mean"
+  # 3. Aggregate Word Type (both decontextualised or not)
   if (!is.null(aggregation_from_tokens_to_word_types) | decontextualize) {
     if (!decontextualize) {
       single_context_text <- paste("Embedding single context embeddings.",
