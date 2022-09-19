@@ -840,6 +840,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}}, \code{\link{textEmbedRawLayers}} and
 #' \code{\link{textDimName}}
+#' @importFrom reticulate source_python
 #' @export
 textEmbed <- function(texts,
                       model = "bert-base-uncased",
@@ -861,6 +862,12 @@ textEmbed <- function(texts,
 
   T1_textEmbed <- Sys.time()
 
+  reticulate::source_python(system.file("python",
+                                        "huggingface_Interface3.py",
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
+
   if (
     (decontextualize == TRUE & is.null(aggregation_from_tokens_to_texts)) |
       (decontextualize == TRUE & is.null(aggregation_from_tokens_to_word_types)) |
@@ -880,12 +887,6 @@ textEmbed <- function(texts,
     layers <- 1 + n + layers
     layers
   }
-
-  reticulate::source_python(system.file("python",
-                                        "huggingface_Interface3.py",
-                                        package = "text",
-                                        mustWork = TRUE
-  ))
 
   # Get hidden states/layers for output 1 and/or output 2 or decontextualsied;
   if (!is.null(aggregation_from_layers_to_tokens) |

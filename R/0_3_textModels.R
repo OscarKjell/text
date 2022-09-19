@@ -29,14 +29,14 @@ textModels <- function() {
 #' textModelLayers(target_model = "bert-base-uncased")
 #' }
 #' @seealso see \code{\link{textModels}}
+#' @importFrom reticulate source_python
 #' @export
 textModelLayers <- function(target_model) {
 
   reticulate::source_python(system.file("python",
-    "huggingface_interface3.py",
-    # envir = NULL,
-    package = "text",
-    mustWork = FALSE
+                                        "huggingface_Interface3.py",
+                                        package = "text",
+                                        mustWork = TRUE
   ))
 
   n_layer <- get_number_of_hidden_layers(target_model,
