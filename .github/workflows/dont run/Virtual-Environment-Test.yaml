@@ -21,9 +21,7 @@ jobs:
         config:
           - {os: macOS-latest,   r: 'release'}
 #          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,  r: '4.0'}
-          - {os: ubuntu-latest,  r: '4.1'}
-          - {os: ubuntu-latest,  r: '4.2'}
+          - {os: ubuntu-latest,  r: 'release'}
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true

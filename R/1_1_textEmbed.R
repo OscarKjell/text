@@ -854,11 +854,7 @@ textEmbed <- function(texts,
                       tokenizer_parallelism = FALSE,
                       device = "gpu",
                       logging_level = "error") {
-  reticulate::source_python(system.file("python",
-    "huggingface_Interface3.py",
-    package = "text",
-    mustWork = TRUE
-  ))
+
 
   T1_textEmbed <- Sys.time()
 
@@ -881,6 +877,12 @@ textEmbed <- function(texts,
     layers <- 1 + n + layers
     layers
   }
+
+  reticulate::source_python(system.file("python",
+                                        "huggingface_Interface3.py",
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
 
   # Get hidden states/layers for output 1 and/or output 2 or decontextualsied;
   if (!is.null(aggregation_from_layers_to_tokens) |
