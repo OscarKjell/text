@@ -581,6 +581,7 @@ test_that("textTrainRegression adding word_embedding together", {
 
 
 test_that("textTrainRandomForest adding word_embedding together", {
+  skip_on_cran()
   y <- as.factor(rep(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), 4))
 
   multi_we_RF_PCA_09 <- text::textTrainRandomForest(
@@ -641,6 +642,7 @@ test_that("textTrainRandomForest adding word_embedding together", {
 
 
 test_that("textPredictTest t-test and bootstrapped test", {
+  skip_on_cran()
   set.seed(1)
   # Test data
   y1 <- runif(10)
@@ -660,6 +662,7 @@ test_that("textPredictTest t-test and bootstrapped test", {
 
 
 test_that("training with only x_append (without word embeddings)", {
+  skip_on_cran()
   test1 <- text::textTrainRegression(
     x = NULL,
     x_append = Language_based_assessment_data_8[6:7],
