@@ -368,13 +368,7 @@ textEmbedRawLayers <- function(texts,
                                max_token_to_sentence = 4,
                                logging_level = "error") {
 
-  # Run python file with HunggingFace interface to state-of-the-art transformers
-  reticulate::source_python(system.file("python",
-    "huggingface_Interface3.py",
-    # envir = NULL,
-    package = "text",
-    mustWork = TRUE
-  ))
+
 
   if (decontextualize == TRUE & word_type_embeddings == FALSE) {
     stop(cat(
@@ -388,11 +382,11 @@ textEmbedRawLayers <- function(texts,
   }
 
 
-#  if (is.numeric(layers)) {
-#    if (max(layers) > textModelLayers(model)) {
-#      stop("You are trying to extract layers that do not exist in this model.")
-#    }
-#  }
+  if (is.numeric(layers)) {
+    if (max(layers) > textModelLayers(model)) {
+      stop("You are trying to extract layers that do not exist in this model.")
+    }
+  }
 
   if (layers[1] < 0) {
     n <- textModelLayers("bert-base-uncased")
@@ -400,6 +394,13 @@ textEmbedRawLayers <- function(texts,
     layers
   }
 
+  # Run python file with HunggingFace interface to state-of-the-art transformers
+  reticulate::source_python(system.file("python",
+                                        "huggingface_Interface3.py",
+                                        # envir = NULL,
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(texts)
