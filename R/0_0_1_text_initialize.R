@@ -83,7 +83,8 @@ textrpp_initialize <- function(python_executable = NULL,
   }
 
   if (textEmbed_test == TRUE) {
-    textEmbed("hello")
+    textEmbed("hello",
+              layers = 5)
   }
 }
 
