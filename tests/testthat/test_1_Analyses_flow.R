@@ -27,8 +27,13 @@ test_that("Testing textEmbed as well as train", {
 
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
+  dim1for1 <- harmony_word_embeddings$word_types[[3]][harmony_word_embeddings$word_types[[1]]=="you"]
+  expect_equal(dim1for1, -0.389898, tolerance = 0.00001)
   expect_equal(harmony_word_embeddings$word_types[[3]][[1]], 0.2229673, tolerance = 0.00001)
-
+  expect_equal(harmony_word_embeddings$word_types[[1]][[1]], "-")
+  expect_equal(harmony_word_embeddings$word_types[[1]][[1]], "!")
+  # windows = 0.323, maybe "!"
+  # ubuntu = 0.323,  maybe "!"
 
   text_train_results1 <- textTrainRegression(
     x = harmony_word_embeddings$texts["satisfactiontexts"],
