@@ -20,17 +20,20 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+evaluate = FALSE
 ```
 The *text*-package uses Hugging Face transformers language models, natural language processing and machine learning methods to examine text and numerical variables.  
 
-Central *text* functions are described below. The data and methods come from the [Kjell et al., 2019](https://pubmed.ncbi.nlm.nih.gov/29963879/) ([pre-print](https://psyarxiv.com/er6t7/)), which show how individuals' open-ended text answers can be used to *measure*, *describe* and *differentiate* psychological constructs.  
+To learn more about the textEmbed() functions see the tutorial called: [HuggingFace Transformers in R: Word Embeddings Defaults and Specifications](https://www.r-text.org/articles/huggingface_in_r.html).
 
-In short the workflow includes to first transform text variables into word embeddings. These word embeddings are then used to, for example, predict numerical variables, compute semantic similarity scores, statistically test difference in meaning between two sets of texts and plot words in the word embedding space.  
+This Getting Started tutorial is going through some central *text* functions. The data comes from the [Kjell et al., 2019](https://pubmed.ncbi.nlm.nih.gov/29963879/) ([pre-print](https://psyarxiv.com/er6t7/)), which show how individuals' open-ended text answers can be used to *measure*, *describe* and *differentiate* psychological constructs.  
+
+In short the workflow includes to first transform text variables into text-level and word type-level word embeddings. These word embeddings are then used to predict numerical variables, compute semantic similarity scores, and plot words in the word embedding space.  
 
 ### textEmbed(): mapping text to numbers using HuggingFace language models
-The ```textEmbed()``` function automatically transforms character variables in a given tibble to word embeddings. The example data that will be used in this tutorial comes from participants that have described their harmony in life and satisfaction with life with a text response, 10 descriptive words or rating scales. For a more detailed description please see the [word embedding tutorial](https://www.r-text.org/articles/Word%20embeddings.html) 
+The `textEmbed()` function automatically transforms character variables in a given tibble to word embeddings. The example data that will be used in this tutorial comes from participants that have described their harmony in life and satisfaction with life with a text response, 10 descriptive words or rating scales. For a more detailed description please see the [word embedding tutorial](https://www.r-text.org/articles/huggingface_in_r.html) 
 
-```{r setup, eval = FALSE, warning=FALSE, message=FALSE}
+```{r setup, eval = evaluate, warning=FALSE, message=FALSE}
 
 library(text)
 
@@ -38,96 +41,87 @@ library(text)
 Language_based_assessment_data_8
 
 # Transform the text data to BERT word embeddings
-word_embeddings <- textEmbed(Language_based_assessment_data_8)
+word_embeddings <- textEmbed(
+  texts = Language_based_assessment_data_8[3],
+  model = "bert-base-uncased",
+  layers = -2,
+  aggregation_from_tokens_to_texts = "mean",
+  aggregation_from_tokens_to_word_types = "mean",
+  keep_token_embeddings = FALSE)
 
 # See how word embeddings are structured
 word_embeddings
 
-# Save the word embeddings to avoid having to import the text every time
-saveRDS(word_embeddings, "word_embeddings.rds")
+# Save the word embeddings to avoid having to import the text every time. (i.e., remove the ##)
+## saveRDS(word_embeddings, "word_embeddings.rds")
 
-# Get the word embeddings again
-word_embeddings <- readRDS("_YOURPATH_/word_embeddings.rds")
+# Get the word embeddings again (i.e., remove the ##)
+## word_embeddings <- readRDS("_YOURPATH_/word_embeddings.rds")
 ```
 
 
 ### textTrain(): Examine the relationship between text and numeric variables
-The ```textTrain()``` is used to examine how well the word embeddings from a text can predict a numeric variable. This is done by training the word embeddings using ridge regression and 10-fold cross-validation (where the word embeddings are pre-processed using pca). In the example below we examine how well the harmony text responses can predict the rating scale scores from the Harmony in life scale.
+The `textTrain()` is used to examine how well the word embeddings from a text can predict a numeric variable. This is done by training the word embeddings using ridge regression and 10-fold cross-validation. In the example below we examine how well the harmony text responses can predict the rating scale scores from the Harmony in life scale.
 
-```{r, eval = FALSE,  warning=FALSE, message=FALSE}
+```{r, eval = evaluate,  warning=FALSE, message=FALSE}
 library(text)
-library(rio)
-# Load data that has already gone through textEmbed
-# The previous example only imported 10 participants; 
-# whereas below we load data from 100 participants
-wordembeddings <- rio::import("https://r-text.org/text_data_examples/wordembeddings4_100.rda")
-# Load corresponding numeric variables
-numeric_data <-   rio::import("https://r-text.org/text_data_examples/Language_based_assessment_data_8_100.rda")
 
-# Examine the relationship between harmonytext and the corresponding rating scale
-model_htext_hils <- textTrain(wordembeddings$harmonytexts, 
-                              numeric_data$hilstotal, 
-                              penalty = 1)
+# Examine the relationship between harmonytext word embeddings and the harmony in life rating scale
+model_htext_hils <- textTrain(word_embeddings$texts$harmonywords, 
+                              Language_based_assessment_data_8$hilstotal)
 
 # Examine the correlation between predicted and observed Harmony in life scale scores
-model_htext_hils$correlation
-```
+model_htext_hils$results
 
-## textSimilarityTest(): Test the difference in meaning between to sets of texts
-The ```textSimilarityTest()``` function provides a permutation based test to examine whether two sets of texts significantly differ in meaning. It produces a p-value and estimate as an effect size. Below we examine whether the harmony text and satisfaction text responses differ in meaning. 
-```{r, eval = FALSE, warning=FALSE, message=FALSE}
-library(text)
-
-# Compare the meaning between individuals' harmony in life and satisfaction with life answers
-textSimilarityTest(word_embeddings_4$harmonytexts, 
-         word_embeddings_4$satisfactiontexts, 
-         Npermutations = 10000, 
-         output.permutations = FALSE)
 ```
 
 ## Plot statistically significant words 
-The plotting is made in two steps: First the ```textProjection``` function is pre-processing the data, including computing statistics for each word to be plotted. Second, ```textProjectionPlot()``` is visualizing the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made in the first step, the last step goes quicker so that one can try different design settings.   
+The text-package has several ways to plot words; here we will use the Supervised Dimension Plot. The plotting is made in two steps: First the `textProjection` function is pre-processing the data, including computing statistics for each word type to be plotted. Second, `textProjectionPlot()` is visualizing the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made in the first step, the last step goes quicker so that one can try different design settings.   
 
 ### textProjection(): Pre-process data for plotting 
-```{r, eval = FALSE, warning=FALSE, message=FALSE}
+```{r, eval = evaluate, warning=FALSE, message=FALSE}
 library(text)
 
-# Pre-process word data to be plotted 
-# word_embeddings_4 and Language_based_assessment_data_8  contain example data provided with the package.
-
 # Pre-process data
-df_for_plotting <- textProjection(Language_based_assessment_data_8$harmonywords, 
-                                word_embeddings_4$harmonywords,
-  word_embeddings_4$singlewords_we,
-  Language_based_assessment_data_8$hilstotal, Language_based_assessment_data_8$swlstotal
+projection_results <- textProjection(
+  words = Language_based_assessment_data_8$harmonywords,
+  word_embeddings = word_embeddings$texts,
+  word_types_embeddings = word_embeddings$word_types,
+  x = Language_based_assessment_data_8$hilstotal,
+  y = Language_based_assessment_data_8$age
 )
-df_for_plotting
+projection_results$word_data
+
 ```
 
 
 ### textProjectionPlot(): A two-dimensional word plot
-```{r, eval = TRUE, warning=FALSE, message=FALSE, dpi=300}
+```{r, eval = evaluate, warning=FALSE, message=FALSE, dpi=300}
 library(text)
-# Used data (DP_projections_HILS_SWLS_100) has
-# been pre-processed with the textProjection function
-plot_projection <- textProjectionPlot(
-  word_data = DP_projections_HILS_SWLS_100,
-  k_n_words_to_test = FALSE,
-  plot_n_words_square = 5,
-  plot_n_words_p = 5,
-  plot_n_word_extreme = 1,
-  plot_n_word_frequency = 1,
-  plot_n_words_middle = 1,
-  y_axes = TRUE,
-  p_alpha = 0.05,
-  title_top = " Supervised Bicentroid Projection of Harmony in life words",
-  x_axes_label = "Low vs. High HILS score",
-  y_axes_label = "Low vs. High SWLS score",
-  p_adjust_method = "bonferroni",
-  points_without_words_size = 0.4,
-  points_without_words_alpha = 0.4
-)
-plot_projection
+# Supervised Dimension Projection Plot
+# To avoid warnings -- and that words do not get plotted, first increase the max.overlaps for the entire session: 
+options(ggrepel.max.overlaps = 1000)
+
+# Supervised Dimension Projection Plot
+plot_projection_2D <- textProjectionPlot(
+  word_data = projection_results,
+ min_freq_words_plot = 1,
+ plot_n_word_extreme = 10,
+ plot_n_word_frequency = 5,
+ plot_n_words_middle = 5,
+ y_axes = TRUE,
+ p_alpha = 0.05,
+ p_adjust_method = "fdr",
+  title_top = "Harmony Words Responses (Supervised Dimension Projection)",
+  x_axes_label = "Low vs. High Harmony in Life Scale Score",
+  y_axes_label = "Low vs.High Age",
+  bivariate_color_codes = c("#E07f6a", "#60A1F7", "#85DB8E",
+                            "#FF0000", "#EAEAEA", "#5dc688",
+                            "#E07f6a", "#60A1F7", "#85DB8E"
+))
+# View plot
+plot_projection_2D$final_plot
+
 
 ```
 
