@@ -76,7 +76,6 @@
     "sharded_ddp": false,
     "deepspeed": null,
     "label_smoothing_factor": 0.0,
-    "adafactor": false,
-    "_n_gpu": 3
+    "adafactor": false
   }
 }

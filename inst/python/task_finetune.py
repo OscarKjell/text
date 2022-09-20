@@ -214,8 +214,7 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test):
     args_dict = {}
     for key in args:
         args_dict.update(args[key])
-        
-    model_args, data_args, training_args = parser.parse_dict(args = args_dict, allow_extra_keys = False)
+    model_args, data_args, training_args = parser.parse_dict(args = args_dict)
     """
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
