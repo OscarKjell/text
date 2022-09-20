@@ -25,16 +25,6 @@ except ImportError:
 ######################
 ######################
 
-"""
-#Future TODO: Prune unecessary layers based on layersToKeep;
-#Blocker: The model definitions are different. So the torch variable inside the nn Module that represents the transformer layers are different.  
-def prune_transformer_layers(model):
-    return
-"""
-
-######################
-######################
-
 class sentenceTokenizer:
     """
         NLTK sentence tokenizer

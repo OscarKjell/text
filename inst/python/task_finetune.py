@@ -42,8 +42,8 @@ from transformers import (
     Trainer,
     default_data_collator,
     set_seed,
+    TrainingArguments
 )
-from training_args import TrainingArguments
 from transformers.trainer_utils import get_last_checkpoint
 #from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
@@ -144,7 +144,7 @@ class DataTrainingArguments:
         default=None, metadata={"help": "A csv or a json file containing the validation data."}
     )
     test_file: Optional[str] = field(default=None, metadata={"help": "A csv or a json file containing the test data."})
-
+    """
     def __post_init__(self):
         if self.task_name is not None:
             self.task_name = self.task_name.lower()
@@ -161,7 +161,7 @@ class DataTrainingArguments:
             assert (
                 validation_extension == train_extension
             ), "`validation_file` should have the same extension (csv or json) as `train_file`."
-
+    """
 
 @dataclass
 class ModelArguments:
@@ -205,19 +205,25 @@ class ModelArguments:
     )
 
 #TODO: Turn the args list below into a single dictionary
-def main(model_name_or_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, output_dir):
+def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test):
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
 
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
+    args_dict = {}
+    for key in args:
+        args_dict.update(args[key])
+        
+    model_args, data_args, training_args = parser.parse_dict(args = args_dict, allow_extra_keys = False)
+    """
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
         # let's parse it to get our arguments.
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-
+    """
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
     # send_example_telemetry("run_glue", model_args, data_args)
