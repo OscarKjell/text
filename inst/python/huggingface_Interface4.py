@@ -1,9 +1,9 @@
 import os, sys
-#print(os.listdir())
 sys.path.append('inst/python/')
 from transformer_embs import transformer_embeddings
 from task_finetune import main
-import numpy as np 
+import numpy as np
+import json
 
 BATCH_SIZE=32
 
@@ -122,7 +122,7 @@ def hgTransformerGetEmbedding(text_strings,
 
     return embs
 
-def hgTransformerFineTune(model_name_or_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, output_dir):
+def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test):
     """
     Simple Python method for embedding text with pretained Hugging Face models
 
@@ -142,7 +142,8 @@ def hgTransformerFineTune(model_name_or_path, text_outcome_df, text_outcome_df_v
     
     """
 
-    main(model_name_or_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, output_dir)
+    args = json.load(open(json_path))
+    main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test)
     return 
     
 
