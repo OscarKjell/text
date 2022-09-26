@@ -50,7 +50,7 @@ def set_logging_level(logging_level):
     if logging_level in ['warn', 'warning']:
         logging.set_verbosity_warning()
     elif logging_level == "critical":
-        logging.set_verbosity_critical()
+        logging.set_verbosity(50)
     elif logging_level == "error":
         logging.set_verbosity_error()
     elif logging_level == "info":
