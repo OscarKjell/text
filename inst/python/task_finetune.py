@@ -148,7 +148,7 @@ class DataTrainingArguments:
     """
     def __post_init__(self):
         print("hello")
-        """
+        
         if self.task_name is not None:
             self.task_name = self.task_name.lower()
             if self.task_name not in task_to_keys.keys():
@@ -209,7 +209,7 @@ class ModelArguments:
     def __post_init__(self):
        print("hello 2")
 #TODO: Turn the args list below into a single dictionary
-def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test):
+def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression):
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
@@ -253,9 +253,8 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test):
     logger.info(f"Training/evaluation parameters {training_args}")
 
     #Init the args into the parser
-    training_args.output_dir = output_dir
-    model_args.model_name_or_path = model_name_or_path
-    print(model_args)
+    #print(model_args)
+    print("HELLO THREE 333")
 
     # Detecting last checkpoint.
     last_checkpoint = None
@@ -271,6 +270,8 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test):
                 f"Checkpoint detected, resuming training at {last_checkpoint}. To avoid this behavior, change "
                 "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
             )
+
+    print("HELLO FOUR 4444")
 
     # Set seed before initializing model.
     set_seed(training_args.seed)
