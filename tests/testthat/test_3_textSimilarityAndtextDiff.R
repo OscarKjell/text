@@ -81,69 +81,69 @@ test_that("textDistanceMatrix produces euclidean distance scores", {
 
 
 
+#
+#
+#test_that("textSimilarityTest paired results in list with numeric output", {
+#  skip_on_cran()
+#
+#  test_diff_results1 <- text::textSimilarityTest(word_embeddings_4$texts$harmonytexts,
+#    word_embeddings_4$texts$satisfactiontexts,
+#    method = "paired", Npermutations = 100, N_cluster_nodes = 1
+#  )
+#
+#  expect_that(test_diff_results1, is_a("list"))
+#  expect_is(test_diff_results1[[1]][[1]], "numeric")
+#  expect_equal(test_diff_results1[[1]][[1]], 0.7825082, tolerance = 0.001)
+#})
+#
+#test_that("textSimilarityTest paired results in list with numeric output", {
+#  skip_on_cran()
+#
+#  expect_error(text::textSimilarityTest(word_embeddings_4$texts$harmonytexts,
+#    word_embeddings_4$texts$satisfactiontexts[1:39, ],
+#    method = "paired", Npermutations = 100, N_cluster_nodes = 1
+#  ))
+#})
+
+#test_that("textSimilarityTest unpaired results in list with numeric output", {
+#  skip_on_cran()
+#
+#  test_diff_results2 <- text::textSimilarityTest(word_embeddings_4$texts$harmonytexts,
+#    word_embeddings_4$texts$satisfactiontexts,
+#    method = "unpaired", Npermutations = 100, N_cluster_nodes = 1
+#  )
+#
+#  expect_that(test_diff_results2, is_a("list"))
+#  # expect_equal(test_diff_results2[[1]][[1]], 0.9950558, tolerance = 0.00001)
+#})
 
 
-test_that("textSimilarityTest paired results in list with numeric output", {
-  skip_on_cran()
+#test_that("textSimilarityTest unpaired results in list with numeric output", {
+#  skip_on_cran()
+#
+#  test_diff_results1 <- text::textSimilarityTest(word_embeddings_4$texts$harmonytexts,
+#    word_embeddings_4$texts$satisfactiontexts,
+#    method = "unpaired", Npermutations = 100, N_cluster_nodes = 1,
+#    output.permutations = FALSE
+#  )
+#
+#  expect_that(test_diff_results1, is_a("list"))
+#  expect_is(test_diff_results1$p.value[[1]], "numeric")
+#  # expect_equal(test_diff_results1$p.value[[1]], 0.00990099, tolerance = 0.00001)
+#  expect_equal(test_diff_results1$p.value[[1]], 1, tolerance = 0.00001)
+#})
 
-  test_diff_results1 <- text::textSimilarityTest(word_embeddings_4$texts$harmonytexts,
-    word_embeddings_4$texts$satisfactiontexts,
-    method = "paired", Npermutations = 100, N_cluster_nodes = 1
-  )
-
-  expect_that(test_diff_results1, is_a("list"))
-  expect_is(test_diff_results1[[1]][[1]], "numeric")
-  expect_equal(test_diff_results1[[1]][[1]], 0.7825082, tolerance = 0.001)
-})
-
-test_that("textSimilarityTest paired results in list with numeric output", {
-  skip_on_cran()
-
-  expect_error(text::textSimilarityTest(word_embeddings_4$texts$harmonytexts,
-    word_embeddings_4$texts$satisfactiontexts[1:39, ],
-    method = "paired", Npermutations = 100, N_cluster_nodes = 1
-  ))
-})
-
-test_that("textSimilarityTest unpaired results in list with numeric output", {
-  skip_on_cran()
-
-  test_diff_results2 <- text::textSimilarityTest(word_embeddings_4$texts$harmonytexts,
-    word_embeddings_4$texts$satisfactiontexts,
-    method = "unpaired", Npermutations = 100, N_cluster_nodes = 1
-  )
-
-  expect_that(test_diff_results2, is_a("list"))
-  # expect_equal(test_diff_results2[[1]][[1]], 0.9950558, tolerance = 0.00001)
-})
-
-
-test_that("textSimilarityTest unpaired results in list with numeric output", {
-  skip_on_cran()
-
-  test_diff_results1 <- text::textSimilarityTest(word_embeddings_4$texts$harmonytexts,
-    word_embeddings_4$texts$satisfactiontexts,
-    method = "unpaired", Npermutations = 100, N_cluster_nodes = 1,
-    output.permutations = FALSE
-  )
-
-  expect_that(test_diff_results1, is_a("list"))
-  expect_is(test_diff_results1$p.value[[1]], "numeric")
-  # expect_equal(test_diff_results1$p.value[[1]], 0.00990099, tolerance = 0.00001)
-  expect_equal(test_diff_results1$p.value[[1]], 1, tolerance = 0.00001)
-})
-
-test_that("textSimilarityTest unpaired euclidean results in list with numeric output", {
-  skip_on_cran()
-
-  test_diff_results2 <- text::textSimilarityTest(word_embeddings_4$texts$harmonytexts,
-    word_embeddings_4$texts$satisfactiontexts,
-    method = "unpaired", Npermutations = 100, N_cluster_nodes = 1,
-    similarity_method = "euclidean"
-  )
-
-  expect_that(test_diff_results2, is_a("list"))
-  expect_is(test_diff_results2$p.value[[1]], "numeric")
-  # expect_equal(test_diff_results2$p.value[[1]], 0.04)
-  expect_equal(test_diff_results2$p.value[[1]], 0.98)
-})
+#test_that("textSimilarityTest unpaired euclidean results in list with numeric output", {
+#  skip_on_cran()
+#
+#  test_diff_results2 <- text::textSimilarityTest(word_embeddings_4$texts$harmonytexts,
+#    word_embeddings_4$texts$satisfactiontexts,
+#    method = "unpaired", Npermutations = 100, N_cluster_nodes = 1,
+#    similarity_method = "euclidean"
+#  )
+#
+#  expect_that(test_diff_results2, is_a("list"))
+#  expect_is(test_diff_results2$p.value[[1]], "numeric")
+#  # expect_equal(test_diff_results2$p.value[[1]], 0.04)
+#  expect_equal(test_diff_results2$p.value[[1]], 0.98)
+#})

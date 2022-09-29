@@ -29,7 +29,7 @@ cosines <- function(x, y) {
 #'   y = word_embeddings_4$texts$satisfactiontext
 #' )
 #' comment(similarity_scores)
-#' @seealso see \code{\link{textDistance}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textDistance}}, \code{\link{textSimilarityNorm}}
 #' @export
 textSimilarity <- function(x,
                            y,
@@ -105,7 +105,7 @@ textSimilarity <- function(x,
 #'   y = word_embeddings_4$texts$satisfactiontext
 #' )
 #' comment(distance_scores)
-#' @seealso see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+#' @seealso see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}}
 #' @export
 textDistance <- function(x,
                          y,
@@ -158,7 +158,7 @@ textDistance <- function(x,
 #' @examples
 #' similarity_scores <- textSimilarityMatrix(word_embeddings_4$texts$harmonytext[1:3, ])
 #' round(similarity_scores, 3)
-#' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textSimilarityNorm}}
 #' @export
 textSimilarityMatrix <- function(x,
                                  method = "cosine",
@@ -186,7 +186,7 @@ textSimilarityMatrix <- function(x,
 #' @examples
 #' distance_scores <- textDistanceMatrix(word_embeddings_4$texts$harmonytext[1:3, ])
 #' round(distance_scores, 3)
-#' @seealso see \code{\link{textDistanceNorm}} and \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textDistanceNorm}}
 #' @export
 textDistanceMatrix <- function(x,
                                method = "euclidean",
@@ -230,7 +230,7 @@ textDistanceMatrix <- function(x,
 #'   word_embeddings_wordnorm$harmonynorm
 #' )
 #' }
-#' @seealso see \code{\link{textSimilarity}} and \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textSimilarity}}
 #' @importFrom dplyr row_number slice select starts_with
 #' @export
 textSimilarityNorm <- function(x,
@@ -285,7 +285,7 @@ textSimilarityNorm <- function(x,
 #'   word_embeddings_wordnorm$harmonynorm
 #' )
 #' }
-#' @seealso see \code{\link{textDistance}} and \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textDistance}}
 #' @importFrom dplyr row_number slice select starts_with
 #' @export
 textDistanceNorm <- function(x,
