@@ -3,7 +3,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# text 0.9.99
+# text 0.9.99.3
+
+## Bug Fix
+- changed hard coded "bert-base-uncased" to `model`, so that `layers` = -2 works in `textEmbed()`. 
+- Update logging level critical using integer 50 with `set_verbosity`.
+
+# text 0.9.99.2
 
 ## DEFAULT CHANGES
 - The default setting of textEmbed() is now providing token-level embeddings and text-level embeddings. Word_type embeddings are optional. 
