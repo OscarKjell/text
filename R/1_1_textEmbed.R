@@ -877,7 +877,7 @@ textEmbed <- function(texts,
   output <- list()
 
   if (layers[1] < 0) {
-    n <- textModelLayers("bert-base-uncased")
+    n <- textModelLayers(model)
     layers <- 1 + n + layers
     layers
   }
