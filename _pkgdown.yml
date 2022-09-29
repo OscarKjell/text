@@ -75,7 +75,6 @@ reference:
     - textDistanceMatrix
     - textSimilarityNorm
     - textDistanceNorm
-    - textSimilarityTest
 - title: Plot words in the word embedding space
   contents:
     - textProjection

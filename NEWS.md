@@ -5,6 +5,9 @@
 
 # text 0.9.99.3
 
+## Functions changes
+- Removing `textSimialirtyTest()` for version 1.0 because it needs more evaluations. 
+
 ## Bug Fix
 - changed hard coded "bert-base-uncased" to `model`, so that `layers` = -2 works in `textEmbed()`. 
 - Update logging level critical using integer 50 with `set_verbosity`.
