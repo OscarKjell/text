@@ -36,5 +36,5 @@ distance_scores <- textDistance(
 comment(distance_scores)
 }
 \seealso{
-see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}}
 }

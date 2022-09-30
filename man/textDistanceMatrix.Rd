@@ -30,5 +30,5 @@ distance_scores <- textDistanceMatrix(word_embeddings_4$texts$harmonytext[1:3, ]
 round(distance_scores, 3)
 }
 \seealso{
-see \code{\link{textDistanceNorm}} and \code{\link{textSimilarityTest}}
+see \code{\link{textDistanceNorm}}
 }

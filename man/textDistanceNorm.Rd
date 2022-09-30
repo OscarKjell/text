@@ -46,5 +46,5 @@ similarity_scores <- textDistanceNorm(
 }
 }
 \seealso{
-see \code{\link{textDistance}} and \code{\link{textSimilarityTest}}
+see \code{\link{textDistance}}
 }

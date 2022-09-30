@@ -124,5 +124,5 @@ results <- textTrainRandomForest(
 }
 }
 \seealso{
-see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
+see \code{\link{textTrainLists}}
 }

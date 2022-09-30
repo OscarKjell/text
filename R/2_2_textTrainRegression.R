@@ -557,7 +557,7 @@ summarize_tune_results <- function(object,
 #' )
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
+#' \code{\link{textTrainRandomForest}}
 #' @importFrom stats cor.test na.omit lm
 #' @importFrom dplyr bind_cols select starts_with filter all_of
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors

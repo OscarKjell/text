@@ -545,7 +545,7 @@ summarize_tune_results_rf <- function(object,
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
 #' }
-#' @seealso see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textTrainLists}}
 #' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
 #' @importFrom dplyr select bind_cols starts_with filter arrange rename
 #' @importFrom tibble as_tibble

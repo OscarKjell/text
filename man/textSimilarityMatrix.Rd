@@ -30,5 +30,5 @@ similarity_scores <- textSimilarityMatrix(word_embeddings_4$texts$harmonytext[1:
 round(similarity_scores, 3)
 }
 \seealso{
-see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+see \code{\link{textSimilarityNorm}}
 }

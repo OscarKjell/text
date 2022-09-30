@@ -41,5 +41,5 @@ ratings_data <- Language_based_assessment_data_8
 }
 \seealso{
 see \code{\link{textTrain}} \code{\link{textTrainLists}}
-\code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
+\code{\link{textTrainRandomForest}}
 }

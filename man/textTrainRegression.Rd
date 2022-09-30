@@ -132,5 +132,5 @@ results <- textTrainRegression(
 }
 \seealso{
 see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
-\code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
+\code{\link{textTrainRandomForest}}
 }
