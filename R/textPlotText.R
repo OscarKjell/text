@@ -2,6 +2,8 @@
 # for interative plots
 # https://shiny.rstudio.com/articles/plot-interaction.html
 
+nltk <- reticulate::import("nltk")
+
 #' Function to calculate the highlight color value.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased'). For full list of options see pretrained models at HuggingFace. For example use "bert-base-multilingual-cased", "openai-gpt", "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".
@@ -37,7 +39,18 @@ textProjectionText <- function(
         if (texts %>% is.data.frame()){textsIsDF <- TRUE}else{textsIsDF <- FALSE}
         if (texts %>% is_tibble()){textsIsTb <- TRUE}else{textsIsTb <- FALSE}
     }
-    
+
+    # if texts == str
+    if (textsIsStr){
+        
+    }
+
+    # if texts == DF or Tb
+    if (textsIsDF | textsIsTb){
+        if (textsIsDF){texts <- texts %>% as_tibble()}
+        
+    }
+
 }
 
 #### textPlotText ####
@@ -53,4 +66,8 @@ textProjectionText <- function(
 #' @export
 textPlotText <- function(RObj_model){
     print("Hi again!")
+}
+
+splitText <- function(string){
+    return (nltk$tokenize$sent_tokenize(string) %>% reticulate::py_to_r())
 }
