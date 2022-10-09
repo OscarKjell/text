@@ -10,12 +10,17 @@
 #' @param device param yet not supported.
 #' @param tokenzier_parallelism param yet not supported.
 #' @param logging_level param yet not supported.
+#' @importFrom magrittr %>%
+#' @importFrom reticulate import
+#' @importFrom tibble as_tibble is_tibble
+#' @importFrom purrr map
+#' @importFrom furrr future_map
 #' @return List of names of models and tibbles.
 #' @examples
 #' \dontrun{
 #' textProjectionText()
 #' }
-#' @seealso see \code{\link{textProjectionText}}
+#' @seealso see \code{\link{textProjection}} and \code{\link{textWordPrediction}}
 #' @export
 textProjectionText <- function(
     texts,
@@ -26,7 +31,13 @@ textProjectionText <- function(
     tokenizer_parallelism = FALSE,
     logging_level = "error"
 ){
-    print("Hi!")
+    # Check the format of the input
+    if (TRUE){
+        if (texts %>% is.character()){textsIsStr <- TRUE}else{textsIsStr <- FALSE}
+        if (texts %>% is.data.frame()){textsIsDF <- TRUE}else{textsIsDF <- FALSE}
+        if (texts %>% is_tibble()){textsIsTb <- TRUE}else{textsIsTb <- FALSE}
+    }
+    
 }
 
 #### textPlotText ####
