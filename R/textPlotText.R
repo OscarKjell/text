@@ -2,7 +2,8 @@
 # for interative plots
 # https://shiny.rstudio.com/articles/plot-interaction.html
 
-nltk <- reticulate::import("nltk")
+# reticulate::py_install("nltk", envname)
+# nltk <- reticulate::import("nltk")
 
 #' Function to calculate the highlight color value.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
@@ -68,6 +69,8 @@ textPlotText <- function(RObj_model){
     print("Hi again!")
 }
 
+#' @importFrom reticulate import
 splitText <- function(string){
+    nltk <- import("nltk")
     return (nltk$tokenize$sent_tokenize(string) %>% reticulate::py_to_r())
 }
