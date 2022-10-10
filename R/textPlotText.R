@@ -5,9 +5,34 @@
 # reticulate::py_install("nltk", envname)
 # nltk <- reticulate::import("nltk")
 
+#### helper func ####
+
+#' @importFrom reticulate import
+getTokenizer <- function(modelName){
+    tokenizers <- import("transformers")
+    autoTokenizers <- tokenizers$AutoTokenizer
+    return (autoTokenizers$from_pretrained(modelName))
+}
+
+decodeToken <- function(AString, model){
+    ids <- AString %>% model$convert_tokens_to_ids()
+    return (ids %>% model$decode())
+}
+
+# #' @importFrom reticulate import
+# splitSent <- function(string){
+#     nltk <- import("nltk")
+#     return (nltk$tokenize$sent_tokenize(string) %>% reticulate::py_to_r())
+# }
+
+#### Basic function ####
+
 #' Function to calculate the highlight color value.
-#' @param texts A character variable or a tibble/dataframe with at least one character variable.
-#' @param model Character string specifying pre-trained language model (default 'bert-base-uncased'). For full list of options see pretrained models at HuggingFace. For example use "bert-base-multilingual-cased", "openai-gpt", "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".
+#' @param textsProj A character variable or a tibble/dataframe with at least one character variable.
+#' @param texts_embeddings Embedding values from text::textEmbed()
+#' @param x Numeric variable that the words should be plotted according to on the x-axes.
+#' @param y Numeric variable that the words should be plotted according to on the y-axes (y=NULL).
+#' @param model Character string specifying pre-trained language model (default 'bert-base-uncased'). For now it only supports the default. For full list of options see pretrained models at HuggingFace. For example use "bert-base-multilingual-cased", "openai-gpt", "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".
 #' @param lang_level Set the language level in the output of predictions. The defaut value is "all".
 #' @param projection_method Set the projection method. Can be either "ridge" or "dot_product." The defaulf value is "ridge". "dot_product" is not yet supported.
 #' @param device param yet not supported.
@@ -26,7 +51,10 @@
 #' @seealso see \code{\link{textProjection}} and \code{\link{textWordPrediction}}
 #' @export
 textProjectionText <- function(
-    texts,
+    textsProj,
+    texts_embeddings = texts_embeddings_from_textEmbed,
+    x,
+    y = NULL,
     model = "bert-base-uncased",
     lang_level = "all",
     projection_method = "ridge",
@@ -36,20 +64,33 @@ textProjectionText <- function(
 ){
     # Check the format of the input
     if (TRUE){
-        if (texts %>% is.character()){textsIsStr <- TRUE}else{textsIsStr <- FALSE}
-        if (texts %>% is.data.frame()){textsIsDF <- TRUE}else{textsIsDF <- FALSE}
-        if (texts %>% is_tibble()){textsIsTb <- TRUE}else{textsIsTb <- FALSE}
+        textIsStr <- FALSE
+        textIsDF <- FALSE
+        textIsTb <- FALSE
+        if (textsProj %>% is.character()){textsIsStr <- TRUE}else{textsIsStr <- FALSE}
+        if (textsProj %>% is.data.frame()){textsIsDF <- TRUE}else{textsIsDF <- FALSE}
+        if (textsProj %>% is_tibble()){textsIsTb <- TRUE}else{textsIsTb <- FALSE}
+        if (model %>% is.character()){modelName <- model}else{modelName <- "bert_base_uncased"}
+        tokenizers <- modelName %>% getTokenizer()
     }
 
     # if texts == str
     if (textsIsStr){
-        
+        # textsProj to textEmbed
+        textEmbedding <- textsProj %>% textEmbed(model = modelName)
+        # bbb <- textEmbed(Language_based_assessment_data_8$harmonytexts)
+        # see bbb[["tokens"]][["texts"]][[5]]$tokens[62:120]
+        # TODO: use contain and decode to transform, based on [CLS]
+        # contains one row of tokens with in sentences
+        temp <- textEmbedding[["tokens"]][["texts"]][[1]]$`tokens` %>%
+            decodeToken(model = tokenizers)
+        # After the calling of the function "decode"
     }
 
     # if texts == DF or Tb
     if (textsIsDF | textsIsTb){
         if (textsIsDF){texts <- texts %>% as_tibble()}
-        
+        NULL
     }
 
 }
@@ -69,8 +110,3 @@ textPlotText <- function(RObj_model){
     print("Hi again!")
 }
 
-#' @importFrom reticulate import
-splitText <- function(string){
-    nltk <- import("nltk")
-    return (nltk$tokenize$sent_tokenize(string) %>% reticulate::py_to_r())
-}
