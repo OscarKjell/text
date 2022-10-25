@@ -20,7 +20,7 @@ getTokenizer <- function(modelName){
 
 #' Transform the subword tokens back to words.
 #' @param aString An input string list.
-#' @param tokenizers A tokenizer model from getTokenizer.
+#' @param tokenizersInUse A tokenizer model from getTokenizer.
 #' @return The transformed string.
 #' @noRd
 decodeToken <- function(aStringList, tokenizerInUse){
@@ -116,9 +116,9 @@ token2Sent_avgSentTokenRowWise <- function(newEmbed, rowCLS,
 #' Transform the tokens into sentence cells.
 #' @param aTibble The input tibble of token embeddings.
 #' @param tokenizers The tokenizer used.
-#' @param include_CLS_SEP To include the embeddings of "CLS", "SEP", or "both".
+#' @param include_CLS_SEP To include the embeddings of "CLS", "SEP", "both", or "none".
 #' @importFrom furrr pmap
-#' @importFrom furrr pmap_dfr # future for paralell
+#' @importFrom furrr pmap_dfr
 #' @importFrom future plan
 #' @importFrom future cluster
 #' @importFrom future future
@@ -142,7 +142,7 @@ token2Sent_getSent <- function(aTibble, tokenizers, include_CLS_SEP="both"){
         ),
         token2Sent_getSentRowWise
         )
-    },seed=TRUE)
+    },seed=TRUE) # TRUE or NULL?
     getSent_embed <- future::future({
         furrr::future_pmap_dfr(
         list(
@@ -154,36 +154,88 @@ token2Sent_getSent <- function(aTibble, tokenizers, include_CLS_SEP="both"){
         ),
         token2Sent_avgSentTokenRowWise
         ) 
-    },seed=TRUE)
+    },seed=TRUE) # TRUE or NULL?
     newSentTb[["sentences"]] <- future::value(getSent_str)
     getSent_embed_ <- future::value(getSent_embed)
     newSentTb <- cbind(newSentTb[,1:3], getSent_embed_)
     return (newSentTb)
 }
-# TODO: continue to code here. Use func token2Sent_getSent to convert the token lists from textEmbed.
-#' Get the tibble of sentence embeddings.
-#' @param texts_embeddings The input tibble of token embeddings.
-#' @return An integer of the number of sentences.
-#' @NoRd
-token2Sent <- function(texts_embeddings){
-
-    rowNum <- length(texts_embeddings$tokens$texts)
-    # for (rowNo in rowNum %>% seq_len){
-        # idCLSSEP <- texts_embeddings[["tokens"]][["texts"]][rowNo] %>% 
-        # texts_embeddings[["sentences"]][["texts"]][rowNo]
-    #}
-    # temp_[["sentences"]][["texts"]][1] <- list("a")
-    # temp_[["sentences"]][2] <- list
-    # texts_embeddings
-
-    return (0)
+#' Remove ID numbers of CLS and SEP
+#' @param aTibble The output from token2Sent_getSent.
+#' @return textEmbeds without ID number columns.
+#' @NoRd 
+removeColCLSSEP <- function(aTibble){
+    return (aTibble[, 3:ncol(aTibble)])
 }
+#' Get the tibble of sentence embeddings.
+#' @param textEmbeds The input tibble of token embeddings.
+#' @param tokenizers The tokenizer used in function textEmbed to get token embeddings.
+#' @param include_CLS_SEP To include the embeddings of "CLS", "SEP", "both", or "none".
+#' @return A list containing token embeddings of the function textEmbed() along with sentence embeddings.
+#' @NoRd
+token2Sent <- function(textEmbeds, tokenizers, include_CLS_SEP="both"){
+
+    tokenSent <- furrr::future_pmap(
+        list(
+            textEmbeds[["tokens"]][["texts"]] %>% as.vector(),
+            tokenizers %>% list(),
+            include_CLS_SEP %>% list()
+        ),
+        token2Sent_getSent
+    )
+    tokenSent <- furrr::future_pmap(
+        list(
+            tokenSent %>% as.vector()
+        ),
+        removeColCLSSEP
+    )
+    for (i in length(tokenSent) %>% seq_len()){
+        if (i == 1){
+            tokenSent[[1]] <- tokenSent[[1]] %>% tibble::as_tibble()
+            sentenceEmbed <- tokenSent[[1]]
+            next
+        }
+        tokenSent[[i]] <- tokenSent[[i]] %>% tibble::as_tibble()
+        sentenceEmbed <- rbind(sentenceEmbed, tokenSent[[i]])
+    }
+    sentenceEmbed <- sentenceEmbed %>% tibble::as_tibble()
+    textEmbeds <- append(textEmbeds,
+                         list("sentences" = list(
+                            "texts"=tokenSent, "sentence_tibble"=sentenceEmbed)
+                         ), 1
+    )
+
+    return (textEmbeds)
+}
+#' Get the predition tibble rowwise
+#' @param rowTb Each row of the original list
+#' @param yValue Row value of the prediction target
+#' @return A row ready for prediction
+#' @NoRd
+getPredictionTb_row <- function(rowTb, yValue){
+    return (cbind(yValue, rowTb))
+}
+#' Get the tibble of sentence embeddings and their prediction targets.
+#' @param PredictTb The input from token2Sent.
+#' @param y Numeric variable to predict.
+#' @importFrom furrr pmap_dfr
+#' @return something.
+#' @NoRd
+getPredictTb <- function(PredictTb, y){
+
+    PredTb <- furrr::future_pmap_dfr(
+        list(PredictTb, y),
+        getPredictionTb_row
+    )
+    return (PredTb)
+}
+
 
 #### Basic function ####
 
 #' Function to calculate the highlight color value.
-#' @param textsProj A character variable or a tibble/dataframe with at least one character variable.
-#' @param texts_embeddings Embedding values from text::textEmbed()
+#' @param textsObj A character variable or a tibble/dataframe with at least one character variable.
+#' @param embeds_from_textEmbed Embedding values from text::textEmbed()
 #' @param x Numeric variable that the words should be plotted according to on the x-axes.
 #' @param y Numeric variable that the words should be plotted according to on the y-axes (y=NULL).
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased'). For now it only supports the default. For full list of options see pretrained models at HuggingFace. For example use "bert-base-multilingual-cased", "openai-gpt", "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased", "roberta-base", or "xlm-roberta-base".
@@ -206,8 +258,8 @@ token2Sent <- function(texts_embeddings){
 #' @seealso see \code{\link{textProjection}} and \code{\link{textWordPrediction}}
 #' @export
 textProjectionText <- function(
-    textsProj,
-    texts_embeddings = texts_embeddings_from_textEmbed,
+    textsPred,
+    embeds_from_textEmbed,
     x,
     y = NULL,
     model = "bert-base-uncased",
@@ -218,29 +270,34 @@ textProjectionText <- function(
     tokenizer_parallelism = FALSE,
     logging_level = "error"
 ){
-    # Check the format of the input
+
+    '''
+        # snowboarding would be tokenized into "snow" & "##boarding".
+        textsPred <- "I wish I could have a nice dream snowboarding. Today it is quite good. Tomorrow would be even better."
+    '''
+
+    #### 1. Check the format of the input
     if (TRUE){
         textIsStr <- FALSE
         textIsDF <- FALSE
         textIsTb <- FALSE
-        if (textsProj %>% is.character()){textsIsStr <- TRUE}else{textsIsStr <- FALSE}
-        if (textsProj %>% is.data.frame()){textsIsDF <- TRUE}else{textsIsDF <- FALSE}
-        if (textsProj %>% is_tibble()){textsIsTb <- TRUE}else{textsIsTb <- FALSE}
-        if (model %>% is.character()){modelName <- model}else{modelName <- "bert_base_uncased"}
+        if (textsPred %>% is.character()){textsIsStr <- TRUE}else{textsIsStr <- FALSE}
+        if (textsPred %>% is.data.frame()){textsIsDF <- TRUE}else{textsIsDF <- FALSE}
+        if (textsPred %>% is_tibble()){textsIsTb <- TRUE}else{textsIsTb <- FALSE}
+        if (model %>% is.character()){modelName <- model}else{modelName <- "bert-base-uncased"}
+        #if (x %>% is_tibble()){return -1 %>% as.numeric()}
         tokenizers <- modelName %>% getTokenizer()
     }
 
+    #### 2. Get the embedding of the input to predict.
     # if texts == str
     if (textsIsStr){
         # textsProj to textEmbed
-        textEmbedding <- textsProj %>% textEmbed(model = modelName)
-        # aaa <- textEmbed(Language_based_assessment_data_8$harmonytexts)
-        # see aaa[["tokens"]][["texts"]][[5]]$tokens[62:120]
-        # TODO: use contain and decode to transform, based on [CLS]
+        sentsPred <- textsPred %>% textEmbed(modelName)
+        sentsPred <- token2Sent(sentsPred, tokenizers, include_CLS_SEP)
         # contains one row of tokens with in sentences
-        temp <- textEmbedding[["tokens"]][["texts"]][[1]]$`tokens` %>%
-            decodeToken(model = tokenizers)
-        # After the calling of the function "decode"
+        # embeds_from_textEmbed <- textEmbed(Language_based_assessment_data_8$harmonytexts)
+        sentsTrain <- token2Sent(embeds_from_textEmbed, tokenizers, include_CLS_SEP)
     }
 
     # if texts == DF or Tb
@@ -248,6 +305,27 @@ textProjectionText <- function(
         if (textsIsDF){texts <- texts %>% as_tibble()}
         NULL
     }
+    
+    #### 3. Train the model using given training data.
+    sentsTrainTb <- getPredictTb(sentsTrain[["sentences"]][["texts"]], 
+                         y # Language_based_assessment_data_8$hilstotal
+    ) %>% tibble::as_tibble()
+    results <- textTrainRegression(
+        x = sentsTrainTb[,3:ncol(sentsTrainTb)],
+        y = sentsTrainTb[,1]) 
+    
+    '''
+    TODO: continue code
+    aaa <- textEmbed(Language_based_assessment_data_8$harmonytexts)
+    sentsInput <- token2Sent(aaa)
+    '''
+    #### 4. Use trained model to predict the input
+    # textPredict https://r-text.org/reference/textPredict.html
+    outputValue <- textPredict(results, 
+        sentsPred[["sentences"]][["sentence_tibble"]][, 2:ncol(sentsPred[["sentences"]][["sentence_tibble"]])])
+    names(outputValue) <- c("y_pred")
+
+    return (outputValue)
 
 }
 
