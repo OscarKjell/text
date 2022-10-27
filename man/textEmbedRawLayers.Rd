@@ -27,7 +27,8 @@ textEmbedRawLayers(
  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
  For example use "bert-base-multilingual-cased", "openai-gpt",
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
-"roberta-base", or "xlm-roberta-base".}
+"roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
+ malicious model can execute arbitrary code on your computer).}
 
 \item{layers}{(string or numeric) Specify the layers that should be extracted
 (default -2, which give the second to last layer). It is more efficient to only extract the

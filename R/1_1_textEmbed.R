@@ -319,7 +319,8 @@ textTokenize <- function(texts,
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
-#' "roberta-base", or "xlm-roberta-base".
+#' "roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
+#'  malicious model can execute arbitrary code on your computer).
 #' @param layers (string or numeric) Specify the layers that should be extracted
 #' (default -2, which give the second to last layer). It is more efficient to only extract the
 #' layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
@@ -784,7 +785,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
-#' "roberta-base", or "xlm-roberta-base".
+#' "roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
+#'  malicious model can execute arbitrary code on your computer).
 #' @param layers (string or numeric) Specify the layers that should be extracted
 #' (default -2 which give the second to last layer). It is more efficient to only extract the layers
 #' that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this parameter

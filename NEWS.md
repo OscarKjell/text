@@ -11,6 +11,8 @@
 ## Bug Fix
 - changed hard coded "bert-base-uncased" to `model`, so that `layers` = -2 works in `textEmbed()`. 
 - Update logging level critical using integer 50 with `set_verbosity`.
+- changed in `sorting_xs_and_x_append` from Dim to Dim0 when renaming x_appended variables.
+- changed `first` to `append_first` and  made it an option in `textTrainRegression()` and `textTrainRandomForest()`. 
 
 # text 0.9.99.2
 

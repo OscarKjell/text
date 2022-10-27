@@ -86,13 +86,13 @@ p_value_comparing_with_Null <- function(Observedresult,
 #' Add numeric variables to word embeddings
 #' @param word_embeddings Word embeddings to add variables to.
 #' @param data Variables to be added to the word embeddings before training.
-#' @param first Option to add variables before or after all word embeddings.
+#' @param append_first Option to add variables before or after all word embeddings.
 #' @return Object of word embeddings with added variables referred to as Dim0X_names.
 #' @examples
 #' \donttest{
 #' embeddings_with_variables <- add_variables_to_we(word_embeddings_4[1],
 #'   Language_based_assessment_data_8[c(6, 7)],
-#'   first = TRUE
+#'   append_first = TRUE
 #' )
 #' }
 #' @importFrom dplyr bind_cols
@@ -101,7 +101,7 @@ p_value_comparing_with_Null <- function(Observedresult,
 #' @noRd
 add_variables_to_we <- function(word_embeddings,
                                 data,
-                                first = FALSE) {
+                                append_first = FALSE) {
 
   # Add Names to new Variables
   colnames(data) <- paste("Dim0", "_", colnames(data), sep = "") # 1:ncol(data),
@@ -112,10 +112,10 @@ add_variables_to_we <- function(word_embeddings,
   # If not list of word embeddings
   if (!is.data.frame(word_embeddings)) {
 
-    # Add first
-    if (first == TRUE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(data, .x))
+    # Add append_first
+    if (append_first == TRUE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(data, .x))
     # Add last
-    if (first == FALSE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(.x, data))
+    if (append_first == FALSE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(.x, data))
 
     ratings_embeddings_tibble <- lapply(ratings_embeddings, tibble::as_tibble)
   }
@@ -123,10 +123,10 @@ add_variables_to_we <- function(word_embeddings,
   # If list of word embeddings
   if (is.data.frame(word_embeddings)) {
 
-    # Add first
-    if (first == TRUE) ratings_embeddings_tibble <- dplyr::bind_cols(data, word_embeddings)
+    # Add append_first
+    if (append_first == TRUE) ratings_embeddings_tibble <- dplyr::bind_cols(data, word_embeddings)
     # Add last
-    if (first == FALSE) ratings_embeddings_tibble <- dplyr::bind_cols(word_embeddings, data)
+    if (append_first == FALSE) ratings_embeddings_tibble <- dplyr::bind_cols(word_embeddings, data)
   }
 
   return(ratings_embeddings_tibble)
@@ -135,11 +135,12 @@ add_variables_to_we <- function(word_embeddings,
 #' Sorting out word_embeddings and x_append for training and predictions
 #'
 #' @param x word embeddings
-#' @param x_append other variables than word embeddings used in training (e.g., age)
+#' @param x_append other variables than word embeddings used in training (e.g., age).
+#' @param append_first Option to add variables before or after all word embeddings.
 #' @return List with sorted tibble of variables, x_name, embedding_description,
 #' x_append_names, and variable_name_index_pca.
 #' @noRd
-sorting_xs_and_x_append <- function(x, x_append, ...) {
+sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
   variable_name_index_pca <- NA
 
   if (!is.null(x)) {
@@ -173,7 +174,7 @@ sorting_xs_and_x_append <- function(x, x_append, ...) {
     x1 <- x_append
     x_append <- NULL
     colnames(x1) <- paste0(
-      "Dim", "_",
+      "Dim0", "_",
       colnames(x1)
     )
     x_name <- NULL
@@ -212,7 +213,9 @@ sorting_xs_and_x_append <- function(x, x_append, ...) {
   if (!is.null(x_append)) {
     x1 <- add_variables_to_we(
       word_embeddings = x1,
-      data = x_append, ...
+      data = x_append,
+      append_first = append_first,
+      ...
     )
   }
 

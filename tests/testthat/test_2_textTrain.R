@@ -663,6 +663,26 @@ test_that("textPredictTest t-test and bootstrapped test", {
 
 test_that("training with only x_append (without word embeddings)", {
   skip_on_cran()
+  help("textTrainRegression")
+  test_firstTRUE <- text::textTrainRegression(
+    x = word_embeddings_4$texts$harmonywords,
+    x_append = Language_based_assessment_data_8[6:7],
+    y = Language_based_assessment_data_8[5],
+    outside_folds = 2,
+    append_first = TRUE
+  )
+  testthat::expect_that(test_firstTRUE, testthat::is_a("list"))
+
+  test_firstTRUE <- text::textTrainRandomForest(
+    x = word_embeddings_4$texts$harmonywords,
+    x_append = Language_based_assessment_data_8[6:7],
+    y = Language_based_assessment_data_8["gender"],
+    outside_folds = 2,
+    append_first = TRUE
+  )
+  testthat::expect_that(test_firstTRUE, testthat::is_a("list"))
+
+
   test1 <- text::textTrainRegression(
     x = NULL,
     x_append = Language_based_assessment_data_8[6:7],
