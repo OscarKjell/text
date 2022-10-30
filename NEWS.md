@@ -3,6 +3,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 0.9.99.4
+## Bug Fix
+- fixed `textEmbed(decontextualize=TRUE)`, which gave error.
+
 # text 0.9.99.3
 
 ## Functions changes

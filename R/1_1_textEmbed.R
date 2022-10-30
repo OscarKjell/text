@@ -993,7 +993,12 @@ textEmbed <- function(texts,
 
       # Tokenize texts
       output <- list()
+      token_embeddings_list <- list()
       token_embeddings_list$tokens <- list()
+      if (tibble::is_tibble(texts)){
+        texts <- tibble::as_tibble(texts)
+      }
+
       for (i_variables in seq_len(ncol(texts))) {
         text_tokens <- lapply(texts[[i_variables]], textTokenize,
                               model = model, max_token_to_sentence = max_token_to_sentence) # , ...
@@ -1124,3 +1129,4 @@ textDimName <- function(word_embeddings,
 
   return(word_embeddings)
 }
+

@@ -95,6 +95,7 @@ test_that("Testing textEmbed as well as train", {
     # x_append = Language_based_assessment_data_8[1:20, ], # sending all give same as below: 12.40038
     # x_append = Language_based_assessment_data_8[1:20, 6:7], # sending only swlstotal and age: 12.40038
     x_append = Language_based_assessment_data_8[1:20, c(7, 6)], # sending "wrong" order give: 12.40038
+    append_first = FALSE,
     # x_append = Language_based_assessment_data_8[1:20, c(5,6) ], # missing one throws error
     dim_names = TRUE
   )
@@ -106,7 +107,8 @@ test_that("Testing textEmbed as well as train", {
   all_predictions <- textPredictAll(
     models = models_1_2,
     word_embeddings = harmony_word_embeddings$texts,
-    x_append = Language_based_assessment_data_8[1:20, 5:8]
+    x_append = Language_based_assessment_data_8[1:20, 5:8],
+    append_first = FALSE
   )
 
   expect_equal(all_predictions[[1]][1], 11.89, tolerance = 0.1)
