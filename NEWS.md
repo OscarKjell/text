@@ -3,7 +3,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# text 0.9.99.4
+# text 0.9.99.5
 ## Bug Fix
 - fixed `textEmbed(decontextualize=TRUE)`, which gave error.
 
