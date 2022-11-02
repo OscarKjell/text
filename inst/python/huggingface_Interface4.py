@@ -123,6 +123,7 @@ def hgTransformerGetEmbedding(text_strings,
     return embs
 
 def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression = True):
+
     """
     Simple Python method for embedding text with pretained Hugging Face models
 
