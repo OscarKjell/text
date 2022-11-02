@@ -148,7 +148,6 @@ class DataTrainingArguments:
     """
     def __post_init__(self):
         print("hello")
-        """
         if self.task_name is not None:
             self.task_name = self.task_name.lower()
             if self.task_name not in task_to_keys.keys():
@@ -206,10 +205,8 @@ class ModelArguments:
         default=False,
         metadata={"help": "Will enable to load a pretrained model whose head dimensions are different."},
     )
-    def __post_init__(self):
-       print("hello 2")
-#TODO: Turn the args list below into a single dictionary
-def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test):
+
+def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression):
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
@@ -252,11 +249,6 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test):
     )
     logger.info(f"Training/evaluation parameters {training_args}")
 
-    #Init the args into the parser
-    training_args.output_dir = output_dir
-    model_args.model_name_or_path = model_name_or_path
-    print(model_args)
-
     # Detecting last checkpoint.
     last_checkpoint = None
     if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
@@ -274,8 +266,6 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test):
 
     # Set seed before initializing model.
     set_seed(training_args.seed)
-
-
 
     # Get the datasets: you can either provide your own CSV/JSON training and evaluation files (see below)
     # or specify a GLUE benchmark task (the dataset will be downloaded automatically from the datasets Hub).
