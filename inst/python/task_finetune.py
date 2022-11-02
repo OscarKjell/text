@@ -145,25 +145,6 @@ class DataTrainingArguments:
         default=None, metadata={"help": "A csv or a json file containing the validation data."}
     )
     test_file: Optional[str] = field(default=None, metadata={"help": "A csv or a json file containing the test data."})
-    """
-    def __post_init__(self):
-        print("hello")
-        if self.task_name is not None:
-            self.task_name = self.task_name.lower()
-            if self.task_name not in task_to_keys.keys():
-                raise ValueError("Unknown task, you should pick one in " + ",".join(task_to_keys.keys()))
-        elif self.dataset_name is not None:
-            pass
-        elif self.train_file is None or self.validation_file is None:
-            raise ValueError("Need either a GLUE task, a training/validation file or a dataset name.")
-        else:
-            train_extension = self.train_file.split(".")[-1]
-            assert train_extension in ["csv", "json"], "`train_file` should be a csv or a json file."
-            validation_extension = self.validation_file.split(".")[-1]
-            assert (
-                validation_extension == train_extension
-            ), "`validation_file` should have the same extension (csv or json) as `train_file`."
-    """
 
 @dataclass
 class ModelArguments:
@@ -216,14 +197,7 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
     for key in args:
         args_dict.update(args[key])
     model_args, data_args, training_args = parser.parse_dict(args = args_dict)
-    """
-    if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
-        # If we pass only one argument to the script and it's the path to a json file,
-        # let's parse it to get our arguments.
-        model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
-    else:
-        model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-    """
+    
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
     # send_example_telemetry("run_glue", model_args, data_args)
@@ -416,9 +390,9 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
 
     # Get the metric function
     if is_regression:
-        metric = load_metric("pearson_correlation")
+        metric = evaluate.load("pearsonr") #load_metric("pearson_correlation")
     else:
-        metric = load_metric("f1")
+        metric = evaluate.load("f1") #load_metric("f1")
 
     # You can define your custom compute_metrics function. It takes an `EvalPrediction` object (a namedtuple with a
     # predictions and label_ids field) and has to return a dictionary string to float.
