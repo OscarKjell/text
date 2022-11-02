@@ -238,6 +238,8 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
                 "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
             )
 
+    print("HELLO FOUR 4444")
+
     # Set seed before initializing model.
     set_seed(training_args.seed)
 

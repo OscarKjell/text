@@ -24,7 +24,7 @@
     "ignore_mismatched_sizes": false
   },
   "TrainingArguments": {
-    "output_dir": "./",
+    "output_dir": "/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/",
     "overwrite_output_dir": false,
     "do_train": false,
     "do_eval": null,
