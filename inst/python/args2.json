@@ -20,7 +20,7 @@
     "cache_dir": null,
     "use_fast_tokenizer": true,
     "model_revision": "main",
-    "use_auth_token": "<USE_AUTH_TOKEN>",
+    "use_auth_token": false,
     "ignore_mismatched_sizes": false
   },
   "TrainingArguments": {
