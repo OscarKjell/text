@@ -160,14 +160,14 @@ test_that("textTrain Random Forest produces list of results with prediction bein
     min_n = c(1),
     trees = c(1000),
     preprocess_PCA = "min_halving",
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = FALSE,
     eval_measure = "f_measure",
     force_train_method = "random_forest"
   )
 
   testthat::expect_that(trained1, testthat::is_a("list"))
   testthat::expect_is(trained1$truth_predictions$truth[1], "factor")
-  testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.329)
+  testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.297)
 
   trained2 <- text::textTrain(
     x = word_embeddings_4$texts$harmonytext,
@@ -180,14 +180,14 @@ test_that("textTrain Random Forest produces list of results with prediction bein
     min_n = c(1),
     trees = c(1000),
     preprocess_PCA = 2,
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = FALSE,
     eval_measure = "sens",
     force_train_method = "random_forest"
   )
 
   testthat::expect_that(trained2, testthat::is_a("list"))
   testthat::expect_is(trained2$truth_predictions$truth[1], "factor")
-  testthat::expect_equal(trained2$truth_predictions$.pred_1[1], 0.303)
+  testthat::expect_equal(trained2$truth_predictions$.pred_1[1], 0.318)
 
   trained_NA <- text::textTrain(
     x = word_embeddings_4$texts$harmonytext,
@@ -201,13 +201,13 @@ test_that("textTrain Random Forest produces list of results with prediction bein
     min_n = c(1),
     trees = c(1000),
     preprocess_PCA = NA,
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = FALSE,
     eval_measure = "spec"
   )
 
   testthat::expect_that(trained_NA, testthat::is_a("list"))
   testthat::expect_is(trained_NA$truth_predictions$truth[1], "factor")
-  testthat::expect_equal(trained_NA$truth_predictions$.pred_1[1], 0.347)
+  testthat::expect_equal(trained_NA$truth_predictions$.pred_1[1], 0.352)
 })
 
 
@@ -236,7 +236,7 @@ test_that("textTrainRandomForest with Extremely
     trees = c(1000),
     preprocess_PCA = c(0.95),
     extremely_randomised_splitrule = NULL,
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = FALSE,
     eval_measure = "roc_auc",
     save_output = "only_results",
     event_level = "second"
@@ -244,7 +244,7 @@ test_that("textTrainRandomForest with Extremely
 
   testthat::expect_that(trained_rf_95, testthat::is_a("list"))
   testthat::expect_is(trained_rf_95$results$.estimate[1], "numeric")
-  testthat::expect_equal(trained_rf_95$results$.estimate[1], 0.4871795, tolerance = 0.001)
+  testthat::expect_equal(trained_rf_95$results$.estimate[1], 0.4102564, tolerance = 0.001)
 
   example_categories <- as.factor(c(
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
@@ -286,12 +286,12 @@ test_that("textTrainRandomForest with Extremely
     trees = c(1000),
     preprocess_PCA = NA,
     extremely_randomised_splitrule = "gini",
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(trained_rf_NA, testthat::is_a("list"))
   testthat::expect_is(trained_rf_NA$truth_predictions$truth[1], "factor")
-  testthat::expect_equal(trained_rf_NA$truth_predictions$.pred_1[1], 0.612)
+  testthat::expect_equal(trained_rf_NA$truth_predictions$.pred_1[1], 0.606)
 })
 
 
@@ -315,7 +315,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     force_train_method = "regression",
     save_output = "only_results",
     method_cor = "kendall",
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_or, testthat::is_a("list"))
@@ -341,7 +341,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     mixture = c(0),
     force_train_method = "automatic",
     save_output = "only_results_predictions",
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_or_p1, testthat::is_a("list"))
@@ -361,15 +361,18 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     mixture = c(0),
     force_train_method = "random_forest",
     save_output = "only_results_predictions",
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = FALSE,
     seed = 22
   )
-
+  # multi_cores_sys_default will result it slightly different results
   testthat::expect_that(results_or_p2, testthat::is_a("list"))
   testthat::expect_is(results_or_p2$results$.estimate[1], "numeric")
-  testthat::expect_equal(results_or_p2$results$.estimate[1], 0.500, tolerance = 0.001)
-  # testthat::expect_equal(results_or_p2$results$.estimate[1], 0.425, tolerance = 0.001)
-  # testthat::expect_equal(results_or_p2$results$.estimate[1], 0.475, tolerance = 0.001)
+  testthat::expect_equal(results_or_p2$results$.estimate[1], 0.525, tolerance = 0.001)
+  #testthat::expect_equal(results_or_p2D$results$.estimate[1], 0.500, tolerance = 0.001)
+  #testthat::expect_equal(results_or_p2F$results$.estimate[1], 0.500, tolerance = 0.001)
+  #testthat::expect_equal(results_or_p2T$results$.estimate[1], 0.500, tolerance = 0.001)
+  #testthat::expect_equal(results_or_p2$results$.estimate[1], 0.425, tolerance = 0.001)
+  #testthat::expect_equal(results_or_p2$results$.estimate[1], 0.475, tolerance = 0.001)
 
 
   factors1 <- as.factor(Language_based_assessment_data_8$gender)
@@ -393,7 +396,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     # model = "logistic",
     eval_measure = "default",
     save_output = "only_results_predictions",
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_list_logistic1, testthat::is_a("list"))
@@ -412,7 +415,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
     mixture = c(0),
     force_train_method = "regression",
     save_output = "only_results_predictions",
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_list_logistic, testthat::is_a("list"))
@@ -445,7 +448,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     eval_measure = "accuracy",
     extremely_randomised_splitrule = "extratrees",
     save_output = "all",
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_rf_et, testthat::is_a("list"))
@@ -466,12 +469,12 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     trees = c(1000),
     eval_measure = "kappa",
     save_output = "all",
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_rf, testthat::is_a("list"))
   testthat::expect_is(results_rf$results$p_value[1], "character")
-  testthat::expect_equal(results_rf$results$p_value[1], "0.191418425237607")
+  testthat::expect_equal(results_rf$results$p_value[1], "0.522372193561587")
 
   results_rf_or_p <- text::textTrain(
     x = x,
@@ -487,7 +490,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     trees = c(1000),
     eval_measure = "precision",
     save_output = "only_results_predictions",
-    multi_cores = "multi_cores_sys_default"
+    multi_cores =FALSE
   )
 
   testthat::expect_that(results_rf_or_p, testthat::is_a("list"))
@@ -509,12 +512,12 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     trees = c(1000),
     eval_measure = "precision",
     save_output = "only_results",
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_rf_or, testthat::is_a("list"))
   testthat::expect_is(results_rf_or$results$p_value[1], "character")
-  testthat::expect_equal(results_rf_or$results$roc_auc[1], 0.38375)
+  testthat::expect_equal(results_rf_or$results$roc_auc[1], 0.38625)
 })
 
 
@@ -532,7 +535,7 @@ test_that("textTrainRegression adding word_embedding together", {
     inside_strata_y = NULL,
     preprocess_PCA = c(0.9),
     penalty = 1,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(multi_we_PCA_09, testthat::is_a("list"))
@@ -555,7 +558,7 @@ test_that("textTrainRegression adding word_embedding together", {
     inside_strata_y = NULL,
     preprocess_PCA = 3,
     penalty = 1,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(multi_we_PCA_3, testthat::is_a("list"))
@@ -572,7 +575,7 @@ test_that("textTrainRegression adding word_embedding together", {
     inside_strata_y = NULL,
     preprocess_PCA = NA,
     penalty = 1,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(multi_we_PCA_NA, testthat::is_a("list"))
@@ -595,7 +598,7 @@ test_that("textTrainRandomForest adding word_embedding together", {
     preprocess_PCA = 0.9,
     mtry = c(1),
     min_n = c(1),
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(multi_we_RF_PCA_09, testthat::is_a("list"))
@@ -613,12 +616,12 @@ test_that("textTrainRandomForest adding word_embedding together", {
     preprocess_PCA = 3,
     mtry = c(1),
     min_n = c(1),
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
   testthat::expect_that(multi_we_RF_PCA_3, testthat::is_a("list"))
   testthat::expect_is(multi_we_RF_PCA_3$results$.estimate[[1]], "numeric")
-  testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.35)
+  testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.375)
 
 
   multi_we_RF_PCA_NA <- text::textTrainRandomForest(
@@ -631,13 +634,13 @@ test_that("textTrainRandomForest adding word_embedding together", {
     preprocess_PCA = NA,
     mtry = c(1),
     min_n = c(1),
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = FALSE
   )
 
 
   testthat::expect_that(multi_we_RF_PCA_NA, testthat::is_a("list"))
   testthat::expect_is(multi_we_RF_PCA_NA$results$.estimate[[1]], "numeric")
-  testthat::expect_equal(multi_we_RF_PCA_NA$results$.estimate[[1]], 0.35)
+  testthat::expect_equal(multi_we_RF_PCA_NA$results$.estimate[[1]], 0.325)
 })
 
 
@@ -657,20 +660,21 @@ test_that("textPredictTest t-test and bootstrapped test", {
 
   boot_test2 <- text::textPredictTest(y1 = y1, yhat1, y2 = NULL, yhat2)
   testthat::expect_that(boot_test2, testthat::is_a("list"))
-  testthat::expect_equal(boot_test2$Test$statistic[[1]], 0.233267, tolerance = 0.0001)
-  testthat::expect_equal(boot_test2$Effect_size, 0.06198192, tolerance = 0.0001)
+  testthat::expect_equal(boot_test2$Test$statistic[[1]], 0.4847137, tolerance = 0.0001)
+  testthat::expect_equal(boot_test2$Effect_size, 0.231406, tolerance = 0.0001)
 })
 
 
 test_that("training with only x_append (without word embeddings)", {
   skip_on_cran()
-  help("textTrainRegression")
+  #help("textTrainRegression")
   test_firstTRUE <- text::textTrainRegression(
     x = word_embeddings_4$texts$harmonywords,
     x_append = Language_based_assessment_data_8[6:7],
     y = Language_based_assessment_data_8[5],
     outside_folds = 2,
-    append_first = TRUE
+    append_first = TRUE,
+    multi_cores = FALSE
   )
   testthat::expect_that(test_firstTRUE, testthat::is_a("list"))
 
