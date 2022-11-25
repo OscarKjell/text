@@ -660,8 +660,8 @@ test_that("textPredictTest t-test and bootstrapped test", {
 
   boot_test2 <- text::textPredictTest(y1 = y1, yhat1, y2 = NULL, yhat2)
   testthat::expect_that(boot_test2, testthat::is_a("list"))
-  testthat::expect_equal(boot_test2$Test$statistic[[1]], 0.4847137, tolerance = 0.0001)
-  testthat::expect_equal(boot_test2$Effect_size, 0.231406, tolerance = 0.0001)
+  testthat::expect_equal(boot_test2$Test$statistic[[1]], 0.233267, tolerance = 0.0001)
+  testthat::expect_equal(boot_test2$Effect_size, 0.06198192, tolerance = 0.0001)
 })
 
 
