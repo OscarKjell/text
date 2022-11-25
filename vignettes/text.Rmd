@@ -1,7 +1,7 @@
 ---
 title: "Getting started"
 description: "Introduction to text: HuggingFace transformers in R."
-author: "Oscar Kjell"
+author: ""
 opengraph:
   image: 
     src: "http://r-text.org/articles/text_files/figure-html/unnamed-chunk-5-1.png"
@@ -14,7 +14,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
+<a rel="me" href="https://mastodon.online/@oscarkjell">Oscar Kjell</a>
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -126,8 +126,18 @@ plot_projection_2D$final_plot
 ```
 
 
-### Relevant References
-*Text* is new and has not been used in a publication yet. therefore, the below list consists of papers analyzing human language in a similar fashion that is possible *text*.
+### Articles using the text-package
+[Natural language analyzed with AI‐based transformers predict traditional subjective well‐being measures approaching the theoretical upper limits in accuracy](https://www.nature.com/articles/s41598-022-07520-w/) *Kjell et al., (2022). Scientific Reports*
+
+[Doing well-being: Self-reported activities are related to subjective well-being](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0270503/).
+*Nilsson, et al., (2022). PLOSONE*
+
+[Computational Language Assessments of Harmony in Life — Not Satisfaction With Life or Rating Scales — Correlate With Cooperative Behaviors](https://www.frontiersin.org/articles/10.3389/fpsyg.2021.601679/). *Kjell et al., (2021). Frontiers*
+
+[Freely Generated Word Responses Analyzed With Artificial Intelligence Predict Self-Reported Symptoms of Depression, Anxiety, and Worry](https://www.frontiersin.org/articles/10.3389/fpsyg.2021.602581/). *Kjell K., et al. (2021). Frontiers*
+
+### Other relevant references
+The below list consists of papers analyzing human language in a similar fashion that is possible in *text*.
 
 ***Methods Articles***  
 [Gaining insights from social media language: Methodologies and challenges](http://www.peggykern.org/uploads/5/6/6/7/56678211/kern_2016_-_gaining_insights_from_social_media_language-_methodologies_and_challenges.pdf).  
@@ -155,9 +165,6 @@ plot_projection_2D$final_plot
 
 
 ***Positive Psychology***  
-[Doing well-being: Self-reported activities are related to subjective well-being](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0270503)
-*Nilsson, et al., (2022). PLOSONE*
-
 [The Harmony in Life Scale Complements the Satisfaction with Life Scale: Expanding the Conceptualization of the Cognitive Component of Subjective Well-Being](https://link.springer.com/article/10.1007/s11205-015-0903-z/)  
 *Kjell, et al., (2016). Social Indicators Research*
 

@@ -181,3 +181,6 @@ plot_projection$final_plot
 ```
 
 <img src="man/figures/README-DPP_plot-1.png" width="100%" />
+
+<a rel="me" href="https://mastodon.online/@oscarkjell">M</a>
+<link rel="me" href="https://mastodon.online/@oscarkjell" M />

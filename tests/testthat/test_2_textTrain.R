@@ -28,7 +28,7 @@ test_that("textTrain Regression produces list of results with prediction being n
 
   testthat::expect_that(trained_min_halving, is_a("list"))
   testthat::expect_is(trained_min_halving$results$statistic[[1]], "numeric")
-  testthat::expect_equal(trained_min_halving$results$statistic[[1]], 0.2979104, tolerance = 0.001)
+  testthat::expect_equal(trained_min_halving$results$statistic[[1]], 0.2979104, tolerance = 0.00001)
 
   trained_logistic <- text::textTrainRegression(
     x = word_embeddings_4$texts["harmonywords"],
@@ -367,6 +367,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
   testthat::expect_that(results_or_p2, testthat::is_a("list"))
   testthat::expect_is(results_or_p2$results$.estimate[1], "numeric")
+  testthat::expect_equal(results_or_p2$results$.estimate[1], 0.500, tolerance = 0.001)
   # testthat::expect_equal(results_or_p2$results$.estimate[1], 0.425, tolerance = 0.001)
   # testthat::expect_equal(results_or_p2$results$.estimate[1], 0.475, tolerance = 0.001)
 

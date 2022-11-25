@@ -13,7 +13,8 @@ test_that("Testing textEmbed as well as train", {
   descr1 <- textDescriptives(Language_based_assessment_data_8[1])
   expect_that(descr1[[1]], is_a("character"))
   descr2 <- textDescriptives(Language_based_assessment_data_8[1:2])
-  expect_that(descr2[[2]][[1]], is_a("integer"))
+  expect_equal(descr2[[2]][[1]], 2482)
+  expect_equal(descr2[[3]][[1]], 62.05)
 
 
   harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1:20, 1:2],

@@ -1,5 +1,4 @@
 
-
 #' Predict scores or classification from, e.g., textTrain.
 #'
 #' @param model_info (model object) Model info (e.g., saved output from textTrain,
@@ -142,7 +141,7 @@ textPredictAll <- function(models,
     word_embeddings$singlewords_we <- NULL
   }
 
-  #
+  # i = 1
   for (i in seq_len(length(models))) {
     preds <- textPredict(
       models[[i]],
