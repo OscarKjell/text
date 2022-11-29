@@ -2,7 +2,7 @@
 # TODO: Develop passage level prediction.
 # TODO: change the col name to "*_sents" in the sentence tibble.
 
-
+# temp2[["colorCode"]] <- map2Color(temp2[["preds"]])
 #### private func ####
 
 #' Num to color
@@ -11,19 +11,22 @@
 #' @param pal (R_obj) The returned obj of rainbow(), only available if mode = FALSE.
 #' @param limits (boolean) The limits of x, like c(min, max), only available if mode = FALSE.
 #' @importFrom colorspace diverging_hcl
+#' @imporFrom grDevices rainbow
 #' @return A list object containing color value codes.
 #' @noRd
 map2Color<-function(values, mode=TRUE, pal=grDevices::rainbow(200),limits=NULL){
     
     if(mode){
-        colorValues <- colorspace::diverging_hcl(n=length(values), palette="Tropic", power=2.5)
+        # Prevent the neutral color to be blank.
+        # colorValues <- colorspace::diverging_hcl(n=length(values), palette="Tropic", power=2.5)
+        colorValues <- colorspace::divergingx_hcl(n=length(values), palette="Temps")
     }else{
         if(is.null(limits)) limits <- range(values) %>% as.integer()
         values <- values %>% as.matrix()
         colorValues <- pal[findInterval(values,seq(limits[1],limits[2],length.out=length(pal)+1), all.inside=TRUE)]
     }
 
-    return (as.list(colorValues))
+    return (as.data.frame(colorValues))
     
 
     if (FALSE){
@@ -653,12 +656,132 @@ langPred <- function(predObj, theModels, lang_level = "sentence"){
 
 }
 
+# TODO: "left_join" based on "preds" might have bugs. In the future it should use id.
+#' Get the color code for each language unit
+#' @param embedObj The embeddings of language units
+#' @importFrom dplyr arrange
+#' @return The color values list contained embedObj
+#' @NoRd
+getLangColorTb <- function(embedObj){
+
+    temp <- NULL
+    coloredTb <- matrix(nrow=nrow(embedObj[["Pred"]][["predTokens"]]) + 
+      nrow(embedObj[["Pred"]][["predSents"]]) + 1,
+     ncol=4) %>% as.data.frame()
+    names(coloredTb) <- c("colorCode", "preds", "texts", "unitLang")
+    start <- 1
+    end <- nrow(embedObj[["Pred"]][["predTokens"]])
+    coloredTb[start:end, 2:3] <- 
+        embedObj[["Pred"]][["predTokens"]][, 1:2]
+    coloredTb[start:end, 4] <- "tokens"
+    start <- nrow(embedObj[["Pred"]][["predTokens"]]) + 1
+    end <- nrow(embedObj[["Pred"]][["predTokens"]]) + nrow(embedObj[["Pred"]][["predSents"]])
+    coloredTb[start:end, 2:3] <- embedObj[["Pred"]][["predSents"]][, 1:2]
+    coloredTb[start:end, 4] <- "sents"
+    coloredTb[nrow(coloredTb), 2] <- embedObj[["Pred"]][["predParas"]][[1]][1]
+    coloredTb[nrow(coloredTb), 3] <- "Lorem Ipsum"
+    coloredTb[nrow(coloredTb), 4] <- "paras"
+    coloredTb_sorted <- dplyr::arrange(coloredTb, preds)
+    coloredTb_sorted[, 1] <- coloredTb_sorted[["preds"]] %>% map2Color(.)
+    temp <- dplyr::left_join(coloredTb[,2:ncol(coloredTb)], 
+                            coloredTb_sorted[,1:2], by=c("preds"))
+    coloredTb[,"colorCode"] <- temp[,"colorCode"] 
+    embedObj <- append(embedObj, list("coloredTb"=coloredTb), length(embedObj) + 1)
+    # add colorCode to tokens embed
+    temp <- NULL
+    temp <- embedObj[["coloredTb"]] %>% dplyr::filter(., unitLang=="tokens")
+    embedObj[["Pred"]][["predTokens"]] <- cbind(
+        temp[["colorCode"]],
+        embedObj[["Pred"]][["predTokens"]])
+    names(embedObj[["Pred"]][["predTokens"]])[1] <- c("colorCode")
+    # add colorCode to sents embed
+    temp <- NULL
+    temp <- embedObj[["coloredTb"]] %>% dplyr::filter(., unitLang=="sents")
+    embedObj[["Pred"]][["predSents"]] <- cbind(
+        temp[["colorCode"]],
+        embedObj[["Pred"]][["predSents"]])
+    names(embedObj[["Pred"]][["predSents"]])[1] <- c("colorCode")
+    # add colorCode to paras embed, and add the "Lorem Ipsum" place holder as the replacement.
+    temp <- NULL
+    temp <- embedObj[["coloredTb"]] %>% dplyr::filter(., unitLang=="paras")
+    embedObj[["Pred"]][["predParas"]] <- temp[, 1:ncol(temp)-1]
+   
+    return (embedObj)
+}
+
+#' @param outObj The R object containing the color code.
+#' @importFrom tibble as_tibble
+#' @return The output data frame following the data structure.
+#' @NoRd
+getOutDf <- function(outObj){
+
+    # temp <- token2Sent_rowCLSSEP(toPred[["tokens"]][["texts"]][[1]])
+    # use coloredTb containing period to generate a sentNo column. Then generate a new list ele in outObj.
+    outTb <- matrix(nrow=nrow(outObj[["coloredTb"]]),
+                    ncol=1) %>% as.data.frame()
+    colnames(outTb)[1] <- c("sentNo")
+
+    # token marking with sentence num
+    posPeriod <- which(outObj[["coloredTb"]][["texts"]] == ".", arr.ind=TRUE) %>% tibble::as_tibble()
+    for (rowNo in length(posPeriod[[1]]) %>% seq_len(.)){
+        if (rowNo == 1){
+            start <- 1
+            end <- posPeriod[[1]][rowNo]
+            # Prevent the sentence ends with the "[SEP]" token.
+            if (outObj[["coloredTb"]][["texts"]][end + 1] == "[SEP]"){end <- end + 1}
+            outTb[["sentNo"]][start:end] <- paste0("sentNo_1")
+        }else{
+            start <- posPeriod[[1]][rowNo - 1] + 1
+            end <- posPeriod[[1]][rowNo]
+            if (outObj[["coloredTb"]][["texts"]][start] == "[SEP]"){start <- start + 1}
+            if (outObj[["coloredTb"]][["texts"]][end + 1] == "[SEP]"){end <- end + 1}
+            outTb[["sentNo"]][start:end] <- paste0("sentNo_", as.character(rowNo))
+        }    
+    }
+    # sentence marking with sentence num
+    start <- end + 1
+    end <- nrow(outTb) - 1
+    marker <- 0
+    for (rowNo in start:end){
+        marker <- marker + 1
+        outTb[["sentNo"]][rowNo] <- paste0("sentNo_", as.character(marker))
+    }
+    outTb[["sentNo"]][nrow(outTb)] <- paste0("paras")
+    outObj[["coloredTb"]] <- cbind(outObj[["coloredTb"]], outTb[["sentNo"]])
+    colnames(outObj[["coloredTb"]])[ncol(outObj[["coloredTb"]])] <- c("sentNo")
+
+    # outTb transform
+    outTb <- matrix(nrow=nrow(outObj[["coloredTb"]] %>% dplyr::filter(., unitLang=="tokens")),
+                    ncol=7) %>% as.data.frame(.)
+    colnames(outTb) <- c("token", "tokenPred", "tokenColor", "sentPred", "sentColor", "paraPred", "paraColor")
+    # outTb token info
+    marker <- outObj[["coloredTb"]] %>% dplyr::filter(., unitLang=="tokens") %>% nrow(.)
+    outTb[["token"]] <- outObj[["coloredTb"]][["texts"]][1:marker]
+    outTb[["tokenPred"]] <- outObj[["coloredTb"]][["preds"]][1:marker]
+    outTb[["tokenColor"]] <- outObj[["coloredTb"]][["colorCode"]][1:marker]
+    # outTb sent info
+    for (rowNo in start:end){
+        marker <- outObj[["coloredTb"]][["sentNo"]][rowNo]
+        marker <- which(outObj[["coloredTb"]][["sentNo"]] == marker)
+        marker_1 <- marker[1]
+        marker_2 <- marker[length(marker)-1]
+        outTb[["sentPred"]][marker_1:marker_2] <- outObj[["coloredTb"]][["preds"]][rowNo]
+        outTb[["sentColor"]][marker_1:marker_2] <- outObj[["coloredTb"]][["colorCode"]][rowNo]
+    }
+    # outTb para info
+    outTb[["paraPred"]] <- outObj[["coloredTb"]][["preds"]][nrow(outObj[["coloredTb"]])]
+    outTb[["paraColor"]] <- outObj[["coloredTb"]][["colorCode"]][nrow(outObj[["coloredTb"]])]
+    outObj <- append(outObj, list("outDf"=outTb), length(outObj))
+
+    return (outObj)
+}
+
 
 
 #### Basic function ####
 
 #' Function to calculate the highlight color value.
-#' @param textsPred A character variable or a tibble/dataframe with at least one character variable.
+#' @param textsPred A character variable or a tibble/dataframe (not support now) with at least one character variable.
 #' @param textsTrain Embedding values from text::textEmbed(..., dim_name=FALSE)
 #' @param x Numeric variable that the words should be plotted according to on the x-axes.
 #' @param y Numeric variable that the words should be plotted according to on the y-axes (y=NULL).
@@ -718,7 +841,6 @@ textProjectionText <- function(
         # textsPred_ <- list("tokens"=list(
         #     "texts"=list(list("texts" = textsPred) %>% tibble::as_tibble())
         # ))
-        # TODO: future::future???????
         toPredEmbedProc <- future::future({
             textsPred %>% textEmbed(modelName, dim_name=FALSE)
             }, seed=NULL)
@@ -732,10 +854,9 @@ textProjectionText <- function(
         toTrain <- future::value(toTrainProc)
     }
 
-    # if texts == DF or Tb
-    if (textsIsDF | textsIsTb){
-        if (textsIsDF){texts <- texts %>% as_tibble()}
-        NULL
+    # if texts == DF or Tb 
+    if (FALSE){ # textsIsDF | textsIsTb
+        if (textsIsDF){texts <- texts %>% tibble::as_tibble()}
     }
     
     #### 3. Train the model using given training data.
@@ -748,13 +869,18 @@ textProjectionText <- function(
     theModels <- langTrain(toTrain, x, "all", tokenizers, modelName)
 
     #### 4. Use trained model to predict the input
-    # outputValue <- textPredict(results, 
-    #     sentsPred[["sentences"]][["sentence_tibble"]][, 2:ncol(sentsPred[["sentences"]][["sentence_tibble"]])])
-    # names(outputValue) <- c("y_pred")
-    # outputValue <- cbind(outputValue, sentsPred[["sentences"]][["sentence_tibble"]])
     output <- langPred(toPred, theModels, "all")
 
-    return (list("Pred" = output, "model" = theModels))
+    #### 5. Output colorCode
+    output <- list("Pred" = output, "model" = theModels)
+    output <- getLangColorTb(output)
+
+    #### TODO: 6. Reorganize the data structure as the last ele in the list
+    if (TRUE){
+        output_out <- getOutDf(output)
+    }
+
+    return (output)
 
 }
 
