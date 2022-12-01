@@ -186,11 +186,15 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
       if (return_tokens) {
         tokens_layer_number <- tibble::tibble(tokens, token_id, rep(layers[i_layers], length(tokens)))
         colnames(tokens_layer_number) <- c("tokens", "token_id", "layer_number")
-        tokens_lnumber_layers <- dplyr::bind_cols(tokens_layer_number, layers_4_token)
+        # Bind tokens with word embeddings (not selecting <pad>s)
+        tokens_lnumber_layers <- dplyr::bind_cols(tokens_layer_number,
+                                                  layers_4_token[1:nrow(tokens_layer_number),])
       } else {
         layer_number <- tibble::tibble(token_id, rep(layers[i_layers], nrow(layers_4_token)))
         colnames(layer_number) <- c("token_id", "layer_number")
-        tokens_lnumber_layers <- dplyr::bind_cols(layer_number, layers_4_token)
+        # Bind tokens with word embeddings (not selecting <pad>s)
+        tokens_lnumber_layers <- dplyr::bind_cols(layer_number,
+                                                  layers_4_token[1:nrow(tokens_layer_number),])
       }
 
       layers_list[[i_layers]] <- tokens_lnumber_layers
