@@ -1,6 +1,6 @@
 ---
 title: "Psychological Methods: the Text Tutorial"
-description: ""
+description: " "
 author: ""
 opengraph:
   image: 
@@ -10,7 +10,7 @@ opengraph:
     creator: "@oscarkjell"
 output: github_document #rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{text}
+  %\VignetteIndexEntry{psychological_methods}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
