@@ -15,7 +15,7 @@ test_that("Testing textDescriptives", {
   # Does not work the same
   help(stri_count_words)
   word2 <- "eat and drink.No money"
-  w_total <- sum(stringi::stri_count_words(word2), locale = 'en_US')
+  w_total <- sum(stringi::stri_count_words(word2, locale = 'en_US'))
   expect_equal(w_total, 4)
 
 #  desc2 <- text::textDescriptives(word2)
