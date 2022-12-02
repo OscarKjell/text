@@ -12,45 +12,21 @@ test_that("Testing textDescriptives", {
 
   text::textEmbed("hello")
 
-  word1 <- Language_based_assessment_data_8[1,1]
-  desc1 <- text::textDescriptives(word1)
-  expect_equal(desc1[[2]][[1]], 61)
-
-  word2 <- Language_based_assessment_data_8[2,1]
-  desc2 <- text::textDescriptives(word2)
-  expect_equal(desc2[[2]][[1]], 71)
-
-  word3 <- Language_based_assessment_data_8[3,1]
-  desc3 <- text::textDescriptives(word3)
-  expect_equal(desc3[[2]][[1]], 27)
-
-  word4 <- Language_based_assessment_data_8[4,1]
-  desc4 <- text::textDescriptives(word4)
-  expect_equal(desc4[[2]][[1]], 46)
-
-  word5 <- Language_based_assessment_data_8[5,1]
-  desc5 <- text::textDescriptives(word5)
-  expect_equal(desc5[[2]][[1]], 88)
-
-  word6 <- Language_based_assessment_data_8[6,1]
-  desc6 <- text::textDescriptives(word6)
-  expect_equal(desc6[[2]][[1]], 50)
-
-  word7 <- Language_based_assessment_data_8[7,1]
+  word7 <- Language_based_assessment_data_8[[7,1]]
   desc7 <- text::textDescriptives(word7)
   expect_equal(desc7[[2]][[1]], 127)
 
-  word8 <- Language_based_assessment_data_8[8,1]
-  desc8 <- text::textDescriptives(word8)
-  expect_equal(desc8[[2]][[1]], 62)
+  word1 <- "the downs and go up!I have no money,"
+  desc1 <- text::textDescriptives(word1)
+  expect_equal(desc1[[2]][[1]], 9)
 
-  word9 <- Language_based_assessment_data_8[9,1]
-  desc9 <- text::textDescriptives(word9)
-  expect_equal(desc9[[2]][[1]], 47)
+  word2 <- "eat and drink.No money"
+  desc2 <- text::textDescriptives(word2)
+  expect_equal(desc2[[2]][[1]], 4)
 
-  word10 <- Language_based_assessment_data_8[10,1]
-  desc10 <- text::textDescriptives(word10)
-  expect_equal(desc10[[2]][[1]], 79)
+  word3 <- "Yes, overall I am satisfied with my life.  Many Ups and downs, mostly downs, but that is how you get over the the downs and go up!I have no money, but I am ok with it.  I have enough to eat and drink.No money to pay all the bills, but oh well.  Had major accident and have been housebound since July, and just starting to improve enough to sit at computer.  I am satisfied, because it could have been much worse, since I had renal failure, I could of ended up on dialysis, which I avoided.  I could have lost my leg, but instead, still working on walking.  But I can walk, slowly, but better than not. I am satisfied with what I have, no complaints."
+  desc3 <- text::textDescriptives(word3)
+  expect_equal(desc3[[2]][[1]], 127)
   #####
 
   words1 <- Language_based_assessment_data_8[1:10,1]
