@@ -16,10 +16,12 @@ test_that("Testing textDescriptives", {
   desc7 <- text::textDescriptives(word7)
   expect_equal(desc7[[2]][[1]], 127)
 
+  # Works the same
   word1 <- "the downs and go up!I have no money,"
   desc1 <- text::textDescriptives(word1)
   expect_equal(desc1[[2]][[1]], 9)
 
+  # Does not work the same
   word2 <- "eat and drink.No money"
   desc2 <- text::textDescriptives(word2)
   expect_equal(desc2[[2]][[1]], 4)
@@ -45,6 +47,10 @@ test_that("Testing textDescriptives", {
     Encoding(x) <- Encoding(enc2utf8(x))
     x
   }
+  wordd2_get <- get_encoding_change(word2)
+  print("wordd2_get")
+  dput(wordd2_get)
+
 
   select_character_v_utf8 <- function(x) {
     # If a vector is submitted, make it a tibble column.
@@ -63,7 +69,8 @@ test_that("Testing textDescriptives", {
     x_characters <- tibble::as_tibble(purrr::map(x_characters, get_encoding_change))
   }
 
-  words_test <- select_character_v_utf8(words1)
+  words_test <- select_character_v_utf8(word2)
+  print("words_test")
   dput(words_test)
 
   w_total <- sum(stringi::stri_count_words(words_test$satisfactiontexts))
