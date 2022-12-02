@@ -1,5 +1,5 @@
 
-#' Find encoding type of variable and the set it to UTF-8.
+#' Find encoding type of variable and then set it to UTF-8.
 #' @param tibble including both text and numeric variables.
 #' @return all character variables in UTF-8 format.
 #' @noRd
