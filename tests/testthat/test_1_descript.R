@@ -7,13 +7,15 @@ library(text)
 context("Big analyses flow")
 
 
-test_that("Testing textEmbed as well as train", {
+test_that("Testing textDescriptives", {
   skip_on_cran()
   words1 <- Language_based_assessment_data_8[1:10,1]
   dput(words1)
 
+  text::textEmbed("hello")
 
-  descr2 <- textDescriptives(words1)
+
+  descr2 <- text::textDescriptives(words1)
   expect_equal(descr2[[2]][[1]], 658)
   expect_equal(descr2[[3]][[1]], 65.8)
   expect_equal(descr2$entropy[[1]], 7.056633, tolerance = 0.00001)
