@@ -783,24 +783,6 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 }
 
 
-texts = "hello"
-model = "bert-base-uncased"
-layers = 1
-dim_name = TRUE
-aggregation_from_layers_to_tokens = "concatenate"
-aggregation_from_tokens_to_texts = "mean"
-aggregation_from_tokens_to_word_types = "mean"
-keep_token_embeddings = TRUE
-tokens_select = NULL
-tokens_deselect = NULL
-decontextualize = TRUE
-model_max_length = NULL
-max_token_to_sentence = 4
-tokenizer_parallelism = FALSE
-device = "gpu"
-logging_level = "error"
-
-
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
