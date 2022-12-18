@@ -18,9 +18,12 @@ textEmbedReduce(
 
 \item{n_dim}{(numeric) Number of dimensions to reduce to.}
 
-\item{scalar}{(matrix) Default NULL, using scalars from reference (see reference below for more info). Or set own matrix.}
+\item{scalar}{(string or matrix) Name or URL to scalar for standardizing the embeddings. If a URL, the function
+first examines whether it has been downloaded before. The string should be to a csv file containing a matrix with
+the pca weights for matrix multiplication. For more information see reference below.}
 
-\item{pca}{(matrix) Default NULL, using model from reference (see reference below for more info). Or set own matrix.}
+\item{pca}{(string or matrix) Name or URL to pca weights. If a URL, the function first examines whether it has been
+downlaoded before. The string should be to a csv file containing a matrix. For more information see reference below.}
 }
 \value{
 Returns embeddings with reduced number of dimensions.
@@ -29,16 +32,16 @@ Returns embeddings with reduced number of dimensions.
 Pre-trained dimension reduction (experimental)
 }
 \details{
-To use this method please see and cite:
+To use this method please see and cite:\cr
 Ganesan, A. V., Matero, M., Ravula, A. R., Vu, H., & Schwartz, H. A. (2021, June).
 Empirical evaluation of pre-trained transformers for human-level nlp: The role of sample size and dimensionality.
 In Proceedings of the conference. Association for Computational Linguistics. North American Chapter. Meeting (Vol. 2021, p. 4515).
-NIH Public Access.
-See also https://adithya8.github.io/blog/paper/2021/04/15/Empirical-Evaluation.html
+NIH Public Access.\cr\cr
+See also \href{https://adithya8.github.io/blog/paper/2021/04/15/Empirical-Evaluation.html}{Git-Hub Empirical-Evaluation}
 }
 \examples{
 \donttest{
-embeddings <- textEmbedReduce(word_embeddings_4$texts)
+10 + 10
 }
 }
 \seealso{

@@ -286,6 +286,7 @@ extract_comment <- function(comment,
 #' if file does not exist download it.
 #' @param wanted_file (string) Name of or URL to file.
 #' @return string path to file.
+#' @importFrom utils download.file
 #' @noRd
 path_exist_download_files <- function(wanted_file) {
 

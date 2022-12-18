@@ -52,6 +52,7 @@ Suggests:
     randomForest,
     covr,
     xml2,
-    ranger
+    ranger,
+    utils
 VignetteBuilder: knitr
 Depends: R (>= 4.00)

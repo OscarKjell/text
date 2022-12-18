@@ -1,12 +1,12 @@
 
-#' textEmbedReduceOne
+#' textEmbedReduceOne help function
 #' @param embeddings (list) Embedding(s) - including, tokens, texts and/or word_types.
 #' @param n_dim (numeric) Number of dimensions to reduce to.
-#' @param scalar (matrix) Default NULL, using scalars from reference (see reference below for more info). Or set own matrix.
-#' @param pca (matrix) Default NULL, using model from reference (see reference below for more info). Or set own matrix.
+#' @param scalar (matrix) Scalars from reference (see reference below for more info). Or set own matrix.
+#' @param pca (matrix) PCA weights from reference (see reference below for more info). Or set own matrix.
 #' @return Returns embeddings with reduced number (n_dim) of dimensions.
 #' @examples
-#' embeddings <- textEmbedReduce(word_embeddings_4$texts)
+#' 5+5
 #' @seealso see \code{\link{textEmbed}}
 #' @importFrom tibble tibble as_tibble
 #' @noRd
@@ -64,27 +64,31 @@ check_reduce <- function(embeddings){
   }
 }
 
-# help(textEmbedReduce)
 #' Pre-trained dimension reduction (experimental)
 #' @param embeddings (list) Embedding(s) - including, tokens, texts and/or word_types.
 #' @param n_dim (numeric) Number of dimensions to reduce to.
-#' @param scalar (matrix) Default NULL, using scalars from reference (see reference below for more info). Or set own matrix.
-#' @param pca (matrix) Default NULL, using model from reference (see reference below for more info). Or set own matrix.
+#' @param scalar (string or matrix) Name or URL to scalar for standardizing the embeddings. If a URL, the function
+#' first examines whether it has been downloaded before. The string should be to a csv file containing a matrix with
+#' the pca weights for matrix multiplication. For more information see reference below.
+#' @param pca (string or matrix) Name or URL to pca weights. If a URL, the function first examines whether it has been
+#' downlaoded before. The string should be to a csv file containing a matrix. For more information see reference below.
 #' @return Returns embeddings with reduced number of dimensions.
 #' @examples
 #' \donttest{
-#' embeddings <- textEmbedReduce(word_embeddings_4$texts)
+#' 10 + 10
+# embeddings <- textEmbedReduce(word_embeddings_4$texts)
 #' }
 #' @seealso see \code{\link{textEmbed}}
 #' @details
-#' To use this method please see and cite:
+#' To use this method please see and cite:\cr
 #' Ganesan, A. V., Matero, M., Ravula, A. R., Vu, H., & Schwartz, H. A. (2021, June).
 #' Empirical evaluation of pre-trained transformers for human-level nlp: The role of sample size and dimensionality.
 #' In Proceedings of the conference. Association for Computational Linguistics. North American Chapter. Meeting (Vol. 2021, p. 4515).
-#' NIH Public Access.
-#' See also https://adithya8.github.io/blog/paper/2021/04/15/Empirical-Evaluation.html
-#' @importFrom tibble tibble as_tibble
+#' NIH Public Access.\cr\cr
+#' See also \href{https://adithya8.github.io/blog/paper/2021/04/15/Empirical-Evaluation.html}{Git-Hub Empirical-Evaluation}
+#' @importFrom tibble as_tibble is_tibble
 #' @importFrom utils read.csv
+#' @importFrom dplyr bind_cols
 #' @export
 textEmbedReduce <- function(
     embeddings,
@@ -93,16 +97,22 @@ textEmbedReduce <- function(
     pca =   "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/rpca_roberta_768_D_20.csv") {
 
   ### Get the right cvs library(text)
-  scalar_path <- path_exist_download_files(scalar)
-  pca_path <- path_exist_download_files(pca)
 
-  scalar <- utils::read.csv(
-      file = scalar_path,
-      header = FALSE)
+  if(is.character(scalar)){
 
-  pca <- utils::read.csv(
-      file = pca_path,
-      header = FALSE)
+    scalar_path <- path_exist_download_files(scalar)
+
+    scalar <- utils::read.csv(
+        file = scalar_path,
+        header = FALSE)
+  }
+  if(is.character(pca)){
+    pca_path <- path_exist_download_files(pca)
+
+    pca <- utils::read.csv(
+        file = pca_path,
+        header = FALSE)
+  }
 
   ## Reduce tokens data
   if(!is.null(embeddings$tokens)){
@@ -155,7 +165,7 @@ textEmbedReduce <- function(
   }
 
   ### Reduce word_types data
-  if(is_tibble(embeddings$word_types)){
+  if(tibble::is_tibble(embeddings$word_types)){
 
     check_reduce(embeddings$word_types)
 
