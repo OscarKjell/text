@@ -2,6 +2,11 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 0.9.99.7
+## Function
+- `textEmbedReduce()` implemented
+
+
 # text 0.9.99.6
 ## Bug Fix
 - Fixing textEmbed error for many non-BERT models. 

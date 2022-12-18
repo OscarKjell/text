@@ -16,7 +16,6 @@ test_that("Testing textEmbed as well as train", {
   expect_equal(descr2[[2]][[1]], 2482)
   expect_equal(descr2[[3]][[1]], 62.05)
 
-
   harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",
     dim_name = TRUE,
@@ -187,4 +186,15 @@ test_that("Testing textEmbed as well as train", {
 
   expect_that(hils_predicted_scores1[[1]][1], is_a("numeric"))
   expect_equal(hils_predicted_scores1[[1]][1], 11.89219, tolerance = 0.000001)
+
+
+  embedding_roberta <- textEmbed(Language_based_assessment_data_3_100[1,1],
+                                 model = "roberta-base",
+                                 layer = 11)
+
+  pca5 <- text::textEmbedReduce(embeddings = embedding_roberta,
+                  n_dim = 5)
+
+  expect_equal(pca5$texts$harmonywords[[1]], -9.569476, tolerance = 0.0001)
+
 })

@@ -48,6 +48,7 @@ reference:
   - textDimName
   - textEmbedRawLayers
   - textEmbedLayerAggregation
+  - textEmbedReduce
   - textEmbedStatic
 - title: Language Analysis Tasks
   contents:

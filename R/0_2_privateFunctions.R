@@ -260,14 +260,86 @@ cohens_d <- function(x, y) {
 #' Extract part of a comment
 #'
 #' @param comment (string) The comment
-#' @param part (string) The part to be extracted.
-#' @return string
+#' @param part (string) The part to be extracted ("model" or "layers").
+#' @return string from the comment
 #' @noRd
-extract_comment <- function(comment, part) {
+extract_comment <- function(comment,
+                            part) {
   if (part == "model") {
     model_text <- sub(".*textEmbedRawLayers: model: ", "", comment)
     output <- sub(" ; layers.*", "", model_text)
   }
 
+  if (part == "layers") {
+    layer_text <- sub(".*layers: ", "", comment)
+    output <- sub(" ; word_type_embeddings:.*", "", layer_text)
+  }
+
   return(output)
 }
+
+
+
+#wanted_file <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
+#' Name to Path
+#' See if file exist in "inst/extdata/"
+#' if file does not exist download it.
+#' @param wanted_file (string) Name of or URL to file.
+#' @return string path to file.
+#' @noRd
+path_exist_download_files <- function(wanted_file) {
+
+  if (wanted_file == "scalar.csv"){
+    wanted_file <- "https://oscarkjell.se/scalar.csv"
+  }
+
+  destfile <- list.files(path = "inst/extdata/",
+                         pattern = "")
+
+  # Check if already downloaded; and if not, download
+  if (startsWith(wanted_file, "http:")  |
+      startsWith(wanted_file, "https:") |
+      startsWith(wanted_file, "www.") ) {
+
+    # Get file names to check if already downloaded
+    file_name <- basename(wanted_file)
+
+    # Download if not there
+    if (!file_name %in% destfile){
+      #utils::download.file(url = wanted_file,
+      #                     destfile = paste0("inst/extdata/", file_name),
+      #                     method = "auto")
+
+      utils::download.file(url = wanted_file,
+                           destfile = paste(system.file("extdata/",
+                                                  #file_name,
+                                                  # envir = NULL,
+                                                  package = "text",
+                                                  mustWork = TRUE
+                           ), "/", file_name, sep = ""),
+                           method = "auto")
+
+    }
+
+    path_to_file <-  system.file("extdata/",
+                file_name,
+                # envir = NULL,
+                package = "text",
+                mustWork = TRUE
+                )
+
+  } else if (wanted_file %in% destfile) {
+
+    path_to_file <- system.file("extdata/",
+                                wanted_file,
+                                # envir = NULL,
+                                package = "text",
+                                mustWork = TRUE
+    )
+
+  }
+  return(path_to_file)
+}
+
+
+
