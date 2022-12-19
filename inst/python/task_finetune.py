@@ -299,7 +299,7 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
         ignore_mismatched_sizes=model_args.ignore_mismatched_sizes,
     )
 
-    sentence1_key, sentence2_key = ("sentence", None)
+    sentence1_key, sentence2_key = ("text", None)
 
     # Padding strategy
     if data_args.pad_to_max_length:
