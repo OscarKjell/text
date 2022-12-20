@@ -255,6 +255,12 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
     # download the dataset.
 
     from datasets import Dataset, DatasetDict, ClassLabel
+
+    if is_regression:
+        if text_outcome_df: text_outcome_df['label'] = text_outcome_df['label'].astype(float)
+        if text_outcome_df_val: text_outcome_df_val['label'] = text_outcome_df_val['label'].astype(float)
+        if text_outcome_df_test: text_outcome_df_test['label'] = text_outcome_df_test['label'].astype(float)
+
     dataset_dict = {"train": Dataset.from_pandas(text_outcome_df), "validation": Dataset.from_pandas(text_outcome_df_val), 
                     "test": Dataset.from_pandas(text_outcome_df_test)}
     # Turn the dataframe contatining text and outcome columns into datasets type using HuggingFace datasets library
@@ -263,7 +269,6 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
     # Text column needs to be labelled as "text"
     # Outcome column should be named as "label"
     if not is_regression:
-
         for i in raw_datasets.keys():
             if (not hasattr(raw_datasets[i].features['label'], 'names')):
                 raw_datasets[i].features['label'] = ClassLabel(num_classes = len(label_names), names = label_names)
