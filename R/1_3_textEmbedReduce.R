@@ -60,7 +60,7 @@ check_reduce <- function(embeddings){
 
   # stop if no support
   if(!model_name == "roberta-base" | !layer_name == "11"){
-    stop("Embedding reduction is currently only supported for roberta-base and layer 11")
+    stop("Embedding reduction is currently only supported for roberta-base layer 11")
   }
 }
 
@@ -74,11 +74,11 @@ check_reduce <- function(embeddings){
 #' downlaoded before. The string should be to a csv file containing a matrix. For more information see reference below.
 #' @return Returns embeddings with reduced number of dimensions.
 #' @examples
-#' \donttest{
-#' 10 + 10
-# embeddings <- textEmbedReduce(word_embeddings_4$texts)
+#' \dontrun{
+# 10 + 10
+#' embeddings <- textEmbedReduce(word_embeddings_4$texts)
 #' }
-#' @seealso see \code{\link{textEmbed}}
+#' @seealso \code{\link{textEmbed}}
 #' @details
 #' To use this method please see and cite:\cr
 #' Ganesan, A. V., Matero, M., Ravula, A. R., Vu, H., & Schwartz, H. A. (2021, June).

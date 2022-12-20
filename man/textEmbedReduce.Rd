@@ -40,8 +40,8 @@ NIH Public Access.\cr\cr
 See also \href{https://adithya8.github.io/blog/paper/2021/04/15/Empirical-Evaluation.html}{Git-Hub Empirical-Evaluation}
 }
 \examples{
-\donttest{
-10 + 10
+\dontrun{
+embeddings <- textEmbedReduce(word_embeddings_4$texts)
 }
 }
 \seealso{
