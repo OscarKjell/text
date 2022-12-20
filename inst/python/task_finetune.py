@@ -262,8 +262,8 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
     # Turn the dataframe contatining text and outcome columns into datasets type using HuggingFace datasets library
     raw_datasets = DatasetDict(dataset_dict)
     
-    #Text column needs to be labelled as "text"
-    #Outcome column should be named as "label"
+    # Text column needs to be labelled as "text"
+    # Outcome column should be named as "label"
     if not is_regression:
         label_list = raw_datasets["train"].features["label"].names
         num_labels = len(label_list)
@@ -361,6 +361,7 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
             load_from_cache_file=not data_args.overwrite_cache,
             desc="Running tokenizer on dataset",
         )
+    
     if training_args.do_train:
         if "train" not in raw_datasets:
             raise ValueError("--do_train requires a train dataset")
@@ -434,6 +435,7 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
 
     # Training
     if training_args.do_train:
+        logger.info("Trainer initialized and about to start training...")
         checkpoint = None
         if training_args.resume_from_checkpoint is not None:
             checkpoint = training_args.resume_from_checkpoint
