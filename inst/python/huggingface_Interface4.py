@@ -4,7 +4,8 @@ from task_finetune import main
 import numpy as np
 import json
 
-def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression = True, label_names = None):
+def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, 
+                        is_regression = True, label_names = None):
 
     """
     Simple Python method for fine tuning pretrained Hugging Face models
@@ -22,14 +23,12 @@ def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_
     is_regression : bool
         True if the outcome variable is continuous, False if the outcome variable is categorical
     label_names : list
-        List of strings containing the class names
+        List of strings containing the class names for classification task
     
     Returns
     -------
     None
     """
-    # if os.path.isdir("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/"):
-    #   print("ADI Hej")
     args = json.load(open(json_path))
     return main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, label_names)
      
