@@ -187,7 +187,7 @@ class ModelArguments:
         metadata={"help": "Will enable to load a pretrained model whose head dimensions are different."},
     )
 
-def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression):
+def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, label_names):
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
@@ -238,8 +238,6 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
                 "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
             )
 
-    print("HELLO FOUR 4444")
-
     # Set seed before initializing model.
     set_seed(training_args.seed)
 
@@ -256,7 +254,13 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
     # In distributed training, the load_dataset function guarantee that only one local process can concurrently
     # download the dataset.
 
-    from datasets import Dataset, DatasetDict
+    from datasets import Dataset, DatasetDict, ClassLabel
+
+    if is_regression:
+        if text_outcome_df: text_outcome_df['label'] = text_outcome_df['label'].astype(float)
+        if text_outcome_df_val: text_outcome_df_val['label'] = text_outcome_df_val['label'].astype(float)
+        if text_outcome_df_test: text_outcome_df_test['label'] = text_outcome_df_test['label'].astype(float)
+
     dataset_dict = {"train": Dataset.from_pandas(text_outcome_df), "validation": Dataset.from_pandas(text_outcome_df_val), 
                     "test": Dataset.from_pandas(text_outcome_df_test)}
     # Turn the dataframe contatining text and outcome columns into datasets type using HuggingFace datasets library
@@ -265,6 +269,10 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
     # Text column needs to be labelled as "text"
     # Outcome column should be named as "label"
     if not is_regression:
+        for i in raw_datasets.keys():
+            if (not hasattr(raw_datasets[i].features['label'], 'names')):
+                raw_datasets[i].features['label'] = ClassLabel(num_classes = len(label_names), names = label_names)
+
         label_list = raw_datasets["train"].features["label"].names
         num_labels = len(label_list)
     else:
