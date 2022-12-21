@@ -257,9 +257,9 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
     from datasets import Dataset, DatasetDict, ClassLabel
 
     if is_regression:
-        if text_outcome_df: text_outcome_df['label'] = text_outcome_df['label'].astype(float)
-        if text_outcome_df_val: text_outcome_df_val['label'] = text_outcome_df_val['label'].astype(float)
-        if text_outcome_df_test: text_outcome_df_test['label'] = text_outcome_df_test['label'].astype(float)
+        if text_outcome_df is not None: text_outcome_df['label'] = text_outcome_df['label'].astype(float)
+        if text_outcome_df_val is not None: text_outcome_df_val['label'] = text_outcome_df_val['label'].astype(float)
+        if text_outcome_df_test is not None: text_outcome_df_test['label'] = text_outcome_df_test['label'].astype(float)
 
     dataset_dict = {"train": Dataset.from_pandas(text_outcome_df), "validation": Dataset.from_pandas(text_outcome_df_val), 
                     "test": Dataset.from_pandas(text_outcome_df_test)}
