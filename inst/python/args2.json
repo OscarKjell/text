@@ -43,7 +43,7 @@
     "adam_beta2": 0.999,
     "adam_epsilon": 1e-08,
     "max_grad_norm": 1.0,
-    "num_train_epochs": 3.0,
+    "num_train_epochs": 5.0,
     "max_steps": -1,
     "lr_scheduler_type": "linear",
     "warmup_steps": 0,
