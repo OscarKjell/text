@@ -7,7 +7,9 @@
 # where to default save output? (cld include it in .cash -- get() )
 # argument to name model
 
-
+#textEmbed("hello",
+#          model = "roberta-base")
+#help("textEmbed")
 #textrpp_install(rpp_version = c("torch==1.11.0", "transformers==4.22.0", #give version number version torch == 1.11.0 transformers==4.22.0
 #                                "numpy==1.23.1", "nltk",
 #                                "datasets", "evaluate",
