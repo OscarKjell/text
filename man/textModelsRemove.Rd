@@ -7,7 +7,7 @@
 textModelsRemove(target_model)
 }
 \arguments{
-\item{target_model}{Character string of the model name that you want to delete.}
+\item{target_model}{(string) The name of the model to be deleted.}
 }
 \value{
 Confirmation whether the model has been deleted.

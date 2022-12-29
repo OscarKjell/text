@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-*Text* uses the R-package [reticulate](https://rstudio.github.io/reticulate/) as an interface to [Python](https://www.python.org/), and the python packages [torch](https://pytorch.org/) and [transformers](https://huggingface.co/docs/transformers/index). So it's important to install both the text-package and a python environment with the text required python packages that the text-package can use.
+*Text* enables users access to HuggingFace Transformers in R through the R-package [reticulate](https://rstudio.github.io/reticulate/) as an interface to [Python](https://www.python.org/), and the python packages [torch](https://pytorch.org/) and [transformers](https://huggingface.co/docs/transformers/index). So it's important to install both the text-package and a python environment with the text required python packages that the text-package can use.
 </br></br>
 The recommended way is to use ```textrpp_install()``` to install a conda environment with text required python packages, and ```textrpp_initialize``` to initialize it.
 
@@ -56,7 +56,7 @@ mini_conda <- c("'-'", "'-'", "'-'","'4.10.1'",
                 "'4.10.3'", "'4.10.3'", "'4.10.3'",
                 "'4.10.3'", "'4.10.3'", "'4.10.3'",
                 "'4.10.3'", "'4.10.3'", "'4.10.3'")
-pyhon <- c("'3.9.0'", "'3.9.0'", "'3.9.0'", "'3.9.0'",
+python <- c("'3.9.0'", "'3.9.0'", "'3.9.0'", "'3.9.0'",
                    "'3.9.0'", "'3.9.0'", "'3.9.0'",
                    "'3.8.10'", "'3.8.10'", "'3.8.10'",
                    "'3.7.0'", "'3.7.0'", "'3.6.13'"
@@ -78,7 +78,7 @@ success <- c("Pass", "Pass","Pass",
              "Pass","Pass","Pass",
              "Pass","Pass","Pass")
 
-mini_conda_table <- tibble::tibble(os, mini_conda, pyhon, torch, transformers, success)
+mini_conda_table <- tibble::tibble(os, mini_conda, python, torch, transformers, success)
 
 knitr::kable(mini_conda_table, caption="", bootstrap_options = c("hover"), full_width = T)
 ``` 
@@ -109,7 +109,7 @@ library(magrittr)
 
 OS <- c("'Mac OS'", "'Linux'", "'Mac OS'", "'Linux'", "'Windows'")
 
-Pyhon_version <- c("'3.9.8'", "'3.9.8'", "'3.9.8'", "-", "-")
+Python_version <- c("'3.9.8'", "'3.9.8'", "'3.9.8'", "-", "-")
 
 torch <- c("'torch==1.11.0'", "'torch==1.11.0'", "'torch==1.7.1'", "-", "-")
 
@@ -117,7 +117,7 @@ transformers <- c("'transformers==4.19.2'", "'transformers==4.19.2'", "'transfor
 
 Success <- c("Pass", "Pass", "Pass", "-", "-")
 
-venv_conda_table <- tibble::tibble(OS, Pyhon_version, torch, transformers, Success)
+venv_conda_table <- tibble::tibble(OS, Python_version, torch, transformers, Success)
 
 knitr::kable(venv_conda_table, caption="", bootstrap_options = c("hover"), full_width = T)
 ``` 

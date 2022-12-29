@@ -1,4 +1,6 @@
 
+#' @importFrom utils packageVersion
+#' @noRd
 .onAttach <- function(libname, pkgname) {
   if (!grepl(x = R.Version()$arch, pattern = "64")) {
     warning("The text package requires running R on a 64-bit systems
@@ -6,14 +8,33 @@
             system is not 64-bit.")
   }
 
-  packageStartupMessage(colourise(
-    "This is text (version 0.9.90). \n",
-    fg = "blue", bg = NULL
-  ), colourise("Text is new and still rapidly improving.
+  text_version_nr <- tryCatch(
+    {
+      text_version_nr1 <- paste(" (version ", packageVersion("text"), ")", sep = "")
+    },
+    error = function(e) {
+      text_version_nr1 <- ""
+    }
+  )
+
+  packageStartupMessage(
+    colourise(
+      paste("This is text",
+        text_version_nr,
+        ".\n",
+        sep = ""
+      ),
+      fg = "blue", bg = NULL
+    ),
+    colourise("Text is new and still rapidly improving.
                \nNewer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art.
-               \nPlease send us feedback based on your experience.",
-    fg = "green", bg = NULL
-  ))
+               Please send us feedback based on your experience.",
+      fg = "green", bg = NULL
+    ),
+    colourise("\n\nPlease note that defaults has changed in the textEmbed-functions since last version; see help(textEmbed) or www.r-text.org for more details.",
+      fg = "purple", bg = NULL
+    )
+  )
 
   if (isTRUE(check_textrpp_python_options()$val == "textrpp_condaenv")) {
     textrpp_initialize(check_env = FALSE)
@@ -61,20 +82,20 @@ colourise <- function(text, fg = "black", bg = NULL) {
 .fg_colours <- c(
   "black" = "0;30",
   "blue" = "0;34",
-  "green" = "0;32"
-  #  "cyan" = "0;36",
-  #  "red" = "0;31",
-  #  "purple" = "0;35",
-  #  "brown" = "0;33",
-  #  "light gray" = "0;37",
-  #  "dark gray" = "1;30",
-  #  "light blue" = "1;34",
-  #  "light green" = "1;32",
-  #  "light cyan" = "1;36",
-  #  "light red" = "1;31",
-  #  "light purple" = "1;35",
-  #  "yellow" = "1;33",
-  #  "white" = "1;37"
+  "green" = "0;32",
+  "cyan" = "0;36",
+  "red" = "0;31",
+  "purple" = "0;35"
+  # "brown" = "0;33",
+  # "light gray" = "0;37",
+  # "dark gray" = "1;30",
+  # "light blue" = "1;34",
+  # "light green" = "1;32",
+  # "light cyan" = "1;36",
+  # "light red" = "1;31",
+  # "light purple" = "1;35",
+  # "yellow" = "1;33",
+  # "white" = "1;37"
 )
 
 .bg_colours <- c(

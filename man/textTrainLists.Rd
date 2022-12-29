@@ -49,11 +49,11 @@ It is not possible to mix numeric and categorical variables.
 }
 \examples{
 \dontrun{
-word_embeddings <- word_embeddings_4[1:2]
+word_embeddings <- word_embeddings_4$texts[1:2]
 ratings_data <- Language_based_assessment_data_8[5:6]
 results <- textTrainLists(
-  word_embeddings,
-  ratings_data
+  x = word_embeddings,
+  y = ratings_data
 )
 results
 comment(results)

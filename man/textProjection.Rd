@@ -7,7 +7,7 @@
 textProjection(
   words,
   word_embeddings,
-  single_word_embeddings = single_word_embeddings_df,
+  word_types_embeddings,
   x,
   y = NULL,
   pca = NULL,
@@ -28,7 +28,7 @@ textProjection(
 \item{word_embeddings}{Word embeddings from textEmbed for the words to be plotted
 (i.e., the aggregated word embeddings for the "words" parameter).}
 
-\item{single_word_embeddings}{Word embeddings from textEmbed for individual words
+\item{word_types_embeddings}{Word embeddings from textEmbed for individual words
 (i.e., decontextualized embeddings).}
 
 \item{x}{Numeric variable that the words should be plotted according to on the x-axes.}
@@ -61,8 +61,9 @@ and the Group 2 split aggregation embedding}
 
 \item{Npermutations}{Number of permutations in the creation of the null distribution.}
 
-\item{n_per_split}{A setting to split Npermutations to avoid reaching computer memory limits;
-the higher the faster, but too high may lead to abortion.}
+\item{n_per_split}{Setting to split Npermutations to avoid reaching computer memory limits;
+set it lower than Npermutations <- and the higher it is set the faster the computation completes,
+ but too high may lead to abortion.}
 
 \item{seed}{Set different seed.}
 }
@@ -79,8 +80,8 @@ Compute Supervised Dimension Projection and related variables for plotting words
 \dontrun{
 df_for_plotting <- textProjection(
   words = Language_based_assessment_data_8$harmonywords,
-  word_embeddings = word_embeddings_4$harmonywords,
-  single_word_embeddings = word_embeddings_4$singlewords_we,
+  word_embeddings = word_embeddings_4$texts$harmonywords,
+  word_types_embeddings = word_embeddings_4$word_types,
   x = Language_based_assessment_data_8$hilstotal,
   split = "mean",
   Npermutations = 10,

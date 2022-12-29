@@ -8,19 +8,28 @@ textDescriptives(
   words,
   compute_total = TRUE,
   entropy_unit = "log2",
-  na.rm = TRUE
+  na.rm = TRUE,
+  locale = "en_US"
 )
 }
 \arguments{
-\item{words}{One or several character variables; if its a tibble or dataframe, all the character variables will be selected.}
+\item{words}{One or several character variables; if its a tibble or dataframe,
+all the character variables will be selected.}
 
-\item{compute_total}{Boolean. If the input (words) is a tibble/dataframe with several character variables, a total variable is computed.}
+\item{compute_total}{Boolean. If the input (words) is a tibble/dataframe with
+several character variables, a total variable is computed.}
 
-\item{entropy_unit}{The unit entropy is measured in. The default is to used bits (i.e., log2; see also, "log", "log10").
-If a total score for several varaibles is computed,the text columns are combined using the dplyr unite function.
-For more information about the entropy see the entropy package and specifically its entropy.plugin function.}
+\item{entropy_unit}{The unit entropy is measured in. The default is to used bits
+ (i.e., log2; see also, "log", "log10").
+If a total score for several varaibles is computed,the text columns are combined using
+the dplyr unite function.
+For more information about the entropy see the entropy package and specifically
+its entropy.plugin function.}
 
 \item{na.rm}{Option to remove NAs when computing mean, median etc (see under return).}
+
+\item{locale}{(character string) Locale Identifiers for example in US-English ('en_US')
+and Australian-English ('en_AU'); see help(about_locale) in the stringi package}
 }
 \value{
 A tibble with descriptive statistics, including

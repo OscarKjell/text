@@ -7,6 +7,8 @@
 textTrainRegression(
   x,
   y,
+  x_append = NULL,
+  append_first = FALSE,
   cv_method = "validation_split",
   outside_folds = 10,
   outside_strata_y = "y",
@@ -32,10 +34,15 @@ textTrainRegression(
 )
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are provided in a list
-they will be concatenated.}
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
+provided in a list they will be concatenated.}
 
 \item{y}{Numeric variable to predict.}
+
+\item{x_append}{Variables to be appended after the word embeddings (x); if wanting to preappend them before
+the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.}
+
+\item{append_first}{(boolean) Option to add variables before or after all word embeddings.}
 
 \item{cv_method}{Cross-validation method to use within a pipeline of nested outer and inner loops
 of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
@@ -47,25 +54,29 @@ uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.}
 
 \item{outside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{outside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the outer cross-validation loop.}
+\item{outside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the
+outer cross-validation loop.}
 
-\item{inside_folds}{The proportion of data to be used for modeling/analysis; (default proportion = 3/4). For more information
-see validation_split in rsample.}
+\item{inside_folds}{The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
+For more information see validation_split in rsample.}
 
 \item{inside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
-\item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the inner cross-validation loop.}
+\item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the inner
+cross-validation loop.}
 
 \item{model}{Type of model. Default is "regression"; see also "logistic" for classification.}
 
-\item{eval_measure}{Type of evaluative measure to select models from. Default = "rmse" for regression and "bal_accuracy"
-for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy", "bal_accuracy", "sens", "spec",
-"precision", "kappa", "f_measure", or "roc_auc",(for more details see the yardstick package).}
+\item{eval_measure}{Type of evaluative measure to select models from. Default = "rmse" for regression and
+"bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
+ "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
+ the yardstick package).}
 
 \item{preprocess_step_center}{normalizes dimensions to have a mean of zero; default is set to TRUE.
 For more info see (step_center in recipes).}
 
-\item{preprocess_step_scale}{normalize dimensions to have a standard deviation of one. For more info see (step_scale in recipes).}
+\item{preprocess_step_scale}{normalize dimensions to have a standard deviation of one.
+For more info see (step_scale in recipes).}
 
 \item{preprocess_PCA}{Pre-processing threshold for PCA (to skip this step set it to NA).
 Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
@@ -76,12 +87,16 @@ preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(5
 
 \item{penalty}{hyper parameter that is tuned}
 
-\item{mixture}{hyper parameter that is tuned default = 0 (hence a pure ridge regression).}
+\item{mixture}{A number between 0 and 1 (inclusive) that reflects the proportion of L1 regularization
+(i.e. lasso) in the model (for more information see the linear_reg-function in the parsnip-package).
+When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
+used (specific engines only).}
 
 \item{first_n_predictors}{by default this setting is turned off (i.e., NA). To use this method,
 set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
-using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1, then multiplying by 1.3 and finally
-rounding to the nearest integer (e.g., 1, 3, 5, 8). This option is currently only possible for one embedding at the time.}
+using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
+then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
+This option is currently only possible for one embedding at the time.}
 
 \item{impute_missing}{default FALSE (can be set to TRUE if something else than word_embeddings are trained).}
 
@@ -94,7 +109,8 @@ can set to "spearman" or "kendall").}
 (i.e., only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
 "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.}
 
-\item{save_output}{Option not to save all output; default "all". see also "only_results" and "only_results_predictions".}
+\item{save_output}{Option not to save all output; default "all". see also "only_results"
+and "only_results_predictions".}
 
 \item{seed}{Set different seed.}
 
@@ -111,13 +127,13 @@ Train word embeddings to a numeric variable.
 \examples{
 \donttest{
 results <- textTrainRegression(
-  word_embeddings_4$harmonytext,
-  Language_based_assessment_data_8$hilstotal,
+  x = word_embeddings_4$texts$harmonytext,
+  y = Language_based_assessment_data_8$hilstotal,
   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 )
 }
 }
 \seealso{
 see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
-\code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
+\code{\link{textTrainRandomForest}}
 }

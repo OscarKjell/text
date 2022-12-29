@@ -1,7 +1,7 @@
 Package: text
 Type: Package
-Title: Analyses of Text using Natural Language Processing and Machine Learning
-Version: 0.9.90
+Title: Analyses of Text using Transformers Models from HuggingFace, Natural Language Processing and Machine Learning
+Version: 0.9.99.7
 Authors@R: c(
     person("Oscar", "Kjell", , "oscar.kjell@psy.lu.se", role = c("aut", "cre"), 
       comment = c(ORCID = "0000-0002-2728-6278"),
@@ -12,7 +12,7 @@ Authors@R: c(
     person("Andrew", "Schwartz", role = c("aut"), 
       comment = c(ORCID = "0000-0002-6383-3339"))
     )
-Description: Transforms text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables, and visual statistically significant words according to various dimensions etc. For more information see  <https://www.r-text.org>.
+Description: Link R with Transformers from Hugging Face to transform text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables, and visual statistically significant words according to various dimensions etc. For more information see  <https://www.r-text.org>.
 License: GPL-3
 URL: https://r-text.org/, https://github.com/OscarKjell/text/
 BugReports: https://github.com/OscarKjell/text/issues/
@@ -42,7 +42,7 @@ Imports:
     future,
     furrr,
     overlapping
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Suggests: 
     knitr,
     rmarkdown,
@@ -52,6 +52,7 @@ Suggests:
     randomForest,
     covr,
     xml2,
-    ranger
+    ranger,
+    utils
 VignetteBuilder: knitr
 Depends: R (>= 4.00)

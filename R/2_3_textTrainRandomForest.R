@@ -8,6 +8,10 @@
 #' @param estimate name of the predicted estimate
 #' @return  tibble with .metric column (i.e., type of evaluation measure), .estimator (e.g., binary)
 #' and .estimate (i.e., the resulting value).
+#' @importFrom  dplyr all_of
+#' @importFrom  yardstick accuracy bal_accuracy sens spec precision kap f_meas roc_auc rmse rsq
+#' @importFrom  tibble tibble
+#' @importFrom  stats cor.test
 #' @noRd
 select_eval_measure_val <- function(eval_measure = "bal_accuracy",
                                     holdout_pred = NULL,
@@ -30,17 +34,17 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
     eval_measure_val <- yardstick::f_meas(holdout_pred, truth = y, estimate = .pred_class)
   } else if (eval_measure == "roc_auc") {
     class1_name <- eval(class)
-    eval_measure_val <- yardstick::roc_auc(holdout_pred, truth = y, class1_name)
+    eval_measure_val <- yardstick::roc_auc(holdout_pred, truth = y, dplyr::all_of(class1_name))
   } else if (eval_measure == "rmse") {
     eval_measure_val <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)
   } else if (eval_measure == "rsq") {
     eval_measure_val <- yardstick::rsq(holdout_pred, truth = y, estimate = .pred)
   } else if (eval_measure == "cor_test") {
-    cor_testing <- cor.test(holdout_pred$y, holdout_pred$.pred, na.action = na.omit)
+    cor_testing <- stats::cor.test(holdout_pred$y, holdout_pred$.pred, na.action = na.omit)
     estimate1 <- cor_testing[[4]][[1]]
     metric <- "cor_test"
     estimator <- "standard"
-    eval_measure_val <- tibble(metric, estimator, as.numeric(estimate1))
+    eval_measure_val <- tibble::tibble(metric, estimator, as.numeric(estimate1))
     colnames(eval_measure_val) <- c(".metric", ".estimator", ".estimate")
   }
   eval_measure_val
@@ -50,6 +54,12 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
 #'
 #' @param outputlist_results_outer Results from outer predictions.
 #' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
+#' @importFrom  tidyr unnest
+#' @importFrom  tibble is_tibble
+#' @importFrom  dplyr full_join arrange bind_rows
+#' @importFrom  stats fisher.test
+#' @importFrom  yardstick accuracy bal_accuracy sens spec precision kap f_meas roc_auc rmse rsq
+#' @importFrom  ggplot2 autoplot
 #' @noRd
 classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
   # Unnest predictions and y
@@ -127,8 +137,11 @@ fit_model_accuracy_rf <- function(object,
   data_train <- rsample::analysis(object)
   data_train <- tibble::as_tibble(data_train)
 
+  # Get number of embeddings provided
+  n_embeddings <- as.numeric(comment(eval_measure))
+
   # Recipe for one embedding input
-  if (colnames(rsample::analysis(object)[1]) == "Dim1") {
+  if (n_embeddings == 1) {
     xy_recipe <- rsample::analysis(object) %>%
       recipes::recipe(y ~ .) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>% # New
@@ -340,6 +353,9 @@ tune_over_cost_rf <- function(object,
                               variable_name_index_pca,
                               eval_measure,
                               extremely_randomised_splitrule) {
+  T1 <- Sys.time()
+
+
   if (!is.na(preprocess_PCA[1])) {
     # Number of components or percent of variance to attain; min_halving;
     if (preprocess_PCA[1] == "min_halving") {
@@ -394,9 +410,32 @@ tune_over_cost_rf <- function(object,
   tune_accuracy <- (dplyr::bind_rows(tune_outputlist$eval_measure_val$eval_measure_val))$.estimate
   # Add accuracy to the grid
   grid_inner_accuracy <- grid_inner %>%
-    dplyr::mutate(eval_measure = tune_accuracy)
+    dplyr::mutate(eval_results = tune_accuracy)
 
-  grid_inner_accuracy
+  # Progression output
+  best_eval <- bestParameters(
+    data = grid_inner_accuracy,
+    eval_measure = eval_measure
+  )
+
+  T2 <- Sys.time()
+  time <- T2 - T1
+  variable_time <- sprintf(
+    "(duration: %s %s).",
+    round(time, digits = 3),
+    units(time)
+  )
+
+  description_text <- paste(
+    "Fold:", eval_measure,
+    round(best_eval$eval_result, digits = 3),
+    variable_time,
+    "\n"
+  )
+
+  cat(colourise(description_text, "green"))
+
+  return(grid_inner_accuracy)
 }
 
 
@@ -423,7 +462,7 @@ summarize_tune_results_rf <- function(object,
                                       extremely_randomised_splitrule) {
 
   # Return row-bound tibble containing the INNER results
-  purrr::map_df(
+  results <- purrr::map_df(
     .x = object$splits,
     .f = tune_over_cost_rf,
     mode_rf = mode_rf,
@@ -437,6 +476,9 @@ summarize_tune_results_rf <- function(object,
     eval_measure = eval_measure,
     extremely_randomised_splitrule = extremely_randomised_splitrule
   )
+
+
+  return(results)
 }
 
 
@@ -444,6 +486,10 @@ summarize_tune_results_rf <- function(object,
 #'
 #' @param x Word embeddings from textEmbed.
 #' @param y Categorical variable to predict.
+#' @param x_append Variables to be appended after the word embeddings (x);
+#' if wanting to preappend them before the word embeddings use the option
+#' first = TRUE.  If not wanting to train with word embeddings, set x = NULL.
+#' @param append_first (boolean) Option to add variables before or after all word embeddings.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and
 #' inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
 #' outside folds and "validation_split" using rsample::validation_split in the inner loop to
@@ -492,17 +538,18 @@ summarize_tune_results_rf <- function(object,
 #' @examples
 #' \donttest{
 #' results <- textTrainRandomForest(
-#'   word_embeddings_4$harmonywords,
-#'   as.factor(Language_based_assessment_data_8$gender),
+#'   x = word_embeddings_4$texts$harmonywords,
+#'   y = as.factor(Language_based_assessment_data_8$gender),
 #'   trees = c(1000, 1500),
-#'   mtry  = c(1), # this is short because of testing
+#'   mtry = c(1), # this is short because of testing
 #'   min_n = c(1), # this is short because of testing
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
 #' }
-#' @seealso see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textTrainLists}}
 #' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
-#' @importFrom dplyr select starts_with filter arrange rename
+#' @importFrom dplyr select bind_cols starts_with filter arrange rename
+#' @importFrom tibble as_tibble
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca
 #' @importFrom rsample vfold_cv
 #' @importFrom parsnip linear_reg set_engine rand_forest
@@ -515,6 +562,8 @@ summarize_tune_results_rf <- function(object,
 #' @export
 textTrainRandomForest <- function(x,
                                   y,
+                                  x_append = NULL,
+                                  append_first = FALSE,
                                   cv_method = "validation_split",
                                   outside_folds = 10,
                                   outside_strata_y = "y",
@@ -539,74 +588,41 @@ textTrainRandomForest <- function(x,
   T1_textTrainRandomForest <- Sys.time()
   set.seed(seed)
 
-  variable_name_index_pca <- NA
-
-  # In case the embedding is in list form get the tibble form
-  if (!tibble::is_tibble(x) & length(x) == 1) {
-    x1 <- x[[1]]
-    # Get names for description
-    x_name <- names(x)
-    # Get embedding info to save for model description
-    embedding_description <- comment(x[[1]])
-    # In case there are several embeddings in list form get the x_names and embedding description for model description
-  } else if (!tibble::is_tibble(x) & length(x) > 1) {
-    x_name <- names(x)
-    x_name <- paste(x_name, sep = " ", collapse = " & ")
-    x_name <- paste("input:", x_name, sep = " ", collapse = " ")
-
-    embedding_description <- comment(x[[1]])
-    # In case it is just one word embedding as tibble
-  } else {
-    x1 <- x
-    x_name <- deparse(substitute(x))
-    embedding_description <- comment(x)
-  }
-
-
+  # Sorting out y
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
-    y <- y[[1]]
+    y <- tibble::as_tibble_col(y[[1]], column_name = "y")
   } else {
     y_name <- deparse(substitute(y))
-    y <- y
+    y <- tibble::as_tibble_col(y, column_name = "y")
   }
 
-  ############ Arranging word embeddings to be concatenated from different texts ############
-  ##################################################
-
-  if (!tibble::is_tibble(x) & length(x) > 1) {
-
-    # Select all variables that starts with Dim in each dataframe of the list.
-    xlist <- lapply(x, function(X) {
-      X <- dplyr::select(X, dplyr::starts_with("Dim"))
-    })
-
-    Nword_variables <- length(xlist)
-    # Give each column specific names with indexes so that they can be handled separately in the PCAs
-    for (i in 1:Nword_variables) {
-      colnames(xlist[[i]]) <- paste("Dim_we", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep = "")
-    }
-
-    # Make vector with each index so that we can allocate them separately for the PCAs
-    variable_name_index_pca <- list()
-    for (i in 1:Nword_variables) {
-      variable_name_index_pca[i] <- paste("Dim_we", i, sep = "")
-    }
-
-    # Make one df rather then list.
-    x1 <- dplyr::bind_cols(xlist)
+  # The fit_model_rmse function need to number of word embeddings -- instead of
+  # sending a separate parameter number of embeddings are give as a comment in "model"
+  if (tibble::is_tibble(x)) {
+    comment(eval_measure) <- "1"
+  } else {
+    comment(eval_measure) <- paste(length(x))
   }
-  ############ End for multiple word embeddings ############
-  ##########################################################
 
+  # sorting out x's
+  variables_and_names <- sorting_xs_and_x_append(x = x,
+                                                 x_append = x_append,
+                                                 append_first = append_first,
+                                                 ...)
+  x1 <- variables_and_names$x1
+  x_name <- variables_and_names$x_name
+  embedding_description <- variables_and_names$embedding_description
+  x_append_names <- variables_and_names$x_append_names
+  variable_name_index_pca <- variables_and_names$variable_name_index_pca
+  rm(variables_and_names)
 
-  x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
 
   if (!mode_rf == "regression") {
-    y <- as.factor(y)
+    y$y <- as.factor(y[[1]])
   }
-  xy <- cbind(x1, y)
-  xy <- as_tibble(xy)
+  xy <- dplyr::bind_cols(x1, y)
+  xy <- tibble::as_tibble(xy)
 
 
   xy$id_nr <- c(seq_len(nrow(xy)))
@@ -701,21 +717,11 @@ textTrainRandomForest <- function(x,
 
 
   # Function to get the lowest eval_measure_val library(tidyverse)
-  if (eval_measure %in% c(
-    "accuracy", "bal_accuracy", "sens", "spec",
-    "precision", "kappa", "f_measure", "roc_auc",
-    "rsq", "cor_test"
-  )) {
-    bestParameters <- function(dat) dat[which.max(dat$eval_measure), ]
-  } else if (eval_measure == "rmse") {
-    bestParameters <- function(dat) dat[which.min(dat$eval_measure), ]
-  }
-
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
   hyper_parameter_vals <-
     tuning_results %>%
-    purrr::map_df(bestParameters)
+    purrr::map_df(bestParameters, eval_measure)
 
   # Bind best results
   results_split_parameter <-
@@ -731,7 +737,8 @@ textTrainRandomForest <- function(x,
       results_split_parameter$min_n,
       trees = results_split_parameter$trees,
       preprocess_PCA = results_split_parameter$preprocess_PCA,
-      variable_name_index_pca = list(variable_name_index_pca)
+      variable_name_index_pca = list(variable_name_index_pca),
+      eval_measure = list(eval_measure)
     ),
     fit_model_accuracy_rf
   )
@@ -753,7 +760,9 @@ textTrainRandomForest <- function(x,
   xy_all <- xy
 
   ######### One word embedding as input
-  if (colnames(xy_all[1]) == "Dim1") {
+  n_embbeddings <- as.numeric(comment(eval_measure))
+
+  if (n_embbeddings == 1) {
     final_recipe <- # xy %>%
       recipes::recipe(y ~ ., xy_all[0, ]) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
@@ -804,7 +813,7 @@ textTrainRandomForest <- function(x,
       final_recipe <- recipes::step_scale(final_recipe, recipes::all_predictors())
     }
 
-    # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
+    # Adding a PCA in each loop; first selecting all variables starting with i="DimWs1"; and then "DimWs2" etc
     if (!is.na(preprocess_PCA)) {
       if (preprocess_PCA >= 1) {
         for (i in variable_name_index_pca) {

@@ -1,5 +1,5 @@
 ---
-title: "Creating a Singularity Container"
+title: "Creating a Singularity Container to Run HuggingFace Transformers Models in R"
 output: github_document #rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Singularity_Container}
@@ -16,9 +16,9 @@ knitr::opts_chunk$set(
 
 [Singularity](https://apptainer.org/) is a container engine alternative to Docker. Singularity containers are well suited for the requirements of High Performance Computing (HPC) workloads.
 
-A container contains all code as well as *all* its dependencies so that the an application runs reliably on different computers (or different computing environments). It can be used to run on servers or as a way to ensure computational reproducibility (that the code run on other systems, and in the future). For an introduction to the concept of containers see [Computational Reproducibility via Containers in Psychology](https://open.lnu.se/index.php/metapsychology/article/view/892/). Below is code to build a Singularity container for running the ```text```-package.
+A container contains all code as well as *all* its dependencies so that the an application runs reliably on different computers (or different computing environments). It can be used to run on servers or as a way to ensure computational reproducibility (that the code run on other systems, and in the future). For an introduction to the concept of containers see [Computational Reproducibility via Containers in Psychology](https://open.lnu.se/index.php/metapsychology/article/view/892/). Below is code to build a Singularity container for setting up transformers language models from HuggingFace and running the ```text```-package.
 
-## Code to build a singularity container
+## Code to build a singularity container with HuggingFace models in R
 ``` 
 
 Bootstrap: docker
@@ -88,8 +88,6 @@ From: ubuntu:20.04
     Rscript -e 'text::textrpp_install(prompt = FALSE)'
     Rscript -e 'text::textrpp_initialize(save_profile = TRUE, prompt = FALSE, textEmbed_test = TRUE)'
 EOF
-
-
 
 ```
 

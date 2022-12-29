@@ -20,20 +20,26 @@ Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-p
 
 <!-- badges: end -->
 
-The language that individuals use contains a wealth of psychological
-information interesting for research. The *text*-package has two main
-objectives:
+An R-package for analyzing natural language with transformers from
+HuggingFace using Natural Language Processing and Machine Learning.
+
+The *text*-package has two main objectives:
 
 -   First, to serve R-users as a *point solution* for transforming text
     to state-of-the-art word embeddings that are ready to be used for
-    downstream tasks.
+    downstream tasks. The package provides a user-friendly link to
+    language models based on transformers from [Hugging
+    Face](https://huggingface.co/).
 
 -   Second, to serve as an *end-to-end solution* that provides
     state-of-the-art AI techniques tailored for social and behavioral
     scientists.
 
 <figure>
-<img src="man/figures/modular_end_solution.png" style="width:85.0%" alt="Modular and End-to-End Solution" /><figcaption aria-hidden="true">Modular and End-to-End Solution</figcaption>
+<img src="man/figures/modular_end_solution.png" style="width:85.0%"
+alt="Modular and End-to-End Solution" />
+<figcaption aria-hidden="true">Modular and End-to-End
+Solution</figcaption>
 </figure>
 
 *Text* is created through a collaboration between psychology and
@@ -43,14 +49,14 @@ hypotheses in social and behavior sciences for both relatively small and
 large datasets. *Text* is continuously tested on Ubuntu, Mac OS and
 Windows using the latest stable R version.
 
-[Tutorial paper](https://psyarxiv.com/293kt/)
+[Tutorial preprint paper](https://psyarxiv.com/293kt/)
 
 ### Short installation guide
 
 Most users simply need to run below installation code. For those
 experiencing problems or want more alternatives, please see the
 [Extended Installation
-Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
+Guide](https://www.r-text.org/articles/huggingface_in_r_extended_installation_guide.html).
 
 For the text-package to work, you first have to install the text-package
 in R, and then make it work with text required python packages.
@@ -93,13 +99,6 @@ understanding human language. Text are making these SOTA models easily
 accessible through an interface to
 [HuggingFace](https://huggingface.co/docs/transformers/index) in Python.
 
-``` r
-library(text)
-# Transform the text data to BERT word embeddings
-wordembeddings <- textEmbed(Language_based_assessment_data_8, 
-                            model = 'bert-base-uncased')
-```
-
 *Text* provides many of the contemporary state-of-the-art language
 models that are based on deep learning to model word order and context.
 Multilingual language models can also represent several languages;
@@ -118,13 +117,53 @@ multilingual BERT comprises *104 different languages*.
 See [HuggingFace](https://huggingface.co/models/) for a more
 comprehensive list of models.
 
+The `textEmbed()` function is the main embedding function in text; and
+can output contextualized embeddings for tokens (i.e., the embeddings
+for each single word instance of each text) and texts (i.e., single
+embeddings per text taken from aggregating all token embeddings of the
+text).
+
+``` r
+library(text)
+# Transform the text data to BERT word embeddings
+
+# Example text
+texts <- c("I feel great!")
+
+# Defaults
+embeddings <- textEmbed(texts)
+embeddings
+```
+
+See [Get Started](https://www.r-text.org/articles/text.html) for more
+information.
+
+### Language Analysis Tasks
+
+It is also possible to access many language analysis tasks such as
+textClassify(), textGeneration(), and textTranslate().
+
+``` r
+library(text)
+
+# Generate text from the prompt "I am happy to"
+generated_text <- textGeneration("I am happy to",
+                                 model = "gpt2")
+generated_text
+```
+
+For a full list of language analysis tasks supported in text see the
+[References](https://www.r-text.org/reference/index.html)
+
 ### An end-to-end package
 
 *Text* also provides functions to analyse the word embeddings with
 well-tested machine learning algorithms and statistics. The focus is to
 analyze and visualize text, and their relation to other text or
-numerical variables. An example is functions plotting statistically
-significant words in the word embedding space.
+numerical variables. For example, the `textTrain()` function is used to
+examine how well the word embeddings from a text can predict a numeric
+or categorical variable. Another example is functions plotting
+statistically significant words in the word embedding space.
 
 ``` r
 library(text) 
@@ -138,34 +177,10 @@ plot_projection <- textProjectionPlot(
   position_jitter_hight = 0.5,
   position_jitter_width = 0.8
 )
-plot_projection
-#> $final_plot
+plot_projection$final_plot
 ```
 
 <img src="man/figures/README-DPP_plot-1.png" width="100%" />
 
-    #> 
-    #> $description
-    #> [1] "INFORMATION ABOUT THE PROJECTION type = textProjection words = $ wordembeddings = Information about the embeddings. textEmbedLayersOutput:  model: bert-base-uncased ;  layers: 11 12 . Warnings from python:  Some weights of the model checkpoint at bert-base-uncased were not used when initializing BertModel: ['cls.seq_relationship.bias', 'cls.seq_relationship.weight', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.transform.dense.bias', 'cls.predictions.decoder.weight', 'cls.predictions.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.dense.weight']\n- This IS expected if you are initializing BertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).\n- This IS NOT expected if you are initializing BertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).\n\n textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   single_wordembeddings = Information about the embeddings. textEmbedLayersOutput:  model: bert-base-uncased layers: 11 12 . textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   x = $ y = $ pca =  aggregation =  mean split =  quartile word_weight_power = 1 min_freq_words_test = 0 Npermutations = 1e+06 n_per_split = 1e+05 type = textProjection words = Language_based_assessment_data_3_100 wordembeddings = Information about the embeddings. textEmbedLayersOutput:  model: bert-base-uncased ;  layers: 11 12 . Warnings from python:  Some weights of the model checkpoint at bert-base-uncased were not used when initializing BertModel: ['cls.seq_relationship.bias', 'cls.seq_relationship.weight', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.transform.dense.bias', 'cls.predictions.decoder.weight', 'cls.predictions.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.dense.weight']\n- This IS expected if you are initializing BertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).\n- This IS NOT expected if you are initializing BertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).\n\n textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   single_wordembeddings = Information about the embeddings. textEmbedLayersOutput:  model: bert-base-uncased layers: 11 12 . textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   x = Language_based_assessment_data_3_100 y = Language_based_assessment_data_3_100 pca =  aggregation =  mean split =  quartile word_weight_power = 1 min_freq_words_test = 0 Npermutations = 1e+06 n_per_split = 1e+05 type = textProjection words = harmonywords wordembeddings = Information about the embeddings. textEmbedLayersOutput:  model: bert-base-uncased ;  layers: 11 12 . Warnings from python:  Some weights of the model checkpoint at bert-base-uncased were not used when initializing BertModel: ['cls.seq_relationship.bias', 'cls.seq_relationship.weight', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.transform.dense.bias', 'cls.predictions.decoder.weight', 'cls.predictions.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.dense.weight']\n- This IS expected if you are initializing BertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).\n- This IS NOT expected if you are initializing BertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).\n\n textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   single_wordembeddings = Information about the embeddings. textEmbedLayersOutput:  model: bert-base-uncased layers: 11 12 . textEmbedLayerAggregation: layers =  11 12 aggregate_layers =  concatenate aggregate_tokens =  mean tokens_select =   tokens_deselect =   x = hilstotal y = swlstotal pca =  aggregation =  mean split =  quartile word_weight_power = 1 min_freq_words_test = 0 Npermutations = 1e+06 n_per_split = 1e+05 INFORMATION ABOUT THE PLOT word_data = word_data k_n_words_to_test = FALSE min_freq_words_test = 1 min_freq_words_plot = 1 plot_n_words_square = 3 plot_n_words_p = 5 plot_n_word_extreme = 5 plot_n_word_frequency = 5 plot_n_words_middle = 5 y_axes = TRUE p_alpha = 0.05 p_adjust_method = none bivariate_color_codes = #398CF9 #60A1F7 #5dc688 #e07f6a #EAEAEA #40DD52 #FF0000 #EA7467 #85DB8E word_size_range = 3 - 8 position_jitter_hight = 0.5 position_jitter_width = 0.8 point_size = 0.5 arrow_transparency = 0.5 points_without_words_size = 0.2 points_without_words_alpha = 0.2 legend_x_position = 0.02 legend_y_position = 0.02 legend_h_size = 0.2 legend_w_size = 0.2 legend_title_size = 7 legend_number_size = 2"
-    #> 
-    #> $processed_word_data
-    #> # A tibble: 583 × 32
-    #>    words   x_plotted p_values_x n_g1.x n_g2.x y_plotted p_values_y n_g1.y n_g2.y
-    #>    <chr>       <dbl>      <dbl>  <dbl>  <dbl>     <dbl>      <dbl>  <dbl>  <dbl>
-    #>  1 able        1.42      0.194       0      1     2.99  0.0000181       0      0
-    #>  2 accept…     0.732     0.451      -1      1     1.40  0.0396         -1      1
-    #>  3 accord      2.04      0.0651      0      1     3.45  0.00000401      0      1
-    #>  4 active      1.46      0.180       0      1     1.92  0.00895         0      1
-    #>  5 adapta…     2.40      0.0311      0      0     0.960 0.113           0      0
-    #>  6 admiri…     0.161     0.839       0      0     1.58  0.0255          0      0
-    #>  7 adrift     -2.64      0.0245     -1      0    -3.17  0.0000422      -1      0
-    #>  8 affini…     1.03      0.320       0      1     2.24  0.00324         0      1
-    #>  9 agreei…     1.62      0.140       0      1     2.12  0.00500         0      0
-    #> 10 alcohol    -2.15      0.0822     -1      0    -1.78  0.0212          0      0
-    #> # … with 573 more rows, and 23 more variables: n <dbl>, n.percent <dbl>,
-    #> #   N_participant_responses <int>, adjusted_p_values.x <dbl>,
-    #> #   adjusted_p_values.y <dbl>, square_categories <dbl>, check_p_square <dbl>,
-    #> #   check_p_x_neg <dbl>, check_p_x_pos <dbl>, check_extreme_max_x <dbl>,
-    #> #   check_extreme_min_x <dbl>, check_extreme_frequency_x <dbl>,
-    #> #   check_middle_x <dbl>, extremes_all_x <dbl>, check_p_y_pos <dbl>,
-    #> #   check_p_y_neg <dbl>, check_extreme_max_y <dbl>, …
+<a rel="me" href="https://mastodon.online/@oscarkjell">M</a>
+<link rel="me" href="https://mastodon.online/@oscarkjell" M />

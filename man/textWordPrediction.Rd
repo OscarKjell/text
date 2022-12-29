@@ -8,7 +8,7 @@ NOT work yet.}
 \usage{
 textWordPrediction(
   words,
-  single_word_embeddings = single_word_embeddings_df,
+  word_types_embeddings = word_types_embeddings_df,
   x,
   y = NULL,
   seed = 1003,
@@ -20,7 +20,7 @@ textWordPrediction(
 \arguments{
 \item{words}{Word or text variable to be plotted.}
 
-\item{single_word_embeddings}{Word embeddings from textEmbed for individual words
+\item{word_types_embeddings}{Word embeddings from textEmbed for individual words
 (i.e., decontextualized embeddings).}
 
 \item{x}{Numeric variable that the words should be plotted according to on the x-axes.}
@@ -50,7 +50,7 @@ NOT work yet.
 \dontrun{
 df_for_plotting <- textWordPrediction(
   words = Language_based_assessment_data_8$harmonywords,
-  single_word_embeddings = word_embeddings_4$singlewords_we,
+  word_types_embeddings = word_embeddings_4$word_types,
   x = Language_based_assessment_data_8$hilstotal
 )
 df_for_plotting

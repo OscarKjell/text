@@ -11,6 +11,9 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
+evaluate <- FALSE
+
 ```
 
 
@@ -26,9 +29,11 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-The language that individuals use contains a wealth of psychological information interesting for research. The *text*-package has two main objectives:
+An R-package for analyzing natural language with transformers from HuggingFace using Natural Language Processing and Machine Learning.
 
-* First, to serve R-users as a *point solution* for transforming text to state-of-the-art word embeddings that are ready to be used for downstream tasks. 
+The *text*-package has two main objectives:
+
+* First, to serve R-users as a *point solution* for transforming text to state-of-the-art word embeddings that are ready to be used for downstream tasks. The package provides a user-friendly link to language models based on transformers from [Hugging Face](https://huggingface.co/).
 
 * Second, to serve as an *end-to-end solution* that provides state-of-the-art AI techniques tailored for social and behavioral scientists.  
 
@@ -36,11 +41,11 @@ The language that individuals use contains a wealth of psychological information
 
 *Text* is created through a collaboration between psychology and computer science to address research needs and ensure state-of-the-art techniques. It provides powerful functions tailored to test research hypotheses in social and behavior sciences for both relatively small and large datasets. *Text* is continuously tested on Ubuntu, Mac OS and Windows using the latest stable R version.
 
-[Tutorial paper](https://psyarxiv.com/293kt/)
+[Tutorial preprint paper](https://psyarxiv.com/293kt/)
 
 ### Short installation guide
 Most users simply need to run below installation code. 
-For those experiencing problems or want more alternatives, please see the [Extended Installation Guide](https://www.r-text.org/articles/Extended%20Installation%20Guide.html).
+For those experiencing problems or want more alternatives, please see the [Extended Installation Guide](https://www.r-text.org/articles/huggingface_in_r_extended_installation_guide.html).
 
 For the text-package to work, you first have to install the text-package in R, and then make it work with text required python packages. 
 
@@ -73,16 +78,8 @@ textrpp_initialize(save_profile = TRUE)
 ```
 
 
-
 ### Point solution for transforming text to embeddings
 Recent significant advances in NLP research have resulted in improved representations of human language (i.e., language models). These language models have produced big performance gains in tasks related to understanding human language. Text are making these SOTA models  easily accessible through an interface to [HuggingFace](https://huggingface.co/docs/transformers/index) in Python.
-
-```{r short_word_embedding_example, eval = FALSE, warning=FALSE, message=FALSE}
-library(text)
-# Transform the text data to BERT word embeddings
-wordembeddings <- textEmbed(Language_based_assessment_data_8, 
-                            model = 'bert-base-uncased')
-```
 
 *Text* provides many of the contemporary state-of-the-art language models that are based on deep learning to model word order and context. Multilingual language models can also represent several languages; multilingual BERT comprises *104 different languages*. 
 
@@ -129,8 +126,38 @@ knitr::kable(Tables_short, caption="", bootstrap_options = c("hover"), full_widt
   
 See [HuggingFace](https://huggingface.co/models/) for a more comprehensive list of models. 
 
+
+The ```textEmbed()``` function is the main embedding function in text; and can output contextualized embeddings for tokens (i.e., the embeddings for each single word  instance of each text) and texts (i.e., single embeddings per text taken from aggregating all token embeddings of the text).
+
+```{r short_word_embedding_example, eval = evaluate, warning=FALSE, message=FALSE}
+library(text)
+# Transform the text data to BERT word embeddings
+
+# Example text
+texts <- c("I feel great!")
+
+# Defaults
+embeddings <- textEmbed(texts)
+embeddings
+```
+See [Get Started](https://www.r-text.org/articles/text.html) for more information. 
+
+### Language Analysis Tasks
+It is also possible to access many language analysis tasks such as textClassify(), textGeneration(), and textTranslate().
+
+```{r language_analysis_task_examples, eval = evaluate, warning=FALSE, message=FALSE}
+library(text)
+
+# Generate text from the prompt "I am happy to"
+generated_text <- textGeneration("I am happy to",
+                                 model = "gpt2")
+generated_text
+```
+
+For a full list of language analysis tasks supported in text see the [References](https://www.r-text.org/reference/index.html)
+
 ### An end-to-end package
-*Text* also provides functions to analyse the word embeddings with well-tested machine learning algorithms and statistics. The focus is to analyze and visualize text, and their relation to other text or numerical variables. An example is functions plotting statistically significant words in the word embedding space.   
+*Text* also provides functions to analyse the word embeddings with well-tested machine learning algorithms and statistics. The focus is to analyze and visualize text, and their relation to other text or numerical variables. For example, the `textTrain()` function is used to examine how well the word embeddings from a text can predict a numeric or categorical variable. Another example is functions plotting statistically significant words in the word embedding space.   
 
 ```{r DPP_plot, message=FALSE, warning=FALSE}
 library(text) 
@@ -144,8 +171,9 @@ plot_projection <- textProjectionPlot(
   position_jitter_hight = 0.5,
   position_jitter_width = 0.8
 )
-plot_projection
+plot_projection$final_plot
 
 ```
 
-
+<a rel="me" href="https://mastodon.online/@oscarkjell">M</a>
+<link rel="me" href="https://mastodon.online/@oscarkjell" M />

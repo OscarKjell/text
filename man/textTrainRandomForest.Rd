@@ -7,6 +7,8 @@
 textTrainRandomForest(
   x,
   y,
+  x_append = NULL,
+  append_first = FALSE,
   cv_method = "validation_split",
   outside_folds = 10,
   outside_strata_y = "y",
@@ -34,6 +36,12 @@ textTrainRandomForest(
 \item{x}{Word embeddings from textEmbed.}
 
 \item{y}{Categorical variable to predict.}
+
+\item{x_append}{Variables to be appended after the word embeddings (x);
+if wanting to preappend them before the word embeddings use the option
+first = TRUE.  If not wanting to train with word embeddings, set x = NULL.}
+
+\item{append_first}{(boolean) Option to add variables before or after all word embeddings.}
 
 \item{cv_method}{Cross-validation method to use within a pipeline of nested outer and
 inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
@@ -109,15 +117,15 @@ Train word embeddings to a categorical variable using random forrest.
 \examples{
 \donttest{
 results <- textTrainRandomForest(
-  word_embeddings_4$harmonywords,
-  as.factor(Language_based_assessment_data_8$gender),
+  x = word_embeddings_4$texts$harmonywords,
+  y = as.factor(Language_based_assessment_data_8$gender),
   trees = c(1000, 1500),
-  mtry  = c(1), # this is short because of testing
+  mtry = c(1), # this is short because of testing
   min_n = c(1), # this is short because of testing
   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 )
 }
 }
 \seealso{
-see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
+see \code{\link{textTrainLists}}
 }

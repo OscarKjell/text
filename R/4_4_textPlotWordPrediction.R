@@ -26,7 +26,7 @@ wordsMeanValue <- function(words, target_word, x_value, case_insensitive) {
 #' @param words Word or text variable to be plotted.
 # @param word_embeddings Word embeddings from textEmbed for the words to be plotted
 # (i.e., the aggregated word embeddings for the "words" parameter).
-#' @param single_word_embeddings Word embeddings from textEmbed for individual words
+#' @param word_types_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., decontextualized embeddings).
 #' @param x Numeric variable that the words should be plotted according to on the x-axes.
 #' @param y Numeric variable that the words should be plotted according to on the y-axes (y=NULL).
@@ -42,7 +42,7 @@ wordsMeanValue <- function(words, target_word, x_value, case_insensitive) {
 #' \dontrun{
 #' df_for_plotting <- textWordPrediction(
 #'   words = Language_based_assessment_data_8$harmonywords,
-#'   single_word_embeddings = word_embeddings_4$singlewords_we,
+#'   word_types_embeddings = word_embeddings_4$word_types,
 #'   x = Language_based_assessment_data_8$hilstotal
 #' )
 #' df_for_plotting
@@ -52,7 +52,7 @@ wordsMeanValue <- function(words, target_word, x_value, case_insensitive) {
 #' @importFrom dplyr bind_cols
 #' @export
 textWordPrediction <- function(words,
-                               single_word_embeddings = single_word_embeddings_df,
+                               word_types_embeddings = word_types_embeddings_df,
                                x,
                                y = NULL,
                                seed = 1003,
@@ -65,7 +65,7 @@ textWordPrediction <- function(words,
   textWordPrediction_descriptions <- paste(
     "type = textWordPrediction",
     "words =", substitute(words),
-    "single_word_embeddings =", comment(single_word_embeddings),
+    "word_types_embeddings =", comment(word_types_embeddings),
     "x =", substitute(x),
     "y =", substitute(y),
     "case_insensitive =", case_insensitive,
@@ -102,8 +102,8 @@ textWordPrediction <- function(words,
     words_mean_y <- words_mean_y[complete.cases(words_mean_y$word_mean_value_y), ]
   }
 
-  # Get word embeddings for each word library(tidyverse)
-  uniques_words_all_wordembedding <- sapply(words_mean_x$words, applysemrep, single_word_embeddings)
+  # Get word embeddings for each word
+  uniques_words_all_wordembedding <- sapply(words_mean_x$words, applysemrep, word_types_embeddings)
   uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
   # Train model

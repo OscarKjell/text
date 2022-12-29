@@ -1,8 +1,118 @@
+# text (development version)
+
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 0.9.99.7
+## Function
+- `textEmbedReduce()` implemented
+
+
+# text 0.9.99.6
+## Bug Fix
+- Fixing textEmbed error for many non-BERT models. 
+
+
+# text 0.9.99.5
+## Bug Fix
+- fixed `textEmbed(decontextualize=TRUE)`, which gave error.
+
+# text 0.9.99.3
+
+## Functions changes
+- Removing `textSimialirtyTest()` for version 1.0 because it needs more evaluations. 
+
+## Bug Fix
+- changed hard coded "bert-base-uncased" to `model`, so that `layers` = -2 works in `textEmbed()`. 
+- Update logging level critical using integer 50 with `set_verbosity`.
+- changed in `sorting_xs_and_x_append` from Dim to Dim0 when renaming x_appended variables.
+- changed `first` to `append_first` and  made it an option in `textTrainRegression()` and `textTrainRandomForest()`. 
+
+# text 0.9.99.2
+
+## DEFAULT CHANGES
+- The default setting of textEmbed() is now providing token-level embeddings and text-level embeddings. Word_type embeddings are optional. 
+- In `textEmbed()` `layers = 11:12` is now `second_to_last`.
+- In `textEmbedRawLayers` default is now `second_to_last`.
+- In `textEmbedLayerAggregation()`  `layers = 11:12` is now `layers = "all"`.
+- In `textEmbed()` and `textEmbedRawLayers()` `x` is now called `texts`.
+- `textEmbedLayerAggregation()` now uses `layers = "all"`, `aggregation_from_layers_to_tokens`, `aggregation_from_tokens_to_texts`. 
+
+
+## New Function
+- `textZeroShot()` is implemented.
+- `textDistanceNorm()` and `textDistanceMatrix()`
+- `textDistance()` can compute cosine `distance`.
+- `textModelLayers()` provides N layers for a given model
+
+## New Setting
+`max_token_to_sentence` in `textEmbed()`
+
+## Setting name changes
+- `aggregate_layers` is now called `aggregation_from_layers_to_tokens`.
+- `aggregate_tokens` is now called `aggregation_from_tokens_to_texts`.
+`single_word_embeddings` is now called `word_types_embeddings`
+
+## Function name changes
+- `textEmbedLayersOutput()` is now called `textEmbedRawLayers()`
+
+
+# text 0.9.98
+ - adding `textDimName()`
+ - DEFAULT CHANGE in `textEmbed()`: `dim_name` = `TRUE`
+ - DEFAULT CHANGE in `textEmbed()`: `single_context_embeddings` = `TRUE`
+ - DEFAULT CHANGE in `textEmbed()`: device = "gpu"
+ - Adding specific layer aggregations for `explore_words` in `textPlot()`
+ - Adding `x_append_target` in `textPredict()` function
+
+# text 0.9.97
+ - updating `textClassify()`, `textGeneration()`, `textNER()`, `textSum()`, `textQA()`, and `textTranslate()`.
+
+
+# text 0.9.96
+### New features
+  - harmonizing `x_add` to `x_append` across functions
+  - adding `set_seed` to language analysis tasks
+
+### Code changes
+- abstracting function for sorting out `x'` in training and prediction
+- `textPredict` does not take `word_embeddings` and `x_append` (not `new_data`)
+
+
+# text 0.9.95
+### New features
+  - `textClassify()` (under development)
+  - `textGeneration()` (under development)
+  - `textNER()` (under development)
+  - `textSum()` (under development)
+  - `textQA()` (under development)
+  - `textTranslate()` (under development)
+
+# text 0.9.93
+### New features
+- New function: `textSentiment()`, from huggingface transformers models.
+- add progression for time consuming functions including `textEmbed()`, `textTrainRegression()`, `textTrainRandomForest()` and `textProjection()`. 
+
+# text 0.9.92
+### New features
+- Option `dim_names` to set unique dimension names in `textEmbed()` and `textEmbedStatic()`.
+- `textPreictAll()` function that can take several models, word embeddings, and variables as input to provide multiple outputs.
+- option to add variables to the embeddings in `textTrain()` functions with `x_append`.
+
+# text 0.9.91
+
+### New features
+- text version is printed from DESCRIPTION-file (rather than manual update)
+- `textPredict` related functions are located in its own file
+- textEmbed comment includes `text_version` number
+- `textEmbedLayersOutput` and `textEmbed` can provide `single_context_embeddings`
+
+### Fixes
+- Removed `return_tokens` option from textEmbed (since it is only relevant for textEmbedLayersOutput)
+- removed the empty list `$single_we` when `decontexts` is `FALSE`.
+
 
 # text 0.9.90
-### New feature
+### New features
 - Visualization of the download process of language models
 - Can set error level from python
 - `Logistic` regression is default for classification in textTrain.
@@ -13,7 +123,7 @@
 
 
 # text 0.9.80
-### New feature
+### New features
 - Option to set `model_max_length` in `textEmbed()`.
 - `textModels()` show downloaded models.
 - `textModelsRemove()` deletes specified models.

@@ -32,15 +32,13 @@ Train word embeddings to a numeric (ridge regression) or categorical (random for
 }
 \examples{
 \dontrun{
-word_embeddings <- word_embeddings_4
-ratings_data <- Language_based_assessment_data_8
 results <- textTrain(
-  word_embeddings$harmonytext,
-  ratings_data$hilstotal
+  x = word_embeddings_4$texts$harmonytext,
+  y = Language_based_assessment_data_8$hilstotal
 )
 }
 }
 \seealso{
 \code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
-\code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
+\code{\link{textTrainLists}}
 }

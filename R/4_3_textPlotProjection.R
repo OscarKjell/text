@@ -5,7 +5,7 @@
 #' @param words Word or text variable to be plotted.
 #' @param word_embeddings Word embeddings from textEmbed for the words to be plotted
 #' (i.e., the aggregated word embeddings for the "words" parameter).
-#' @param single_word_embeddings Word embeddings from textEmbed for individual words
+#' @param word_types_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., decontextualized embeddings).
 #' @param x Numeric variable that the words should be plotted according to on the x-axes.
 #' @param y Numeric variable that the words should be plotted according to on the y-axes (y=NULL).
@@ -27,8 +27,9 @@
 #' and the Group 2 split aggregation embedding
 #' @param mean_centering2 Boolean; separately mean centering the G1 and G2 split aggregation embeddings
 #' @param Npermutations Number of permutations in the creation of the null distribution.
-#' @param n_per_split A setting to split Npermutations to avoid reaching computer memory limits;
-#' the higher the faster, but too high may lead to abortion.
+#' @param n_per_split Setting to split Npermutations to avoid reaching computer memory limits;
+#' set it lower than Npermutations <- and the higher it is set the faster the computation completes,
+#'  but too high may lead to abortion.
 #' @param seed Set different seed.
 #' @return A dataframe with variables (e.g., including Supervised Dimension Projection, frequencies, p-values)
 #' for the individual words that is used for the plotting in the textProjectionPlot function.
@@ -38,8 +39,8 @@
 #' \dontrun{
 #' df_for_plotting <- textProjection(
 #'   words = Language_based_assessment_data_8$harmonywords,
-#'   word_embeddings = word_embeddings_4$harmonywords,
-#'   single_word_embeddings = word_embeddings_4$singlewords_we,
+#'   word_embeddings = word_embeddings_4$texts$harmonywords,
+#'   word_types_embeddings = word_embeddings_4$word_types,
 #'   x = Language_based_assessment_data_8$hilstotal,
 #'   split = "mean",
 #'   Npermutations = 10,
@@ -57,7 +58,7 @@
 #' @export
 textProjection <- function(words,
                            word_embeddings,
-                           single_word_embeddings = single_word_embeddings_df,
+                           word_types_embeddings, # = word_types_embeddings_df
                            x,
                            y = NULL,
                            pca = NULL,
@@ -76,7 +77,7 @@ textProjection <- function(words,
     "type = textProjection",
     "words =", substitute(words),
     "word_embeddings =", comment(word_embeddings),
-    "single_word_embeddings =", comment(single_word_embeddings),
+    "word_types_embeddings =", comment(word_types_embeddings),
     "x =", substitute(x),
     "y =", substitute(y),
     "pca =", as.character(pca),
@@ -90,11 +91,18 @@ textProjection <- function(words,
   )
 
   set.seed(seed)
-  # PCA on single_word_embeddings
+  # PCA on word_types_embeddings
   if (is.numeric(pca)) {
     # Select word embeddings to be included in plot
-    uniques_words_all <- unique_freq_words(words)
-    uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, single_word_embeddings)
+    model <- extract_comment(comment(word_types_embeddings), part = "model")
+
+    uniques_words_all <- getUniqueWordsAndFreq(
+      x_characters = words,
+      hg_tokenizer = model
+    )
+
+
+    uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, word_types_embeddings, tolower = FALSE)
     uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
     rec_pca <- recipes::recipe(~., data = uniques_words_all_wordembedding)
@@ -112,9 +120,9 @@ textProjection <- function(words,
     pca_estimates <- recipes::prep(pca_trans, training = uniques_words_all_wordembedding)
     pca_data <- recipes::bake(pca_estimates, uniques_words_all_wordembedding)
 
-    pca_data <- pca_data %>% stats::setNames(paste0("Dim", 1:length(pca_data)))
-    single_word_embeddings <- dplyr::bind_cols(uniques_words_all, pca_data)
-    single_word_embeddings
+    pca_data <- pca_data %>% stats::setNames(paste0("Dim", seq_len(length(pca_data))))
+    word_types_embeddings <- dplyr::bind_cols(uniques_words_all, pca_data)
+    word_types_embeddings
   }
 
   # Make dataframe (and combine x and y)
@@ -191,7 +199,7 @@ textProjection <- function(words,
       words_group1b_freq$n_g1_g2 <- words_group1b_freq$n * -1
 
       # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedStatic).
-      words_group1_single_wordembedding <- lapply(words_group1b_freq$words, applysemrep, single_word_embeddings)
+      words_group1_single_wordembedding <- lapply(words_group1b_freq$words, applysemrep, word_types_embeddings)
       words_group1_single_wordembedding_b <- dplyr::bind_rows(words_group1_single_wordembedding)
 
       # Group 2
@@ -199,7 +207,7 @@ textProjection <- function(words,
       words_group2b_freq <- words_group2b_freq[words_group2b_freq$n >= min_freq_words_test, ]
       words_group2b_freq$n_g1_g2 <- words_group2b_freq$n * 1
 
-      words_group2_single_wordembedding <- lapply(words_group2b_freq$words, applysemrep, single_word_embeddings)
+      words_group2_single_wordembedding <- lapply(words_group2b_freq$words, applysemrep, word_types_embeddings)
       words_group2_single_wordembedding_b <- dplyr::bind_rows(words_group2_single_wordembedding)
 
 
@@ -257,7 +265,7 @@ textProjection <- function(words,
         tidyr::separate_rows(words, sep = " ")
 
       # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
-      words_single_wordembedding <- lapply(words_values_sep$words, applysemrep, single_word_embeddings)
+      words_single_wordembedding <- lapply(words_values_sep$words, applysemrep, word_types_embeddings)
       words_single_wordembedding_b <- dplyr::bind_rows(words_single_wordembedding)
       words_single_wordembedding_c <- dplyr::bind_cols(words_values_sep, words_single_wordembedding_b)
 
@@ -303,9 +311,11 @@ textProjection <- function(words,
 
     # 3. The aggregated word embeddings of the two groups are computed:
     Aggregated_word_embedding_group1 <- textEmbeddingAggregation(Aggregated_word_embedding_group1a,
-                                                                 aggregation = aggregation)
+      aggregation = aggregation
+    )
     Aggregated_word_embedding_group2 <- textEmbeddingAggregation(Aggregated_word_embedding_group2a,
-                                                                 aggregation = aggregation)
+      aggregation = aggregation
+    )
 
     if (mean_centering2 == TRUE) {
       Aggregated_word_embedding_group1_and2 <- dplyr::bind_rows(
@@ -313,8 +323,9 @@ textProjection <- function(words,
         Aggregated_word_embedding_group2
       )
       Aggregated_word_embedding_group1_and2_scale <- scale(Aggregated_word_embedding_group1_and2,
-                                                           center = TRUE,
-                                                           scale = FALSE)
+        center = TRUE,
+        scale = FALSE
+      )
 
       Aggregated_word_embedding_group1 <- Aggregated_word_embedding_group1_and2_scale[1, ]
       Aggregated_word_embedding_group2 <- Aggregated_word_embedding_group1_and2_scale[2, ]
@@ -330,7 +341,7 @@ textProjection <- function(words,
     # Position words in relation to Group 2 (High)
     all_unique_words_freq <- unique_freq_words(x2$words)
     # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
-    all_unique_words_we <- lapply(all_unique_words_freq$words, applysemrep, single_word_embeddings)
+    all_unique_words_we <- lapply(all_unique_words_freq$words, applysemrep, word_types_embeddings)
     all_unique_words_we_b <- dplyr::bind_rows(all_unique_words_we)
 
     if (split == "no") {
@@ -389,6 +400,7 @@ textProjection <- function(words,
     dot_null_distribution <- list()
 
     for (i in 1:forloops) {
+      T1 <- Sys.time()
       ### Create new Projected embedding
       # Randomly split word embeddings into two groups: words_group1_2_agg_single_wordembedding_e1
       ind <- sample(c(TRUE, FALSE), nrow(words_group1_2_agg_single_wordembedding_e1), replace = TRUE)
@@ -425,6 +437,23 @@ textProjection <- function(words,
       dot_products_null <- tibble::as_tibble(rowSums(words_positioned_embeddings_random * projected_embedding_random_long))
 
       dot_null_distribution[i] <- dot_products_null
+
+      # Progression text
+      T2 <- Sys.time()
+      time <- T2 - T1
+      variable_time <- sprintf(
+        "(duration: %f %s).\n",
+        time,
+        units(time)
+      )
+      seq_text <- paste(i, "/", forloops, sep = "")
+      description_text <- paste("Creating null distribution.",
+        seq_text, "of permutations computed.",
+        variable_time,
+        sep = " "
+      )
+      cat(colourise(description_text, "green"))
+
       dot_null_distribution
     }
     dot_null_distribution <- tibble::as_tibble(unlist(dot_null_distribution))
@@ -559,9 +588,10 @@ textProjection <- function(words,
 #' @param min_freq_words_plot Select words to plot that has occurred at least min_freq_words_plot times.
 #' @param plot_n_words_square Select number of significant words in each square of the figure to plot. The significant
 #' words, in each square is selected according to most frequent words.
-#' @param plot_n_words_p Number of significant words to plot on each(positive and negative) side of the x-axes and y-axes,
-#' (where duplicates are removed); selects first according to lowest p-value and then according to frequency. Hence, on a two
-#' dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.
+#' @param plot_n_words_p Number of significant words to plot on each(positive and negative) side of
+#' the x-axes and y-axes, (where duplicates are removed); selects first according to lowest p-value
+#' and then according to frequency. Hence, on a two dimensional plot it is possible that
+#' plot_n_words_p = 1 yield 4 words.
 #' @param plot_n_word_extreme Number of words that are extreme on Supervised Dimension Projection per dimension.
 #' (i.e., even if not significant; per dimensions, where duplicates are removed).
 #' @param plot_n_word_frequency Number of words based on being most frequent.

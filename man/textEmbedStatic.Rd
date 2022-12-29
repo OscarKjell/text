@@ -5,18 +5,32 @@
 \title{Applies word embeddings from a given decontextualized static space (such as
 from Latent Semantic Analyses) to all character variables}
 \usage{
-textEmbedStatic(df, space, tk_df = "null", aggregate = "mean")
+textEmbedStatic(
+  df,
+  space,
+  tk_df = "null",
+  aggregation_from_tokens_to_texts = "mean",
+  dim_name = FALSE,
+  tolower = FALSE
+)
 }
 \arguments{
 \item{df}{dataframe that at least contains one character column.}
 
-\item{space}{decontextualized/static space (from textSpace, which is not included in the current text package).}
+\item{space}{decontextualized/static space with a column called "words" and the semantic
+representations are in columns called Dim1, Dim2 (or V1, V2, ...) and so on (from textSpace,
+which is not included in the current text package).}
 
 \item{tk_df}{default "null"; option to use either the "tk" of "df" space (if using textSpace, which has
 not been implemented yet).}
 
-\item{aggregate}{method to aggregate semantic representation when their are more than a single word.
-(default is "mean"; see also "min" and "max", "concatenate" and "normalize")}
+\item{aggregation_from_tokens_to_texts}{method to aggregate semantic representation when their
+are more than a single word. (default is "mean"; see also "min" and "max", "concatenate" and "normalize")}
+
+\item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
+(This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)}
+
+\item{tolower}{(boolean) Lower case input.}
 }
 \value{
 A list with tibbles for each character variable. Each tibble comprises a column with the text, followed by

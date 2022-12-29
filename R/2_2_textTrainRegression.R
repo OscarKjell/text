@@ -21,9 +21,17 @@ statisticalMode <- function(x) {
 #' from same word embedding together in separate pca:s
 #' @return  RMSE.
 #' @noRd
-fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", penalty = 1, mixture = 0,
-                           preprocess_PCA = NA, variable_name_index_pca = NA, first_n_predictors = NA,
-                           preprocess_step_center = TRUE, preprocess_step_scale = TRUE, impute_missing = FALSE) {
+fit_model_rmse <- function(object,
+                           model = "regression",
+                           eval_measure = "rmse",
+                           penalty = 1,
+                           mixture = 0,
+                           preprocess_PCA = NA,
+                           variable_name_index_pca = NA,
+                           first_n_predictors = NA,
+                           preprocess_step_center = TRUE,
+                           preprocess_step_scale = TRUE,
+                           impute_missing = FALSE) {
   data_train <- rsample::analysis(object)
   data_train <- tibble::as_tibble(data_train)
 
@@ -36,8 +44,12 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
     variable_names <- "id_nr"
   }
 
+  # Get number of embeddings provided
+  n_embeddings <- as.numeric(comment(eval_measure))
+
+
   # Recipe for one embedding input summary(xy_recipe) help(all_of) library(tidyverse) help(step_naomit)
-  if (colnames(data_train[1]) == "Dim1") {
+  if (n_embeddings == 1) {
     xy_recipe <- data_train %>%
       recipes::recipe(y ~ .) %>%
       recipes::update_role(dplyr::all_of(variable_names), new_role = "Not_predictors") %>%
@@ -139,7 +151,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
 
   # Ridge and/or Lasso
   if (nr_predictors > 1) {
-    # Create and fit model
+    # Create and fit model help(linear_reg)
     mod_spec <-
       {
         if (model == "regression") {
@@ -217,7 +229,6 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
         dplyr::select(y, id_nr))
 
     holdout_pred$.pred_class <- holdout_pred_class$.pred_class
-    # class <- colnames(holdout_pred[2])
 
     # Get RMSE; eval_measure = "rmse"
     eval_result <- select_eval_measure_val(eval_measure,
@@ -257,7 +268,7 @@ fit_model_rmse <- function(object, model = "regression", eval_measure = "rmse", 
 #' @param mixture hyperparameter for ridge regression.
 #' @param preprocess_PCA threshold for pca
 #' @param variable_name_index_pca variable with names to know how to keep variables
-#' from same word embedding together in separate pcas.
+#' from same word embedding together in separate pca:s.
 #' @return RMSE.
 #' @noRd
 fit_model_rmse_wrapper <- function(penalty = penalty,
@@ -308,6 +319,7 @@ tune_over_cost <- function(object,
                            preprocess_step_center = preprocess_step_center,
                            preprocess_step_scale = preprocess_step_scale,
                            impute_missing = impute_missing) {
+  T1 <- Sys.time()
 
   # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
   if (!is.na(preprocess_PCA[1])) {
@@ -330,7 +342,9 @@ tune_over_cost <- function(object,
   }
 
   ## Sequence to select dimensions from the semreps. SM-article state:
-  # "Adding 1, then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8, where the next number of dimensions to be tested are the first 12; in other words ([8 +􏰄 1*] 􏱡 1.3)
+  # "Adding 1, then multiplying by 1.3 and finally rounding to the nearest
+  # integer (e.g., 1, 3, 5, 8, where the next number of dimensions to be tested are the first 12;
+  # in other words ([8 +􏰄 1*] 􏱡 1.3)
   if (!is.na(first_n_predictors)) {
     stop <- first_n_predictors
     new_num <- 1
@@ -353,7 +367,7 @@ tune_over_cost <- function(object,
     first_n_predictors = first_n_predictors
   )
 
-  # Test models with the different hyperparameters for the inner samples
+  #  Test models with the different hyperparameters for the inner samples
   tune_results <- purrr::pmap(list(
     grid_inner$penalty,
     grid_inner$mixture,
@@ -383,9 +397,54 @@ tune_over_cost <- function(object,
   grid_inner_eval_result <- grid_inner %>%
     dplyr::mutate(eval_result = tune_eval_result)
 
-  grid_inner_eval_result
+
+  # Progression output
+  best_eval <- bestParameters(
+    data = grid_inner_eval_result,
+    eval_measure = eval_measure
+  )
+
+  T2 <- Sys.time()
+  time <- round(T2 - T1, digits = 2)
+
+  variable_time <- sprintf(
+    "(duration: %s %s).",
+    time,
+    units(time)
+  )
+
+  description_text <- paste(
+    "Fold:", eval_measure,
+    round(best_eval$eval_result, digits = 3),
+    variable_time, "\n"
+  )
+
+  cat(colourise(description_text, "green"))
+
+
+  return(grid_inner_eval_result)
 }
 
+
+
+#' Function to get the lowest eval_measure_val
+#' @param data the data with parameters
+#' @param eval_measure the evaluation measure which decide if min or max value should be selected
+#' @return The row with the best evaluation measure.
+#' @noRd
+bestParameters <- function(data, eval_measure) {
+  if (eval_measure %in% c(
+    "accuracy", "bal_accuracy", "sens", "spec",
+    "precision", "kappa", "f_measure", "roc_auc",
+    "rsq", "cor_test"
+  )) {
+    bestParametersFunction <- function(data) data[which.max(data$eval_result), ]
+  } else if (eval_measure == "rmse") {
+    bestParametersFunction <- function(data) data[which.min(data$eval_result), ]
+  }
+  results <- bestParametersFunction(data)
+  return(results)
+}
 
 #' # Since this will be called across the set of OUTER cross-validation splits, another wrapper is required:
 #'
@@ -411,7 +470,7 @@ summarize_tune_results <- function(object,
                                    impute_missing = impute_missing) {
 
   # Return row-bound tibble containing the INNER results
-  purrr::map_df(
+  results <- purrr::map_df(
     .x = object$splits,
     .f = tune_over_cost,
     penalty = penalty,
@@ -425,13 +484,17 @@ summarize_tune_results <- function(object,
     preprocess_step_scale = preprocess_step_scale,
     impute_missing = impute_missing
   )
-}
 
+  return(results)
+}
 
 #' Train word embeddings to a numeric variable.
 #'
-#' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are provided in a list
-#' they will be concatenated.
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
+#' provided in a list they will be concatenated.
+#' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before
+#' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.
+#' @param append_first (boolean) Option to add variables before or after all word embeddings.
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops
@@ -441,17 +504,21 @@ summarize_tune_results <- function(object,
 #' uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.
 #' @param outside_folds Number of folds for the outer folds (default = 10).
 #' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param outside_breaks The number of bins wanted to stratify a numeric stratification variable in the outer cross-validation loop.
-#' @param inside_folds The proportion of data to be used for modeling/analysis; (default proportion = 3/4). For more information
-#' see validation_split in rsample.
+#' @param outside_breaks The number of bins wanted to stratify a numeric stratification variable in the
+#' outer cross-validation loop.
+#' @param inside_folds The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
+#' For more information see validation_split in rsample.
 #' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner cross-validation loop.
-#' @param eval_measure Type of evaluative measure to select models from. Default = "rmse" for regression and "bal_accuracy"
-#' for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy", "bal_accuracy", "sens", "spec",
-#' "precision", "kappa", "f_measure", or "roc_auc",(for more details see the yardstick package).
+#' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner
+#' cross-validation loop.
+#' @param eval_measure Type of evaluative measure to select models from. Default = "rmse" for regression and
+#' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
+#'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
+#'  the yardstick package).
 #' @param preprocess_step_center normalizes dimensions to have a mean of zero; default is set to TRUE.
 #' For more info see (step_center in recipes).
-#' @param preprocess_step_scale  normalize dimensions to have a standard deviation of one. For more info see (step_scale in recipes).
+#' @param preprocess_step_scale  normalize dimensions to have a standard deviation of one.
+#' For more info see (step_scale in recipes).
 #' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
 #' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function
@@ -459,11 +526,15 @@ summarize_tune_results <- function(object,
 #' in the data. The formula is:
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
 #' @param penalty hyper parameter that is tuned
-#' @param mixture hyper parameter that is tuned default = 0 (hence a pure ridge regression).
+#' @param mixture A number between 0 and 1 (inclusive) that reflects the proportion of L1 regularization
+#' (i.e. lasso) in the model (for more information see the linear_reg-function in the parsnip-package).
+#' When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
+#' used (specific engines only).
 #' @param first_n_predictors by default this setting is turned off (i.e., NA). To use this method,
 #' set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
-#' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1, then multiplying by 1.3 and finally
-#' rounding to the nearest integer (e.g., 1, 3, 5, 8). This option is currently only possible for one embedding at the time.
+#' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
+#' then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
+#' This option is currently only possible for one embedding at the time.
 #' @param method_cor Type of correlation used in evaluation (default "pearson";
 #' can set to "spearman" or "kendall").
 #' @param impute_missing default FALSE (can be set to TRUE if something else than word_embeddings are trained).
@@ -471,7 +542,8 @@ summarize_tune_results <- function(object,
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it
 #'  (i.e., only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
 #'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
-#' @param save_output Option not to save all output; default "all". see also "only_results" and "only_results_predictions".
+#' @param save_output Option not to save all output; default "all". see also "only_results"
+#'  and "only_results_predictions".
 #' @param seed Set different seed.
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A (one-sided) correlation test between predicted and observed values; tibble
@@ -480,15 +552,15 @@ summarize_tune_results <- function(object,
 #' @examples
 #' \donttest{
 #' results <- textTrainRegression(
-#'   word_embeddings_4$harmonytext,
-#'   Language_based_assessment_data_8$hilstotal,
+#'   x = word_embeddings_4$texts$harmonytext,
+#'   y = Language_based_assessment_data_8$hilstotal,
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
+#' \code{\link{textTrainRandomForest}}
 #' @importFrom stats cor.test na.omit lm
-#' @importFrom dplyr select starts_with filter all_of
+#' @importFrom dplyr bind_cols select starts_with filter all_of
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
 #' @importFrom rsample vfold_cv
 #' @importFrom parsnip linear_reg set_engine
@@ -500,6 +572,8 @@ summarize_tune_results <- function(object,
 #' @export
 textTrainRegression <- function(x,
                                 y,
+                                x_append = NULL,
+                                append_first = FALSE,
                                 cv_method = "validation_split",
                                 outside_folds = 10,
                                 outside_strata_y = "y",
@@ -524,7 +598,6 @@ textTrainRegression <- function(x,
                                 ...) {
   T1_textTrainRegression <- Sys.time()
   set.seed(seed)
-  variable_name_index_pca <- NA
 
   # Select correct eval_measure depending on model when default
   if (model == "regression" & eval_measure == "default") {
@@ -533,72 +606,42 @@ textTrainRegression <- function(x,
     eval_measure <- "bal_accuracy"
   }
 
-  # In case one embedding is in list form get the tibble form
-  if (!tibble::is_tibble(x) & length(x) == 1) {
-    x1 <- x[[1]]
-    # Get names for description
-    x_name <- names(x)
-    embedding_description <- comment(x[[1]])
-    # In case there are several embeddings in list form get the x_names and embedding description for model description
-  } else if (!tibble::is_tibble(x) & length(x) > 1) {
-    x_name <- names(x)
-    x_name <- paste(x_name, sep = " ", collapse = " & ")
-    x_name <- paste("input:", x_name, sep = " ", collapse = " ")
-
-    embedding_description <- comment(x[[1]])
-    # In case it is just one word embedding as tibble
+  # The fit_model_rmse function need to number of word embeddings -- instead of
+  # sending a separate parameter number of embeddings are give as a comment in "model"
+  if (tibble::is_tibble(x)) {
+    comment(eval_measure) <- "1"
   } else {
-    x1 <- x
-    x_name <- deparse(substitute(x))
-    embedding_description <- comment(x)
+    comment(eval_measure) <- paste(length(x))
   }
 
+  # Sorting out y
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
-    y <- y[[1]]
+
+    y <- tibble::as_tibble_col(y[[1]], column_name = "y")
   } else {
     y_name <- deparse(substitute(y))
-    y <- y
+    y <- tibble::as_tibble_col(y, column_name = "y")
   }
 
+  # Sorting out x's
+  variables_and_names <- sorting_xs_and_x_append(x = x,
+                                                 x_append = x_append,
+                                                 append_first = append_first,
+                                                 ...)
+  x2 <- variables_and_names$x1
+  x_name <- variables_and_names$x_name
+  embedding_description <- variables_and_names$embedding_description
+  x_append_names <- variables_and_names$x_append_names
+  variable_name_index_pca <- variables_and_names$variable_name_index_pca
+  rm(variables_and_names)
 
-  ############ Arranging word embeddings to be concatenated from different texts ############
-  ##################################################
-
-  if (!tibble::is_tibble(x) & length(x) > 1) {
-
-    # Select all variables that starts with Dim in each dataframe of the list.
-    xlist <- lapply(x, function(X) {
-      X <- dplyr::select(X, dplyr::starts_with("Dim"))
-    })
-    Nword_variables <- length(xlist)
-
-    # Give each column specific names with indexes so that they can be handled separately in the PCAs
-    for (i in 1:Nword_variables) {
-      colnames(xlist[[i]]) <- paste("Dim_we", i, ".", names(xlist[i]), colnames(xlist[[i]]), sep = "")
-
-      # Get the name of the first column for the PCA
-    }
-
-    # Make vector with each index so that we can allocate them separately for the PCAs
-    variable_name_index_pca <- list()
-    for (i in 1:Nword_variables) {
-      variable_name_index_pca[i] <- paste("Dim_we", i, sep = "")
-    }
-
-    # Make one df rather then list.
-    x1 <- dplyr::bind_cols(xlist)
-  }
-  ############ End for multiple word embeddings ############
-  ##########################################################
-
-  x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
-  xy <- cbind(x2, y)
-  xy <- tibble::as_tibble(xy)
+  xy <- dplyr::bind_cols(x2, y)
+  # xy <- tibble::as_tibble(xy) xy[1537]
   xy$id_nr <- c(seq_len(nrow(xy)))
 
   # complete.cases is not neccassary
-  # Cross-Validation help(nested_cv) help(vfold_cv) help(validation_split) inside_folds = 3/4
+  # Cross-Validation inside_folds = 3/4; results_nested_resampling[[1]][[1]][[1]]
   if (cv_method == "cv_folds") {
     results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
       outside = rsample::vfold_cv(
@@ -685,21 +728,11 @@ textTrainRegression <- function(x,
   }
 
   # Function to get the lowest eval_measure_val
-  if (eval_measure %in% c(
-    "accuracy", "bal_accuracy", "sens", "spec",
-    "precision", "kappa", "f_measure", "roc_auc",
-    "rsq", "cor_test"
-  )) {
-    bestParameters <- function(dat) dat[which.max(dat$eval_result), ]
-  } else if (eval_measure == "rmse") {
-    bestParameters <- function(dat) dat[which.min(dat$eval_result), ]
-  }
-
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
   hyper_parameter_vals <-
     tuning_results %>%
-    purrr::map_df(bestParameters) %>%
+    purrr::map_df(bestParameters, eval_measure) %>%
     dplyr::select(c(penalty, mixture, preprocess_PCA, first_n_predictors))
 
   # Bind best results
@@ -707,7 +740,7 @@ textTrainRegression <- function(x,
     dplyr::bind_cols(results_nested_resampling, hyper_parameter_vals)
 
 
-  # Compute the outer resampling results for each of the
+  # Compute the outer re-sampling results for each of the comment(model)
   # splits using the corresponding tuning parameter value from results_split_parameter.
   results_outer <- purrr::pmap(
     list(
@@ -718,7 +751,7 @@ textTrainRegression <- function(x,
       first_n_predictors = results_split_parameter$first_n_predictors,
       variable_name_index_pca = list(variable_name_index_pca),
       model = model,
-      eval_measure = eval_measure,
+      eval_measure = list(eval_measure),
       preprocess_step_center = preprocess_step_center,
       preprocess_step_scale = preprocess_step_scale,
       impute_missing = impute_missing
@@ -761,7 +794,8 @@ textTrainRegression <- function(x,
   xy_all <- xy
 
   ######### One word embedding as input
-  if (colnames(xy_all[1]) == "Dim1") {
+  n_embbeddings <- as.numeric(comment(eval_measure))
+  if (n_embbeddings == 1) {
 
     # If testing N first predictors help(step_scale) first_n_predictors = 3
     if (!is.na(first_n_predictors)) {
@@ -870,7 +904,10 @@ textTrainRegression <- function(x,
     )))
   }
 
-  preprocessing_recipe_save <- recipe_save_small_size(final_recipe = final_recipe, xy_all = xy_all)
+  preprocessing_recipe_save <- recipe_save_small_size(
+    final_recipe = final_recipe,
+    xy_all = xy_all
+  )
 
   # Check number of predictors (to later decide standard or multiple regression)
   # To load the prepared training data into a variable juice() is used.
@@ -949,6 +986,9 @@ textTrainRegression <- function(x,
   ##########  DESCRIBING THE MODEL  ##########
   ############################################
 
+  x_name_description <- paste("x word_embeddings = ", x_name)
+  x_append_names_description <- paste("x_append = ", x_append_names)
+  y_name_description <- paste("y = ", y_name)
   cv_method_description <- paste("cv_method = ", deparse(cv_method))
   outside_folds_description <- paste("outside_folds = ", deparse(outside_folds))
   outside_strata_y_description <- paste("outside_strata_y = ", deparse(outside_strata_y))
@@ -1005,10 +1045,12 @@ textTrainRegression <- function(x,
     collapse = " "
   )
 
+
   # Describe model; adding user's-description + the name of the x and y
   model_description_detail <- c(
-    x_name,
-    y_name,
+    x_name_description,
+    x_append_names_description,
+    y_name_description,
     cv_method_description,
     outside_folds_description,
     outside_strata_y_description,
@@ -1099,9 +1141,9 @@ textTrainRegression <- function(x,
   }
 
   # Remove object to minimize model size when saved to rds; use this to
-  # check sizes: sort(sapply(ls(),function(x){object.size(get(x))}))
+  # check sizes: sort(sapply(ls(),function(x) {object.size(get(x))}))
   remove(x)
-  remove(x1)
+  remove(x_append)
   remove(y)
   remove(x2)
   remove(xy)
