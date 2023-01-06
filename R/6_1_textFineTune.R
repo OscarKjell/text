@@ -50,7 +50,7 @@ textFineTuneTask <- function(text_outcome_data,
                              ){
 
   T1 <- Sys.time()
-  set.set(set_seed) = set_seed
+  set.seed(set_seed)
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
                                         "huggingface_Interface4.py",
