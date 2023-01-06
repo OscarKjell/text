@@ -23,8 +23,6 @@ import sys
 from dataclasses import dataclass, field
 from typing import Optional
 
-#sys.path.append("inst/python/")
-#print(sys.path)
 import datasets
 import numpy as np
 from datasets import load_dataset
@@ -46,14 +44,7 @@ from transformers import (
 )
 
 from transformers.trainer_utils import get_last_checkpoint
-#from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
-
-
-# Will error if the minimal version of Transformers is not installed. Remove at your own risks.
-#check_min_version("4.23.0.dev0")
-
-#require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/text-classification/requirements.txt")
 
 task_to_keys = {
     "cola": ("sentence", None),
@@ -187,7 +178,7 @@ class ModelArguments:
         metadata={"help": "Will enable to load a pretrained model whose head dimensions are different."},
     )
 
-def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, label_names):
+def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, label_names, **kwargs):
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
@@ -196,6 +187,10 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
     args_dict = {}
     for key in args:
         args_dict.update(args[key])
+    
+    for i in kwargs:
+        if i in args_dict: args_dict[i] = kwargs[i]
+
     model_args, data_args, training_args = parser.parse_dict(args = args_dict)
     
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
@@ -529,13 +524,3 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
         trainer.push_to_hub(**kwargs)
     else:
         trainer.create_model_card(**kwargs)
-
-"""
-def _mp_fn(index):
-    # For xla_spawn (TPUs)
-    main()
-
-
-if __name__ == "__main__":
-    main()
-"""
