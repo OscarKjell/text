@@ -7,6 +7,10 @@
 # where to default save output? (cld include it in .cash -- get() )
 # argument to name model
 
+
+
+# OK: Stratify sampling!
+
 #textEmbed("hello",
 #          model = "roberta-base")
 #help("textEmbed")
@@ -46,7 +50,7 @@ textFineTuneTask <- function(text_outcome_data,
                              ){
 
   T1 <- Sys.time()
-  set_seed = set_seed
+  set.set(set_seed) = set_seed
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
                                         "huggingface_Interface4.py",
