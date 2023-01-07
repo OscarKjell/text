@@ -57,7 +57,7 @@
 #' }
 #' @seealso see \code{\link{textEmbed}}, \code{\link{textEmbed}}
 #' @details Information about more parameters see inst/python/args2.json (https://github.com/OscarKjell/text/tree/master/inst/python/args2.json).
-#' Descriptions of settings can be found in inst/python/task_finetune.py under "class ModelArguments" and class DataTrainingArguments as well as
+#' Descriptions of settings can be found in inst/python/task_finetune.py under "class ModelArguments" and "class DataTrainingArguments" as well as
 #' online at https://huggingface.co/docs/transformers/main_classes/trainer.
 #' @export
 textFineTuneTask <- function(text_outcome_data,

@@ -1,5 +1,5 @@
 import os, sys
-sys.path.append('inst/python/')
+sys.path.append('./inst/python/')
 from task_finetune import main
 import numpy as np
 import json
