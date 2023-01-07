@@ -1,4 +1,5 @@
 import os, sys
+print(os.getcwd())
 sys.path.append('./inst/python/')
 from task_finetune import main
 import numpy as np
