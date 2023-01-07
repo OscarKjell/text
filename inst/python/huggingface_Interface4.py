@@ -5,7 +5,7 @@ import numpy as np
 import json
 
 def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, 
-                        is_regression = True, label_names = None):
+                        is_regression = True, label_names = None, **kwargs):
 
     """
     Simple Python method for fine tuning pretrained Hugging Face models
@@ -30,7 +30,7 @@ def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_
     None
     """
     args = json.load(open(json_path))
-    return main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, label_names)
+    return main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, label_names, **kwargs)
      
     
 

@@ -43,4 +43,7 @@ text_outcome_df_test = text_outcome_df.iloc[7:10]
 
 json_path = './args2.json'
 is_regression = False
-hgTransformerFineTune(json_path, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, is_regression, label_names)
+model_name_or_path = 'roberta-large'
+num_epochs = 5
+hgTransformerFineTune(json_path, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, is_regression, label_names, 
+                        model_name_or_path=model_name_or_path, num_epochs=num_epochs)
