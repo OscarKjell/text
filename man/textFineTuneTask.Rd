@@ -62,7 +62,7 @@ for their predictions. If this argument is set to a positive int, the Trainer wi
 
 \item{set_seed}{(Numeric) Set the seed}
 
-\item{...}{Parameters related to the fine tuning set in text-package file inst/python/arg2.json.}
+\item{...}{Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.}
 }
 \value{
 A folder containing the pretrained model and output data. The model can then be used, for example, by
@@ -73,6 +73,8 @@ Task Adapted Pre-Training (experimental)
 }
 \details{
 Information about more parameters see inst/python/args2.json (https://github.com/OscarKjell/text/tree/master/inst/python/args2.json).
+Descriptions of settings can be found in inst/python/task_finetune.py under "class ModelArguments" and class DataTrainingArguments as well as
+online at https://huggingface.co/docs/transformers/main_classes/trainer.
 }
 \examples{
 \donttest{
