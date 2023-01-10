@@ -1,6 +1,6 @@
 import os, sys
-print(os.getcwd())
-sys.path.append('./inst/python/')
+
+# Paths in python to task_finetune is set in R function
 from task_finetune import main
 import numpy as np
 import json

@@ -78,8 +78,13 @@ textFineTuneTask <- function(text_outcome_data,
                              ){
 
   T1 <- Sys.time()
+
   set.seed(set_seed)
-  # Run python file with HunggingFace interface to state-of-the-art transformers
+
+  text_path <- system.file("python", package = "text")
+
+  # Setting path in python -- so it finds task_finetune module/file
+  reticulate::py_run_string(paste0("import sys; sys.path.append('", text_path, "')"))
   reticulate::source_python(system.file("python",
                                         "huggingface_Interface4.py",
                                         # envir = NULL,
@@ -104,7 +109,10 @@ textFineTuneTask <- function(text_outcome_data,
   text_outcome_df_val  = text_outcome_data[props=="validation", ]
   text_outcome_df_test = text_outcome_data[props=="evaluation", ]
 
-  hgTransformerFineTune(json_path = "inst/python/args2.json",
+  # Setting file to fine-tuning arguments in python
+  json_path1 <- paste0(text_path, "/args2.json")
+
+  hgTransformerFineTune(json_path = json_path1, #"args2.json",
                         model_name_or_path = model_name_or_path,
                         output_dir = output_dir,
                         text_outcome_df = text_outcome_df,
