@@ -91,6 +91,8 @@ textFineTuneTask <- function(text_outcome_data,
                                         package = "text",
                                         mustWork = TRUE
   ))
+  # Resetting the python path
+  reticulate::py_run_string("sys.path = sys.path[:1]")
 
   colnames(text_outcome_data) <-  c("text", "label")
 
