@@ -84,7 +84,7 @@ textFineTuneTask <- function(text_outcome_data,
   text_path <- system.file("python", package = "text")
 
   # Setting path in python -- so it finds task_finetune module/file
-  reticulate::py_run_string(paste0("import sys; sys.path.append('", text_path, "')"))
+  #reticulate::py_run_string(paste0("import sys; sys.path.append('", text_path, "')"))
   reticulate::source_python(system.file("python",
                                         "huggingface_Interface4.py",
                                         # envir = NULL,
@@ -92,7 +92,7 @@ textFineTuneTask <- function(text_outcome_data,
                                         mustWork = TRUE
   ))
   # Resetting the python path
-  reticulate::py_run_string("sys.path = sys.path[:1]")
+  #reticulate::py_run_string("sys.path = sys.path[:1]")
 
   colnames(text_outcome_data) <-  c("text", "label")
 
