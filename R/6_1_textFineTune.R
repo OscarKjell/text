@@ -62,7 +62,7 @@
 #' @export
 textFineTuneTask <- function(text_outcome_data,
                              model_name_or_path = "bert-base-uncased", # Also how to find my previously created one?
-                             output_dir = "./runs/trial",
+                             output_dir = "/runs/trial",
                              validation_proportion = 0.10,
                              evaluation_proportion = 0.10,
                              is_regression = TRUE,
@@ -114,9 +114,11 @@ textFineTuneTask <- function(text_outcome_data,
   # Setting file to fine-tuning arguments in python
   json_path1 <- paste0(text_path, "/args2.json")
 
+  output_dir1 <- getwd()
+  output_dir2 <- paste0(output_dir1, output_dir)
   hgTransformerFineTune(json_path = json_path1, #"args2.json",
                         model_name_or_path = model_name_or_path,
-                        output_dir = output_dir,
+                        output_dir = output_dir2,
                         text_outcome_df = text_outcome_df,
                         text_outcome_df_val = text_outcome_df_val,
                         text_outcome_df_test = text_outcome_df_test,
