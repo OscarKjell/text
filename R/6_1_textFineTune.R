@@ -114,11 +114,11 @@ textFineTuneTask <- function(text_outcome_data,
   # Setting file to fine-tuning arguments in python
   json_path1 <- paste0(text_path, "/args2.json")
 
-  output_dir1 <- getwd()
-  output_dir2 <- paste0(output_dir1, output_dir)
-  hgTransformerFineTune(json_path = json_path1, #"args2.json",
+  #output_dir1 <- getwd()
+  #output_dir2 <- paste0(output_dir1, output_dir)
+  hgTransformerFineTune(json_path = json_path1,
                         model_name_or_path = model_name_or_path,
-                        output_dir = output_dir2,
+                        output_dir = output_dir,
                         text_outcome_df = text_outcome_df,
                         text_outcome_df_val = text_outcome_df_val,
                         text_outcome_df_test = text_outcome_df_test,
