@@ -1,8 +1,4 @@
-#### textProjectText ####
-# TODO: Develop passage level prediction.
-# TODO: change the col name to "*_sents" in the sentence tibble.
 
-# temp2[["colorCode"]] <- map2Color(temp2[["preds"]])
 #### private func ####
 
 #' Num to color
@@ -191,10 +187,10 @@ convertSubWord <- function(tokensTb, numSubTokens, tokenizers, modelName){
 #' @param modelName (str) The model name of transformers in use;
 #' @return The Tb aligned
 #' @noRd
-getTokenTb_rowWise <- function(tokensTb_row, target_row){
+getTokenTb_eleWise <- function(tokensTb_row, target_row){
 
-    tokensTb_row <- tokensTb_row %>% tibble::tibble()
-    targetTb_row <- matrix(nrow = tokensTb_row %>% nrow(), ncol=1) %>% as.data.frame() %>% tibble::as_tibble()
+    # tokensTb_row <- tokensTb_row %>% tibble::tibble()
+    targetTb_row <- matrix(nrow=tokensTb_row %>% nrow(), ncol=1) %>% as.data.frame() %>% tibble::as_tibble()
     names(targetTb_row)[1] <- c("target")
     targetTb_row[["target"]] <- target_row
     targetTb_row <- cbind(targetTb_row, tokensTb_row)
@@ -214,14 +210,15 @@ getTokensTb <- function(aTibble,
                       tokenizers, 
                       modelName
                 ){
+    # tokensTb, 1 col target, 1 col tokens across observations
     tokensTb <- furrr::future_pmap_dfr(
         list(
-            aTibble[["tokens"]][["texts"]] %>% as.vector(),
-            x %>% as.vector()
+            aTibble[["tokens"]][[1]],
+            x[[1]]
             # tokenizers %>% list(),
             # modelName %>% list()
         ),
-        getTokenTb_rowWise
+        getTokenTb_eleWise
     )
     tokensTb <- tokensTb %>% dplyr::filter(tokens!="[CLS]")
     tokensTb <- tokensTb %>% dplyr::filter(tokens!="[SEP]")
@@ -398,7 +395,7 @@ token2Sent <- function(sentsList, tokenizers, modelName="bert-base-uncased", inc
     
     tokenSent <- furrr::future_pmap(
         list(
-            sentsList[["tokens"]][["texts"]] %>% as.vector(),
+            sentsList[["tokens"]][[1]] %>% as.vector(),
             tokenizers %>% list(),
             modelName %>% list(),
             include_CLS_SEP %>% list()
@@ -439,14 +436,14 @@ getSentsPredTb_row <- function(rowTb, yValue){
 }
 #' Get the tibble of sentence embeddings and their prediction targets.
 #' @param PredictTb The input from token2Sent.
-#' @param y Numeric variable to predict.
+#' @param y The numeric variable to predict.
 #' @importFrom furrr future_pmap_dfr
 #' @return The tibble of sentence embeddings.
 #' @NoRd
 getSentsPredTb <- function(PredictTb, y){
 
     PredTb <- furrr::future_pmap_dfr(
-        list(PredictTb, y),
+        list(PredictTb, y %>% unlist()),
         getSentsPredTb_row
     )
     return (PredTb)
@@ -485,7 +482,7 @@ getPasgPredTb <- function(textEmbeds, y){
 langTrain_tokens <- function(trainObj, x, tokenizers, modelName){
 
     # need a element-wise list func
-    tokensTb <- getTokensTb(textsTrain, x, tokenizers, modelName) %>% tibble::as_tibble()
+    tokensTb <- getTokensTb(trainObj, x, tokenizers, modelName) %>% tibble::as_tibble()
     theModelTokens <- textTrainRegression(
         x = tokensTb[,3:ncol(tokensTb)],
         y = tokensTb[,1]) 
@@ -532,7 +529,7 @@ langTrain <- function(trainObj, x, lang_level="all", tokenizers, modelName){
     }else if(lang_level == "paragraph"){
         
         parasTb <- cbind(x,  # Language_based_assessment_data_8$hilstotal
-            trainObj[["texts"]][["texts"]]) %>% tibble::as_tibble()
+            trainObj[["texts"]][[1]]) %>% tibble::as_tibble()
         theModelParas <- textTrainRegression(
             x = parasTb[,2:ncol(parasTb)],
             y = parasTb[,1]) 
@@ -545,7 +542,7 @@ langTrain <- function(trainObj, x, lang_level="all", tokenizers, modelName){
             langTrain_sents(trainObj, x)
         }, seed=NULL)
         parasTb <- cbind(x,  # Language_based_assessment_data_8$hilstotal
-            trainObj[["texts"]][["texts"]]) %>% tibble::as_tibble()
+            trainObj[["texts"]][[1]]) %>% tibble::as_tibble()
         modelingParas <- future::future({textTrainRegression(
             x = parasTb[,2:ncol(parasTb)],
             y = parasTb[,1])
@@ -708,7 +705,6 @@ getLangColorTb <- function(embedObj){
    
     return (embedObj)
 }
-
 #' @param outObj The R object containing the color code.
 #' @importFrom tibble as_tibble
 #' @return The output data frame following the data structure.
@@ -836,22 +832,17 @@ textProjectionText <- function(
     #### 2. Get the embedding of the input to predict.
     # if texts == str
     if (textsIsStr){
-        # textsProj to textEmbed
-        # if needed
-        # textsPred_ <- list("tokens"=list(
-        #     "texts"=list(list("texts" = textsPred) %>% tibble::as_tibble())
-        # ))
-        toPredEmbedProc <- future::future({
-            textsPred %>% textEmbed(modelName, dim_name=FALSE)
-            }, seed=NULL)
-        toTrainProc <- future::future({textsTrain %>% token2Sent(., tokenizers, include_CLS_SEP)},
-         seed=NULL)
-        toPred <- future::value(toPredEmbedProc)
-        toPredProc <- future::future({
-            toPred %>% token2Sent(., tokenizers, include_CLS_SEP)
-            }, seed=NULL)
-        toPred <- future::value(toPredProc)
-        toTrain <- future::value(toTrainProc)
+            toPredEmbedProc <- future::future({
+                textsPred %>% textEmbed(modelName, dim_name=FALSE)
+                }, seed=NULL)
+            toTrainProc <- future::future({textsTrain %>% token2Sent(., tokenizers, include_CLS_SEP)},
+            seed=NULL)
+            toPred <- future::value(toPredEmbedProc)
+            toPredProc <- future::future({
+                toPred %>% token2Sent(., tokenizers, include_CLS_SEP)
+                }, seed=NULL)
+            toPred <- future::value(toPredProc)
+            toTrain <- future::value(toTrainProc)
     }
 
     # if texts == DF or Tb 
@@ -875,93 +866,182 @@ textProjectionText <- function(
     output <- list("Pred" = output, "model" = theModels)
     output <- getLangColorTb(output)
 
-    #### TODO: 6. Reorganize the data structure as the last ele in the list
+    #### 6. Reorganize the data structure as the last ele in the list
     if (TRUE){
         output_out <- getOutDf(output)
     }
 
-    return (output)
+    return (output_out)
 
 }
 
 #### textPlotText ####
-#' oneSentPlot
-#' Plot one sentence
-#' @param sent The sentence to plot.
-#' @param colorSent The color code to use.
-#' @return The plotted object.
+#' get html all, no function.
+#' @param RObj_outDf The model output from the function "textProjectionText".
+#' @importFrom htmltools p, span
+#' @return The RObject of a plot
 #' @NoRd
-oneSentPlot <- function(sent="Lorem ipsum *dolor sit amet*", colorSent="#F7D1CD"){
+textPlotText_getHtmAll <- function(RObj_outDf){
 
-    df <- data.frame(
-        label = sent,
-        x = c(0.5),
-        y = c(0.5),
-        hjust = c(0.5), vjust = c(0.5),
-        # orientation = c("upright", "right-rotated"),
-        # color = c("black"),
-        fill = c(colorSent) # cornsilk
-    )
-
-    # width = unit(0.8, "npc")
-    p <- ggplot2::ggplot(df) + ggplot2::theme_void() +
-    ggplot2::aes(
-        x, y,
-        label = label,
-        # color = color, 
-        fill = fill,
-        hjust = hjust, vjust = vjust,
-        # orientation = orientation
-    ) + ggtext::geom_textbox() +
-    # geom_point(color `= "black", size = 2) +
-    ggplot2::scale_discrete_identity(aesthetics = c(#"color", 
-                                         "fill"# , "orientation"
-                                         )) +
-    ggplot2::xlim(0, 1) + ggplot2::ylim(0, 1) + 
-    ggplot2::theme(plot.background = ggplot2::element_rect(fill="#37FAB6")) 
-    # TODO: passage color encoding 
-
-    return (p)
-}
-#' sentsPlot
-#' Plot sentences
-#' @param sents (data.frame) The sentences dataframe to plot, a data frame from textProjectionText().
-#' @param num_plots_row (integer) The number of plots in each row in the output.
-#' @return The plotted object.
-#' @NoRd
-sentsPlot <- function(sents, num_plots_row=3){
-
-    if (!is.data.frame(sents)){return (NULL)}
-    if (!is.numeric(num_plots_row)){return (NULL)}
-    require(furrr)
-    require(patchwork)
-
-    sortedSents <- dplyr::arrange(sents, y_pred)
-    colorValues <- map2Color(sortedSents[["y_pred"]])
+    if (TRUE){
+        paraColor <- RObj_outDf[["outDf"]]$`paraColor`[1]
+        tokenColorDf <- RObj_outDf[["outDf"]]["tokenColor"]
+        sentColorDf <- RObj_outDf[["outDf"]]["sentColor"]
+        tokenSeries <- RObj_outDf[["outDf"]]["token"]
+    }
     
-    sentsPlotList <- furrr::future_pmap(
-        list(
-            sortedSents[["sentences"]] %>% as.vector(),
-            colorValues %>% as.vector()
-        ),
-        oneSentPlot
-    )
+    tokens <- htmltools::p(style=paste0("background-color:", paraColor))
+    for (rowNo in nrow(RObj_outDf[["outDf"]]) %>% seq_len()){
+        if (tokenSeries[["token"]][rowNo][[1]] == "[CLS]" ||
+            tokenSeries[["token"]][rowNo][[1]] == "[SEP]"){next}
+        tokenColor <- paste0("color:", tokenColorDf[["tokenColor"]][rowNo]
+            , ";background-color:", sentColorDf[["sentColor"]][rowNo])
+        token <- htmltools::span(tokenSeries[["token"]][rowNo][[1]], style=tokenColor)
+        tokens[["children"]] <- append(tokens[["children"]], token %>% list())
+    }
+    
+    return (tokens)
+}
+#' get html tokens, no function.
+#' @param RObj_outDf The model output from the function "textProjectionText".
+#' @importFrom htmltools p, span
+#' @return The RObject of a plot
+#' @NoRd
+textPlotText_getHtmToken <- function(RObj_outDf){
 
-    p <- sentsPlotList[[1]]
-    for (i in seq_len(length(sentsPlotList))){
-        if (i == 1) {next}
-        if (i != length(sentsPlotList)){p <- p + sentsPlotList[[i]]}
-        if (i == length(sentsPlotList)){
-            p <- p + sentsPlotList[[i]] + patchwork::plot_layout(ncol = num_plots_row, byrow=TRUE)}
+    if (TRUE){
+        paraColor <- RObj_outDf[["outDf"]]$`paraColor`[1]
+        tokens <- htmltools::p()
+        tokenColorDf <- RObj_outDf[["outDf"]]["tokenColor"]
+        sentColorDf <- RObj_outDf[["outDf"]]["sentColor"]
+        tokenSeries <- RObj_outDf[["outDf"]]["token"]
+    }
+    
+    for (rowNo in nrow(RObj_outDf[["outDf"]]) %>% seq_len()){
+        if (tokenSeries[["token"]][rowNo][[1]] == "[CLS]" ||
+            tokenSeries[["token"]][rowNo][[1]] == "[SEP]"){next}
+        tokenColor <- paste0("color:", tokenColorDf[["tokenColor"]][rowNo])
+        token <- htmltools::span(tokenSeries[["token"]][rowNo][[1]], style=tokenColor)
+        tokens[["children"]] <- append(tokens[["children"]], token %>% list())
+    }
+    return (tokens)
+}
+#' get html sentence, no function.
+#' @param RObj_outDf The model output from the function "textProjectionText".
+#' @importFrom htmltools p, span
+#' @return The RObject of a plot
+#' @NoRd
+textPlotText_getHtmSent <- function(RObj_outDf){
+    
+    if (TRUE){
+        paraColor <- RObj_outDf[["outDf"]]$`paraColor`[1]
+        tokens <- htmltools::p()
+        tokenColorDf <- RObj_outDf[["outDf"]]["tokenColor"]
+        sentColorDf <- RObj_outDf[["outDf"]]["sentColor"]
+        tokenSeries <- RObj_outDf[["outDf"]]["token"]
     }
 
-    return (p)
+    for (rowNo in nrow(RObj_outDf[["outDf"]]) %>% seq_len()){
+        if (tokenSeries[["token"]][rowNo][[1]] == "[CLS]" ||
+            tokenSeries[["token"]][rowNo][[1]] == "[SEP]"){next}
+        tokenColor <- paste0("background-color:", sentColorDf[["sentColor"]][rowNo])
+        token <- htmltools::span(tokenSeries[["token"]][rowNo][[1]], style=tokenColor)
+        tokens[["children"]] <- append(tokens[["children"]], token %>% list())
+    }
+    return (tokens)
+}
+#' get html paragraph, no function.
+#' @param RObj_outDf The model output from the function "textProjectionText".
+#' @importFrom htmltools p, span
+#' @return The RObject of a plot
+#' @NoRd
+textPlotText_getHtmPara <- function(RObj_outDf){
+    
+    if (TRUE){
+        paraColor <- RObj_outDf[["outDf"]]$`paraColor`[1]
+        tokens <- htmltools::p(style=paste0("background-color:", paraColor))
+        tokenColorDf <- RObj_outDf[["outDf"]]["tokenColor"]
+        sentColorDf <- RObj_outDf[["outDf"]]["sentColor"]
+        tokenSeries <- RObj_outDf[["outDf"]]["token"]
+    }
 
+    for (rowNo in nrow(RObj_outDf[["outDf"]]) %>% seq_len()){
+        if (tokenSeries[["token"]][rowNo][[1]] == "[CLS]" ||
+            tokenSeries[["token"]][rowNo][[1]] == "[SEP]"){next}
+        token <- htmltools::span(tokenSeries[["token"]][rowNo][[1]])
+        tokens[["children"]] <- append(tokens[["children"]], token %>% list())
+    }
+    return (tokens)
 }
 
+#' Function to plot the legend.
+#' @param RObj_outDF (R_obj) The model output from the function "textProjectionText".
+#' @param sents (shiny tags) The sents tags from the previous processing within the func textPlotText().
+#' @param outHTML (shiny tags) The output from the previous processing within the func textPlotText().
+#' @param textColor (str) The color of the text in the legend.
+#' @param plotTitle (str) The title for the plot.
+#' @importFrom dplyr filter arrange
+#' @importFrom tibble as_tibble
+#' @return The Legend HTML string
+#' @NoRd
+textPlotText_getLegend <- function(RObj_outDf, sents, outHTML, textColor = "black", plotTitle = "A plot"){
 
-#' TBD: Function to plot the highlight color value into semantic cloud.
-#' @param RObj_model The model output from the function "textPlotText".
+    # Get the params for the legend
+    if (TRUE){
+        quanVals <- quantile(RObj_outDf[["coloredTb"]]["preds"] %>% as.matrix())
+        toLegend <- matrix(nrow=2,ncol=5) %>% tibble::as_tibble()
+        colnames(toLegend) <- names(quanVals)
+        toFilt <- quanVals %>% as.matrix()
+        for (colNo in ncol(toLegend) %>% seq_len()){
+            temp <- RObj_outDf[["coloredTb"]] %>% dplyr::filter(preds >= toFilt[colNo]) %>%
+                    dplyr::arrange(., preds)
+            toLegend[[colNo]][1] <- temp[["preds"]][1] %>% round(., 1) %>% as.character()
+            toLegend[[colNo]][2] <- temp[["colorCode"]][1]
+        }
+    }
+
+    # Combine the plot title, the plot, and the legend into one.
+    if (TRUE){
+        spanStyleCtrl <- paste0("padding:2%;color:", textColor, ";background-color:")
+        outHTML[["children"]] <- append(
+         outHTML[["children"]],
+         htmltools::withTags(htmltools::div(htmltools::h1(plotTitle))) %>% list())
+        outHTML[["children"]] <- append(
+         outHTML[["children"]],
+         sents %>% list())
+        outHTML[["children"]] <- append(
+         outHTML[["children"]],
+         htmltools::withTags(htmltools::div(
+            htmltools::h1("Legend"),
+            htmltools::tags$table(
+              htmltools::tags$tr(
+                htmltools::tags$td(htmltools::span(toLegend[["0%"]][1], style=paste0(spanStyleCtrl,toLegend[["0%"]][2]))),
+                htmltools::tags$td(htmltools::span(toLegend[["25%"]][1], style=paste0(spanStyleCtrl,toLegend[["25%"]][2]))),
+                htmltools::tags$td(htmltools::span(toLegend[["50%"]][1], style=paste0(spanStyleCtrl,toLegend[["50%"]][2]))),
+                htmltools::tags$td(htmltools::span(toLegend[["75%"]][1], style=paste0(spanStyleCtrl,toLegend[["75%"]][2]))),
+                htmltools::tags$td(htmltools::span(toLegend[["100%"]][1], style=paste0(spanStyleCtrl,toLegend[["100%"]][2]))),
+                style="text-align:center;padding:2px"),
+              htmltools::tags$tr(
+                htmltools::tags$td("0% quantile"),
+                htmltools::tags$td("25% quantile"),
+                htmltools::tags$td("50% quantile"),
+                htmltools::tags$td("75% quantile"),
+                htmltools::tags$td("100% quantile"),
+                style="text-align:center;padding:2px"),
+              style="width:100%")
+            ))%>% list())
+    # sents[["children"]] <- append(sents[["children"]], div("hello") %>% list())
+    }
+
+    return (outHTML)
+}
+
+#' Function to plot the highlight color value into html object.
+#' @param RObj_outDf The model output from the function "textProjectionText".
+#' @param lang_level (list) Set the language level in the output of the plot. The defaut value is "all". Possible options include "token", "sentence", and "paragraph". Should input a list object.
+#' @param textColor (string) "black", "white".
+#' @param plotTitle (string) Set the plot string.
+#' @importFrom htmltools browsable, div, p, span
 #' @return The RObject of the plot
 #' @examples
 #' \dontrun{
@@ -969,80 +1049,307 @@ sentsPlot <- function(sents, num_plots_row=3){
 #' }
 #' @seealso see \code{\link{textPlotText}}
 #' @export
-textPlotText <- function(RObj_model){
+textPlotText <- function(RObj_outDf, lang_level=list("all"), textColor="black", plotTitle="A plot"){
 
+    require(dplyr)
     require(magrittr)
-    require(ggplot2)
-    require(ggtext)
-    # require(patchwork)
-    require(colorspace)
+    require(htmltools)
+    # require(colorspace)
 
-
-    ggplot() + theme_void()
     
-    return (0)
+    # https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+    styleControl <- "display: flex;
+     flex-wrap: wrap; 
+     justify-content:flex-start;
+     "
+
+    if (TRUE){
+        outHTML <- htmltools::div(style = styleControl)
+        paraColor <- paste0(RObj_outDf[["outDf"]]$`paraColor`[1])
+        tokenColorDf <- RObj_outDf[["outDf"]]["tokenColor"]
+        sentColorDf <- RObj_outDf[["outDf"]]["sentColor"]
+        tokenSeries <- RObj_outDf[["outDf"]]["token"]
+        if (is.character(textColor)){
+            if (textColor == "black"){
+                textColor_ <- "#000000"
+            }else{textColor_ <- "#FFFFFF"}
+        }else{
+            textColor_ <- "#FFFFFF"
+        }
+    }
+
+    if ("word" %in% lang_level){
+        paraColor <- paste0(paraColor, "padding: 2% 2%")
+        sents <- htmltools::div(style = styleControl) # level para color
+        sentsUnique <- sentColorDf[["sentColor"]][!duplicated(sentColorDf[["sentColor"]])]
+        counter <- list(0, 0)
+        for (rowNoSent in length(sentsUnique) %>% seq_len()){
+            rangeNum <- which(sentColorDf[["sentColor"]] == sentsUnique[[rowNoSent]])
+            counter[[1]] <- rangeNum[[1]]
+            counter[[2]] <- rangeNum[[length(rangeNum)]]
+            tokens <- htmltools::p(style = paste0(
+                # "background-color:", sentsUnique[[rowNoSent]], "64",
+                "padding: 1% 1%;"
+                )) # level sent color
+            for (rowNoToken in length(rangeNum) %>% seq_len()){
+                idToken <- counter[[1]] + rowNoToken - 1
+                if (tokenSeries[["token"]][idToken][[1]] == "[CLS]" || tokenSeries[["token"]][idToken][[1]] == "[SEP]"){next}
+                tokenColor <- paste0("color:", textColor_,";background-color:", tokenColorDf[["tokenColor"]][idToken],";")
+                # level token color
+                token <- htmltools::span(tokenSeries[["token"]][idToken][[1]], style=tokenColor)
+                tokens[["children"]] <- append(tokens[["children"]] , token %>% list())
+            }
+            sents[["children"]] <- append(sents[["children"]], tokens %>% list())
+        }
+    }
+
+    if ("sentence" %in% lang_level){
+        paraColor <- paste0(styleControl, "padding: 2% 2%")
+        sents <- htmltools::div(style = paraColor) # level para color
+        sentsUnique <- sentColorDf[["sentColor"]][!duplicated(sentColorDf[["sentColor"]])]
+        counter <- list(0, 0)
+        for (rowNoSent in length(sentsUnique) %>% seq_len()){
+            rangeNum <- which(sentColorDf[["sentColor"]] == sentsUnique[[rowNoSent]])
+            counter[[1]] <- rangeNum[[1]]
+            counter[[2]] <- rangeNum[[length(rangeNum)]]
+            tokens <- htmltools::p(style = paste0(
+                "background-color:", sentsUnique[[rowNoSent]], "64;",
+                "padding: 1% 1%;"
+                )) # level sent color
+            for (rowNoToken in length(rangeNum) %>% seq_len()){
+                idToken <- counter[[1]] + rowNoToken - 1
+                if (tokenSeries[["token"]][idToken][[1]] == "[CLS]" || tokenSeries[["token"]][idToken][[1]] == "[SEP]"){next}
+                tokenColor <- paste0("color:", textColor_, ";",
+                # "background-color:", tokenColorDf[["tokenColor"]][idToken],
+                ";")
+                # level token color
+                token <- htmltools::span(tokenSeries[["token"]][idToken][[1]], style=tokenColor)
+                tokens[["children"]] <- append(tokens[["children"]] , token %>% list())
+            }
+            sents[["children"]] <- append(sents[["children"]], tokens %>% list())
+        }
+    }
+
+    if ("word" %in% lang_level && "sentence" %in% lang_level){
+        paraColor <- paste0(styleControl, "padding: 2% 2%")
+        sents <- htmltools::div(style = paraColor) # level para color
+        sentsUnique <- sentColorDf[["sentColor"]][!duplicated(sentColorDf[["sentColor"]])]
+        counter <- list(0, 0)
+        for (rowNoSent in length(sentsUnique) %>% seq_len()){
+            rangeNum <- which(sentColorDf[["sentColor"]] == sentsUnique[[rowNoSent]])
+            counter[[1]] <- rangeNum[[1]]
+            counter[[2]] <- rangeNum[[length(rangeNum)]]
+            tokens <- htmltools::p(style = paste0(
+                "background-color:", sentsUnique[[rowNoSent]], "64;",
+                "padding: 1% 1%;"
+                )) # level sent color
+            for (rowNoToken in length(rangeNum) %>% seq_len()){
+                idToken <- counter[[1]] + rowNoToken - 1
+                if (tokenSeries[["token"]][idToken][[1]] == "[CLS]" || tokenSeries[["token"]][idToken][[1]] == "[SEP]"){next}
+                tokenColor <- paste0("color:", textColor_,";background-color:", tokenColorDf[["tokenColor"]][idToken],";")
+                # level token color
+                token <- htmltools::span(tokenSeries[["token"]][idToken][[1]], style=tokenColor)
+                tokens[["children"]] <- append(tokens[["children"]] , token %>% list())
+            }
+            sents[["children"]] <- append(sents[["children"]], tokens %>% list())
+        }
+    }
+
+    # lang_level == "all"
+    # display in several <p>
+    if ("all" %in% lang_level){
+        paraColor <- paste0("background-color:", paraColor, "20", ";", "padding: 2% 2%")
+        sents <- htmltools::div(style = paraColor) # level para color
+        sentsUnique <- sentColorDf[["sentColor"]][!duplicated(sentColorDf[["sentColor"]])]
+        counter <- list(0, 0)
+        for (rowNoSent in length(sentsUnique) %>% seq_len()){
+            rangeNum <- which(sentColorDf[["sentColor"]] == sentsUnique[[rowNoSent]])
+            counter[[1]] <- rangeNum[[1]]
+            counter[[2]] <- rangeNum[[length(rangeNum)]]
+            tokens <- htmltools::p(style = paste0(
+                "background-color:", sentsUnique[[rowNoSent]], "64;",
+                "padding: 1% 1%;"
+                )) # level sent color
+            for (rowNoToken in length(rangeNum) %>% seq_len()){
+                idToken <- counter[[1]] + rowNoToken - 1
+                if (tokenSeries[["token"]][idToken][[1]] == "[CLS]" || tokenSeries[["token"]][idToken][[1]] == "[SEP]"){next}
+                tokenColor <- paste0("color:", textColor_,";background-color:", tokenColorDf[["tokenColor"]][idToken],";")
+                # level token color
+                token <- htmltools::span(tokenSeries[["token"]][idToken][[1]], style=tokenColor)
+                tokens[["children"]] <- append(tokens[["children"]] , token %>% list())
+            }
+            sents[["children"]] <- append(sents[["children"]], tokens %>% list())
+        }
+
+        #########################
+
+        if (FALSE){
+            for (rowNo in nrow(RObj_outDf[["outDf"]]) %>% seq_len()){
+            if (tokenSeries[["token"]][rowNo][[1]] == "[CLS]" ||
+                tokenSeries[["token"]][rowNo][[1]] == "[SEP]"){next}
+            tokenColor <- paste0("color:", tokenColorDf[["tokenColor"]][rowNo]
+                , ";background-color:", sentColorDf[["sentColor"]][rowNo])
+            token <- htmltools::span(tokenSeries[["token"]][rowNo][[1]], style=tokenColor)
+            tokens[["children"]] <- append(tokens[["children"]], token %>% list())
+            }
+            plot <- htmltools::browsable(
+                style = styleControl,
+                tokens
+            )
+        }
+    }
+
+    # Add legend
+    if (TRUE){
+        outHTML <- textPlotText_getLegend(RObj_outDf, sents, outHTML, textColor_, plotTitle)
+    }
+
+    plot <- htmltools::browsable(outHTML)
+    return (plot)
     
 }
 
+# TODO: using diverging_hcl to custom the plot!!!!!!!!
+# https://www.rdocumentation.org/packages/dichromat/versions/1.1/topics/colorRampPalette
+# https://r-universe.dev/manuals/grDevices.html#colorRamp
+# https://r-universe.dev/manuals/grDevices.html#col2rgb
+# colorRampPalette returns a function that takes an integer argument (the required number of colors) and returns a character vector of colors (see rgb) interpolating the given sequence (similar to heat.colors or terrain.colors).
+# colorRampPalette(c("blue", "red"))( 4 ) ## (n)
 
-# ggtext
-# 3-levels
-# https://cran.r-project.org/web/packages/ggtext/vignettes/plotting_text.html
-# https://cran.r-project.org/web/packages/ggtext/vignettes/theme_elements.html
-# background the background color of the plot
-# ? grid 
-# ? cowplot https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html
-# ? patchwork https://patchwork.data-imaginist.com/articles/patchwork.html
-# each sentence in a textbox
-# token, the text color
-# https://cran.r-project.org/web/packages/ggtext/vignettes/plotting_text.html
-# https://cran.r-project.org/web/packages/ggtext/vignettes/theme_elements.html
-'''
-# https://stackoverflow.com/questions/12518387/can-i-create-an-empty-ggplot2-plot-in-r
-# Add the textbox via ggtext::geom_textbox. 
-# https://cran.r-project.org/web/packages/ggtext/vignettes/plotting_text.html
-# Cannot use the theme ele, due to no object defined in the param list.
-# https://cran.r-project.org/web/packages/ggtext/vignettes/theme_elements.html
-# https://wilkelab.org/ggtext/reference/geom_textbox.html
+# Manually set the color for textPlotText().
+#' @param RObj_outDf (R_obj) The model output from the function "textProjectionText".
+#' @param mode (character) Select the "RGB" or "HSL" space to generate color. The "HSL" is the default and the recommeded mode.
+#' @param RGBstart (list) The list (Red, Green, Blue) containing RGB values where the color generation starts. Each dimension should be within 0 to 255. Only available when mode = "RGB".
+#' @param RGBend (list) The list (Red, Green, Blue), same to RGBstart where the color generation ends. Only available when mode = "RGB".
+#' @importFrom colorspace diverging_hcl
+#' @importFrom grDevices colorRampPalette rgb
+#' @importFrom magrittr
+#' @importFrom tibble as_tibble
+#' @return The RObject of a plot
+#' @NoRd
+cusColor <- function(RObj_outDf, mode="HSL", 
+    HSLstart = 260, HSLend = 0,
+    RGBstart=list(00, 22, 00), RGBend=list(255, 00, 00)){
 
-require(ggplot2)
-require(ggtext)
-ggplot() + theme_void() + labs(
-    title = "<b>Fuel economy vs. engine displacement</b><br>
-    <span style = 'font-size:10pt'>Lorem ipsum *dolor sit amet,*
-    consectetur adipiscing elit, **sed do eiusmod tempor incididunt** ut
-    labore et dolore magna aliqua. <span style = 'color:red;'>Ut enim
-    ad minim veniam,</span> quis nostrud exercitation ullamco laboris nisi
-    ut aliquip ex ea commodo consequat.</span>",
-    x = "displacement (in<sup>3</sup>)",
-    y = "Miles per gallon (mpg)<br><span style = 'font-size:8pt'>A measure of
-    the car's fuel efficiency.</span>"
-  ) +
-  theme(
-    plot.title.position = "plot",
-    plot.title = element_textbox_simple(
-      size = 13,
-      lineheight = 1,
-      padding = margin(5.5, 5.5, 5.5, 5.5),
-      margin = margin(0, 0, 5.5, 0),
-      fill = "cornsilk"
-    ),
-    axis.title.x = element_textbox_simple(
-      width = NULL,
-      padding = margin(4, 4, 4, 4),
-      margin = margin(4, 0, 0, 0),
-      linetype = 1,
-      r = grid::unit(8, "pt"),
-      fill = "azure1"
-    ),
-    axis.title.y = element_textbox_simple(
-      hjust = 0,
-      orientation = "left-rotated",
-      minwidth = unit(1, "in"),
-      maxwidth = unit(2, "in"),
-      padding = margin(4, 4, 2, 4),
-      margin = margin(0, 0, 2, 0),
-      fill = "lightsteelblue1"
-    )
-  )
-'''
+    if (mode == "RGB"){
+        for (id in RGBstart %>% length() %>% seq_len()){
+            if (RGBstart[[id]][1] < 0){RGBstart[[id]][1] <- 0}
+            if (RGBstart[[id]][1] > 255){RGBstart[[id]][1] <- 255}
+            if (RGBend[[id]][1] < 0){RGBend[[id]][1] <- 0}
+            if (RGBend[[id]][1] > 255){RGBend[[id]][1] <- 255}}
+
+        RGBstart <- grDevices::rgb(RGBstart[[1]][1], RGBstart[[2]][1], RGBstart[[3]][1], maxColorValue=255)
+        RGBend <- grDevices::rgb(RGBend[[1]][1], RGBend[[2]][1], RGBend[[3]][1], maxColorValue=255)
+        if (TRUE){
+            colorVec <- grDevices::colorRampPalette(c(RGBstart, RGBend))(
+                nrow(RObj_outDf[["Pred"]][["predTokens"]]) + 
+                nrow(RObj_outDf[["Pred"]][["predSents"]]) + 1
+            ) %>% as.data.frame() %>% tibble::as_tibble()
+            colnames(colorVec)[1] <- c("colorCode")
+        }
+        return (colorVec)
+    }else{
+        if (!HSLstart %>% is.numeric() || HSLstart > 360 || HSLstart < 0){
+            HSLstart = 260
+        }else if (!HSLend %>% is.numeric() || HSLend > 360 || HSLend < 0){
+            HSLend = 0
+        }
+        colorVec <- colorspace::diverging_hcl(nrow(RObj_outDf[["Pred"]][["predTokens"]]) + 
+                  nrow(RObj_outDf[["Pred"]][["predSents"]]) + 1,
+                   h = c(HSLstart, HSLend), c = 80, l = c(30,90)) %>% 
+                   as.data.frame() %>% tibble::as_tibble()
+        colnames(colorVec)[1] <- c("colorCode")
+        
+        # hclplot(diverging_hcl(7, h = c(42.5, 85), c = 30, l = c(35,180)))
+        # For the rainbow palette you can also select start/end color 
+        # (red = 0, yellow = 1/6, green = 2/6, cyan = 3/6, blue
+        # = 4/6 and magenta = 5/6) and saturation (s) and value (v): 
+        # rainbow(n, s = 1, v = 1, start = 0, end = max(1, n - 1)/n, alpha = 1)
+    
+        return (colorVec)
+    }
+
+    return (NULL)
+}
+
+#' Get the color code for each language unit based on customed color by using cusColor()
+#' @param embedObj (R_obj) The embeddings obj from textProjectionText()
+#' @param cusColVec (list) The custom color vector of list(list(R,G,B), list(R,G,B)) if "mode" is "RGB". A list of two lists containing user-defined RGB values from 0-255, from starting to ending. If "mode" is "HSL", it is a list of two numbers: list(HSLstart, HSLend).
+#' @param mode  (character) Select the "RGB" or "HSL" space to generate color. The "HSL" is the default and the recommeded mode.
+#' @param restore (bool) If FALSE, change the input into customed color; If TRUE, change it back to default from textProjectionText().
+#' @importFrom dplyr arrange
+#' @return The color values list contained embedObj
+#' @export
+cusPlotText <- function(embedObj, cusColVec=NULL, mode="HSL", restore=FALSE){
+
+    embedObj <- embedObj[1:2]
+    temp <- NULL
+    coloredTb <- matrix(nrow=nrow(embedObj[["Pred"]][["predTokens"]]) + 
+      nrow(embedObj[["Pred"]][["predSents"]]) + 1,
+     ncol=4) %>% as.data.frame()
+    names(coloredTb) <- c("colorCode", "preds", "texts", "unitLang")
+    start <- 1
+    end <- nrow(embedObj[["Pred"]][["predTokens"]])
+    coloredTb[start:end, 2:3] <- 
+        embedObj[["Pred"]][["predTokens"]][, 2:3]
+    coloredTb[start:end, 4] <- "tokens"
+    start <- nrow(embedObj[["Pred"]][["predTokens"]]) + 1
+    end <- nrow(embedObj[["Pred"]][["predTokens"]]) + nrow(embedObj[["Pred"]][["predSents"]])
+    coloredTb[start:end, 2:3] <- embedObj[["Pred"]][["predSents"]][, 2:3]
+    coloredTb[start:end, 4] <- "sents"
+    coloredTb[nrow(coloredTb), 2] <- embedObj[["Pred"]][["predParas"]][[2]][1]
+    coloredTb[nrow(coloredTb), 3] <- "Lorem Ipsum"
+    coloredTb[nrow(coloredTb), 4] <- "paras"
+    coloredTb_sorted <- dplyr::arrange(coloredTb, preds)
+    if (restore){
+        coloredTb_sorted[, 1] <- coloredTb_sorted[["preds"]] %>% map2Color(.)
+    }else if (mode == "RGB"){
+        coloredTb_sorted[, 1] <- embedObj %>% cusColor(., mode,
+         RGBstart = cusColVec[[1]], RGBend = cusColVec[[2]])
+    }else{
+        coloredTb_sorted[, 1] <- embedObj %>% cusColor(., mode,
+         HSLstart = cusColVec[[1]], HSLend = cusColVec[[2]])
+    }
+    temp <- dplyr::left_join(coloredTb[,2:ncol(coloredTb)], 
+                            coloredTb_sorted[,1:2], by=c("preds"))
+    coloredTb[,"colorCode"] <- temp[,"colorCode"] 
+    embedObj <- append(embedObj, list("coloredTb"=coloredTb), length(embedObj) + 1)
+    # add colorCode to tokens embed
+    temp <- NULL
+    temp <- embedObj[["coloredTb"]] %>% dplyr::filter(., unitLang=="tokens")
+    embedObj[["Pred"]][["predTokens"]]["colorCode"] <- temp[["colorCode"]]
+    # add colorCode to sents embed
+    temp <- NULL
+    temp <- embedObj[["coloredTb"]] %>% dplyr::filter(., unitLang=="sents")
+    embedObj[["Pred"]][["predSents"]]["colorCode"] <- temp[["colorCode"]]
+    # add colorCode to paras embed, and add the "Lorem Ipsum" place holder as the replacement.
+    temp <- NULL
+    temp <- embedObj[["coloredTb"]] %>% dplyr::filter(., unitLang=="paras")
+    embedObj[["Pred"]][["predParas"]] <- temp[, 1:3]
+
+    if (TRUE){
+        output_out <- getOutDf(embedObj)
+    }
+   
+    return (output_out)
+}
+
+
+
+
+# <table style="width:100%">
+#   <tr style="text-align:center;padding:2px">
+#     <td><span style="padding:2%;color:#000000;background-color:#001122">1</span></td>
+#     <td><span style="padding:2%;color:#000000;background-color:#112200">2.5</span></td>
+#     <td><span style="padding:2%;color:#000000;background-color:#221100">5</span></td>
+#     <td><span style="padding:2%;color:#000000;background-color:#222222">7.5</span></td>
+#     <td><span style="padding:2%;color:#000000;background-color:#333333">10</span></td>
+#   </tr>
+#   <tr style="text-align:center;padding:2px">
+#     <td>0% quantile</td>
+#     <td>25% quantile</td>
+#     <td>50% quantile</td>
+#     <td>75% quantile</td>
+#     <td>100% quantile</td>
+#   </tr>
+# </table>
