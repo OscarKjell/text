@@ -412,7 +412,9 @@ def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_re
                 result["combined_score"] = np.mean(list(result.values())).item()
             return result
         elif is_regression:
-            return {"mse": ((preds - p.label_ids) ** 2).mean().item(), "pearsonr": np.corrcoef(preds, p.label_ids)[0, 1]}
+            metric_dict = {"mse": ((preds - p.label_ids) ** 2).mean().item(), "pearsonr": np.corrcoef(preds, p.label_ids)[0, 1]}
+            print ("METRIC DICT: ", metric_dict)
+            return metric_dict
         else:
             return {"accuracy": (preds == p.label_ids).astype(np.float32).mean().item(), "macro-f1": f1_score(p.label_ids, preds, average='macro')}
 
