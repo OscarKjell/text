@@ -1,7 +1,7 @@
 Package: text
 Type: Package
 Title: Analyses of Text using Transformers Models from HuggingFace, Natural Language Processing and Machine Learning
-Version: 0.9.99
+Version: 0.9.99.123
 Authors@R: c(
     person("Oscar", "Kjell", , "oscar.kjell@psy.lu.se", role = c("aut", "cre"), 
       comment = c(ORCID = "0000-0002-2728-6278"),
@@ -42,7 +42,7 @@ Imports:
     future,
     furrr,
     overlapping
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Suggests: 
     knitr,
     rmarkdown,
