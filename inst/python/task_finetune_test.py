@@ -46,42 +46,58 @@ def basic_cls_test():
     text_outcome_df_train = text_outcome_df.iloc[0:4]
     text_outcome_df_val = text_outcome_df.iloc[4:7]
     text_outcome_df_test = text_outcome_df.iloc[7:10]
+    
+    # Print the shape of the data
+    print ("-------------------------------------*5*")
+    print ("Train data shape: ", text_outcome_df_train.shape)
+    print ("Validation data shape: ", text_outcome_df_val.shape)
+    print ("Test data shape: ", text_outcome_df_test.shape)
+    print ("Test data 1: ", text_outcome_df_test)
+    print ("-------------------------------------**")
 
     json_path = './args2.json'
+    json_path = '/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/inst/python/args2.json'
     is_regression = False
     model_name_or_path = 'roberta-large'
-    num_epochs = 5
+    num_epochs = 2
     hgTransformerFineTune(json_path, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, is_regression, label_names, 
                             model_name_or_path=model_name_or_path, num_epochs=num_epochs)
 
 ##########################################################################
 ### Test 3: Regression Task on real dataset ##############################
 ##########################################################################
-
-def real_reg_test(path_to_csv="/data1/avirinchipur/resp_form_PHQtot.csv"):
+# "/data1/avirinchipur/resp_form_PHQtot.csv"
+def real_reg_test(path_to_csv = "/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/dep_all_text_976_phq_data.csv"):
     
     # Read task data from the path and split it into train, validation and test
-    data = pd.read_csv(path_to_csv)
+    #data = pd.read_csv(path_to_csv)
     
     # Random split of data into train, validation and test with 60%, 20% and 20% split
-    train_data, val_data, test_data = np.split(data.sample(frac=1), [int(.6*len(data)), int(.8*len(data))])
+    #train_data, val_data, test_data = np.split(data.sample(frac=1), [int(.6*len(data)), int(.8*len(data))])
     
+    #train_data = pd.read_csv("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/text_outcome_df.csv")
+    #val_data = pd.read_csv("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/text_outcome_df_val.csv")
+    #test_data = pd.read_csv("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/text_outcome_df_test.csv")
+  
+      
     # Print the shape of the data
-    print ("-------------------------------------")
+    print ("-------------------------------------*5*")
     print ("Train data shape: ", train_data.shape)
     print ("Validation data shape: ", val_data.shape)
     print ("Test data shape: ", test_data.shape)
-    print ("-------------------------------------")
-     
+    print ("Test data: ", test_data)
+    print ("-------------------------------------**")
     
-    json_path = './args2.json'
+    #json_path = './args2.json'
+    json_path = '/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/inst/python/args2.json'
     is_regression = True
     model_name_or_path = 'roberta-base'
-    num_epochs = 10
-    hgTransformerFineTune(json_path, train_data, val_data, test_data, is_regression, label_names=None,
-                            model_name_or_path=model_name_or_path, num_epochs=num_epochs)
+    num_epochs = 2
+    hgTransformerFineTune(json_path, train_data, val_data, test_data, is_regression, #label_names=None,
+                            model_name_or_path=model_name_or_path, num_train_epochs=num_epochs)
 
 ##########################################################################
 
 if __name__ == "__main__":
-    real_reg_test()
+#    real_reg_test()
+    basic_cls_test()
