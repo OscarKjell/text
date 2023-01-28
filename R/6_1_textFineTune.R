@@ -7,6 +7,8 @@
 # where to default save output? (cld include it in .cash -- get() )
 # argument to name model
 
+# ARGuMENT to resumen from checkpoint.
+
 # OK: Stratify sampling!
 
 #textEmbed("hello",
@@ -20,6 +22,27 @@
 #textrpp_initialize()
 #reticulate::source_python("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/inst/python/huggingface_Interface4.py")
 
+##nrow(text_outcome_data)
+##nrow(dep_all_text_976_phq)
+#text_outcome_data <-  dep_all_text_976_gender[1:100,]
+##text_outcome_data <-  dep_all_text_976_phq_data
+##head(text_outcome_data)
+#colnames(text_outcome_data)
+#text_outcome_data
+#
+#model_name_or_path = "roberta-large" # Also how to find my previously created one?
+#output_dir = "./runs"
+#validation_proportion = 0.20
+#evaluation_proportion = 0.20
+#is_regression = FALSE
+#config_name = NULL
+#tokenizer_name = NULL
+#max_seq_length = 128L
+#evaluation_strategy = "no"
+#eval_accumulation_steps = NULL
+#num_train_epochs = 2
+#past_index = -1
+#set_seed = 2022
 
 
 #' Task Adapted Pre-Training (experimental)
@@ -62,7 +85,7 @@
 #' @export
 textFineTuneTask <- function(text_outcome_data,
                              model_name_or_path = "bert-base-uncased", # Also how to find my previously created one?
-                             output_dir = "/runs/trial",
+                             output_dir = "./runs",
                              validation_proportion = 0.10,
                              evaluation_proportion = 0.10,
                              is_regression = TRUE,
@@ -78,11 +101,9 @@ textFineTuneTask <- function(text_outcome_data,
                              ){
 
   T1 <- Sys.time()
-
   set.seed(set_seed)
 
   text_path <- system.file("python", package = "text")
-
   # Setting path in python -- so it finds task_finetune module/file
   reticulate::py_run_string(paste0("import sys; sys.path.append('", text_path, "')"))
   reticulate::source_python(system.file("python",
@@ -91,37 +112,49 @@ textFineTuneTask <- function(text_outcome_data,
                                         package = "text",
                                         mustWork = TRUE
   ))
-  # Resetting the python path
-  #reticulate::py_run_string("sys.path = sys.path[:1]")
 
+  if(ncol(text_outcome_data)>2){
+    stop("Please only input a text and label column")
+  }
   colnames(text_outcome_data) <-  c("text", "label")
+  text_outcome_data$idx <- 1:nrow(text_outcome_data)
+  text_outcome_data <- text_outcome_data[, c(3, 1, 2)]
+
+  n_befor <- nrow(text_outcome_data)
+  text_outcome_data <- text_outcome_data[complete.cases(text_outcome_data),]
+  n_after <- nrow(text_outcome_data)
+
+  if(n_befor>n_after){
+    print(paste("Removed incomplete cases. Only using", n_after, "complete cases."))
+  }
 
   # Data set partitioning
-  props <- sample(c("train", "validation", "evaluation"),
-               size=nrow(text_outcome_data),
-               replace=TRUE,
-               prob = c(
-                 1 - validation_proportion - evaluation_proportion,
-                 validation_proportion,
-                 evaluation_proportion
-                 )
-               )
+  train_proportion = 1 - validation_proportion - evaluation_proportion
+  total_size = nrow(text_outcome_data)
+  props <- c(rep("train",      round(train_proportion*total_size)),
+             rep("validation", round(validation_proportion*total_size)),
+             rep("evaluation", round(evaluation_proportion*total_size)))
 
-  text_outcome_df      = text_outcome_data[props=="train", ]
-  text_outcome_df_val  = text_outcome_data[props=="validation", ]
-  text_outcome_df_test = text_outcome_data[props=="evaluation", ]
+  props <- sample(sample_vec)
+  props <- props[1:total_size]
+
+  if(is_regression){
+    text_outcome_data$label <- as.numeric(text_outcome_data$label)
+  }
+
+  train_data1 <-  tibble::as_tibble(text_outcome_data[props=="train", ])
+  val_data1   <-  tibble::as_tibble(text_outcome_data[props=="validation", ])
+  test_data1  <-  tibble::as_tibble(text_outcome_data[props=="evaluation", ])
 
   # Setting file to fine-tuning arguments in python
   json_path1 <- paste0(text_path, "/args2.json")
 
-  #output_dir1 <- getwd()
-  #output_dir2 <- paste0(output_dir1, output_dir)
   hgTransformerFineTune(json_path = json_path1,
                         model_name_or_path = model_name_or_path,
                         output_dir = output_dir,
-                        text_outcome_df = text_outcome_df,
-                        text_outcome_df_val = text_outcome_df_val,
-                        text_outcome_df_test = text_outcome_df_test,
+                        text_outcome_df = train_data1,
+                        text_outcome_df_val = val_data1,
+                        text_outcome_df_test = test_data1,
                         is_regression = is_regression,
                         config_name = config_name,
                         tokenizer_name = tokenizer_name,
@@ -129,8 +162,10 @@ textFineTuneTask <- function(text_outcome_data,
                         evaluation_strategy = evaluation_strategy,
                         eval_accumulation_steps = eval_accumulation_steps,
                         num_train_epochs = num_train_epochs,
-                        past_index = past_index,
-                        ...)
+                        past_index = past_index) #...
+
+
+  # Return all datasets
 
   T2 <- Sys.time()
   T2-T1
