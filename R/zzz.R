@@ -32,7 +32,7 @@
       fg = "green", bg = NULL
     ),
     colourise("\n\nPlease note that defaults has changed in the textEmbed-functions since last version; see help(textEmbed) or www.r-text.org for more details.",
-              fg = "purple", bg = NULL
+      fg = "purple", bg = NULL
     )
   )
 

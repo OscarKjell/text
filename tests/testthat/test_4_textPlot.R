@@ -33,9 +33,10 @@ test_that("textProjection with QUARTILE, 0.9 PCA and
   skip_on_cran()
 
   # Pre-processing data for plotting
-  df_for_plotting2 <- text::textProjection(words =  Language_based_assessment_data_8$harmonywords[1:12],
-                                           word_embeddings = word_embeddings_4$texts$harmonywords[1:12, ],
-                                           word_types_embeddings =word_embeddings_4$word_types,
+  df_for_plotting2 <- text::textProjection(
+    words = Language_based_assessment_data_8$harmonywords[1:12],
+    word_embeddings = word_embeddings_4$texts$harmonywords[1:12, ],
+    word_types_embeddings = word_embeddings_4$word_types,
     Language_based_assessment_data_8$hilstotal[1:12],
     Language_based_assessment_data_8$swlstotal[1:12],
     split = "quartile",
@@ -188,6 +189,7 @@ test_that("textCentralityPlot produces a plot.", {
 
   expect_true(ggplot2::is.ggplot(centrality_plot$final_plot))
   expect_equal(centrality_plot$processed_word_data$n[2], 21)
+  expect_equal(centrality_plot$processed_word_data$central_semantic_similarity[2], 0.5079464, tolerance = 0.00001)
 })
 
 

@@ -118,9 +118,11 @@ test_that("textQA test", {
 test_that("textZeroShot test", {
   skip_on_cran()
 
-  ZeroShot_example <- text::textZeroShot(sequences = c("I play football", "The forrest is wonderful"),
-                                         candidate_labels = c("sport", "nature", "research"),
-                                         model = "facebook/bart-large-mnli")
+  ZeroShot_example <- text::textZeroShot(
+    sequences = c("I play football", "The forrest is wonderful"),
+    candidate_labels = c("sport", "nature", "research"),
+    model = "facebook/bart-large-mnli"
+  )
 
   expect_equal(ZeroShot_example$scores_x_1[1], 0.9985854)
 })

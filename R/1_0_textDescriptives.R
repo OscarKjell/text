@@ -12,6 +12,8 @@
 #' For more information about the entropy see the entropy package and specifically
 #' its entropy.plugin function.
 #' @param na.rm Option to remove NAs when computing mean, median etc (see under return).
+#' @param locale (character string) Locale Identifiers for example in US-English ('en_US')
+#' and Australian-English ('en_AU'); see help(about_locale) in the stringi package
 #' @return A tibble with descriptive statistics, including
 #' variable = the variable names of input "words";
 #' w_total = total number of words in the variable;
@@ -37,7 +39,8 @@
 textDescriptives <- function(words,
                              compute_total = TRUE,
                              entropy_unit = "log2",
-                             na.rm = TRUE) {
+                             na.rm = TRUE,
+                             locale = 'en_US') {
   if (tibble::is_tibble(words) | is.data.frame(words)) {
     # Select all character variables and make them UTF-8 coded.
     words <- select_character_v_utf8(words)
@@ -70,14 +73,14 @@ textDescriptives <- function(words,
   word_descriptives <- function(words, entropy_unit) {
 
     # Total words
-    w_total <- sum(stringi::stri_count_words(words), na.rm = na.rm)
+    w_total <- sum(stringi::stri_count_words(words, locale), na.rm = na.rm)
 
     # Mean, median SD and range words
-    w_mean <- mean(stringi::stri_count_words(words), na.rm = na.rm)
-    w_median <- median(stringi::stri_count_words(words), na.rm = na.rm)
-    w_sd <- sd(stringi::stri_count_words(words), na.rm = na.rm)
-    w_range_min <- range(stringi::stri_count_words(words), na.rm = na.rm)[1]
-    w_range_max <- range(stringi::stri_count_words(words), na.rm = na.rm)[2]
+    w_mean <- mean(stringi::stri_count_words(words, locale), na.rm = na.rm)
+    w_median <- median(stringi::stri_count_words(words, locale), na.rm = na.rm)
+    w_sd <- sd(stringi::stri_count_words(words, locale), na.rm = na.rm)
+    w_range_min <- range(stringi::stri_count_words(words, locale), na.rm = na.rm)[1]
+    w_range_max <- range(stringi::stri_count_words(words, locale), na.rm = na.rm)[2]
 
     # Number of tokens and unique tokens using nltk
     n_tokens <- sum(unique_freq_words(words)$n)
@@ -122,14 +125,17 @@ textDescriptives <- function(words,
     entropy <- entropy_plugin_text(collapse_text_df_freqs1, unit = entropy_unit)
 
     # Sorting output
-    output_list <- tibble::tibble(w_total,
-                                  w_mean,
-                                  w_median,
-                                  w_range_min,
-                                  w_range_max,
-                                  w_sd,
-                                  unique_tokens,
-                                  n_tokens, entropy)
+    output_list <- tibble::tibble(
+      w_total,
+      w_mean,
+      w_median,
+      w_range_min,
+      w_range_max,
+      w_sd,
+      unique_tokens,
+      n_tokens,
+      entropy
+    )
     return(output_list)
   }
 

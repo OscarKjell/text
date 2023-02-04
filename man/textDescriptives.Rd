@@ -8,7 +8,8 @@ textDescriptives(
   words,
   compute_total = TRUE,
   entropy_unit = "log2",
-  na.rm = TRUE
+  na.rm = TRUE,
+  locale = "en_US"
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ For more information about the entropy see the entropy package and specifically
 its entropy.plugin function.}
 
 \item{na.rm}{Option to remove NAs when computing mean, median etc (see under return).}
+
+\item{locale}{(character string) Locale Identifiers for example in US-English ('en_US')
+and Australian-English ('en_AU'); see help(about_locale) in the stringi package}
 }
 \value{
 A tibble with descriptive statistics, including

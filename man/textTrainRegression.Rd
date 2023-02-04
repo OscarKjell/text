@@ -8,6 +8,7 @@ textTrainRegression(
   x,
   y,
   x_append = NULL,
+  append_first = FALSE,
   cv_method = "validation_split",
   outside_folds = 10,
   outside_strata_y = "y",
@@ -41,6 +42,8 @@ provided in a list they will be concatenated.}
 \item{x_append}{Variables to be appended after the word embeddings (x); if wanting to preappend them before
 the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.}
 
+\item{append_first}{(boolean) Option to add variables before or after all word embeddings.}
+
 \item{cv_method}{Cross-validation method to use within a pipeline of nested outer and inner loops
 of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
 using rsample::validation_split in the inner loop to achieve a development and assessment set (note that
@@ -54,8 +57,8 @@ uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.}
 \item{outside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the
 outer cross-validation loop.}
 
-\item{inside_folds}{The proportion of data to be used for modeling/analysis; (default proportion = 3/4). For more information
-see validation_split in rsample.}
+\item{inside_folds}{The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
+For more information see validation_split in rsample.}
 
 \item{inside_strata_y}{Variable to stratify according (default y; can set to NULL).}
 
@@ -64,14 +67,16 @@ cross-validation loop.}
 
 \item{model}{Type of model. Default is "regression"; see also "logistic" for classification.}
 
-\item{eval_measure}{Type of evaluative measure to select models from. Default = "rmse" for regression and "bal_accuracy"
-for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy", "bal_accuracy", "sens", "spec",
-"precision", "kappa", "f_measure", or "roc_auc",(for more details see the yardstick package).}
+\item{eval_measure}{Type of evaluative measure to select models from. Default = "rmse" for regression and
+"bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
+ "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
+ the yardstick package).}
 
 \item{preprocess_step_center}{normalizes dimensions to have a mean of zero; default is set to TRUE.
 For more info see (step_center in recipes).}
 
-\item{preprocess_step_scale}{normalize dimensions to have a standard deviation of one. For more info see (step_scale in recipes).}
+\item{preprocess_step_scale}{normalize dimensions to have a standard deviation of one.
+For more info see (step_scale in recipes).}
 
 \item{preprocess_PCA}{Pre-processing threshold for PCA (to skip this step set it to NA).
 Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
@@ -130,5 +135,5 @@ results <- textTrainRegression(
 }
 \seealso{
 see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
-\code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
+\code{\link{textTrainRandomForest}}
 }

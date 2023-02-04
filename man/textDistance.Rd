@@ -4,7 +4,7 @@
 \alias{textDistance}
 \title{Compute the semantic distance between two text variables.}
 \usage{
-textDistance(x, y, method = "euclidean")
+textDistance(x, y, method = "euclidean", center = FALSE, scale = FALSE)
 }
 \arguments{
 \item{x}{Word embeddings (from textEmbed).}
@@ -12,7 +12,14 @@ textDistance(x, y, method = "euclidean")
 \item{y}{Word embeddings (from textEmbed).}
 
 \item{method}{Character string describing type of measure to be computed; default is "euclidean" (see also
-measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".}
+measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
+It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).}
+
+\item{center}{(boolean; from base::scale) If center is TRUE then centering is done by subtracting the embedding mean
+(omitting NAs) of x from each of its dimension, and if center is FALSE, no centering is done.}
+
+\item{scale}{(boolean; from base::scale) If scale is TRUE then scaling is done by dividing the
+(centered) embedding dimensions by the standard deviation of the embedding if center is TRUE, and the root mean square otherwise.}
 }
 \value{
 A vector comprising semantic distance scores.
@@ -29,5 +36,5 @@ distance_scores <- textDistance(
 comment(distance_scores)
 }
 \seealso{
-see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}}
 }

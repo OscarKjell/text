@@ -24,7 +24,8 @@ Change the names of the dimensions in the word embeddings.
 word_embeddings_4$texts$harmonytexts
 # Here they are changed to just Dim
 w_e_T <- textDimName(word_embeddings_4$texts["harmonytexts"],
-                      dim_names = FALSE)
+  dim_names = FALSE
+)
 # Here they are changed back
 w_e_F <- textDimName(w_e_T, dim_names = TRUE)
 }

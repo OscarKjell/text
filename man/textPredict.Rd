@@ -14,16 +14,18 @@ textPredict(
 )
 }
 \arguments{
-\item{model_info}{Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).}
+\item{model_info}{(model object) Model info (e.g., saved output from textTrain,
+textTrainRegression or textRandomForest).}
 
-\item{word_embeddings}{Word embeddings}
+\item{word_embeddings}{(tibble) Word embeddings}
 
-\item{x_append}{Variables to be appended after the word embeddings (x).}
+\item{x_append}{(tibble) Variables to be appended after the word embeddings (x).}
 
-\item{type}{Type of prediction; e.g., "prob", "class".}
+\item{type}{(string) Type of prediction; e.g., "prob", "class".}
 
-\item{dim_names}{Account for specific dimension names from textEmbed
-(rather than generic names including Dim1, Dim2 etc.).}
+\item{dim_names}{(boolean) Account for specific dimension names from textEmbed()
+(rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
+word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.}
 
 \item{...}{Setting from stats::predict can be called.}
 }
@@ -39,5 +41,5 @@ ratings_data <- Language_based_assessment_data_8
 }
 \seealso{
 see \code{\link{textTrain}} \code{\link{textTrainLists}}
-\code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
+\code{\link{textTrainRandomForest}}
 }

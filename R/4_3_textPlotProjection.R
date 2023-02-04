@@ -1,39 +1,4 @@
-# words,
-# word_embeddings,
-# word_types_embeddings = word_types_embeddings_df,
-# x,
-# y = NULL
-# pca = NULL
-# aggregation = "mean"
-# split = "quartile"
-# word_weight_power = 1
-# min_freq_words_test = 0
-# mean_centering = FALSE
-# mean_centering2 = FALSE
-# Npermutations = 10000
-# n_per_split = 50000
-# seed = 1003
-#
-#
-# words = Language_based_assessment_data_8$harmonywords[1:12]
-# word_embeddings = word_embeddings_4$texts$harmonywords[1:12, ]
-# word_types_embeddings = word_embeddings_4$word_types
-# Language_based_assessment_data_8$hilstotal[1:12]
-# Language_based_assessment_data_8$swlstotal[1:12]
-# split = "quartile"
-# Npermutations = 2
-# n_per_split = 3
-# pca = 0.9
 
-
-# words = Language_based_assessment_data_8$harmonywords[1:5]
-# word_embeddings = word_embeddings_4$texts$harmonywords[1:5, ]
-# word_types_embeddings = word_embeddings_4$word_types
-# Language_based_assessment_data_8$hilstotal[1:5]
-# split = "mean"
-# Npermutations = 2
-# n_per_split = 1
-# pca = 2
 #### Supervised Dimension Projection ######
 
 #' Compute Supervised Dimension Projection and related variables for plotting words.
@@ -93,7 +58,7 @@
 #' @export
 textProjection <- function(words,
                            word_embeddings,
-                           word_types_embeddings, #= word_types_embeddings_df
+                           word_types_embeddings, # = word_types_embeddings_df
                            x,
                            y = NULL,
                            pca = NULL,
@@ -129,11 +94,12 @@ textProjection <- function(words,
   # PCA on word_types_embeddings
   if (is.numeric(pca)) {
     # Select word embeddings to be included in plot
-    model <- extract_comment(comment(word_types_embeddings), part="model")
+    model <- extract_comment(comment(word_types_embeddings), part = "model")
 
-    #uniques_words_all <- unique_freq_words(words)
-    uniques_words_all <- getUniqueWordsAndFreq(x_characters = words,
-                                               hg_tokenizer = model)
+    uniques_words_all <- getUniqueWordsAndFreq(
+      x_characters = words,
+      hg_tokenizer = model
+    )
 
 
     uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, word_types_embeddings, tolower = FALSE)
@@ -154,7 +120,7 @@ textProjection <- function(words,
     pca_estimates <- recipes::prep(pca_trans, training = uniques_words_all_wordembedding)
     pca_data <- recipes::bake(pca_estimates, uniques_words_all_wordembedding)
 
-    pca_data <- pca_data %>% stats::setNames(paste0("Dim", 1:length(pca_data)))
+    pca_data <- pca_data %>% stats::setNames(paste0("Dim", seq_len(length(pca_data))))
     word_types_embeddings <- dplyr::bind_cols(uniques_words_all, pca_data)
     word_types_embeddings
   }
