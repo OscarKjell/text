@@ -1,49 +1,3 @@
-# .rs.restartR()
-# library(text)
-# library(tidyverse)
-# set_seed - Result DOES NOT replicate.
-
-# Decide which arguments to include.
-# where to default save output? (cld include it in .cash -- get() )
-# argument to name model
-
-# ARGuMENT to resumen from checkpoint.
-
-# OK: Stratify sampling!
-
-#textEmbed("hello",
-#          model = "roberta-base")
-#help("textEmbed")
-#textrpp_install(rpp_version = c("torch==1.11.0", "transformers==4.22.0", #give version number version torch == 1.11.0 transformers==4.22.0
-#                                "numpy==1.23.1", "nltk",
-#                                "datasets", "evaluate",
-#                                "scipy==1.9.3",
-#                                "scikit-learn"))
-#textrpp_initialize()
-#reticulate::source_python("/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/text/inst/python/huggingface_Interface4.py")
-
-##nrow(text_outcome_data)
-##nrow(dep_all_text_976_phq)
-#text_outcome_data <-  dep_all_text_976_gender[1:100,]
-##text_outcome_data <-  dep_all_text_976_phq_data
-##head(text_outcome_data)
-#colnames(text_outcome_data)
-#text_outcome_data
-#
-#model_name_or_path = "roberta-large" # Also how to find my previously created one?
-#output_dir = "./runs"
-#validation_proportion = 0.20
-#evaluation_proportion = 0.20
-#is_regression = FALSE
-#config_name = NULL
-#tokenizer_name = NULL
-#max_seq_length = 128L
-#evaluation_strategy = "no"
-#eval_accumulation_steps = NULL
-#num_train_epochs = 2
-#past_index = -1
-#set_seed = 2022
-
 
 #' Task Adapted Pre-Training (experimental)
 #' @param text_outcome_data A dataframe, where the first column contain text data,
@@ -71,6 +25,7 @@
 #' for their predictions. If this argument is set to a positive int, the Trainer will use the corresponding output
 #' (usually index 2) as the past state and feed it to the model at the next training step under the keyword argument mems.
 #' @param set_seed (Numeric) Set the seed
+#' @param label_names label name in case of classification.
 #' @param ... Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.
 #' @return A folder containing the pretrained model and output data. The model can then be used, for example, by
 #' textEmbed() by providing the model parameter with a the path to the output folder.
@@ -97,6 +52,7 @@ textFineTuneTask <- function(text_outcome_data,
                              num_train_epochs = 3,
                              past_index = -1,
                              set_seed = 2022,
+                             label_names,
                              ...
                              ){
 
@@ -116,10 +72,21 @@ textFineTuneTask <- function(text_outcome_data,
   if(ncol(text_outcome_data)>2){
     stop("Please only input a text and label column")
   }
+
+
   colnames(text_outcome_data) <-  c("text", "label")
   text_outcome_data$idx <- 1:nrow(text_outcome_data)
   text_outcome_data <- text_outcome_data[, c(3, 1, 2)]
 
+  # Ensuring label variable has appropriate type
+  if(is_regression){
+    text_outcome_data$label <- as.numeric(text_outcome_data$label)
+  }
+  if(!is_regression){
+    text_outcome_data$label <- as.character(text_outcome_data$label)
+  }
+
+  # Only include complete cases
   n_befor <- nrow(text_outcome_data)
   text_outcome_data <- text_outcome_data[complete.cases(text_outcome_data),]
   n_after <- nrow(text_outcome_data)
@@ -131,16 +98,10 @@ textFineTuneTask <- function(text_outcome_data,
   # Data set partitioning
   train_proportion = 1 - validation_proportion - evaluation_proportion
   total_size = nrow(text_outcome_data)
-  props <- c(rep("train",      round(train_proportion*total_size)),
-             rep("validation", round(validation_proportion*total_size)),
-             rep("evaluation", round(evaluation_proportion*total_size)))
-
-  props <- sample(sample_vec)
+  props <- c(rep("train",      ceiling(train_proportion*total_size)),
+             rep("validation", ceiling(validation_proportion*total_size)),
+             rep("evaluation", ceiling(evaluation_proportion*total_size)))
   props <- props[1:total_size]
-
-  if(is_regression){
-    text_outcome_data$label <- as.numeric(text_outcome_data$label)
-  }
 
   train_data1 <-  tibble::as_tibble(text_outcome_data[props=="train", ])
   val_data1   <-  tibble::as_tibble(text_outcome_data[props=="validation", ])
@@ -162,14 +123,16 @@ textFineTuneTask <- function(text_outcome_data,
                         evaluation_strategy = evaluation_strategy,
                         eval_accumulation_steps = eval_accumulation_steps,
                         num_train_epochs = num_train_epochs,
-                        past_index = past_index) #...
+                        past_index = past_index,
+                        label_names = label_names,
+                        ...)
 
 
   # Return all datasets
 
   T2 <- Sys.time()
   T2-T1
+  print("Completed")
 
 }
 
-# DAPT
