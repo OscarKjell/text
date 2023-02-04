@@ -98,8 +98,8 @@ def basic_cls_test():
 ##########################################################################
 ### Test 3: Regression Task on real dataset ##############################
 ##########################################################################
-# "/data1/avirinchipur/resp_form_PHQtot.csv"
-def real_reg_test(path_to_csv = "/Users/oscarkjell/Desktop/1 Projects/0 Research/0 text r-package/dep_all_text_976_phq_data.csv"):
+
+def real_reg_test(path_to_csv="/data1/avirinchipur/r-text-data/resp_form_PHQtot.csv"):
     
     # Read task data from the path and split it into train, validation and test
     #data = pd.read_csv(path_to_csv)
@@ -130,6 +130,35 @@ def real_reg_test(path_to_csv = "/Users/oscarkjell/Desktop/1 Projects/0 Research
 
 ##########################################################################
 
+def real_cls_test(path_to_csv="/data1/avirinchipur/r-text-data/dep_all_text_956_gender_processed.csv"):
+    
+    # Read task data from the path and split it into train, validation and test
+    data = pd.read_csv(path_to_csv)
+    
+    # Random split of data into train, validation and test with 60%, 20% and 20% split
+    train_data, val_data, test_data = np.split(data.sample(frac=1), [int(.6*len(data)), int(.8*len(data))])
+    label_names = ["male", "female"]
+     
+    # Print the shape of the data
+    print ("-------------------------------------")
+    print ("Train data shape: ", train_data.shape)
+    print ("Validation data shape: ", val_data.shape)
+    print ("Test data shape: ", test_data.shape)
+    print ("-------------------------------------")
+     
+    
+    json_path = './args2.json'
+    is_regression = False
+    model_name_or_path = 'roberta-base'
+    num_train_epochs = 10
+    output_dir = "./runs/trial3/"
+    logging_strategy = "epoch"
+    evaluation_strategy = "epoch"
+    hgTransformerFineTune(json_path, train_data, val_data, test_data, is_regression, label_names=label_names,
+                            model_name_or_path=model_name_or_path, num_train_epochs=num_train_epochs, output_dir=output_dir, logging_strategy=logging_strategy, evaluation_strategy=evaluation_strategy)
+    
+##########################################################################
+
 if __name__ == "__main__":
+    real_cls_test()
 #    real_reg_test()
-    basic_cls_test()
