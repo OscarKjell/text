@@ -52,7 +52,7 @@ textFineTuneTask <- function(text_outcome_data,
                              num_train_epochs = 3,
                              past_index = -1,
                              set_seed = 2022,
-                             label_names,
+                             label_names = NULL,
                              ...
                              ){
 
