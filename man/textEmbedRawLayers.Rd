@@ -7,7 +7,7 @@
 textEmbedRawLayers(
   texts,
   model = "bert-base-uncased",
-  layers = 11,
+  layers = -2,
   return_tokens = TRUE,
   word_type_embeddings = FALSE,
   decontextualize = FALSE,
@@ -27,10 +27,12 @@ textEmbedRawLayers(
  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
  For example use "bert-base-multilingual-cased", "openai-gpt",
 "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
-"roberta-base", or "xlm-roberta-base".}
+"roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
+ malicious model can execute arbitrary code on your computer).}
 
-\item{layers}{Specify the layers that should be extracted (default 11). It is more efficient
-to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
+\item{layers}{(string or numeric) Specify the layers that should be extracted
+(default -2, which give the second to last layer). It is more efficient to only extract the
+layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
 or all by setting this parameter to "all". Layer 0 is the decontextualized input layer
 (i.e., not comprising hidden states) and thus should normally not be used. These layers can then
  be aggregated in the textEmbedLayerAggregation function.}
@@ -41,7 +43,8 @@ or all by setting this parameter to "all". Layer 0 is the decontextualized input
 
 \item{decontextualize}{(boolean) Wether to dectonextualise embeddings (i.e., embedding one word at a time).}
 
-\item{keep_token_embeddings}{(boolean) Whether to keep token level embeddings in the output (when using word_types aggregation)}
+\item{keep_token_embeddings}{(boolean) Whether to keep token level embeddings in the output
+(when using word_types aggregation)}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 
@@ -57,8 +60,9 @@ text sentence by sentence.}
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 }
 \value{
-Returns hiddenstates/layers that can be 1. Can return three different outputA tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
-input embedding to the transformer, and should normally not be used.
+Returns hiddenstates/layers that can be 1. Can return three different outputA tibble with tokens,
+column specifying layer and word embeddings. Note that layer 0 is the input embedding to the transformer,
+and should normally not be used.
 }
 \description{
 Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.

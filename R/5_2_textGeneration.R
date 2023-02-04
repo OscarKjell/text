@@ -11,7 +11,8 @@
 #' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results.
 #' This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
 #' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
-#' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").
+#' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"
+#'  and "negative").
 #' @param return_tensors (boolean)  Whether or not the output should include the prediction tensors (as token indices).
 #' @param return_text (boolean)  Whether or not the outputs should include the decoded text.
 #' @param return_full_text (boolean) If FALSE only the added text is returned, otherwise the full text is returned.

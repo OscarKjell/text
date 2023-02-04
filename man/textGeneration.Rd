@@ -36,7 +36,8 @@ Options (ordered from less logging to more logging): critical, error, warning, i
 \item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
 This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
 All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
-dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}
+dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"
+ and "negative").}
 
 \item{return_tensors}{(boolean)  Whether or not the output should include the prediction tensors (as token indices).}
 

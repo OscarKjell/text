@@ -1,5 +1,5 @@
 
-#' Find encoding type of variable and the set it to UTF-8.
+#' Find encoding type of variable and then set it to UTF-8.
 #' @param tibble including both text and numeric variables.
 #' @return all character variables in UTF-8 format.
 #' @noRd
@@ -102,26 +102,25 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
 # @importFrom tokenizers tokenize_words
 #' @noRd
 getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer = NULL, ...) {
+  if (is.null(hg_tokenizer)) {
+    # Unite all text variables into one
+    x_characters2 <- tidyr::unite(x_characters, "x_characters2", seq_len(ncol(x_characters)), sep = " ")
 
-  if(is.null(hg_tokenizer)){
-  # Unite all text variables into one
-  x_characters2 <- tidyr::unite(x_characters, "x_characters2", seq_len(ncol(x_characters)), sep = " ")
-
-  # unite all rows in the column into one cell
-  x_characters3 <- stringi::stri_c(x_characters2$x_characters2, collapse = " ")
-  # Tokenize into single words help(stri_split_boundaries)
-  x_characters4a <- stringi::stri_trans_tolower(x_characters3)
-  x_characters4b <- stringi::stri_split_boundaries(x_characters4a,
-    type = "word",
-    skip_word_none = TRUE,
-    skip_word_number = FALSE
-  )[[1]]
-  # Create dataframe with single words and frequency
-  x_characters5 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters4b), " ")))))
+    # unite all rows in the column into one cell
+    x_characters3 <- stringi::stri_c(x_characters2$x_characters2, collapse = " ")
+    # Tokenize into single words help(stri_split_boundaries)
+    x_characters4a <- stringi::stri_trans_tolower(x_characters3)
+    x_characters4b <- stringi::stri_split_boundaries(x_characters4a,
+      type = "word",
+      skip_word_none = TRUE,
+      skip_word_number = FALSE
+    )[[1]]
+    # Create dataframe with single words and frequency
+    x_characters5 <- data.frame(sort(table(unlist(strsplit(tolower(x_characters4b), " ")))))
   }
 
-  if (!is.null(hg_tokenizer)){
-    x_characters4b <- lapply(list(x_characters), textTokenize, model=hg_tokenizer, ...)
+  if (!is.null(hg_tokenizer)) {
+    x_characters4b <- lapply(list(x_characters), textTokenize, model = hg_tokenizer, ...)
     x_characters5 <- data.frame(sort(table(unlist(x_characters4b))))
   }
 
@@ -187,11 +186,15 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
       if (return_tokens) {
         tokens_layer_number <- tibble::tibble(tokens, token_id, rep(layers[i_layers], length(tokens)))
         colnames(tokens_layer_number) <- c("tokens", "token_id", "layer_number")
-        tokens_lnumber_layers <- dplyr::bind_cols(tokens_layer_number, layers_4_token)
+        # Bind tokens with word embeddings (not selecting <pad>s)
+        tokens_lnumber_layers <- dplyr::bind_cols(tokens_layer_number,
+                                                  layers_4_token[1:nrow(tokens_layer_number),])
       } else {
         layer_number <- tibble::tibble(token_id, rep(layers[i_layers], nrow(layers_4_token)))
         colnames(layer_number) <- c("token_id", "layer_number")
-        tokens_lnumber_layers <- dplyr::bind_cols(layer_number, layers_4_token)
+        # Bind tokens with word embeddings (not selecting <pad>s)
+        tokens_lnumber_layers <- dplyr::bind_cols(layer_number,
+                                                  layers_4_token[1:nrow(tokens_layer_number),])
       }
 
       layers_list[[i_layers]] <- tokens_lnumber_layers
@@ -232,11 +235,11 @@ layer_aggregation_helper <- function(x,
   }
   aggregated_layers_saved1 <- dplyr::bind_rows(aggregated_layers_saved)
 
-  if(return_tokens){
+  if (return_tokens) {
     # Number of ids
     number_of_layers <- unique(x[, grep("^layer_number", names(x))][[1]])
     n_layers <- length(number_of_layers)
-    tokens <- x$tokens[1:(length(x$tokens)/n_layers)]
+    tokens <- x$tokens[1:(length(x$tokens) / n_layers)]
     tokens <- as_tibble_col(tokens, column_name = "tokens")
     aggregated_layers_saved1 <- dplyr::bind_cols(tokens, aggregated_layers_saved1)
   }
@@ -283,53 +286,35 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' @importFrom tibble tibble as_tibble
 #' @export
 textTokenize <- function(texts,
-                         model = 'bert-base-uncased',
+                         model = "bert-base-uncased",
                          max_token_to_sentence = 4,
-                         device = 'cpu',
+                         device = "cpu",
                          tokenizer_parallelism = FALSE,
                          model_max_length = NULL,
-                         logging_level = 'error'){
+                         logging_level = "error") {
 
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
-                                        "huggingface_Interface3.py",
-                                        # envir = NULL,
-                                        package = "text",
-                                        mustWork = TRUE
+    "huggingface_Interface3.py",
+    # envir = NULL,
+    package = "text",
+    mustWork = TRUE
   ))
 
-  tokens <- hgTokenizerGetTokens(text_strings = texts,
-                                 model = model,
-                                 max_token_to_sentence = max_token_to_sentence,
-                                 device = device,
-                                 tokenizer_parallelism = tokenizer_parallelism,
-                                 model_max_length = model_max_length,
-                                 logging_level = logging_level)
+  tokens <- hgTokenizerGetTokens(
+    text_strings = texts,
+    model = model,
+    max_token_to_sentence = max_token_to_sentence,
+    device = device,
+    tokenizer_parallelism = tokenizer_parallelism,
+    model_max_length = model_max_length,
+    logging_level = logging_level
+  )
   tokens1 <- lapply(tokens, tibble::as_tibble_col, column_name = "tokens")
 
   return(tokens1)
 }
-
-
-#texts = x
-#model = "bert-base-uncased"
-#layers = 11
-#return_tokens = TRUE
-#word_type_embeddings = FALSE
-#decontextualize = FALSE
-#keep_token_embeddings = TRUE #whether to keep token embeddings when using texts or word_types aggregation
-#device = "cpu"
-#tokenizer_parallelism = FALSE
-#model_max_length = NULL
-#max_token_to_sentence = 4
-#logging_level = "error"
-#
-#
-#model = "bert-base-uncased"
-#word_type_embeddings = TRUE
-#decontextualize = TRUE
-#layers = "all"
 
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
@@ -338,16 +323,19 @@ textTokenize <- function(texts,
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
-#' "roberta-base", or "xlm-roberta-base".
-#' @param layers Specify the layers that should be extracted (default 11). It is more efficient
-#' to only extract the layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
+#' "roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
+#'  malicious model can execute arbitrary code on your computer).
+#' @param layers (string or numeric) Specify the layers that should be extracted
+#' (default -2, which give the second to last layer). It is more efficient to only extract the
+#' layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
 #' or all by setting this parameter to "all". Layer 0 is the decontextualized input layer
 #' (i.e., not comprising hidden states) and thus should normally not be used. These layers can then
 #'  be aggregated in the textEmbedLayerAggregation function.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
 #' @param word_type_embeddings (boolean) Wether to provide embeddings for each word/token type.
 #' @param decontextualize (boolean) Wether to dectonextualise embeddings (i.e., embedding one word at a time).
-#' @param keep_token_embeddings (boolean) Whether to keep token level embeddings in the output (when using word_types aggregation)
+#' @param keep_token_embeddings (boolean) Whether to keep token level embeddings in the output
+#' (when using word_types aggregation)
 #' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
@@ -356,8 +344,9 @@ textTokenize <- function(texts,
 #' text sentence by sentence.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @return Returns hiddenstates/layers that can be 1. Can return three different outputA tibble with tokens, column specifying layer and word embeddings. Note that layer 0 is the
-#' input embedding to the transformer, and should normally not be used.
+#' @return Returns hiddenstates/layers that can be 1. Can return three different outputA tibble with tokens,
+#' column specifying layer and word embeddings. Note that layer 0 is the input embedding to the transformer,
+#' and should normally not be used.
 #' @examples
 #' \donttest{
 #' # texts <- Language_based_assessment_data_8[1:2, 1:2]
@@ -371,39 +360,56 @@ textTokenize <- function(texts,
 #' @export
 textEmbedRawLayers <- function(texts,
                                model = "bert-base-uncased",
-                               layers = 11,
+                               layers = -2,
                                return_tokens = TRUE,
                                word_type_embeddings = FALSE,
                                decontextualize = FALSE,
-                               keep_token_embeddings = TRUE, #whether to keep token embeddings when using texts or word_types aggregation
+                               keep_token_embeddings = TRUE,
                                device = "cpu",
                                tokenizer_parallelism = FALSE,
                                model_max_length = NULL,
                                max_token_to_sentence = 4,
                                logging_level = "error") {
 
-  if (decontextualize == TRUE & word_type_embeddings == FALSE){
+  if (decontextualize == TRUE & word_type_embeddings == FALSE) {
     stop(cat(
-      colourise("decontextualize = TRUE & word_type_embeddings = FALSE has not been implemented in textEmbedRawLayers() at this stage.", fg = "red"),
+      colourise("decontextualize = TRUE & word_type_embeddings = FALSE has not been implemented in textEmbedRawLayers() at this stage.",
+                fg = "red"),
       colourise("When using decontextualize = TRUE  you need to create the word_type_embeddings. To create a text embeddings withouth it would take unnecessary
                 time as it would require to send the same decontextualised words to a transformer multiple times (whilst getting the same results over and over).
-                Consdier using rextEmbed, to get token embeddings as well as text embeddings.", fg = "green")
+                Consdier using rextEmbed, to get token embeddings as well as text embeddings.",
+                fg = "green")
     ))
   }
+
+
+  # Run python file with HunggingFace interface to state-of-the-art transformers
+  reticulate::source_python(system.file("python",
+                                        "huggingface_Interface3.py",
+                                        # envir = NULL,
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
+
+  if (is.numeric(layers)) {
+    if (max(layers) > textModelLayers(model)) {
+      stop("You are trying to extract layers that do not exist in this model.")
+    }
+  }
+
+  if (layers[1] < 0) {
+    n <- textModelLayers("bert-base-uncased")
+    layers <- 1 + n + layers
+    layers
+  }
+
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(texts)
 
-  # Run python file with HunggingFace interface to state-of-the-art transformers
-  reticulate::source_python(system.file("python",
-    "huggingface_Interface3.py",
-    # envir = NULL,
-    package = "text",
-    mustWork = TRUE
-  ))
 
-
-  # Context (default): gives sorted word embeddings based on context (i.e., the entire text is sent to the transformer model)
+  # Context (default): gives sorted word embeddings based on context
+  # (i.e., the entire text is sent to the transformer model)
   if (!decontextualize) {
     x <- data_character_variables
     sorted_layers_ALL_variables <- list()
@@ -433,7 +439,8 @@ textEmbedRawLayers <- function(texts,
       # Adding informative comment
       layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
 
-      comment(sorted_layers_ALL_variables$context_tokens) <- paste("Information about the embeddings. textEmbedRawLayers: ",
+      comment(sorted_layers_ALL_variables$context_tokens) <-
+        paste("Information about the embeddings. textEmbedRawLayers: ",
         "model: ", model, " ; ",
         "layers: ", layers_string, " ; ",
         "word_type_embeddings: ", word_type_embeddings, " ; ",
@@ -473,13 +480,12 @@ textEmbedRawLayers <- function(texts,
 
     individual_tokens <- list()
     individual_tokens$context_word_type <- list()
-    #individual_tokens$context$word_type <- list()
     individual_tokens$tokens <- list()
 
     # 1. Group individual tokens help(bind_rows)
     i_we <- suppressWarnings(dplyr::bind_rows(sorted_layers_ALL_variables$context_tokens))
     i_we2 <- dplyr::group_split(i_we, i_we[, grep("^tokens", names(i_we))][[1]])
-    names(i_we2) <- paste(rep("word_type", length(i_we2)), seq_len(length(i_we2)), sep="")
+    names(i_we2) <- paste(rep("word_type", length(i_we2)), seq_len(length(i_we2)), sep = "")
     individual_tokens$context_word_type <- i_we2
 
     # Specify which token layers go together and ensure that the token_id starts with 1
@@ -487,22 +493,22 @@ textEmbedRawLayers <- function(texts,
     num_layers <- length(layers)
 
     # Look over all token list objects to adjust the token_id. i_context = 1
-    for (i_context in seq_len(length(individual_tokens$context_word_type))) { #$word_type
-      token_id_df <- individual_tokens$context_word_type[[i_context]] #$word_type
+    for (i_context in seq_len(length(individual_tokens$context_word_type))) { # $word_type
+      token_id_df <- individual_tokens$context_word_type[[i_context]] # $word_type
 
       token_id_variable <- token_id_df[, grep("^token_id", names(token_id_df))][[1]]
 
       num_token <- length(token_id_variable) / num_layers
       token_id <- sort(rep(1:num_token, num_layers))
-      individual_tokens$context_word_type[[i_context]][, grep("^token_id", names(token_id_df))][[1]] <- token_id #$word_type
+      individual_tokens$context_word_type[[i_context]][, grep("^token_id", names(token_id_df))][[1]] <- token_id
     }
 
     # Get first element from each list.
-    single_words <- sapply(individual_tokens$context_word_type, function(x) x[[1]][1]) #$word_type
+    single_words <- sapply(individual_tokens$context_word_type, function(x) x[[1]][1]) # $word_type
     single_words <- tibble::as_tibble_col(single_words, column_name = "words")
 
     # n
-    n <- sapply(individual_tokens$context_word_type, function(x) length(x[[1]]) / num_layers) #$word_type
+    n <- sapply(individual_tokens$context_word_type, function(x) length(x[[1]]) / num_layers) # $word_type
     n <- tibble::as_tibble_col(n, column_name = "n")
     single_words_n <- dplyr::bind_cols(single_words, n)
     individual_tokens$tokens <- single_words_n
@@ -519,8 +525,9 @@ textEmbedRawLayers <- function(texts,
     data_character_variables1 <- suppressMessages(apply(data_character_variables, 1, bind_cols)) %>%
       bind_rows()
 
-   singlewords <- getUniqueWordsAndFreq(data_character_variables1[[1]],
-                                         hg_tokenizer = model)
+    singlewords <- getUniqueWordsAndFreq(data_character_variables1[[1]],
+      hg_tokenizer = model
+    )
     list_words <- sapply(singlewords$words, list)
     names(list_words) <- NULL
 
@@ -573,21 +580,17 @@ textEmbedRawLayers <- function(texts,
   if (decontextualize == FALSE & word_type_embeddings == FALSE) {
     word_embeddings_with_layers <- c(sorted_layers_ALL_variables)
     rm(sorted_layers_ALL_variables)
-
   } else if (decontextualize == FALSE & word_type_embeddings == TRUE & keep_token_embeddings == TRUE) {
     word_embeddings_with_layers <- c(sorted_layers_ALL_variables, individual_tokens)
     rm(sorted_layers_ALL_variables)
     rm(individual_tokens)
-
   } else if (decontextualize == FALSE & word_type_embeddings == TRUE & keep_token_embeddings == FALSE) {
     word_embeddings_with_layers <- c(individual_tokens)
     rm(sorted_layers_ALL_variables)
     rm(individual_tokens)
-
   } else if (decontextualize == TRUE & word_type_embeddings == TRUE) {
     word_embeddings_with_layers <- c(individual_tokens)
     rm(individual_tokens)
-
   }
 
   return(word_embeddings_with_layers)
@@ -603,8 +606,8 @@ textEmbedRawLayers <- function(texts,
 #' @param aggregation_from_layers_to_tokens Method to carry out the aggregation among the layers for each word/token,
 #' including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
 #' or "concatenate", which links together each layer of the word embedding to one long row. Default is "concatenate"
-#' @param aggregation_from_tokens_to_texts Method to carry out the aggregation among the word embeddings for the words/tokens,
-#' including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+#' @param aggregation_from_tokens_to_texts Method to carry out the aggregation among the word embeddings
+#' for the words/tokens, including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
 #' or "concatenate", which links together each layer of the word embedding to one long row.
 #' @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
 #' @param tokens_select Option to only select embeddings linked to specific tokens
@@ -625,12 +628,11 @@ textEmbedRawLayers <- function(texts,
 textEmbedLayerAggregation <- function(word_embeddings_layers,
                                       layers = "all",
                                       aggregation_from_layers_to_tokens = "concatenate",
-                                      aggregation_from_tokens_to_texts  = "mean",
+                                      aggregation_from_tokens_to_texts = "mean",
                                       return_tokens = FALSE,
                                       tokens_select = NULL,
                                       tokens_deselect = NULL) {
-
-  if (return_tokens == TRUE & !is.null(aggregation_from_tokens_to_texts)){
+  if (return_tokens == TRUE & !is.null(aggregation_from_tokens_to_texts)) {
     stop(cat(
       colourise("return_tokens = TRUE does not work with aggregation_from_tokens_to_texts not being NULL ", fg = "red"),
       colourise("When aggregating tokens to text, it is not possible to have return_token = TRUE.
@@ -722,14 +724,13 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
       return_tokens = return_tokens
     )
 
-    if (is.null(aggregation_from_tokens_to_texts)){
+    if (is.null(aggregation_from_tokens_to_texts)) {
       # Sort output
       selected_layers_aggregated_tibble[[variable_list_i]] <- selected_layers_aggregated
     }
 
     # Aggregate across tokens
-    if (!is.null(aggregation_from_tokens_to_texts)){
-
+    if (!is.null(aggregation_from_tokens_to_texts)) {
       selected_layers_tokens_aggregated <- lapply(selected_layers_aggregated,
         textEmbeddingAggregation,
         aggregation = aggregation_from_tokens_to_texts
@@ -782,31 +783,6 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 }
 
 
-
-#texts = Language_based_assessment_data_8[1,1]
-#model = "bert-base-uncased"
-#layers = 11
-#dim_name = TRUE
-#aggregation_from_layers_to_tokens = "concatenate"
-#aggregation_from_tokens_to_texts = "mean"
-#aggregation_from_tokens_to_word_types = "mean"
-#keep_token_embeddings = FALSE
-#tokens_select = NULL
-#tokens_deselect = NULL
-#decontextualize = FALSE
-#model_max_length = NULL
-#max_token_to_sentence = 4
-#tokenizer_parallelism = FALSE
-#device = "gpu"
-#logging_level = "error"
-#
-#
-#model = "bert-base-uncased"
-#word_type_embeddings = TRUE
-##contexts = FALSE
-#decontextualize = TRUE
-#layers = "all"
-
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
@@ -814,30 +790,33 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
-#' "roberta-base", or "xlm-roberta-base".
-#' @param layers Specify the layers that should be extracted (default 11:12). It is more efficient to
-#' only extract the layers that you need (e.g., 12).
-#' Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and thus advised to not use.
-#' These layers can then be aggregated in the textEmbedLayerAggregation function. If you want all layers then use 'all'.
-# @param contexts Provide word embeddings based on word contexts
-# (standard method; default = TRUE).
+#' "roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
+#'  malicious model can execute arbitrary code on your computer).
+#' @param layers (string or numeric) Specify the layers that should be extracted
+#' (default -2 which give the second to last layer). It is more efficient to only extract the layers
+#' that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this parameter
+#' to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and
+#'  thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation
+#'  function.
 #' @param dim_name Boolean, if TRUE append the variable name after all variable-names in the output.
 #' (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name).
 #' see \code{\link{textDimName}} to change names back and forth.
-# @param single_context_embeddings Aggregated word embeddings for each token in the dataset
-# @param return_tokens If TRUE, provide the tokens used in the specified transformer model.
-#' @param aggregation_from_layers_to_tokens (string) Aggregated layers of each token. Method to aggregate the contextualized layers (e.g., "mean", "min" or
-#' "max, which takes the minimum, maximum or mean, respectively, across each column; or "concatenate", which links
-#'  together each word embedding layer to one long row.
-#' @param aggregation_from_tokens_to_texts (string)  Aggregates to the individual text (i.e., the aggregation of all tokens/words given to the transformer).
-#' @param aggregation_from_tokens_to_word_types (string) Aggregates to the word type (i.e., the individual words) rather than texts.
-#' @param keep_token_embeddings (boolean) Whether to also keep token embeddings when using texts or word types aggregation.
+#' @param aggregation_from_layers_to_tokens (string) Aggregated layers of each token. Method to aggregate the
+#' contextualized layers (e.g., "mean", "min" or "max, which takes the minimum, maximum or mean, respectively,
+#' across each column; or "concatenate", which links  together each word embedding layer to one long row.
+#' @param aggregation_from_tokens_to_texts (string)  Aggregates to the individual text (i.e., the aggregation of
+#' all tokens/words given to the transformer).
+#' @param aggregation_from_tokens_to_word_types (string) Aggregates to the word type (i.e., the individual words)
+#'  rather than texts.
+#' @param keep_token_embeddings (boolean) Whether to also keep token embeddings when using texts or word
+#' types aggregation.
 #' @param tokens_select Option to select word embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the context embeddings.
 #' @param tokens_deselect Option to deselect embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the context embeddings.
 #' @param decontextualize (boolean) Provide word embeddings of single words as input to the model
-#' (these embeddings are, e.g., used for plotting; default is to use ). If using this, then set single_context_embeddings to FALSE.
+#' (these embeddings are, e.g., used for plotting; default is to use ). If using this, then set
+#' single_context_embeddings to FALSE.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
 #' (default the value stored for the associated model).
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
@@ -850,22 +829,23 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' Note that layer 0 is the input embedding to the transformer
 #' @examples
 #' \donttest{
-#' #word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
+#' # word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
 #' #                             layers = 10:11,
 #' #                             aggregation_from_layers_to_tokens = "concatenate",
 #' #                             aggregation_from_tokens_to_texts = "mean",
 #' #                             aggregation_from_tokens_to_word_types = "mean")
-#' ##Show information about how the embeddings were constructed
-#' #comment(word_embeddings$texts$satisfactiontexts)
-#' #comment(word_embeddings$word_types)
-#' #comment(word_embeddings$tokens$satisfactiontexts)
+#' ## Show information about how the embeddings were constructed
+#' # comment(word_embeddings$texts$satisfactiontexts)
+#' # comment(word_embeddings$word_types)
+#' # comment(word_embeddings$tokens$satisfactiontexts)
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}}, \code{\link{textEmbedRawLayers}} and
 #' \code{\link{textDimName}}
+#' @importFrom reticulate source_python
 #' @export
 textEmbed <- function(texts,
                       model = "bert-base-uncased",
-                      layers = 11,
+                      layers = -2,
                       dim_name = TRUE,
                       aggregation_from_layers_to_tokens = "concatenate",
                       aggregation_from_tokens_to_texts = "mean",
@@ -879,31 +859,40 @@ textEmbed <- function(texts,
                       tokenizer_parallelism = FALSE,
                       device = "gpu",
                       logging_level = "error") {
+
+
   T1_textEmbed <- Sys.time()
+
+  reticulate::source_python(system.file("python",
+                                        "huggingface_Interface3.py",
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
 
   if (
     (decontextualize == TRUE & is.null(aggregation_from_tokens_to_texts)) |
       (decontextualize == TRUE & is.null(aggregation_from_tokens_to_word_types)) |
-       (decontextualize == TRUE & is.null(aggregation_from_layers_to_tokens)) ){
+      (decontextualize == TRUE & is.null(aggregation_from_layers_to_tokens))) {
     stop(cat(
       colourise("When using decontextualize = TRUE, it is required to set aggregation_from_tokens_to_texts,
-                aggregation_from_tokens_to_word_types as well as aggregation_from_tokens_to_word_types", fg = "red"),
-      colourise("This is because both the token ambeddings and text embeddings are constrcuted from the word type embeddings.", fg = "green")
+                aggregation_from_tokens_to_word_types as well as aggregation_from_tokens_to_word_types",
+                fg = "red"),
+      colourise("This is because both the token ambeddings and text embeddings are constrcuted from the word type embeddings.",
+                fg = "green")
     ))
   }
   output <- list()
 
-  reticulate::source_python(system.file("python",
-    "huggingface_Interface3.py",
-    package = "text",
-    mustWork = TRUE
-  ))
+  if (layers[1] < 0) {
+    n <- textModelLayers(model)
+    layers <- 1 + n + layers
+    layers
+  }
 
   # Get hidden states/layers for output 1 and/or output 2 or decontextualsied;
   if (!is.null(aggregation_from_layers_to_tokens) |
-      !is.null(aggregation_from_tokens_to_texts) |
-      decontextualize){
-
+    !is.null(aggregation_from_tokens_to_texts) |
+    decontextualize) {
     all_wanted_layers <- textEmbedRawLayers(
       texts = texts,
       model = model,
@@ -919,40 +908,37 @@ textEmbed <- function(texts,
     )
   }
 
-  if(!decontextualize){
-  # 1. Get token-level embeddings with aggregated levels
-  if (!is.null(aggregation_from_layers_to_tokens) & keep_token_embeddings){
+  if (!decontextualize) {
+    # 1. Get token-level embeddings with aggregated levels
+    if (!is.null(aggregation_from_layers_to_tokens) & keep_token_embeddings) {
+      token_embeddings <- textEmbedLayerAggregation(
+        word_embeddings_layers = all_wanted_layers$context_tokens,
+        layers = layers,
+        aggregation_from_layers_to_tokens = aggregation_from_layers_to_tokens,
+        aggregation_from_tokens_to_texts = NULL,
+        return_tokens = TRUE, # need to be TRUE
+        tokens_deselect = NULL
+      )
+      output$tokens <- token_embeddings
+    }
 
-    token_embeddings <- textEmbedLayerAggregation(
-      word_embeddings_layers = all_wanted_layers$context_tokens,
-      layers = layers,
-      aggregation_from_layers_to_tokens = aggregation_from_layers_to_tokens,
-      aggregation_from_tokens_to_texts = NULL,
-      return_tokens = TRUE, # need to be TRUE
-      tokens_deselect = NULL
-    )
-    output$tokens <- token_embeddings
+    # 2. Get aggregated token layers; aggregation_from_tokens_to_texts = "mean"
+    if (!is.null(aggregation_from_tokens_to_texts)) {
+      aggregated_token_embeddings <- textEmbedLayerAggregation(
+        word_embeddings_layers = all_wanted_layers$context_tokens,
+        layers = layers,
+        aggregation_from_layers_to_tokens = aggregation_from_layers_to_tokens,
+        aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts,
+        return_tokens = FALSE, # need to be FALSE
+        tokens_deselect = NULL
+      )
+      output$texts <- aggregated_token_embeddings
+    }
   }
 
-  # 2. Get aggregated token layers; aggregation_from_tokens_to_texts = "mean"
-  if (!is.null(aggregation_from_tokens_to_texts)){
 
-    aggregated_token_embeddings <- textEmbedLayerAggregation(
-      word_embeddings_layers = all_wanted_layers$context_tokens,
-      layers = layers,
-      aggregation_from_layers_to_tokens = aggregation_from_layers_to_tokens,
-      aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts,
-      return_tokens = FALSE, # need to be FALSE
-      tokens_deselect = NULL
-    )
-    output$texts <- aggregated_token_embeddings
-  }
-  }
-
-
-  # 3. Aggregate Word Type (both decontextualised or not) aggregation_from_tokens_to_word_types = "mean"
+  # 3. Aggregate Word Type (both decontextualised or not)
   if (!is.null(aggregation_from_tokens_to_word_types) | decontextualize) {
-
     if (!decontextualize) {
       single_context_text <- paste("Embedding single context embeddings.",
         "\n",
@@ -966,8 +952,8 @@ textEmbed <- function(texts,
 
     if (decontextualize) {
       single_context_text <- paste("Embedding decontextualised embeddings.",
-                                   "\n",
-                                   sep = ""
+        "\n",
+        sep = ""
       )
       cat(colourise(single_context_text, "purple"))
 
@@ -991,10 +977,12 @@ textEmbed <- function(texts,
       individual_word_embeddings
     )
 
-    comment(individual_word_embeddings_words) <- paste(comment(all_wanted_layers$context_tokens),
-                                                       comment(individual_word_embeddings),
-                                                       " ; aggregation_from_tokens_to_word_types = ", aggregation_from_tokens_to_word_types,
-                                                       " ; decontextualize = ", decontextualize)
+    comment(individual_word_embeddings_words) <- paste(
+      comment(all_wanted_layers$context_tokens),
+      comment(individual_word_embeddings),
+      " ; aggregation_from_tokens_to_word_types = ", aggregation_from_tokens_to_word_types,
+      " ; decontextualize = ", decontextualize
+    )
     output$word_types <- individual_word_embeddings_words
     cat(colourise("Done! \n", "purple"))
   }
@@ -1002,52 +990,55 @@ textEmbed <- function(texts,
 
   #### Decontextualised tokens and text embeddings (using output from 3 above)
 
-  if(decontextualize){
-
+  if (decontextualize) {
     decontext_space <- individual_word_embeddings_words
 
     ### 1. Get token-level embeddings with aggregated levels
-    if (!is.null(aggregation_from_layers_to_tokens)){ #  & keep_token_embeddings
+    if (!is.null(aggregation_from_layers_to_tokens)) { #  & keep_token_embeddings
 
       # Tokenize texts
       output <- list()
+      token_embeddings_list <- list()
       token_embeddings_list$tokens <- list()
+      if (!tibble::is_tibble(texts)){
+        texts <- tibble::as_tibble(texts)
+      }
+
       for (i_variables in seq_len(ncol(texts))) {
+        text_tokens <- lapply(texts[[i_variables]], textTokenize,
+                              model = model, max_token_to_sentence = max_token_to_sentence) # , ...
 
-      text_tokens <- lapply(texts[[i_variables]], textTokenize, model = model, max_token_to_sentence = max_token_to_sentence) #, ...
+        t_embeddings <- lapply(text_tokens, applysemrep_over_words, decontext_space, tolower = FALSE)
 
-      t_embeddings <- lapply(text_tokens, applysemrep_over_words, decontext_space, tolower = FALSE)
+        token_embeddings <- mapply(dplyr::bind_cols, text_tokens, t_embeddings, SIMPLIFY = FALSE)
 
-      token_embeddings <- mapply(dplyr::bind_cols, text_tokens, t_embeddings, SIMPLIFY = FALSE)
-
-      #token_embeddings <- lapply(text_tokens, dplyr::bind_cols, t_embeddings, SIMPLIFY = FALSE)
-      token_embeddings_list$tokens[[i_variables]] <- token_embeddings
-      names(token_embeddings_list$tokens[[i_variables]]) <- paste(names(texts)[[i_variables]],
-                                                                  seq_len(length(token_embeddings)),
-                                                                  sep="_")
-
+        token_embeddings_list$tokens[[i_variables]] <- token_embeddings
+        names(token_embeddings_list$tokens[[i_variables]]) <- paste(names(texts)[[i_variables]],
+          seq_len(length(token_embeddings)),
+          sep = "_"
+        )
       }
       output$tokens <- token_embeddings_list$tokens
+    }
 
+    # 2. Get aggregated token layers; aggregation_from_tokens_to_texts = "mean"
+    if (!is.null(aggregation_from_tokens_to_texts)) {
+
+      # Function to add dummy variable token_id and layer_number because textEmbedLayerAggregation
+      # expect that (and it is missing here because the dectontextualize method is used)
+      add_columns <- function(df) {
+        df$token_id <- seq_len(nrow(df))
+        df$layer_number <- rep(1, nrow(df))
+        return(df)
       }
+      token_embeddings1 <- lapply(token_embeddings, add_columns)
 
-      # 2. Get aggregated token layers; aggregation_from_tokens_to_texts = "mean"
-      if (!is.null(aggregation_from_tokens_to_texts)){
+      text_embeddings <- textEmbedLayerAggregation(token_embeddings1,
+        aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts,
+        return_tokens = FALSE
+      )
 
-        # Function to add dummy variable token_id and layer_number because textEmbedLayerAggregation
-        # expect that (and it is missing here because the dectontextualize method is used)
-        add_columns <- function(df){
-          df$token_id <- seq_len(nrow(df))
-          df$layer_number <- rep(1, nrow(df))
-          return(df)
-        }
-        token_embeddings1 <- lapply(token_embeddings, add_columns)
-
-        text_embeddings <- textEmbedLayerAggregation(token_embeddings1,
-                                                     aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts,
-                                                     return_tokens = FALSE)
-
-        output$texts <- text_embeddings
+      output$texts <- text_embeddings
     }
   }
 
@@ -1056,7 +1047,7 @@ textEmbed <- function(texts,
   Time_textEmbed <- sprintf("Duration to embed text: %f %s", Time_textEmbed, units(Time_textEmbed))
   Date_textEmbed <- Sys.time()
 
-  if (dim_name == TRUE & !is.null(aggregation_from_tokens_to_texts)){
+  if (dim_name == TRUE & !is.null(aggregation_from_tokens_to_texts)) {
     output$texts <- textDimName(output$texts)
   }
 
@@ -1068,212 +1059,6 @@ textEmbed <- function(texts,
   )
   return(output)
 }
-
-#rearrange list order to be the same for decontextualised.
-
-#library(text)
-#test1 <- textEmbed(texts = Language_based_assessment_data_8[1,1],
-#                   layers = 10:11,
-#                   aggregation_from_layers_to_tokens = "concatenate",
-#                   aggregation_from_tokens_to_texts = NULL,
-#                   aggregation_from_tokens_to_word_types = NULL,
-#                   decontextualize = FALSE)
-#test1
-#names(test1)
-#
-#test2 <- textEmbed(texts = Language_based_assessment_data_8[1,1],
-#                   layers = 10:11,
-#                   aggregation_from_layers_to_tokens = "concatenate",
-#                   aggregation_from_tokens_to_texts = "mean",
-#                   aggregation_from_tokens_to_word_types = NULL,
-#                   decontextualize = FALSE,
-#                   dim_name = FALSE)
-#test2
-#names(test2)
-#
-#test3 <- textEmbed(texts = Language_based_assessment_data_8[1,1],
-#                   layers = 10:11,
-#                   aggregation_from_layers_to_tokens = "concatenate",
-#                   aggregation_from_tokens_to_texts = "mean",
-#                   aggregation_from_tokens_to_word_types = "mean",
-#                   decontextualize = FALSE,
-#                   dim_name = FALSE)
-#test3
-#names(test3)
-#
-#test4 <- textEmbed(texts = Language_based_assessment_data_8[1,1],
-#                   layers = 10:11,
-#                   aggregation_from_layers_to_tokens = "concatenate",
-#                   aggregation_from_tokens_to_texts = "mean",
-#                   aggregation_from_tokens_to_word_types = "mean",
-#                   keep_token_embeddings = FALSE,
-#                   decontextualize = FALSE,
-#                   dim_name = TRUE)
-#test4
-#names(test4)
-#
-#
-#
-## DECONTEXTUALISE = TRUE
-#test3_DE <- textEmbed(texts = Language_based_assessment_data_8[1,1],
-#                      layers = 10:11,
-#                      aggregation_from_layers_to_tokens = "concatenate",
-#                      aggregation_from_tokens_to_texts = "mean",
-#                      aggregation_from_tokens_to_word_types = "mean",
-#                      keep_token_embeddings = FALSE,
-#                      decontextualize = TRUE,
-#                      dim_name = FALSE)
-#test3_DE
-#names(test3_DE)
-#
-## keep_token_embeddings = TRUE
-#test4_DE <- textEmbed(texts = Language_based_assessment_data_8[1,1],
-#                      layers = 10:11,
-#                      aggregation_from_layers_to_tokens = "concatenate",
-#                      aggregation_from_tokens_to_texts = "mean",
-#                      aggregation_from_tokens_to_word_types = "mean",
-#                      keep_token_embeddings = TRUE,
-#                      decontextualize = TRUE,
-#                      dim_name = FALSE)
-#test4_DE
-#names(test4_DE)
-#
-#
-## True stop
-#test1_DE <- textEmbed(texts = Language_based_assessment_data_8[1,1],
-#                   layers = 10:11,
-#                   aggregation_from_layers_to_tokens = "concatenate",
-#                   aggregation_from_tokens_to_texts = NULL,
-#                   aggregation_from_tokens_to_word_types = NULL,
-#                   keep_token_embeddings = TRUE,
-#                   decontextualize = TRUE)
-#test1_DE
-#names(test1_DE)
-#
-
-
-
-#textEmbedAll <- function(texts,
-#                      model = "bert-base-uncased",
-#                      layers = 11,
-#                      contexts = TRUE,
-#                      dim_name = TRUE,
-#                      single_context_embeddings = TRUE,
-#                      context_layers = layers,
-#                      context_aggregation_layers = "concatenate",
-#                      context_aggregation_tokens = "mean",
-#                      context_tokens_select = NULL,
-#                      context_tokens_deselect = NULL,
-#                      decontexts = FALSE,
-#                      decontext_layers = layers,
-#                      decontext_aggregation_layers = "concatenate",
-#                      decontext_aggregation_tokens = "mean",
-#                      decontext_tokens_select = NULL,
-#                      decontext_tokens_deselect = NULL,
-#                      device = "gpu",
-#                      model_max_length = NULL,
-##                      logging_level = "error") {
-#  T1_textEmbed <- Sys.time()
-#
-#  reticulate::source_python(system.file("python",
-#                                        "huggingface_Interface3.py",
-#                                        package = "text",
-#                                        mustWork = TRUE
-#  ))
-#
-#  # Get hidden states/layers for all text; both context and decontext
-#  all_wanted_layers <- textEmbedRawLayers(texts,
-#                                             contexts = contexts,
-#                                             single_context_embeddings = single_context_embeddings,
-#                                             decontexts = decontexts,
-#                                             model = model,
-#                                             layers = layers,
-#                                             device = device,
-#                                             model_max_length = model_max_length,
-#                                             logging_level = logging_level
-#  )
-#
-#  # Aggregate context layers
-#  contextualised_embeddings <- textEmbedLayerAggregation(
-#    word_embeddings_layers = all_wanted_layers$context,
-#    layers = context_layers,
-#    aggregation_from_layers_to_tokens = context_aggregation_layers,
-#    aggregation_from_tokens_to_texts = context_aggregation_tokens,
-#    tokens_deselect = NULL
-#  )
-#
-#  # Aggregate Single words embeddings
-#  # DEcontext layers (in case they should be added differently from context) decontext_layers = 11
-#  if (decontexts == TRUE | single_context_embeddings == TRUE) {
-#
-#    if (single_context_embeddings) {
-#      single_context_text <- paste("Embedding single context embeddings.",
-#                                   "\n",
-#                                   sep = ""
-#      )
-#      cat(colourise(single_context_text, "purple"))
-#
-#      individual_word_embeddings_layers <- all_wanted_layers$word_type
-#      individual_words <- all_wanted_layers$tokens
-#    }
-#
-#    if (decontexts) {
-#      single_context_text <- paste("Embedding decontextualised embeddings.",
-#                                   "\n",
-#                                   sep = ""
-#      )
-#      cat(colourise(single_context_text, "purple"))
-#
-#      individual_word_embeddings_layers <- all_wanted_layers$decontext$word_type
-#      individual_words <- all_wanted_layers$decontext$single_words
-#    }
-#
-#    individual_word_embeddings <- textEmbedLayerAggregation(
-#      word_embeddings_layers = individual_word_embeddings_layers,
-#      layers = decontext_layers, # decontext_layers = 11
-#      aggregation_from_layers_to_tokens = decontext_aggregation_layers, # decontext_aggregation_layers = 11
-#      aggregation_from_tokens_to_texts = decontext_aggregation_tokens,
-#      tokens_select = decontext_tokens_select,
-#      tokens_deselect = decontext_tokens_deselect
-#    )
-#
-#    # Combine the words for each decontextualized embedding
-#    individual_word_embeddings_words <- dplyr::bind_cols(
-#      individual_words, # all_wanted_layers$decontext$single_words,
-#      individual_word_embeddings
-#    )
-#
-#    comment(individual_word_embeddings_words) <- paste(comment(individual_word_embeddings[[1]]),
-#                                                       " ; single_context_embeddings = ", single_context_embeddings,
-#                                                       " ; decontexts = ", decontexts)
-#    cat(colourise("Done! \n", "purple"))
-#  }
-#
-#  T2_textEmbed <- Sys.time()
-#  Time_textEmbed <- T2_textEmbed - T1_textEmbed
-#  Time_textEmbed <- sprintf("Duration to embed text: %f %s", Time_textEmbed, units(Time_textEmbed))
-#  Date_textEmbed <- Sys.time()
-#  # Adding embeddings to one list
-#  all_embeddings <- contextualised_embeddings
-#
-#  if (decontexts == TRUE | single_context_embeddings == TRUE) {
-#    all_embeddings$singlewords_we <- individual_word_embeddings_words
-#  }
-#
-#  if (dim_name == TRUE){
-#    all_embeddings <- textDimName(all_embeddings)
-#  }
-#
-#  comment(all_embeddings) <- paste(Time_textEmbed,
-#                                   "; Date created: ", Date_textEmbed,
-#                                   "; text_version: ", packageVersion("text"), ".",
-#                                   sep = "",
-#                                   collapse = " "
-#  )
-#  all_embeddings
-#}
-#
-#
 
 
 #' Change the names of the dimensions in the word embeddings.
@@ -1287,27 +1072,28 @@ textEmbed <- function(texts,
 #' word_embeddings_4$texts$harmonytexts
 #' # Here they are changed to just Dim
 #' w_e_T <- textDimName(word_embeddings_4$texts["harmonytexts"],
-#'                       dim_names = FALSE)
+#'   dim_names = FALSE
+#' )
 #' # Here they are changed back
 #' w_e_F <- textDimName(w_e_T, dim_names = TRUE)
 #' }
 #' @seealso see \code{\link{textEmbed}}
 #' @export
 textDimName <- function(word_embeddings,
-                         dim_names = TRUE) {
-  tokens = NULL
-  word_type = NULL
+                        dim_names = TRUE) {
+  tokens <- NULL
+  word_type <- NULL
 
   x_is_tibble <- tibble::is_tibble(word_embeddings)
-  if(x_is_tibble) word_embeddings <- list(word_embeddings)
+  if (x_is_tibble) word_embeddings <- list(word_embeddings)
 
   # Remove singlewords_we if it exist
-  if(!is.null(word_embeddings$word_type)){
+  if (!is.null(word_embeddings$word_type)) {
     word_type <- word_embeddings$word_type
     word_embeddings$word_type <- NULL
   }
 
-  if(!is.null(word_embeddings$tokens)){
+  if (!is.null(word_embeddings$tokens)) {
     tokens <- word_embeddings$tokens
     word_embeddings$tokens <- NULL
   }
@@ -1325,7 +1111,6 @@ textDimName <- function(word_embeddings,
 
   if (!dim_names) {
     for (i_row in seq_len(length(word_embeddings))) {
-
       target_variables_names <- colnames(word_embeddings[[i_row]])
 
       # Select everything BEFORE the first _ (i.e., the Dim1, etc.)
@@ -1336,16 +1121,16 @@ textDimName <- function(word_embeddings,
   }
 
   # Attach word embeddings again
-  if(!is.null(word_type)){
+  if (!is.null(word_type)) {
     word_embeddings$word_type <- word_type
   }
   # Attach word embeddings again
-  if(!is.null(tokens)){
+  if (!is.null(tokens)) {
     word_embeddings$tokens <- tokens
   }
 
   # Return tibble if x is a tibble (and not a list)
-  if(x_is_tibble) word_embeddings <- word_embeddings[[1]]
+  if (x_is_tibble) word_embeddings <- word_embeddings[[1]]
 
   return(word_embeddings)
 }

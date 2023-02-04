@@ -1,25 +1,21 @@
 
-#model_info = text_train_results2
-#word_embeddings = harmony_word_embeddings
-#x_append = Language_based_assessment_data_8[1:20, ]
-#dim_names = TRUE
-
 #' Predict scores or classification from, e.g., textTrain.
 #'
-#' @param model_info  Model info (e.g., saved output from textTrain, textTrainRegression or textRandomForest).
-# @param new_data Word embeddings from new data to be predicted from.
-#' @param word_embeddings  Word embeddings
-#' @param x_append  Variables to be appended after the word embeddings (x).
-#' @param dim_names Account for specific dimension names from textEmbed
-#' (rather than generic names including Dim1, Dim2 etc.).
-#' @param type  Type of prediction; e.g., "prob", "class".
+#' @param model_info (model object) Model info (e.g., saved output from textTrain,
+#' textTrainRegression or textRandomForest).
+#' @param word_embeddings (tibble) Word embeddings
+#' @param x_append (tibble) Variables to be appended after the word embeddings (x).
+#' @param dim_names (boolean) Account for specific dimension names from textEmbed()
+#' (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
+#' word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.
+#' @param type (string) Type of prediction; e.g., "prob", "class".
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predicted scores from word embeddings.
 #' @examples
 #' word_embeddings <- word_embeddings_4
 #' ratings_data <- Language_based_assessment_data_8
 #' @seealso see \code{\link{textTrain}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
+#' \code{\link{textTrainRandomForest}}
 #' @importFrom recipes prep bake
 #' @importFrom stats predict
 #' @importFrom tibble is_tibble as_tibble_col
@@ -49,6 +45,11 @@ textPredict <- function(model_info,
     # Select the word embeddings
     word_embeddings <- word_embeddings[word_embeddings_names]
   } else {
+    # Remove specific names in the word embeddings
+    word_embeddings <- textDimName(word_embeddings,
+      dim_names = FALSE
+    )
+
     word_embeddings_names <- "word_embeddings"
   }
 
@@ -64,7 +65,6 @@ textPredict <- function(model_info,
 
     # Select those names from the "data"
     x_append_target <- x_append %>% dplyr::select(dplyr::all_of(variable_names))
-
   } else {
     variable_names <- NULL
     x_append_target <- NULL
@@ -76,7 +76,6 @@ textPredict <- function(model_info,
     x_append = x_append_target, ...
   )
   new_data1 <- new_data1$x1
-  #names(new_data1)[3000:3078]
 
   # Dealing with NAs
   new_data1$id_nr <- c(seq_len(nrow(new_data1)))
@@ -92,7 +91,7 @@ textPredict <- function(model_info,
 
   # Get Prediction scores help(arrange)
   predicted_scores2 <- data_prepared_with_recipe %>%
-    dplyr::bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type)) %>% #, ...
+    dplyr::bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = type)) %>% # , ...
     dplyr::select(-!!colnames_to_b_removed) %>%
     dplyr::full_join(new_data_id_nr_col, by = "id_nr") %>%
     dplyr::arrange(id_nr) %>%
@@ -142,7 +141,7 @@ textPredictAll <- function(models,
     word_embeddings$singlewords_we <- NULL
   }
 
-  #
+  # i = 1
   for (i in seq_len(length(models))) {
     preds <- textPredict(
       models[[i]],

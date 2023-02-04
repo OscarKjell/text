@@ -1,26 +1,216 @@
+library(stats)
+library(dplyr)
+library(recipes)
+library(rsample)
+library(parsnip)
+library(tune)
+library(magrittr)
+library(future)
+library(furrr)
+library(workflows)
 
-#' Function to find the mode
-#' @param x vector with numbers
-#' @return  Mode value
-#' @noRd
+library(text)
+library(tibble)
+library(testthat)
+
+context("Testing PM tutorial")
+
+test_that("PM tutorial", {
+  skip_on_cran()
+colourise <- function(text, fg = "black", bg = NULL) {
+  term <- Sys.getenv()["TERM"]
+  colour_terms <- c("xterm-color", "xterm-256color", "screen", "screen-256color")
+
+  if (rcmd_running() || !any(term %in% colour_terms, na.rm = TRUE)) {
+    return(text)
+  }
+
+  col_escape <- function(col) {
+    paste0("\033[", col, "m")
+  }
+
+  col <- .fg_colours[tolower(fg)]
+  if (!is.null(bg)) {
+    col <- paste0(col, .bg_colours[tolower(bg)], sep = ";")
+  }
+
+  init <- col_escape(col)
+  reset <- col_escape("0")
+  paste0(init, text, reset)
+}
+
+.fg_colours <- c(
+  "black" = "0;30",
+  "blue" = "0;34",
+  "green" = "0;32",
+  "cyan" = "0;36",
+  "red" = "0;31",
+  "purple" = "0;35"
+  # "brown" = "0;33",
+  # "light gray" = "0;37",
+  # "dark gray" = "1;30",
+  # "light blue" = "1;34",
+  # "light green" = "1;32",
+  # "light cyan" = "1;36",
+  # "light red" = "1;31",
+  # "light purple" = "1;35",
+  # "yellow" = "1;33",
+  # "white" = "1;37"
+)
+
+.bg_colours <- c(
+  "black" = "40",
+  "red" = "41",
+  "green" = "42",
+  "brown" = "43",
+  "blue" = "44",
+  "purple" = "45",
+  "cyan" = "46",
+  "light gray" = "47"
+)
+
+rcmd_running <- function() {
+  nchar(Sys.getenv("R_TESTS")) != 0
+}
+
+
+
+sorting_xs_and_x_append <- function(x, x_append, ...) {
+  variable_name_index_pca <- NA
+
+  if (!is.null(x)) {
+    # In case the embedding is in list form get the tibble form
+    if (!tibble::is_tibble(x) & length(x) == 1) {
+      x1 <- x[[1]]
+      # Get names for description
+      x_name <- names(x)
+      # Get embedding info to save for model description
+      embedding_description <- comment(x[[1]])
+      # In case there are several embeddings in list form get the x_names and
+      # embedding description for model description
+    } else if (!tibble::is_tibble(x) & length(x) > 1) {
+      x_name <- names(x)
+      x_name <- paste(x_name, sep = " ", collapse = " & ")
+      x_name <- paste("input:", x_name, sep = " ", collapse = " ")
+
+      embedding_description <- comment(x[[1]])
+      # In case it is just one word embedding as tibble
+    } else {
+      x1 <- x
+      x_name <- deparse(substitute(x))
+      embedding_description <- comment(x)
+    }
+  }
+
+  # Get names for the added variables to save to description
+  x_append_names <- paste(names(x_append), collapse = ", ")
+  # Possibility to train without word embeddings
+  if (is.null(x)) {
+    x1 <- x_append
+    x_append <- NULL
+    colnames(x1) <- paste0(
+      "Dim", "_",
+      colnames(x1)
+    )
+    x_name <- NULL
+    embedding_description <- NULL
+  }
+
+  ############ Arranging word embeddings to be concatenated from different texts ############
+  ##################################################
+
+  if (!tibble::is_tibble(x) & length(x) > 1) {
+
+    # Select all variables that starts with Dim in each dataframe of the list.
+    xlist <- lapply(x, function(X) {
+      X <- dplyr::select(X, dplyr::starts_with("Dim"))
+    })
+
+    Nword_variables <- length(xlist)
+    # Give each column specific names with indexes so that they can be handled separately in the PCAs
+    for (i in 1:Nword_variables) {
+      colnames(xlist[[i]]) <- paste("DimWs", i, ".", colnames(xlist[[i]]), sep = "")
+    }
+
+    # Make vector with each index so that we can allocate them separately for the PCAs
+    variable_name_index_pca <- list()
+    for (i in 1:Nword_variables) {
+      variable_name_index_pca[i] <- paste("DimWs", i, sep = "")
+    }
+
+    # Make one df rather then list.
+    x1 <- dplyr::bind_cols(xlist)
+  }
+  ############ End for multiple word embeddings ############
+  ##########################################################
+
+  #### Add other variables to word embeddings x_append=NULL
+  if (!is.null(x_append)) {
+    x1 <- add_variables_to_we(
+      word_embeddings = x1,
+      data = x_append, ...
+    )
+  }
+
+  x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
+  variables_names <- list(
+    x1, x_name, embedding_description,
+    x_append_names, variable_name_index_pca
+  )
+  names(variables_names) <- c(
+    "x1", "x_name", "embedding_description",
+    "x_append_names", "variable_name_index_pca"
+  )
+
+  return(variables_names)
+}
+
+
 statisticalMode <- function(x) {
   ux <- unique(x)
   ux[which.max(tabulate(match(x, ux)))]
 }
 
 
-#' Function to fit a model and compute RMSE.
-#'
-#' @param object An rsplit object (from results_nested_resampling tibble)
-#' object = results_nested_resampling$splits[[1]] OR results_nested_resampling$splits[[1]][[1]]
-#' object = results_nested_resampling$inner_resamples[[5]][[1]][[1]]
-#' @param penalty hyperparameter for ridge regression.
-#' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA threshold for pca; preprocess_PCA = NA
-#' @param variable_name_index_pca variable with names to know how to keep variables
-#' from same word embedding together in separate pca:s
-#' @return  RMSE.
-#' @noRd
+select_eval_measure_val <- function(eval_measure = "bal_accuracy",
+                                    holdout_pred = NULL,
+                                    truth = y,
+                                    estimate = .pred_class, class) {
+  # Get accuracy
+  if (eval_measure == "accuracy") {
+    eval_measure_val <- yardstick::accuracy(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "bal_accuracy") {
+    eval_measure_val <- yardstick::bal_accuracy(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "sens") {
+    eval_measure_val <- yardstick::sens(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "spec") {
+    eval_measure_val <- yardstick::spec(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "precision") {
+    eval_measure_val <- yardstick::precision(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "kappa") {
+    eval_measure_val <- yardstick::kap(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "f_measure") {
+    eval_measure_val <- yardstick::f_meas(holdout_pred, truth = y, estimate = .pred_class)
+  } else if (eval_measure == "roc_auc") {
+    class1_name <- eval(class)
+    eval_measure_val <- yardstick::roc_auc(holdout_pred, truth = y, dplyr::all_of(class1_name))
+  } else if (eval_measure == "rmse") {
+    eval_measure_val <- yardstick::rmse(holdout_pred, truth = y, estimate = .pred)
+  } else if (eval_measure == "rsq") {
+    eval_measure_val <- yardstick::rsq(holdout_pred, truth = y, estimate = .pred)
+  } else if (eval_measure == "cor_test") {
+    cor_testing <- stats::cor.test(holdout_pred$y, holdout_pred$.pred, na.action = na.omit)
+    estimate1 <- cor_testing[[4]][[1]]
+    metric <- "cor_test"
+    estimator <- "standard"
+    eval_measure_val <- tibble::tibble(metric, estimator, as.numeric(estimate1))
+    colnames(eval_measure_val) <- c(".metric", ".estimator", ".estimate")
+  }
+  eval_measure_val
+}
+
+
+
 fit_model_rmse <- function(object,
                            model = "regression",
                            eval_measure = "rmse",
@@ -204,12 +394,12 @@ fit_model_rmse <- function(object,
     holdout_pred <-
       stats::predict(mod, xy_testing) %>%
       dplyr::bind_cols(rsample::assessment(object) %>%
-        dplyr::select(y, id_nr))
+                         dplyr::select(y, id_nr))
 
     # Get RMSE; eval_measure = "rmse" library(tidyverse)
     eval_result <- select_eval_measure_val(eval_measure,
-      holdout_pred = holdout_pred,
-      truth = y, estimate = .pred
+                                           holdout_pred = holdout_pred,
+                                           truth = y, estimate = .pred
     )$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
     output <- list(
@@ -221,19 +411,19 @@ fit_model_rmse <- function(object,
     holdout_pred_class <-
       stats::predict(mod, xy_testing, type = c("class")) %>%
       dplyr::bind_cols(rsample::assessment(object) %>%
-        dplyr::select(y, id_nr))
+                         dplyr::select(y, id_nr))
 
     holdout_pred <-
       stats::predict(mod, xy_testing, type = c("prob")) %>%
       dplyr::bind_cols(rsample::assessment(object) %>%
-        dplyr::select(y, id_nr))
+                         dplyr::select(y, id_nr))
 
     holdout_pred$.pred_class <- holdout_pred_class$.pred_class
 
     # Get RMSE; eval_measure = "rmse"
     eval_result <- select_eval_measure_val(eval_measure,
-      holdout_pred = holdout_pred,
-      truth = y, estimate = .pred_class
+                                           holdout_pred = holdout_pred,
+                                           truth = y, estimate = .pred_class
     )$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
     output <- list(
@@ -259,18 +449,6 @@ fit_model_rmse <- function(object,
 }
 
 
-#' In some situations, we want to parameterize the function over the tuning parameter:
-#' Function to fit a model and compute RMSE.
-#'
-#' @param object An rsplit object (from results_nested_resampling tibble)
-#' object = results_nested_resampling$splits[[1]]
-#' @param penalty hyperparameter for ridge regression.
-#' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA threshold for pca
-#' @param variable_name_index_pca variable with names to know how to keep variables
-#' from same word embedding together in separate pca:s.
-#' @return RMSE.
-#' @noRd
 fit_model_rmse_wrapper <- function(penalty = penalty,
                                    mixture = mixture,
                                    object,
@@ -283,31 +461,20 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
                                    preprocess_step_scale = preprocess_step_scale,
                                    impute_missing = impute_missing) {
   fit_model_rmse(object,
-    model,
-    eval_measure,
-    penalty,
-    mixture,
-    preprocess_PCA = preprocess_PCA,
-    variable_name_index_pca = variable_name_index_pca,
-    first_n_predictors = first_n_predictors,
-    preprocess_step_center = preprocess_step_center,
-    preprocess_step_scale = preprocess_step_scale,
-    impute_missing = impute_missing
+                 model,
+                 eval_measure,
+                 penalty,
+                 mixture,
+                 preprocess_PCA = preprocess_PCA,
+                 variable_name_index_pca = variable_name_index_pca,
+                 first_n_predictors = first_n_predictors,
+                 preprocess_step_center = preprocess_step_center,
+                 preprocess_step_scale = preprocess_step_scale,
+                 impute_missing = impute_missing
   )
 }
 
 
-#' For the nested resampling, a model needs to be fit for each tuning parameter and each INNER split.
-#'
-#' @param object an rsplit object from the INNER samples
-#' object=results_nested_resampling$inner_resamples[[1]]$splits[[1]]
-#' @param penalty hyperparameter for ridge regression.
-#' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA threshold for pca
-#' @param variable_name_index_pca variable with names to know how to keep variables
-#' from same word embedding together in separate pcas
-#' @return RMSE.
-#' @noRd
 tune_over_cost <- function(object,
                            model,
                            eval_measure,
@@ -426,12 +593,6 @@ tune_over_cost <- function(object,
 }
 
 
-
-#' Function to get the lowest eval_measure_val
-#' @param data the data with parameters
-#' @param eval_measure the evaluation measure which decide if min or max value should be selected
-#' @return The row with the best evaluation measure.
-#' @noRd
 bestParameters <- function(data, eval_measure) {
   if (eval_measure %in% c(
     "accuracy", "bal_accuracy", "sens", "spec",
@@ -446,17 +607,6 @@ bestParameters <- function(data, eval_measure) {
   return(results)
 }
 
-#' # Since this will be called across the set of OUTER cross-validation splits, another wrapper is required:
-#'
-#' @param object An rsplit object from the INNER samples
-#' object = results_nested_resampling$inner_resamples[[1]]
-#' @param penalty hyperparameter for ridge regression.
-#' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA threshold for pca
-#' @param variable_name_index_pca variable with names to know how to keep variables
-#' from same word embedding together in separate pcas
-#' @return RMSE with corresponding penalty, mixture and preprocess_PCA.
-#' @noRd
 summarize_tune_results <- function(object,
                                    model,
                                    eval_measure,
@@ -488,116 +638,39 @@ summarize_tune_results <- function(object,
   return(results)
 }
 
-#' Train word embeddings to a numeric variable.
-#'
-#' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
-#' provided in a list they will be concatenated.
-#' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before
-#' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.
-#' @param append_first (boolean) Option to add variables before or after all word embeddings.
-#' @param y Numeric variable to predict.
-#' @param model Type of model. Default is "regression"; see also "logistic" for classification.
-#' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops
-#' of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
-#' using rsample::validation_split in the inner loop to achieve a development and assessment set (note that
-#' for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds"
-#' uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.
-#' @param outside_folds Number of folds for the outer folds (default = 10).
-#' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param outside_breaks The number of bins wanted to stratify a numeric stratification variable in the
-#' outer cross-validation loop.
-#' @param inside_folds The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
-#' For more information see validation_split in rsample.
-#' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner
-#' cross-validation loop.
-#' @param eval_measure Type of evaluative measure to select models from. Default = "rmse" for regression and
-#' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
-#'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
-#'  the yardstick package).
-#' @param preprocess_step_center normalizes dimensions to have a mean of zero; default is set to TRUE.
-#' For more info see (step_center in recipes).
-#' @param preprocess_step_scale  normalize dimensions to have a standard deviation of one.
-#' For more info see (step_scale in recipes).
-#' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
-#' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
-#' number of components to select (e.g., 10). Default is "min_halving", which is a function
-#' that selects the number of PCA components based on number  of participants and feature (word embedding dimensions)
-#' in the data. The formula is:
-#' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
-#' @param penalty hyper parameter that is tuned
-#' @param mixture A number between 0 and 1 (inclusive) that reflects the proportion of L1 regularization
-#' (i.e. lasso) in the model (for more information see the linear_reg-function in the parsnip-package).
-#' When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
-#' used (specific engines only).
-#' @param first_n_predictors by default this setting is turned off (i.e., NA). To use this method,
-#' set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
-#' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
-#' then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
-#' This option is currently only possible for one embedding at the time.
-#' @param method_cor Type of correlation used in evaluation (default "pearson";
-#' can set to "spearman" or "kendall").
-#' @param impute_missing default FALSE (can be set to TRUE if something else than word_embeddings are trained).
-#' @param model_description Text to describe your model (optional; good when sharing the model with others).
-#' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it
-#'  (i.e., only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
-#'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
-#' @param save_output Option not to save all output; default "all". see also "only_results"
-#'  and "only_results_predictions".
-#' @param seed Set different seed.
-#' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
-#' @return A (one-sided) correlation test between predicted and observed values; tibble
-#' of predicted values, as well as information about the model (preprossing_recipe, final_model
-#'  and model_description).
-#' @examples
-#' \donttest{
-#' results <- textTrainRegression(
-#'   x = word_embeddings_4$texts$harmonytext,
-#'   y = Language_based_assessment_data_8$hilstotal,
-#'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
-#' )
-#' }
-#' @seealso see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}}
-#' @importFrom stats cor.test na.omit lm
-#' @importFrom dplyr bind_cols select starts_with filter all_of
-#' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
-#' @importFrom rsample vfold_cv
-#' @importFrom parsnip linear_reg set_engine
-#' @importFrom tune tune control_grid tune_grid select_best collect_predictions
-#' @importFrom magrittr %>%
-#' @importFrom future plan multisession
-#' @importFrom furrr future_map
-#' @importFrom workflows workflow add_model add_recipe
-#' @export
-textTrainRegression <- function(x,
-                                y,
-                                x_append = NULL,
-                                append_first = FALSE,
-                                cv_method = "validation_split",
-                                outside_folds = 10,
-                                outside_strata_y = "y",
-                                outside_breaks = 4,
-                                inside_folds = 3 / 4,
-                                inside_strata_y = "y",
-                                inside_breaks = 4,
-                                model = "regression",
-                                eval_measure = "default",
-                                preprocess_step_center = TRUE,
-                                preprocess_step_scale = TRUE,
-                                preprocess_PCA = NA,
-                                penalty = 10^seq(-16, 16),
-                                mixture = c(0),
-                                first_n_predictors = NA,
-                                impute_missing = FALSE,
-                                method_cor = "pearson",
-                                model_description = "Consider writing a description of your model here",
-                                multi_cores = "multi_cores_sys_default",
-                                save_output = "all",
-                                seed = 2020,
-                                ...) {
+
+
+x = word_embeddings_4$texts$harmonytext
+y = Language_based_assessment_data_8$hilstotal
+x_append = NULL
+cv_method = "validation_split"
+outside_folds = 10
+outside_strata_y = "y"
+outside_breaks = 4
+inside_folds = 3 / 4
+inside_strata_y = "y"
+inside_breaks = 4
+model = "regression"
+eval_measure = "default"
+preprocess_step_center = TRUE
+preprocess_step_scale = TRUE
+preprocess_PCA = NA
+penalty = 10^seq(-16, 16)
+mixture = c(0)
+first_n_predictors = NA
+impute_missing = FALSE
+method_cor = "pearson"
+model_description = "Consider writing a description of your model here"
+multi_cores = "multi_cores_sys_default"
+save_output = "all"
+seed = 2020
   T1_textTrainRegression <- Sys.time()
   set.seed(seed)
+
+  random_number <- runif(5)
+  expect_equal(random_number[1], 0.6469028, tolerance = 0.00001)
+  expect_equal(random_number[5], 0.1360972, tolerance = 0.00001)
+
 
   # Select correct eval_measure depending on model when default
   if (model == "regression" & eval_measure == "default") {
@@ -625,10 +698,7 @@ textTrainRegression <- function(x,
   }
 
   # Sorting out x's
-  variables_and_names <- sorting_xs_and_x_append(x = x,
-                                                 x_append = x_append,
-                                                 append_first = append_first,
-                                                 ...)
+  variables_and_names <- sorting_xs_and_x_append(x = x, x_append = x_append)
   x2 <- variables_and_names$x1
   x_name <- variables_and_names$x_name
   embedding_description <- variables_and_names$embedding_description
@@ -644,38 +714,39 @@ textTrainRegression <- function(x,
   # Cross-Validation inside_folds = 3/4; results_nested_resampling[[1]][[1]][[1]]
   if (cv_method == "cv_folds") {
     results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
-      outside = rsample::vfold_cv(
-        v = !!outside_folds,
-        repeats = 1,
-        strata = !!outside_strata_y,
-        breaks = !!outside_breaks
-      ), #
-      inside = rsample::vfold_cv(
-        v = !!inside_folds,
-        repeats = 1,
-        strata = !!inside_strata_y,
-        breaks = !!inside_breaks
-      )
+                                                                outside = rsample::vfold_cv(
+                                                                  v = !!outside_folds,
+                                                                  repeats = 1,
+                                                                  strata = !!outside_strata_y,
+                                                                  breaks = !!outside_breaks
+                                                                ), #
+                                                                inside = rsample::vfold_cv(
+                                                                  v = !!inside_folds,
+                                                                  repeats = 1,
+                                                                  strata = !!inside_strata_y,
+                                                                  breaks = !!inside_breaks
+                                                                )
     ))
   }
   if (cv_method == "validation_split") {
     results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
-      outside = rsample::vfold_cv(
-        v = !!outside_folds,
-        repeats = 1,
-        strata = !!outside_strata_y,
-        breaks = !!outside_breaks
-      ),
-      inside = rsample::validation_split(
-        prop = !!inside_folds,
-        strata = !!inside_strata_y,
-        breaks = !!inside_breaks
-      )
+                                                                outside = rsample::vfold_cv(
+                                                                  v = !!outside_folds,
+                                                                  repeats = 1,
+                                                                  strata = !!outside_strata_y,
+                                                                  breaks = !!outside_breaks
+                                                                ),
+                                                                inside = rsample::validation_split(
+                                                                  prop = !!inside_folds,
+                                                                  strata = !!inside_strata_y,
+                                                                  breaks = !!inside_breaks
+                                                                )
     ))
   }
 
   results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
-
+  expect_equal(results_nested_resampling$splits[[1]][[1]][[1]][[1]], 0.4212412, tolerance = 0.00001)
+  expect_equal(results_nested_resampling$splits[[1]][[1]][[1]][[2]], -0.00678613, tolerance = 0.00001)
 
   # Deciding whether to use multicores depending on system and settings.
   if (multi_cores == "multi_cores_sys_default") {
@@ -726,6 +797,8 @@ textTrainRegression <- function(x,
       impute_missing = impute_missing
     )
   }
+  expect_equal(tuning_results[[1]]$eval_result[[1]], 7.434478, tolerance = 0.00001)
+
 
   # Function to get the lowest eval_measure_val
   # Determine the best parameter estimate from each INNER sample to be used
@@ -832,11 +905,11 @@ textTrainRegression <- function(x,
         if (!is.na(preprocess_PCA[1])) {
           if (preprocess_PCA[1] >= 1) {
             recipes::step_pca(., recipes::all_predictors(),
-              num_comp = statisticalMode(results_split_parameter$preprocess_PCA)
+                              num_comp = statisticalMode(results_split_parameter$preprocess_PCA)
             )
           } else if (preprocess_PCA[1] < 1) {
             recipes::step_pca(., recipes::all_predictors(),
-              threshold = statisticalMode(results_split_parameter$preprocess_PCA)
+                              threshold = statisticalMode(results_split_parameter$preprocess_PCA)
             )
           } else {
             .
@@ -899,8 +972,8 @@ textTrainRegression <- function(x,
     env_final_recipe$final_recipe <- final_recipe
 
     with(env_final_recipe, preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe,
-      xy_all,
-      retain = FALSE
+                                                                                       xy_all,
+                                                                                       retain = FALSE
     )))
   }
 
@@ -1040,9 +1113,9 @@ textTrainRegression <- function(x,
   )
   Date_textTrainRegression <- Sys.time()
   time_date <- paste(Time_textTrainRegression,
-    "; Date created: ", Date_textTrainRegression,
-    sep = "",
-    collapse = " "
+                     "; Date created: ", Date_textTrainRegression,
+                     sep = "",
+                     collapse = " "
   )
 
 
@@ -1140,27 +1213,8 @@ textTrainRegression <- function(x,
     final_results
   }
 
-  # Remove object to minimize model size when saved to rds; use this to
-  # check sizes: sort(sapply(ls(),function(x) {object.size(get(x))}))
-  remove(x)
-  remove(x_append)
-  remove(y)
-  remove(x2)
-  remove(xy)
 
-  remove(predy_y)
-  remove(preprocessing_recipe_save)
-  remove(final_predictive_model)
-  remove(collected_results)
-  remove(model_description_detail)
-  remove(results_nested_resampling)
-  remove(tuning_results)
-  remove(hyper_parameter_vals)
-  remove(results_split_parameter)
-  remove(results_outer)
-  remove(outputlist_results_outer)
-  remove(xy_all)
-  remove(final_recipe)
+  expect_equal(final_results$results$estimate[[1]], 0.3590022, tolerance = 0.00001)
 
-  final_results
-}
+
+})

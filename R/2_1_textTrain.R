@@ -23,7 +23,7 @@
 #' )
 #' }
 #' @seealso \code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
-#' \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
+#' \code{\link{textTrainLists}}
 #' @importFrom tibble is_tibble
 #' @importFrom dplyr select_if
 #' @export

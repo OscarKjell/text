@@ -8,6 +8,7 @@ textTrainRandomForest(
   x,
   y,
   x_append = NULL,
+  append_first = FALSE,
   cv_method = "validation_split",
   outside_folds = 10,
   outside_strata_y = "y",
@@ -39,6 +40,8 @@ textTrainRandomForest(
 \item{x_append}{Variables to be appended after the word embeddings (x);
 if wanting to preappend them before the word embeddings use the option
 first = TRUE.  If not wanting to train with word embeddings, set x = NULL.}
+
+\item{append_first}{(boolean) Option to add variables before or after all word embeddings.}
 
 \item{cv_method}{Cross-validation method to use within a pipeline of nested outer and
 inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
@@ -124,5 +127,5 @@ results <- textTrainRandomForest(
 }
 }
 \seealso{
-see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
+see \code{\link{textTrainLists}}
 }

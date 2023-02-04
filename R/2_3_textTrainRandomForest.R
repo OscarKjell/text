@@ -482,44 +482,6 @@ summarize_tune_results_rf <- function(object,
 }
 
 
-#x_append = NULL
-#cv_method = "validation_split"
-#outside_folds = 10
-#outside_strata_y = "y"
-#outside_breaks = 4
-#inside_folds = 3 / 4
-#inside_strata_y = "y"
-#inside_breaks = 4
-#mode_rf = "classification"
-#preprocess_step_center = FALSE
-#preprocess_scale_center = FALSE
-#preprocess_PCA = NA
-#extremely_randomised_splitrule = "extratrees"
-#mtry = c(1, 10, 20, 40)
-#min_n = c(1, 10, 20, 40)
-#trees = c(1000)
-#eval_measure = "bal_accuracy"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#seed = 2020
-#x = word_embeddings_4$texts$harmonytext
-#y = example_categories
-#outside_folds = 2
-#inside_folds = 2 / 3
-#outside_strata_y = NULL
-#inside_strata_y = NULL
-#mode_rf = "classification"
-#mtry = c(1)
-#min_n = c(1)
-#trees = c(1000)
-#preprocess_PCA = c(0.95)
-#extremely_randomised_splitrule = NULL
-#multi_cores = "multi_cores_sys_default"
-#eval_measure = "roc_auc"
-#save_output = "only_results"
-#event_level = "second"
-
 #' Train word embeddings to a categorical variable using random forrest.
 #'
 #' @param x Word embeddings from textEmbed.
@@ -527,6 +489,7 @@ summarize_tune_results_rf <- function(object,
 #' @param x_append Variables to be appended after the word embeddings (x);
 #' if wanting to preappend them before the word embeddings use the option
 #' first = TRUE.  If not wanting to train with word embeddings, set x = NULL.
+#' @param append_first (boolean) Option to add variables before or after all word embeddings.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and
 #' inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
 #' outside folds and "validation_split" using rsample::validation_split in the inner loop to
@@ -583,7 +546,7 @@ summarize_tune_results_rf <- function(object,
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
 #' }
-#' @seealso see \code{\link{textTrainLists}} \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textTrainLists}}
 #' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
 #' @importFrom dplyr select bind_cols starts_with filter arrange rename
 #' @importFrom tibble as_tibble
@@ -600,6 +563,7 @@ summarize_tune_results_rf <- function(object,
 textTrainRandomForest <- function(x,
                                   y,
                                   x_append = NULL,
+                                  append_first = FALSE,
                                   cv_method = "validation_split",
                                   outside_folds = 10,
                                   outside_strata_y = "y",
@@ -627,7 +591,6 @@ textTrainRandomForest <- function(x,
   # Sorting out y
   if (tibble::is_tibble(y) | is.data.frame(y)) {
     y_name <- colnames(y)
-    # y <- y[[1]]
     y <- tibble::as_tibble_col(y[[1]], column_name = "y")
   } else {
     y_name <- deparse(substitute(y))
@@ -636,14 +599,17 @@ textTrainRandomForest <- function(x,
 
   # The fit_model_rmse function need to number of word embeddings -- instead of
   # sending a separate parameter number of embeddings are give as a comment in "model"
-  if(tibble::is_tibble(x)){
+  if (tibble::is_tibble(x)) {
     comment(eval_measure) <- "1"
-  }else {
+  } else {
     comment(eval_measure) <- paste(length(x))
   }
 
   # sorting out x's
-  variables_and_names <- sorting_xs_and_x_append(x = x, x_append = x_append, ...)
+  variables_and_names <- sorting_xs_and_x_append(x = x,
+                                                 x_append = x_append,
+                                                 append_first = append_first,
+                                                 ...)
   x1 <- variables_and_names$x1
   x_name <- variables_and_names$x_name
   embedding_description <- variables_and_names$embedding_description
@@ -794,7 +760,7 @@ textTrainRandomForest <- function(x,
   xy_all <- xy
 
   ######### One word embedding as input
-  n_embbeddings <-as.numeric(comment(eval_measure))
+  n_embbeddings <- as.numeric(comment(eval_measure))
 
   if (n_embbeddings == 1) {
     final_recipe <- # xy %>%

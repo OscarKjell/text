@@ -2,8 +2,10 @@
 url: https://r-text.org
 
 development:
-  mode: release
-
+#  mode: release
+#   mode: auto
+   mode: default
+#   mode: unreleased
 home:
   title: text
   description: Analyses of Text using Transformers from HuggingFace, Natural Language Processing and Machine Learning.
@@ -46,6 +48,7 @@ reference:
   - textDimName
   - textEmbedRawLayers
   - textEmbedLayerAggregation
+  - textEmbedReduce
   - textEmbedStatic
 - title: Language Analysis Tasks
   contents:
@@ -72,8 +75,9 @@ reference:
     - textSimilarity
     - textDistance
     - textSimilarityMatrix
+    - textDistanceMatrix
     - textSimilarityNorm
-    - textSimilarityTest
+    - textDistanceNorm
 - title: Plot words in the word embedding space
   contents:
     - textProjection
@@ -87,6 +91,7 @@ reference:
 - title: View or delete downloaded HuggingFace models in R
   contents:
   - textModels
+  - textModelLayers
   - textModelsRemove
 - title: Miscellaneous
   contents:
@@ -96,6 +101,7 @@ reference:
   contents:
     - Language_based_assessment_data_8
     - word_embeddings_4
+    - raw_embeddings_1
     - Language_based_assessment_data_3_100
     - DP_projections_HILS_SWLS_100
     - centrality_data_harmony
@@ -114,22 +120,13 @@ articles:
     These tutorials go into detail about various text-analyses.
   contents:
   - huggingface_in_r
+  - psychological_methods
 - title: Comments
   desc: >
     General comments about text-analyses.
   contents:
-  - pre-registration_and_transformers
+  - pre_registration_and_transformers
 
 news:
-# releases:
-# - text: "usethis 1.3.0"
-#   href: https://www.tidyverse.org/articles/2018/02/usethis-1-3-0/
-# - text: "usethis 1.0.0 (and 1.1.0)"
-#   href: https://www.tidyverse.org/articles/2017/11/usethis-1.0.0/
    one_page: true
    cran_dates: true
-
-
-
-
-

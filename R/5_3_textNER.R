@@ -12,7 +12,8 @@
 #' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results.
 #' This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
 #' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
-#' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").
+#' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"
+#' and "negative").
 #' @param set_seed (Integer) Set seed.
 #' @return A list with tibble(s) with NER classifications for each column.
 #' @examples
@@ -64,7 +65,7 @@ textNER <- function(x,
 
     ## Sort output into tidy-format
     # Name each hg_NER output to get below to work
-    names(hg_NER) <- paste0("variable_row", 1:length(hg_NER))
+    names(hg_NER) <- paste0("variable_row", seq_len(length(hg_NER)))
     # Make each portion of the objects in the list tibbles
     output1 <- purrr::map(hg_NER, dplyr::bind_rows)
     # Combine the tibbles to one tibble (and include NA if the result is empty)

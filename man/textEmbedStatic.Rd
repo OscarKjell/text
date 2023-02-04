@@ -24,8 +24,8 @@ which is not included in the current text package).}
 \item{tk_df}{default "null"; option to use either the "tk" of "df" space (if using textSpace, which has
 not been implemented yet).}
 
-\item{aggregation_from_tokens_to_texts}{method to aggregate semantic representation when their are more than a single word.
-(default is "mean"; see also "min" and "max", "concatenate" and "normalize")}
+\item{aggregation_from_tokens_to_texts}{method to aggregate semantic representation when their
+are more than a single word. (default is "mean"; see also "min" and "max", "concatenate" and "normalize")}
 
 \item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
 (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)}

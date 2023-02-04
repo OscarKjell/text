@@ -1,4 +1,3 @@
-#x <- df_characters[[i]][1]
 
 #' semanticrepresentation
 #' Apply an aggregated semantic representation for ALL words in a "CELL";
@@ -16,7 +15,7 @@ semanticrepresentation <- function(x,
                                    single_word_embeddings2,
                                    aggregation_from_tokens_to_texts = "min",
                                    tolower = TRUE, ...) {
-  if(tolower) x <- tolower(x)
+  if (tolower) x <- tolower(x)
   # Separates the words in a cell into a character vector with separate words.
 
   x <- data.frame(unlist(stringi::stri_extract_all(x, regex = "[[:alpha:]]+")))
@@ -32,8 +31,9 @@ semanticrepresentation <- function(x,
   } else {
     # Create a matrix with all the semantic representations using the applysemrep function
     x1 <- purrr::map(x, applysemrep,
-                     single_word_embeddings1 = single_word_embeddings2,
-                     tolower = tolower) #
+      single_word_embeddings1 = single_word_embeddings2,
+      tolower = tolower
+    ) #
     x2 <- dplyr::bind_rows(x1)
     # If more than one semrep; Sum all the semantic representations; if not return it as is,
     # so that NAs etc is returned/kept
@@ -70,7 +70,7 @@ applysemrep <- function(x,
                         tolower = TRUE) {
   # If semrep is found get it; if not return NA vector of dimensions
   if (sum(single_word_embeddings1$words == x[TRUE]) %in% 1) {
-    if(tolower) x <- tolower(x)
+    if (tolower) x <- tolower(x)
     # Get the semantic representation for a word=x
     word1rep <- single_word_embeddings1[single_word_embeddings1$words == x, ]
     # Only get the semantic representation as a vector without the actual word in the first column
@@ -104,12 +104,12 @@ applysemrep <- function(x,
 #' @noRd
 applysemrep_over_words <- function(word_col,
                                    space,
-                                   tolower = TRUE){
-
+                                   tolower = TRUE) {
   output_vectors_sw <- purrr::map(word_col[[1]][[1]],
-                                  applysemrep,
-                                  single_word_embeddings1 = space,
-                                  tolower = tolower)
+    applysemrep,
+    single_word_embeddings1 = space,
+    tolower = tolower
+  )
 
   names(output_vectors_sw) <- paste("a", seq_len(length(output_vectors_sw)))
   output_vectors_sw2 <- dplyr::bind_cols(output_vectors_sw)
@@ -130,8 +130,8 @@ applysemrep_over_words <- function(word_col,
 #' which is not included in the current text package).
 #' @param tk_df default "null"; option to use either the "tk" of "df" space (if using textSpace, which has
 #' not been implemented yet).
-#' @param aggregation_from_tokens_to_texts method to aggregate semantic representation when their are more than a single word.
-#' (default is "mean"; see also "min" and "max", "concatenate" and "normalize")
+#' @param aggregation_from_tokens_to_texts method to aggregate semantic representation when their
+#' are more than a single word. (default is "mean"; see also "min" and "max", "concatenate" and "normalize")
 #' @param dim_name Boolean, if TRUE append the variable name after all variable-names in the output.
 #' (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name)
 #' @param tolower (boolean) Lower case input.
@@ -198,9 +198,11 @@ textEmbedStatic <- function(df,
 
   # Add single word embeddings used for plotting
   singlewords <- getUniqueWordsAndFreq(df_characters, hg_tokenizer = NULL)
-  output_vectors_sw3 <- applysemrep_over_words(word_col = list(singlewords),
-                                               space =  single_word_embeddings1,
-                                               tolower = tolower)
+  output_vectors_sw3 <- applysemrep_over_words(
+    word_col = list(singlewords),
+    space = single_word_embeddings1,
+    tolower = tolower
+  )
   word_types <- dplyr::bind_cols(singlewords, output_vectors_sw3)
 
   # Gives the tibbles in the list the same name as the original character variables
