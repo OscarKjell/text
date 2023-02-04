@@ -30,7 +30,7 @@
 #' @return A folder containing the pretrained model and output data. The model can then be used, for example, by
 #' textEmbed() by providing the model parameter with a the path to the output folder.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' textFineTuneTask(text_outcome_data)
 #' }
 #' @seealso see \code{\link{textEmbed}}, \code{\link{textEmbed}}

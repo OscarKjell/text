@@ -19,7 +19,7 @@ textFineTuneTask(
   num_train_epochs = 3,
   past_index = -1,
   set_seed = 2022,
-  label_names,
+  label_names = NULL,
   ...
 )
 }
@@ -80,7 +80,7 @@ Descriptions of settings can be found in inst/python/task_finetune.py under "cla
 online at https://huggingface.co/docs/transformers/main_classes/trainer.
 }
 \examples{
-\donttest{
+\dontrun{
 textFineTuneTask(text_outcome_data)
 }
 }
