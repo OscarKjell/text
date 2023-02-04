@@ -50,6 +50,9 @@ reference:
   - textEmbedLayerAggregation
   - textEmbedReduce
   - textEmbedStatic
+- title: Fine-tuning
+  contents:
+  - textFineTuneTask
 - title: Language Analysis Tasks
   contents:
   - textClassify

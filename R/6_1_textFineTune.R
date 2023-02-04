@@ -132,7 +132,9 @@ textFineTuneTask <- function(text_outcome_data,
 
   T2 <- Sys.time()
   T2-T1
-  print("Completed")
+  colourise("Completed",
+            fg = "green", bg = NULL
+  )
 
 }
 

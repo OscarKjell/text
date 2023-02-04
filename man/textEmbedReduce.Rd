@@ -45,5 +45,5 @@ embeddings <- textEmbedReduce(word_embeddings_4$texts)
 }
 }
 \seealso{
-see \code{\link{textEmbed}}
+\code{\link{textEmbed}}
 }
