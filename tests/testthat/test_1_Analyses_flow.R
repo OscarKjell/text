@@ -24,6 +24,7 @@ test_that("Testing textEmbed as well as train", {
     aggregation_from_tokens_to_word_types = "mean"
   )
 
+  textModelsRemove("bert-base-uncased")
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
   dim1for1 <- harmony_word_embeddings$word_types[[3]][harmony_word_embeddings$word_types[[1]]=="you"]
@@ -193,6 +194,8 @@ test_that("Testing textEmbedReduce as well as train", {
   embedding_roberta <- textEmbed(Language_based_assessment_data_3_100[1,1],
                                  model = "roberta-base",
                                  layer = 11)
+
+  textModelsRemove("roberta-base")
 
   pca5 <- text::textEmbedReduce(embeddings = embedding_roberta,
                                 n_dim = 5)

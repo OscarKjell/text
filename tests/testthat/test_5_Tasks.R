@@ -17,6 +17,7 @@ test_that("textClassify tests", {
     function_to_apply = "none"
   )
   expect_equal(sen1$score_x, 4.67502, tolerance = 0.001)
+  textModelsRemove("distilbert-base-uncased-finetuned-sst-2-english")
 
   #  # Test another model
   sen2 <- textClassify("I like you. I love you",
@@ -25,6 +26,7 @@ test_that("textClassify tests", {
     return_all_scores = TRUE,
     function_to_apply = "none"
   )
+  textModelsRemove("cardiffnlp/twitter-roberta-base-sentiment")
   #
 })
 
@@ -45,7 +47,6 @@ test_that("textGeneration test", {
     prefix = "",
     handle_long_generation = "hole"
   )
-
   expect_equal(generated_text$x_generated, "The meaning of life is self-improvement. We do this the right way. It is an exercise in self-improvement. The better part of the day we try to do that is to stop thinking about doing things to the level most people")
   expect_that(generated_text$x_generated, is_a("character"))
 
@@ -65,6 +66,7 @@ test_that("textGeneration test", {
     handle_long_generation = "hole",
     set_seed = 22L
   )
+  textModelsRemove("gpt2")
   expect_equal(generated_text2$generated_token_ids[1], 464)
   expect_that(generated_text2$generated_token_ids[1], is_a("integer"))
 })
@@ -88,6 +90,7 @@ test_that("textNER test", {
   )
   ner_example2
   expect_equal(ner_example2$satisfactiontexts_NER$score[2], 0.976, tolerance = 0.01)
+  textModelsRemove("dslim/bert-base-NER")
 })
 
 test_that("textSum test", {
@@ -123,8 +126,8 @@ test_that("textZeroShot test", {
     candidate_labels = c("sport", "nature", "research"),
     model = "facebook/bart-large-mnli"
   )
-
   expect_equal(ZeroShot_example$scores_x_1[1], 0.9985854)
+  textModelsRemove("facebook/bart-large-mnli")
 })
 
 test_that("textTranslate test", {
@@ -139,4 +142,5 @@ test_that("textTranslate test", {
   translation_example
   expect_that(translation_example$en_to_fr_satisfactiontexts, is_a("character"))
   expect_equal(translation_example$en_to_fr_satisfactiontexts[1], "Je ne suis pas satisfait de ma vie. Je suis reconnaissante de ce que j'ai et de l'endroit où je suis parce que la situation peut toujours être pire. Je veux une carrière et un diplôme, je veux perdre du poids et je n'ai pas encore atteint ces objectifs. Je ne suis donc pas satisfait de ma vie à l'heure actuelle.")
+  textModelsRemove("t5-base")
 })
