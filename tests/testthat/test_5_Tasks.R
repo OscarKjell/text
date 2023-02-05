@@ -124,23 +124,27 @@ test_that("textZeroShot test", {
   ZeroShot_example <- text::textZeroShot(
     sequences = c("I play football", "The forrest is wonderful"),
     candidate_labels = c("sport", "nature", "research"),
-    model = "facebook/bart-large-mnli"
+    #model = "facebook/bart-large-mnli"
+    model = "okho0653/distilbert-base-uncased-zero-shot-sentiment-model"
   )
-  expect_equal(ZeroShot_example$scores_x_1[1], 0.9985854)
-  textModelsRemove("facebook/bart-large-mnli")
+
+  testthat::expect_equal(ZeroShot_example$scores_x_1[1], 0.3341856, tolerance = 0.00001)
+  textModelsRemove("okho0653/distilbert-base-uncased-zero-shot-sentiment-model")
 })
 
 test_that("textTranslate test", {
   skip_on_cran()
 
+  textModels()
   translation_example <- text::textTranslate(
     Language_based_assessment_data_8[1, 1:2],
     source_lang = "en",
     target_lang = "fr",
-    model = "t5-base"
+    model = "t5-small"
   )
-  translation_example
-  expect_that(translation_example$en_to_fr_satisfactiontexts, is_a("character"))
-  expect_equal(translation_example$en_to_fr_satisfactiontexts[1], "Je ne suis pas satisfait de ma vie. Je suis reconnaissante de ce que j'ai et de l'endroit où je suis parce que la situation peut toujours être pire. Je veux une carrière et un diplôme, je veux perdre du poids et je n'ai pas encore atteint ces objectifs. Je ne suis donc pas satisfait de ma vie à l'heure actuelle.")
-  textModelsRemove("t5-base")
+
+  testthat::expect_that(translation_example$en_to_fr_satisfactiontexts, testthat::is_a("character"))
+  testthat::expect_equal(translation_example$en_to_fr_satisfactiontexts[1],
+                         "Je ne suis pas satisfait de ma vie, je suis reconnaissante de ce que j'ai et de ce que je suis, car la situation peut toujours être pire. Je veux une carrière et un diplôme, je veux perdre de poids et je n'ai pas encore atteint ces objectifs.")
+  textModelsRemove("t5-small")
 })
