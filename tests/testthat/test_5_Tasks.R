@@ -140,7 +140,8 @@ test_that("textTranslate test", {
     Language_based_assessment_data_8[1, 1:2],
     source_lang = "en",
     target_lang = "fr",
-    model = "t5-small"
+    model = "t5-small",
+    max_length = 400
   )
 
   testthat::expect_that(translation_example$en_to_fr_satisfactiontexts, testthat::is_a("character"))

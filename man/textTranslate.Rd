@@ -16,7 +16,8 @@ textTranslate(
   return_tensors = FALSE,
   return_text = TRUE,
   clean_up_tokenization_spaces = FALSE,
-  set_seed = 202208L
+  set_seed = 202208L,
+  max_length = 400
 )
 }
 \arguments{
@@ -51,6 +52,8 @@ and "negative").}
 \item{clean_up_tokenization_spaces}{(boolean)  Whether or not to clean the output from potential extra spaces.}
 
 \item{set_seed}{(Integer) Set seed.}
+
+\item{max_length}{Set max length of text to be translated}
 }
 \value{
 A tibble with transalted text.

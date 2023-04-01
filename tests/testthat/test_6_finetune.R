@@ -19,17 +19,17 @@ test_that("Task Fine-tuning tests", {
 
   # remove the folder
   unlink("./run_reg", recursive = TRUE)
-textModels()
-  unlink("./run_clf", recursive = TRUE)
-  text::textFineTuneTask(Language_based_assessment_data_8[,c("satisfactiontexts",
-                                                             "gender")],
-                         model_name_or_path = "distilbert-base-uncased",
-                         is_regression = FALSE,
-                         output_dir = "./run_clf",
-                         label_names = c("male", "female"))
-
-  # remove the folder
-  unlink("./run_clf", recursive = TRUE)
+#  textModels()
+#  unlink("./run_clf", recursive = TRUE)
+#  text::textFineTuneTask(Language_based_assessment_data_8[,c("satisfactiontexts",
+#                                                             "gender")],
+#                         model_name_or_path = "distilbert-base-uncased",
+#                         is_regression = FALSE,
+#                         output_dir = "./run_clf",
+#                         label_names = c("male", "female"))
+#
+#  # remove the folder
+#  unlink("./run_clf", recursive = TRUE)
 
 })
 

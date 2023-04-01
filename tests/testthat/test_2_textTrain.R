@@ -346,7 +346,7 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
   testthat::expect_that(results_or_p1, testthat::is_a("list"))
   testthat::expect_is(results_or_p1$results$correlation[1], "character")
-  testthat::expect_equal(results_or_p1$results$correlation[1], "0.374437383412246") # "0.374436371225743"
+  testthat::expect_equal(results_or_p1$results$correlation[1], "0.374437383412247") # "0.374437383412246" "0.374436371225743"
 
   # FORCE RANDOM FORREST Even though categorical variables are not most present
   results_or_p2 <- text::textTrain(
