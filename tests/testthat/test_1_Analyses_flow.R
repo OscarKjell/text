@@ -6,15 +6,14 @@ library(text)
 
 context("Big analyses flow")
 
-
 test_that("Testing textEmbed as well as train", {
   skip_on_cran()
 
   descr1 <- textDescriptives(Language_based_assessment_data_8[1])
   expect_that(descr1[[1]], is_a("character"))
   descr2 <- textDescriptives(Language_based_assessment_data_8[1:2])
-  expect_that(descr2[[2]][[1]], is_a("integer"))
-
+  expect_equal(descr2[[2]][[1]], 2482)
+  expect_equal(descr2[[3]][[1]], 62.05)
 
   harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",
@@ -25,6 +24,7 @@ test_that("Testing textEmbed as well as train", {
     aggregation_from_tokens_to_word_types = "mean"
   )
 
+  textModelsRemove("bert-base-uncased")
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
   dim1for1 <- harmony_word_embeddings$word_types[[3]][harmony_word_embeddings$word_types[[1]]=="you"]
@@ -95,6 +95,7 @@ test_that("Testing textEmbed as well as train", {
     # x_append = Language_based_assessment_data_8[1:20, ], # sending all give same as below: 12.40038
     # x_append = Language_based_assessment_data_8[1:20, 6:7], # sending only swlstotal and age: 12.40038
     x_append = Language_based_assessment_data_8[1:20, c(7, 6)], # sending "wrong" order give: 12.40038
+    append_first = FALSE,
     # x_append = Language_based_assessment_data_8[1:20, c(5,6) ], # missing one throws error
     dim_names = TRUE
   )
@@ -106,7 +107,8 @@ test_that("Testing textEmbed as well as train", {
   all_predictions <- textPredictAll(
     models = models_1_2,
     word_embeddings = harmony_word_embeddings$texts,
-    x_append = Language_based_assessment_data_8[1:20, 5:8]
+    x_append = Language_based_assessment_data_8[1:20, 5:8],
+    append_first = FALSE
   )
 
   expect_equal(all_predictions[[1]][1], 11.89, tolerance = 0.1)
@@ -184,4 +186,20 @@ test_that("Testing textEmbed as well as train", {
 
   expect_that(hils_predicted_scores1[[1]][1], is_a("numeric"))
   expect_equal(hils_predicted_scores1[[1]][1], 11.89219, tolerance = 0.000001)
+})
+
+test_that("Testing textEmbedReduce as well as train", {
+
+  skip_on_cran()
+  embedding_roberta <- textEmbed(Language_based_assessment_data_3_100[1,1],
+                                 model = "roberta-base",
+                                 layer = 11)
+
+  textModelsRemove("roberta-base")
+
+  pca5 <- text::textEmbedReduce(embeddings = embedding_roberta,
+                                n_dim = 5)
+
+  testthat::expect_equal(pca5$texts$harmonywords[[1]], -9.569476, tolerance = 0.0001)
+
 })

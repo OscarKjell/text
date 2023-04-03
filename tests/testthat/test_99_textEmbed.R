@@ -174,7 +174,7 @@ test_that("textEmbed", {
     aggregation_from_layers_to_tokens = "concatenate",
     aggregation_from_tokens_to_texts = "mean",
     aggregation_from_tokens_to_word_types = "mean",
-    decontextualize = FALSE
+    decontextualize = TRUE
   )
 
   single_context_embeddingsT <- text::textEmbed(x[1],

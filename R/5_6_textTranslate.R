@@ -21,6 +21,7 @@
 #' @param return_text (boolean)  Whether or not to also output the decoded texts.
 #' @param clean_up_tokenization_spaces (boolean)  Whether or not to clean the output from potential extra spaces.
 #' @param set_seed (Integer) Set seed.
+#' @param max_length Set max length of text to be translated
 #' @return A tibble with transalted text.
 #' @examples
 #' \donttest{
@@ -46,7 +47,8 @@ textTranslate <- function(x,
                           return_tensors = FALSE,
                           return_text = TRUE,
                           clean_up_tokenization_spaces = FALSE,
-                          set_seed = 202208L) {
+                          set_seed = 202208L,
+                          max_length = 400) {
   T1_text_all <- Sys.time()
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
@@ -76,7 +78,8 @@ textTranslate <- function(x,
       return_tensors = return_tensors,
       return_text = return_text,
       clean_up_tokenization_spaces = clean_up_tokenization_spaces,
-      set_seed = set_seed
+      set_seed = set_seed,
+      max_length = max_length
     )
 
     # Sort output into tidy-format

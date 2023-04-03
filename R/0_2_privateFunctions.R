@@ -86,13 +86,13 @@ p_value_comparing_with_Null <- function(Observedresult,
 #' Add numeric variables to word embeddings
 #' @param word_embeddings Word embeddings to add variables to.
 #' @param data Variables to be added to the word embeddings before training.
-#' @param first Option to add variables before or after all word embeddings.
+#' @param append_first Option to add variables before or after all word embeddings.
 #' @return Object of word embeddings with added variables referred to as Dim0X_names.
 #' @examples
 #' \donttest{
 #' embeddings_with_variables <- add_variables_to_we(word_embeddings_4[1],
 #'   Language_based_assessment_data_8[c(6, 7)],
-#'   first = TRUE
+#'   append_first = TRUE
 #' )
 #' }
 #' @importFrom dplyr bind_cols
@@ -101,7 +101,7 @@ p_value_comparing_with_Null <- function(Observedresult,
 #' @noRd
 add_variables_to_we <- function(word_embeddings,
                                 data,
-                                first = FALSE) {
+                                append_first = FALSE) {
 
   # Add Names to new Variables
   colnames(data) <- paste("Dim0", "_", colnames(data), sep = "") # 1:ncol(data),
@@ -112,10 +112,10 @@ add_variables_to_we <- function(word_embeddings,
   # If not list of word embeddings
   if (!is.data.frame(word_embeddings)) {
 
-    # Add first
-    if (first == TRUE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(data, .x))
+    # Add append_first
+    if (append_first == TRUE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(data, .x))
     # Add last
-    if (first == FALSE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(.x, data))
+    if (append_first == FALSE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(.x, data))
 
     ratings_embeddings_tibble <- lapply(ratings_embeddings, tibble::as_tibble)
   }
@@ -123,10 +123,10 @@ add_variables_to_we <- function(word_embeddings,
   # If list of word embeddings
   if (is.data.frame(word_embeddings)) {
 
-    # Add first
-    if (first == TRUE) ratings_embeddings_tibble <- dplyr::bind_cols(data, word_embeddings)
+    # Add append_first
+    if (append_first == TRUE) ratings_embeddings_tibble <- dplyr::bind_cols(data, word_embeddings)
     # Add last
-    if (first == FALSE) ratings_embeddings_tibble <- dplyr::bind_cols(word_embeddings, data)
+    if (append_first == FALSE) ratings_embeddings_tibble <- dplyr::bind_cols(word_embeddings, data)
   }
 
   return(ratings_embeddings_tibble)
@@ -135,11 +135,12 @@ add_variables_to_we <- function(word_embeddings,
 #' Sorting out word_embeddings and x_append for training and predictions
 #'
 #' @param x word embeddings
-#' @param x_append other variables than word embeddings used in training (e.g., age)
+#' @param x_append other variables than word embeddings used in training (e.g., age).
+#' @param append_first Option to add variables before or after all word embeddings.
 #' @return List with sorted tibble of variables, x_name, embedding_description,
 #' x_append_names, and variable_name_index_pca.
 #' @noRd
-sorting_xs_and_x_append <- function(x, x_append, ...) {
+sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
   variable_name_index_pca <- NA
 
   if (!is.null(x)) {
@@ -173,7 +174,7 @@ sorting_xs_and_x_append <- function(x, x_append, ...) {
     x1 <- x_append
     x_append <- NULL
     colnames(x1) <- paste0(
-      "Dim", "_",
+      "Dim0", "_",
       colnames(x1)
     )
     x_name <- NULL
@@ -212,7 +213,9 @@ sorting_xs_and_x_append <- function(x, x_append, ...) {
   if (!is.null(x_append)) {
     x1 <- add_variables_to_we(
       word_embeddings = x1,
-      data = x_append, ...
+      data = x_append,
+      append_first = append_first,
+      ...
     )
   }
 
@@ -257,14 +260,79 @@ cohens_d <- function(x, y) {
 #' Extract part of a comment
 #'
 #' @param comment (string) The comment
-#' @param part (string) The part to be extracted.
-#' @return string
+#' @param part (string) The part to be extracted ("model" or "layers").
+#' @return string from the comment
 #' @noRd
-extract_comment <- function(comment, part) {
+extract_comment <- function(comment,
+                            part) {
   if (part == "model") {
     model_text <- sub(".*textEmbedRawLayers: model: ", "", comment)
     output <- sub(" ; layers.*", "", model_text)
   }
 
+  if (part == "layers") {
+    layer_text <- sub(".*layers: ", "", comment)
+    output <- sub(" ; word_type_embeddings:.*", "", layer_text)
+  }
+
   return(output)
 }
+
+
+
+#wanted_file <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
+#' Name to Path
+#' See if file exist in "inst/extdata/"
+#' if file does not exist download it.
+#' @param wanted_file (string) Name of or URL to file.
+#' @return string path to file.
+#' @importFrom utils download.file
+#' @noRd
+path_exist_download_files <- function(wanted_file) {
+
+  destfile <- list.files(path = system.file("extdata/",
+                                            "", #file_name,
+                                            package = "text",
+                                            mustWork = TRUE),
+                         pattern = "")
+
+  # Check if already downloaded; and if not, download
+  if (startsWith(wanted_file, "http:")  |
+      startsWith(wanted_file, "https:") |
+      startsWith(wanted_file, "www.") ) {
+
+    # Get file names to check if already downloaded
+    file_name <- basename(wanted_file)
+
+    # Download if not there
+    if (!file_name %in% destfile){
+
+      utils::download.file(url = wanted_file,
+                           destfile = paste(system.file("extdata/",
+                                                        "", #file_name,
+                                                  # envir = NULL,
+                                                  package = "text",
+                                                  mustWork = TRUE
+                           ), "/", file_name, sep = ""),
+                           method = "auto")
+    }
+
+    path_to_file <-  system.file("extdata/",
+                file_name,
+                # envir = NULL,
+                package = "text",
+                mustWork = TRUE
+                )
+
+  } else if (wanted_file %in% destfile) {
+
+    path_to_file <- system.file("extdata/",
+                                wanted_file,
+                                # envir = NULL,
+                                package = "text",
+                                mustWork = TRUE
+    )
+  }
+  return(path_to_file)
+}
+

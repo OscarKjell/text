@@ -49,7 +49,7 @@ hypotheses in social and behavior sciences for both relatively small and
 large datasets. *Text* is continuously tested on Ubuntu, Mac OS and
 Windows using the latest stable R version.
 
-[Tutorial paper](https://psyarxiv.com/293kt/)
+[Tutorial preprint paper](https://psyarxiv.com/293kt/)
 
 ### Short installation guide
 
@@ -181,3 +181,6 @@ plot_projection$final_plot
 ```
 
 <img src="man/figures/README-DPP_plot-1.png" width="100%" />
+
+<a rel="me" href="https://mastodon.online/@oscarkjell">M</a>
+<link rel="me" href="https://mastodon.online/@oscarkjell" M />

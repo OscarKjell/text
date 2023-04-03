@@ -494,6 +494,7 @@ summarize_tune_results <- function(object,
 #' provided in a list they will be concatenated.
 #' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before
 #' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.
+#' @param append_first (boolean) Option to add variables before or after all word embeddings.
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" for classification.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops
@@ -557,7 +558,7 @@ summarize_tune_results <- function(object,
 #' )
 #' }
 #' @seealso see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
+#' \code{\link{textTrainRandomForest}}
 #' @importFrom stats cor.test na.omit lm
 #' @importFrom dplyr bind_cols select starts_with filter all_of
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
@@ -572,6 +573,7 @@ summarize_tune_results <- function(object,
 textTrainRegression <- function(x,
                                 y,
                                 x_append = NULL,
+                                append_first = FALSE,
                                 cv_method = "validation_split",
                                 outside_folds = 10,
                                 outside_strata_y = "y",
@@ -623,7 +625,10 @@ textTrainRegression <- function(x,
   }
 
   # Sorting out x's
-  variables_and_names <- sorting_xs_and_x_append(x = x, x_append = x_append, ...)
+  variables_and_names <- sorting_xs_and_x_append(x = x,
+                                                 x_append = x_append,
+                                                 append_first = append_first,
+                                                 ...)
   x2 <- variables_and_names$x1
   x_name <- variables_and_names$x_name
   embedding_description <- variables_and_names$embedding_description

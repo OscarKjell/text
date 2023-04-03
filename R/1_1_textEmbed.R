@@ -1,6 +1,6 @@
 
-#' Find encoding type of variable and the set it to UTF-8.
-#' @param tibble including both text and numeric variables.
+#' Find encoding type of variable and then set it to UTF-8.
+#' @param x Tibble including both text and numeric variables.
 #' @return all character variables in UTF-8 format.
 #' @noRd
 get_encoding_change <- function(x) {
@@ -186,11 +186,15 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
       if (return_tokens) {
         tokens_layer_number <- tibble::tibble(tokens, token_id, rep(layers[i_layers], length(tokens)))
         colnames(tokens_layer_number) <- c("tokens", "token_id", "layer_number")
-        tokens_lnumber_layers <- dplyr::bind_cols(tokens_layer_number, layers_4_token)
+        # Bind tokens with word embeddings (not selecting <pad>s)
+        tokens_lnumber_layers <- dplyr::bind_cols(tokens_layer_number,
+                                                  layers_4_token[1:nrow(tokens_layer_number),])
       } else {
         layer_number <- tibble::tibble(token_id, rep(layers[i_layers], nrow(layers_4_token)))
         colnames(layer_number) <- c("token_id", "layer_number")
-        tokens_lnumber_layers <- dplyr::bind_cols(layer_number, layers_4_token)
+        # Bind tokens with word embeddings (not selecting <pad>s)
+        tokens_lnumber_layers <- dplyr::bind_cols(layer_number,
+                                                  layers_4_token[1:nrow(tokens_layer_number),])
       }
 
       layers_list[[i_layers]] <- tokens_lnumber_layers
@@ -319,7 +323,8 @@ textTokenize <- function(texts,
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
-#' "roberta-base", or "xlm-roberta-base".
+#' "roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
+#'  malicious model can execute arbitrary code on your computer).
 #' @param layers (string or numeric) Specify the layers that should be extracted
 #' (default -2, which give the second to last layer). It is more efficient to only extract the
 #' layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
@@ -777,6 +782,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
   selected_layers_aggregated_tibble
 }
 
+
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
@@ -784,7 +790,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
 #'  For example use "bert-base-multilingual-cased", "openai-gpt",
 #' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
-#' "roberta-base", or "xlm-roberta-base".
+#' "roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
+#'  malicious model can execute arbitrary code on your computer).
 #' @param layers (string or numeric) Specify the layers that should be extracted
 #' (default -2 which give the second to last layer). It is more efficient to only extract the layers
 #' that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this parameter
@@ -877,7 +884,7 @@ textEmbed <- function(texts,
   output <- list()
 
   if (layers[1] < 0) {
-    n <- textModelLayers("bert-base-uncased")
+    n <- textModelLayers(model)
     layers <- 1 + n + layers
     layers
   }
@@ -991,7 +998,12 @@ textEmbed <- function(texts,
 
       # Tokenize texts
       output <- list()
+      token_embeddings_list <- list()
       token_embeddings_list$tokens <- list()
+      if (!tibble::is_tibble(texts)){
+        texts <- tibble::as_tibble(texts)
+      }
+
       for (i_variables in seq_len(ncol(texts))) {
         text_tokens <- lapply(texts[[i_variables]], textTokenize,
                               model = model, max_token_to_sentence = max_token_to_sentence) # , ...
@@ -1122,3 +1134,4 @@ textDimName <- function(word_embeddings,
 
   return(word_embeddings)
 }
+

@@ -29,7 +29,7 @@ cosines <- function(x, y) {
 #'   y = word_embeddings_4$texts$satisfactiontext
 #' )
 #' comment(similarity_scores)
-#' @seealso see \code{\link{textDistance}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textDistance}}, \code{\link{textSimilarityNorm}}
 #' @export
 textSimilarity <- function(x,
                            y,
@@ -93,10 +93,10 @@ textSimilarity <- function(x,
 #' @param method Character string describing type of measure to be computed; default is "euclidean" (see also
 #' measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
 #' It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).
-#' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
-#' (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.
+#' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the embedding mean
+#' (omitting NAs) of x from each of its dimension, and if center is FALSE, no centering is done.
 #' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the
-#' (centered) columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.
+#' (centered) embedding dimensions by the standard deviation of the embedding if center is TRUE, and the root mean square otherwise.
 #' @return A vector comprising semantic distance scores.
 #' @examples
 #' library(dplyr)
@@ -105,7 +105,7 @@ textSimilarity <- function(x,
 #'   y = word_embeddings_4$texts$satisfactiontext
 #' )
 #' comment(distance_scores)
-#' @seealso see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+#' @seealso see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}}
 #' @export
 textDistance <- function(x,
                          y,
@@ -158,7 +158,7 @@ textDistance <- function(x,
 #' @examples
 #' similarity_scores <- textSimilarityMatrix(word_embeddings_4$texts$harmonytext[1:3, ])
 #' round(similarity_scores, 3)
-#' @seealso see \code{\link{textSimilarityNorm}} and \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textSimilarityNorm}}
 #' @export
 textSimilarityMatrix <- function(x,
                                  method = "cosine",
@@ -186,7 +186,7 @@ textSimilarityMatrix <- function(x,
 #' @examples
 #' distance_scores <- textDistanceMatrix(word_embeddings_4$texts$harmonytext[1:3, ])
 #' round(distance_scores, 3)
-#' @seealso see \code{\link{textDistanceNorm}} and \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textDistanceNorm}}
 #' @export
 textDistanceMatrix <- function(x,
                                method = "euclidean",
@@ -230,7 +230,7 @@ textDistanceMatrix <- function(x,
 #'   word_embeddings_wordnorm$harmonynorm
 #' )
 #' }
-#' @seealso see \code{\link{textSimilarity}} and \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textSimilarity}}
 #' @importFrom dplyr row_number slice select starts_with
 #' @export
 textSimilarityNorm <- function(x,
@@ -285,7 +285,7 @@ textSimilarityNorm <- function(x,
 #'   word_embeddings_wordnorm$harmonynorm
 #' )
 #' }
-#' @seealso see \code{\link{textDistance}} and \code{\link{textSimilarityTest}}
+#' @seealso see \code{\link{textDistance}}
 #' @importFrom dplyr row_number slice select starts_with
 #' @export
 textDistanceNorm <- function(x,

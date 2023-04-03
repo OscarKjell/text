@@ -471,7 +471,8 @@ def hgTransformerGetTranslation(text_strings,
                             target_lang = '',
                             return_tensors = False,
                             return_text = True,
-                            clean_up_tokenization_spaces = False):
+                            clean_up_tokenization_spaces = False, 
+                            max_length = ''):
     task = 'translation'
     if source_lang and target_lang:
         task = "translation_{s}_to_{t}".format(s=source_lang, t=target_lang)
@@ -487,7 +488,8 @@ def hgTransformerGetTranslation(text_strings,
                             tgt_lang = target_lang,
                             return_tensors = return_tensors,
                             return_text = return_text,
-                            clean_up_tokenization_spaces = clean_up_tokenization_spaces)
+                            clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
+                            max_length = max_length)
     return translations
 
 def hgTransformerGetEmbedding(text_strings,

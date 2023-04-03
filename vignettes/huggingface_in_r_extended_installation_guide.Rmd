@@ -38,7 +38,37 @@ textEmbed("hello")
 
 ```
 
-### Recommended versions for conda
+
+## Solving Mac OS errors
+
+### Failed to build tokenizers
+if running:
+textrpp_install()
+
+results in this error:
+```
+Failed to build tokenizers
+ERROR: Could not build wheels for tokenizers, which is required to install pyproject.toml-based projects
+```
+
+In the terminal run:
+```{r extended_installation_condaenvE1, eval = FALSE}
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+### Rust compiler
+Error:
+```
+"Error: Error installing package(s): ..." 
+including: "error: can't find Rust compiler"
+```
+
+In the terminal run:
+```{r extended_installation_condaenvE2, eval = FALSE}
+brew install rust
+```
+
+## Recommended versions for conda
 
 The success of the installation is dependent on using conda, python and package versions that work together. The installation of the text-package with text required python packages is tested on Linux, Mac OS, and Windows using github actions. The installation procedure and details can be seen at [github actions](https://github.com/OscarKjell/text/actions) (look at workflow runs called System specific installation NoPy).
 

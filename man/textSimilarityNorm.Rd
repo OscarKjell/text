@@ -46,5 +46,5 @@ similarity_scores <- textSimilarityNorm(
 }
 }
 \seealso{
-see \code{\link{textSimilarity}} and \code{\link{textSimilarityTest}}
+see \code{\link{textSimilarity}}
 }

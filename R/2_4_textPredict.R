@@ -1,5 +1,4 @@
 
-
 #' Predict scores or classification from, e.g., textTrain.
 #'
 #' @param model_info (model object) Model info (e.g., saved output from textTrain,
@@ -16,7 +15,7 @@
 #' word_embeddings <- word_embeddings_4
 #' ratings_data <- Language_based_assessment_data_8
 #' @seealso see \code{\link{textTrain}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}} \code{\link{textSimilarityTest}}
+#' \code{\link{textTrainRandomForest}}
 #' @importFrom recipes prep bake
 #' @importFrom stats predict
 #' @importFrom tibble is_tibble as_tibble_col
@@ -142,7 +141,7 @@ textPredictAll <- function(models,
     word_embeddings$singlewords_we <- NULL
   }
 
-  #
+  # i = 1
   for (i in seq_len(length(models))) {
     preds <- textPredict(
       models[[i]],

@@ -2,8 +2,32 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 0.9.99.7
+## Function
+- `textEmbedReduce()` implemented
 
-# text 0.9.99
+
+# text 0.9.99.6
+## Bug Fix
+- Fixing textEmbed error for many non-BERT models. 
+
+
+# text 0.9.99.5
+## Bug Fix
+- fixed `textEmbed(decontextualize=TRUE)`, which gave error.
+
+# text 0.9.99.3
+
+## Functions changes
+- Removing `textSimialirtyTest()` for version 1.0 because it needs more evaluations. 
+
+## Bug Fix
+- changed hard coded "bert-base-uncased" to `model`, so that `layers` = -2 works in `textEmbed()`. 
+- Update logging level critical using integer 50 with `set_verbosity`.
+- changed in `sorting_xs_and_x_append` from Dim to Dim0 when renaming x_appended variables.
+- changed `first` to `append_first` and  made it an option in `textTrainRegression()` and `textTrainRandomForest()`. 
+
+# text 0.9.99.2
 
 ## DEFAULT CHANGES
 - The default setting of textEmbed() is now providing token-level embeddings and text-level embeddings. Word_type embeddings are optional. 
