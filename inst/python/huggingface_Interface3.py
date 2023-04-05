@@ -561,7 +561,7 @@ def hgTransformerGetEmbedding(text_strings,
     for text_string in text_strings:
         # if length of text_string is > max_token_to_sentence*4
         # embedd each sentence separately
-        if False: #len(text_string) > max_token_to_sentence*4:
+        if len(text_string) > max_token_to_sentence*4:
             sentence_batch = [s for s in sent_tokenize(text_string)]
             if model_max_length is None:
                 batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True)
