@@ -121,7 +121,7 @@ def get_device(device):
                 except:
                     pass
         if not attached:
-            print("Unable to use MPS(Mac M1+), CUDA (GPU), using CPU")
+            print("Unable to use MPS (Mac M1+), CUDA (GPU), using CPU")
             device = "cpu"
             device_num = -1
 
