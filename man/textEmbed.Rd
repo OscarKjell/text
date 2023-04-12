@@ -76,7 +76,8 @@ switching to embedding text sentence by sentence.}
 
 \item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 
-\item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
+\item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
+specific device number.}
 
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}

@@ -2,8 +2,11 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 0.9.99.9
+## Function
+Possibility to use GPU for MacOS M1 and M2 chip using device = "mps" in `textEmbed()`
 
-# text 0.9.99.7
+# text 0.9.99.8
 ## Function
 `textFineTune()` as an experimental function is implemented
 `max_length` implemented in `textTranslate()`

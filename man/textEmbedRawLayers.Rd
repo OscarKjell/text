@@ -46,7 +46,8 @@ or all by setting this parameter to "all". Layer 0 is the decontextualized input
 \item{keep_token_embeddings}{(boolean) Whether to keep token level embeddings in the output
 (when using word_types aggregation)}
 
-\item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
+\item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
+specific device number.}
 
 \item{tokenizer_parallelism}{If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 

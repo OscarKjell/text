@@ -27,7 +27,8 @@ textTokenize(
 \item{max_token_to_sentence}{(numeric) Maximum number of tokens in a string to handle before
 switching to embedding text sentence by sentence.}
 
-\item{device}{Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
+\item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
+specific device number.}
 
 \item{tokenizer_parallelism}{If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 

@@ -270,7 +270,8 @@ grep_col_by_name_in_list <- function(l, pattern) {
 #' "roberta-base", or "xlm-roberta-base".
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #' switching to embedding text sentence by sentence.
-#' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
+#' specific device number.
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
 #' (default the value stored for the associated model).
@@ -336,7 +337,8 @@ textTokenize <- function(texts,
 #' @param decontextualize (boolean) Wether to dectonextualise embeddings (i.e., embedding one word at a time).
 #' @param keep_token_embeddings (boolean) Whether to keep token level embeddings in the output
 #' (when using word_types aggregation)
-#' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
+#' specific device number.
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
 #' (default the value stored for the associated model).
@@ -822,7 +824,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #' switching to embedding text sentence by sentence.
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
-#' @param device Name of device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
+#' specific device number.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @return A tibble with tokens, a column for layer identifier and word embeddings.
