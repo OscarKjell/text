@@ -2,6 +2,12 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# text 0.9.99.7
+## Function
+`textFineTune()` as an experimental function is implemented
+`max_length` implemented in `textTranslate()`
+
 # text 0.9.99.7
 ## Function
 - `textEmbedReduce()` implemented
