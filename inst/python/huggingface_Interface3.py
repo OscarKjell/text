@@ -86,7 +86,7 @@ def get_device(device):
     """
     device = device.lower()
     if not device.startswith('cpu') and not device.startswith('gpu') and not device.startswith('cuda') and not device.startswith('mps'):
-        print("device must be 'cpu', 'gpu', 'cuda', 'mps', or of the form 'gpu:k', 'cuda:k', or 'mps:k'")
+        print("device must be 'cpu', 'gpu', 'cuda', 'mps', or of the form 'gpu:k', 'cuda:k', or 'mps:0'")
         print("\twhere k is an integer value for the device")
         print("Trying CPUs")
         device = 'cpu'
@@ -107,7 +107,7 @@ def get_device(device):
                     else:
                         print("MPS not available because the current MacOS version is not 12.3+ and/or you do not have an MPS-enabled device on this machine.")
                 else:
-                    device_num = list(range(torch.cuda.device_count()))[0]
+                    device_num = 0 # list(range(torch.cuda.device_count()))[0]
                     device = 'mps:' + str(device_num)
                     attached = True
             else: # assign to specific gpu device number
