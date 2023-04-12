@@ -105,9 +105,9 @@ def get_device(device):
         elif "mps" in device:
             if torch.backends.mps.is_available():
                 if not torch.backends.mps.is_built():
-                    # print("MPS not available because the current PyTorch install was not built with MPS enabled.")
+                    print("MPS not available because the current PyTorch install was not built with MPS enabled.")
                 else:
-                    # print("MPS not available because the current MacOS version is not 12.3+ and/or you do not have an MPS-enabled device on this machine.")
+                    print("MPS not available because the current MacOS version is not 12.3+ and/or you do not have an MPS-enabled device on this machine.")
             else:
                 device_num = 0 # list(range(torch.cuda.device_count()))[0]
                 device = 'mps:' + str(device_num)
