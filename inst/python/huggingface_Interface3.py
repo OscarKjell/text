@@ -95,7 +95,7 @@ def get_device(device):
     if device != 'cpu':
         attached = False
         mps_available = hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
-        print(f"mps_available: {mps_available})
+        print(f"mps_available: {mps_available}")
         if torch.cuda.is_available():
             if device == 'gpu' or device == 'cuda': 
                 # assign to first gpu device number
