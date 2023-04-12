@@ -74,7 +74,7 @@ def get_device(device):
     Parameters
     ----------
     device : str
-        name of device: 'cpu', 'gpu', 'cuda', or of the form 'gpu:k' or 'cuda:k' 
+        name of device: 'cpu', 'gpu', 'cuda', 'mps', or of the form 'gpu:k' or 'cuda:k' 
         where k is a specific device number
 
     Returns
@@ -85,8 +85,8 @@ def get_device(device):
         device number, -1 for CPU
     """
     device = device.lower()
-    if not device.startswith('cpu') and not device.startswith('gpu') and not device.startswith('cuda'):
-        print("device must be 'cpu', 'gpu', 'cuda', or of the form 'gpu:k' or 'cuda:k'")
+    if not device.startswith('cpu') and not device.startswith('gpu') and not device.startswith('cuda') and not device.startswith('mps'):
+        print("device must be 'cpu', 'gpu', 'cuda', 'mps', or of the form 'gpu:k' or 'cuda:k'")
         print("\twhere k is an integer value for the device")
         print("Trying CPUs")
         device = 'cpu'
@@ -98,6 +98,9 @@ def get_device(device):
             if device == 'gpu' or device == 'cuda': 
                 # assign to first gpu device number
                 device = 'cuda'
+                device_num = list(range(torch.cuda.device_count()))[0]
+                attached = True
+            elif device == "mps":
                 device_num = list(range(torch.cuda.device_count()))[0]
                 attached = True
             else: # assign to specific gpu device number
