@@ -102,6 +102,7 @@ def get_device(device):
                 attached = True
             elif device == "mps":
                 device_num = list(range(torch.cuda.device_count()))[0]
+                device = 'mps:' + str(device_num)
                 attached = True
             else: # assign to specific gpu device number
                 try:
