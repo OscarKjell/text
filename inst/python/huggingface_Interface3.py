@@ -74,7 +74,7 @@ def get_device(device):
     Parameters
     ----------
     device : str
-        name of device: 'cpu', 'gpu', 'cuda', 'mps', or of the form 'gpu:k' or 'cuda:k' 
+        name of device: 'cpu', 'gpu', 'cuda', 'mps', or of the form 'gpu:k', 'cuda:k', or 'mps:0'
         where k is a specific device number
 
     Returns
@@ -86,7 +86,7 @@ def get_device(device):
     """
     device = device.lower()
     if not device.startswith('cpu') and not device.startswith('gpu') and not device.startswith('cuda') and not device.startswith('mps'):
-        print("device must be 'cpu', 'gpu', 'cuda', 'mps', or of the form 'gpu:k' or 'cuda:k'")
+        print("device must be 'cpu', 'gpu', 'cuda', 'mps', or of the form 'gpu:k', 'cuda:k', or 'mps:0'")
         print("\twhere k is an integer value for the device")
         print("Trying CPUs")
         device = 'cpu'
@@ -94,24 +94,34 @@ def get_device(device):
     device_num = -1
     if device != 'cpu':
         attached = False
+        mps_available = hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
+        print(f"MPS_for_MacM1+_available: {mps_available}")
         if torch.cuda.is_available():
             if device == 'gpu' or device == 'cuda': 
                 # assign to first gpu device number
                 device = 'cuda'
                 device_num = list(range(torch.cuda.device_count()))[0]
                 attached = True
-            elif device == "mps":
-                device_num = list(range(torch.cuda.device_count()))[0]
+        elif "mps" in device:
+            if not torch.backends.mps.is_available():
+                if not torch.backends.mps.is_built():
+                    print("MPS not available because the current PyTorch install was not built with MPS enabled.")
+                else:
+                    print("MPS not available because the current MacOS version is not 12.3+ and/or you do not have an MPS-enabled device on this machine.")
+            else:
+                device_num = 0 # list(range(torch.cuda.device_count()))[0]
+                device = 'mps:' + str(device_num)
                 attached = True
-            else: # assign to specific gpu device number
+                print("Using mps!")
+        else: # assign to specific gpu device number
                 try:
                     device_num = int(device.split(":")[-1])
                     device = 'cuda:' + str(device_num)
                     attached = True
                 except:
-                    pass
+                    attached = False
         if not attached:
-            print("Unable to use CUDA (GPU), using CPU")
+            print("Unable to use MPS (Mac M1+), CUDA (GPU), using CPU")
             device = "cpu"
             device_num = -1
 
