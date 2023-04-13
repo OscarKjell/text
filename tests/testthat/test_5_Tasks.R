@@ -45,9 +45,10 @@ test_that("textGeneration test", {
     return_full_text = TRUE,
     clean_up_tokenization_spaces = FALSE,
     prefix = "",
-    handle_long_generation = "hole"
+    handle_long_generation = "hole",
+    set_seed = 22L
   )
-  expect_equal(generated_text$x_generated, "The meaning of life is self-improvement. We do this the right way. It is an exercise in self-improvement. The better part of the day we try to do that is to stop thinking about doing things to the level most people")
+  expect_equal(generated_text$x_generated, "The meaning of life is to live for the sake of one's children, and to take the name or life of another, and not as the child of a dead person. It is a name, a life, and not as the son, daughter")
   expect_that(generated_text$x_generated, is_a("character"))
 
   # Return token IDs
