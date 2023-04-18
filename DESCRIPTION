@@ -33,7 +33,7 @@ Imports:
     purrr,
     magrittr,
     parsnip,
-    recipes,
+    recipes (>= 0.1.16),
     rsample,
     reticulate,
     tune,

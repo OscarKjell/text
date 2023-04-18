@@ -59,7 +59,7 @@ fit_model_rmse <- function(object,
     if (!impute_missing) {
       xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
     } else if (impute_missing) {
-      xy_recipe <- recipes::step_knnimpute(xy_recipe, recipes::all_predictors(), neighbors = 10) # , skip = TRUE
+      xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10) # , skip = TRUE
     }
 
 
@@ -100,7 +100,7 @@ fit_model_rmse <- function(object,
     if (!impute_missing) {
       xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
     } else if (impute_missing) {
-      xy_recipe <- recipes::step_knnimpute(xy_recipe, recipes::all_predictors(), neighbors = 10) # , skip = TRUE
+      xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10) # , skip = TRUE
     }
 
     if (preprocess_step_center) {
@@ -817,7 +817,7 @@ textTrainRegression <- function(x,
     if (!impute_missing) {
       final_recipe <- recipes::step_naomit(final_recipe, recipes::all_predictors(), skip = TRUE)
     } else if (impute_missing) {
-      final_recipe <- recipes::step_knnimpute(final_recipe, recipes::all_predictors(), neighbors = 10)
+      final_recipe <- recipes::step_impute_knn(final_recipe, recipes::all_predictors(), neighbors = 10)
     }
 
     if (preprocess_step_center) {
@@ -856,7 +856,7 @@ textTrainRegression <- function(x,
     if (!impute_missing) {
       final_recipe <- recipes::step_naomit(final_recipe, recipes::all_predictors(), skip = TRUE)
     } else if (impute_missing) {
-      final_recipe <- recipes::step_knnimpute(final_recipe, recipes::all_predictors(), neighbors = 10)
+      final_recipe <- recipes::step_impute_knn(final_recipe, recipes::all_predictors(), neighbors = 10)
     }
 
     if (preprocess_step_center) {
