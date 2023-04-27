@@ -589,7 +589,7 @@ def hgTransformerGetEmbedding(text_strings,
             if return_tokens:
                 tokens = []
                 for ids in input_ids:
-                    tokens.extend([token for token in tokenizer.convert_ids_to_tokens(ids) if token != '[PAD]'])
+                    tokens.extend([token for token in tokenizer.convert_ids_to_tokens(ids) if token != '[PAD]' and token != '<pad>'])
                 all_toks.append(tokens)
 
             with torch.no_grad():
@@ -700,7 +700,7 @@ def hgTokenizerGetTokens(text_strings,
 
             tokens = []
             for ids in input_ids:
-                tokens.extend([token for token in tokenizer.convert_ids_to_tokens(ids) if token != '[PAD]'])
+                tokens.extend([token for token in tokenizer.convert_ids_to_tokens(ids) if token != '[PAD]' and token != '<pad>'])
             all_toks.append(tokens)
 
         else:
