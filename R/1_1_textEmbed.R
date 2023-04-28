@@ -143,7 +143,9 @@ getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer = NULL, ...) {
 #' @param return_tokens bolean whether tokens have been returned (setting comes from textEmbedRawLayers).
 #' @return Layers in tidy tibble format with each dimension column called Dim1, Dim2 etc.
 #' @noRd
-sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
+sortingLayers <- function(x,
+                          layers = layers,
+                          return_tokens = return_tokens) {
   # If selecting "all" layers, find out number of layers to help indicate layer index later in code
   if (is.character(layers)) {
     layers <- 0:(length(x[[1]][[1]]) - 1)
@@ -206,6 +208,87 @@ sortingLayers <- function(x, layers = layers, return_tokens = return_tokens) {
   }
   variable_x
 }
+
+
+
+sortingLayers2 <- function(x,
+                           layers = NULL,
+                           return_tokens = TRUE) {
+  # If selecting "all" layers, find out number of layers to help indicate layer index later in code
+  if (is.null(layers)) {
+    layers <- 0:(length(x[[1]][[1]]) - 1)
+    n_layers <- length(x[[1]][[1]])
+  }
+
+  # Find number of dimensions (where the place differ depending on return_token is TRUE or FALSE)
+  if (return_tokens) {
+    dimensions <- length(x[[1]][[1]][[1]][[1]][[1]])
+    participants <- length(x[[1]])
+  } else {
+    dimensions <- length(x[[1]][[1]][[1]][[1]])
+    participants <- length(x)
+  }
+
+  # Loop over the cases in the variable
+  variable_x <- purrr::map(seq_len(participants), function(i_in_variable) {
+
+    # Tidy-structure tokens and embeddings
+    if (return_tokens) {
+      tokens <- purrr::map(x[[2]], ~ .x)
+      all_layers <- purrr::map(x[[1]], ~ .x[[layers + 1]])
+
+    } else {
+      tokens <- NULL
+      all_layers <- x[[layers + 1]]
+    }
+
+    # Count number of embeddings within one layer help("dim")
+    # token_id <- seq_len(dim(all_layers[[i_in_variable]][[1]][[1]]))
+     token_id <- seq_len(length(tokens[[i_in_variable]]))
+
+    layers_list <- purrr::map(#length(all_layers),
+      n_layers,
+      function(i_layers) {
+
+      i_layers_for_tokens <- all_layers[[i_in_variable]][[i_layers]] # = i_layers = 2
+
+      # Transpose layers and give each column a DimX names help("~")
+      layers_4_token <- suppressMessages(
+        tibble::as_tibble(t(dplyr::bind_cols(i_layers_for_tokens)),
+                          .name_repair = ~ paste0("Dim", seq_along(.)))
+      )
+
+      if (return_tokens) {
+        tokens_layer_number <- tibble::tibble(tokens[[i_in_variable]],
+                                              token_id,
+                                              layers[layers != ""][i_layers])
+        colnames(tokens_layer_number) <- c("tokens", "token_id", "layer_number")
+
+        # Bind tokens with word embeddings (not selecting <pad>s)
+        tokens_lnumber_layers <- dplyr::bind_cols(
+          tokens_layer_number,
+          layers_4_token[1:nrow(tokens_layer_number),])
+
+      } else {
+        layer_number <- tibble::tibble(token_id,
+                                       layers[layers != ""][i_layers])
+
+        colnames(layer_number) <- c("token_id", "layer_number")
+
+        # Bind tokens with word embeddings (not selecting <pad>s)
+        tokens_lnumber_layers <- dplyr::bind_cols(
+          layer_number,
+          layers_4_token)
+      }
+
+      return(tokens_lnumber_layers)
+    })
+    dplyr::bind_rows(layers_list)
+  })
+
+  return(variable_x)
+}
+
 
 
 #' This is a function that uses the textAggregation to aggregate the layers
@@ -317,6 +400,7 @@ textTokenize <- function(texts,
   return(tokens1)
 }
 
+
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
@@ -417,6 +501,7 @@ textEmbedRawLayers <- function(texts,
     sorted_layers_ALL_variables <- list()
     sorted_layers_ALL_variables$context_tokens <- list()
     # Loop over all character variables; i_variables = 1
+    T_test1 <- Sys.time()
     for (i_variables in seq_len(length(data_character_variables))) {
       T1_variable <- Sys.time()
       # Python file function to HuggingFace
@@ -431,8 +516,13 @@ textEmbedRawLayers <- function(texts,
         max_token_to_sentence = max_token_to_sentence,
         logging_level = logging_level
       )
+      T_test2 <- Sys.time()
 
-      variable_x <- sortingLayers(x = hg_embeddings, layers = layers, return_tokens = return_tokens)
+      T1_ok_test <- Sys.time()
+      variable_x <- sortingLayers2(x = hg_embeddings,
+                                  layers = layers,
+                                  return_tokens = return_tokens)
+      T2_ok_test <- Sys.time() # T2_ok_test-T1_ok_test
 
       sorted_layers_ALL_variables$context_tokens[[i_variables]] <- variable_x
       names(sorted_layers_ALL_variables$context_tokens)[[i_variables]] <- names(x)[[i_variables]]
@@ -783,6 +873,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
   names(selected_layers_aggregated_tibble) <- names(word_embeddings_layers)
   selected_layers_aggregated_tibble
 }
+
+
 
 
 #' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
