@@ -81,14 +81,14 @@ textZeroShot <- function(sequences,
     ) %>%
     dplyr::ungroup() %>%
     tidyr::pivot_wider(
-      sequence,
+      id_cols= sequence,
       names_from = no,
       names_prefix = "x_",
       values_from = c(labels, scores),
       names_sort=TRUE
     )
 
-  # Re-arrange to mix order of labels and scores.
+  # Re-arrange to mix order of labels and scores. help(pivot_wider)
   hg_zeroshot1 <- cbind(hg_zeroshot1[1],
                         hg_zeroshot1[c(matrix(names(hg_zeroshot1)[-1], 2,
                                               byrow = TRUE))])
