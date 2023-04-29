@@ -46,8 +46,8 @@ fit_model_rmse <- function(object,
 
   # Get number of embeddings provided
   n_embeddings <- as.numeric(comment(eval_measure))
-  
-  
+
+
   # Recipe for one embedding input summary(xy_recipe) help(all_of) library(tidyverse) help(step_naomit)
   if (n_embeddings == 1) {
     xy_recipe <- data_train %>%
@@ -446,7 +446,7 @@ tune_over_cost <- function(object,
     split.default(names(.)) %>%
     purrr::map(na.omit)
 
-  # Extract the RMSE. 
+  # Extract the RMSE.
   tune_eval_result <- unlist(tune_outputlist$eval_result$eval_result)
 
   # Add RMSE to the grid
@@ -553,7 +553,7 @@ summarize_tune_results <- function(object,
 #' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.
 #' @param append_first (boolean) Option to add variables before or after all word embeddings.
 #' @param y Numeric variable to predict.
-#' @param model Type of model. Default is "regression"; see also "logistic" for classification.
+#' @param model Type of model. Default is "regression"; see also "logistic" and "multinomial" for classification.
 #' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops
 #' of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
 #' using rsample::validation_split in the inner loop to achieve a development and assessment set (note that
@@ -663,9 +663,7 @@ textTrainRegression <- function(x,
   # Select correct eval_measure depending on model when default
   if (model == "regression" & eval_measure == "default") {
     eval_measure <- "rmse"
-  } else if (model == "logistic" & eval_measure == "default") {
-    eval_measure <- "bal_accuracy"
-  } else if (model == "multinomial" & eval_measure == "default") {
+  } else if (model == "logistic" | model == "multinomial" & eval_measure == "default") {
     eval_measure <- "bal_accuracy"
   }
 
@@ -692,8 +690,7 @@ textTrainRegression <- function(x,
   # Sorting out x's
   variables_and_names <- sorting_xs_and_x_append(x = x,
                                                  x_append = x_append,
-                                                 append_first = append_first
-                                                 ,
+                                                 append_first = append_first,
                                                  ...
   )
   x2 <- variables_and_names$x1

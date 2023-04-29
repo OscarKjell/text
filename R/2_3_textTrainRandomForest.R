@@ -53,6 +53,7 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
 #' Select evaluation measure and compute it (also used in logistic regression)
 #'
 #' @param outputlist_results_outer Results from outer predictions.
+#' @param id_nr ID numbers
 #' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
 #' @importFrom  tidyr unnest
 #' @importFrom  tibble is_tibble
@@ -82,16 +83,17 @@ classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
   fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate)
 
 
-  accuracy <- yardstick::accuracy(predy_y, truth, estimate, ...)
+  accuracy     <- yardstick::accuracy(predy_y, truth, estimate, ...)
   bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate, ...)
-  sens <- yardstick::sens(predy_y, truth, estimate, ...)
-  spec <- yardstick::spec(predy_y, truth, estimate, ...)
-  precision <- yardstick::precision(predy_y, truth, estimate, ...)
-  kappa <- yardstick::kap(predy_y, truth, estimate, ...)
-  f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...)
+  sens         <- yardstick::sens(predy_y, truth, estimate, ...)
+  spec         <- yardstick::spec(predy_y, truth, estimate, ...)
+  precision    <- yardstick::precision(predy_y, truth, estimate, ...)
+  kappa        <- yardstick::kap(predy_y, truth, estimate, ...)
+  f_measure    <- yardstick::f_meas(predy_y, truth, estimate, ...)
 
-  roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3]))
+  roc_auc        <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3]))
   roc_curve_data <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[3]))
+
   roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[3])))
 
   results_collected <- dplyr::bind_rows(
@@ -110,7 +112,19 @@ classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
   output
 }
 
-classification_results_multi <- function(outputlist_results_outer, id_nr = NA, n = 3,...) {
+#' Select evaluation measure and compute it (also used in logistic regression)
+#'
+#' @param outputlist_results_outer Results from outer predictions.
+#' @param id_nr ID numbers
+#' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
+#' @importFrom  tidyr unnest
+#' @importFrom  tibble is_tibble
+#' @importFrom  dplyr full_join arrange bind_rows
+#' @importFrom  stats fisher.test
+#' @importFrom  yardstick accuracy bal_accuracy sens spec precision kap f_meas roc_auc rmse rsq
+#' @importFrom  ggplot2 autoplot
+#' @noRd
+classification_results_multi <- function(outputlist_results_outer, id_nr = NA, ...) {
   predy_y <- tibble::tibble(
     tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
     tidyr::unnest(outputlist_results_outer$estimate, cols = c(estimate)),
@@ -125,24 +139,25 @@ classification_results_multi <- function(outputlist_results_outer, id_nr = NA, n
     predy_y <- predy_y %>% dplyr::full_join(id_nr, by = "id_nr")
   }
 
-
-predy_y <- predy_y %>% dplyr::arrange(id_nr)
+  predy_y <- predy_y %>% dplyr::arrange(id_nr)
   # Correlate predictions and observed help(all_of)
+
   chisq <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
 
   fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate)
 
 
-  accuracy <- yardstick::accuracy(predy_y, truth, estimate, ...)
+  accuracy     <- yardstick::accuracy(predy_y, truth, estimate, ...)
   bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate, ...)
-  sens <- yardstick::sens(predy_y, truth, estimate, ...)
-  spec <- yardstick::spec(predy_y, truth, estimate, ...)
-  precision <- yardstick::precision(predy_y, truth, estimate, ...)
-  kappa <- yardstick::kap(predy_y, truth, estimate, ...)
-  f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...)
+  sens         <- yardstick::sens(predy_y, truth, estimate, ...)
+  spec         <- yardstick::spec(predy_y, truth, estimate, ...)
+  precision    <- yardstick::precision(predy_y, truth, estimate, ...)
+  kappa        <- yardstick::kap(predy_y, truth, estimate, ...)
+  f_measure    <- yardstick::f_meas(predy_y, truth, estimate, ...)
 
-  roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[4:(length(predy_y))]))
+  roc_auc        <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[4:(length(predy_y))]))
   roc_curve_data <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[4:(length(predy_y))]))
+
   roc_curve_plot <- ggplot2::autoplot(yardstick::roc_curve(predy_y, truth, colnames(predy_y[4:(length(predy_y))])))
 
   results_collected <- dplyr::bind_rows(
