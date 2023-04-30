@@ -519,7 +519,7 @@ textEmbedRawLayers <- function(texts,
       T_test2 <- Sys.time()
 
       T1_ok_test <- Sys.time()
-      variable_x <- sortingLayers2(x = hg_embeddings,
+      variable_x <- sortingLayers(x = hg_embeddings,
                                   layers = layers,
                                   return_tokens = return_tokens)
       T2_ok_test <- Sys.time() # T2_ok_test-T1_ok_test
