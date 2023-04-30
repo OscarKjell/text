@@ -65,7 +65,7 @@ For more information see validation_split in rsample.}
 \item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the inner
 cross-validation loop.}
 
-\item{model}{Type of model. Default is "regression"; see also "logistic" for classification.}
+\item{model}{Type of model. Default is "regression"; see also "logistic" and "multinomial" for classification.}
 
 \item{eval_measure}{Type of evaluative measure to select models from. Default = "rmse" for regression and
 "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",

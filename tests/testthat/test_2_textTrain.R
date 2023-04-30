@@ -134,6 +134,45 @@ test_that("textTrain Regression produces list of results with prediction being n
   testthat::expect_that(trained_NA, is_a("list"))
   testthat::expect_is(trained_NA$predictions$predictions[1], "numeric")
   testthat::expect_equal(trained_NA$predictions$predictions[1], 28.5811, tolerance = 0.001)
+
+  #test multinomial logistic regression with 3 outcomes
+trained_multinomial <- text::textTrainRegression(
+  x = word_embeddings_4$texts["harmonywords"],
+  y = as.factor(ntile(Language_based_assessment_data_8$hilstotal,3)),
+  cv_method = "validation_split",
+  outside_folds = 10,
+  inside_folds = 3 / 4,
+  model = "multinomial",
+  eval_measure = "bal_accuracy",
+  penalty = c(1),
+  mixture = c(0),
+  preprocess_PCA = "min_halving",
+  multi_cores = "multi_cores_sys_default",
+  save_output = "only_results"
+)
+
+testthat::expect_that(trained_multinomial, testthat::is_a("list"))
+testthat::expect_is(trained_multinomial$results_metrics$.estimate[[1]], "numeric")
+testthat::expect_equal(trained_multinomial$results_metrics$.estimate[[1]], 0.675)
+
+#test multinomial logistic regression with four outcomes. Note that the data has few observations so there will be many warnings.
+trained_multinomial4 <- text::textTrainRegression(
+  x = word_embeddings_4$texts["harmonywords"],
+  y = as.factor(ntile(Language_based_assessment_data_8$hilstotal, 4)),
+  cv_method = "validation_split",
+  outside_folds = 10,
+  inside_folds = 3 / 4,
+  model = "multinomial",
+  eval_measure = "bal_accuracy",
+  penalty = c(1),
+  mixture = c(0),
+  preprocess_PCA = "min_halving",
+  multi_cores = "multi_cores_sys_default"
+)
+
+testthat::expect_that(trained_multinomial4, testthat::is_a("list"))
+testthat::expect_is(trained_multinomial4$results_metrics$.estimate[[1]], "numeric")
+testthat::expect_equal(trained_multinomial4$results_metrics$.estimate[[1]], 0.275)
 })
 
 
