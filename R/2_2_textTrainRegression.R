@@ -685,7 +685,9 @@ textTrainRegression <- function(x,
     y <- tibble::as_tibble_col(y, column_name = "y")
   }
 
-
+  if(model == "logistic" & anyNA(y[1])){
+    stop("In logistic regression you cannot currently have any NA(s) in y.")
+  }
 
   # Sorting out x's
   variables_and_names <- sorting_xs_and_x_append(x = x,
