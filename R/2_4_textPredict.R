@@ -237,12 +237,15 @@ textPredictTest <- function(y1,
 
     # Correlation function
     corr_on_bootstrap <- function(split) {
-      stats::cor(rsample::analysis(split)[[1]], rsample::analysis(split)[[2]])
+      stats::cor(rsample::analysis(split)[[1]],
+                 rsample::analysis(split)[[2]])
     }
 
     # Creating correlation distribution for y1 and yhat1
     y_yhat1_df <- tibble::tibble(y1, yhat1)
-    boots_y1 <- rsample::bootstraps(y_yhat1_df, times = bootstraps_times, apparent = FALSE)
+    boots_y1 <- rsample::bootstraps(y_yhat1_df,
+                                    times = bootstraps_times,
+                                    apparent = FALSE)
 
     boot_corrss_y1 <- boots_y1 %>%
       dplyr::mutate(corr_y1 = purrr::map(splits, corr_on_bootstrap))
@@ -253,7 +256,9 @@ textPredictTest <- function(y1,
 
     # Creating correlation distribution for y2 and yhat2
     y_yhat2_df <- tibble::tibble(y2, yhat2)
-    boots_y2 <- rsample::bootstraps(y_yhat2_df, times = bootstraps_times, apparent = FALSE)
+    boots_y2 <- rsample::bootstraps(y_yhat2_df,
+                                    times = bootstraps_times,
+                                    apparent = FALSE)
 
     boot_corrss_y2 <- boots_y2 %>%
       dplyr::mutate(corr_y2 = purrr::map(splits, corr_on_bootstrap))

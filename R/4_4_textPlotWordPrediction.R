@@ -22,7 +22,7 @@ wordsMeanValue <- function(words, target_word, x_value, case_insensitive) {
 
 #' Compute predictions based on single words for plotting words. The word embeddings of
 #' single words are trained to predict the mean value associated with that word. P-values does
-#' NOT work yet.
+#' NOT work yet (experimental).
 #' @param words Word or text variable to be plotted.
 # @param word_embeddings Word embeddings from textEmbed for the words to be plotted
 # (i.e., the aggregated word embeddings for the "words" parameter).

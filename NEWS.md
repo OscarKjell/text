@@ -2,6 +2,10 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.0
+## Function
+- multinomial regression in `textTrainRegression()`
+
 # text 0.9.99.9
 ## Function
 Possibility to use GPU for MacOS M1 and M2 chip using device = "mps" in `textEmbed()`

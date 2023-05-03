@@ -652,10 +652,7 @@ textTrainRegression <- function(x,
                                 multi_cores = "multi_cores_sys_default",
                                 save_output = "all",
                                 seed = 2020,
-                                ...)
-
-
-{
+                                ...) {
   T1_textTrainRegression <- Sys.time()
   set.seed(seed)
 

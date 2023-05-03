@@ -9,14 +9,15 @@ context("Testing tasks")
 test_that("Task Fine-tuning tests", {
   skip_on_cran()
 
-  help("textFineTuneTask")
+  #help("textFineTuneTask")
   unlink("./run_reg", recursive = TRUE)
-  text::textFineTuneTask(Language_based_assessment_data_8[,c("satisfactiontexts",
+  test <- text::textFineTuneTask(Language_based_assessment_data_8[,c("satisfactiontexts",
                                                              "hilstotal")],
                          model_name_or_path = "distilbert-base-uncased",
                          is_regression = TRUE,
                          output_dir = "./run_reg")
 
+  testthat::expect_equal(test, "\033[0;32mCompleted\033[0m")
   # remove the folder
   unlink("./run_reg", recursive = TRUE)
 #  textModels()

@@ -186,42 +186,5 @@ textEmbedReduce <- function(
   return(embeddings)
 }
 
-#hil_roberta_all <- textEmbed(
-#  Language_based_assessment_data_3_100,
-#  model = "roberta-base",
-#  layer = 11,
-#  keep_token_embeddings = FALSE,
-#  aggregation_from_tokens_to_word_types = NULL)
-#
-#
-#
-#model_def <- textTrain(hil_roberta_all$texts,
-#                          Language_based_assessment_data_3_100$hilstotal)
-#model_def
-#
-#pca5 <- textEmbedReduce(hil_roberta_all,
-#                n_dim = 5)
-#pca5_model <- textTrain(pca5$texts,
-#                        Language_based_assessment_data_3_100$hilstotal)
-#pca5_model
-#
-#
-#pca100 <- textEmbedReduce(hil_roberta_all,
-#                        n_dim = 100)
-#pca100_model <- textTrain(pca100$texts,
-#                        Language_based_assessment_data_3_100$hilstotal)
-#pca100_model
-#
-#pca300 <- textEmbedReduce(hil_roberta_all,
-#                          n_dim = 300)
-#pca300_model <- textTrain(pca300$texts,
-#                          Language_based_assessment_data_3_100$hilstotal)
-#pca300_model
-#
-#
-#pca768 <- textEmbedReduce(hil_roberta_all,
-#                          n_dim = 768)
-#pca768_model <- textTrain(pca768$texts,
-#                          Language_based_assessment_data_3_100$hilstotal)
-#pca768_model
+
 
