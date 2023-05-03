@@ -2,6 +2,7 @@
 library(testthat)
 library(tibble)
 library(text)
+library(stringi)
 
 context("Testing tasks")
 
@@ -17,9 +18,10 @@ test_that("Task Fine-tuning tests", {
                          is_regression = TRUE,
                          output_dir = "./run_reg")
 
-  # This is because some systems show this as: "\033[0;32mCompleted\033[0m"
-  test1 <- stringr::str_extract(test, "Completed")
-  testthat::expect_equal(test1, "Completed")
+  # This is because some systems show this as:test <- "\033[0;32mCompleted\033[0m"
+  test <- tolower(test)
+  test1 <- stringi::stri_extract_all_fixed(test, "completed")[[1]]
+  testthat::expect_equal(test1, "completed")
 
   # Remove the folder
   unlink("./run_reg", recursive = TRUE)
