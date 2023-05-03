@@ -17,8 +17,11 @@ test_that("Task Fine-tuning tests", {
                          is_regression = TRUE,
                          output_dir = "./run_reg")
 
-  testthat::expect_equal(test, "\033[0;32mCompleted\033[0m")
-  # remove the folder
+  # This is because some systems show this as: "\033[0;32mCompleted\033[0m"
+  test1 <- stringr::str_extract(test, "Completed")
+  testthat::expect_equal(test1, "Completed")
+
+  # Remove the folder
   unlink("./run_reg", recursive = TRUE)
 #  textModels()
 #  unlink("./run_clf", recursive = TRUE)
