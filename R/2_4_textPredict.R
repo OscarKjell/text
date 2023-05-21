@@ -157,9 +157,6 @@ textPredictAll <- function(models,
 
 
 
-
-textPredictTest()
-test
 #' Significance testing correlations
 #' If only y1 is provided a t-test is computed, between the absolute error from yhat1-y1 and yhat2-y1.
 #'
@@ -175,10 +172,12 @@ test
 #' @param yhat2 The predicted scores from model 2 that will be compared with model 1.
 #' @param paired Paired test or not in stats::t.test (default TRUE).
 #' @param method Set "t-test" if comparing predictions from models that predict the SAME outcome.
-#' Set "bootstrap" if comparing predictions from models that predict DIFFERENT outcomes or comparison from logistic regression computing AUC distributions.
-#' @param statistic If method is set to bootstrap choose "correlation or "auc" depending model training.
+#' Set "bootstrap" if comparing predictions from models that predict DIFFERENT outcomes or comparison from logistic
+#' regression computing AUC distributions.
+#' @param statistic Character ("correlation", "auc") describing statistic to be compared in bootstrapping.
+#' @param event_level Character "first" or "second" for computing the auc in the bootstrap.
 #' @param bootstraps_times Number of bootstraps (when providing y2).
-#' @param seed Set different seed.
+#' @param seed Set seed.
 #' @param ... Settings from stats::t.test or overlapping::overlap (e.g., plot = TRUE).
 #' @return Comparison of correlations either a t-test or the overlap of a bootstrapped procedure (see $OV).
 #' @examples
@@ -188,7 +187,7 @@ test
 #' y2 <- runif(10)
 #' yhat2 <- runif(10)
 #'
-#boot_test <- textPredictTest(y1, y2, yhat1, yhat2, statistic = auc, paired = TRUE, bootstraps_times = 10)
+#' boot_test <- textPredictTest(y1, y2, yhat1, yhat2)
 #' @seealso see \code{\link{textTrain}} \code{\link{textPredict}}
 #' @importFrom stats t.test cor
 #' @importFrom tibble is_tibble as_tibble_col
@@ -196,15 +195,16 @@ test
 #' @importFrom dplyr select mutate
 #' @importFrom overlapping overlap
 #' @importFrom rsample analysis bootstraps
-#' @importFrom yardstick auc
+#' @importFrom yardstick roc_auc_vec
 #' @export
 textPredictTest <- function(y1,
                             y2,
                             yhat1,
                             yhat2,
-                            method = "bootstrap",
-                            statistic = "auc",
+                            method = "t-test",
+                            statistic = "correlation",
                             paired = TRUE,
+                            event_level = "first",
                             bootstraps_times = 1000,
                             seed = 6134,
                             ...) {
@@ -254,12 +254,13 @@ textPredictTest <- function(y1,
     }
 
 
-    #auc function
+    # AUC function
     if(statistic == "auc"){
 
       stats_on_bootstrap <- function(split) {
-        yardstick::roc_auc_vec(as_factor(rsample::analysis(split)[[1]]),
-                               rsample::analysis(split)[[2]], event_level = "second")
+        yardstick::roc_auc_vec(as.factor(rsample::analysis(split)[[1]]),
+                               rsample::analysis(split)[[2]],
+                               event_level = event_level)
       }
     }
 

@@ -23,7 +23,8 @@ jobs:
 #          - {os: windows-latest, r: 'release'}
 #          - {os: ubuntu-20.04,   r: 'release'}
           - {os: macOS-latest,   r: '4.2'}
-          - {os: windows-latest, r: '4.2'}
+#          - {os: windows-latest, r: '4.2'}
+          - {os: windows-2019, r: '4.2'}
           - {os: ubuntu-20.04,   r: '4.2'}
 
 #          - {os: windows-latest, r: '3.6'}

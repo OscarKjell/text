@@ -7,11 +7,14 @@ If only y1 is provided a t-test is computed, between the absolute error from yha
 \usage{
 textPredictTest(
   y1,
-  y2 = NULL,
+  y2,
   yhat1,
   yhat2,
+  method = "t-test",
+  statistic = "correlation",
   paired = TRUE,
-  bootstraps_times = 10000,
+  event_level = "first",
+  bootstraps_times = 1000,
   seed = 6134,
   ...
 )
@@ -27,11 +30,19 @@ compared (see description above).}
 
 \item{yhat2}{The predicted scores from model 2 that will be compared with model 1.}
 
+\item{method}{Set "t-test" if comparing predictions from models that predict the SAME outcome.
+Set "bootstrap" if comparing predictions from models that predict DIFFERENT outcomes or comparison from logistic
+regression computing AUC distributions.}
+
+\item{statistic}{Character ("correlation", "auc") describing statistic to be compared in bootstrapping.}
+
 \item{paired}{Paired test or not in stats::t.test (default TRUE).}
+
+\item{event_level}{Character "first" or "second" for computing the auc in the bootstrap.}
 
 \item{bootstraps_times}{Number of bootstraps (when providing y2).}
 
-\item{seed}{Set different seed.}
+\item{seed}{Set seed.}
 
 \item{...}{Settings from stats::t.test or overlapping::overlap (e.g., plot = TRUE).}
 }
@@ -50,7 +61,7 @@ yhat1 <- runif(10)
 y2 <- runif(10)
 yhat2 <- runif(10)
 
-boot_test <- textPredictTest(y1, yhat1, y2, yhat2, bootstraps_times = 10)
+boot_test <- textPredictTest(y1, y2, yhat1, yhat2)
 }
 \seealso{
 see \code{\link{textTrain}} \code{\link{textPredict}}
