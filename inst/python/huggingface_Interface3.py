@@ -94,7 +94,11 @@ def get_device(device):
     device_num = -1
     if device != 'cpu':
         attached = False
-        mps_available = hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
+        
+        if hasattr(torch.backends, "mps"):
+            mps_available = torch.backends.mps.is_available()
+        else:
+            mps_available = False
         print(f"MPS_for_MacM1+_available: {mps_available}")
         if torch.cuda.is_available():
             if device == 'gpu' or device == 'cuda': 
