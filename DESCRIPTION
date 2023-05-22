@@ -49,7 +49,6 @@ Suggests:
     testthat,
     rio,
     glmnet,
-    multinomial,
     randomForest,
     covr,
     xml2,

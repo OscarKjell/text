@@ -20,6 +20,12 @@ statisticalMode <- function(x) {
 #' @param variable_name_index_pca variable with names to know how to keep variables
 #' from same word embedding together in separate pca:s
 #' @return  RMSE.
+#' @importFrom rsample analysis assessment
+#' @importFrom recipes recipe update_role step_naomit step_impute_knn step_center
+#' step_scale step_pca prep juice
+#' @importFrom dplyr matches select
+#' @importFrom parsnip linear_reg logistic_reg multinom_reg set_engine fit
+#' @importFrom workflows workflow add_model add_recipe
 #' @noRd
 fit_model_rmse <- function(object,
                            model = "regression",
@@ -620,7 +626,7 @@ summarize_tune_results <- function(object,
 #' @importFrom dplyr bind_cols select starts_with filter all_of
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
 #' @importFrom rsample vfold_cv
-#' @importFrom parsnip linear_reg set_engine
+#' @importFrom parsnip linear_reg set_engine multinom_reg
 #' @importFrom tune tune control_grid tune_grid select_best collect_predictions
 #' @importFrom magrittr %>%
 #' @importFrom future plan multisession
