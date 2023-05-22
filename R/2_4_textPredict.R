@@ -156,6 +156,7 @@ textPredictAll <- function(models,
 }
 
 
+
 #' Significance testing correlations
 #' If only y1 is provided a t-test is computed, between the absolute error from yhat1-y1 and yhat2-y1.
 #'
@@ -170,8 +171,13 @@ textPredictAll <- function(models,
 #' @param yhat1 The predicted scores from model 1.
 #' @param yhat2 The predicted scores from model 2 that will be compared with model 1.
 #' @param paired Paired test or not in stats::t.test (default TRUE).
+#' @param method Set "t-test" if comparing predictions from models that predict the SAME outcome.
+#' Set "bootstrap" if comparing predictions from models that predict DIFFERENT outcomes or comparison from logistic
+#' regression computing AUC distributions.
+#' @param statistic Character ("correlation", "auc") describing statistic to be compared in bootstrapping.
+#' @param event_level Character "first" or "second" for computing the auc in the bootstrap.
 #' @param bootstraps_times Number of bootstraps (when providing y2).
-#' @param seed Set different seed.
+#' @param seed Set seed.
 #' @param ... Settings from stats::t.test or overlapping::overlap (e.g., plot = TRUE).
 #' @return Comparison of correlations either a t-test or the overlap of a bootstrapped procedure (see $OV).
 #' @examples
@@ -181,7 +187,7 @@ textPredictAll <- function(models,
 #' y2 <- runif(10)
 #' yhat2 <- runif(10)
 #'
-#' boot_test <- textPredictTest(y1, yhat1, y2, yhat2, bootstraps_times = 10)
+#' boot_test <- textPredictTest(y1, y2, yhat1, yhat2)
 #' @seealso see \code{\link{textTrain}} \code{\link{textPredict}}
 #' @importFrom stats t.test cor
 #' @importFrom tibble is_tibble as_tibble_col
@@ -189,18 +195,22 @@ textPredictAll <- function(models,
 #' @importFrom dplyr select mutate
 #' @importFrom overlapping overlap
 #' @importFrom rsample analysis bootstraps
+#' @importFrom yardstick roc_auc_vec
 #' @export
 textPredictTest <- function(y1,
-                            y2 = NULL,
+                            y2,
                             yhat1,
                             yhat2,
+                            method = "t-test",
+                            statistic = "correlation",
                             paired = TRUE,
-                            bootstraps_times = 10000,
+                            event_level = "first",
+                            bootstraps_times = 1000,
                             seed = 6134,
                             ...) {
 
   ## If comparing predictions from models that predict the SAME outcome
-  if (is.null(y2)) {
+  if (method == "t-test") {
     yhat1_absolut_error <- abs(yhat1 - y1)
     yhat1_absolut_error_mean <- mean(yhat1_absolut_error)
     yhat1_absolut_error_sd <- sd(yhat1_absolut_error)
@@ -231,15 +241,29 @@ textPredictTest <- function(y1,
 
   ## If comparing predictions from models that predict DIFFERENT outcomes
 
-  if (!is.null(y2)) {
+  if (method == "bootstrap") {
     set.seed(seed)
     # Bootstrap data to create distribution of correlations; help(bootstraps)
 
     # Correlation function
-    corr_on_bootstrap <- function(split) {
-      stats::cor(rsample::analysis(split)[[1]],
-                 rsample::analysis(split)[[2]])
+    if(statistic == "correlation"){
+      stats_on_bootstrap <- function(split) {
+        stats::cor(rsample::analysis(split)[[1]],
+                   rsample::analysis(split)[[2]])
+      }
     }
+
+
+    # AUC function
+    if(statistic == "auc"){
+
+      stats_on_bootstrap <- function(split) {
+        yardstick::roc_auc_vec(as.factor(rsample::analysis(split)[[1]]),
+                               rsample::analysis(split)[[2]],
+                               event_level = event_level)
+      }
+    }
+
 
     # Creating correlation distribution for y1 and yhat1
     y_yhat1_df <- tibble::tibble(y1, yhat1)
@@ -248,7 +272,9 @@ textPredictTest <- function(y1,
                                     apparent = FALSE)
 
     boot_corrss_y1 <- boots_y1 %>%
-      dplyr::mutate(corr_y1 = purrr::map(splits, corr_on_bootstrap))
+      dplyr::mutate(corr_y1 = purrr::map(splits, stats_on_bootstrap))
+
+
 
     boot_y1_distribution <- boot_corrss_y1 %>%
       tidyr::unnest(corr_y1) %>%
@@ -261,7 +287,7 @@ textPredictTest <- function(y1,
                                     apparent = FALSE)
 
     boot_corrss_y2 <- boots_y2 %>%
-      dplyr::mutate(corr_y2 = purrr::map(splits, corr_on_bootstrap))
+      dplyr::mutate(corr_y2 = purrr::map(splits, stats_on_bootstrap))
 
     boot_y2_distribution <- boot_corrss_y2 %>%
       tidyr::unnest(corr_y2) %>%
@@ -271,9 +297,14 @@ textPredictTest <- function(y1,
     ### Examining the overlap
     x_list_dist <- list(boot_y1_distribution$corr_y1, boot_y2_distribution$corr_y2)
 
-    output <- overlapping::overlap(x_list_dist, ...)
+    output <- overlapping::overlap(x_list_dist)
     output <- list(output$OV[[1]])
     names(output) <- "overlapp_p_value"
   }
   output
 }
+
+
+
+
+

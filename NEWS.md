@@ -5,6 +5,7 @@
 # text 1.0
 ## Function
 - multinomial regression in `textTrainRegression()`
+- textPredictTest() can hand `auc`
 
 # text 0.9.99.9
 ## Function

@@ -33,6 +33,9 @@ utils::globalVariables(c(
   "data_train",
   "textTrainCVpredictions", "textTrainCVpredictionsRF",
 
+  # textPredcitTest
+  "stats_on_bootstrap",
+
   # Language Tasks
   "NamesNer",
   "no", "scores", # in textZeropShot
