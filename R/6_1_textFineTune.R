@@ -25,7 +25,7 @@
 #' for their predictions. If this argument is set to a positive int, the Trainer will use the corresponding output
 #' (usually index 2) as the past state and feed it to the model at the next training step under the keyword argument mems.
 #' @param set_seed (Numeric) Set the seed
-#' @param label_names label name in case of classification.
+#' @param label_names label name in case of classification; e.g., label_names = c("female", "male").
 #' @param ... Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.
 #' @return A folder containing the pretrained model and output data. The model can then be used, for example, by
 #' textEmbed() by providing the model parameter with a the path to the output folder.

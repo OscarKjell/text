@@ -63,7 +63,7 @@ for their predictions. If this argument is set to a positive int, the Trainer wi
 
 \item{set_seed}{(Numeric) Set the seed}
 
-\item{label_names}{label name in case of classification.}
+\item{label_names}{label name in case of classification; e.g., label_names = c("female", "male").}
 
 \item{...}{Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.}
 }
