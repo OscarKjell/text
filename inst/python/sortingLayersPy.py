@@ -6,6 +6,9 @@ def sortingLayersPy(x, layers, return_tokens):
     # If selecting "all" layers, find out number of layers to help indicate layer index later in code
     if isinstance(layers, str):
         layers = list(range(len(x[0][0])))
+    if isinstance(layers, float):
+        if layers > 0: layers -= 1 
+        layers = list(layers)
 
     # Find number of dimensions (where the place differ depending on return_token is True or False)
     if return_tokens:
