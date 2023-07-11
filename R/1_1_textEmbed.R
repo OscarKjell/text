@@ -146,67 +146,14 @@ getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer = NULL, ...) {
 sortingLayers <- function(x,
                           layers = layers,
                           return_tokens = return_tokens) {
-  # If selecting "all" layers, find out number of layers to help indicate layer index later in code
-  if (is.character(layers)) {
-    layers <- 0:(length(x[[1]][[1]]) - 1)
-  }
-
-  # Find number of dimensions (where the place differ depending on return_token is TRUE or FALSE)
-  if (return_tokens) {
-    dimensions <- length(x[[1]][[1]][[1]][[1]][[1]])
-    participants <- length(x[[1]])
-  } else {
-    dimensions <- length(x[[1]][[1]][[1]][[1]])
-    participants <- length(x)
-  }
-
-  # Tidy-structure tokens and embeddings
-  # Loop over the cases in the variable; i_in_variable = 1
-  variable_x <- list()
-  for (i_in_variable in 1:participants) {
-    if (return_tokens) {
-      tokens <- x[[2]][[i_in_variable]]
-      token_id <- seq_len(length(tokens))
-      all_layers <- x[[1]][[i_in_variable]]
-    } else {
-      tokens <- NULL
-      all_layers <- x[[i_in_variable]]
-      # Count number of embeddings within one layer
-      token_id <- seq_len(length(all_layers[[1]][[1]]))
-    }
-
-    # Loop of the number of layers; i_layers=1
-    layers_list <- list()
-    for (i_layers in seq_len(length(all_layers))) {
-      i_layers_for_tokens <- all_layers[i_layers]
-
-      # Transpose layers and give each column a DimX names
-      layers_4_token <- suppressMessages(t(dplyr::bind_cols(i_layers_for_tokens))) %>%
-        magrittr::set_colnames(c(paste0("Dim", 1:dimensions))) # %>%
-      layers_4_token <- tibble::as_tibble(layers_4_token)
-
-      if (return_tokens) {
-        tokens_layer_number <- tibble::tibble(tokens, token_id, rep(layers[i_layers], length(tokens)))
-        colnames(tokens_layer_number) <- c("tokens", "token_id", "layer_number")
-        # Bind tokens with word embeddings (not selecting <pad>s)
-        tokens_lnumber_layers <- dplyr::bind_cols(tokens_layer_number,
-                                                  layers_4_token[1:nrow(tokens_layer_number),])
-      } else {
-        layer_number <- tibble::tibble(token_id, rep(layers[i_layers], nrow(layers_4_token)))
-        colnames(layer_number) <- c("token_id", "layer_number")
-        # Bind tokens with word embeddings (not selecting <pad>s)
-        tokens_lnumber_layers <- dplyr::bind_cols(layer_number,
-                                                  layers_4_token[1:nrow(tokens_layer_number),])
-      }
-
-      layers_list[[i_layers]] <- tokens_lnumber_layers
-      layers_list
-    }
-    layers_tibble <- dplyr::bind_rows(layers_list)
-
-    variable_x[[i_in_variable]] <- layers_tibble
-  }
-  variable_x
+  reticulate::source_python(system.file("python",
+    "sortingLayersPy.py",
+    # envir = NULL,
+    package = "text",
+    mustWork = TRUE
+  ))
+  variable_x <- sortingLayersPy(x, layers, return_tokens)
+  return(variable_x)
 }
 
 
