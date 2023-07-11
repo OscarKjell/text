@@ -19,7 +19,7 @@ def sortingLayersPy(x, layers, return_tokens):
         participants = len(x)
 
     # Tidy-structure tokens and embeddings
-    # Loop over the cases in the variable; i_in_variable = 1
+    # Loop over the cases in the variable; i_in_variable = 0
     variable_x = []
     for i_in_variable in range(participants):
         if return_tokens:
