@@ -8,7 +8,7 @@ def sortingLayersPy(x, layers, return_tokens):
         layers = list(range(len(x[0][0])))
     if isinstance(layers, float):
         if layers > 0: layers -= 1 
-        layers = list(layers)
+        layers = [layers]
 
     # Find number of dimensions (where the place differ depending on return_token is True or False)
     if return_tokens:
