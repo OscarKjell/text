@@ -143,7 +143,7 @@ getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer = NULL, ...) {
 #' @param return_tokens bolean whether tokens have been returned (setting comes from textEmbedRawLayers).
 #' @return Layers in tidy tibble format with each dimension column called Dim1, Dim2 etc.
 #' @noRd
-sortingLayers5 <- function(x,
+sortingLayers <- function(x,
                           layers = layers,
                           return_tokens = return_tokens) {
   # If selecting "all" layers, find out number of layers to help indicate layer index later in code
