@@ -176,7 +176,6 @@ sortingLayers <- function(x,
     
     # Replace inner loop over i_layers with updated code
     totalTokensNum <- length(tokens)
-    print(paste0("totalTokensNum: ", as.character(totalTokensNum)))
     tarTb <- numeric(length=totalTokensNum*length(layers)*dimensions)
     tarTb <- reticulate::np_array(tarTb)
     tarTb <- tibble::as_tibble(reticulate::py_to_r(reticulate::array_reshape(tarTb, c(totalTokensNum*length(layers), dimensions))))
