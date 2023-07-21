@@ -143,17 +143,60 @@ getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer = NULL, ...) {
 #' @param return_tokens bolean whether tokens have been returned (setting comes from textEmbedRawLayers).
 #' @return Layers in tidy tibble format with each dimension column called Dim1, Dim2 etc.
 #' @noRd
-sortingLayers <- function(x,
-                          layers = layers,
-                          return_tokens = return_tokens) {
-  reticulate::source_python(system.file("python",
-    "sortingLayersPy.py",
-    # envir = NULL,
-    package = "text",
-    mustWork = TRUE
-  ))
-  variable_x <- sortingLayersPy(x, layers, return_tokens)
-  return(variable_x)
+sortingLayers4 <- function(x,
+                           layers = layers,
+                           return_tokens = return_tokens) {
+  # If selecting "all" layers, find out number of layers to help indicate layer index later in code
+  if (is.character(layers)) {
+    layers <- 0:(length(x[[1]][[1]]) - 1)
+  }
+  
+  # Find number of dimensions (where the place differ depending on return_token is TRUE or FALSE)
+  if (return_tokens) {
+    dimensions <- length(x[[1]][[1]][[1]][[1]][[1]])
+    participants <- length(x[[1]])
+  } else {
+    dimensions <- length(x[[1]][[1]][[1]][[1]])
+    participants <- length(x)
+  }
+  
+  # Tidy-structure tokens and embeddings
+  # Replace outer loop over i_in_variable with future_map()
+  variable_x <- purrr::map(1:participants, function(i_in_variable) {
+    if (return_tokens) {
+      tokens <- x[[2]][[i_in_variable]]
+      token_id <- seq_len(length(tokens))
+      all_layers <- x[[1]][[i_in_variable]]
+    } else {
+      tokens <- NULL
+      all_layers <- x[[i_in_variable]]
+      # Count number of embeddings within one layer
+      token_id <- seq_len(length(all_layers[[1]][[1]]))
+    }
+    
+    # Replace inner loop over i_layers with updated code from script
+    totalTokensNum <- length(tokens)
+    tarTb <- numeric(length=totalTokensNum*dimensions)
+    tarTb <- reticulate::np_array(tarTb)
+    tarTb <- tibble::as_tibble(reticulate::py_to_r(reticulate::array_reshape(tarTb, c(totalTokensNum, dimensions))))
+    colnames(tarTb) <- paste0("Dim", seq_len(dimensions))
+    tokenRowNum <- 1
+    for (j in seq_len(totalTokensNum)){
+      tarTb[tokenRowNum,] <- as.list(all_layers[[1]][[1]][[j]])
+      tokenRowNum <- tokenRowNum + 1
+    }
+    
+    # Add tokens, token IDs, and layer numbers to output tibble
+    if (return_tokens) {
+      tarTb <- cbind(tokens, token_id, layer_number = rep(layers, totalTokensNum), tarTb)
+    } else {
+      tarTb <- cbind(token_id, layer_number = rep(layers, totalTokensNum), tarTb)
+    }
+    
+    tarTb
+  })
+  
+  variable_x
 }
 
 
