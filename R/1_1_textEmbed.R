@@ -143,9 +143,9 @@ getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer = NULL, ...) {
 #' @param return_tokens bolean whether tokens have been returned (setting comes from textEmbedRawLayers).
 #' @return Layers in tidy tibble format with each dimension column called Dim1, Dim2 etc.
 #' @noRd
-sortingLayers <- function(x,
-                           layers = layers,
-                           return_tokens = return_tokens) {
+sortingLayers5 <- function(x,
+                          layers = layers,
+                          return_tokens = return_tokens) {
   # If selecting "all" layers, find out number of layers to help indicate layer index later in code
   if (is.character(layers)) {
     layers <- 0:(length(x[[1]][[1]]) - 1)
@@ -174,26 +174,31 @@ sortingLayers <- function(x,
       token_id <- seq_len(length(all_layers[[1]][[1]]))
     }
     
-    # Replace inner loop over i_layers with updated code from script
-    totalTokensNum <- length(tokens)
-    tarTb <- numeric(length=totalTokensNum*dimensions)
-    tarTb <- reticulate::np_array(tarTb)
-    tarTb <- tibble::as_tibble(reticulate::py_to_r(reticulate::array_reshape(tarTb, c(totalTokensNum, dimensions))))
-    colnames(tarTb) <- paste0("Dim", seq_len(dimensions))
-    tokenRowNum <- 1
-    for (j in seq_len(totalTokensNum)){
-      tarTb[tokenRowNum,] <- as.list(all_layers[[1]][[1]][[j]])
-      tokenRowNum <- tokenRowNum + 1
-    }
+    # Loop over layers
+    layers_list <- purrr::map(layers, function(layer) {
+      # Replace inner loop over i_layers with updated code from script
+      totalTokensNum <- length(tokens)
+      tarTb <- numeric(length=totalTokensNum*dimensions)
+      tarTb <- reticulate::np_array(tarTb)
+      tarTb <- tibble::as_tibble(reticulate::py_to_r(reticulate::array_reshape(tarTb, c(totalTokensNum, dimensions))))
+      colnames(tarTb) <- paste0("Dim", seq_len(dimensions))
+      tokenRowNum <- 1
+      for (j in seq_len(totalTokensNum)){
+        tarTb[tokenRowNum,] <- as.list(all_layers[[1]][[1]][[j]])
+        tokenRowNum <- tokenRowNum + 1
+      }
+      
+      # Add tokens, token IDs, and layer numbers to output tibble
+      if (return_tokens) {
+        tarTb <- cbind(tokens, token_id, layer_number = rep(layer, totalTokensNum), tarTb)
+      } else {
+        tarTb <- cbind(token_id, layer_number = rep(layer, totalTokensNum), tarTb)
+      }
+      
+      tarTb
+    })
     
-    # Add tokens, token IDs, and layer numbers to output tibble
-    if (return_tokens) {
-      tarTb <- cbind(tokens, token_id, layer_number = rep(layers, totalTokensNum), tarTb)
-    } else {
-      tarTb <- cbind(token_id, layer_number = rep(layers, totalTokensNum), tarTb)
-    }
-    
-    tarTb
+    dplyr::bind_rows(layers_list)
   })
   
   variable_x
