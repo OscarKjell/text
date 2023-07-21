@@ -180,7 +180,6 @@ sortingLayers <- function(x,
     tarTb <- reticulate::np_array(tarTb)
     tarTb <- tibble::as_tibble(reticulate::py_to_r(reticulate::array_reshape(tarTb, c(totalTokensNum*length(layers), dimensions))))
     colnames(tarTb) <- paste0("Dim", seq_len(dimensions))
-    tokenRowNum <- 1
     purrr::map(seq_len(totalTokensNum), function(i) {
       purrr::map(seq_len(length(layers)), function(j) {
         k <- j - 1
