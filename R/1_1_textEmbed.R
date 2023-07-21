@@ -144,8 +144,8 @@ getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer = NULL, ...) {
 #' @return Layers in tidy tibble format with each dimension column called Dim1, Dim2 etc.
 #' @noRd
 sortingLayers <- function(x,
-                          layers = layers,
-                          return_tokens = return_tokens) {
+                           layers = layers,
+                           return_tokens = return_tokens) {
   # If selecting "all" layers, find out number of layers to help indicate layer index later in code
   if (is.character(layers)) {
     layers <- 0:(length(x[[1]][[1]]) - 1)
@@ -161,7 +161,7 @@ sortingLayers <- function(x,
   }
   
   # Tidy-structure tokens and embeddings
-  # Replace outer loop over i_in_variable with future_map()
+  # Replace outer loop over i_in_variable with map();
   variable_x <- purrr::map(1:participants, function(i_in_variable) {
     if (return_tokens) {
       tokens <- x[[2]][[i_in_variable]]
@@ -174,31 +174,31 @@ sortingLayers <- function(x,
       token_id <- seq_len(length(all_layers[[1]][[1]]))
     }
     
-    # Loop over layers
-    layers_list <- purrr::map(layers, function(layer) {
-      # Replace inner loop over i_layers with updated code from script
-      totalTokensNum <- length(tokens)
-      tarTb <- numeric(length=totalTokensNum*dimensions)
-      tarTb <- reticulate::np_array(tarTb)
-      tarTb <- tibble::as_tibble(reticulate::py_to_r(reticulate::array_reshape(tarTb, c(totalTokensNum, dimensions))))
-      colnames(tarTb) <- paste0("Dim", seq_len(dimensions))
-      tokenRowNum <- 1
-      for (j in seq_len(totalTokensNum)){
-        tarTb[tokenRowNum,] <- as.list(all_layers[[1]][[1]][[j]])
-        tokenRowNum <- tokenRowNum + 1
-      }
-      
-      # Add tokens, token IDs, and layer numbers to output tibble
-      if (return_tokens) {
-        tarTb <- cbind(tokens, token_id, layer_number = rep(layer, totalTokensNum), tarTb)
-      } else {
-        tarTb <- cbind(token_id, layer_number = rep(layer, totalTokensNum), tarTb)
-      }
-      
-      tarTb
+    # Replace inner loop over i_layers with updated code
+    totalTokensNum <- length(tokens)
+    print(paste0("totalTokensNum: ", as.character(totalTokensNum)))
+    tarTb <- numeric(length=totalTokensNum*length(layers)*dimensions)
+    tarTb <- reticulate::np_array(tarTb)
+    tarTb <- tibble::as_tibble(reticulate::py_to_r(reticulate::array_reshape(tarTb, c(totalTokensNum*length(layers), dimensions))))
+    colnames(tarTb) <- paste0("Dim", seq_len(dimensions))
+    tokenRowNum <- 1
+    purrr::map(seq_len(totalTokensNum), function(i) {
+      purrr::map(seq_len(length(layers)), function(j) {
+        k <- j - 1
+        tarTb[i + totalTokensNum * k,] <<- as.list(all_layers[[j]][[1]][[i]])
+      })
     })
     
-    dplyr::bind_rows(layers_list)
+    # Add tokens, token IDs, and layer numbers to output tibble
+    if (return_tokens) {
+      tarTb <- cbind(tokens, token_id, layer_number = rep(layers, each = totalTokensNum), tarTb) %>%
+        tibble::as_tibble()
+    } else {
+      tarTb <- cbind(token_id, layer_number = rep(layers, each = totalTokensNum), tarTb) %>%
+        tibble::as_tibble()
+    }
+    
+    tarTb
   })
   
   variable_x
