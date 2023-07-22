@@ -176,10 +176,18 @@ sortingLayers <- function(x,
 
     # Replace inner loop over i_layers with updated code
     totalTokensNum <- length(tokens)
+
     tarTb <- numeric(length=totalTokensNum*length(layers)*dimensions)
+
     tarTb <- reticulate::np_array(tarTb)
-    tarTb <- tibble::as_tibble(reticulate::py_to_r(reticulate::array_reshape(tarTb, c(totalTokensNum*length(layers), dimensions))))
+
+    tarTb <- tibble::as_tibble(
+      reticulate::py_to_r(
+        reticulate::array_reshape(tarTb, c(totalTokensNum*length(layers), dimensions))),
+      .name_repair = "minimal")
+
     colnames(tarTb) <- paste0("Dim", seq_len(dimensions))
+
     purrr::map(seq_len(totalTokensNum), function(i) {
       purrr::map(seq_len(length(layers)), function(j) {
         k <- j - 1
@@ -311,6 +319,19 @@ textTokenize <- function(texts,
   return(tokens1)
 }
 
+
+texts = "hello"
+model = "bert-base-uncased"
+layers = -2
+return_tokens = TRUE
+word_type_embeddings = FALSE
+decontextualize = FALSE
+keep_token_embeddings = TRUE
+device = "cpu"
+tokenizer_parallelism = FALSE
+model_max_length = NULL
+max_token_to_sentence = 4
+logging_level = "error"
 
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
