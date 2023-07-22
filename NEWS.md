@@ -5,7 +5,11 @@
 # text 1.0
 ## Function
 - multinomial regression in `textTrainRegression()`
-- textPredictTest() can hand `auc`
+- `textPredictTest()` can handle `auc`
+- `textEmbed()` is faster (thanks to faster handling of aggregating layers)
+
+## Bug/unexpected behaviour
+- Tests using training with random forest was updated since outcomes changed when updating from R 4.2 to R 4.3.1. (see test_2_textTrain.R in tests/testthat folder) 
 
 # text 0.9.99.9
 ## Function
