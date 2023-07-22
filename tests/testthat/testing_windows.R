@@ -7,9 +7,10 @@ library(text)
 test_that("installing text", {
   skip_on_cran()
 
-#  textrpp_install(prompt = FALSE)
+  textrpp_install(prompt = FALSE)
 
-#  textrpp_initialize(textEmbed_test = FALSE)
+  textrpp_initialize(textEmbed_test = FALSE)
+
   # help(textEmbed)
   text_test <- text::textEmbed("hello",
                                device = "cpu")
