@@ -140,7 +140,7 @@ getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer = NULL, ...) {
 #' This is a function that sorts out (i.e., tidy) the embeddings from the huggingface interface.
 #' @param x list of layers.
 #' @param layers the number of layers to get (setting comes from textEmbedRawLayers).
-#' @param return_tokens bolean whether tokens have been returned (setting comes from textEmbedRawLayers).
+#' @param return_tokens boolean whether tokens have been returned (setting comes from textEmbedRawLayers).
 #' @return Layers in tidy tibble format with each dimension column called Dim1, Dim2 etc.
 #' @noRd
 sortingLayers <- function(x,
@@ -150,7 +150,7 @@ sortingLayers <- function(x,
   if (is.character(layers)) {
     layers <- 0:(length(x[[1]][[1]]) - 1)
   }
-  
+
   # Find number of dimensions (where the place differ depending on return_token is TRUE or FALSE)
   if (return_tokens) {
     dimensions <- length(x[[1]][[1]][[1]][[1]][[1]])
@@ -159,7 +159,7 @@ sortingLayers <- function(x,
     dimensions <- length(x[[1]][[1]][[1]][[1]])
     participants <- length(x)
   }
-  
+
   # Tidy-structure tokens and embeddings
   # Replace outer loop over i_in_variable with map();
   variable_x <- purrr::map(1:participants, function(i_in_variable) {
@@ -173,7 +173,7 @@ sortingLayers <- function(x,
       # Count number of embeddings within one layer
       token_id <- seq_len(length(all_layers[[1]][[1]]))
     }
-    
+
     # Replace inner loop over i_layers with updated code
     totalTokensNum <- length(tokens)
     tarTb <- numeric(length=totalTokensNum*length(layers)*dimensions)
@@ -186,7 +186,7 @@ sortingLayers <- function(x,
         tarTb[i + totalTokensNum * k,] <<- as.list(all_layers[[j]][[1]][[i]])
       })
     })
-    
+
     # Add tokens, token IDs, and layer numbers to output tibble
     if (return_tokens) {
       tarTb <- cbind(tokens, token_id, layer_number = rep(layers, each = totalTokensNum), tarTb) %>%
@@ -195,14 +195,12 @@ sortingLayers <- function(x,
       tarTb <- cbind(token_id, layer_number = rep(layers, each = totalTokensNum), tarTb) %>%
         tibble::as_tibble()
     }
-    
+
     tarTb
   })
-  
+
   variable_x
 }
-
-
 
 #' This is a function that uses the textAggregation to aggregate the layers
 #' @param x list of layers.
@@ -431,11 +429,10 @@ textEmbedRawLayers <- function(texts,
       )
       T_test2 <- Sys.time()
 
-      T1_ok_test <- Sys.time()
+
       variable_x <- sortingLayers(x = hg_embeddings,
                                   layers = layers,
                                   return_tokens = return_tokens)
-      T2_ok_test <- Sys.time() # T2_ok_test-T1_ok_test
 
       sorted_layers_ALL_variables$context_tokens[[i_variables]] <- variable_x
       names(sorted_layers_ALL_variables$context_tokens)[[i_variables]] <- names(x)[[i_variables]]
@@ -550,11 +547,13 @@ textEmbedRawLayers <- function(texts,
     )
 
     # Sort out layers as above
-    individual_tokens$decontext$word_type <- sortingLayers(
-      x = hg_decontexts_embeddings,
-      layers = layers,
-      return_tokens = return_tokens
+
+      individual_tokens$decontext$word_type <- sortingLayers(
+        x = hg_decontexts_embeddings,
+        layers = layers,
+        return_tokens = return_tokens
     )
+
     names(individual_tokens$decontext$word_type) <- NULL
     individual_tokens$decontext$single_words <- singlewords
 
@@ -830,7 +829,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' switching to embedding text sentence by sentence.
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-#' specific device number.
+#' specific device number such as 'mps:1'.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @return A tibble with tokens, a column for layer identifier and word embeddings.
@@ -865,7 +864,7 @@ textEmbed <- function(texts,
                       model_max_length = NULL,
                       max_token_to_sentence = 4,
                       tokenizer_parallelism = FALSE,
-                      device = "gpu",
+                      device = "cpu",
                       logging_level = "error") {
 
 

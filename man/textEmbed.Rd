@@ -19,7 +19,7 @@ textEmbed(
   model_max_length = NULL,
   max_token_to_sentence = 4,
   tokenizer_parallelism = FALSE,
-  device = "gpu",
+  device = "cpu",
   logging_level = "error"
 )
 }
@@ -77,7 +77,7 @@ switching to embedding text sentence by sentence.}
 \item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-specific device number.}
+specific device number such as 'mps:1'.}
 
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
