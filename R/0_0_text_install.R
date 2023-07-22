@@ -99,7 +99,11 @@ textrpp_install <- function(conda = "auto",
       "Binary installation is only available for 64-bit platforms."
     )
   }
-
+  
+  # install rust
+  # reticulate::py_run_string("import os\nos.system(\"curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y\")")
+  processx::run(command="curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y")
+  
   # resolve and look for conda help(conda_binary)
   conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
   have_conda <- !is.null(conda)
