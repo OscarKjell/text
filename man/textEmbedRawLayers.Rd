@@ -16,8 +16,7 @@ textEmbedRawLayers(
   tokenizer_parallelism = FALSE,
   model_max_length = NULL,
   max_token_to_sentence = 4,
-  logging_level = "error",
-  old = FALSE
+  logging_level = "error"
 )
 }
 \arguments{
