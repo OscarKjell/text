@@ -1,5 +1,5 @@
 
-#' Task Adapted Pre-Training (experimental)
+#' Task Adapted Pre-Training (EXPERIMENTAL - under development)
 #' @param text_outcome_data A dataframe, where the first column contain text data,
 #' and the second column the to-be-predicted variable (numeric or categorical).
 #' @param model_name_or_path (string) Path to foundation/pretrained model or model identifier from huggingface.co/models

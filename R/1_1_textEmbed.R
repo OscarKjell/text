@@ -319,20 +319,6 @@ textTokenize <- function(texts,
   return(tokens1)
 }
 
-
-texts = "hello"
-model = "bert-base-uncased"
-layers = -2
-return_tokens = TRUE
-word_type_embeddings = FALSE
-decontextualize = FALSE
-keep_token_embeddings = TRUE
-device = "cpu"
-tokenizer_parallelism = FALSE
-model_max_length = NULL
-max_token_to_sentence = 4
-logging_level = "error"
-
 #' Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').

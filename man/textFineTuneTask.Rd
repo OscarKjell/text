@@ -2,7 +2,7 @@
 % Please edit documentation in R/6_1_textFineTune.R
 \name{textFineTuneTask}
 \alias{textFineTuneTask}
-\title{Task Adapted Pre-Training (experimental)}
+\title{Task Adapted Pre-Training (EXPERIMENTAL - under development)}
 \usage{
 textFineTuneTask(
   text_outcome_data,
@@ -72,7 +72,7 @@ A folder containing the pretrained model and output data. The model can then be 
 textEmbed() by providing the model parameter with a the path to the output folder.
 }
 \description{
-Task Adapted Pre-Training (experimental)
+Task Adapted Pre-Training (EXPERIMENTAL - under development)
 }
 \details{
 Information about more parameters see inst/python/args2.json (https://github.com/OscarKjell/text/tree/master/inst/python/args2.json).
