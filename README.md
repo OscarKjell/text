@@ -25,15 +25,15 @@ HuggingFace using Natural Language Processing and Machine Learning.
 
 The *text*-package has two main objectives:
 
--   First, to serve R-users as a *point solution* for transforming text
-    to state-of-the-art word embeddings that are ready to be used for
-    downstream tasks. The package provides a user-friendly link to
-    language models based on transformers from [Hugging
-    Face](https://huggingface.co/).
+- First, to serve R-users as a *point solution* for transforming text to
+  state-of-the-art word embeddings that are ready to be used for
+  downstream tasks. The package provides a user-friendly link to
+  language models based on transformers from [Hugging
+  Face](https://huggingface.co/).
 
--   Second, to serve as an *end-to-end solution* that provides
-    state-of-the-art AI techniques tailored for social and behavioral
-    scientists.
+- Second, to serve as an *end-to-end solution* that provides
+  state-of-the-art AI techniques tailored for social and behavioral
+  scientists.
 
 <figure>
 <img src="man/figures/modular_end_solution.png" style="width:85.0%"
