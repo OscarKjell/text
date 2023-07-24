@@ -20,7 +20,8 @@ textEmbed(
   max_token_to_sentence = 4,
   tokenizer_parallelism = FALSE,
   device = "cpu",
-  logging_level = "error"
+  logging_level = "error",
+  ...
 )
 }
 \arguments{
@@ -81,6 +82,8 @@ specific device number such as 'mps:1'.}
 
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
+
+\item{...}{settings from textEmbedRawLayers().}
 }
 \value{
 A tibble with tokens, a column for layer identifier and word embeddings.

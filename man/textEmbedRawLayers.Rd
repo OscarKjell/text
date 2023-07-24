@@ -16,7 +16,8 @@ textEmbedRawLayers(
   tokenizer_parallelism = FALSE,
   model_max_length = NULL,
   max_token_to_sentence = 4,
-  logging_level = "error"
+  logging_level = "error",
+  sort = TRUE
 )
 }
 \arguments{
@@ -59,6 +60,8 @@ text sentence by sentence.}
 
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
+
+\item{sort}{(boolean) TRUE sort the output to tidy format.}
 }
 \value{
 Returns hiddenstates/layers that can be 1. Can return three different outputA tibble with tokens,

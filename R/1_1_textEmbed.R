@@ -348,6 +348,7 @@ textTokenize <- function(texts,
 #' text sentence by sentence.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
+#' @param sort (boolean) TRUE sort the output to tidy format.
 #' @return Returns hiddenstates/layers that can be 1. Can return three different outputA tibble with tokens,
 #' column specifying layer and word embeddings. Note that layer 0 is the input embedding to the transformer,
 #' and should normally not be used.
@@ -373,7 +374,8 @@ textEmbedRawLayers <- function(texts,
                                tokenizer_parallelism = FALSE,
                                model_max_length = NULL,
                                max_token_to_sentence = 4,
-                               logging_level = "error") {
+                               logging_level = "error",
+                               sort = TRUE) {
 
   if (decontextualize == TRUE & word_type_embeddings == FALSE) {
     stop(cat(
@@ -437,9 +439,13 @@ textEmbedRawLayers <- function(texts,
       T_test2 <- Sys.time()
 
 
+      if(sort){
       variable_x <- sortingLayers(x = hg_embeddings,
                                   layers = layers,
                                   return_tokens = return_tokens)
+      } else {
+        variable_x <- hg_embeddings
+      }
 
       sorted_layers_ALL_variables$context_tokens[[i_variables]] <- variable_x
       names(sorted_layers_ALL_variables$context_tokens)[[i_variables]] <- names(x)[[i_variables]]
@@ -554,12 +560,14 @@ textEmbedRawLayers <- function(texts,
     )
 
     # Sort out layers as above
-
+    if(sort){
       individual_tokens$decontext$word_type <- sortingLayers(
         x = hg_decontexts_embeddings,
         layers = layers,
-        return_tokens = return_tokens
-    )
+        return_tokens = return_tokens)
+    } else {
+      individual_tokens$decontext$word_type <- hg_decontexts_embeddings
+    }
 
     names(individual_tokens$decontext$word_type) <- NULL
     individual_tokens$decontext$single_words <- singlewords
@@ -839,6 +847,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' specific device number such as 'mps:1'.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
+#' @param ... settings from textEmbedRawLayers().
 #' @return A tibble with tokens, a column for layer identifier and word embeddings.
 #' Note that layer 0 is the input embedding to the transformer
 #' @examples
@@ -872,7 +881,8 @@ textEmbed <- function(texts,
                       max_token_to_sentence = 4,
                       tokenizer_parallelism = FALSE,
                       device = "cpu",
-                      logging_level = "error") {
+                      logging_level = "error",
+                      ...) {
 
 
   T1_textEmbed <- Sys.time()
@@ -918,7 +928,8 @@ textEmbed <- function(texts,
       tokenizer_parallelism = tokenizer_parallelism,
       model_max_length = model_max_length,
       max_token_to_sentence = max_token_to_sentence,
-      logging_level = logging_level
+      logging_level = logging_level,
+      ...
     )
   }
 
