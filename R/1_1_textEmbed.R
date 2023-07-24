@@ -348,7 +348,7 @@ textTokenize <- function(texts,
 #' text sentence by sentence.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param sort (boolean) TRUE sort the output to tidy format.
+#' @param sort (boolean) If TRUE sort the output to tidy format.
 #' @return Returns hiddenstates/layers that can be 1. Can return three different outputA tibble with tokens,
 #' column specifying layer and word embeddings. Note that layer 0 is the input embedding to the transformer,
 #' and should normally not be used.

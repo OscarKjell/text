@@ -61,7 +61,7 @@ text sentence by sentence.}
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{sort}{(boolean) TRUE sort the output to tidy format.}
+\item{sort}{(boolean) If TRUE sort the output to tidy format.}
 }
 \value{
 Returns hiddenstates/layers that can be 1. Can return three different outputA tibble with tokens,
