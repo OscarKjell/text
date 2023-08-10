@@ -29,10 +29,55 @@ From: ubuntu:20.04
   export XDG_RUNTIME_DIR=/tmp/.run_$(uuidgen)
 
 %post
+    # Set DEBIAN_FRONTEND to noninteractive
+    export DEBIAN_FRONTEND=noninteractive
+    # Preconfigure tzdata package
+    echo "tzdata tzdata/Areas select Europe" | debconf-set-selections
+
     # Install
     apt-get -y update
+    apt-get -y upgrade
 
-    export R_VERSION=4.2.2
+    # Check for duplicate CUDA repository entries
+    for file in /etc/apt/sources.list /etc/apt/sources.list.d/*; do
+      if [ -f "$file" ]; then
+        if grep -q "^deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64 /" "$file"; then
+          echo "Duplicate CUDA repository entry found in $file"
+          echo "Removing duplicate entry..."
+          sed -i '/^deb https:\/\/developer.download.nvidia.com\/compute\/cuda\/repos\/ubuntu2004\/x86_64 \//d' "$file"
+        fi
+      fi
+    done
+
+    # Install CUDA keyring
+    apt-get -y update
+    apt-get install -y --no-install-recommends gnupg2 curl ca-certificates
+    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub | apt-key add -
+    echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64 /" > /etc/apt/sources.list.d/cuda.list
+    apt-get -y update
+
+    # Check for errors when installing CUDA keyring
+    if [ $? -ne 0 ]; then
+      echo "Error installing CUDA keyring"
+      # Attempt to fix the error by removing conflicting keyring file
+      rm /usr/share/keyrings/cuda-archive-keyring.gpg
+      apt-get -y update
+    fi
+
+    # Install CUDA
+    apt-get -y update
+    apt-get install -y gnupg
+    apt-get -y update
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
+    apt-get update
+    apt-get install -y --no-install-recommends gnupg2 curl ca-certificates
+    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub | apt-key add -
+    echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64 /" > /etc/apt/sources.list.d/cuda.list
+    apt-get update
+    apt-get -y install cuda-toolkit-11-4
+
+    # Set R envs
+    export R_VERSION=4.3.1
     echo "export R_VERSION=${R_VERSION}" >> $SINGULARITY_ENVIRONMENT
 
      # Install R
@@ -43,25 +88,31 @@ From: ubuntu:20.04
      add-apt-repository \
        "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
      apt-get install -y --no-install-recommends \
-     r-base=${R_VERSION}* \
-     r-base-core=${R_VERSION}* \
-     r-base-dev=${R_VERSION}* \
-     r-recommended=${R_VERSION}* \
-     r-base-html=${R_VERSION}* \
-     r-doc-html=${R_VERSION}* \
-     libcurl4-openssl-dev \
-     libharfbuzz-dev \
-     libfribidi-dev \
-     libgit2-dev \
-     libxml2-dev \
-     libfontconfig1-dev \
-     libssl-dev \
-     libxml2-dev \
-     libfreetype6-dev \
-     libpng-dev \
-     libtiff5-dev \
-     libjpeg-dev
-     
+       r-base=${R_VERSION}* \
+       r-base-core=${R_VERSION}* \
+       r-base-dev=${R_VERSION}* \
+       r-recommended=${R_VERSION}* \
+       r-base-html=${R_VERSION}* \
+       r-doc-html=${R_VERSION}* \
+       libcurl4-openssl-dev \
+       libharfbuzz-dev \
+       libfribidi-dev \
+       libgit2-dev \
+       libxml2-dev \
+       libfontconfig1-dev \
+       libssl-dev \
+       libxml2-dev \
+       libfreetype6-dev \
+       libpng-dev \
+       libtiff5-dev \
+       libjpeg-dev \
+       r-cran-mgcv \
+       r-cran-rpart \
+       r-cran-survival \
+       r-cran-mass \
+       r-cran-class \
+       r-cran-matrix
+
      # Add a default CRAN mirror
      echo "options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl')" >> /usr/lib/R/etc/Rprofile.site
 
@@ -86,20 +137,29 @@ From: ubuntu:20.04
      source /miniconda/etc/profile.d/conda.sh
      conda update -y conda
      # Install reticulate and text
-         Rscript -e 'install.packages("pkgdown")'
+     Rscript -e 'install.packages("pkgdown")'
      Rscript -e 'install.packages("ragg")'
      Rscript -e 'install.packages("textshaping")'
      Rscript -e 'install.packages("reticulate")'
      Rscript -e 'install.packages("devtools")'
      Rscript -e 'install.packages("glmnet")'
      Rscript -e 'install.packages("tidyverse")'
-#     Rscript -e 'install.packages("text")'
+     Rscript -e 'install.packages("future")'
+     Rscript -e 'install.packages("cld2")'
+
+     #Rscript -e 'install.packages("text")'
      Rscript -e 'devtools::install_github("oscarkjell/text")'
      # Create the Conda environment at a system folder
-     Rscript -e 'text::textrpp_install(prompt = FALSE, rpp_version = c("torch==1.11.0", "transformers==4.19.2", "numpy", "nltk"))'
+     Rscript -e 'text::textrpp_install(prompt = FALSE, rpp_version = c("torch==2.0.1", "transformers==4.19.2", "numpy==1.25.1", "pandas", "nltk", "six", "protobuf==4.23.3", "sentencepiece"))'
      Rscript -e 'text::textrpp_initialize(save_profile = TRUE, prompt = FALSE, textEmbed_test = TRUE)'
-     Rscript -e 'text::textEmbed("hello", model = "distilbert-base-uncased", layers = 5)'
-     Rscript -e 'text::textEmbed("hello", model = "roberta-base", layers = 11)'
+     Rscript -e 'reticulate::py_run_string("import nltk; nltk.download('punkt')")'
+     Rscript -e 'text::textEmbed("hello", model = "distilbert-base-cased", layers = -2)'
+     Rscript -e 'text::textEmbed("hello", model = "bert-base-uncased", layers = -2)'
+     Rscript -e 'text::textEmbed("hello", model = "bert-large-uncased", layers = -2)'
+     Rscript -e 'text::textEmbed("hello", model = "bert-base-cased", layers = -2, device="gpu")'
+     Rscript -e 'text::textEmbed("hello", model = "bert-large-cased", layers = -2)'
+     Rscript -e 'text::textEmbed("hello", model = "roberta-base", layers = -2)'
+     Rscript -e 'text::textEmbed("hello", model = "roberta-large", layers = -2)'
 
 ```
 
