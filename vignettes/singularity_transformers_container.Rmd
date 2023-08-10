@@ -150,7 +150,7 @@ From: ubuntu:20.04
      #Rscript -e 'install.packages("text")'
      Rscript -e 'devtools::install_github("oscarkjell/text")'
      # Create the Conda environment at a system folder
-     Rscript -e 'text::textrpp_install(prompt = FALSE, rpp_version = c("torch==2.0.1", "transformers==4.19.2", "numpy==1.25.1", "pandas", "nltk", "six", "protobuf==4.23.3", "sentencepiece"))'
+     Rscript -e 'text::textrpp_install(prompt = FALSE, rpp_version = c("torch==2.0.1", "transformers==4.19.2", "numpy", "pandas", "nltk", "six", "protobuf==4.23.3", "sentencepiece"))'
      Rscript -e 'text::textrpp_initialize(save_profile = TRUE, prompt = FALSE, textEmbed_test = TRUE)'
      Rscript -e 'reticulate::py_run_string("import nltk; nltk.download('punkt')")'
      Rscript -e 'text::textEmbed("hello", model = "distilbert-base-cased", layers = -2)'
