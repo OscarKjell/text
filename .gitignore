@@ -15,12 +15,10 @@ docs
 *.py[ocd]
 *.so
 .build_cache_dir
-
 #########################################
 # Editor temporary/working/backup files #
 .#*
 *\#*\#
 [#]*#
 *~
-
 __pycache__/
