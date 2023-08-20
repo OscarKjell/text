@@ -1,17 +1,10 @@
 citHeader("To cite text in publications use:")
 
-citEntry(
-  entry    = "Unpublished",
-  note = "Psychology",
-  title    = "text: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning",
-  author   = "Oscar Kjell, Salvatore Giorgi & Andrew Schwartz",
-  journal  = "",
-  year     = "In progress",
-  volume   = "0",
-  number   = "0",
-  pages    = "0",
-  url      = "https://www.r-text.org/",
-  textVersion =
-           paste("Oscar Kjell, Salvatore Giorgi & Andrew Schwartz (In Progress).",
-                 "text: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning.", "https://www.r-text.org/.")
-)
+bibentry(
+   bibtype = "Article",
+   title = "The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning",
+   author = as.person("Oscar Kjell [aut], Salvatore Giorgi [aut], H. Andrew Schwartz [aut]"),
+   journal = "Psychological Methods",
+   doi = "10.1037/met0000542",
+   year = 2023,
+   url = "https://psyarxiv.com/293kt/")

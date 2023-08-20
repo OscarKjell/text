@@ -7,6 +7,7 @@
 - multinomial regression in `textTrainRegression()`
 - `textPredictTest()` can handle `auc`
 - `textEmbed()` is faster (thanks to faster handling of aggregating layers)
+- Added `sort` parameter in `textEmbedRawLayers()`. 
 
 ## Bug/unexpected behaviour
 - Tests using training with random forest was updated since outcomes changed when updating from R 4.2 to R 4.3.1. (see test_2_textTrain.R in tests/testthat folder) 
