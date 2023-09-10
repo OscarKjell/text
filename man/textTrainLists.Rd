@@ -2,10 +2,7 @@
 % Please edit documentation in R/2_1_textTrain.R
 \name{textTrainLists}
 \alias{textTrainLists}
-\title{Individually trains word embeddings from several text variables to several numeric or categorical variables.
-It is possible to have  word embeddings from one text variable and several numeric/categprical variables;
-or vice verse, word embeddings from several text variables to one numeric/categorical variable.
-It is not possible to mix numeric and categorical variables.}
+\title{Individually trains word embeddings from several text variables to several numeric or categorical variables.}
 \usage{
 textTrainLists(
   x,
@@ -19,46 +16,55 @@ textTrainLists(
 )
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation).}
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation). It is possible to have word embeddings from one text variable and several numeric/categorical variables;
+or vice verse, word embeddings from several text variables to one numeric/categorical variable.
+It is not possible to mix numeric and categorical variables.}
 
 \item{y}{Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
 categorical variables.}
 
-\item{force_train_method}{Default is "automatic"; see also "regression" and "random_forest".}
+\item{force_train_method}{(character) Default is "automatic"; see also "regression" and "random_forest".}
 
-\item{save_output}{Option not to save all output; default "all". see also "only_results"
+\item{save_output}{(character) Option not to save all output; default "all". See also "only_results"
 and "only_results_predictions".}
 
-\item{method_cor}{A character string describing type of correlation (default "Pearson").}
+\item{method_cor}{(character) A character string describing type of correlation (default "Pearson").}
 
-\item{eval_measure}{Type of evaluative measure to assess models on.}
+\item{eval_measure}{(character) Type of evaluative measure to assess models on (default "rmse").}
 
-\item{p_adjust_method}{Method to adjust/correct p-values for multiple comparisons
+\item{p_adjust_method}{Method to adjust/correct p-values for multiple comparisons. 
 (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").}
 
-\item{...}{Arguments from textTrainRegression or textTrainRandomForest the textTrain function.}
+\item{...}{Arguments from textTrainRegression or textTrainRandomForest (the textTrain function).}
 }
 \value{
-Correlations between predicted and observed values.
+Correlations between predicted and observed values (t-value, degree of freedom (df), p-value, 
+confidence interval, alternative hypothesis, correlation coefficient) stored in a dataframe.
 }
 \description{
 Individually trains word embeddings from several text variables to several numeric or categorical variables.
-It is possible to have  word embeddings from one text variable and several numeric/categprical variables;
-or vice verse, word embeddings from several text variables to one numeric/categorical variable.
-It is not possible to mix numeric and categorical variables.
 }
 \examples{
+#Examines how well the embeddings from Language_based_assessment_data_8 can
+#predict the numerical numerical variables in Language_based_assessment_data_8. 
+#The training is done combination wise, i.e., correlations are tested pair wise, column: 1-5,1-6,2-5,2-6, resulting in a dataframe with four rows. 
+   
 \dontrun{
 word_embeddings <- word_embeddings_4$texts[1:2]
 ratings_data <- Language_based_assessment_data_8[5:6]
-results <- textTrainLists(
+
+trained_model <- textTrainLists(
   x = word_embeddings,
   y = ratings_data
 )
-results
-comment(results)
+
+#Examine results (t-value, degree of freedom (df), p-value, 
+#alternative-hypothesis, confidence interval, correlation coefficient).
+ 
+trained_model$results
 }
+
 }
 \seealso{
-see \code{\link{textTrain}}  \code{\link{textTrainRegression}}  \code{\link{textTrainRandomForest}}
+See \code{\link{textTrain}}, \code{\link{textTrainRegression}} and  \code{\link{textTrainRandomForest}}.
 }

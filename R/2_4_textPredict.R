@@ -1,21 +1,36 @@
 
-#' Predict scores or classification from, e.g., textTrain.
+#' Trained models created by e.g., textTrain() can be used to predict new scores or classifications using textPredict. 
 #'
 #' @param model_info (model object) Model info (e.g., saved output from textTrain,
 #' textTrainRegression or textRandomForest).
-#' @param word_embeddings (tibble) Word embeddings
+#' @param word_embeddings (tibble) Word embeddings. 
 #' @param x_append (tibble) Variables to be appended after the word embeddings (x).
 #' @param dim_names (boolean) Account for specific dimension names from textEmbed()
 #' (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 #' word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.
-#' @param type (string) Type of prediction; e.g., "prob", "class".
+#' @param type (character) Type of prediction; e.g., "prob", "class".
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predicted scores from word embeddings.
 #' @examples
-#' word_embeddings <- word_embeddings_4
-#' ratings_data <- Language_based_assessment_data_8
-#' @seealso see \code{\link{textTrain}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}}
+#' #Apply trained model from the function textTrain to the new data:"satisfactiontexts". 
+#' \dontrun{
+#' 
+#' predictions <- textPredict(
+#'   trained_model, 
+#'   word_embeddings_4$texts$satisfactiontexts
+#' )
+#' }
+#' #Examine the correlation between the predicted values and
+#' #the Satisfaction with life scale score (pre-included in text).
+#' 
+#' \dontrun{
+#' psych::corr.test(
+#'  predictions$word_embeddings__ypred,
+#'  Language_based_assessment_data_8$swlstotal
+#' ) 
+#' }
+#' @seealso See \code{\link{textTrain}}, \code{\link{textTrainLists}} and
+#' \code{\link{textTrainRandomForest}}. 
 #' @importFrom recipes prep bake
 #' @importFrom stats predict
 #' @importFrom tibble is_tibble as_tibble_col

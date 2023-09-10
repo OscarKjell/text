@@ -552,35 +552,34 @@ summarize_tune_results <- function(object,
 
 
 #' Train word embeddings to a numeric variable.
-#'
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
 #' provided in a list they will be concatenated.
-#' @param x_append Variables to be appended after the word embeddings (x); if wanting to preappend them before
-#' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL.
-#' @param append_first (boolean) Option to add variables before or after all word embeddings.
+#' @param x_append (optional) Variables to be appended after the word embeddings (x); if wanting to preappend them before
+#' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL (default = NULL).
+#' @param append_first (boolean) Option to add variables before or after all word embeddings (default = False).
 #' @param y Numeric variable to predict.
 #' @param model Type of model. Default is "regression"; see also "logistic" and "multinomial" for classification.
-#' @param cv_method Cross-validation method to use within a pipeline of nested outer and inner loops
+#' @param cv_method (character) Cross-validation method to use within a pipeline of nested outer and inner loops
 #' of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
 #' using rsample::validation_split in the inner loop to achieve a development and assessment set (note that
 #' for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds"
 #' uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.
-#' @param outside_folds Number of folds for the outer folds (default = 10).
-#' @param outside_strata_y Variable to stratify according (default y; can set to NULL).
-#' @param outside_breaks The number of bins wanted to stratify a numeric stratification variable in the
-#' outer cross-validation loop.
-#' @param inside_folds The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
+#' @param outside_folds (numeric) Number of folds for the outer folds (default = 10).
+#' @param outside_strata_y Variable to stratify according (default "y"; can set to NULL).
+#' @param outside_breaks (numeric) The number of bins wanted to stratify a numeric stratification variable in the
+#' outer cross-validation loop (default = 4).
+#' @param inside_folds (numeric) The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
 #' For more information see validation_split in rsample.
 #' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
 #' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner
-#' cross-validation loop.
-#' @param eval_measure Type of evaluative measure to select models from. Default = "rmse" for regression and
+#' cross-validation loop (default = 4). 
+#' @param eval_measure (character) Type of evaluative measure to select models from. Default = "rmse" for regression and
 #' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
 #'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
 #'  the yardstick package).
-#' @param preprocess_step_center normalizes dimensions to have a mean of zero; default is set to TRUE.
+#' @param preprocess_step_center (boolean) Normalizes dimensions to have a mean of zero; default is set to TRUE.
 #' For more info see (step_center in recipes).
-#' @param preprocess_step_scale  normalize dimensions to have a standard deviation of one.
+#' @param preprocess_step_scale (boolean) Normalize dimensions to have a standard deviation of one; default is set to TRUE.
 #' For more info see (step_scale in recipes).
 #' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
 #' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
@@ -588,40 +587,48 @@ summarize_tune_results <- function(object,
 #' that selects the number of PCA components based on number  of participants and feature (word embedding dimensions)
 #' in the data. The formula is:
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
-#' @param penalty hyper parameter that is tuned
+#' @param penalty (numeric) Hyper parameter that is tuned (default = 10^seq(-16,16)). 
 #' @param mixture A number between 0 and 1 (inclusive) that reflects the proportion of L1 regularization
 #' (i.e. lasso) in the model (for more information see the linear_reg-function in the parsnip-package).
 #' When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
 #' used (specific engines only).
-#' @param first_n_predictors by default this setting is turned off (i.e., NA). To use this method,
+#' @param first_n_predictors By default this setting is turned off (i.e., NA). To use this method,
 #' set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
 #' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
 #' then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
 #' This option is currently only possible for one embedding at the time.
 #' @param method_cor Type of correlation used in evaluation (default "pearson";
 #' can set to "spearman" or "kendall").
-#' @param impute_missing default FALSE (can be set to TRUE if something else than word_embeddings are trained).
-#' @param model_description Text to describe your model (optional; good when sharing the model with others).
+#' @param impute_missing Default FALSE (can be set to TRUE if something else than word_embeddings are trained).
+#' @param model_description (character) Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it
 #'  (i.e., only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
 #'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
-#' @param save_output Option not to save all output; default "all". see also "only_results"
+#' @param save_output (character) Option not to save all output; default = "all". see also "only_results"
 #'  and "only_results_predictions".
-#' @param seed Set different seed.
+#' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A (one-sided) correlation test between predicted and observed values; tibble
-#' of predicted values, as well as information about the model (preprossing_recipe, final_model
-#'  and model_description).
+#' of predicted values (t-value, degree of freedom (df), p-value, 
+#'  alternative-hypothesis, confidence interval, correlation coefficient), as well as information about 
+#'  the model (preprossing_recipe, final_model and model_description).
 #' @examples
-#' \donttest{
-#' results <- textTrainRegression(
+#' #Examines how well the embeddings from the column "harmonytext" can
+#' #predict the numerical values in the column "hilstotal". 
+#' 
+#' \dontrun{
+#' trained_model <- textTrainRegression(
 #'   x = word_embeddings_4$texts$harmonytext,
 #'   y = Language_based_assessment_data_8$hilstotal,
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
+#'
+#' #Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis, confidence interval, correlation coefficient).
+#' 
+#' trained_model$results
 #' }
-#' @seealso see \code{\link{textEmbedLayerAggregation}} \code{\link{textTrainLists}}
-#' \code{\link{textTrainRandomForest}}
+#' @seealso See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and
+#' \code{\link{textTrainRandomForest}}. 
 #' @importFrom stats cor.test na.omit lm
 #' @importFrom dplyr bind_cols select starts_with filter all_of
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors

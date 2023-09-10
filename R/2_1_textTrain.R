@@ -8,22 +8,32 @@
 #' @param y Numeric variable to predict. Can be several; although then make
 #' sure to have them within a tibble (this is required
 #' even if it is only one outcome but several word embeddings variables).
-#' @param force_train_method default is "automatic", so if y is a factor
+#' @param force_train_method Default is "automatic", so if y is a factor
 #' random_forest is used, and if y is numeric ridge regression
 #' is used. This can be overridden using "regression" or "random_forest".
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest
 #' the textTrain function.
 #' @return A correlation between predicted and observed values; as well as a
-#'  tibble of predicted values.
+#'  tibble of predicted values (t-value, degree of freedom (df), p-value, 
+#'  alternative-hypothesis, confidence interval, correlation coefficient).
 #' @examples
+#' #Examines how well the embeddings from "harmonytext" can
+#' #predict the numeric variable "hilstotal" in the pre-included 
+#' #dataset "Language_based_assessment_data_8". 
+#' 
 #' \dontrun{
-#' results <- textTrain(
+#' trained_model <- textTrain(
 #'   x = word_embeddings_4$texts$harmonytext,
 #'   y = Language_based_assessment_data_8$hilstotal
 #' )
+#' 
+#' #Examine results (t-value, degree of freedom (df), p-value, 
+#' #alternative-hypothesis, confidence interval, correlation coefficient).
+#'  
+#' trained_model$results
 #' }
-#' @seealso \code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
-#' \code{\link{textTrainLists}}
+#' @seealso See \code{\link{textTrainRegression}}, \code{\link{textTrainRandomForest}} and 
+#' \code{\link{textTrainLists}}. 
 #' @importFrom tibble is_tibble
 #' @importFrom dplyr select_if
 #' @export
@@ -225,33 +235,42 @@ sort_classification_output_list <- function(output, save_output, descriptions, t
 
 
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables.
-#' It is possible to have  word embeddings from one text variable and several numeric/categprical variables;
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation). It is possible to have word embeddings from one text variable and several numeric/categorical variables;
 #' or vice verse, word embeddings from several text variables to one numeric/categorical variable.
 #' It is not possible to mix numeric and categorical variables.
-#' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation).
 #' @param y Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
 #' categorical variables.
-#' @param force_train_method Default is "automatic"; see also "regression" and "random_forest".
-#' @param save_output Option not to save all output; default "all". see also "only_results"
+#' @param force_train_method (character) Default is "automatic"; see also "regression" and "random_forest".
+#' @param save_output (character) Option not to save all output; default "all". See also "only_results"
 #' and "only_results_predictions".
-#' @param method_cor  A character string describing type of correlation (default "Pearson").
-#' @param eval_measure  Type of evaluative measure to assess models on.
-#' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons
+#' @param method_cor (character) A character string describing type of correlation (default "Pearson").
+#' @param eval_measure (character) Type of evaluative measure to assess models on (default "rmse").
+#' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons. 
 #' (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
-#' @param ... Arguments from textTrainRegression or textTrainRandomForest the textTrain function.
-#' @return Correlations between predicted and observed values.
+#' @param ... Arguments from textTrainRegression or textTrainRandomForest (the textTrain function).
+#' @return Correlations between predicted and observed values (t-value, degree of freedom (df), p-value, 
+#' confidence interval, alternative hypothesis, correlation coefficient) stored in a dataframe.
 #' @examples
+#' #Examines how well the embeddings from Language_based_assessment_data_8 can
+#' #predict the numerical numerical variables in Language_based_assessment_data_8. 
+#' #The training is done combination wise, i.e., correlations are tested pair wise, column: 1-5,1-6,2-5,2-6, resulting in a dataframe with four rows. 
+#'    
 #' \dontrun{
 #' word_embeddings <- word_embeddings_4$texts[1:2]
 #' ratings_data <- Language_based_assessment_data_8[5:6]
-#' results <- textTrainLists(
+#' 
+#' trained_model <- textTrainLists(
 #'   x = word_embeddings,
 #'   y = ratings_data
 #' )
-#' results
-#' comment(results)
+#'
+#' #Examine results (t-value, degree of freedom (df), p-value, 
+#' #alternative-hypothesis, confidence interval, correlation coefficient).
+#'  
+#' trained_model$results
 #' }
-#' @seealso see \code{\link{textTrain}}  \code{\link{textTrainRegression}}  \code{\link{textTrainRandomForest}}
+#' 
+#' @seealso See \code{\link{textTrain}}, \code{\link{textTrainRegression}} and  \code{\link{textTrainRandomForest}}.
 #' @importFrom stats cor.test
 #' @importFrom tibble as_tibble
 #' @importFrom magrittr %>%

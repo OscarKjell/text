@@ -618,44 +618,44 @@ adjust_for_plot_type <- function(word_data, y_axes) {
 
 
 #' Plot words from textProjection() or textWordPrediction().
-#' @param word_data Dataframe from textProjection
+#' @param word_data Dataframe from textProjection. 
 #' @param k_n_words_to_test Select the k most frequent words to significance
-#' test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.
+#' test (k = sqrt(100*N); N = number of participant responses) (default = TRUE).
 #' @param min_freq_words_test Select words to significance test that have occurred
 #' at least min_freq_words_test (default = 1).
 #' @param min_freq_words_plot Select words to plot that has occurred at
-#' least min_freq_words_plot times.
+#' least min_freq_words_plot times (default = 1).
 #' @param plot_n_words_square Select number of significant words in each square
 #' of the figure to plot. The significant words, in each square is selected
-#' according to most frequent words.
-#' @param plot_n_words_p Number of significant words to plot on each(positive
+#' according to most frequent words (default = 3).
+#' @param plot_n_words_p Number of significant words to plot on each (positive
 #' and negative) side of the x-axes and y-axes, (where duplicates are removed);
-#' selects first according to lowest p-value and then according to frequency. Hence, on a two
+#' selects first according to lowest p-value and then according to frequency (default = 5). Hence, on a two
 #' dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.
 #' @param plot_n_word_extreme Number of words that are extreme on Supervised Dimension
-#' Projection per dimension. (i.e., even if not significant; per dimensions,
+#' Projection per dimension (default = 5). (i.e., even if not significant; per dimensions,
 #' where duplicates are removed).
-#' @param plot_n_word_frequency Number of words based on being most frequent.
+#' @param plot_n_word_frequency Number of words based on being most frequent (default = 5).
 #' (i.e., even if not significant).
 #' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised
-#' Dimension Projection score (i.e., even if not significant;  per dimensions, where duplicates are removed).
-#' @param title_top Title (default "  ")
-#' @param titles_color Color for all the titles (default: "#61605e")
+#' Dimension Projection score (default = 5). (i.e., even if not significant;  per dimensions, where duplicates are removed).
+#' @param title_top Title (default "  ").
+#' @param titles_color Color for all the titles (default: "#61605e").
 # @param x_axes If TRUE, plotting on the x_axes.
-#' @param y_axes If TRUE, also plotting on the y-axes (default is FALSE). Also plotting on
+#' @param y_axes (boolean) If TRUE, also plotting on the y-axes (default = FALSE, i.e, a 1-dimensional plot is generated). Also plotting on
 #' y-axes produces a two dimension 2-dimensional plot, but the textProjection function has to
 #' have had a variable on the y-axes.
 #' @param p_alpha Alpha (default = .05).
-#' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons
-#' (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
-#' @param x_axes_label Label on the x-axes.
-#' @param y_axes_label Label on the y-axes.
+#' @param p_adjust_method (character) Method to adjust/correct p-values for multiple comparisons
+#' (default = "none"; see also "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
+#' @param x_axes_label (character) Label on the x-axes (default = "Supervised Dimension Projection (SDP)").
+#' @param y_axes_label (character) Label on the y-axes (default = "Supervised Dimension Projection (SDP)").
 #' @param scale_x_axes_lim Manually set the length of the x-axes (default = NULL, which uses
 #' ggplot2::scale_x_continuous(limits = scale_x_axes_lim); change e.g., by trying c(-5, 5)).
 #' @param scale_y_axes_lim Manually set the length of the y-axes (default = NULL; which uses
 #' ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c(-5, 5)).
-#' @param word_font Font type (default: NULL).
-#' @param bivariate_color_codes The different colors of the words. Note that, at the moment, two
+#' @param word_font Font type (default = NULL).
+#' @param bivariate_color_codes (HTML color codes. Type = character) The different colors of the words. Note that, at the moment, two
 #' squares should not have the exact same colour-code because the numbers within the squares of the
 #' legend will then be aggregated (and show the same, incorrect  value).
 #' (default: c("#398CF9", "#60A1F7", "#5dc688",
@@ -670,45 +670,45 @@ adjust_for_plot_type <- function(word_data, y_axes) {
 #' (default is to not show it, i.e., 0).
 #' @param points_without_words_alpha Transparency of the points not linked with a words
 #' (default is to not show it, i.e., 0).
-#' @param legend_title Title on the color legend (default: "(SDP)".
-#' @param legend_x_axes_label Label on the color legend (default: "(x)".
-#' @param legend_y_axes_label Label on the color legend (default: "(y)".
+#' @param legend_title Title on the color legend (default: "SDP").
+#' @param legend_x_axes_label Label on the color legend (default: "x").
+#' @param legend_y_axes_label Label on the color legend (default: "y").
 #' @param legend_x_position Position on the x coordinates of the color legend (default: 0.02).
 #' @param legend_y_position Position on the y coordinates of the color legend (default: 0.05).
 #' @param legend_h_size Height of the color legend (default 0.15).
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size (default: 7).
 #' @param legend_number_size Font size of the values in the legend (default: 2).
-#' @param group_embeddings1 Shows a point representing the aggregated word embedding
+#' @param group_embeddings1 (boolean) Shows a point representing the aggregated word embedding
 #' for group 1 (default = FALSE).
-#' @param group_embeddings2 Shows a point representing the aggregated word embedding
+#' @param group_embeddings2 (boolean) Shows a point representing the aggregated word embedding
 #' for group 2 (default = FALSE).
-#' @param projection_embedding Shows a point representing the aggregated direction
+#' @param projection_embedding (boolean) Shows a point representing the aggregated direction
 #' embedding (default = FALSE).
 #' @param aggregated_point_size Size of the points representing the group_embeddings1,
-#' group_embeddings2 and projection_embedding.
+#' group_embeddings2 and projection_embedding (default = 0.8).
 #' @param aggregated_shape Shape type of the points representing the group_embeddings1,
-#' group_embeddings2 and projection_embedding.
-#' @param aggregated_color_G1 Color
-#' @param aggregated_color_G2 Color
-#' @param projection_color Color
-#' @param seed Set different seed.
+#' group_embeddings2 and projection_embedding (default = 8).
+#' @param aggregated_color_G1 Color (default = "black").
+#' @param aggregated_color_G2 Color (default = "black").
+#' @param projection_color Color (default = "blue").
+#' @param seed (numeric) Set different seed (default = 1005)..
 #' @param explore_words Explore where specific words are positioned in the embedding space.
-#' For example, c("happy content", "sad down").
+#' For example, c("happy content", "sad down") (default = NULL).
 #' @param explore_words_color Specify the color(s) of the words being explored.
-#' For example c("#ad42f5", "green")
+#' For example c("#ad42f5", "green") (default = "#ad42f5"). 
 #' @param explore_words_point Specify the names of the point for the aggregated word embeddings
-#' of all the explored words.
+#' of all the explored words (default = "ALL_1").
 #' @param explore_words_aggregation Specify how to aggregate the word embeddings of
-#' the explored words.
-#' @param remove_words manually remove words from the plot (which is done just before the
-#' words are plotted so that the remove_words are part of previous counts/analyses).
-#' @param space Provide a semantic space if using static embeddings and wanting to explore words.
+#' the explored words (default = "mean").
+#' @param remove_words Manually remove words from the plot (which is done just before the
+#' words are plotted so that the remove_words are part of previous counts/analyses) (default = NULL).
+#' @param space Provide a semantic space if using static embeddings and wanting to explore words (default = NULL).
 #' @param n_contrast_group_color Set color to words that have higher frequency (N)
 #' on the other opposite side of its dot product projection (default = NULL).
 #' @param n_contrast_group_remove Remove words that have higher frequency (N) on the other
 #' opposite side of its dot product projection (default = FALSE).
-#' @param scaling Scaling word embeddings before aggregation.
+#' @param scaling Scaling word embeddings before aggregation (default = FALSE).
 #' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used
 #' to plot.
 #' @examples
@@ -735,7 +735,7 @@ adjust_for_plot_type <- function(word_data, y_axes) {
 #' plot_projection
 #'
 #' names(DP_projections_HILS_SWLS_100)
-#' @seealso see \code{\link{textProjection}}
+#' @seealso See \code{\link{textProjection}}. 
 #' @importFrom tibble as_tibble tibble
 #' @importFrom dplyr row_number slice mutate mutate_if bind_rows group_by summarize left_join %>% n
 #' @importFrom tidyr gather separate

@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_3_textTrainRandomForest.R
 \name{textTrainRandomForest}
 \alias{textTrainRandomForest}
-\title{Train word embeddings to a categorical variable using random forrest.}
+\title{Train word embeddings to a categorical variable using random forest.}
 \usage{
 textTrainRandomForest(
   x,
@@ -37,72 +37,72 @@ textTrainRandomForest(
 
 \item{y}{Categorical variable to predict.}
 
-\item{x_append}{Variables to be appended after the word embeddings (x);
+\item{x_append}{(optional) Variables to be appended after the word embeddings (x);
 if wanting to preappend them before the word embeddings use the option
-first = TRUE.  If not wanting to train with word embeddings, set x = NULL.}
+first = TRUE.  If not wanting to train with word embeddings, set x_append = NULL (default = null).}
 
-\item{append_first}{(boolean) Option to add variables before or after all word embeddings.}
+\item{append_first}{(boolean) Option to add variables before or after all word embeddings (default = FALSE).}
 
-\item{cv_method}{Cross-validation method to use within a pipeline of nested outer and
+\item{cv_method}{(character) Cross-validation method to use within a pipeline of nested outer and
 inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
 outside folds and "validation_split" using rsample::validation_split in the inner loop to
 achieve a development and assessment set (note that for validation_split the inside_folds
 should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds" uses rsample::vfold_cv
 to achieve n-folds in both the outer and inner loops.}
 
-\item{outside_folds}{Number of folds for the outer folds (default = 10).}
+\item{outside_folds}{(numeric) Number of folds for the outer folds (default = 10).}
 
 \item{outside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
 
-\item{outside_breaks}{The number of bins wanted to stratify a numeric stratification variable
-in the outer cross-validation loop.}
+\item{outside_breaks}{(numeric) The number of bins wanted to stratify a numeric stratification variable
+in the outer cross-validation loop (default = 4).}
 
-\item{inside_folds}{Number of folds for the inner folds (default = 3/4).}
+\item{inside_folds}{(numeric) Number of folds for the inner folds (default = 3/4).}
 
 \item{inside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
 
 \item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable
-in the inner cross-validation loop.}
+in the inner cross-validation loop (default = 4).}
 
 \item{mode_rf}{Default is "classification" ("regression" is not supported yet).}
 
-\item{preprocess_step_center}{normalizes dimensions to have a mean of zero; default is set to TRUE.
+\item{preprocess_step_center}{(boolean) Normalizes dimensions to have a mean of zero; default is set to FALSE
 For more info see (step_center in recipes).}
 
-\item{preprocess_scale_center}{normalize dimensions to have a standard deviation of one.
+\item{preprocess_scale_center}{(boolean) Normalizes dimensions to have a standard deviation of one; default is set to FALSE.
 For more info see (step_scale in recipes).}
 
 \item{preprocess_PCA}{Pre-processing threshold for PCA. Can select amount of variance to
 retain (e.g., .90 or as a grid c(0.80, 0.90)); or
-number of components to select (e.g., 10). Default is "min_halving", which is a function that
+number of components to select (e.g., 10). (To skip this step, set preprocess_PCA to NA) Default is "min_halving", which is a function that
 selects the number of PCA components based on number of participants and feature (word embedding
 dimensions) in the data. The formula is:
 preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).}
 
-\item{extremely_randomised_splitrule}{default: "extratrees", which thus implement a random forest;
+\item{extremely_randomised_splitrule}{Default is "extratrees", which thus implement a random forest;
 can also select: NULL, "gini" or "hellinger"; if these are selected your mtry settings will
  be overridden (see Geurts et al. (2006) Extremely randomized trees for details; and see the ranger r-package
 for details on implementations).}
 
-\item{mtry}{hyper parameter that may be tuned;  default:c(1, 20, 40),}
+\item{mtry}{Hyper parameter that may be tuned; default: c(1, 20, 40),}
 
-\item{min_n}{hyper parameter that may be tuned; default: c(1, 20, 40)}
+\item{min_n}{Hyper parameter that may be tuned; default: c(1, 20, 40)}
 
 \item{trees}{Number of trees to use (default 1000).}
 
-\item{eval_measure}{Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
+\item{eval_measure}{(character) Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
 see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".}
 
-\item{model_description}{Text to describe your model (optional; good when sharing the model with others).}
+\item{model_description}{(character) Text to describe your model (optional; good when sharing the model with others).}
 
 \item{multi_cores}{If TRUE it enables the use of multiple cores if the computer system allows for it (i.e.,
 only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.}
 
-\item{save_output}{Option not to save all output; default "all". see also "only_results" and
+\item{save_output}{(character) Option not to save all output; default "all". See also "only_results" and
 "only_results_predictions".}
 
-\item{seed}{Set different seed.}
+\item{seed}{(numeric) Set different seed (default = 2020).}
 
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
@@ -112,11 +112,14 @@ final_model, model_description chisq and fishers test as well as evaluation meas
 f_meas and roc_auc (for details on these measures see the yardstick r-package documentation).
 }
 \description{
-Train word embeddings to a categorical variable using random forrest.
+Train word embeddings to a categorical variable using random forest.
 }
 \examples{
-\donttest{
-results <- textTrainRandomForest(
+#Examines how well the embeddings from column "harmonywords" in 
+#Language_based_assessment_data_8 can binarily classify gender. 
+
+\dontrun{
+trained_model <- textTrainRandomForest(
   x = word_embeddings_4$texts$harmonywords,
   y = as.factor(Language_based_assessment_data_8$gender),
   trees = c(1000, 1500),
@@ -124,8 +127,14 @@ results <- textTrainRandomForest(
   min_n = c(1), # this is short because of testing
   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 )
+
+
+#Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis, confidence interval, correlation coefficient).
+ 
+trained_model$results
 }
 }
 \seealso{
-see \code{\link{textTrainLists}}
+See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and 
+\code{\link{textTrainRegression}}.
 }

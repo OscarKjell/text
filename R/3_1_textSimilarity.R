@@ -14,22 +14,26 @@ cosines <- function(x, y) {
 #'
 #' @param x Word embeddings from textEmbed.
 #' @param y Word embeddings from textEmbed.
-#' @param method Character string describing type of measure to be computed. Default is "cosine" (see also
+#' @param method (character) Character string describing type of measure to be computed. Default is "cosine" (see also
 #' "spearmen", "pearson" as well as measures from textDistance() (which here is computed as 1 - textDistance)
 #' including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
 #' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the column means
 #' (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.
 #' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered)
 #' columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.
-#' @return A vector comprising semantic similarity scores.
+#' @return A vector comprising semantic similarity scores. The closer the value is to 1 when using the default method, "cosine", the higher the semantic similarity.  
 #' @examples
-#' library(dplyr)
+#' #Compute the semantic similarity between the embeddings from "harmonytext" and "satisfactiontext". 
+#' \dontrun{
 #' similarity_scores <- textSimilarity(
 #'   x = word_embeddings_4$texts$harmonytext,
 #'   y = word_embeddings_4$texts$satisfactiontext
 #' )
+#' 
+#' #Show information about how similarity_scores were constructed.
 #' comment(similarity_scores)
-#' @seealso see \code{\link{textDistance}}, \code{\link{textSimilarityNorm}}
+#' }
+#' @seealso See \code{\link{textDistance}} and \code{\link{textSimilarityNorm}}. 
 #' @export
 textSimilarity <- function(x,
                            y,
@@ -90,7 +94,7 @@ textSimilarity <- function(x,
 #'
 #' @param x Word embeddings (from textEmbed).
 #' @param y Word embeddings (from textEmbed).
-#' @param method Character string describing type of measure to be computed; default is "euclidean" (see also
+#' @param method (character) Character string describing type of measure to be computed; default is "euclidean" (see also
 #' measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
 #' It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).
 #' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the embedding mean
@@ -99,13 +103,19 @@ textSimilarity <- function(x,
 #' (centered) embedding dimensions by the standard deviation of the embedding if center is TRUE, and the root mean square otherwise.
 #' @return A vector comprising semantic distance scores.
 #' @examples
-#' library(dplyr)
+#' #Compute the semantic distance score between the embeddings from "harmonytext" and "satisfactiontext". 
+#' 
+#' \dontrun{
 #' distance_scores <- textDistance(
 #'   x = word_embeddings_4$texts$harmonytext,
 #'   y = word_embeddings_4$texts$satisfactiontext
 #' )
+#' 
+#' #Show information about how distance_scores were constructed.
+#' 
 #' comment(distance_scores)
-#' @seealso see  \code{\link{textSimilarity}}, \code{\link{textSimilarityNorm}}
+#' }
+#' @seealso See  \code{\link{textSimilarity}} and \code{\link{textSimilarityNorm}}. 
 #' @export
 textDistance <- function(x,
                          y,

@@ -31,52 +31,56 @@ textEmbedRawLayers(
 "roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
  malicious model can execute arbitrary code on your computer).}
 
-\item{layers}{(string or numeric) Specify the layers that should be extracted
+\item{layers}{(character or numeric) Specify the layers that should be extracted
 (default -2, which give the second to last layer). It is more efficient to only extract the
 layers that you need (e.g., 11). You can also extract several (e.g., 11:12),
 or all by setting this parameter to "all". Layer 0 is the decontextualized input layer
 (i.e., not comprising hidden states) and thus should normally not be used. These layers can then
  be aggregated in the textEmbedLayerAggregation function.}
 
-\item{return_tokens}{If TRUE, provide the tokens used in the specified transformer model.}
+\item{return_tokens}{(boolean) If TRUE, provide the tokens used in the specified transformer model. (default = TRUE)}
 
-\item{word_type_embeddings}{(boolean) Wether to provide embeddings for each word/token type.}
+\item{word_type_embeddings}{(boolean) Wether to provide embeddings for each word/token type. (default = FALSE)}
 
-\item{decontextualize}{(boolean) Wether to dectonextualise embeddings (i.e., embedding one word at a time).}
+\item{decontextualize}{(boolean) Wether to dectonextualise embeddings (i.e., embedding one word at a time). (default = TRUE)}
 
 \item{keep_token_embeddings}{(boolean) Whether to keep token level embeddings in the output
-(when using word_types aggregation)}
+(when using word_types aggregation). (default= TRUE)}
 
-\item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-specific device number.}
+\item{device}{(character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
+specific device number. (default = "cpu")}
 
-\item{tokenizer_parallelism}{If TRUE this will turn on tokenizer parallelism. Default FALSE.}
+\item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism. (default = FALSE).}
 
 \item{model_max_length}{The maximum length (in number of tokens) for the inputs to the transformer model
 (default the value stored for the associated model).}
 
 \item{max_token_to_sentence}{(numeric) Maximum number of tokens in a string to handle before switching to embedding
-text sentence by sentence.}
+text sentence by sentence. (default= 4)}
 
-\item{logging_level}{Set the logging level. Default: "warning".
+\item{logging_level}{(character) Set the logging level. Default: "error".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
 \item{sort}{(boolean) If TRUE sort the output to tidy format.}
 }
 \value{
-Returns hiddenstates/layers that can be 1. Can return three different outputA tibble with tokens,
-column specifying layer and word embeddings. Note that layer 0 is the input embedding to the transformer,
-and should normally not be used.
+The textEmbedRawLayers() takes text as input, and returns the hidden states for each token of the text, including the [CLS] and the [SEP]. Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 }
 \description{
 Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 }
 \examples{
-\donttest{
-# texts <- Language_based_assessment_data_8[1:2, 1:2]
-# word_embeddings_with_layers <- textEmbedRawLayers(texts, layers = 11:12)
+# Get hidden states of layer 11 and 12 for "I am fine". 
+\dontrun{
+imf_embeddings_11_12 <- textEmbedRawLayers(
+                                  "I am fine",
+                                  layers = 11:12
+)
+
+# Show hidden states of layer 11 and 12. 
+imf_embeddings_11_12
 }
 }
 \seealso{
-see \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}
+See \code{\link{textEmbedLayerAggregation}} and \code{\link{textEmbed}}.
 }

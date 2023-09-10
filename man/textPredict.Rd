@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_4_textPredict.R
 \name{textPredict}
 \alias{textPredict}
-\title{Predict scores or classification from, e.g., textTrain.}
+\title{Trained models created by e.g., textTrain() can be used to predict new scores or classifications using textPredict.}
 \usage{
 textPredict(
   model_info,
@@ -17,11 +17,11 @@ textPredict(
 \item{model_info}{(model object) Model info (e.g., saved output from textTrain,
 textTrainRegression or textRandomForest).}
 
-\item{word_embeddings}{(tibble) Word embeddings}
+\item{word_embeddings}{(tibble) Word embeddings.}
 
 \item{x_append}{(tibble) Variables to be appended after the word embeddings (x).}
 
-\item{type}{(string) Type of prediction; e.g., "prob", "class".}
+\item{type}{(character) Type of prediction; e.g., "prob", "class".}
 
 \item{dim_names}{(boolean) Account for specific dimension names from textEmbed()
 (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
@@ -33,13 +33,28 @@ word embeddings created with dim_names FALSE, so that embeddings were only calle
 Predicted scores from word embeddings.
 }
 \description{
-Predict scores or classification from, e.g., textTrain.
+Trained models created by e.g., textTrain() can be used to predict new scores or classifications using textPredict.
 }
 \examples{
-word_embeddings <- word_embeddings_4
-ratings_data <- Language_based_assessment_data_8
+#Apply trained model from the function textTrain to the new data:"satisfactiontexts". 
+\dontrun{
+
+predictions <- textPredict(
+  trained_model, 
+  word_embeddings_4$texts$satisfactiontexts
+)
+}
+#Examine the correlation between the predicted values and
+#the Satisfaction with life scale score (pre-included in text).
+
+\dontrun{
+psych::corr.test(
+ predictions$word_embeddings__ypred,
+ Language_based_assessment_data_8$swlstotal
+) 
+}
 }
 \seealso{
-see \code{\link{textTrain}} \code{\link{textTrainLists}}
-\code{\link{textTrainRandomForest}}
+See \code{\link{textTrain}}, \code{\link{textTrainLists}} and
+\code{\link{textTrainRandomForest}}.
 }

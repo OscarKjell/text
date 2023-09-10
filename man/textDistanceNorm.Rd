@@ -12,7 +12,7 @@ textDistanceNorm(x, y, method = "euclidean", center = FALSE, scale = FALSE)
 
 \item{y}{Word embedding from textEmbed (from only one text).}
 
-\item{method}{Character string describing type of measure to be computed; default is "euclidean" (see also
+\item{method}{(character) Character string describing type of measure to be computed; default is "euclidean" (see also
 measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
 It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).}
 
