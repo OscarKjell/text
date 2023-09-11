@@ -21,9 +21,9 @@ textEmbedRawLayers(
 )
 }
 \arguments{
-\item{texts}{A character variable or a tibble/dataframe with at least one character variable.}
+\item{texts}{A character variable or a tibble with at least one character variable.}
 
-\item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased').
+\item{model}{(character) Character string specifying pre-trained language model (default = 'bert-base-uncased').
  For full list of options see pretrained models at
  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
  For example use "bert-base-multilingual-cased", "openai-gpt",
@@ -58,10 +58,10 @@ specific device number. (default = "cpu")}
 \item{max_token_to_sentence}{(numeric) Maximum number of tokens in a string to handle before switching to embedding
 text sentence by sentence. (default= 4)}
 
-\item{logging_level}{(character) Set the logging level. Default: "error".
+\item{logging_level}{(character) Set the logging level. (default ="error")
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{sort}{(boolean) If TRUE sort the output to tidy format.}
+\item{sort}{(boolean) If TRUE sort the output to tidy format. (default = TRUE)}
 }
 \value{
 The textEmbedRawLayers() takes text as input, and returns the hidden states for each token of the text, including the [CLS] and the [SEP]. Note that layer 0 is the input embedding to the transformer, and should normally not be used.
