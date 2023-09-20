@@ -129,7 +129,8 @@ trained_model <- textTrainRandomForest(
 )
 
 
-#Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis, confidence interval, correlation coefficient).
+# Examine results (t-value, degree of freedom (df), p-value, 
+# alternative-hypothesis, confidence interval, correlation coefficient).
  
 trained_model$results
 }

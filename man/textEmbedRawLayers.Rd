@@ -64,7 +64,9 @@ Options (ordered from less logging to more logging): critical, error, warning, i
 \item{sort}{(boolean) If TRUE sort the output to tidy format. (default = TRUE)}
 }
 \value{
-The textEmbedRawLayers() takes text as input, and returns the hidden states for each token of the text, including the [CLS] and the [SEP]. Note that layer 0 is the input embedding to the transformer, and should normally not be used.
+The textEmbedRawLayers() takes text as input, and returns the hidden states for each token of the text, 
+including the [CLS] and the [SEP]. 
+Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 }
 \description{
 Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.

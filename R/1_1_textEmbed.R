@@ -349,7 +349,9 @@ textTokenize <- function(texts,
 #' @param logging_level (character) Set the logging level. (default ="error")
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param sort (boolean) If TRUE sort the output to tidy format. (default = TRUE)
-#' @return The textEmbedRawLayers() takes text as input, and returns the hidden states for each token of the text, including the [CLS] and the [SEP]. Note that layer 0 is the input embedding to the transformer, and should normally not be used.
+#' @return The textEmbedRawLayers() takes text as input, and returns the hidden states for each token of the text, 
+#' including the [CLS] and the [SEP]. 
+#' Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 #' @examples
 #' # Get hidden states of layer 11 and 12 for "I am fine". 
 #' \dontrun{
@@ -640,7 +642,9 @@ textEmbedRawLayers <- function(texts,
 #' @return A tibble with word embeddings. Note that layer 0 is the input embedding to
 #' the transformer, which is normally not used.
 #' @examples
-#' #Aggregate the hidden states returned by the textEmbedRawLayers function to create a word embedding representing the entire text. This is achieved by concatenating layer 11 and 12. 
+#' #Aggregate the hidden states from textEmbedRawLayers 
+#' #to create a word embedding representing the entire text. 
+#' #This is achieved by concatenating layer 11 and 12. 
 #' \dontrun{
 #' word_embedding <- textEmbedLayerAggregation(
 #'                     imf_embeddings_11_12$context_tokens,
@@ -1182,7 +1186,7 @@ textDimName <- function(word_embeddings,
   # Return tibble if x is a tibble (and not a list)
   if (x_is_tibble) word_embeddings <- word_embeddings[[1]]
 
-  
+  return(word_embeddings)
 }
 
 

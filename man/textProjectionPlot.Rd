@@ -17,6 +17,7 @@ textProjectionPlot(
   titles_color = "#61605e",
   y_axes = FALSE,
   p_alpha = 0.05,
+  overlapping = TRUE,
   p_adjust_method = "none",
   title_top = "Supervised Dimension Projection",
   x_axes_label = "Supervised Dimension Projection (SDP)",

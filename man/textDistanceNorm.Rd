@@ -20,7 +20,8 @@ It is also possible to use "cosine", which computes the cosine distance (i.e., 1
 (omitting NAs) of x from each of its dimension, and if center is FALSE, no centering is done.}
 
 \item{scale}{(boolean; from base::scale) If scale is TRUE then scaling is done by dividing the
-(centered) embedding dimensions by the standard deviation of the embedding if center is TRUE, and the root mean square otherwise.}
+(centered) embedding dimensions by the standard deviation of the embedding if center is TRUE, 
+ and the root mean square otherwise.}
 }
 \value{
 A vector comprising semantic distance scores.

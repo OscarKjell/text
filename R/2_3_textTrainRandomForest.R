@@ -616,7 +616,8 @@ summarize_tune_results_rf <- function(object,
 #' )
 #' 
 #' 
-#' #Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis, confidence interval, correlation coefficient).
+#' # Examine results (t-value, degree of freedom (df), p-value, 
+#' # alternative-hypothesis, confidence interval, correlation coefficient).
 #'  
 #' trained_model$results
 #' }

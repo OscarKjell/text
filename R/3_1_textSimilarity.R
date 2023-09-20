@@ -100,10 +100,12 @@ textSimilarity <- function(x,
 #' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the embedding mean
 #' (omitting NAs) of x from each of its dimension, and if center is FALSE, no centering is done.
 #' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the
-#' (centered) embedding dimensions by the standard deviation of the embedding if center is TRUE, and the root mean square otherwise.
+#' (centered) embedding dimensions by the standard deviation of the embedding if center is TRUE, 
+#'  and the root mean square otherwise.
 #' @return A vector comprising semantic distance scores.
 #' @examples
-#' #Compute the semantic distance score between the embeddings from "harmonytext" and "satisfactiontext". 
+#' #Compute the semantic distance score between the embeddings 
+#' #from "harmonytext" and "satisfactiontext". 
 #' 
 #' \dontrun{
 #' distance_scores <- textDistance(

@@ -623,7 +623,8 @@ summarize_tune_results <- function(object,
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
 #'
-#' #Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis, confidence interval, correlation coefficient).
+#' # Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis, 
+#' # confidence interval, correlation coefficient).
 #' 
 #' trained_model$results
 #' }

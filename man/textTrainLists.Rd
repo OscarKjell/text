@@ -47,7 +47,8 @@ Individually trains word embeddings from several text variables to several numer
 \examples{
 #Examines how well the embeddings from Language_based_assessment_data_8 can
 #predict the numerical numerical variables in Language_based_assessment_data_8. 
-#The training is done combination wise, i.e., correlations are tested pair wise, column: 1-5,1-6,2-5,2-6, resulting in a dataframe with four rows. 
+#The training is done combination wise, i.e., correlations are tested pair wise, 
+#column: 1-5,1-6,2-5,2-6, resulting in a dataframe with four rows. 
    
 \dontrun{
 word_embeddings <- word_embeddings_4$texts[1:2]
