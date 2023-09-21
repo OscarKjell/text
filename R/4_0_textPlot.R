@@ -646,6 +646,7 @@ adjust_for_plot_type <- function(word_data, y_axes) {
 #' y-axes produces a two dimension 2-dimensional plot, but the textProjection function has to
 #' have had a variable on the y-axes.
 #' @param p_alpha Alpha (default = .05).
+#' @param overlapping (boolean) Allow overlapping (TRUE) or disallow (FALSE) (default = TRUE).
 #' @param p_adjust_method (character) Method to adjust/correct p-values for multiple comparisons
 #' (default = "none"; see also "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
 #' @param x_axes_label (character) Label on the x-axes (default = "Supervised Dimension Projection (SDP)").

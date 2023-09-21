@@ -605,6 +605,7 @@ textProjection <- function(words,
 #' y-axes produces a two dimension 2-dimensional plot, but the textProjection function has to
 #' have had a variable on the y-axes.
 #' @param p_alpha Alpha (default = .05).
+#' @param overlapping (boolean) Allow overlapping (TRUE) or disallow (FALSE) (default = TRUE).
 #' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons
 #' (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
 #' @param x_axes_label Label on the x-axes.

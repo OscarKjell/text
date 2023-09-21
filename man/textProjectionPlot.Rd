@@ -99,6 +99,8 @@ have had a variable on the y-axes.}
 
 \item{p_alpha}{Alpha (default = .05).}
 
+\item{overlapping}{(boolean) Allow overlapping (TRUE) or disallow (FALSE) (default = TRUE).}
+
 \item{p_adjust_method}{Method to adjust/correct p-values for multiple comparisons
 (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").}
 
