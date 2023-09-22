@@ -11,7 +11,7 @@ textSimilarity(x, y, method = "cosine", center = TRUE, scale = FALSE)
 
 \item{y}{Word embeddings from textEmbed.}
 
-\item{method}{Character string describing type of measure to be computed. Default is "cosine" (see also
+\item{method}{(character) Character string describing type of measure to be computed. Default is "cosine" (see also
 "spearmen", "pearson" as well as measures from textDistance() (which here is computed as 1 - textDistance)
 including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
 
@@ -22,19 +22,23 @@ including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkows
 columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.}
 }
 \value{
-A vector comprising semantic similarity scores.
+A vector comprising semantic similarity scores. The closer the value is to 1 when using the default method, "cosine", the higher the semantic similarity.
 }
 \description{
 Compute the semantic similarity between two text variables.
 }
 \examples{
-library(dplyr)
+#Compute the semantic similarity between the embeddings from "harmonytext" and "satisfactiontext". 
+\dontrun{
 similarity_scores <- textSimilarity(
   x = word_embeddings_4$texts$harmonytext,
   y = word_embeddings_4$texts$satisfactiontext
 )
+
+#Show information about how similarity_scores were constructed.
 comment(similarity_scores)
 }
+}
 \seealso{
-see \code{\link{textDistance}}, \code{\link{textSimilarityNorm}}
+See \code{\link{textDistance}} and \code{\link{textSimilarityNorm}}.
 }

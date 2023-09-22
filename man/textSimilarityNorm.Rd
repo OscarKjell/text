@@ -12,7 +12,7 @@ textSimilarityNorm(x, y, method = "cosine", center = TRUE, scale = FALSE)
 
 \item{y}{Word embedding from textEmbed (from only one text).}
 
-\item{method}{Character string describing type of measure to be computed. Default is "cosine" (see also
+\item{method}{(character) Character string describing type of measure to be computed. Default is "cosine" (see also
 "spearmen", "pearson" as well as measures from textDistance() (which here is computed as 1 - textDistance)
 including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").}
 

@@ -16,7 +16,7 @@ tibble input (i.e., keep the name of the wordembedding).}
 sure to have them within a tibble (this is required
 even if it is only one outcome but several word embeddings variables).}
 
-\item{force_train_method}{default is "automatic", so if y is a factor
+\item{force_train_method}{Default is "automatic", so if y is a factor
 random_forest is used, and if y is numeric ridge regression
 is used. This can be overridden using "regression" or "random_forest".}
 
@@ -25,20 +25,30 @@ the textTrain function.}
 }
 \value{
 A correlation between predicted and observed values; as well as a
- tibble of predicted values.
+ tibble of predicted values (t-value, degree of freedom (df), p-value, 
+ alternative-hypothesis, confidence interval, correlation coefficient).
 }
 \description{
 Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 }
 \examples{
+#Examines how well the embeddings from "harmonytext" can
+#predict the numeric variable "hilstotal" in the pre-included 
+#dataset "Language_based_assessment_data_8". 
+
 \dontrun{
-results <- textTrain(
+trained_model <- textTrain(
   x = word_embeddings_4$texts$harmonytext,
   y = Language_based_assessment_data_8$hilstotal
 )
+
+#Examine results (t-value, degree of freedom (df), p-value, 
+#alternative-hypothesis, confidence interval, correlation coefficient).
+ 
+trained_model$results
 }
 }
 \seealso{
-\code{\link{textTrainRegression}} \code{\link{textTrainRandomForest}}
-\code{\link{textTrainLists}}
+See \code{\link{textTrainRegression}}, \code{\link{textTrainRandomForest}} and 
+\code{\link{textTrainLists}}.
 }

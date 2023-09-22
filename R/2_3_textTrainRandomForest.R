@@ -548,62 +548,65 @@ summarize_tune_results_rf <- function(object,
 }
 
 
-#' Train word embeddings to a categorical variable using random forrest.
+#' Train word embeddings to a categorical variable using random forest.
 #'
 #' @param x Word embeddings from textEmbed.
 #' @param y Categorical variable to predict.
-#' @param x_append Variables to be appended after the word embeddings (x);
+#' @param x_append (optional) Variables to be appended after the word embeddings (x);
 #' if wanting to preappend them before the word embeddings use the option
-#' first = TRUE.  If not wanting to train with word embeddings, set x = NULL.
-#' @param append_first (boolean) Option to add variables before or after all word embeddings.
-#' @param cv_method Cross-validation method to use within a pipeline of nested outer and
+#' first = TRUE.  If not wanting to train with word embeddings, set x_append = NULL (default = null).
+#' @param append_first (boolean) Option to add variables before or after all word embeddings (default = FALSE).
+#' @param cv_method (character) Cross-validation method to use within a pipeline of nested outer and
 #' inner loops of folds (see nested_cv in rsample). Default is using cv_folds in the
 #' outside folds and "validation_split" using rsample::validation_split in the inner loop to
 #' achieve a development and assessment set (note that for validation_split the inside_folds
 #' should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds" uses rsample::vfold_cv
 #' to achieve n-folds in both the outer and inner loops.
-#' @param outside_folds Number of folds for the outer folds (default = 10).
+#' @param outside_folds (numeric) Number of folds for the outer folds (default = 10).
 #' @param outside_strata_y Variable to stratify according (default "y"; can also set to NULL).
-#' @param outside_breaks The number of bins wanted to stratify a numeric stratification variable
-#' in the outer cross-validation loop.
-#' @param inside_folds Number of folds for the inner folds (default = 3/4).
+#' @param outside_breaks (numeric) The number of bins wanted to stratify a numeric stratification variable
+#' in the outer cross-validation loop (default = 4).
+#' @param inside_folds (numeric) Number of folds for the inner folds (default = 3/4).
 #' @param inside_strata_y Variable to stratify according (default "y"; can also set to NULL).
 #' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable
-#' in the inner cross-validation loop.
+#' in the inner cross-validation loop (default = 4).
 #' @param mode_rf Default is "classification" ("regression" is not supported yet).
-#' @param preprocess_step_center normalizes dimensions to have a mean of zero; default is set to TRUE.
+#' @param preprocess_step_center (boolean) Normalizes dimensions to have a mean of zero; default is set to FALSE
 #' For more info see (step_center in recipes).
-#' @param preprocess_scale_center  normalize dimensions to have a standard deviation of one.
+#' @param preprocess_scale_center (boolean) Normalizes dimensions to have a standard deviation of one; default is set to FALSE.
 #' For more info see (step_scale in recipes).
 #' @param preprocess_PCA Pre-processing threshold for PCA. Can select amount of variance to
 #' retain (e.g., .90 or as a grid c(0.80, 0.90)); or
-#' number of components to select (e.g., 10). Default is "min_halving", which is a function that
+#' number of components to select (e.g., 10). (To skip this step, set preprocess_PCA to NA) Default is "min_halving", which is a function that
 #' selects the number of PCA components based on number of participants and feature (word embedding
 #' dimensions) in the data. The formula is:
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
-#' @param extremely_randomised_splitrule default: "extratrees", which thus implement a random forest;
+#' @param extremely_randomised_splitrule Default is "extratrees", which thus implement a random forest;
 #' can also select: NULL, "gini" or "hellinger"; if these are selected your mtry settings will
 #'  be overridden (see Geurts et al. (2006) Extremely randomized trees for details; and see the ranger r-package
 #' for details on implementations).
-#' @param mtry hyper parameter that may be tuned;  default:c(1, 20, 40),
-#' @param min_n hyper parameter that may be tuned; default: c(1, 20, 40)
+#' @param mtry Hyper parameter that may be tuned; default: c(1, 20, 40),
+#' @param min_n Hyper parameter that may be tuned; default: c(1, 20, 40)
 #' @param trees Number of trees to use (default 1000).
-#' @param eval_measure Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
+#' @param eval_measure (character) Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
 #' see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".
-#' @param model_description Text to describe your model (optional; good when sharing the model with others).
+#' @param model_description (character) Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it (i.e.,
 #'  only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
 #'   "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
-#' @param save_output Option not to save all output; default "all". see also "only_results" and
+#' @param save_output (character) Option not to save all output; default "all". See also "only_results" and
 #' "only_results_predictions".
-#' @param seed Set different seed.
+#' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe,
 #' final_model, model_description chisq and fishers test as well as evaluation measures, e.g., including accuracy,
 #' f_meas and roc_auc (for details on these measures see the yardstick r-package documentation).
 #' @examples
-#' \donttest{
-#' results <- textTrainRandomForest(
+#' #Examines how well the embeddings from column "harmonywords" in 
+#' #Language_based_assessment_data_8 can binarily classify gender. 
+#'
+#' \dontrun{
+#' trained_model <- textTrainRandomForest(
 #'   x = word_embeddings_4$texts$harmonywords,
 #'   y = as.factor(Language_based_assessment_data_8$gender),
 #'   trees = c(1000, 1500),
@@ -611,8 +614,15 @@ summarize_tune_results_rf <- function(object,
 #'   min_n = c(1), # this is short because of testing
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
+#' 
+#' 
+#' # Examine results (t-value, degree of freedom (df), p-value, 
+#' # alternative-hypothesis, confidence interval, correlation coefficient).
+#'  
+#' trained_model$results
 #' }
-#' @seealso see \code{\link{textTrainLists}}
+#' @seealso See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and 
+#' \code{\link{textTrainRegression}}. 
 #' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
 #' @importFrom dplyr select bind_cols starts_with filter arrange rename
 #' @importFrom tibble as_tibble

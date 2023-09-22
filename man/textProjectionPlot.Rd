@@ -17,6 +17,7 @@ textProjectionPlot(
   titles_color = "#61605e",
   y_axes = FALSE,
   p_alpha = 0.05,
+  overlapping = TRUE,
   p_adjust_method = "none",
   title_top = "Supervised Dimension Projection",
   x_axes_label = "Supervised Dimension Projection (SDP)",
@@ -97,6 +98,8 @@ y-axes produces a two dimension 2-dimensional plot, but the textProjection funct
 have had a variable on the y-axes.}
 
 \item{p_alpha}{Alpha (default = .05).}
+
+\item{overlapping}{(boolean) Allow overlapping (TRUE) or disallow (FALSE) (default = TRUE).}
 
 \item{p_adjust_method}{Method to adjust/correct p-values for multiple comparisons
 (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").}
@@ -207,7 +210,8 @@ A 1- or 2-dimensional word plot, as well as tibble with processed data used to p
 Plot words according to Supervised Dimension Projection.
 }
 \examples{
-# The test-data included in the package is called: DP_projections_HILS_SWLS_100
+# The test-data included in the package is called: DP_projections_HILS_SWLS_100.
+# The dataframe created by textProjection can also be used as input-data.  
 
 # Supervised Dimension Projection Plot
 plot_projection <- textProjectionPlot(
@@ -227,10 +231,12 @@ plot_projection <- textProjectionPlot(
   p_adjust_method = "bonferroni",
   scale_y_axes_lim = NULL
 )
+
 plot_projection
 
+#Investigate elements in DP_projections_HILS_SWLS_100.
 names(DP_projections_HILS_SWLS_100)
 }
 \seealso{
-see \code{\link{textProjection}}
+See \code{\link{textProjection}}.
 }

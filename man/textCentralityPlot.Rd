@@ -37,29 +37,29 @@ textCentralityPlot(
 )
 }
 \arguments{
-\item{word_data}{Tibble from textPlotData.}
+\item{word_data}{Tibble from the textPlot function.}
 
 \item{min_freq_words_test}{Select words to significance test that have occurred
 at least min_freq_words_test (default = 1).}
 
 \item{plot_n_word_extreme}{Number of words per dimension to plot with extreme
-Supervised Dimension Projection value.
+Supervised Dimension Projection value (default = 10).
 (i.e., even if not significant;  duplicates are removed).}
 
-\item{plot_n_word_frequency}{Number of words to plot according to their frequency.
+\item{plot_n_word_frequency}{Number of words to plot according to their frequency (default = 10).
 (i.e., even if not significant).}
 
-\item{plot_n_words_middle}{Number of words to plot that are in the middle in Supervised Dimension Projection score
+\item{plot_n_words_middle}{Number of words to plot that are in the middle in Supervised Dimension Projection score (default = 10).
 (i.e., even if not significant; duplicates are removed).}
 
 \item{titles_color}{Color for all the titles (default: "#61605e").}
 
-\item{x_axes}{Variable to be plotted on the x-axes (default is "central_semantic_similarity",
+\item{x_axes}{Variable to be plotted on the x-axes (default: "central_semantic_similarity",
 could also select "n", "n_percent").}
 
-\item{title_top}{Title (default "  ").}
+\item{title_top}{Title (default: "  ").}
 
-\item{x_axes_label}{Label on the x-axes.}
+\item{x_axes_label}{Label on the x-axes (default: "Semantic Centrality").}
 
 \item{scale_x_axes_lim}{Length of the x-axes (default: NULL, which uses
 c(min(word_data$central_semantic_similarity)-0.05, max(word_data$central_semantic_similarity)+0.05);
@@ -70,7 +70,7 @@ change e.g., by trying c(-5, 5)).}
 
 \item{word_font}{Type of font (default: NULL).}
 
-\item{centrality_color_codes}{Colors of the words selected as plot_n_word_extreme
+\item{centrality_color_codes}{(HTML color codes. type = character) Colors of the words selected as plot_n_word_extreme
 (minimum values), plot_n_words_middle, plot_n_word_extreme (maximum values) and
 plot_n_word_frequency; the default is c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d", respectively.}
 
@@ -90,23 +90,23 @@ plot_n_word_frequency; the default is c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9
 \item{points_without_words_alpha}{Transparency of the points that are not linked to a word
 (default is to not show it; i.e., 0).}
 
-\item{legend_title}{Title of the color legend (default: "(SCP)").}
+\item{legend_title}{Title of the color legend (default: "SCP").}
 
-\item{legend_x_axes_label}{Label on the color legend (default: "(x)".}
+\item{legend_x_axes_label}{Label on the color legend (default: "x").}
 
-\item{legend_x_position}{Position on the x coordinates of the color legend (default: 0.02).}
+\item{legend_x_position}{Position on the x coordinates of the color legend (default = 0.02).}
 
-\item{legend_y_position}{Position on the y coordinates of the color legend (default: 0.05).}
+\item{legend_y_position}{Position on the y coordinates of the color legend (default = 0.05).}
 
-\item{legend_h_size}{Height of the color legend (default 0.15).}
+\item{legend_h_size}{Height of the color legend (default = 0.15).}
 
-\item{legend_w_size}{Width of the color legend (default 0.15).}
+\item{legend_w_size}{Width of the color legend (default = 0.15).}
 
 \item{legend_title_size}{Font size of the title (default = 7).}
 
 \item{legend_number_size}{Font size of the values in the legend (default = 2).}
 
-\item{seed}{Set different seed.}
+\item{seed}{Set different seed (default = 1007).}
 }
 \value{
 A 1-dimensional word plot based on similarity to the aggregated word embedding,
@@ -116,31 +116,43 @@ as well as tibble with processed data used to plot.
 Plot words according to semantic similarity to the aggregated word embedding.
 }
 \examples{
-# The test-data included in the package is called: centrality_data_harmony
-names(centrality_data_harmony)
-# Plot
-# centrality_plot <- textCentralityPlot(
-#  word_data = centrality_data_harmony,
-#  min_freq_words_test = 10,
-#  plot_n_word_extreme = 10,
-#  plot_n_word_frequency = 10,
-#  plot_n_words_middle = 10,
-#  titles_color = "#61605e",
-#  x_axes = "central_semantic_similarity",
-#
-#  title_top = "Semantic Centrality Plot",
-#  x_axes_label = "Semantic Centrality",
-#
-#  word_font = NULL,
-#  centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d"),
-#  word_size_range = c(3, 8),
-#  point_size = 0.5,
-#  arrow_transparency = 0.1,
-#  points_without_words_size = 0.5,
-#  points_without_words_alpha = 0.5,
-# )
-# centrality_plot
+#Plot a centrality plot from the dataframe df_for_plotting 
+#that is returned by the textCentrality function. 
+\dontrun{
+textCentralityPlot(
+  df_for_plotting,
+  min_freq_words_test = 1,
+  plot_n_word_extreme = 10,
+  plot_n_word_frequency = 10,
+  plot_n_words_middle = 10,
+  titles_color = "#61605e",
+  x_axes = "central_semantic_similarity",
+  title_top = "Semantic Centrality Plot",
+  x_axes_label = "Semantic Centrality",
+  scale_x_axes_lim = NULL,
+  scale_y_axes_lim = NULL,
+  word_font = NULL,
+  centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d"),
+  word_size_range = c(3, 8),
+  position_jitter_hight = 0,
+  position_jitter_width = 0.03,
+  point_size = 0.5,
+  arrow_transparency = 0.1,
+  points_without_words_size = 0.5,
+  points_without_words_alpha = 0.5,
+  legend_title = "SC",
+  legend_x_axes_label = "x",
+  legend_x_position = 0.02,
+  legend_y_position = 0.02,
+  legend_h_size = 0.2,
+  legend_w_size = 0.2,
+  legend_title_size = 7,
+  legend_number_size = 2,
+  seed = 1007
+)
+}
+
 }
 \seealso{
-see \code{\link{textCentrality}} and \code{\link{textProjection}}
+See \code{\link{textCentrality}} and \code{\link{textProjection}}.
 }

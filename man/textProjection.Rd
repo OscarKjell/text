@@ -23,7 +23,7 @@ textProjection(
 )
 }
 \arguments{
-\item{words}{Word or text variable to be plotted.}
+\item{words}{(character) Word or text variable to be plotted.}
 
 \item{word_embeddings}{Word embeddings from textEmbed for the words to be plotted
 (i.e., the aggregated word embeddings for the "words" parameter).}
@@ -33,16 +33,16 @@ textProjection(
 
 \item{x}{Numeric variable that the words should be plotted according to on the x-axes.}
 
-\item{y}{Numeric variable that the words should be plotted according to on the y-axes (y=NULL).}
+\item{y}{Numeric variable that the words should be plotted according to on the y-axes (default = NULL, i.e., a 1-dimensional plot is created).}
 
-\item{pca}{Number of PCA dimensions applied to the word embeddings in the beginning of the function.
+\item{pca}{Number of PCA dimensions applied to the word embeddings in the beginning of the function (default = NULL).
 A number below 1 takes out \% of variance; An integer specify number of components to extract.
 (default is NULL as this setting has not yet been evaluated).}
 
-\item{aggregation}{Method to aggregate the word embeddings
+\item{aggregation}{(character) Method to aggregate the word embeddings
 (default = "mean"; see also "min", "max", and "[CLS]").}
 
-\item{split}{Method to split the axes
+\item{split}{(character) Method to split the axes
 (default = "quartile" involving selecting lower and upper quartile; see also "mean"). However, if the variable is
 only containing two different values (i.e., being dichotomous) mean split is used.}
 
@@ -50,22 +50,22 @@ only containing two different values (i.e., being dichotomous) mean split is use
 the word embeddings with this in the computation of aggregated word embeddings for
 group low (1) and group high (2). This increases the weight of more frequent words.}
 
-\item{min_freq_words_test}{Option to select words that have occurred a specified number of
+\item{min_freq_words_test}{(numeric) Option to select words that have occurred a specified number of
 times (default = 0); when creating the Supervised Dimension Projection line
 (i.e., single words receive Supervised Dimension Projection and p-value).}
 
-\item{mean_centering}{Boolean; separately mean centering the Group 1 split aggregation embedding,
+\item{mean_centering}{(boolean) Separately mean centering the Group 1 split aggregation embedding,
 and the Group 2 split aggregation embedding}
 
-\item{mean_centering2}{Boolean; separately mean centering the G1 and G2 split aggregation embeddings}
+\item{mean_centering2}{(boolean) Separately mean centering the G1 and G2 split aggregation embeddings}
 
-\item{Npermutations}{Number of permutations in the creation of the null distribution.}
+\item{Npermutations}{(numeric) Number of permutations in the creation of the null distribution (default = 10000).}
 
-\item{n_per_split}{Setting to split Npermutations to avoid reaching computer memory limits;
+\item{n_per_split}{(numeric) Setting to split Npermutations to avoid reaching computer memory limits;
 set it lower than Npermutations <- and the higher it is set the faster the computation completes,
- but too high may lead to abortion.}
+ but too high may lead to abortion (default = 50000).}
 
-\item{seed}{Set different seed.}
+\item{seed}{(numeric) Set different seed (default = 1003).}
 }
 \value{
 A dataframe with variables (e.g., including Supervised Dimension Projection, frequencies, p-values)
@@ -75,8 +75,7 @@ for the individual words that is used for the plotting in the textProjectionPlot
 Compute Supervised Dimension Projection and related variables for plotting words.
 }
 \examples{
-# Data
-# Pre-processing data for plotting
+# Pre-processing data for plotting. 
 \dontrun{
 df_for_plotting <- textProjection(
   words = Language_based_assessment_data_8$harmonywords,
@@ -87,7 +86,10 @@ df_for_plotting <- textProjection(
   Npermutations = 10,
   n_per_split = 1
 )
+#Run df_for_plotting to examine result. 
 df_for_plotting
 }
-#' @seealso see \code{\link{textProjectionPlot}}
+}
+\seealso{
+See \code{\link{textProjectionPlot}}.
 }

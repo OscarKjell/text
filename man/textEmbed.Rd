@@ -42,7 +42,7 @@ to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidd
  thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation
  function.}
 
-\item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
+\item{dim_name}{(boolean) If TRUE append the variable name after all variable-names in the output.
 (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name).
 see \code{\link{textDimName}} to change names back and forth.}
 
@@ -87,25 +87,39 @@ Options (ordered from less logging to more logging): critical, error, warning, i
 }
 \value{
 A tibble with tokens, a column for layer identifier and word embeddings.
-Note that layer 0 is the input embedding to the transformer
+Note that layer 0 is the input embedding to the transformer.
 }
 \description{
 Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 }
 \examples{
-\donttest{
-# word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
-#                             layers = 10:11,
-#                             aggregation_from_layers_to_tokens = "concatenate",
-#                             aggregation_from_tokens_to_texts = "mean",
-#                             aggregation_from_tokens_to_word_types = "mean")
-## Show information about how the embeddings were constructed
-# comment(word_embeddings$texts$satisfactiontexts)
-# comment(word_embeddings$word_types)
-# comment(word_embeddings$tokens$satisfactiontexts)
+# Automatically transforms the characters in the example dataset: 
+# Language_based_assessment_data_8 (included in text-package), to embeddings.
+\dontrun{
+word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
+                              layers = 10:11,
+                              aggregation_from_layers_to_tokens = "concatenate",
+                              aggregation_from_tokens_to_texts = "mean",
+                              aggregation_from_tokens_to_word_types = "mean"
+)
+
+# Show information about how the embeddings were constructed. 
+comment(word_embeddings$texts$satisfactiontexts)
+comment(word_embeddings$word_types)
+comment(word_embeddings$tokens$satisfactiontexts)
+
+# See how the word embeddings are structured. 
+word_embeddings
+
+# Save the word embeddings to avoid having to embed the text again. 
+saveRDS(word_embeddings, "word_embeddings.rds")
+
+# Retrieve the saved word embeddings. 
+word_embeddings <- readRDS("word_embeddings.rds")
 }
+
 }
 \seealso{
-see \code{\link{textEmbedLayerAggregation}}, \code{\link{textEmbedRawLayers}} and
-\code{\link{textDimName}}
+See \code{\link{textEmbedLayerAggregation}}, \code{\link{textEmbedRawLayers}} and
+\code{\link{textDimName}}.
 }
