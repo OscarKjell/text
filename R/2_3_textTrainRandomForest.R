@@ -16,7 +16,8 @@
 select_eval_measure_val <- function(eval_measure = "bal_accuracy",
                                     holdout_pred = NULL,
                                     truth = y,
-                                    estimate = .pred_class, class) {
+                                    estimate = .pred_class, class,
+                                    ...) {
   # Get accuracy
   if (eval_measure == "accuracy") {
     eval_measure_val <- yardstick::accuracy(holdout_pred, truth = y, estimate = .pred_class)
@@ -62,7 +63,9 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
 #' @importFrom  yardstick accuracy bal_accuracy sens spec precision kap f_meas roc_auc rmse rsq
 #' @importFrom  ggplot2 autoplot
 #' @noRd
-classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
+classification_results<- function(outputlist_results_outer,
+                                   id_nr = NA,
+                                   ...) {
   # Unnest predictions and y
   predy_y <- tibble::tibble(
     tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
@@ -80,7 +83,9 @@ classification_results <- function(outputlist_results_outer, id_nr = NA, ...) {
   # Correlate predictions and observed help(all_of)
   chisq <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
 
-  fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate)
+  fisher <- stats::fisher.test(predy_y$truth,
+                               predy_y$estimate,
+                               ...)
 
 
   accuracy     <- yardstick::accuracy(predy_y, truth, estimate, ...)
@@ -144,7 +149,7 @@ classification_results_multi <- function(outputlist_results_outer, id_nr = NA, .
 
   chisq <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
 
-  fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate)
+  fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate, ...)
 
 
   accuracy     <- yardstick::accuracy(predy_y, truth, estimate, ...)
@@ -602,8 +607,8 @@ summarize_tune_results_rf <- function(object,
 #' final_model, model_description chisq and fishers test as well as evaluation measures, e.g., including accuracy,
 #' f_meas and roc_auc (for details on these measures see the yardstick r-package documentation).
 #' @examples
-#' #Examines how well the embeddings from column "harmonywords" in 
-#' #Language_based_assessment_data_8 can binarily classify gender. 
+#' #Examines how well the embeddings from column "harmonywords" in
+#' #Language_based_assessment_data_8 can binarily classify gender.
 #'
 #' \dontrun{
 #' trained_model <- textTrainRandomForest(
@@ -614,15 +619,15 @@ summarize_tune_results_rf <- function(object,
 #'   min_n = c(1), # this is short because of testing
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
-#' 
-#' 
-#' # Examine results (t-value, degree of freedom (df), p-value, 
+#'
+#'
+#' # Examine results (t-value, degree of freedom (df), p-value,
 #' # alternative-hypothesis, confidence interval, correlation coefficient).
-#'  
+#'
 #' trained_model$results
 #' }
-#' @seealso See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and 
-#' \code{\link{textTrainRegression}}. 
+#' @seealso See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and
+#' \code{\link{textTrainRegression}}.
 #' @importFrom stats cor.test na.omit chisq.test fisher.test complete.cases
 #' @importFrom dplyr select bind_cols starts_with filter arrange rename
 #' @importFrom tibble as_tibble
@@ -826,7 +831,8 @@ textTrainRandomForest <- function(x,
     purrr::map(na.omit)
 
   # Get  predictions and evaluation results help(full_join)
-  results_collected <- classification_results(outputlist_results_outer = outputlist_results_outer, id_nr, ...)
+  results_collected <- classification_results(outputlist_results_outer = outputlist_results_outer,
+                                              id_nr, ...)
   names(results_collected) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
 
 
