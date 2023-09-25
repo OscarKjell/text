@@ -28,6 +28,7 @@ textTrainRandomForest(
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
   save_output = "all",
+  simulate.p.value = FALSE,
   seed = 2020,
   ...
 )
@@ -102,6 +103,9 @@ only on unix, not windows). Hence it makes the analyses considerably faster to r
 \item{save_output}{(character) Option not to save all output; default "all". See also "only_results" and
 "only_results_predictions".}
 
+\item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
+in larger than 2 × 2 tables.}
+
 \item{seed}{(numeric) Set different seed (default = 2020).}
 
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
@@ -115,8 +119,8 @@ f_meas and roc_auc (for details on these measures see the yardstick r-package do
 Train word embeddings to a categorical variable using random forest.
 }
 \examples{
-#Examines how well the embeddings from column "harmonywords" in 
-#Language_based_assessment_data_8 can binarily classify gender. 
+#Examines how well the embeddings from column "harmonywords" in
+#Language_based_assessment_data_8 can binarily classify gender.
 
 \dontrun{
 trained_model <- textTrainRandomForest(
@@ -129,13 +133,13 @@ trained_model <- textTrainRandomForest(
 )
 
 
-# Examine results (t-value, degree of freedom (df), p-value, 
+# Examine results (t-value, degree of freedom (df), p-value,
 # alternative-hypothesis, confidence interval, correlation coefficient).
- 
+
 trained_model$results
 }
 }
 \seealso{
-See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and 
+See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and
 \code{\link{textTrainRegression}}.
 }

@@ -29,6 +29,7 @@ textTrainRegression(
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
   save_output = "all",
+  simulate.p.value = FALSE,
   seed = 2020,
   ...
 )
@@ -112,14 +113,17 @@ can set to "spearman" or "kendall").}
 \item{save_output}{(character) Option not to save all output; default = "all". see also "only_results"
 and "only_results_predictions".}
 
+\item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
+in larger than 2 × 2 tables.}
+
 \item{seed}{(numeric) Set different seed (default = 2020).}
 
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
 \value{
 A (one-sided) correlation test between predicted and observed values; tibble
-of predicted values (t-value, degree of freedom (df), p-value, 
- alternative-hypothesis, confidence interval, correlation coefficient), as well as information about 
+of predicted values (t-value, degree of freedom (df), p-value,
+ alternative-hypothesis, confidence interval, correlation coefficient), as well as information about
  the model (preprossing_recipe, final_model and model_description).
 }
 \description{
@@ -127,7 +131,7 @@ Train word embeddings to a numeric variable.
 }
 \examples{
 #Examines how well the embeddings from the column "harmonytext" can
-#predict the numerical values in the column "hilstotal". 
+#predict the numerical values in the column "hilstotal".
 
 \dontrun{
 trained_model <- textTrainRegression(
@@ -136,7 +140,7 @@ trained_model <- textTrainRegression(
   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 )
 
-# Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis, 
+# Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis,
 # confidence interval, correlation coefficient).
 
 trained_model$results

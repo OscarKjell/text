@@ -55,6 +55,8 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
 #'
 #' @param outputlist_results_outer Results from outer predictions.
 #' @param id_nr ID numbers
+#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
+#' in larger than 2 × 2 tables.
 #' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
 #' @importFrom  tidyr unnest
 #' @importFrom  tibble is_tibble
@@ -63,8 +65,9 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
 #' @importFrom  yardstick accuracy bal_accuracy sens spec precision kap f_meas roc_auc rmse rsq
 #' @importFrom  ggplot2 autoplot
 #' @noRd
-classification_results<- function(outputlist_results_outer,
-                                   id_nr = NA,
+classification_results <- function(outputlist_results_outer,
+                                  id_nr = NA,
+                                  simulate.p.value = simulate.p.value,
                                    ...) {
   # Unnest predictions and y
   predy_y <- tibble::tibble(
@@ -85,7 +88,7 @@ classification_results<- function(outputlist_results_outer,
 
   fisher <- stats::fisher.test(predy_y$truth,
                                predy_y$estimate,
-                               ...)
+                               simulate.p.value = simulate.p.value)
 
 
   accuracy     <- yardstick::accuracy(predy_y, truth, estimate, ...)
@@ -121,6 +124,8 @@ classification_results<- function(outputlist_results_outer,
 #'
 #' @param outputlist_results_outer Results from outer predictions.
 #' @param id_nr ID numbers
+#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
+#' in larger than 2 × 2 tables.
 #' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
 #' @importFrom  tidyr unnest
 #' @importFrom  tibble is_tibble
@@ -129,7 +134,10 @@ classification_results<- function(outputlist_results_outer,
 #' @importFrom  yardstick accuracy bal_accuracy sens spec precision kap f_meas roc_auc rmse rsq
 #' @importFrom  ggplot2 autoplot
 #' @noRd
-classification_results_multi <- function(outputlist_results_outer, id_nr = NA, ...) {
+classification_results_multi <- function(outputlist_results_outer,
+                                         id_nr = NA,
+                                         simulate.p.value = FALSE,
+                                         ...) {
   predy_y <- tibble::tibble(
     tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
     tidyr::unnest(outputlist_results_outer$estimate, cols = c(estimate)),
@@ -149,7 +157,9 @@ classification_results_multi <- function(outputlist_results_outer, id_nr = NA, .
 
   chisq <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
 
-  fisher <- stats::fisher.test(predy_y$truth, predy_y$estimate, ...)
+  fisher <- stats::fisher.test(predy_y$truth,
+                               predy_y$estimate,
+                               simulate.p.value = simulate.p.value)
 
 
   accuracy     <- yardstick::accuracy(predy_y, truth, estimate, ...)
@@ -601,6 +611,8 @@ summarize_tune_results_rf <- function(object,
 #'   "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output (character) Option not to save all output; default "all". See also "only_results" and
 #' "only_results_predictions".
+#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
+#' in larger than 2 × 2 tables.
 #' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe,
@@ -664,6 +676,7 @@ textTrainRandomForest <- function(x,
                                   model_description = "Consider writing a description of your model here",
                                   multi_cores = "multi_cores_sys_default",
                                   save_output = "all",
+                                  simulate.p.value = FALSE,
                                   seed = 2020,
                                   ...) {
   T1_textTrainRandomForest <- Sys.time()
@@ -832,7 +845,9 @@ textTrainRandomForest <- function(x,
 
   # Get  predictions and evaluation results help(full_join)
   results_collected <- classification_results(outputlist_results_outer = outputlist_results_outer,
-                                              id_nr, ...)
+                                              id_nr,
+                                              simulate.p.value = simulate.p.value,
+                                              ...)
   names(results_collected) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
 
 

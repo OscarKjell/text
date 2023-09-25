@@ -572,7 +572,7 @@ summarize_tune_results <- function(object,
 #' For more information see validation_split in rsample.
 #' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
 #' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner
-#' cross-validation loop (default = 4). 
+#' cross-validation loop (default = 4).
 #' @param eval_measure (character) Type of evaluative measure to select models from. Default = "rmse" for regression and
 #' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
 #'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
@@ -587,7 +587,7 @@ summarize_tune_results <- function(object,
 #' that selects the number of PCA components based on number  of participants and feature (word embedding dimensions)
 #' in the data. The formula is:
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
-#' @param penalty (numeric) Hyper parameter that is tuned (default = 10^seq(-16,16)). 
+#' @param penalty (numeric) Hyper parameter that is tuned (default = 10^seq(-16,16)).
 #' @param mixture A number between 0 and 1 (inclusive) that reflects the proportion of L1 regularization
 #' (i.e. lasso) in the model (for more information see the linear_reg-function in the parsnip-package).
 #' When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
@@ -606,16 +606,18 @@ summarize_tune_results <- function(object,
 #'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output (character) Option not to save all output; default = "all". see also "only_results"
 #'  and "only_results_predictions".
+#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
+#' in larger than 2 × 2 tables.
 #' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A (one-sided) correlation test between predicted and observed values; tibble
-#' of predicted values (t-value, degree of freedom (df), p-value, 
-#'  alternative-hypothesis, confidence interval, correlation coefficient), as well as information about 
+#' of predicted values (t-value, degree of freedom (df), p-value,
+#'  alternative-hypothesis, confidence interval, correlation coefficient), as well as information about
 #'  the model (preprossing_recipe, final_model and model_description).
 #' @examples
 #' #Examines how well the embeddings from the column "harmonytext" can
-#' #predict the numerical values in the column "hilstotal". 
-#' 
+#' #predict the numerical values in the column "hilstotal".
+#'
 #' \dontrun{
 #' trained_model <- textTrainRegression(
 #'   x = word_embeddings_4$texts$harmonytext,
@@ -623,13 +625,13 @@ summarize_tune_results <- function(object,
 #'   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 #' )
 #'
-#' # Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis, 
+#' # Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis,
 #' # confidence interval, correlation coefficient).
-#' 
+#'
 #' trained_model$results
 #' }
 #' @seealso See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and
-#' \code{\link{textTrainRandomForest}}. 
+#' \code{\link{textTrainRandomForest}}.
 #' @importFrom stats cor.test na.omit lm
 #' @importFrom dplyr bind_cols select starts_with filter all_of
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
@@ -665,6 +667,7 @@ textTrainRegression <- function(x,
                                 model_description = "Consider writing a description of your model here",
                                 multi_cores = "multi_cores_sys_default",
                                 save_output = "all",
+                                simulate.p.value = FALSE,
                                 seed = 2020,
                                 ...) {
   T1_textTrainRegression <- Sys.time()
@@ -867,7 +870,9 @@ textTrainRegression <- function(x,
     # Remove the predictions from list
     collected_results[[1]] <- NULL
   } else if (model == "multinomial") {
-    collected_results <- classification_results_multi(outputlist_results_outer = outputlist_results_outer, ...
+    collected_results <- classification_results_multi(outputlist_results_outer = outputlist_results_outer,
+                                                      simulate.p.value = simulate.p.value,
+                                                      ...
     )
 
     #  Save predictions outside list to make similar structure as model == regression output.
