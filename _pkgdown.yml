@@ -68,6 +68,8 @@ reference:
     - textTrainLists
     - textTrainRegression
     - textTrainRandomForest
+    - textTrainN
+    - textTrainNPlot
 - title: Predict from word embeddings
   contents:
     - textPredict
