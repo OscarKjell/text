@@ -1,12 +1,10 @@
-import os, sys
-
 # Paths in python to task_finetune is set in R function
 from task_finetune import main as task_finetuner
 from run_mlm import main as mlm_finetuner
-import numpy as np
 import json
 
-def hgTransformerMLM(json_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, **kwargs):
+
+def hgTransformerMLM(json_path, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, **kwargs):
     """
     Simple Python method for MLM fine tuning pretrained Hugging Face models
     
@@ -14,7 +12,7 @@ def hgTransformerMLM(json_path, text_outcome_df, text_outcome_df_val, text_outco
     ----------
     json_path : str
         Path to the json file containing the arguments for fine tuning model
-    text_outcome_df : pandas dataframe
+    text_outcome_df_train : pandas dataframe
         Dataframe containing the text and outcome variables for training
     text_outcome_df_val : pandas dataframe
         Dataframe containing the text and outcome variables for validation
@@ -26,9 +24,10 @@ def hgTransformerMLM(json_path, text_outcome_df, text_outcome_df_val, text_outco
     None
     """
     args = json.load(open(json_path))
-    return mlm_finetuner(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, **kwargs)
+    return mlm_finetuner(args, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, **kwargs)
 
-def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, 
+
+def hgTransformerFineTune(json_path, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, 
                         is_regression = True, label_names = None, **kwargs):
 
     """
@@ -38,7 +37,7 @@ def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_
     ----------
     json_path : str
         Path to the json file containing the arguments for fine tuning model
-    text_outcome_df : pandas dataframe
+    text_outcome_df_train : pandas dataframe
         Dataframe containing the text and outcome variables for training
     text_outcome_df_val : pandas dataframe
         Dataframe containing the text and outcome variables for validation
@@ -55,7 +54,7 @@ def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_
     """
 
     args = json.load(open(json_path))
-    return task_finetuner(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, label_names, **kwargs)
+    return task_finetuner(args, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, is_regression, label_names, **kwargs)
      
     
 
