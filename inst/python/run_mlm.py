@@ -202,7 +202,7 @@ class DataTrainingArguments:
     streaming: bool = field(default=False, metadata={"help": "Enable streaming mode"})
 
 
-def main(args=None, text_outcome_df=None, text_outcome_df_val=None, text_outcome_df_test=None, **kwargs):
+def main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, **kwargs):
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
@@ -216,10 +216,6 @@ def main(args=None, text_outcome_df=None, text_outcome_df_val=None, text_outcome
         if i in args_dict: args_dict[i] = kwargs[i]
 
     model_args, data_args, training_args = parser.parse_dict(args = args_dict)
-
-    # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
-    # information sent is the one passed as arguments along with your Python/PyTorch versions.
-    # send_example_telemetry("run_mlm", model_args, data_args)
 
     # Setup logging
     logging.basicConfig(
@@ -275,7 +271,7 @@ def main(args=None, text_outcome_df=None, text_outcome_df_val=None, text_outcome
     # In distributed training, the load_dataset function guarantee that only one local process can concurrently
     # download the dataset.
     
-    from datasets import Dataset, DatasetDict, ClassLabel
+    from datasets import Dataset, DatasetDict
 
     dataset_dict = {"train": Dataset.from_pandas(text_outcome_df), "validation": Dataset.from_pandas(text_outcome_df_val), 
                     "test": Dataset.from_pandas(text_outcome_df_test)}
