@@ -4,7 +4,7 @@ from run_mlm import main as mlm_finetuner
 import json
 
 
-def hgTransformerMLM(json_path, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, **kwargs):
+def hgTransformerMLM(json_path, text_df_train, text_df_val, text_df_test, **kwargs):
     """
     Simple Python method for MLM fine tuning pretrained Hugging Face models
     
@@ -12,19 +12,19 @@ def hgTransformerMLM(json_path, text_outcome_df_train, text_outcome_df_val, text
     ----------
     json_path : str
         Path to the json file containing the arguments for fine tuning model
-    text_outcome_df_train : pandas dataframe
-        Dataframe containing the text and outcome variables for training
-    text_outcome_df_val : pandas dataframe
-        Dataframe containing the text and outcome variables for validation
-    text_outcome_df_test : pandas dataframe
-        Dataframe containing the text and outcome variables for testing
+    text_df_train : pandas dataframe
+        Dataframe containing the text for training
+    text_df_val : pandas dataframe
+        Dataframe containing the text for validation
+    text_df_test : pandas dataframe
+        Dataframe containing the text for testing
         
     Returns
     -------
     None
     """
     args = json.load(open(json_path))
-    return mlm_finetuner(args, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, **kwargs)
+    return mlm_finetuner(args, text_df_train, text_df_val, text_df_test, **kwargs)
 
 
 def hgTransformerFineTune(json_path, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, 
