@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_5_textTrainN.R
 \name{textTrainN}
 \alias{textTrainN}
-\title{Compute cross-validated correlations for different sample-sizes of a data set. 
+\title{(experimental) Compute cross-validated correlations for different sample-sizes of a data set. 
 The cross-validation process can be repeated several times to enhance the reliability of the evaluation.}
 \usage{
 textTrainN(
@@ -23,7 +23,8 @@ If several word embedding are provided in a list they will be concatenated.}
 the datapoints). The datapoints in each sample are chosen randomly for each new sample.}
 
 \item{n_cross_val}{(numeric) Value that determines the number of times to repeat the cross-validation.
-(default = 1, i.e., cross-validation is only performed once).}
+(default = 1, i.e., cross-validation is only performed once). Warning: The training process gets proportionately slower to the number of cross-validations, 
+resulting in a time complexity that increases with a factor of n (n cross-validations).}
 
 \item{seed}{(numeric) Set different seed (default = 2023).}
 }
@@ -33,7 +34,7 @@ along with standard-deviation and mean correlation is included in the tibble. Th
 visualised via the textTrainNPlot function.
 }
 \description{
-Compute cross-validated correlations for different sample-sizes of a data set. 
+(experimental) Compute cross-validated correlations for different sample-sizes of a data set. 
 The cross-validation process can be repeated several times to enhance the reliability of the evaluation.
 }
 \examples{

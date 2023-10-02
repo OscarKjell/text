@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_5_textTrainN.R
 \name{textTrainNPlot}
 \alias{textTrainNPlot}
-\title{Plot cross-validated correlation coefficients across different sample-sizes from the object
+\title{(experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
 returned by the textTrainN function. If the number of cross-validations exceed one, then 
 error-bars will be included in the plot.}
 \usage{
@@ -66,11 +66,11 @@ A plot with correlation coefficient on y-axis and sample size in quantity or per
 If number och cross-validations exceed 1, then error bars measuring standard deviations will be plotted.
 }
 \description{
-Plot cross-validated correlation coefficients across different sample-sizes from the object
+(experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
 returned by the textTrainN function. If the number of cross-validations exceed one, then 
 error-bars will be included in the plot.
 }
-\section{Figures}{
+\section{Plot Example}{
  Example of a plot created by textTrainNPlot. 
 \if{html}{\figure{textTrainNPlot.image.png}{options: width=100\%}}
 }
