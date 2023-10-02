@@ -70,7 +70,7 @@ Plot cross-validated correlation coefficients across different sample-sizes from
 returned by the textTrainN function. If the number of cross-validations exceed one, then 
 error-bars will be included in the plot.
 }
-\section{Figures}{
+\section{Plot Example}{
  Example of a plot created by textTrainNPlot. 
 \if{html}{\figure{textTrainNPlot.image.png}{options: width=100\%}}
 }
