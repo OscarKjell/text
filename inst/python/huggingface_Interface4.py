@@ -1,9 +1,32 @@
 import os, sys
 
 # Paths in python to task_finetune is set in R function
-from task_finetune import main
+from task_finetune import main as task_finetuner
+from run_mlm import main as mlm_finetuner
 import numpy as np
 import json
+
+def hgTransformerMLM(json_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, **kwargs):
+    """
+    Simple Python method for MLM fine tuning pretrained Hugging Face models
+    
+    Parameters
+    ----------
+    json_path : str
+        Path to the json file containing the arguments for fine tuning model
+    text_outcome_df : pandas dataframe
+        Dataframe containing the text and outcome variables for training
+    text_outcome_df_val : pandas dataframe
+        Dataframe containing the text and outcome variables for validation
+    text_outcome_df_test : pandas dataframe
+        Dataframe containing the text and outcome variables for testing
+        
+    Returns
+    -------
+    None
+    """
+    args = json.load(open(json_path))
+    return mlm_finetuner(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, **kwargs)
 
 def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_outcome_df_test, 
                         is_regression = True, label_names = None, **kwargs):
@@ -32,7 +55,7 @@ def hgTransformerFineTune(json_path, text_outcome_df, text_outcome_df_val, text_
     """
 
     args = json.load(open(json_path))
-    return main(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, label_names, **kwargs)
+    return task_finetuner(args, text_outcome_df, text_outcome_df_val, text_outcome_df_test, is_regression, label_names, **kwargs)
      
     
 
