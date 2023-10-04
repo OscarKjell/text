@@ -42,7 +42,7 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 
 #### textTrainN function ####
 
-#' Compute cross-validated correlations for different sample-sizes of a data set. 
+#' (experimental) Compute cross-validated correlations for different sample-sizes of a data set. 
 #' The cross-validation process can be repeated several times to enhance the reliability of the evaluation.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). 
 #' If several word embedding are provided in a list they will be concatenated.
@@ -50,7 +50,8 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #' @param sample_percents (numeric) Numeric vector that specifies the percentages of the total number of data points to include in each sample (default = c(25,50,75,100), i.e., correlations are evaluated for 25%%,50%%,75%% and 100%% of 
 #' the datapoints). The datapoints in each sample are chosen randomly for each new sample.  
 #' @param n_cross_val (numeric) Value that determines the number of times to repeat the cross-validation.
-#' (default = 1, i.e., cross-validation is only performed once). 
+#' (default = 1, i.e., cross-validation is only performed once). Warning: The training process gets proportionately slower to the number of cross-validations, 
+#' resulting in a time complexity that increases with a factor of n (n cross-validations).
 #' @param seed (numeric) Set different seed (default = 2023).
 #' @return A tibble containing correlations for each sample. If n_cross_val > 1, correlations for each new cross-validation, 
 #' along with standard-deviation and mean correlation is included in the tibble. The information in the tibble is 
@@ -151,7 +152,7 @@ textTrainN <- function(
 
 #### textTrainNPlot function #### 
 
-#' Plot cross-validated correlation coefficients across different sample-sizes from the object
+#' (experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
 #' returned by the textTrainN function. If the number of cross-validations exceed one, then 
 #' error-bars will be included in the plot. 
 #' @param tibble (tibble) Object returned by the function textTrainN.
