@@ -25,7 +25,8 @@ textPredictEntireProcedure(
 
 \item{model_platform}{(character) Either "github" or "local" (default = "github").}
 
-\item{model_reference}{(character) Link to github-model.}
+\item{model_reference}{(character) Link to github-model (default = "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS",
+a model that predicts harmony in life score).}
 
 \item{save_model}{(boolean) If set to true, the model will be saved in work-directory (default = FALSE). If TRUE, then argument "model_name" must be defined.}
 
@@ -80,5 +81,5 @@ on the specific pre-trained model.
 
 }
 \seealso{
-See \code{\link{textPredict}} and \code{\link{textpredictAll}}.
+See \code{\link{textPredict}}.
 }

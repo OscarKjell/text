@@ -3,7 +3,8 @@
 #' @param text_to_predict (character) Text to predict. If this argument is specified, then argument "premade_embeddings" must be set to NULL (default = NULL).
 #' @param premade_embeddings (Embeddings from e.g., textEmbed) Embeddings to predict. If this argument is specified, then argument "texts" must be set to NULL (default = NULL).
 #' @param model_platform (character) Either "github" or "local" (default = "github"). 
-#' @param model_reference (character) Link to github-model. 
+#' @param model_reference (character) Link to github-model (default = "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS",
+#' a model that predicts harmony in life score). 
 #' @param save_model (boolean) If set to true, the model will be saved in work-directory (default = FALSE). If TRUE, then argument "model_name" must be defined.  
 #' @param model_name (character) Optional. If the 'save_model' argument is set to TRUE and you wish to assign a custom name to your model, 
 #' provide a file path along with the desired filename, for example, 'C:/Users/Name/Models/linear_model.RDS' (default is NULL). If this is not defined 
@@ -44,7 +45,7 @@
 #'                              type = "prob")
 #' }
 #' 
-#' @seealso See \code{\link{textPredict}} and \code{\link{textpredictAll}}. 
+#' @seealso See \code{\link{textPredict}}. 
 #' @export
 textPredictEntireProcedure <- function(
     text_to_predict = NULL,
@@ -89,6 +90,12 @@ textPredictEntireProcedure <- function(
     ###### Create embeddings based on information stored in the pre-trained model ######
   
     if (!is.null(text_to_predict) & is.null(premade_embeddings)){
+      
+      # Save default values for later use 
+      default_max_token_to_sentence <- 4
+      default_aggregation_from_layers_to_tokens <- "concatenate"
+      default_aggregation_from_tokens_to_texts <- "mean"
+      
       # Finds the line number for the line with "impute_missing_setting" (the line above the line we're looking for, which is the model description)
       line_number <- grep("impute_missing_setting", loaded_model$model_description)
       new_line_number <- line_number + 1
@@ -99,15 +106,25 @@ textPredictEntireProcedure <- function(
       
       # Extracts the max_token_to_sentence, aggregation_from_layers_to_tokens, aggregation_from_tokens_to_texts from the model. 
       input_string <- loaded_model$model_description[new_line_number]
-      max_token_to_sentence <- as.numeric(stringr::str_extract(input_string, "(?<=max_token_to_sentence: )\\d+"))
-      aggregation_from_layers_to_tokens <- stringr::str_extract(input_string, "(?<=aggregation_from_layers_to_tokens = )\\S+")
-      aggregation_from_tokens_to_texts <- stringr::str_extract(input_string, "(?<=aggregation_from_tokens_to_texts = )\\S+")
       
-      # Doublechecks that the values aren't NA's. If so, the default arguments of the function are inserted. 
-      max_token_to_sentence <- ifelse(!is.na(max_token_to_sentence), max_token_to_sentence, 4)
-      aggregation_from_layers_to_tokens <- ifelse(!is.na(aggregation_from_layers_to_tokens), aggregation_from_layers_to_tokens, "concatenate")
-      aggregation_from_tokens_to_texts <- ifelse(!is.na(aggregation_from_tokens_to_texts), aggregation_from_tokens_to_texts, "mean")
+      max_token_to_sentence <- as.numeric(sub(".*max_token_to_sentence: (\\d+).*", "\\1", input_string))
       
+      aggregation_from_layers_to_tokens <- sub(".*aggregation_from_layers_to_tokens = (\\S+).*", "\\1", input_string)
+
+      aggregation_from_tokens_to_texts <- sub(".*aggregation_from_tokens_to_texts = (\\S+).*", "\\1", input_string)
+      
+      # Check if the variables match input_string and assign the default values
+      if (max_token_to_sentence == input_string) {
+        max_token_to_sentence <- default_max_token_to_sentence
+      }
+      
+      if (aggregation_from_layers_to_tokens == input_string) {
+        aggregation_from_layers_to_tokens <- default_aggregation_from_layers_to_tokens
+      }
+      
+      if (aggregation_from_tokens_to_texts == input_string) {
+        aggregation_from_tokens_to_texts <- default_aggregation_from_tokens_to_texts
+      }
       # Create embeddings based on the extracted information from the model. 
       embeddings <- textEmbed(texts = text_to_predict,
                               model = model_type, 
@@ -138,7 +155,6 @@ textPredictEntireProcedure <- function(
     return(predictions)
   
 }
-
 
 
 
