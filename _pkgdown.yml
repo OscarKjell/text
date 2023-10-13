@@ -70,6 +70,9 @@ reference:
     - textTrainRandomForest
     - textTrainN
     - textTrainNPlot
+- title: Predict from text
+  contents:  
+    - textPredictEntireProcedure
 - title: Predict from word embeddings
   contents:
     - textPredict
