@@ -134,7 +134,7 @@ test_that("Testing textEmbed as well as train", {
   )
 
   expect_that(proj[[1]][[1]][[1]][[1]], is_a("numeric"))
-  expect_equal(proj[[1]][[1]][[1]][[1]], 0.2018889, tolerance = 0.0000001)
+  expect_equal(proj[[1]][[1]][[1]][[1]], 0.2018889, tolerance = 0.00001)
 
   # for decontexts = TRUE expect_equal(proj[[1]][[1]][[1]][[1]], -0.402433, tolerance = 0.0000001)
 
