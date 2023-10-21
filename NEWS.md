@@ -2,6 +2,14 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# text 1.1
+## Functions
+- textEmbed() is now fully embedding one column at the time; and reducing word_types for each column. This can break some code; and produc different results in plots where word_types and based on several embedded columns.
+- textTrainN() and textTrainNPlot evaluates prediction accuracy across cases. 
+
+
+
 # text 1.0
 ## Function
 - multinomial regression in `textTrainRegression()`

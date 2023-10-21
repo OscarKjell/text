@@ -64,22 +64,22 @@ Options (ordered from less logging to more logging): critical, error, warning, i
 \item{sort}{(boolean) If TRUE sort the output to tidy format. (default = TRUE)}
 }
 \value{
-The textEmbedRawLayers() takes text as input, and returns the hidden states for each token of the text, 
-including the [CLS] and the [SEP]. 
+The textEmbedRawLayers() takes text as input, and returns the hidden states for each token of the text,
+including the [CLS] and the [SEP].
 Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 }
 \description{
 Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
 }
 \examples{
-# Get hidden states of layer 11 and 12 for "I am fine". 
+# Get hidden states of layer 11 and 12 for "I am fine".
 \dontrun{
 imf_embeddings_11_12 <- textEmbedRawLayers(
                                   "I am fine",
                                   layers = 11:12
 )
 
-# Show hidden states of layer 11 and 12. 
+# Show hidden states of layer 11 and 12.
 imf_embeddings_11_12
 }
 }

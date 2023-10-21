@@ -15,7 +15,7 @@ test_that("Testing textEmbed as well as train", {
   expect_equal(descr2[[2]][[1]], 2482)
   expect_equal(descr2[[3]][[1]], 62.05)
 
-  harmony_word_embeddings <- textEmbed(Language_based_assessment_data_8[1:20, 1:2],
+  harmony_word_embeddings <- text::textEmbed(Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",
     dim_name = TRUE,
     layers = c(11:12),
@@ -27,13 +27,15 @@ test_that("Testing textEmbed as well as train", {
   textModelsRemove("bert-base-uncased")
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
-  dim1for1 <- harmony_word_embeddings$word_types[[3]][harmony_word_embeddings$word_types[[1]]=="you"]
-  expect_equal(dim1for1, -0.389898, tolerance = 0.00001)
 
-  dim1for2 <- harmony_word_embeddings$word_types[[3]][harmony_word_embeddings$word_types[[1]]=="!"]
-  expect_equal(dim1for2, 0.3234321, tolerance = 0.00001)
-  dim1for3 <- harmony_word_embeddings$word_types[[3]][harmony_word_embeddings$word_types[[1]]=="-"]
-  expect_equal(dim1for3, 0.2229673, tolerance = 0.00001)
+  dim1for1 <- harmony_word_embeddings$word_types$harmonytexts[[3]][harmony_word_embeddings$word_types$harmonytexts$words=="you"]
+  expect_equal(dim1for1, -0.2809616, tolerance = 0.00001)
+
+  dim1for1 <- harmony_word_embeddings$word_types$satisfactiontexts[[3]][harmony_word_embeddings$word_types$harmonytexts$words=="you"]
+  expect_equal(dim1for1, 0.1417716, tolerance = 0.00001)
+
+  dim1for1 <- harmony_word_embeddings$word_types$harmonytexts[[3]][harmony_word_embeddings$word_types$harmonytexts$words=="-"]
+  expect_equal(dim1for1, 0.5637481, tolerance = 0.00001)
 
   text_train_results1 <- textTrainRegression(
     x = harmony_word_embeddings$texts["satisfactiontexts"],
@@ -118,7 +120,7 @@ test_that("Testing textEmbed as well as train", {
   proj <- textProjection(
     words = Language_based_assessment_data_8[1],
     word_embeddings = harmony_word_embeddings$texts$satisfactiontexts,
-    word_types_embeddings = harmony_word_embeddings$word_type,
+    word_types_embeddings = harmony_word_embeddings$word_type$satisfactiontexts,
     x = Language_based_assessment_data_8$hilstotal,
     y = Language_based_assessment_data_8$swlstotal,
     pca = NULL,
@@ -132,7 +134,7 @@ test_that("Testing textEmbed as well as train", {
   )
 
   expect_that(proj[[1]][[1]][[1]][[1]], is_a("numeric"))
-  expect_equal(proj[[1]][[1]][[1]][[1]], 0.2005167, tolerance = 0.0000001)
+  expect_equal(proj[[1]][[1]][[1]][[1]], 0.2018889, tolerance = 0.0000001)
 
   # for decontexts = TRUE expect_equal(proj[[1]][[1]][[1]][[1]], -0.402433, tolerance = 0.0000001)
 
