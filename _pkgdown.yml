@@ -73,7 +73,7 @@ reference:
 - title: Predict from text
   contents:  
     - textPredictEntireProcedure
-- title: Predict from word embeddings
+- title: Predict from word embeddings or text
   contents:
     - textPredict
     - textPredictTest
