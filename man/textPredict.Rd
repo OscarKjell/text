@@ -2,14 +2,23 @@
 % Please edit documentation in R/2_4_textPredict.R
 \name{textPredict}
 \alias{textPredict}
-\title{Trained models created by e.g., textTrain() can be used to predict new scores or classifications using textPredict.}
+\title{Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classifications from embeddings or text using textPredict.}
 \usage{
 textPredict(
-  model_info,
-  word_embeddings,
+  model_info = NULL,
+  word_embeddings = NULL,
   x_append = NULL,
   type = NULL,
   dim_names = TRUE,
+  texts = NULL,
+  premade_embeddings = NULL,
+  model_platform = "github",
+  model_reference =
+    "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS",
+  save_model = FALSE,
+  model_name = NULL,
+  threshold = NULL,
+  view_prob = FALSE,
   ...
 )
 }
@@ -17,39 +26,79 @@ textPredict(
 \item{model_info}{(model object) Model info (e.g., saved output from textTrain,
 textTrainRegression or textRandomForest).}
 
-\item{word_embeddings}{(tibble) Word embeddings.}
+\item{word_embeddings}{(tibble) Embeddings from e.g., textEmbed().}
 
 \item{x_append}{(tibble) Variables to be appended after the word embeddings (x).}
 
-\item{type}{(character) Type of prediction; e.g., "prob", "class".}
+\item{type}{(character) Defines the type of prediction when implementing logistic models. Either probabilities or
+classifications are returned (default = "class". For probabilities use "prob").}
 
 \item{dim_names}{(boolean) Account for specific dimension names from textEmbed()
 (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.}
 
+\item{texts}{(character) Text to predict. If this argument is specified, then arguments "word_embeddings" and "premade embeddings" cannot be defined (default = NULL).}
+
+\item{premade_embeddings}{(Embeddings from e.g., textEmbed) Use premade embeddings for prediction. If this argument is specified, then argument "texts" must be set to NULL (default = NULL).}
+
+\item{model_platform}{(character) Either "github" or "local" (default = "github").}
+
+\item{model_reference}{(character) Link to github-model (default = "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS",
+a model that predicts harmony in life score).}
+
+\item{save_model}{(boolean) If set to true, the model will be saved to the work-directory (default = FALSE). If TRUE, then argument "model_name" must be defined.}
+
+\item{model_name}{(character) Optional. If the 'save_model' argument is set to TRUE and you wish to assign a custom name to your model, 
+provide a file path along with the desired filename, for example, 'C:/Users/Name/Models/linear_model.RDS' (default is NULL). If this is not defined 
+but 'save_model' is set to TRUE, the model will be saved as 'imported_model.RDS'.}
+
+\item{threshold}{(numeric) Determine threshold if you are using a logistic model (default = 0.5).}
+
+\item{view_prob}{(boolean) If you are using a logistic model and view_prob is set to TRUE, then both classification and the underlying probabilities will be 
+shown (default = FALSE).}
+
 \item{...}{Setting from stats::predict can be called.}
 }
 \value{
-Predicted scores from word embeddings.
+Predictions from either embeddings or text input.
 }
 \description{
-Trained models created by e.g., textTrain() can be used to predict new scores or classifications using textPredict.
+Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classifications from embeddings or text using textPredict.
 }
 \examples{
-#Apply trained model from the function textTrain to the new data:"satisfactiontexts". 
+
 \dontrun{
 
-predictions <- textPredict(
-  trained_model, 
-  word_embeddings_4$texts$satisfactiontexts
-)
+# Text data from Language_based_assessment_data_8
+text_to_predict = "I am not in harmony in my life as much as I would like to be." 
+
+# Example 1: (predict using embeddings and local model)
+prediction1 <- textPredict(trained_model, 
+                           word_embeddings_4$texts$satisfactiontexts)
+
+# Example 2: (predict using a pretrained github model)
+prediction2 <- textPredict(texts = text_to_predict)
+
+# Example 4: (predict using a pretrained github model and save the model locally)
+prediction3 <- textPredictA(texts = text_to_predict, 
+                            model_platform = "github", 
+                            model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS",
+                            save_model = TRUE)
+                           
+# Example 5: (predict using a pretrained logistic github model and return probabilities and classifications simultaneously)
+prediction4 <- textPredictA(texts = text_to_predict, 
+                            model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_github_model_logistic.RDS",
+                            type = "class",
+                            threshold = 0.7, 
+                            view_prob = TRUE)
 }
+
+\dontrun{
 #Examine the correlation between the predicted values and
 #the Satisfaction with life scale score (pre-included in text).
 
-\dontrun{
 psych::corr.test(
- predictions$word_embeddings__ypred,
+ predictions1$word_embeddings__ypred,
  Language_based_assessment_data_8$swlstotal
 ) 
 }
