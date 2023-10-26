@@ -1,5 +1,5 @@
 
-#' Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classifications from embeddings or text using textPredict. 
+#' Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classes from embeddings or text using textPredict. 
 #'
 #' @param model_info (model object) Model info (e.g., saved output from textTrain,
 #' textTrainRegression or textRandomForest).
@@ -81,6 +81,7 @@ textPredict <- function(model_info = NULL,
                             model_name = NULL,
                             threshold = NULL, 
                             view_prob = FALSE,
+                            aggregate_classification = NULL, 
                             ...) {
   
   # Stop message if user defines both word_embeddings and texts
@@ -185,6 +186,11 @@ textPredict <- function(model_info = NULL,
     class1 <- classes[1]
     class2 <- classes[2]
     
+    # Create column names 
+    class1_col_name <- paste0(class1, "_prob")
+    class2_col_name <- paste0(class2, "_prob")
+    
+    
     # Retrieve the probabilities 
     predicted_scores2 <- data_prepared_with_recipe %>%
       dplyr::bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = "prob")) %>% # , ...
@@ -193,13 +199,18 @@ textPredict <- function(model_info = NULL,
       dplyr::arrange(id_nr) %>%
       dplyr::select(-id_nr)
     
+    # Rename columns 
+    predicted_scores2 <- predicted_scores2 %>%
+      dplyr::rename(
+        !!class1_col_name := 1,
+        !!class2_col_name := 2
+      )
+    
     # If the user desires to only view class, then remove the probabilty columns. 
     if(type == "class" & view_prob == FALSE){
       predicted_scores2 <- predicted_scores2 %>%
-        mutate(predicted_class = ifelse(.pred_male >= threshold, class1, class2)) %>%
+        mutate(predicted_class = ifelse(class1 >= threshold, class1, class2)) %>%
         dplyr::select(predicted_class)
-      
-      
       
       we_names <- paste(word_embeddings_names, collapse = "_", sep = "")
       v_names <- paste(variable_names, collapse = "_", sep = "")
@@ -210,10 +221,12 @@ textPredict <- function(model_info = NULL,
       
       colnames(predicted_scores2) <- paste(we_names, "_", v_names, "_", y_name, "pred", sep = "")
     }
+    
     # If the user desires to view the classes and the probability columns.
     else if(type == "class" & view_prob == TRUE){
       predicted_scores2 <- predicted_scores2 %>%
-        mutate(predicted_class = ifelse(.pred_male >= threshold, class1, class2))
+        mutate(predicted_class = ifelse(class1 >= threshold, class1, class2)) %>%
+        select(predicted_class, everything())
     }
   }
   
