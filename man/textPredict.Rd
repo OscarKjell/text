@@ -19,7 +19,6 @@ textPredict(
   model_name = NULL,
   threshold = NULL,
   view_prob = FALSE,
-  aggregate_classification = NULL,
   ...
 )
 }

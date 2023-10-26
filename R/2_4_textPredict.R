@@ -81,7 +81,6 @@ textPredict <- function(model_info = NULL,
                            model_name = NULL,
                            threshold = NULL, 
                            view_prob = FALSE,
-                           aggregate_classification = NULL, 
                            ...) {
   
   # Stop message if user defines both word_embeddings and texts
