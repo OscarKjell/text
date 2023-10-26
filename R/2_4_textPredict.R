@@ -69,20 +69,20 @@
 #' @importFrom dplyr bind_cols select full_join arrange
 #' @export
 textPredict <- function(model_info = NULL,
-                            word_embeddings = NULL,
-                            x_append = NULL,
-                            type = NULL,
-                            dim_names = TRUE,
-                            texts = NULL,
-                            premade_embeddings = NULL, 
-                            model_platform = "github",
-                            model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS",
-                            save_model = FALSE, 
-                            model_name = NULL,
-                            threshold = NULL, 
-                            view_prob = FALSE,
-                            aggregate_classification = NULL, 
-                            ...) {
+                           word_embeddings = NULL,
+                           x_append = NULL,
+                           type = NULL,
+                           dim_names = TRUE,
+                           texts = NULL,
+                           premade_embeddings = NULL, 
+                           model_platform = "github",
+                           model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS",
+                           save_model = FALSE, 
+                           model_name = NULL,
+                           threshold = NULL, 
+                           view_prob = FALSE,
+                           aggregate_classification = NULL, 
+                           ...) {
   
   # Stop message if user defines both word_embeddings and texts
   if (!is.null(texts) & !is.null(word_embeddings)) {
@@ -100,6 +100,7 @@ textPredict <- function(model_info = NULL,
                                                save_model = save_model, 
                                                model_name = model_name, 
                                                type = type)
+    
     # Retrieve model_info from emb_and_mod object
     model_info <- emb_and_mod$loaded_model
     
@@ -209,7 +210,7 @@ textPredict <- function(model_info = NULL,
     # If the user desires to only view class, then remove the probabilty columns. 
     if(type == "class" & view_prob == FALSE){
       predicted_scores2 <- predicted_scores2 %>%
-        mutate(predicted_class = ifelse(class1 >= threshold, class1, class2)) %>%
+        mutate(predicted_class = ifelse(!!sym(class1_col_name) >= threshold, class1, class2)) %>%
         dplyr::select(predicted_class)
       
       we_names <- paste(word_embeddings_names, collapse = "_", sep = "")
@@ -225,7 +226,7 @@ textPredict <- function(model_info = NULL,
     # If the user desires to view the classes and the probability columns.
     else if(type == "class" & view_prob == TRUE){
       predicted_scores2 <- predicted_scores2 %>%
-        mutate(predicted_class = ifelse(class1 >= threshold, class1, class2)) %>%
+        mutate(predicted_class = ifelse(!!sym(class1_col_name) >= threshold, class1, class2)) %>%
         select(predicted_class, everything())
     }
   }
@@ -265,7 +266,6 @@ textPredict <- function(model_info = NULL,
   
   return(predicted_scores2)
 }
-
 
 #' Predict from several models, selecting the correct input
 #' @param models Object containing several models.
