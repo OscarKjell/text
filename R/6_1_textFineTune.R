@@ -1,4 +1,5 @@
 
+
 #' Task Adapted Pre-Training (EXPERIMENTAL - under development)
 #' @param text_outcome_data A dataframe, where the first column contain text data,
 #' and the second column the to-be-predicted variable (numeric or categorical).
@@ -113,7 +114,7 @@ textFineTuneTask <- function(text_outcome_data,
   hgTransformerFineTune(json_path = json_path1,
                         model_name_or_path = model_name_or_path,
                         output_dir = output_dir,
-                        text_outcome_df = train_data1,
+                        text_outcome_df_train = train_data1,
                         text_outcome_df_val = val_data1,
                         text_outcome_df_test = test_data1,
                         is_regression = is_regression,
