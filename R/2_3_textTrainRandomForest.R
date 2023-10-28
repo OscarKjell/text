@@ -226,8 +226,15 @@ fit_model_accuracy_rf <- function(object,
     xy_recipe <- rsample::analysis(object) %>%
       recipes::recipe(y ~ .) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>% # New
-      recipes::update_role(-id_nr, new_role = "predictor") %>% # New
-      recipes::update_role(y, new_role = "outcome") %>% # New
+      #recipes::update_role(-id_nr, new_role = "predictor") %>% # New
+      recipes::update_role(y, new_role = "outcome") #%>% # New
+
+      if("strata" %in% colnames(data_train)) {
+        xy_recipe <- xy_recipe %>%
+          recipes::update_role(strata, new_role = "strata")
+      }
+
+    xy_recipe <- xy_recipe %>%
       recipes::step_naomit(recipes::all_predictors(), skip = FALSE) # %>%
     # recipes::step_BoxCox(recipes::all_predictors()) %>%
 
@@ -262,8 +269,15 @@ fit_model_accuracy_rf <- function(object,
       recipes::recipe(y ~ .) %>%
       # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(-id_nr, new_role = "predictor") %>%
-      recipes::update_role(y, new_role = "outcome") %>%
+      #recipes::update_role(-id_nr, new_role = "predictor") %>%
+      recipes::update_role(y, new_role = "outcome") #%>%
+
+    if("strata" %in% colnames(data_train)) {
+      xy_recipe <- xy_recipe %>%
+        recipes::update_role(strata, new_role = "strata")
+    }
+
+    xy_recipe <- xy_recipe %>%
       recipes::step_naomit(recipes::all_predictors(), skip = FALSE) %>%
       recipes::step_center(recipes::all_predictors()) %>%
       recipes::step_scale(recipes::all_predictors())
@@ -563,6 +577,8 @@ summarize_tune_results_rf <- function(object,
 }
 
 
+
+
 #' Train word embeddings to a categorical variable using random forest.
 #'
 #' @param x Word embeddings from textEmbed.
@@ -578,11 +594,14 @@ summarize_tune_results_rf <- function(object,
 #' should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds" uses rsample::vfold_cv
 #' to achieve n-folds in both the outer and inner loops.
 #' @param outside_folds (numeric) Number of folds for the outer folds (default = 10).
-#' @param outside_strata_y Variable to stratify according (default "y"; can also set to NULL).
+#' @param inside_folds (numeric) Number of folds for the inner folds (default = 3/4).
+#' @param strata (string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
+#' training set - if you want to stratify according to another variable you can include it as a tibble (please note you
+#' can only add 1 variable to stratify according). Can set it to NULL.
+#' @param outside_strata (boolean) Whether to stratify the outside folds.
 #' @param outside_breaks (numeric) The number of bins wanted to stratify a numeric stratification variable
 #' in the outer cross-validation loop (default = 4).
-#' @param inside_folds (numeric) Number of folds for the inner folds (default = 3/4).
-#' @param inside_strata_y Variable to stratify according (default "y"; can also set to NULL).
+#' @param inside_strata (boolean) Whether to stratify the outside folds.
 #' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable
 #' in the inner cross-validation loop (default = 4).
 #' @param mode_rf Default is "classification" ("regression" is not supported yet).
@@ -659,10 +678,11 @@ textTrainRandomForest <- function(x,
                                   append_first = FALSE,
                                   cv_method = "validation_split",
                                   outside_folds = 10,
-                                  outside_strata_y = "y",
-                                  outside_breaks = 4,
                                   inside_folds = 3 / 4,
-                                  inside_strata_y = "y",
+                                  strata = "y",
+                                  outside_strata = TRUE,
+                                  outside_breaks = 4,
+                                  inside_strata = TRUE,
                                   inside_breaks = 4,
                                   mode_rf = "classification",
                                   preprocess_step_center = FALSE,
@@ -722,6 +742,39 @@ textTrainRandomForest <- function(x,
   xy$id_nr <- c(seq_len(nrow(xy)))
   id_nr <- tibble::as_tibble_col(c(seq_len(nrow(xy))), column_name = "id_nr")
   xy <- tibble::as_tibble(xy[stats::complete.cases(xy), ])
+
+  # Adding strata variable to the data set -- and then calling it "outside_strata"
+  # Which is then called in strata variable, and also made into not a predictor downstream
+  outside_strata_y <- NULL
+  inside_strata_y <- NULL
+  strata_name <- NULL
+
+  if(!is.null(strata)){
+
+    if(tibble::is_tibble(strata)){
+
+      strata_name <- colnames(strata)
+      colnames(strata) <- "strata"
+      xy <- dplyr::bind_cols(xy, strata)
+
+      if(inside_strata){
+        outside_strata_y <- "strata"
+      }
+      if(outside_strata) {
+        inside_strata_y <- "strata"
+      }
+    }
+
+    if(strata[[1]][[1]] == "y"){
+      strata_name = "y"
+      if(inside_strata){
+        outside_strata_y <- "y"
+      }
+      if(outside_strata) {
+        inside_strata_y <- "y"
+      }
+    }
+  }
 
 
   # Cross-Validation help(nested_cv) help(vfold_cv) help(validation_split)
@@ -863,8 +916,14 @@ textTrainRandomForest <- function(x,
     final_recipe <- # xy %>%
       recipes::recipe(y ~ ., xy_all[0, ]) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(-id_nr, new_role = "predictor") %>%
-      recipes::update_role(y, new_role = "outcome") %>%
+      recipes::update_role(y, new_role = "outcome")
+
+    if("strata" %in% colnames(xy_all)) {
+      final_recipe <- final_recipe %>%
+        recipes::update_role(strata, new_role = "strata")
+    }
+
+    final_recipe <- final_recipe %>%
       recipes::step_naomit(recipes::all_predictors(), skip = FALSE) # %>%
     # recipes::step_BoxCox(recipes::all_predictors()) %>%
 
@@ -898,10 +957,15 @@ textTrainRandomForest <- function(x,
   } else {
     final_recipe <- recipes::recipe(y ~ ., xy_all[0, ]) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(-id_nr, new_role = "predictor") %>%
+      #recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome") %>%
       recipes::step_naomit(recipes::all_predictors(), skip = TRUE) # %>%
     # recipes::step_BoxCox(recipes::all_predictors()) %>%
+
+    if("strata" %in% colnames(xy_all)) {
+      final_recipe <- final_recipe %>%
+        recipes::update_role(strata, new_role = "strata")
+    }
 
     if (preprocess_step_center) {
       final_recipe <- recipes::step_center(final_recipe, recipes::all_predictors())
@@ -1035,6 +1099,7 @@ textTrainRandomForest <- function(x,
   }
 
   cv_method_description <- paste("cv_method = ", deparse(cv_method))
+  strata_description <- paste("strata = ", strata_name)
   outside_folds_description <- paste("outside_folds = ", deparse(outside_folds))
   outside_strata_y_description <- paste("outside_strata_y = ", deparse(outside_strata_y))
   inside_folds_description <- paste("inside_folds = ", deparse(inside_folds))
@@ -1068,8 +1133,9 @@ textTrainRandomForest <- function(x,
     y_name,
     cv_method_description,
     outside_folds_description,
-    outside_strata_y_description,
     inside_folds_description,
+    strata_description,
+    outside_strata_y_description,
     inside_strata_y_description,
     mode_rf_description,
     preprocess_step_center,

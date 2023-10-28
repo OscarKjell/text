@@ -11,10 +11,11 @@ textTrainRandomForest(
   append_first = FALSE,
   cv_method = "validation_split",
   outside_folds = 10,
-  outside_strata_y = "y",
-  outside_breaks = 4,
   inside_folds = 3/4,
-  inside_strata_y = "y",
+  strata = "y",
+  outside_strata = TRUE,
+  outside_breaks = 4,
+  inside_strata = TRUE,
   inside_breaks = 4,
   mode_rf = "classification",
   preprocess_step_center = FALSE,
@@ -53,14 +54,18 @@ to achieve n-folds in both the outer and inner loops.}
 
 \item{outside_folds}{(numeric) Number of folds for the outer folds (default = 10).}
 
-\item{outside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
+\item{inside_folds}{(numeric) Number of folds for the inner folds (default = 3/4).}
+
+\item{strata}{(string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
+training set - if you want to stratify according to another variable you can include it as a tibble (please note you
+can only add 1 variable to stratify according). Can set it to NULL.}
+
+\item{outside_strata}{(boolean) Whether to stratify the outside folds.}
 
 \item{outside_breaks}{(numeric) The number of bins wanted to stratify a numeric stratification variable
 in the outer cross-validation loop (default = 4).}
 
-\item{inside_folds}{(numeric) Number of folds for the inner folds (default = 3/4).}
-
-\item{inside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
+\item{inside_strata}{(boolean) Whether to stratify the outside folds.}
 
 \item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable
 in the inner cross-validation loop (default = 4).}

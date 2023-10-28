@@ -47,7 +47,11 @@ fit_model_rmse <- function(object,
     Nvariable_totals <- length(data_train)
     variable_names <- colnames(data_train[(first_n_predictors + 1):(Nvariable_totals - 2)])
   } else {
-    variable_names <- "id_nr"
+    if("strata" %in% colnames(data_train)){
+      variable_names <- c("id_nr", "strata")
+    } else {
+      variable_names <- c("id_nr")
+    }
   }
 
   # Get number of embeddings provided
@@ -67,7 +71,6 @@ fit_model_rmse <- function(object,
     } else if (impute_missing) {
       xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10) # , skip = TRUE
     }
-
 
     if (preprocess_step_center) {
       xy_recipe <- recipes::step_center(xy_recipe, recipes::all_predictors())
@@ -100,8 +103,14 @@ fit_model_rmse <- function(object,
       recipes::recipe(y ~ .) %>%
       # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(-id_nr, new_role = "predictor") %>%
+    #  recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome")
+
+
+    if("strata" %in% colnames(data_train)) {
+      xy_recipe <- xy_recipe %>%
+        recipes::update_role(strata, new_role = "strata")
+      }
 
     if (!impute_missing) {
       xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
@@ -554,25 +563,28 @@ summarize_tune_results <- function(object,
 #' Train word embeddings to a numeric variable.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
 #' provided in a list they will be concatenated.
+#' @param y Numeric variable to predict.
 #' @param x_append (optional) Variables to be appended after the word embeddings (x); if wanting to preappend them before
 #' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL (default = NULL).
 #' @param append_first (boolean) Option to add variables before or after all word embeddings (default = False).
-#' @param y Numeric variable to predict.
-#' @param model Type of model. Default is "regression"; see also "logistic" and "multinomial" for classification.
 #' @param cv_method (character) Cross-validation method to use within a pipeline of nested outer and inner loops
 #' of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
 #' using rsample::validation_split in the inner loop to achieve a development and assessment set (note that
 #' for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds"
 #' uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.
 #' @param outside_folds (numeric) Number of folds for the outer folds (default = 10).
-#' @param outside_strata_y Variable to stratify according (default "y"; can set to NULL).
-#' @param outside_breaks (numeric) The number of bins wanted to stratify a numeric stratification variable in the
-#' outer cross-validation loop (default = 4).
 #' @param inside_folds (numeric) The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
 #' For more information see validation_split in rsample.
-#' @param inside_strata_y Variable to stratify according (default y; can set to NULL).
+#' @param strata (string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
+#' training set - if you want to stratify according to another variable you can include it as a tibble (please note you
+#' can only add 1 variable to stratify according). Can set it to NULL.
+#' @param outside_strata (boolean) Whether to stratify the outside folds.
+#' @param outside_breaks (numeric) The number of bins wanted to stratify a numeric stratification variable in the
+#' outer cross-validation loop (default = 4).
+#' @param inside_strata Whether to stratify the outside folds.
 #' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner
 #' cross-validation loop (default = 4).
+#' @param model Type of model. Default is "regression"; see also "logistic" and "multinomial" for classification.
 #' @param eval_measure (character) Type of evaluative measure to select models from. Default = "rmse" for regression and
 #' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
 #'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
@@ -649,10 +661,11 @@ textTrainRegression <- function(x,
                                 append_first = FALSE,
                                 cv_method = "validation_split",
                                 outside_folds = 10,
-                                outside_strata_y = "y",
-                                outside_breaks = 4,
                                 inside_folds = 3 / 4,
-                                inside_strata_y = "y",
+                                strata = "y",
+                                outside_strata = TRUE,
+                                outside_breaks = 4,
+                                inside_strata = TRUE,
                                 inside_breaks = 4,
                                 model = "regression",
                                 eval_measure = "default",
@@ -718,45 +731,77 @@ textTrainRegression <- function(x,
 
   xy <- dplyr::bind_cols(x2, y)
 
-  # xy <- tibble::as_tibble(xy) xy[1537]
   xy$id_nr <- c(seq_len(nrow(xy)))
+
+  # Adding strata variable to the data set -- and then calling it "outside_strata"
+  # Which is then called in strata variable, and also made into not a predictor downstream
+  outside_strata_y <- NULL
+  inside_strata_y <- NULL
+  strata_name <-  NULL
+  if(!is.null(strata)){
+
+    if(tibble::is_tibble(strata)){
+
+      strata_name <- colnames(strata)
+      colnames(strata) <- "strata"
+      xy <- dplyr::bind_cols(xy, strata)
+
+      if(inside_strata){
+        outside_strata_y <- "strata"
+      }
+      if(outside_strata) {
+        inside_strata_y <- "strata"
+      }
+    }
+
+    if(strata[[1]][[1]] == "y"){
+      strata_name = "y"
+      if(inside_strata){
+        outside_strata_y <- "y"
+      }
+      if(outside_strata) {
+        inside_strata_y <- "y"
+      }
+    }
+  }
 
   # complete.cases is not neccassary
   # Cross-Validation inside_folds = 3/4; results_nested_resampling[[1]][[1]][[1]]
-  if (cv_method == "cv_folds") {
-    results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
-                                                                outside = rsample::vfold_cv(
-                                                                  v = !!outside_folds,
-                                                                  repeats = 1,
-                                                                  strata = !!outside_strata_y,
-                                                                  breaks = !!outside_breaks
-                                                                ), #
-                                                                inside = rsample::vfold_cv(
-                                                                  v = !!inside_folds,
-                                                                  repeats = 1,
-                                                                  strata = !!inside_strata_y,
-                                                                  breaks = !!inside_breaks
-                                                                )
-    ))
-  }
-  if (cv_method == "validation_split") {
-    results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
-                                                                outside = rsample::vfold_cv(
-                                                                  v = !!outside_folds,
-                                                                  repeats = 1,
-                                                                  strata = !!outside_strata_y,
-                                                                  breaks = !!outside_breaks
-                                                                ),
-                                                                inside = rsample::validation_split(
-                                                                  prop = !!inside_folds,
-                                                                  strata = !!inside_strata_y,
-                                                                  breaks = !!inside_breaks
-                                                                )
-    ))
-  }
+    if (cv_method == "cv_folds") {
+      results_nested_resampling <- rlang::expr(rsample::nested_cv(
+        xy,
+        outside = rsample::vfold_cv(
+          v = !!outside_folds,
+          repeats = 1,
+          strata = !!outside_strata_y,
+          breaks = !!outside_breaks
+          ), #
+        inside = rsample::vfold_cv(
+          v = !!inside_folds,
+          repeats = 1,
+          strata = !!inside_strata_y,
+          breaks = !!inside_breaks
+          )
+      ))
+    }
+    if (cv_method == "validation_split") {
+      results_nested_resampling <- rlang::expr(rsample::nested_cv(
+        xy,
+        outside = rsample::vfold_cv(
+          v = !!outside_folds,
+          repeats = 1,
+          strata = !!outside_strata_y,
+          breaks = !!outside_breaks
+          ),
+        inside = rsample::validation_split(
+          prop = !!inside_folds,
+          strata = !!inside_strata_y,
+          breaks = !!inside_breaks
+          )
+      ))
+    }
 
   results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
-
 
   # Deciding whether to use multicores depending on system and settings.
   if (multi_cores == "multi_cores_sys_default") {
@@ -772,6 +817,7 @@ textTrainRegression <- function(x,
   }
 
 
+  # preprocess_PCA = 1
   if (multi_cores_use == FALSE) {
     tuning_results <- purrr::map(
       .x = results_nested_resampling$inner_resamples,
@@ -896,7 +942,12 @@ textTrainRegression <- function(x,
       Nvariable_totals <- length(xy_all)
       variable_names <- colnames(xy_all[(first_n_predictors + 1):(Nvariable_totals - 2)])
     } else {
-      variable_names <- "id_nr"
+
+      if("strata" %in% colnames(xy_all)){
+        variable_names <- c("id_nr", "strata")
+      } else {
+        variable_names <- c("id_nr")
+      }
     }
 
     # [0,] is added to just get the col names (and avoid saving all the data with the receipt) help(step_naomit)
@@ -904,7 +955,6 @@ textTrainRegression <- function(x,
       recipes::recipe(y ~ ., xy_all[0, ]) %>%
       recipes::update_role(all_of(variable_names), new_role = "Not_predictors") %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      # recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome")
 
     if (!impute_missing) {
@@ -945,6 +995,11 @@ textTrainRegression <- function(x,
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome")
+
+    if("strata" %in% colnames(xy_all)) {
+      final_recipe <- final_recipe %>%
+        recipes::update_role(strata, new_role = "strata")
+    }
 
     if (!impute_missing) {
       final_recipe <- recipes::step_naomit(final_recipe, recipes::all_predictors(), skip = TRUE)
@@ -1009,7 +1064,13 @@ textTrainRegression <- function(x,
 
   nr_predictors <- recipes::juice(preprocessing_recipe_prep)
 
+  # This is so that nr_predictors > 3 and nr_predictors == 3 should work
+  if("strata" %in% colnames(nr_predictors)){
+    nr_predictors <- nr_predictors %>%
+      select(-strata)
+  }
   nr_predictors <- length(nr_predictors)
+
 
   ####### NEW ENVIRONMENT
   model_save_small_size <- function(xy_all, final_recipe, results_split_parameter, model, nr_predictors) {
@@ -1026,7 +1087,7 @@ textTrainRegression <- function(x,
     with(
       env_final_model,
       if (nr_predictors > 3) {
-        # Create and fit model; penalty=NULL mixture = NULL
+        # Create and fit model; penalty = NULL mixture = NULL
         final_predictive_model_spec <-
           {
             if (model == "regression") {
@@ -1082,7 +1143,9 @@ textTrainRegression <- function(x,
     )
   }
 
-  final_predictive_model <- model_save_small_size(xy_all, final_recipe, results_split_parameter, model, nr_predictors)
+  final_predictive_model <- model_save_small_size(
+    xy_all, final_recipe, results_split_parameter, model, nr_predictors
+    )
 
 
   ##### NEW ENVIRONMENT END
@@ -1094,10 +1157,11 @@ textTrainRegression <- function(x,
   x_append_names_description <- paste("x_append = ", x_append_names)
   y_name_description <- paste("y = ", y_name)
   cv_method_description <- paste("cv_method = ", deparse(cv_method))
+  strata_description <- paste("strata = ", strata_name)
   outside_folds_description <- paste("outside_folds = ", deparse(outside_folds))
-  outside_strata_y_description <- paste("outside_strata_y = ", deparse(outside_strata_y))
+  outside_strata_y_description <- paste("outside_strata = ", deparse(outside_strata))
   inside_folds_description <- paste("inside_folds = ", deparse(inside_folds))
-  inside_strata_y_description <- paste("inside_strata_y = ", deparse(inside_strata_y))
+  inside_strata_y_description <- paste("inside_strata = ", deparse(inside_strata))
 
   penalty_setting <- paste("penalty_setting = ", deparse(penalty))
   mixture_setting <- paste("mixture_setting = ", deparse(mixture))
@@ -1156,6 +1220,7 @@ textTrainRegression <- function(x,
     x_append_names_description,
     y_name_description,
     cv_method_description,
+    strata_description,
     outside_folds_description,
     outside_strata_y_description,
     inside_folds_description,
