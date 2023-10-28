@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_4_textPredict.R
 \name{textPredict}
 \alias{textPredict}
-\title{Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classifications from embeddings or text using textPredict.}
+\title{Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classes from embeddings or text using textPredict.}
 \usage{
 textPredict(
   model_info = NULL,
@@ -63,7 +63,7 @@ shown (default = FALSE).}
 Predictions from either embeddings or text input.
 }
 \description{
-Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classifications from embeddings or text using textPredict.
+Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classes from embeddings or text using textPredict.
 }
 \examples{
 
