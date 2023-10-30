@@ -560,6 +560,38 @@ summarize_tune_results <- function(object,
 }
 
 
+
+#x = word_embeddings_4$texts$harmonytext
+#y = Language_based_assessment_data_8$hilstotal
+#
+#x_append = NULL
+#append_first = FALSE
+#cv_method = "validation_split"
+#outside_folds = 10
+#inside_folds = 3 / 4
+#strata = "y"
+#outside_strata = TRUE
+#outside_breaks = 4
+#inside_strata = TRUE
+#inside_breaks = 4
+#model = "regression"
+#eval_measure = "default"
+#preprocess_step_center = TRUE
+#preprocess_step_scale = TRUE
+#preprocess_PCA = NA
+#penalty = 10^seq(-16, 16)
+#mixture = c(0)
+#first_n_predictors = NA
+#impute_missing = FALSE
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#simulate.p.value = FALSE
+#seed = 2020
+
+
+
 #' Train word embeddings to a numeric variable.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
 #' provided in a list they will be concatenated.
@@ -930,8 +962,15 @@ textTrainRegression <- function(x,
 
   ##### Construct final model to be saved and applied on other data  ########
   ############################################################################
-  xy_all <- xy
+  #colnames(xy)
+  if("strata" %in% colnames(xy)){
+    xy_all <- xy %>%
+      dplyr::select(-strata)
+  } else {
+    xy_all <- xy
+  }
 
+  colnames(xy_all)
   ######### One word embedding as input
   n_embbeddings <- as.numeric(comment(eval_measure))
   if (n_embbeddings == 1) {
@@ -943,11 +982,12 @@ textTrainRegression <- function(x,
       variable_names <- colnames(xy_all[(first_n_predictors + 1):(Nvariable_totals - 2)])
     } else {
 
-      if("strata" %in% colnames(xy_all)){
-        variable_names <- c("id_nr", "strata")
-      } else {
+      # Dont need strata here since we have removed it above
+#      if("strata" %in% colnames(xy_all)){
+#        variable_names <- c("id_nr", "strata")
+#      } else {
         variable_names <- c("id_nr")
-      }
+#      }
     }
 
     # [0,] is added to just get the col names (and avoid saving all the data with the receipt) help(step_naomit)
@@ -996,10 +1036,11 @@ textTrainRegression <- function(x,
       recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome")
 
-    if("strata" %in% colnames(xy_all)) {
-      final_recipe <- final_recipe %>%
-        recipes::update_role(strata, new_role = "strata")
-    }
+    # Not needed since strata column is removed from this last training of the model
+#    if("strata" %in% colnames(xy_all)) {
+#      final_recipe <- final_recipe %>%
+#        recipes::update_role(strata, new_role = "strata", bake = FALSE)
+#    }
 
     if (!impute_missing) {
       final_recipe <- recipes::step_naomit(final_recipe, recipes::all_predictors(), skip = TRUE)

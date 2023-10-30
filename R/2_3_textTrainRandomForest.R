@@ -907,8 +907,13 @@ textTrainRandomForest <- function(x,
   ##### Construct final model to be saved and applied on other data  ########
   ############################################################################
 
-  xy_all <- xy
-
+  #colnames(xy)
+  if("strata" %in% colnames(xy)){
+    xy_all <- xy %>%
+      dplyr::select(-strata)
+  } else {
+    xy_all <- xy
+  }
   ######### One word embedding as input
   n_embbeddings <- as.numeric(comment(eval_measure))
 
@@ -918,10 +923,10 @@ textTrainRandomForest <- function(x,
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(y, new_role = "outcome")
 
-    if("strata" %in% colnames(xy_all)) {
-      final_recipe <- final_recipe %>%
-        recipes::update_role(strata, new_role = "strata")
-    }
+#    if("strata" %in% colnames(xy_all)) {
+#      final_recipe <- final_recipe %>%
+#        recipes::update_role(strata, new_role = "strata")
+#    }
 
     final_recipe <- final_recipe %>%
       recipes::step_naomit(recipes::all_predictors(), skip = FALSE) # %>%
@@ -962,10 +967,10 @@ textTrainRandomForest <- function(x,
       recipes::step_naomit(recipes::all_predictors(), skip = TRUE) # %>%
     # recipes::step_BoxCox(recipes::all_predictors()) %>%
 
-    if("strata" %in% colnames(xy_all)) {
-      final_recipe <- final_recipe %>%
-        recipes::update_role(strata, new_role = "strata")
-    }
+#    if("strata" %in% colnames(xy_all)) {
+#      final_recipe <- final_recipe %>%
+#        recipes::update_role(strata, new_role = "strata")
+#    }
 
     if (preprocess_step_center) {
       final_recipe <- recipes::step_center(final_recipe, recipes::all_predictors())
