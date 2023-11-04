@@ -46,9 +46,9 @@ the transformer, which is normally not used.
 Select and aggregate layers of hidden states to form a word embedding.
 }
 \examples{
-#Aggregate the hidden states from textEmbedRawLayers 
-#to create a word embedding representing the entire text. 
-#This is achieved by concatenating layer 11 and 12. 
+#Aggregate the hidden states from textEmbedRawLayers
+#to create a word embedding representing the entire text.
+#This is achieved by concatenating layer 11 and 12.
 \dontrun{
 word_embedding <- textEmbedLayerAggregation(
                     imf_embeddings_11_12$context_tokens,

@@ -75,7 +75,7 @@ for the individual words that is used for the plotting in the textProjectionPlot
 Compute Supervised Dimension Projection and related variables for plotting words.
 }
 \examples{
-# Pre-processing data for plotting. 
+# Pre-processing data for plotting.
 \dontrun{
 df_for_plotting <- textProjection(
   words = Language_based_assessment_data_8$harmonywords,
@@ -86,7 +86,7 @@ df_for_plotting <- textProjection(
   Npermutations = 10,
   n_per_split = 1
 )
-#Run df_for_plotting to examine result. 
+#Run df_for_plotting to examine result.
 df_for_plotting
 }
 }

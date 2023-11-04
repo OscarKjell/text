@@ -295,6 +295,7 @@ textOwnWordsProjection <- function(word_data = word_data,
   forloops_add_w <- length(explore_words)
   added_words_information <- list()
 
+  # i_add_w = 1
   for (i_add_w in 1:forloops_add_w) {
 
     # If using a contextualized language model
@@ -368,13 +369,13 @@ textOwnWordsProjection <- function(word_data = word_data,
     } else {
       # Aggregate the words
       Aggregated_embedding_added_words <- tibble::as_tibble_row(textEmbeddingAggregation(dplyr::select(
-        explore_words_embeddings$word_types,
+        explore_words_embeddings$word_types[[1]],
         dplyr::starts_with("Dim")
       ),
       aggregation = explore_words_aggregation
       ))
       Mean1 <- dplyr::bind_cols(words, n_words, Aggregated_embedding_added_words)
-      manual_words_mean1 <- bind_rows(explore_words_embeddings$word_types, Mean1)
+      manual_words_mean1 <- bind_rows(explore_words_embeddings$word_types[[1]], Mean1)
     }
 
     #### Project embedding on the x axes ######
@@ -618,7 +619,7 @@ adjust_for_plot_type <- function(word_data, y_axes) {
 
 
 #' Plot words from textProjection() or textWordPrediction().
-#' @param word_data Dataframe from textProjection. 
+#' @param word_data Dataframe from textProjection.
 #' @param k_n_words_to_test Select the k most frequent words to significance
 #' test (k = sqrt(100*N); N = number of participant responses) (default = TRUE).
 #' @param min_freq_words_test Select words to significance test that have occurred
@@ -697,7 +698,7 @@ adjust_for_plot_type <- function(word_data, y_axes) {
 #' @param explore_words Explore where specific words are positioned in the embedding space.
 #' For example, c("happy content", "sad down") (default = NULL).
 #' @param explore_words_color Specify the color(s) of the words being explored.
-#' For example c("#ad42f5", "green") (default = "#ad42f5"). 
+#' For example c("#ad42f5", "green") (default = "#ad42f5").
 #' @param explore_words_point Specify the names of the point for the aggregated word embeddings
 #' of all the explored words (default = "ALL_1").
 #' @param explore_words_aggregation Specify how to aggregate the word embeddings of
@@ -736,7 +737,7 @@ adjust_for_plot_type <- function(word_data, y_axes) {
 #' plot_projection
 #'
 #' names(DP_projections_HILS_SWLS_100)
-#' @seealso See \code{\link{textProjection}}. 
+#' @seealso See \code{\link{textProjection}}.
 #' @importFrom tibble as_tibble tibble
 #' @importFrom dplyr row_number slice mutate mutate_if bind_rows group_by summarize left_join %>% n
 #' @importFrom tidyr gather separate
@@ -760,7 +761,7 @@ textPlot <- function(word_data,
                      # x_axes = TRUE,
                      y_axes = FALSE,
                      p_alpha = 0.05,
-                     overlapping = TRUE, 
+                     overlapping = TRUE,
                      p_adjust_method = "none",
                      title_top = "Supervised Dimension Projection",
                      x_axes_label = "Supervised Dimension Projection (SDP)",
@@ -807,8 +808,8 @@ textPlot <- function(word_data,
                      n_contrast_group_remove = FALSE,
                      space = NULL,
                      scaling = FALSE) {
-  
-  
+
+
   ##### Comment to be saved ####
   text_plot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",
@@ -842,11 +843,11 @@ textPlot <- function(word_data,
     "legend_title_size =", legend_title_size,
     "legend_number_size =", legend_number_size
   )
-  
+
   set.seed(seed)
   plot_type_text <- sub(".*type = ", "", comment(word_data))
   plot_type_name <- sub(" .*", "", plot_type_text)
-  
+
   #### Sorting out axes ####
   # Renaming column names from different types of word_data
   word_data <- adjust_for_plot_type(
@@ -855,7 +856,7 @@ textPlot <- function(word_data,
   )
   x_axes_1 <- "x_plotted"
   p_values_x <- "p_values_x"
-  
+
   if (y_axes == TRUE) {
     y_axes_1 <- "y_plotted"
     p_values_y <- "p_values_y"
@@ -865,25 +866,25 @@ textPlot <- function(word_data,
     p_values_y <- NULL
     y_axes_values_hide <- TRUE
   }
-  
+
   #### Allow overlapping ####
   if (overlapping == TRUE){
     options(ggrepel.max.overlaps = 1000)
   }
-  
+
   #### Removing words MANUALY #######
-  
+
   if (!is.null(remove_words)) {
     word_data$word_data <- word_data$word_data %>% dplyr::filter(!words %in% remove_words)
   }
-  
+
   #### Selecting words to plot ####
   # Computing adjusted p-values with those words selected by min_freq_words_test
   word_data_padjusted <- word_data$word_data[word_data$word_data$n >= min_freq_words_test, ]
-  
+
   # Selected Aggregated points
   aggregated_embeddings_data <- word_data$word_data[word_data$word_data$n == 0, ]
-  
+
   # View(word_data_padjusted) Computing adjusted p-values with those words selected by: k = sqrt(100*N)
   if (k_n_words_to_test == TRUE) {
     words_k <- sqrt(100 * word_data$word_data$N_participant_responses[1])
@@ -899,7 +900,7 @@ textPlot <- function(word_data,
                                  by = "words"
   )
   # word_data$adjusted_p_values.x
-  
+
   if (is.null(y_axes_1) == FALSE) {
     # Computing adjusted p-values
     word_data1_padjusted_y <- word_data1[word_data1$n >= min_freq_words_test, ]
@@ -909,10 +910,10 @@ textPlot <- function(word_data,
     )
     word_data1 <- dplyr::left_join(word_data1, word_data1_padjusted_y[, c("words", "adjusted_p_values.y")], by = "words")
   }
-  
+
   # Select only min_freq_words_plot to plot (i.e., after correction of multiple comparison for sig. test)
   word_data1 <- word_data1[word_data1$n >= min_freq_words_plot, ]
-  
+
   #  Select only words based on square-position; and then top frequency in each "square"
   # (see legend) plot_n_words_square
   if (is.null(y_axes_1) == TRUE) {
@@ -922,18 +923,18 @@ textPlot <- function(word_data,
         x_plotted < 0 & adjusted_p_values.x > p_alpha ~ 2,
         x_plotted > 0 & adjusted_p_values.x < p_alpha ~ 3
       ))
-    
+
     data_p_sq1 <- word_data1[word_data1$square_categories == 1, ] %>%
       dplyr::arrange(-n) %>%
       dplyr::slice(0:plot_n_words_square)
-    
+
     data_p_sq3 <- word_data1[word_data1$square_categories == 3, ] %>%
       dplyr::arrange(-n) %>%
       dplyr::slice(0:plot_n_words_square)
-    
+
     data_p_sq_all <- rbind(data_p_sq1, data_p_sq3) # data_p_sq2,
   }
-  
+
   if (is.null(y_axes_1) == FALSE) {
     # Categorize words to apply specific color plot_n_words_square=1
     word_data1 <- word_data1 %>%
@@ -948,7 +949,7 @@ textPlot <- function(word_data,
         adjusted_p_values.x > p_alpha & y_plotted < 0 & adjusted_p_values.y < p_alpha ~ 8,
         x_plotted > 0 & adjusted_p_values.x < p_alpha & y_plotted < 0 & adjusted_p_values.y < p_alpha ~ 9
       ))
-    
+
     data_p_sq1 <- word_data1[word_data1$square_categories == 1, ] %>%
       dplyr::arrange(-n) %>%
       dplyr::slice(0:plot_n_words_square)
@@ -974,39 +975,39 @@ textPlot <- function(word_data,
     data_p_sq9 <- word_data1[word_data1$square_categories == 9, ] %>%
       dplyr::arrange(-n) %>%
       dplyr::slice(0:plot_n_words_square)
-    
+
     data_p_sq_all <- rbind(
       data_p_sq1, data_p_sq2, data_p_sq3,
       data_p_sq4, data_p_sq6, # data_p_sq5,
       data_p_sq7, data_p_sq8, data_p_sq9
     )
   }
-  
-  
+
+
   # Select only words below alpha; and then top x_plotted
   data_p_x_neg <- word_data1 %>%
     dplyr::filter(adjusted_p_values.x < p_alpha) %>%
     dplyr::arrange(x_plotted) %>%
     dplyr::slice(0:plot_n_words_p)
-  
+
   data_p_x_pos <- word_data1 %>%
     dplyr::filter(adjusted_p_values.x < p_alpha) %>%
     dplyr::arrange(-x_plotted) %>%
     dplyr::slice(0:plot_n_words_p)
-  
+
   # Select plot_n_word_extreme and Select plot_n_word_frequency
   word_data1_extrem_max_x <- word_data1 %>%
     dplyr::arrange(-x_plotted) %>%
     dplyr::slice(0:plot_n_word_extreme)
-  
+
   word_data1_extrem_min_x <- word_data1 %>%
     dplyr::arrange(x_plotted) %>%
     dplyr::slice(0:plot_n_word_extreme)
-  
+
   word_data1_frequency_x <- word_data1 %>%
     dplyr::arrange(-n) %>%
     dplyr::slice(0:plot_n_word_frequency)
-  
+
   # Select the middle range, order according to frequency and then select the plot_n_words_middle = 5
   mean_m_sd_x <- mean(word_data1$x_plotted, na.rm = TRUE) - (sd(word_data1$x_plotted, na.rm = TRUE) / 10)
   mean_p_sd_x <- mean(word_data1$x_plotted, na.rm = TRUE) + (sd(word_data1$x_plotted, na.rm = TRUE) / 10)
@@ -1014,7 +1015,7 @@ textPlot <- function(word_data,
     dplyr::filter(dplyr::between(word_data1$x_plotted, mean_m_sd_x, mean_p_sd_x)) %>%
     dplyr::arrange(-n) %>%
     dplyr::slice(0:plot_n_words_middle)
-  
+
   word_data1_x <- word_data1 %>%
     dplyr::left_join(data_p_sq_all %>%
                        dplyr::transmute(words, check_p_square = 1), by = "words") %>%
@@ -1034,8 +1035,8 @@ textPlot <- function(word_data,
       check_p_square, check_p_x_neg, check_p_x_pos, check_extreme_max_x, check_extreme_min_x,
       check_extreme_frequency_x, check_middle_x
     ), na.rm = T))
-  
-  
+
+
   ###### Sort words for y-axes.
   if (is.null(y_axes_1) == FALSE) {
     # Computing adjusted p-values
@@ -1044,25 +1045,25 @@ textPlot <- function(word_data,
       dplyr::filter(adjusted_p_values.y < p_alpha) %>%
       dplyr::arrange(y_plotted) %>%
       dplyr::slice(0:plot_n_words_p)
-    
+
     data_p_y_pos <- word_data1 %>%
       dplyr::filter(adjusted_p_values.y < p_alpha) %>%
       dplyr::arrange(-y_plotted) %>%
       dplyr::slice(0:plot_n_words_p)
-    
+
     # Select plot_n_word_extreme and Select plot_n_word_frequency
     word_data1_extrem_max_y <- word_data1 %>%
       dplyr::arrange(-y_plotted) %>%
       dplyr::slice(0:plot_n_word_extreme)
-    
+
     word_data1_extrem_min_y <- word_data1 %>%
       dplyr::arrange(y_plotted) %>%
       dplyr::slice(0:plot_n_word_extreme)
-    
+
     word_data1_frequency_y <- word_data1 %>%
       dplyr::arrange(-n) %>%
       dplyr::slice(0:plot_n_word_frequency)
-    
+
     # Select the middle range, order according to frequency and then select the plot_n_words_middle =5
     mean_m_sd_y <- mean(word_data1$y_plotted, na.rm = TRUE) - (sd(word_data1$y_plotted, na.rm = TRUE) / 10)
     mean_p_sd_y <- mean(word_data1$y_plotted, na.rm = TRUE) + (sd(word_data1$y_plotted, na.rm = TRUE) / 10)
@@ -1070,7 +1071,7 @@ textPlot <- function(word_data,
       dplyr::filter(dplyr::between(word_data1$y_plotted, mean_m_sd_y, mean_p_sd_y)) %>%
       dplyr::arrange(-n) %>%
       dplyr::slice(0:plot_n_words_middle) # TODO selecting on frequency again. perhaps point to have exact middle?
-    
+
     word_data_all <- word_data1_x %>%
       dplyr::left_join(data_p_y_pos %>%
                          dplyr::transmute(words, check_p_y_pos = 1), by = "words") %>%
@@ -1089,8 +1090,8 @@ textPlot <- function(word_data,
         check_extreme_frequency_y, check_middle_y
       ), na.rm = T)) %>%
       dplyr::mutate(extremes_all = rowSums(cbind(extremes_all_x, extremes_all_y), na.rm = T))
-    
-    
+
+
     # Categorize words to apply specific color
     word_data_all <- word_data_all %>%
       dplyr::mutate(colour_categories = dplyr::case_when(
@@ -1105,8 +1106,8 @@ textPlot <- function(word_data,
         x_plotted > 0 & adjusted_p_values.x < p_alpha & y_plotted < 0 & adjusted_p_values.y < p_alpha ~ bivariate_color_codes[9]
       ))
   }
-  
-  
+
+
   if (is.null(y_axes_1) == TRUE) {
     word_data_all <- word_data1_x %>%
       dplyr::mutate(colour_categories = dplyr::case_when(
@@ -1118,21 +1119,21 @@ textPlot <- function(word_data,
         x_plotted > 0 & adjusted_p_values.x < p_alpha ~ bivariate_color_codes[6]
       ))
   }
-  
+
   #### Colorize words that are more frequent on the opposite side of the dot product projection ####
   if (is.character(n_contrast_group_color) == TRUE) {
-    
+
     # Select words with MORE words in G1 and POSITIVE dot product (i.e., remove words that are
     # more represented in the opposite group of its dot product projection)
     word_data_all$colour_categories[(abs(word_data_all$n_g1.x) > abs(word_data_all$n_g2.x) &
                                        word_data_all$x_plotted > 0)] <- n_contrast_group_color
-    
+
     # Select words with MORE words in G2 and POSITIVE dot product (i.e., remove words that are more
     # represented in the opposite group of its dot product projection)
     word_data_all$colour_categories[(abs(word_data_all$n_g1.x) < abs(word_data_all$n_g2.x) &
                                        word_data_all$x_plotted < 0)] <- n_contrast_group_color
   }
-  
+
   #### Remove more frequent words on the opposite side of the dot product projection ####
   if (n_contrast_group_remove == TRUE) {
     word_data_all1 <- word_data_all %>%
@@ -1140,42 +1141,42 @@ textPlot <- function(word_data,
       # that are more represented in the opposite group of its dot product projection)
       filter((abs(n_g1.x) > abs(n_g2.x) &
                 x_plotted < 0))
-    
+
     word_data_all2 <- word_data_all %>%
       # Select words with MORE words in G2 and POSITIVE dot product (i.e., do not select words that
       # are more represented in the opposite group of its dot product projection)
       filter((abs(n_g1.x) < abs(n_g2.x) &
                 x_plotted > 0))
-    
+
     word_data_all <- bind_rows(word_data_all1, word_data_all2)
   }
-  
+
   #### Preparing for the plot function ####
-  
+
   # This solution is because it is not possible to send "0" as a parameter
   only_x_dimension <- NULL
   if (is.null(y_axes_1) == TRUE) {
     only_x_dimension <- 0
     y_axes_1 <- "only_x_dimension"
   }
-  
+
   # Add or Remove values on y-axes
   if (y_axes_values_hide) {
     y_axes_values <- ggplot2::element_blank()
   } else {
     y_axes_values <- ggplot2::element_text()
   }
-  
+
   # Word data adjusted for if y_axes exists
   if (y_axes == TRUE) {
     word_data_all_yadjusted <- word_data_all[word_data_all$extremes_all_x >= 1 | word_data_all$extremes_all_y >= 1, ]
   } else if (y_axes == FALSE) {
     word_data_all_yadjusted <- word_data_all[word_data_all$extremes_all_x >= 1, ]
   }
-  
-  
+
+
   ##### Adding/exploring words MANUALY ###### explore_words = "happy"
-  
+
   if (!is.null(explore_words) == TRUE) {
     if (plot_type_name == "textProjection") {
       word_data_all_yadjusted <- textOwnWordsProjection(
@@ -1192,7 +1193,7 @@ textPlot <- function(word_data,
         scaling = scaling
       )
     }
-    
+
     if (plot_type_name == "textWordPrediction") {
       word_data_all_yadjusted <- textOwnWordPrediction(
         word_data = word_data,
@@ -1209,7 +1210,7 @@ textPlot <- function(word_data,
       )
     }
   }
-  
+
   #### Plotting  ####
   plot <- textPlotting(
     word_data_all = word_data_all,
@@ -1245,14 +1246,14 @@ textPlot <- function(word_data,
     y_axes_label = y_axes_label,
     y_axes_values = y_axes_values
   )
-  
-  #### Reset overlapping #### 
+
+  #### Reset overlapping ####
   options(ggrepel.max.overlaps = 10)
-  
+
   # plot
-  
+
   #### Creating the legend ####
-  
+
   legend <- textLegend(
     bivariate_color_codes = bivariate_color_codes,
     y_axes_1 = y_axes_1,
@@ -1267,16 +1268,16 @@ textPlot <- function(word_data,
     titles_color = titles_color
   )
   # legend
-  
+
   #### Plot both figure and legend help(null_dev_env) ####
   final_plot <- suppressWarnings(cowplot::ggdraw() +
                                    cowplot::draw_plot(plot, 0, 0, 1, 1) +
                                    cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
-  
+
   output_plot_data <- list(final_plot, text_plot_comment, word_data_all)
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")
   output_plot_data
-  
+
 }
 
 

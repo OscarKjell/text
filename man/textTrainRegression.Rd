@@ -11,10 +11,11 @@ textTrainRegression(
   append_first = FALSE,
   cv_method = "validation_split",
   outside_folds = 10,
-  outside_strata_y = "y",
-  outside_breaks = 4,
   inside_folds = 3/4,
-  inside_strata_y = "y",
+  strata = "y",
+  outside_strata = TRUE,
+  outside_breaks = 4,
+  inside_strata = TRUE,
   inside_breaks = 4,
   model = "regression",
   eval_measure = "default",
@@ -29,6 +30,7 @@ textTrainRegression(
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
   save_output = "all",
+  simulate.p.value = FALSE,
   seed = 2020,
   ...
 )
@@ -52,15 +54,19 @@ uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.}
 
 \item{outside_folds}{(numeric) Number of folds for the outer folds (default = 10).}
 
-\item{outside_strata_y}{Variable to stratify according (default "y"; can set to NULL).}
+\item{inside_folds}{(numeric) The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
+For more information see validation_split in rsample.}
+
+\item{strata}{(string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
+training set - if you want to stratify according to another variable you can include it as a tibble (please note you
+can only add 1 variable to stratify according). Can set it to NULL.}
+
+\item{outside_strata}{(boolean) Whether to stratify the outside folds.}
 
 \item{outside_breaks}{(numeric) The number of bins wanted to stratify a numeric stratification variable in the
 outer cross-validation loop (default = 4).}
 
-\item{inside_folds}{(numeric) The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
-For more information see validation_split in rsample.}
-
-\item{inside_strata_y}{Variable to stratify according (default y; can set to NULL).}
+\item{inside_strata}{Whether to stratify the outside folds.}
 
 \item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the inner
 cross-validation loop (default = 4).}
@@ -112,14 +118,17 @@ can set to "spearman" or "kendall").}
 \item{save_output}{(character) Option not to save all output; default = "all". see also "only_results"
 and "only_results_predictions".}
 
+\item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
+in larger than 2 × 2 tables.}
+
 \item{seed}{(numeric) Set different seed (default = 2020).}
 
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
 \value{
 A (one-sided) correlation test between predicted and observed values; tibble
-of predicted values (t-value, degree of freedom (df), p-value, 
- alternative-hypothesis, confidence interval, correlation coefficient), as well as information about 
+of predicted values (t-value, degree of freedom (df), p-value,
+ alternative-hypothesis, confidence interval, correlation coefficient), as well as information about
  the model (preprossing_recipe, final_model and model_description).
 }
 \description{
@@ -127,7 +136,7 @@ Train word embeddings to a numeric variable.
 }
 \examples{
 #Examines how well the embeddings from the column "harmonytext" can
-#predict the numerical values in the column "hilstotal". 
+#predict the numerical values in the column "hilstotal".
 
 \dontrun{
 trained_model <- textTrainRegression(
@@ -136,7 +145,7 @@ trained_model <- textTrainRegression(
   multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
 )
 
-# Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis, 
+# Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis,
 # confidence interval, correlation coefficient).
 
 trained_model$results

@@ -211,7 +211,7 @@ Plot words according to Supervised Dimension Projection.
 }
 \examples{
 # The test-data included in the package is called: DP_projections_HILS_SWLS_100.
-# The dataframe created by textProjection can also be used as input-data.  
+# The dataframe created by textProjection can also be used as input-data.
 
 # Supervised Dimension Projection Plot
 plot_projection <- textProjectionPlot(

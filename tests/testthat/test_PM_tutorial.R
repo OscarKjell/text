@@ -20,14 +20,14 @@ test_that("PM tutorial", {
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
   # Transform the text/word data to word embeddings (see help(textEmbed) to see the default settings).
-  word_embeddings <- textEmbed(Language_based_assessment_data_8,
+  word_embeddings <- text::textEmbed(Language_based_assessment_data_8,
                                model = "bert-base-uncased",
                                aggregation_from_layers_to_tokens = "concatenate",
                                aggregation_from_tokens_to_texts = "mean",
                                keep_token_embeddings = FALSE)
 
   # See how the word embeddings are structured
-  word_embeddings
+  #word_embeddings
 
   # Save the word embeddings to avoid having to embed the text again. It is good practice to save output from analyses that take a lot of time to compute, which is often the case when analyzing text data.
   # saveRDS(word_embeddings, "word_embeddings.rds")
@@ -178,15 +178,16 @@ test_that("PM tutorial", {
 
 
   # Extract word type embeddings and text embeddings for harmony words
-  harmony_words_embeddings <- textEmbed(texts = Language_based_assessment_data_8["harmonywords"],
-                                        aggregation_from_layers_to_tokens = "concatenate",
-                                        aggregation_from_tokens_to_texts = "mean",
-                                        aggregation_from_tokens_to_word_types = "mean",
-                                        keep_token_embeddings = FALSE)
+  harmony_words_embeddings <- text::textEmbed(
+    texts = Language_based_assessment_data_8["harmonywords"],
+    aggregation_from_layers_to_tokens = "concatenate",
+    aggregation_from_tokens_to_texts = "mean",
+    aggregation_from_tokens_to_word_types = "mean",
+    keep_token_embeddings = FALSE)
 
 
   # Pre-processing data for plotting
-  projection_results <- textProjection(words = Language_based_assessment_data_8$harmonywords,
+  projection_results <- text::textProjection(words = Language_based_assessment_data_8$harmonywords,
                                        word_embeddings = harmony_words_embeddings$texts,
                                        word_types_embeddings = harmony_words_embeddings$word_types,
                                        x = Language_based_assessment_data_8$hilstotal,

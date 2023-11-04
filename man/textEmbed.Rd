@@ -93,7 +93,7 @@ Note that layer 0 is the input embedding to the transformer.
 Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 }
 \examples{
-# Automatically transforms the characters in the example dataset: 
+# Automatically transforms the characters in the example dataset:
 # Language_based_assessment_data_8 (included in text-package), to embeddings.
 \dontrun{
 word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
@@ -103,18 +103,18 @@ word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
                               aggregation_from_tokens_to_word_types = "mean"
 )
 
-# Show information about how the embeddings were constructed. 
+# Show information about how the embeddings were constructed.
 comment(word_embeddings$texts$satisfactiontexts)
 comment(word_embeddings$word_types)
 comment(word_embeddings$tokens$satisfactiontexts)
 
-# See how the word embeddings are structured. 
+# See how the word embeddings are structured.
 word_embeddings
 
-# Save the word embeddings to avoid having to embed the text again. 
+# Save the word embeddings to avoid having to embed the text again.
 saveRDS(word_embeddings, "word_embeddings.rds")
 
-# Retrieve the saved word embeddings. 
+# Retrieve the saved word embeddings.
 word_embeddings <- readRDS("word_embeddings.rds")
 }
 

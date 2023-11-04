@@ -11,10 +11,11 @@ textTrainRandomForest(
   append_first = FALSE,
   cv_method = "validation_split",
   outside_folds = 10,
-  outside_strata_y = "y",
-  outside_breaks = 4,
   inside_folds = 3/4,
-  inside_strata_y = "y",
+  strata = "y",
+  outside_strata = TRUE,
+  outside_breaks = 4,
+  inside_strata = TRUE,
   inside_breaks = 4,
   mode_rf = "classification",
   preprocess_step_center = FALSE,
@@ -28,6 +29,7 @@ textTrainRandomForest(
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
   save_output = "all",
+  simulate.p.value = FALSE,
   seed = 2020,
   ...
 )
@@ -52,14 +54,18 @@ to achieve n-folds in both the outer and inner loops.}
 
 \item{outside_folds}{(numeric) Number of folds for the outer folds (default = 10).}
 
-\item{outside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
+\item{inside_folds}{(numeric) Number of folds for the inner folds (default = 3/4).}
+
+\item{strata}{(string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
+training set - if you want to stratify according to another variable you can include it as a tibble (please note you
+can only add 1 variable to stratify according). Can set it to NULL.}
+
+\item{outside_strata}{(boolean) Whether to stratify the outside folds.}
 
 \item{outside_breaks}{(numeric) The number of bins wanted to stratify a numeric stratification variable
 in the outer cross-validation loop (default = 4).}
 
-\item{inside_folds}{(numeric) Number of folds for the inner folds (default = 3/4).}
-
-\item{inside_strata_y}{Variable to stratify according (default "y"; can also set to NULL).}
+\item{inside_strata}{(boolean) Whether to stratify the outside folds.}
 
 \item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable
 in the inner cross-validation loop (default = 4).}
@@ -102,6 +108,9 @@ only on unix, not windows). Hence it makes the analyses considerably faster to r
 \item{save_output}{(character) Option not to save all output; default "all". See also "only_results" and
 "only_results_predictions".}
 
+\item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
+in larger than 2 × 2 tables.}
+
 \item{seed}{(numeric) Set different seed (default = 2020).}
 
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
@@ -115,8 +124,8 @@ f_meas and roc_auc (for details on these measures see the yardstick r-package do
 Train word embeddings to a categorical variable using random forest.
 }
 \examples{
-#Examines how well the embeddings from column "harmonywords" in 
-#Language_based_assessment_data_8 can binarily classify gender. 
+#Examines how well the embeddings from column "harmonywords" in
+#Language_based_assessment_data_8 can binarily classify gender.
 
 \dontrun{
 trained_model <- textTrainRandomForest(
@@ -129,13 +138,13 @@ trained_model <- textTrainRandomForest(
 )
 
 
-# Examine results (t-value, degree of freedom (df), p-value, 
+# Examine results (t-value, degree of freedom (df), p-value,
 # alternative-hypothesis, confidence interval, correlation coefficient).
- 
+
 trained_model$results
 }
 }
 \seealso{
-See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and 
+See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and
 \code{\link{textTrainRegression}}.
 }

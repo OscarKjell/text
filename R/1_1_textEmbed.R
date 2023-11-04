@@ -1,4 +1,3 @@
-
 #' Find encoding type of variable and then set it to UTF-8.
 #' @param x Tibble including both text and numeric variables.
 #' @return all character variables in UTF-8 format.
@@ -1270,6 +1269,5 @@ textDimName <- function(word_embeddings,
   
   return(word_embeddings)
 }
-
 
 
