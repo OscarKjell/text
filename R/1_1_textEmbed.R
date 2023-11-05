@@ -1,4 +1,3 @@
-
 #' Find encoding type of variable and then set it to UTF-8.
 #' @param x Tibble including both text and numeric variables.
 #' @return all character variables in UTF-8 format.
@@ -816,6 +815,82 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
   selected_layers_aggregated_tibble
 }
 
+
+#' Generate_placement_vector input from textEmbedRawLayers and inserts NA-placeholder vectors for NA values. 
+#' @param raw_layers Layers returned by the textEmbedRawLayers function with NA values.
+#' @return Layers returned by the textEmbedRawLayers with inserted NA-placeholder vectors.  
+#' @noRd
+generate_placement_vector <- function(raw_layers) {
+  context_tokens <- NULL
+  
+  # Check if raw_layers$context_tokens$value is not NULL, and use it
+  if (!is.null(raw_layers$context_tokens$value)) {
+    context_tokens <- raw_layers$context_tokens$value
+  }
+  # If raw_layers$context_tokens$value is NULL, check if raw_layers$context_tokens$texts is not NULL and use it
+  else if (!is.null(raw_layers$context_tokens$texts)) {
+    context_tokens <- raw_layers$context_tokens$texts
+  }
+  
+  if (is.null(context_tokens)) {
+    stop("Neither raw_layers$context_tokens$value nor raw_layers$context_tokens$texts found or both are NULL.")
+  }
+  
+  # Loop through the hidden states
+  for (i in 1:length(context_tokens)) {
+    token_embedding <- context_tokens[[i]]
+    
+    # Find the corresponding token of each hidden state
+    elements <- context_tokens[[i]][1]
+    
+    # Check if "na" or "NA" is represented as a token
+    if (any(sapply(elements, function(element) "na" %in% element)) |
+        any(sapply(elements, function(element) "NA" %in% element))) {
+      # If so, then check for "NA" or "na" in the token-embedding
+      if (any(grepl("na", token_embedding$tokens, ignore.case = TRUE)) |
+          any(grepl("NA", token_embedding$tokens, ignore.case = TRUE))) {
+        # Store the dimensions of the token-embedding with NA:s
+        dimensions <- dim(context_tokens[[i]])
+      }
+    }
+  }
+  
+  # Create a placeholder tibble with NA values of the same shape as the original token embedding
+  template_na <- as_tibble(matrix(NA, nrow = dimensions[1], ncol = dimensions[2] - 2))
+  colnames(template_na) <- c("tokens", paste0("Dim", 1:(dimensions[2] - 3)))
+  
+  # Create a list to store the modified embeddings
+  modified_embeddings <- list()
+  
+  # Iterate over each context token in the original embedding list
+  for (i in 1:length(context_tokens)) {
+    token_embedding <- context_tokens[[i]]
+    elements <- context_tokens[[i]][1]
+    
+    # Check if "na" is present in any element of the list
+    if (any(sapply(elements, function(element) "na" %in% element)) |
+        any(sapply(elements, function(element) "NA" %in% element))) {
+      # If so, then check for "na" in the token-embedding
+      if (any(grepl("na", token_embedding$tokens, ignore.case = TRUE)) |
+          any(grepl("NA", token_embedding$tokens, ignore.case = TRUE))) {
+        # Replace only the numerical columns with NA values while keeping the first three columns
+        token_embedding[, -(1:3)] <- NA  # Exclude the first three columns
+      }
+    }
+    modified_embeddings[[i]] <- token_embedding
+  }
+  
+  # Replace the original layers with the modified
+  if (!is.null(raw_layers$context_tokens$value)) {
+    raw_layers$context_tokens$value <- modified_embeddings
+  } else if (!is.null(raw_layers$context_tokens$texts)) {
+    raw_layers$context_tokens$texts <- modified_embeddings
+  }
+  
+  return(raw_layers)
+}
+
+
 #texts = x
 #model = "bert-base-uncased"
 #layers = -2
@@ -926,7 +1001,10 @@ textEmbed <- function(texts,
                       device = "cpu",
                       logging_level = "error",
                       ...) {
-
+  
+  if (sum(is.na(texts) > 0)){
+    warning("texts contain NA-values.")
+  }
 
   T1_textEmbed <- Sys.time()
 
@@ -981,7 +1059,12 @@ textEmbed <- function(texts,
       ...
     )
   }
-
+    
+  # Generate placement vectors if there are NA:s in texts. 
+  if (sum(is.na(texts) > 0)){
+    all_wanted_layers <- generate_placement_vector(raw_layers = all_wanted_layers)
+  }
+    
   if (!decontextualize) {
     # 1. Get token-level embeddings with aggregated levels
     if (!is.null(aggregation_from_layers_to_tokens) & keep_token_embeddings) {
@@ -1220,6 +1303,3 @@ textDimName <- function(word_embeddings,
 
   return(word_embeddings)
 }
-
-
-
