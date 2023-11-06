@@ -4,9 +4,9 @@
 #' @return Column with all words and an accompanying column with their frequency.
 #' @importFrom tibble as_tibble
 #' @noRd
-unique_freq_words <- function(words) {
+unique_freq_words <- function(words, tolower = TRUE) {
   # Make all words lower case
-  words <- tolower(words)
+  if(tolower) words <- tolower(words)
 
   # separate words/tokens combined with /
   words <- gsub("/", " ", words)

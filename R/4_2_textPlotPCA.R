@@ -33,8 +33,9 @@ textPCA <- function(words,
   set.seed(seed)
   # PCA on word_types_embeddings
   # Select word embeddings to be included in plot
-  uniques_words_all <- unique_freq_words(words)
-  uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, word_types_embeddings)
+  no_upcase_embedding_words <- !any(grepl("[A-Z]", word_types_embeddings$words))
+  uniques_words_all <- unique_freq_words(words, tolower = no_upcase_embedding_words)
+  uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, word_types_embeddings, tolower = no_upcase_embedding_words)
   uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
   rec_pca <- recipes::recipe(~., data = uniques_words_all_wordembedding)
