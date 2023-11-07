@@ -69,19 +69,19 @@
 #' @importFrom dplyr bind_cols select full_join arrange
 #' @export
 textPredict <- function(model_info = NULL,
-                           word_embeddings = NULL,
-                           x_append = NULL,
-                           type = NULL,
-                           dim_names = TRUE,
-                           texts = NULL,
-                           premade_embeddings = NULL, 
-                           model_platform = "github",
-                           model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS",
-                           save_model = FALSE, 
-                           model_name = NULL,
-                           threshold = NULL, 
-                           view_prob = FALSE,
-                           ...) {
+                        word_embeddings = NULL,
+                        x_append = NULL,
+                        type = "class",
+                        dim_names = TRUE,
+                        texts = NULL,
+                        premade_embeddings = NULL, 
+                        model_platform = "github",
+                        model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS",
+                        save_model = FALSE, 
+                        model_name = NULL,
+                        threshold = NULL, 
+                        view_prob = FALSE,
+                        ...) {
   
   # Stop message if user defines both word_embeddings and texts
   if (!is.null(texts) & !is.null(word_embeddings)) {
@@ -223,7 +223,7 @@ textPredict <- function(model_info = NULL,
     }
     
     # If the user desires to view the classes and the probability columns.
-    else if(type == "class" & view_prob == TRUE){
+    if(type == "class" & view_prob == TRUE){
       predicted_scores2 <- predicted_scores2 %>%
         mutate(predicted_class = ifelse(!!sym(class1_col_name) >= threshold, class1, class2)) %>%
         select(predicted_class, everything())
@@ -286,17 +286,17 @@ textPredictAll <- function(models,
                            x_append = NULL,
                            ...) {
   output_predictions <- list()
-
+  
   # If textTrain has created many models at the same time, select them from "all_output".
   if (!is.null(models$all_output)) {
     models <- models$all_output
   }
-
+  
   # Remove singlewords_we if it exist
   if (!is.null(word_embeddings$singlewords_we)) {
     word_embeddings$singlewords_we <- NULL
   }
-
+  
   # i = 1
   for (i in seq_len(length(models))) {
     preds <- textPredict(
@@ -304,7 +304,7 @@ textPredictAll <- function(models,
       word_embeddings,
       x_append, ...
     )
-
+    
     output_predictions[[i]] <- preds
   }
   output_predictions1 <- dplyr::bind_cols(output_predictions)
@@ -364,21 +364,21 @@ textPredictTest <- function(y1,
                             bootstraps_times = 1000,
                             seed = 6134,
                             ...) {
-
+  
   ## If comparing predictions from models that predict the SAME outcome
   if (method == "t-test") {
     yhat1_absolut_error <- abs(yhat1 - y1)
     yhat1_absolut_error_mean <- mean(yhat1_absolut_error)
     yhat1_absolut_error_sd <- sd(yhat1_absolut_error)
-
+    
     yhat2_absolut_error <- abs(yhat2 - y1)
     yhat2_absolut_error_mean <- mean(yhat2_absolut_error)
     yhat2_absolut_error_sd <- sd(yhat2_absolut_error)
-
+    
     # T-test
     t_test_results <- stats::t.test(yhat1_absolut_error,
-      yhat2_absolut_error,
-      paired = paired, ...
+                                    yhat2_absolut_error,
+                                    paired = paired, ...
     ) # , ... Double check
     # Effect size
     cohensD <- cohens_d(
@@ -394,13 +394,13 @@ textPredictTest <- function(y1,
     output <- list(descriptives, cohensD, t_test_results)
     names(output) <- c("Descriptives", "Effect_size", "Test")
   }
-
+  
   ## If comparing predictions from models that predict DIFFERENT outcomes
-
+  
   if (method == "bootstrap") {
     set.seed(seed)
     # Bootstrap data to create distribution of correlations; help(bootstraps)
-
+    
     # Correlation function
     if(statistic == "correlation"){
       stats_on_bootstrap <- function(split) {
@@ -408,51 +408,51 @@ textPredictTest <- function(y1,
                    rsample::analysis(split)[[2]])
       }
     }
-
-
+    
+    
     # AUC function
     if(statistic == "auc"){
-
+      
       stats_on_bootstrap <- function(split) {
         yardstick::roc_auc_vec(as.factor(rsample::analysis(split)[[1]]),
                                rsample::analysis(split)[[2]],
                                event_level = event_level)
       }
     }
-
-
+    
+    
     # Creating correlation distribution for y1 and yhat1
     y_yhat1_df <- tibble::tibble(y1, yhat1)
     boots_y1 <- rsample::bootstraps(y_yhat1_df,
                                     times = bootstraps_times,
                                     apparent = FALSE)
-
+    
     boot_corrss_y1 <- boots_y1 %>%
       dplyr::mutate(corr_y1 = purrr::map(splits, stats_on_bootstrap))
-
-
-
+    
+    
+    
     boot_y1_distribution <- boot_corrss_y1 %>%
       tidyr::unnest(corr_y1) %>%
       dplyr::select(corr_y1)
-
+    
     # Creating correlation distribution for y2 and yhat2
     y_yhat2_df <- tibble::tibble(y2, yhat2)
     boots_y2 <- rsample::bootstraps(y_yhat2_df,
                                     times = bootstraps_times,
                                     apparent = FALSE)
-
+    
     boot_corrss_y2 <- boots_y2 %>%
       dplyr::mutate(corr_y2 = purrr::map(splits, stats_on_bootstrap))
-
+    
     boot_y2_distribution <- boot_corrss_y2 %>%
       tidyr::unnest(corr_y2) %>%
       dplyr::select(corr_y2)
-
-
+    
+    
     ### Examining the overlap
     x_list_dist <- list(boot_y1_distribution$corr_y1, boot_y2_distribution$corr_y2)
-
+    
     output <- overlapping::overlap(x_list_dist)
     output <- list(output$OV[[1]])
     names(output) <- "overlapp_p_value"
