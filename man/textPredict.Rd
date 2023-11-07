@@ -8,7 +8,7 @@ textPredict(
   model_info = NULL,
   word_embeddings = NULL,
   x_append = NULL,
-  type = NULL,
+  type = "class",
   dim_names = TRUE,
   texts = NULL,
   premade_embeddings = NULL,
