@@ -8,7 +8,7 @@ textPredict(
   model_info = NULL,
   word_embeddings = NULL,
   x_append = NULL,
-  type = "class",
+  type = NULL,
   dim_names = TRUE,
   texts = NULL,
   premade_embeddings = NULL,
@@ -19,6 +19,11 @@ textPredict(
   model_name = NULL,
   threshold = NULL,
   view_prob = FALSE,
+  show_texts = FALSE,
+  implicit_motive = FALSE,
+  device = "cpu",
+  keep_token_embeddings = FALSE,
+  user_id = NULL,
   ...
 )
 }
@@ -54,7 +59,9 @@ but 'save_model' is set to TRUE, the model will be saved as 'imported_model.RDS'
 
 \item{threshold}{(numeric) Determine threshold if you are using a logistic model (default = 0.5).}
 
-\item{view_prob}{(boolean) If you are using a logistic model and view_prob is set to TRUE, then both classification and the underlying probabilities will be 
+\item{view_prob}{(boolean) If you are using a logistic model and view_prob is set to TRUE, then both classification and the underlying probabilities will be}
+
+\item{user_id}{(list) User_id associates specific sentences with particular individuals. User_id must be defined when calculating implicit motives. (default = NULL)
 shown (default = FALSE).}
 
 \item{...}{Setting from stats::predict can be called.}

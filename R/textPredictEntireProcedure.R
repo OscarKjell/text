@@ -185,7 +185,9 @@ textReturnModelAndEmbedding <- function(
     type = "class",
     max_token_to_sentence = 4, 
     aggregation_from_layers_to_tokens = "concatenate",
-    aggregation_from_tokens_to_texts = "mean"
+    aggregation_from_tokens_to_texts = "mean", 
+    device = "cpu", 
+    keep_token_embeddings = FALSE
 ) {
   
   # Load model from github. 
@@ -195,10 +197,12 @@ textReturnModelAndEmbedding <- function(
     # Save model into working-directory and automatically save it as "imported_model".  
     if (save_model == TRUE & is.null(model_name)){
       saveRDS(loaded_model, "imported_model.RDS")
+      print("The model has been downloaded")
     }
     #  Save model into working-directory and automatically save it as model_name.  
     else if (save_model == TRUE & !is.null(model_name)){
       saveRDS(loaded_model, model_name)
+      print("The model has been downloaded")
     }
   } 
   
@@ -259,7 +263,9 @@ textReturnModelAndEmbedding <- function(
                             layers = model_layers,
                             max_token_to_sentence = max_token_to_sentence, 
                             aggregation_from_layers_to_tokens = aggregation_from_layers_to_tokens,
-                            aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts
+                            aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts, 
+                            device = device, 
+                            keep_token_embeddings = keep_token_embeddings
     )
   } 
   
