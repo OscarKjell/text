@@ -1,68 +1,4 @@
 
-#' Returns a tibble with values relevant for calculating implicit motives 
-#' @param texts Texts to predict
-#' @param user_id A column with user ids. 
-#' @param predicted_scores2 Predictions from textPredict. 
-#' @return Returns a tibble with values relevant for calculating implicit motives 
-#' @noRd
-implicit_motives <- function(texts, user_id, predicted_scores2){
-  
-  table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
-  num_persons <- length(table_uniques2)
-  
-  summations <- data.frame(
-    OUTCOME_USER_SUM_CLASS = numeric(num_persons),
-    OUTCOME_USER_SUM_PROB = numeric(num_persons),
-    wc_person_per_1000 = numeric(num_persons)
-  )
-  
-  summations[1, c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB")] <- c(
-    OUTCOME_USER_SUM_CLASS = sum(as.numeric(predicted_scores2[[1]][1:table_uniques2[[1]]]), na.rm = TRUE),
-    OUTCOME_USER_SUM_PROB = sum(as.numeric(predicted_scores2[[3]][1:table_uniques2[[1]]]), na.rm = TRUE)
-  )
-  
-  for (user_ids in 2:length(table_uniques2)) {
-    start_idx <- sum(table_uniques2[1:(user_ids - 1)]) + 1
-    end_idx <- sum(table_uniques2[1:user_ids])
-    
-    summations[user_ids, c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB")] <- c(
-      OUTCOME_USER_SUM_CLASS = sum(as.numeric(predicted_scores2[[1]][start_idx:end_idx]), na.rm = TRUE),
-      OUTCOME_USER_SUM_PROB = sum(as.numeric(predicted_scores2[[3]][start_idx:end_idx]), na.rm = TRUE)
-    )
-  }
-  
-  summations[1, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[1:table_uniques2[[1]]], ' ')), na.rm = TRUE) / 1000
-  
-  for (user_ids in 2:length(table_uniques2)) {
-    start_idx <- sum(table_uniques2[1:(user_ids - 1)]) + 1
-    end_idx <- sum(table_uniques2[1:user_ids])
-    
-    summations[user_ids, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[start_idx:end_idx], ' ')), na.rm = TRUE) / 1000
-  }
-  
-  return(summations)
-}
-
-#' implicit_motives_pred returns residuals from robust linear regression. 
-#' @param implicit_motives Tibble returned from function implicit_motives. 
-#' @return implicit_motives_pred returns residuals from robust linear regression. 
-#' @noRd
-implicit_motives_pred <- function(implicit_motives){
-  # For OUTCOME_USER_SUM_PROB
-  rlm.OUTCOME_USER_SUM_PROB <- lmrob(formula = OUTCOME_USER_SUM_PROB  ~ wc_person_per_1000, data = implicit_motives, setting = "KS2014")
-  OUTCOME_USER_SUM_PROB.residual1 <- resid(rlm.OUTCOME_USER_SUM_PROB)
-  OUTCOME_USER_SUM_PROB.residual1.z <- scale(OUTCOME_USER_SUM_PROB.residual1)
-  
-  # For OUTCOME_USER_SUM_CLASS
-  rlm.OUTCOME_USER_SUM_CLASS <- lmrob(formula = OUTCOME_USER_SUM_CLASS  ~ wc_person_per_1000, data = implicit_motives, setting = "KS2014")
-  OUTCOME_USER_SUM_CLASS.residual1 <- resid(rlm.OUTCOME_USER_SUM_CLASS)
-  OUTCOME_USER_SUM_CLASS.residual1.z <- scale(OUTCOME_USER_SUM_CLASS.residual1)
-  
-  implicit_motives_pred <- list(OUTCOME_USER_SUM_PROB.residual1.z, OUTCOME_USER_SUM_CLASS.residual1.z)
-  
-  return(implicit_motives_pred)
-}
-
 #' Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classes from embeddings or text using textPredict. 
 #'
 #' @param model_info (model object) Model info (e.g., saved output from textTrain,
@@ -85,7 +21,6 @@ implicit_motives_pred <- function(implicit_motives){
 #' but 'save_model' is set to TRUE, the model will be saved as 'imported_model.RDS'.
 #' @param threshold (numeric) Determine threshold if you are using a logistic model (default = 0.5). 
 #' @param view_prob (boolean) If you are using a logistic model and view_prob is set to TRUE, then both classification and the underlying probabilities will be 
-#' @param user_id (list) User_id associates specific sentences with particular individuals. User_id must be defined when calculating implicit motives. (default = NULL)
 #' shown (default = FALSE). 
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predictions from either embeddings or text input. 
@@ -146,30 +81,12 @@ textPredict <- function(model_info = NULL,
                         model_name = NULL,
                         threshold = NULL, 
                         view_prob = FALSE,
-                        show_texts = FALSE, 
-                        implicit_motive = FALSE,
-                        device = "cpu", 
-                        keep_token_embeddings = FALSE,
-                        user_id = NULL, 
                         ...) {
   
   # Stop message if user defines both word_embeddings and texts
   if (!is.null(texts) & !is.null(word_embeddings)) {
     stop('Both arguments: "texts" and "word_embeddings" cannot be defined simultaneously. Choose one or the other.')
   }
-  
-  ####### Special treatment for implicit motives ####### 
-  
-  # type must be class and view_prob must be TRUE
-  if (
-    grepl("power", lower_case_model) ||
-    grepl("achievement", lower_case_model) ||
-    grepl("affiliation", lower_case_model) && !is.null(user_id)
-  ) {
-    type = "class"
-    view_prob = TRUE
-  }
-  
   
   # This section is activated if the user prefer to use a pretrained 
   if (!is.null(texts) | !is.null(premade_embeddings)) {
@@ -181,9 +98,7 @@ textPredict <- function(model_info = NULL,
                                                model_reference = model_reference, 
                                                save_model = save_model, 
                                                model_name = model_name, 
-                                               type = type, 
-                                               device = device, 
-                                               keep_token_embeddings = keep_token_embeddings)
+                                               type = type)
     
     # Retrieve model_info from emb_and_mod object
     model_info <- emb_and_mod$loaded_model
@@ -200,7 +115,7 @@ textPredict <- function(model_info = NULL,
     stop('No model was found.')
   }
   # check if embeddings are defined
-  if (is.null(word_embeddings)) {
+  if (is.null(word_embeddings) & is.null(x_append)) {
     stop('No embeddings were found.')
   }
   
@@ -312,7 +227,7 @@ textPredict <- function(model_info = NULL,
       predicted_scores2 <- predicted_scores2 %>%
         mutate(predicted_class = ifelse(!!sym(class1_col_name) >= threshold, class1, class2)) %>%
         select(predicted_class, everything())
-    } else if(is.null(type)){}
+    }
   }
   
   # If no threshold is defined, then use the predefined threshold of 50%. 
@@ -347,40 +262,8 @@ textPredict <- function(model_info = NULL,
       predicted_scores2 <- cbind(predicted_scores2, prob_scores)
     }
   }
-  if (show_texts){
-    predicted_scores2 <- predicted_scores2 %>% 
-      mutate(texts = texts) 
-  }
   
-  ####### Implicit motives section ###### 
-  
-  lower_case_model <- tolower(model_reference)
-  
-  # Check for implicit motives configuration
-  if (
-    grepl("power", lower_case_model) ||
-    grepl("achievement", lower_case_model) ||
-    grepl("affiliation", lower_case_model) && !is.null(user_id)
-  ) {
-    
-    if (type != "prob" || type == "prob")
-    
-    # Retrieve Data
-    implicit_motives <- implicit_motives(texts, user_id, predicted_scores2)
-    
-    # Predict 
-    predicted <- implicit_motives_pred(implicit_motives)
-    print(predicted)
-    # Summarize all predictions
-    summary_list <- list(predicted_scores2, predicted[[1]], predicted[[2]]) 
-    
-    return(summary_list)
-    
-  } else {
-    
-    return(predicted_scores2)
-    
-  }
+  return(predicted_scores2)
 }
 
 #' Predict from several models, selecting the correct input
