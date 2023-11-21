@@ -11,14 +11,16 @@ textPredict(
   type = NULL,
   dim_names = TRUE,
   texts = NULL,
-  premade_embeddings = NULL,
   model_platform = "github",
   model_reference =
     "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS",
   save_model = FALSE,
   model_name = NULL,
   threshold = NULL,
-  view_prob = FALSE,
+  show_prob = FALSE,
+  show_texts = FALSE,
+  device = "cpu",
+  user_id = NULL,
   ...
 )
 }
@@ -26,7 +28,7 @@ textPredict(
 \item{model_info}{(model object) Model info (e.g., saved output from textTrain,
 textTrainRegression or textRandomForest).}
 
-\item{word_embeddings}{(tibble) Embeddings from e.g., textEmbed().}
+\item{word_embeddings}{(tibble) Embeddings from e.g., textEmbed(). If you're using a premade model, then submit either texts or word_embeddings (default = NULL).}
 
 \item{x_append}{(tibble) Variables to be appended after the word embeddings (x).}
 
@@ -38,8 +40,6 @@ classifications are returned (default = "class". For probabilities use "prob").}
 word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.}
 
 \item{texts}{(character) Text to predict. If this argument is specified, then arguments "word_embeddings" and "premade embeddings" cannot be defined (default = NULL).}
-
-\item{premade_embeddings}{(Embeddings from e.g., textEmbed) Use premade embeddings for prediction. If this argument is specified, then argument "texts" must be set to NULL (default = NULL).}
 
 \item{model_platform}{(character) Either "github" or "local" (default = "github").}
 
@@ -54,7 +54,14 @@ but 'save_model' is set to TRUE, the model will be saved as 'imported_model.RDS'
 
 \item{threshold}{(numeric) Determine threshold if you are using a logistic model (default = 0.5).}
 
-\item{view_prob}{(boolean) If you are using a logistic model and view_prob is set to TRUE, then both classification and the underlying probabilities will be 
+\item{show_prob}{(boolean) If you are using a logistic model and show_prob is set to TRUE, then both classification and the underlying probabilities will be}
+
+\item{show_texts}{(boolean) Show texts together with predictions (default = FALSE).}
+
+\item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
+specific device number such as 'mps:1'.}
+
+\item{user_id}{(list) User_id associates specific sentences with particular individuals. User_id must be defined when calculating implicit motives. (default = NULL)
 shown (default = FALSE).}
 
 \item{...}{Setting from stats::predict can be called.}
@@ -80,17 +87,25 @@ prediction1 <- textPredict(trained_model,
 prediction2 <- textPredict(texts = text_to_predict)
 
 # Example 4: (predict using a pretrained github model and save the model locally)
-prediction3 <- textPredictA(texts = text_to_predict, 
+prediction3 <- textPredict(texts = text_to_predict, 
                             model_platform = "github", 
                             model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS",
                             save_model = TRUE)
                            
 # Example 5: (predict using a pretrained logistic github model and return probabilities and classifications simultaneously)
-prediction4 <- textPredictA(texts = text_to_predict, 
+prediction4 <- textPredict(texts = text_to_predict, 
                             model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_github_model_logistic.RDS",
                             type = "class",
                             threshold = 0.7, 
-                            view_prob = TRUE)
+                            show_prob = TRUE)
+                       
+# Example 6: (calculate implicit motives)
+schone_training <- read.RDS("schone_training.rds")
+
+implicit_motives <- textPredict(texts = schone_training$text,
+                                 model_reference = "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_power_pen_30.rds",
+                                 threshold = 0.07, 
+                                 user_id = schone_training$participant_id)
 }
 
 \dontrun{
