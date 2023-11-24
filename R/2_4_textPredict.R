@@ -25,9 +25,6 @@ textReturnModelAndEmbedding <- function(
     save_model = FALSE, 
     model_name = NULL, 
     type = "class",
-    max_token_to_sentence = 4, 
-    aggregation_from_layers_to_tokens = "concatenate",
-    aggregation_from_tokens_to_texts = "mean", 
     device = "cpu"
 ) {
   
@@ -138,8 +135,6 @@ textReturnModelAndEmbedding <- function(
   return(emb_and_model)
 }
 
-
-
 #' Returns a tibble with values relevant for calculating implicit motives 
 #' @param texts Texts to predict
 #' @param user_id A column with user ids. 
@@ -148,20 +143,24 @@ textReturnModelAndEmbedding <- function(
 #' @noRd
 implicit_motives <- function(texts, user_id, predicted_scores2){
   
+  # Create a table with the number of sentences per user 
   table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
   num_persons <- length(table_uniques2)
   
+  # Create dataframe 
   summations <- data.frame(
     OUTCOME_USER_SUM_CLASS = numeric(num_persons),
     OUTCOME_USER_SUM_PROB = numeric(num_persons),
     wc_person_per_1000 = numeric(num_persons)
   )
   
+  # Summarize classes and probabilities (for the first row)
   summations[1, c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB")] <- c(
     OUTCOME_USER_SUM_CLASS = sum(as.numeric(predicted_scores2[[1]][1:table_uniques2[[1]]]), na.rm = TRUE),
     OUTCOME_USER_SUM_PROB = sum(as.numeric(predicted_scores2[[3]][1:table_uniques2[[1]]]), na.rm = TRUE)
   )
   
+  # Summarize classes and probabilities (for the rest of the rows)
   for (user_ids in 2:length(table_uniques2)) {
     start_idx <- sum(table_uniques2[1:(user_ids - 1)]) + 1
     end_idx <- sum(table_uniques2[1:user_ids])
@@ -172,8 +171,10 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
     )
   }
   
+  # Calculate wc_person_per_1000 (for the first row)
   summations[1, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[1:table_uniques2[[1]]], ' ')), na.rm = TRUE) / 1000
   
+  # Calculate wc_person_per_1000 (for the rest of the rows)
   for (user_ids in 2:length(table_uniques2)) {
     # must start on index of the next user, therefore +1
     start_idx <- sum(table_uniques2[1:(user_ids - 1)]) + 1
@@ -211,6 +212,49 @@ implicit_motives_pred <- function(sqrt_implicit_motives){
   
   return(implicit_motives_pred)
 }
+
+
+implicit_motives_results <- function(model_reference, 
+                                     user_id, 
+                                     predicted_scores2, 
+                                     predicted, 
+                                     texts){
+  
+  lower_case_model <- tolower(model_reference)
+  
+  if (grepl("power", lower_case_model)){
+    column_name <- "power"
+  }
+  if (grepl("affiliation", lower_case_model)){
+    column_name <- "affiliation"
+  }
+  if (grepl("achievement", lower_case_model)){
+    column_name <- "achievement"
+  }
+  
+  # Retrieve Data
+  implicit_motives <- implicit_motives(texts, user_id, predicted_scores2)
+  
+  # Predict 
+  predicted <- implicit_motives_pred(implicit_motives)
+  
+  # Full column name
+  class_col_name <- paste0(column_name, "_class")
+  
+  #Change column name in predicted_scores2 
+  colnames(predicted_scores2)[1] <- class_col_name
+  
+  # Summarize all predictions
+  summary_list <- list(sentence_predictions = predicted_scores2, person_predictions_prob  = predicted[1], person_predictions_class = predicted[2]) 
+  
+  #display message to user
+  cat(colourise("Predictions of implicit motives are ready!", fg = "green"))
+  cat("\n")
+  
+  return(summary_list)
+}
+
+
 
 #' Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classes from embeddings or text using textPredict. 
 #'
@@ -325,12 +369,13 @@ textPredict <- function(model_info = NULL,
     
     type = "class"
     show_prob = TRUE
+    show_texts = TRUE 
   }
   #### End Special treatment for implicit motives #### 
-
-  # This section is activated if the user prefer to use a pretrained 
-  if (!is.null(texts)) {
   
+  # This section is activated if the user prefer to use a pretrained model
+  if (!is.null(texts)) {
+    
     # Retrieve embeddings that are compatible with the pretrained model, and the model object itself.  
     emb_and_mod <- textReturnModelAndEmbedding(text_to_predict = texts,
                                                premade_embeddings = word_embeddings, 
@@ -376,6 +421,7 @@ textPredict <- function(model_info = NULL,
     
     # Select the word embeddings
     word_embeddings <- word_embeddings[word_embeddings_names]
+    
   } else {
     # Remove specific names in the word embeddings
     word_embeddings <- textDimName(word_embeddings,
@@ -409,10 +455,11 @@ textPredict <- function(model_info = NULL,
   )
   new_data1 <- new_data1$x1
   
-  # Dealing with NAs
+  # Dealing with NAs # Position of new_data_id_nr_col and new_data1 has noe been switched.  
   new_data1$id_nr <- c(seq_len(nrow(new_data1)))
-  new_data1 <- new_data1[complete.cases(new_data1), ]
   new_data_id_nr_col <- tibble::as_tibble_col(seq_len(nrow(new_data1)), column_name = "id_nr")
+  new_data1 <- new_data1[complete.cases(new_data1), ]
+  
   
   #### Load prepared_with_recipe
   data_prepared_with_recipe <- recipes::bake(model_info$final_recipe, new_data1)
@@ -520,26 +567,20 @@ textPredict <- function(model_info = NULL,
     grepl("affiliation", lower_case_model) && !is.null(user_id)
   ) {
     
-    # Retrieve Data
-    implicit_motives <- implicit_motives(texts, user_id, predicted_scores2)
     
-    # Predict 
-    predicted <- implicit_motives_pred(implicit_motives)
-    
-    # Summarize all predictions
-    summary_list <- list(predicted_scores2, predicted[1], predicted[2]) 
-    
-    #display message to user
-    cat(colourise("Predictions with implicit motives are ready!", fg = "green"))
-    
-    return(summary_list)
+    implicit_motives_results(model_reference = model_reference, 
+                             user_id = user_id, 
+                             predicted_scores2 = predicted_scores2, 
+                             predicted = predicted,
+                             texts = texts)
+  
     #### End Implicit motives section ##### 
     
   } else {
     
     #display message to user
     cat(colourise("Predictions are ready!", fg = "green"))
-    
+    cat("\n")
     return(predicted_scores2)
     
   }
@@ -738,7 +779,3 @@ textPredictTest <- function(y1,
   }
   output
 }
-
-
-
-
