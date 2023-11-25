@@ -822,8 +822,11 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' @noRd
 generate_placement_vector <- function(raw_layers, texts) {
   
+  # Extract column name, if there is one. 
   column_name <- colnames(texts)
+  
   context_tokens <- NULL
+  
   
   if (!is.null(raw_layers$context_tokens$value)) {
     context_tokens <- raw_layers$context_tokens$value
@@ -834,6 +837,7 @@ generate_placement_vector <- function(raw_layers, texts) {
     context_tokens <- raw_layers$context_tokens$texts
   }
   
+  # Try with column name
   if (!is.null(column_name)) {
     context_tokens <- raw_layers$context_tokens[[column_name]]
   }
