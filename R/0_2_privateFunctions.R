@@ -341,42 +341,6 @@ path_exist_download_files <- function(wanted_file) {
 ###################################### Implicit motives section ###################################### 
 ######################################                          ###################################### 
 
-
-#' Combines the current and the next word-embedding for all word-embeddings per story_id
-#' @param story_id Column with story-id:s
-#' @param word_embeddings Word-embeddings created by ex. textEmbed.  
-#' @return Returns word-embeddings with the running-average function applied.
-#' @noRd
-story_id_function <- function(story_id, word_embeddings) {
-  
-  # measure time
-  T1_story_id <- Sys.time()
-  
-  # add story_id to we_training_study_ids
-  word_embeddings$texts$story_id <- as.numeric(as.factor(story_id))
-  
-  # calculate the running average, i.e "mean concatenation" of embeddings located in near proximity.  
-  running_avg <- function(x) {
-    c(x[1], (x[-1] + x[-length(x)]) / 2)
-  }
-  
-  # apply the running average function to each word_embedding. 
-  modified_word_embeddings <- dplyr::group_by(word_embeddings$texts, story_id) %>%
-    dplyr::mutate(across(starts_with("Dim"), running_avg))
-  
-  # remove story_id column
-  modified_word_embeddings <- dplyr::ungroup(modified_word_embeddings)
-  
-  T2_story_id <- Sys.time()
-  Time_story_id <- T2_story_id - T1_story_id
-  Time_story_id <- sprintf("Completed word-embedding concatenation per story-id, duration: %f %s", Time_story_id, units(Time_story_id))
-  cat(colourise(Time_story_id, fg = "green"))
-  cat("\n")
-  
-  # return the concatenated embeddings
-  return(modified_word_embeddings)
-}
-
 #' Returns a tibble with values relevant for calculating implicit motives 
 #' @param texts Texts to predict
 #' @param user_id A column with user ids. 

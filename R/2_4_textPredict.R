@@ -131,7 +131,7 @@ textReturnModelAndEmbedding <- function(
   }
   
   # Calculate the average of the current and the next word_embedding per story_id
-  if (!is.null(story_id)){
+  if (!is.null(story_id)) {
     
     T1_story_id <- Sys.time()
     
@@ -143,13 +143,12 @@ textReturnModelAndEmbedding <- function(
     }
     
     # Apply the running average function to each embedding column by story_id
-    embeddings$texts$texts <- embeddings$texts$texts %>%
-      group_by(story_id) %>%
-      mutate(across(starts_with("Dim"), running_avg)) %>%
-      ungroup()
+    embeddings$texts$texts <- dplyr::group_by(embeddings$texts$texts, story_id) %>%
+      dplyr::mutate(across(starts_with("Dim"), running_avg)) %>%
+      dplyr::ungroup()
     
     # If you want to remove grouping, you can use ungroup()
-    embeddings$texts$texts <- embeddings$texts$texts %>% ungroup()
+    embeddings$texts$texts <- dplyr::ungroup(embeddings$texts$texts)
     
     T2_story_id <- Sys.time()
     Time_story_id <- T2_story_id - T1_story_id
