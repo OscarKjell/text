@@ -21,6 +21,7 @@ textPredict(
   show_texts = FALSE,
   device = "cpu",
   user_id = NULL,
+  story_id = NULL,
   ...
 )
 }
@@ -61,13 +62,16 @@ but 'save_model' is set to TRUE, the model will be saved as 'imported_model.RDS'
 \item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 specific device number such as 'mps:1'.}
 
-\item{user_id}{(list) User_id associates specific sentences with particular individuals. User_id must be defined when calculating implicit motives. (default = NULL)
+\item{user_id}{(list) user_id associates sentences with their writers. User_id must be defined when calculating implicit motives. (default = NULL)
 shown (default = FALSE).}
+
+\item{story_id}{(list) story_id associates sentences with their stories. If story_id is defined, then the mean of the current and previous 
+word-embedding per story-id will be calculated. (default = NULL)}
 
 \item{...}{Setting from stats::predict can be called.}
 }
 \value{
-Predictions from either embeddings or text input.
+Predictions from word-embedding or text input.
 }
 \description{
 Trained models created by e.g., textTrain() or strored on e.g., github can be used to predict new scores or classes from embeddings or text using textPredict.
@@ -99,13 +103,13 @@ prediction4 <- textPredict(texts = text_to_predict,
                             threshold = 0.7, 
                             show_prob = TRUE)
                        
-# Example 6: (calculate implicit motives)
+# Example 6: (Automatic implicit motive coding)
 schone_training <- read.RDS("schone_training.rds")
 
 implicit_motives <- textPredict(texts = schone_training$text,
-                                 model_reference = "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_power_pen_30.rds",
-                                 threshold = 0.07, 
-                                 user_id = schone_training$participant_id)
+                                 model_reference = "power",
+                                 user_id = schone_training$participant_id, 
+                                 story_id = schone_training$story_id) 
 }
 
 \dontrun{
