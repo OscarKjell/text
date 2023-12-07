@@ -248,7 +248,6 @@ textReturnModelAndEmbedding <- function(
 #' @importFrom stats predict
 #' @importFrom tibble is_tibble as_tibble_col
 #' @importFrom dplyr bind_cols select full_join arrange
-#' @importFrom dplyr bind_cols select full_join arrange
 #' @importFrom magrittr %>%
 #' @export
 textPredict <- function(model_info = NULL,
