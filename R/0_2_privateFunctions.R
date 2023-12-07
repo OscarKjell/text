@@ -426,7 +426,7 @@ update_user_and_texts <- function(df) {
   updated_texts <- character()
   
   for (i in seq_along(df$user_id)) {
-    sentences <- str_split(df$texts[i], "(?<=\\.\\s)", simplify = TRUE)
+    sentences <- stringr::str_split(df$texts[i], "(?<=\\.\\s)", simplify = TRUE)
     
     # Filter out empty sentences
     sentences <- sentences[sentences != ""]
@@ -440,7 +440,7 @@ update_user_and_texts <- function(df) {
     
     # Check if sentences should be split based on the length of each sentence
     split_indices <- sapply(current_texts, function(sentence) {
-      length(unlist(str_split(sentence, "\\s+"))) > 2
+      length(unlist(stringr::str_split(sentence, "\\s+"))) > 2
     })
     
     # Append the updated user_id and texts to the results
