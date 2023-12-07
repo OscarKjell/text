@@ -357,7 +357,8 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
   summations <- data.frame(
     OUTCOME_USER_SUM_CLASS = numeric(num_persons),
     OUTCOME_USER_SUM_PROB = numeric(num_persons),
-    wc_person_per_1000 = numeric(num_persons)
+    wc_person_per_1000 = numeric(num_persons),
+    user_ids = numeric(num_persons)
   )
   
   # Summarize classes and probabilities (for the first row)
@@ -388,6 +389,8 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
     
     summations[user_ids, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[start_idx:end_idx], ' ')), na.rm = TRUE) / 1000
   }
+  
+  summations["user_ids"] <- c(1:num_persons)
   return(summations)
 }
 
@@ -410,8 +413,9 @@ implicit_motives_pred <- function(sqrt_implicit_motives){
   
   # Insert residuals into a tibble
   implicit_motives_pred <- tibble::tibble(
-    residual_PROB = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
-    residual_CLASS = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)
+    user_id = sqrt_implicit_motives$user_id,
+    person_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
+    person_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)
   )
   
   return(implicit_motives_pred)
@@ -512,8 +516,11 @@ implicit_motives_results <- function(model_reference,
   # Change column name in predicted_scores2 
   colnames(predicted_scores2)[1] <- class_col_name
   
+  # Change from df to tibble 
+  predicted_scores2 <- tibble::as_tibble(predicted_scores2)
+  
   # Summarize all predictions
-  summary_list <- list(sentence_predictions = predicted_scores2, person_predictions_prob  = predicted[1], person_predictions_class = predicted[2]) 
+  summary_list <- list(sentence_predictions = predicted_scores2, person_predictions = predicted) 
   
   # Display message to user
   cat(colourise("Predictions of implicit motives are ready!", fg = "green"))
