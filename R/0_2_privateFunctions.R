@@ -353,6 +353,15 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
   table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
   num_persons <- length(table_uniques2)
   
+  # Define variables 
+  user_id_column <- c()
+  current <- 0
+  # Create user_id_column
+  for (i in 1:num_persons) {
+    current <- current + table_uniques2[[i]]
+    user_id_column <- c(user_id_column, user_id[current])
+  }
+  
   # Create dataframe 
   summations <- data.frame(
     OUTCOME_USER_SUM_CLASS = numeric(num_persons),
@@ -390,7 +399,7 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
     summations[user_ids, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[start_idx:end_idx], ' ')), na.rm = TRUE) / 1000
   }
   
-  summations["user_ids"] <- c(1:num_persons)
+  summations["user_ids"] <- user_id_column
   return(summations)
 }
 
@@ -430,31 +439,29 @@ update_user_and_texts <- function(df) {
   updated_texts <- character()
   
   for (i in seq_along(df$user_id)) {
-    sentences <- stringr::str_split(df$texts[i], "(?<=\\.\\s)", simplify = TRUE)
+    # split sentences on ".", "!", or "?"
+    sentences <- stringi::stri_split(df$texts[i], regex = "[.!?]", simplify = TRUE)
     
-    # Filter out empty sentences
+    # remove any empty sentences
     sentences <- sentences[sentences != ""]
     
-    # Determine the number of sentences
-    num_sentences <- length(sentences)
+    # if more than one sentence, repeat user_id and create a vector of updated texts
+    current_user_id <- rep(df$user_id[i], length(sentences))
+    current_texts <- sentences
     
-    # If more than one sentence, repeat user_id and create a vector of updated texts accordingly
-    current_user_id <- rep(df$user_id[i], max(1, num_sentences))
-    current_texts <- sentences[1:max(1, num_sentences)]
-    
-    # Check if sentences should be split based on the length of each sentence
+    # check if the "next" sentence should be split based on its length (if it exceeds two words)
     split_indices <- sapply(current_texts, function(sentence) {
-      length(unlist(stringr::str_split(sentence, "\\s+"))) > 2
+      length(unlist(stringi::stri_split(sentence, regex = "\\s+"))) > 2
     })
     
-    # Append the updated user_id and texts to the results
+    # append the updated user_id and texts to the results
     updated_user_id <- c(updated_user_id, rep(df$user_id[i], sum(split_indices)))
     updated_texts <- c(updated_texts, current_texts[split_indices])
   }
   
   updated_df <- data.frame(user_id = updated_user_id, texts = updated_texts)
   
-  # Add missing rows with empty texts
+  # since empty rows were deleted, any extra must now be added again. 
   missing_rows <- setdiff(df$user_id, updated_df$user_id)
   if (length(missing_rows) > 0) {
     updated_df <- rbind(updated_df, data.frame(user_id = missing_rows, texts = ""))
