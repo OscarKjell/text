@@ -3,7 +3,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-
+# text 1.1.02
+- `textFineTuneDomain()` is implemented as experimental
+- `textTrainN()` and `textTrainNPlot()` are implemented as experimental
+- `textPredict()` has the option to download models (experimental)
 
 # text 1.1
 ## Functions

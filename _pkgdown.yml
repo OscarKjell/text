@@ -53,6 +53,7 @@ reference:
 - title: Fine-tuning
   contents:
   - textFineTuneTask
+  - textFineTuneDomain
 - title: Language Analysis Tasks
   contents:
   - textClassify
@@ -70,9 +71,6 @@ reference:
     - textTrainRandomForest
     - textTrainN
     - textTrainNPlot
-- title: Predict from text
-  contents:  
-    - textPredictEntireProcedure
 - title: Predict from word embeddings or text
   contents:
     - textPredict
