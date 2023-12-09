@@ -353,11 +353,21 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
   table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
   num_persons <- length(table_uniques2)
   
+  # Define variables 
+  user_id_column <- c()
+  current <- 0
+  # Create user_id_column
+  for (i in 1:num_persons) {
+    current <- current + table_uniques2[[i]]
+    user_id_column <- c(user_id_column, user_id[current])
+  }
+  
   # Create dataframe 
   summations <- data.frame(
     OUTCOME_USER_SUM_CLASS = numeric(num_persons),
     OUTCOME_USER_SUM_PROB = numeric(num_persons),
-    wc_person_per_1000 = numeric(num_persons)
+    wc_person_per_1000 = numeric(num_persons),
+    user_ids = numeric(num_persons)
   )
   
   # Summarize classes and probabilities (for the first row)
@@ -388,6 +398,8 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
     
     summations[user_ids, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[start_idx:end_idx], ' ')), na.rm = TRUE) / 1000
   }
+  
+  summations["user_ids"] <- user_id_column
   return(summations)
 }
 
@@ -410,8 +422,9 @@ implicit_motives_pred <- function(sqrt_implicit_motives){
   
   # Insert residuals into a tibble
   implicit_motives_pred <- tibble::tibble(
-    residual_PROB = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
-    residual_CLASS = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)
+    user_id = sqrt_implicit_motives$user_id,
+    person_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
+    person_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)
   )
   
   return(implicit_motives_pred)
@@ -426,31 +439,29 @@ update_user_and_texts <- function(df) {
   updated_texts <- character()
   
   for (i in seq_along(df$user_id)) {
-    sentences <- str_split(df$texts[i], "(?<=\\.\\s)", simplify = TRUE)
+    # split sentences on ".", "!", or "?"
+    sentences <- stringi::stri_split(df$texts[i], regex = "[.!?]", simplify = TRUE)
     
-    # Filter out empty sentences
+    # remove any empty sentences
     sentences <- sentences[sentences != ""]
     
-    # Determine the number of sentences
-    num_sentences <- length(sentences)
+    # if more than one sentence, repeat user_id and create a vector of updated texts
+    current_user_id <- rep(df$user_id[i], length(sentences))
+    current_texts <- sentences
     
-    # If more than one sentence, repeat user_id and create a vector of updated texts accordingly
-    current_user_id <- rep(df$user_id[i], max(1, num_sentences))
-    current_texts <- sentences[1:max(1, num_sentences)]
-    
-    # Check if sentences should be split based on the length of each sentence
+    # check if the "next" sentence should be split based on its length (if it exceeds two words)
     split_indices <- sapply(current_texts, function(sentence) {
-      length(unlist(str_split(sentence, "\\s+"))) > 2
+      length(unlist(stringi::stri_split(sentence, regex = "\\s+"))) > 2
     })
     
-    # Append the updated user_id and texts to the results
+    # append the updated user_id and texts to the results
     updated_user_id <- c(updated_user_id, rep(df$user_id[i], sum(split_indices)))
     updated_texts <- c(updated_texts, current_texts[split_indices])
   }
   
   updated_df <- data.frame(user_id = updated_user_id, texts = updated_texts)
   
-  # Add missing rows with empty texts
+  # since empty rows were deleted, any extra must now be added again. 
   missing_rows <- setdiff(df$user_id, updated_df$user_id)
   if (length(missing_rows) > 0) {
     updated_df <- rbind(updated_df, data.frame(user_id = missing_rows, texts = ""))
@@ -512,8 +523,11 @@ implicit_motives_results <- function(model_reference,
   # Change column name in predicted_scores2 
   colnames(predicted_scores2)[1] <- class_col_name
   
+  # Change from df to tibble 
+  predicted_scores2 <- tibble::as_tibble(predicted_scores2)
+  
   # Summarize all predictions
-  summary_list <- list(sentence_predictions = predicted_scores2, person_predictions_prob  = predicted[1], person_predictions_class = predicted[2]) 
+  summary_list <- list(sentence_predictions = predicted_scores2, person_predictions = predicted) 
   
   # Display message to user
   cat(colourise("Predictions of implicit motives are ready!", fg = "green"))
