@@ -27,6 +27,7 @@
 #' (usually index 2) as the past state and feed it to the model at the next training step under the keyword argument mems.
 #' @param set_seed (Numeric) Set the seed
 #' @param label_names label name in case of classification; e.g., label_names = c("female", "male").
+#' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param remove_utf8 Boolean (RStudio crashes when including characters being transformed to utf-8; so for now we are removing them)
 #' @param ... Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.
 #' @return A folder containing the pretrained model and output data. The model can then be used, for example, by
