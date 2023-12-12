@@ -40,6 +40,7 @@
 #' @param past_index (Numeric, defaults to -1) Some models like TransformerXL or XLNet can make use of the past hidden states
 #' for their predictions. If this argument is set to a positive int, the Trainer will use the corresponding output
 #' (usually index 2) as the past state and feed it to the model at the next training step under the keyword argument mems.
+#' @param remove_utf8 Boolean (RStudio crashes when including characters being transformed to utf-8; so for now we are removing them)
 #' @param set_seed (Numeric) Set the seed
 #' @param ... Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.
 #' @return A folder containing the pretrained model and output data. The model can then be used, for example, by
@@ -53,20 +54,22 @@
 #' Descriptions of settings can be found in inst/python/task_finetune.py under "class ModelArguments" and "class DataTrainingArguments" as well as
 #' online at https://huggingface.co/docs/transformers/main_classes/trainer.
 #' @export
-textFineTuneDomain <- function(text_data,
-                             model_name_or_path = "bert-base-uncased", # Also how to find my previously created one?
-                             output_dir = "./runs",
-                            validation_proportion = 0.10,
-                            evaluation_proportion = 0.10,
-                             config_name = NULL,
-                             tokenizer_name = NULL,
-                             max_seq_length = 128L,
-                             evaluation_strategy = "epoch",
-                             eval_accumulation_steps = NULL,
-                             num_train_epochs = 3,
-                             past_index = -1,
-                             set_seed = 2022,
-                             ...
+textFineTuneDomain <- function(
+    text_data,
+    model_name_or_path = "bert-base-uncased",
+    output_dir = "./runs",
+    validation_proportion = 0.10,
+    evaluation_proportion = 0.10,
+    config_name = NULL,
+    tokenizer_name = NULL,
+    max_seq_length = 128L,
+    evaluation_strategy = "epoch",
+    eval_accumulation_steps = NULL,
+    num_train_epochs = 3,
+    past_index = -1,
+    remove_utf8 = TRUE,
+    set_seed = 2022,
+    ...
 ){
 
   T1 <- Sys.time()
@@ -97,6 +100,26 @@ textFineTuneDomain <- function(text_data,
 
   if(n_befor>n_after){
     print(paste("Removed incomplete cases. Only using", n_after, "complete cases."))
+  }
+
+
+  # Remove UTF-8 characters before
+  if(remove_utf8 == TRUE){
+    n_utf_before <- nrow(text_data)
+    text_data1 <- select_character_v_utf8(text_data)
+
+    text_data <- dplyr::bind_cols(text_data1,
+                                  text_data["idx"])
+
+    text_data <- text_data[!Encoding(text_data$text) == "UTF-8",]
+    n_utf_after <- nrow(text_data)
+
+    if(n_utf_before > n_utf_after) {
+      utf_info <- paste("Removed utf-8 cases. Only using",
+                        n_utf_after, "cases.")
+
+      print(utf_info)
+    }
   }
 
   # Data set partitioning
@@ -133,7 +156,16 @@ textFineTuneDomain <- function(text_data,
 
   # Return all datasets
   T2 <- Sys.time()
-  T2-T1
+
+  print(T2-T1)
+
+  if(n_before>n_after){
+    print(incomplete_info)
+  }
+  if(n_utf_before > n_utf_after) {
+    print(utf_info)
+  }
+
   colourise("Completed",
             fg = "green", bg = NULL
   )

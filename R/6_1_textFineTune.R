@@ -55,6 +55,7 @@ textFineTuneTask <- function(text_outcome_data,
                              past_index = -1,
                              set_seed = 2022,
                              label_names = NULL,
+                             tokenizer_parallelism = FALSE,
                              remove_utf8 = TRUE,
                              ...
                              ){
@@ -150,6 +151,7 @@ textFineTuneTask <- function(text_outcome_data,
                         eval_accumulation_steps = eval_accumulation_steps,
                         num_train_epochs = num_train_epochs,
                         past_index = past_index,
+                        tokenizer_parallelism = tokenizer_parallelism,
                         label_names = label_names,
                         ...)
 
@@ -157,20 +159,19 @@ textFineTuneTask <- function(text_outcome_data,
   # Return all datasets
 
   T2 <- Sys.time()
-  T2-T1
+
+  print(T2-T1)
+
+  if(n_before>n_after){
+    print(incomplete_info)
+  }
+  if(n_utf_before > n_utf_after) {
+    print(utf_info)
+  }
+
   colourise("Completed",
             fg = "green", bg = NULL
   )
-  if(n_before>n_after){
-    colourise(incomplete_info,
-              fg = "orange", bg = NULL
-    )
-  }
-  if(n_utf_before > n_utf_after) {
-    colourise(utf_info,
-              fg = "orange", bg = NULL
-    )
-  }
 
 }
 

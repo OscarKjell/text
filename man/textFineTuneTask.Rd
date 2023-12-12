@@ -20,6 +20,7 @@ textFineTuneTask(
   past_index = -1,
   set_seed = 2022,
   label_names = NULL,
+  tokenizer_parallelism = FALSE,
   remove_utf8 = TRUE,
   ...
 )

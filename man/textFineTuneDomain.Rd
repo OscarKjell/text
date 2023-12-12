@@ -17,6 +17,7 @@ textFineTuneDomain(
   eval_accumulation_steps = NULL,
   num_train_epochs = 3,
   past_index = -1,
+  remove_utf8 = TRUE,
   set_seed = 2022,
   ...
 )
@@ -56,6 +57,8 @@ before being moved to the CPU (faster but requires more memory).}
 \item{past_index}{(Numeric, defaults to -1) Some models like TransformerXL or XLNet can make use of the past hidden states
 for their predictions. If this argument is set to a positive int, the Trainer will use the corresponding output
 (usually index 2) as the past state and feed it to the model at the next training step under the keyword argument mems.}
+
+\item{remove_utf8}{Boolean (RStudio crashes when including characters being transformed to utf-8; so for now we are removing them)}
 
 \item{set_seed}{(Numeric) Set the seed}
 
