@@ -94,12 +94,15 @@ textFineTuneDomain <- function(
   text_data$idx <- 1:nrow(text_data)
 
   # Only include complete cases
-  n_befor <- nrow(text_data)
+  n_before <- nrow(text_data)
   text_data <- text_data[complete.cases(text_data),]
   n_after <- nrow(text_data)
 
-  if(n_befor>n_after){
-    print(paste("Removed incomplete cases. Only using", n_after, "complete cases."))
+  if(n_before>n_after){
+    incomplete_info <- paste("Removed incomplete cases. Only using",
+                             n_after,
+                             "complete cases.", "\n")
+    print(incomplete_info)
   }
 
 
@@ -116,7 +119,7 @@ textFineTuneDomain <- function(
 
     if(n_utf_before > n_utf_after) {
       utf_info <- paste("Removed utf-8 cases. Only using",
-                        n_utf_after, "cases.")
+                        n_utf_after, "cases.", "\n")
 
       print(utf_info)
     }
@@ -160,15 +163,20 @@ textFineTuneDomain <- function(
   print(T2-T1)
 
   if(n_before>n_after){
-    print(incomplete_info)
+    cat(colourise(incomplete_info,
+                  fg = "brown", bg = NULL
+    ))
   }
   if(n_utf_before > n_utf_after) {
-    print(utf_info)
+    cat(colourise(utf_info,
+                  fg = "brown", bg = NULL
+    ))
+
   }
 
-  colourise("Completed",
+  cat(colourise("Completed!",
             fg = "green", bg = NULL
-  )
+  ))
 
 }
 

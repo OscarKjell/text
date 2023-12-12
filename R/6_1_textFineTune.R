@@ -97,7 +97,7 @@ textFineTuneTask <- function(text_outcome_data,
 
   if(n_before>n_after){
     incomplete_info <- paste("Removed incomplete cases. Only using",
-                             n_after, "complete cases.")
+                             n_after, "complete cases.", "\n")
     print(incomplete_info)
   }
 
@@ -115,7 +115,7 @@ textFineTuneTask <- function(text_outcome_data,
 
     if(n_utf_before > n_utf_after) {
       utf_info <- paste("Removed utf-8 cases. Only using",
-                        n_utf_after, "cases.")
+                        n_utf_after, "cases.", "\n")
 
       print(utf_info)
     }
@@ -163,15 +163,20 @@ textFineTuneTask <- function(text_outcome_data,
   print(T2-T1)
 
   if(n_before>n_after){
-    print(incomplete_info)
+    cat(colourise(incomplete_info,
+                  fg = "brown", bg = NULL
+    ))
   }
   if(n_utf_before > n_utf_after) {
-    print(utf_info)
+    cat(colourise(utf_info,
+                  fg = "brown", bg = NULL
+    ))
+
   }
 
-  colourise("Completed",
+  cat(colourise("Completed",
             fg = "green", bg = NULL
-  )
+  ))
 
 }
 

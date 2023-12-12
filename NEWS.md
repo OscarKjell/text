@@ -3,6 +3,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.1.03
+- `textFineTuneTask()` and `textFineTuneDomain()` removes problematic characters. 
+
 # text 1.1.02
 - `textFineTuneDomain()` is implemented as experimental
 - `textTrainN()` and `textTrainNPlot()` are implemented as experimental
