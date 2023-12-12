@@ -27,6 +27,7 @@
 #' (usually index 2) as the past state and feed it to the model at the next training step under the keyword argument mems.
 #' @param set_seed (Numeric) Set the seed
 #' @param label_names label name in case of classification; e.g., label_names = c("female", "male").
+#' @param remove_utf8 Boolean (RStudio crashes when including characters being transformed to utf-8; so for now we are removing them)
 #' @param ... Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.
 #' @return A folder containing the pretrained model and output data. The model can then be used, for example, by
 #' textEmbed() by providing the model parameter with a the path to the output folder.
@@ -54,6 +55,7 @@ textFineTuneTask <- function(text_outcome_data,
                              past_index = -1,
                              set_seed = 2022,
                              label_names = NULL,
+                             remove_utf8 = TRUE,
                              ...
                              ){
 
@@ -88,13 +90,36 @@ textFineTuneTask <- function(text_outcome_data,
   }
 
   # Only include complete cases
-  n_befor <- nrow(text_outcome_data)
+  n_before <- nrow(text_outcome_data)
   text_outcome_data <- text_outcome_data[complete.cases(text_outcome_data),]
   n_after <- nrow(text_outcome_data)
 
-  if(n_befor>n_after){
-    print(paste("Removed incomplete cases. Only using", n_after, "complete cases."))
+  if(n_before>n_after){
+    incomplete_info <- paste("Removed incomplete cases. Only using",
+                             n_after, "complete cases.")
+    print(incomplete_info)
   }
+
+
+  # Remove UTF-8 characters before
+  if(remove_utf8 == TRUE){
+    n_utf_before <- nrow(text_outcome_data)
+    text_outcome_data1 <- select_character_v_utf8(text_outcome_data)
+
+    text_outcome_data <- dplyr::bind_cols(text_outcome_data1,
+                                          text_outcome_data["label"])
+
+    text_outcome_data <- text_outcome_data[!Encoding(text_outcome_data$text) == "UTF-8",]
+    n_utf_after <- nrow(text_outcome_data)
+
+    if(n_utf_before > n_utf_after) {
+      utf_info <- paste("Removed utf-8 cases. Only using",
+                        n_utf_after, "cases.")
+
+      print(utf_info)
+    }
+  }
+
 
   # Data set partitioning
   train_proportion = 1 - validation_proportion - evaluation_proportion
@@ -136,6 +161,16 @@ textFineTuneTask <- function(text_outcome_data,
   colourise("Completed",
             fg = "green", bg = NULL
   )
+  if(n_before>n_after){
+    colourise(incomplete_info,
+              fg = "orange", bg = NULL
+    )
+  }
+  if(n_utf_before > n_utf_after) {
+    colourise(utf_info,
+              fg = "orange", bg = NULL
+    )
+  }
 
 }
 
