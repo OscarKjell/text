@@ -22,7 +22,7 @@ def fileFinder(folder, pattern):
                 filename = os.path.join(root, basename)
                 filenames.append(filename)
 
-    return True if len(filesNames) > 0 else False
+    return True if len(fileNames) > 0 else False
 
 def folder_2_modelNam(folder):
     
