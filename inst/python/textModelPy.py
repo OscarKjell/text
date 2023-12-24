@@ -2,7 +2,7 @@
 import os, glob, json, re
 from collections import OrderedDict
 from transformers import TRANSFORMERS_CACHE
-# from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
+from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
 
 modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\.h5$)"
 
