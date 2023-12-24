@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, glob, json, re, logging
+import os, glob, json, re
 from collections import OrderedDict
 from transformers import TRANSFORMERS_CACHE
 from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
