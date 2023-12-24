@@ -27,7 +27,7 @@ def fileFinder(name_, pattern):
 def folder_2_modelNam(folder):
     
     pos = folder.find("models--")
-    A = s[pos+len("models--"):]
+    A = folder[pos+len("models--"):]
     
     if "--" in A:
         A = A.replace("--", "/")
