@@ -7,14 +7,6 @@ from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
 
 modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\.h5$)"
 
-def tokenizer1():
-    tokenizer = Tokenizer.from_pretrained("bert-base-cased")
-
-    # Get the path of the downloaded tokenizer
-    tokenizer_path = tokenizer.save_pretrained("./")
-
-    print(f"The path of the downloaded tokenizer is: {tokenizer_path[0]}")
-
 def nameFinder(name_):
     
     if name_.find("/resolve/main") != -1:
