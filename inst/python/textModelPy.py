@@ -59,7 +59,7 @@ def writeNamesTransformers(folder, cachedModels, cachedTokenizers):
 ##            temp = nameFinder(temp)
 ##            cachedTokenizers[temp] = fileJ
 
-    return (cachedModels.sort(), cachedTokenizers.sort())
+    return cachedModels, cachedTokenizers
     
 
 def textModelsPy():
@@ -82,16 +82,16 @@ def textModelsPy():
     #    cachedTokenizers = OrderedDict(sorted(cachedTokenizers.items(), key=lambda k: k[0]))
 
     if cachedModels and not cachedTokenizers:
-        returnTarget = (list(cachedModels), ("NoTokenizersAvailable"))
+        returnTarget = (list(cachedModels.sort()), ("NoTokenizersAvailable"))
         return tuple(returnTarget)
     elif not cachedModels and cachedTokenizers:
-        returnTarget = (("NoModelsAvailable"), list(cachedTokenizers))
+        returnTarget = (("NoModelsAvailable"), list(cachedTokenizers.sort()))
         return tuple(returnTarget)
     elif not cachedModels and not cachedTokenizers:
         returnTarget = (("NoModelsAvailable"),("NoTokenizersAvailable"))
         return tuple(returnTarget)
     else:
-        returnTarget = (list(cachedModels), list(cachedTokenizers))
+        returnTarget = (list(cachedModels.sort()), list(cachedTokenizers.sort()))
         return tuple(returnTarget)
 
 def textModelsRMPy(target="default"):
