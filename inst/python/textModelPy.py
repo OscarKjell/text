@@ -10,15 +10,22 @@ modelRegex = "(.*)(pytorch_model.bin$|tf_model.h5$)"
 tokenizerRegex = "(tokenizer.json$)"
 
 
-def fileFinder(name_):
+def fileFinder(name_, pattern):
     
-    files = glob.glob(name_, recursive=True)
-
-    return True if len(files) > 0 else False
-
-def folder_2_modelNam(s):
+    modelRegex = re.compile(pattern)
+    fileNames = []
     
-    pos = s.find("models--")
+    for root, dirs, files in os.walk(directory):
+        for basename in files:
+            if modelRegex.match(basename):
+                filename = os.path.join(root, basename)
+                filenames.append(filename)
+
+    return True if len(filesNames) > 0 else False
+
+def folder_2_modelNam(folder):
+    
+    pos = folder.find("models--")
     A = s[pos+len("models--"):]
     
     if "--" in A:
@@ -27,20 +34,29 @@ def folder_2_modelNam(s):
     return A
 
 def writeNamesTransformers(folder, cachedModels, cachedTokenizers):
+
+    modelName = folder_2_modelNam(folder)
     
-     if fileFinder(folder)
+    if fileFinder(folder, modelRegex):
+        cachedModels = cachedModels + modelName
+    if fileFinder(folder, tokenizerRegex):
+        cachedTokenizers = cachedTokenizers + modelName
+        
+
     
-    with open(fileJ) as j:
-        data = json.load(j)
-        isM = re.search(modelRegex, data['url'])
-        if isM:
-            temp = isM.group(1)[:-1]
-            temp = nameFinder(temp)
-            cachedModels[temp] = fileJ
-        else:
-            temp = data['url'].partition('huggingface.co/')[2]
-            temp = nameFinder(temp)
-            cachedTokenizers[temp] = fileJ
+    ###
+    
+##    with open(fileJ) as j:
+##        data = json.load(j)
+##        isM = re.search(modelRegex, data['url'])
+##        if isM:
+##            temp = isM.group(1)[:-1]
+##            temp = nameFinder(temp)
+##            cachedModels[temp] = fileJ
+##        else:
+##            temp = data['url'].partition('huggingface.co/')[2]
+##            temp = nameFinder(temp)
+##            cachedTokenizers[temp] = fileJ
 
     return (cachedModels, cachedTokenizers)
     
