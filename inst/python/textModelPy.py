@@ -102,10 +102,10 @@ if __name__ == '__main__':
      model = AutoModelForMaskedLM.from_pretrained("bert-base-uncased")
 
      # Show the downloaded model.
-     temp = textModelsPy()
+     #temp = textModelsPy()
      tokenizer1()
-     for a in temp:
-         print(a)
+     #for a in temp:
+     #    print(a)
 
 #     textModelsRMPy(target="bert-base-uncased")
 
