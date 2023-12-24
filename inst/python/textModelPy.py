@@ -6,7 +6,7 @@ from tokenizers import Tokenizer
 from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
 
 #modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\.h5$)"
-modelRegex = "(pytorch_model.bin$|tf_model.h5$)"
+modelRegex = "(.*)(pytorch_model.bin$|tf_model.h5$)"
 tokenizerRegex = "(tokenizer.json$)"
 
 
@@ -16,9 +16,19 @@ def fileFinder(name_):
 
     return True if len(files) > 0 else False
 
+def folder_2_modelNam(s):
+    
+    pos = s.find("models--")
+    A = s[pos+len("models--"):]
+    
+    if "--" in A:
+        A = A.replace("--", "/")
+
+    return A
+
 def writeNamesTransformers(folder, cachedModels, cachedTokenizers):
     
-     if fileFinder # TODO
+     if fileFinder(folder)
     
     with open(fileJ) as j:
         data = json.load(j)
