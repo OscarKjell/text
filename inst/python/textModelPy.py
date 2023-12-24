@@ -68,8 +68,8 @@ def textModelsPy():
     print(f"metaFiles: \n'): {metaFolders}")
 
     
-    cachedModels = {}
-    cachedTokenizers = {}
+    cachedModels = []
+    cachedTokenizers = []
                 
     for folder in metaFolders:
         cachedModels, cachedTokenizers = writeNamesTransformers(
