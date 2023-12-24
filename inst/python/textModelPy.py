@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import os, glob, json, re
-from collections import OrderedDict
+import os, glob, re
+#import json
+#from collections import OrderedDict
 from transformers import TRANSFORMERS_CACHE
 from tokenizers import Tokenizer
 from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
@@ -77,20 +78,20 @@ def textModelsPy():
                                              ,cachedTokenizers
                                              )   
     
-    if cachedTokenizers:
-        cachedTokenizers = OrderedDict(sorted(cachedTokenizers.items(), key=lambda k: k[0]))
+    #if cachedTokenizers:
+    #    cachedTokenizers = OrderedDict(sorted(cachedTokenizers.items(), key=lambda k: k[0]))
 
     if cachedModels and not cachedTokenizers:
-        returnTarget = (list(cachedModels.keys()), ("NoTokenizersAvailable"))
+        returnTarget = (list(cachedModels), ("NoTokenizersAvailable"))
         return tuple(returnTarget)
     elif not cachedModels and cachedTokenizers:
-        returnTarget = (("NoModelsAvailable"), list(cachedTokenizers.keys()))
+        returnTarget = (("NoModelsAvailable"), list(cachedTokenizers))
         return tuple(returnTarget)
     elif not cachedModels and not cachedTokenizers:
         returnTarget = (("NoModelsAvailable"),("NoTokenizersAvailable"))
         return tuple(returnTarget)
     else:
-        returnTarget = (list(cachedModels.keys()), list(cachedTokenizers.keys()))
+        returnTarget = (list(cachedModels), list(cachedTokenizers))
         return tuple(returnTarget)
 
 def textModelsRMPy(target="default"):
@@ -124,10 +125,9 @@ if __name__ == '__main__':
      model = AutoModelForMaskedLM.from_pretrained("bert-base-uncased")
 
      # Show the downloaded model.
-     #temp = textModelsPy()
-     tokenizer1()
-     #for a in temp:
-     #    print(a)
+     temp = textModelsPy()
+     for a in temp:
+         print(a)
 
 #     textModelsRMPy(target="bert-base-uncased")
 
