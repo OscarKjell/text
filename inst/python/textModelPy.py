@@ -5,7 +5,9 @@ from transformers import TRANSFORMERS_CACHE
 from tokenizers import Tokenizer
 from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
 
-modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\.h5$)"
+#modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\.h5$)"
+modelRegex = "(.*)(pytorch_model.bin$|tf_model.h5$)"
+
 
 def nameFinder(name_):
     
@@ -33,7 +35,7 @@ def writeNamesTransformers(fileJ, cachedModels):
 
 def textModelsPy():
     
-    metaFiles = glob.glob(TRANSFORMERS_CACHE + '/models--(.*)(pytorch_model.bin$|tf_model.h5$)')
+    metaFiles = glob.glob(TRANSFORMERS_CACHE + '/models--*')
     print(f"metaFiles: \n'): {metaFiles}")
 
     
