@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, glob, json, re
+import os, glob, json, re, logging
 from collections import OrderedDict
 from transformers import TRANSFORMERS_CACHE
 from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
@@ -9,7 +9,7 @@ modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\
 def nameFinder(name_):
 
     test = name_.find('/resolve/main')
-    print(f"name_.find('/resolve/main'): {test}")
+    logging.info(f"name_.find('/resolve/main'): {test}"))
     if name_.find("/resolve/main") != -1:
         return name_.split("/resolve/main")[0]
     else:
