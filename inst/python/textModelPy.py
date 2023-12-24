@@ -11,9 +11,9 @@ def tokenizer1():
     tokenizer = Tokenizer.from_pretrained("bert-base-cased")
 
     # Get the path of the downloaded tokenizer
-    tokenizer_path = tokenizer.get_vocab_files_dict()["tokenizer_file"]
+    tokenizer_path = tokenizer.save_pretrained("./")
 
-    print(f"The path of the downloaded tokenizer is: {os.path.abspath(tokenizer_path)}")
+    print(f"The path of the downloaded tokenizer is: {tokenizer_path[0]}")
 
 def nameFinder(name_):
     
