@@ -84,15 +84,15 @@ def textModelsRMPy(target="default"):
     return 0
 
 # main for test
-# if __name__ == '__main__':
+if __name__ == '__main__':
 
-#     tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
-#     model = AutoModelForMaskedLM.from_pretrained("bert-base-uncased")
+     tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+     model = AutoModelForMaskedLM.from_pretrained("bert-base-uncased")
 
-#     # Show the downloaded model.
-#     temp = textModelsPy()
-#     for a in temp:
-#         print(a)
+     # Show the downloaded model.
+     temp = textModelsPy()
+     for a in temp:
+         print(a)
 
 #     textModelsRMPy(target="bert-base-uncased")
 
