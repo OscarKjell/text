@@ -11,12 +11,12 @@ modelRegex = "(.*)(pytorch_model.bin$|tf_model.h5$)"
 tokenizerRegex = "(tokenizer.json$)"
 
 
-def fileFinder(name_, pattern):
+def fileFinder(folder, pattern):
     
     modelRegex = re.compile(pattern)
     fileNames = []
     
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(folder):
         for basename in files:
             if modelRegex.match(basename):
                 filename = os.path.join(root, basename)
