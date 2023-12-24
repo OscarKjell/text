@@ -7,9 +7,7 @@ from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
 modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\.h5$)"
 
 def nameFinder(name_):
-
-    test = name_.find('/resolve/main')
-    print(f"name_.find('/resolve/main'): {test}")
+    
     if name_.find("/resolve/main") != -1:
         return name_.split("/resolve/main")[0]
     else:
@@ -35,6 +33,9 @@ def writeNamesTransformers(fileJ, cachedModels, cachedTokenizers):
 def textModelsPy():
     
     metaFiles = glob.glob(TRANSFORMERS_CACHE + '/*.json')
+    print(f"metaFiles: \n'): {metaFiles}")
+
+    
     cachedModels = {}
     cachedTokenizers = {}
                 
