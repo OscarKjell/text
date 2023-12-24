@@ -20,7 +20,7 @@ def fileFinder(folder, pattern):
         for basename in files:
             if modelRegex.match(basename):
                 filename = os.path.join(root, basename)
-                filenames.append(filename)
+                fileNames.append(filename)
 
     return True if len(fileNames) > 0 else False
 
