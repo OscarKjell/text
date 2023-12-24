@@ -82,16 +82,16 @@ def textModelsPy():
     #    cachedTokenizers = OrderedDict(sorted(cachedTokenizers.items(), key=lambda k: k[0]))
 
     if cachedModels and not cachedTokenizers:
-        returnTarget = (list(cachedModels.sort()), ("NoTokenizersAvailable"))
+        returnTarget = (list(sorted(cachedModels)), ("NoTokenizersAvailable"))
         return tuple(returnTarget)
     elif not cachedModels and cachedTokenizers:
-        returnTarget = (("NoModelsAvailable"), list(cachedTokenizers.sort()))
+        returnTarget = (("NoModelsAvailable"), list(sorted(cachedTokenizers)))
         return tuple(returnTarget)
     elif not cachedModels and not cachedTokenizers:
         returnTarget = (("NoModelsAvailable"),("NoTokenizersAvailable"))
         return tuple(returnTarget)
     else:
-        returnTarget = (list(cachedModels.sort()), list(cachedTokenizers.sort()))
+        returnTarget = (list(sorted(cachedModels)), list(sorted(cachedTokenizers)))
         return tuple(returnTarget)
 
 def textModelsRMPy(target="default"):
