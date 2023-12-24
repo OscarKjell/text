@@ -32,7 +32,7 @@ def writeNamesTransformers(fileJ, cachedModels, cachedTokenizers):
 
 def textModelsPy():
     
-    metaFiles = glob.glob(TRANSFORMERS_CACHE + '/*.json')
+    metaFiles = glob.glob(TRANSFORMERS_CACHE + '/models--*')
     print(f"metaFiles: \n'): {metaFiles}")
 
     
