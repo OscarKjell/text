@@ -2,9 +2,18 @@
 import os, glob, json, re
 from collections import OrderedDict
 from transformers import TRANSFORMERS_CACHE
+from tokenizers import Tokenizer
 from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
 
 modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\.h5$)"
+
+def tokenizer1():
+    tokenizer = Tokenizer.from_pretrained("bert-base-cased")
+
+    # Get the path of the downloaded tokenizer
+    tokenizer_path = tokenizer.get_vocab_files_dict()["tokenizer_file"]
+
+    print(f"The path of the downloaded tokenizer is: {os.path.abspath(tokenizer_path)}")
 
 def nameFinder(name_):
     
@@ -94,6 +103,7 @@ if __name__ == '__main__':
 
      # Show the downloaded model.
      temp = textModelsPy()
+     tokenizer1()
      for a in temp:
          print(a)
 
