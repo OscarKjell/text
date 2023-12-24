@@ -9,7 +9,7 @@ modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\
 def nameFinder(name_):
 
     test = name_.find('/resolve/main')
-    logging.info(f"name_.find('/resolve/main'): {test}")
+    print(f"name_.find('/resolve/main'): {test}")
     if name_.find("/resolve/main") != -1:
         return name_.split("/resolve/main")[0]
     else:
