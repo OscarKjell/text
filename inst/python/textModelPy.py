@@ -39,9 +39,9 @@ def writeNamesTransformers(folder, cachedModels, cachedTokenizers):
     modelName = folder_2_modelNam(folder)
     
     if fileFinder(folder, modelRegex):
-        cachedModels = cachedModels + modelName
+        cachedModels.append(modelName)
     if fileFinder(folder, tokenizerRegex):
-        cachedTokenizers = cachedTokenizers + modelName
+        cachedTokenizers.append(modelName)
         
 
     
