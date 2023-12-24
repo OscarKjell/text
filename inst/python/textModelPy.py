@@ -59,7 +59,7 @@ def writeNamesTransformers(folder, cachedModels, cachedTokenizers):
 ##            temp = nameFinder(temp)
 ##            cachedTokenizers[temp] = fileJ
 
-    return (cachedModels, cachedTokenizers)
+    return (cachedModels.sort(), cachedTokenizers.sort())
     
 
 def textModelsPy():
