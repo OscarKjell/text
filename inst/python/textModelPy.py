@@ -6,17 +6,19 @@ from tokenizers import Tokenizer
 from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
 
 #modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\.h5$)"
-modelRegex = "(.*)(pytorch_model.bin$|tf_model.h5$)"
+modelRegex = "(pytorch_model.bin$|tf_model.h5$)"
+tokenizerRegex = "(tokenizer.json$)"
 
 
-def nameFinder(name_):
+def fileFinder(name_):
     
-    if name_.find("/resolve/main") != -1:
-        return name_.split("/resolve/main")[0]
-    else:
-        return name_
+    files = glob.glob(name_, recursive=True)
 
-def writeNamesTransformers(fileJ, cachedModels):
+    return True if len(files) > 0 else False
+
+def writeNamesTransformers(folder, cachedModels, cachedTokenizers):
+    
+     if fileFinder # TODO
     
     with open(fileJ) as j:
         data = json.load(j)
@@ -35,17 +37,18 @@ def writeNamesTransformers(fileJ, cachedModels):
 
 def textModelsPy():
     
-    metaFiles = glob.glob(TRANSFORMERS_CACHE + '/models--*')
-    print(f"metaFiles: \n'): {metaFiles}")
+    metaFolders = glob.glob(TRANSFORMERS_CACHE + '/models--*')
+    print(f"metaFiles: \n'): {metaFolders}")
 
     
     cachedModels = {}
-    # cachedTokenizers = {} # unavailable since 202312
+    cachedTokenizers = {}
                 
-    for file in metaFiles:
-        cachedModels = writeNamesTransformers(
-                                             file
+    for folder in metaFolders:
+        cachedModels, cachedTokenizers = writeNamesTransformers(
+                                             folder
                                              ,cachedModels
+                                             ,cachedTokenizers
                                              )   
     
     if cachedTokenizers:
