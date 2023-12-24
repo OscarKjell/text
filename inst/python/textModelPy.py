@@ -14,7 +14,7 @@ def nameFinder(name_):
     else:
         return name_
 
-def writeNamesTransformers(fileJ, cachedModels, cachedTokenizers):
+def writeNamesTransformers(fileJ, cachedModels):
     
     with open(fileJ) as j:
         data = json.load(j)
@@ -33,18 +33,17 @@ def writeNamesTransformers(fileJ, cachedModels, cachedTokenizers):
 
 def textModelsPy():
     
-    metaFiles = glob.glob(TRANSFORMERS_CACHE + '/models--*')
+    metaFiles = glob.glob(TRANSFORMERS_CACHE + '/models--(.*)(pytorch_model.bin$|tf_model.h5$)')
     print(f"metaFiles: \n'): {metaFiles}")
 
     
     cachedModels = {}
-    cachedTokenizers = {}
+    # cachedTokenizers = {} # unavailable since 202312
                 
     for file in metaFiles:
-        cachedModels, cachedTokenizers = writeNamesTransformers(
+        cachedModels = writeNamesTransformers(
                                              file
                                              ,cachedModels
-                                             ,cachedTokenizers
                                              )   
     
     if cachedTokenizers:
