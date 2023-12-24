@@ -8,7 +8,8 @@ modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\
 
 def nameFinder(name_):
 
-    print(f"name_.find('/resolve/main'): {}")
+    test = name_.find('/resolve/main')
+    print(f"name_.find('/resolve/main'): {test}")
     if name_.find("/resolve/main") != -1:
         return name_.split("/resolve/main")[0]
     else:
