@@ -84,7 +84,7 @@ def textModelsRMPy(target="default"):
     metaFolders = glob.glob(TRANSFORMERS_CACHE + '/models--*')
 
     deleteModel = []
-    for folder in metaFiles:
+    for folder in metaFolders:
         for target1 in target:
             if "/" in target1:
                 target1 = target1.replace("/", "--")
