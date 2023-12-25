@@ -83,20 +83,20 @@ def textModelsRMPy(target="default"):
     # transformerLists = textModelsPy()
     metaFolders = glob.glob(TRANSFORMERS_CACHE + '/models--*')
 
+
+    if "/" in target:
+        target1 = target.replace("/", "--")
     deleteModel = []
     for folder in metaFolders:
-        for target1 in target:
-            if "/" in target1:
-                target1 = target1.replace("/", "--")
-            if target1 in folder:
-                deleteModel.append(folder)
+        if target1 in folder:
+            deleteModel.append(folder)
     print(f"len of deleteModel: {len(deleteModel)}")
     if len(deleteModel) != 0:
         for folder in deleteModel:
             if os.path.exists(folder): 
                 os.remove(folder)
-                print("Model " + folder + " is removed!")
-            else: print("Model " + folder + " is not found!")
+                print("Model " + target + " is removed!")
+            else: print("Fail to remove model " + target + "!")
     else:
         print("Model(s) " + target + " is/are not found!")
         
