@@ -86,6 +86,7 @@ def textModelsRMPy(target="default"):
 
     if "/" in target:
         target1 = target.replace("/", "--")
+    else: target1 = target
     deleteModel = []
     for folder in metaFolders:
         if target1 in folder:
