@@ -100,37 +100,23 @@ def textModelsRMPy(target="default"):
             else: print("Fail to remove model " + target + "!")
     else:
         print("Model(s) " + target + " is/are not found!")
-        
-        #with open(file) as j:
-        #    data = json.load(j)
-        #    if isinstance(target, str):
-        #        if data['url'].find(target) != -1:
-        #            toDelete = file.find(".json")
-        #            targetFind += 1
-        #if toDelete != 0:
-        #    if os.path.exists(file[0:toDelete]): os.remove(file[0:toDelete])
-        #    if os.path.exists(file[0:toDelete] + ".json"): os.remove(file[0:toDelete] + ".json")
-        #    if os.path.exists(file[0:toDelete] + ".lock"): os.remove(file[0:toDelete] + ".lock")
-        #    toDelete = 0
-    #if targetFind == 0:
-       # print("Model(s) " + target + " do/does not exist!")
 
     return 0
 
 # main for test
-if __name__ == '__main__':
+#if __name__ == '__main__':
 
-     textModelsRMPy(target="distilbert-base-uncased")
-     # Show the downloaded model.
-     temp = textModelsPy()
-     for a in temp:
-         print(a)
+#     textModelsRMPy(target="distilbert-base-uncased")
+#     # Show the downloaded model.
+#     temp = textModelsPy()
+#     for a in temp:
+#         print(a)
 
-     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-     model = AutoModelForMaskedLM.from_pretrained("distilbert-base-uncased")
-     textModelsRMPy(target="distilbert-base-uncased")
+#     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+#     model = AutoModelForMaskedLM.from_pretrained("distilbert-base-uncased")
+#     textModelsRMPy(target="distilbert-base-uncased")
 
      # Show the model again after deleting.
-     temp = textModelsPy()
-     for a in temp:
-         print(a)
+#     temp = textModelsPy()
+#     for a in temp:
+#         print(a)
