@@ -88,7 +88,6 @@ def textModelsRMPy(target="default"):
     for folder in metaFolders:
         if target1 in folder:
             deleteModel.append(folder)
-    print(f"len of deleteModel: {len(deleteModel)}")
     if len(deleteModel) != 0:
         for folder in deleteModel:
             if os.path.exists(folder): 
