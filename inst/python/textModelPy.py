@@ -89,13 +89,14 @@ def textModelsRMPy(target="default"):
             if "/" in target1:
                 target1 = target1.replace("/", "--")
             if target1 in folder:
-                deleteModel.append(target1)
+                deleteModel.append(folder)
     print(f"len of deleteModel: {len(deleteModel)}")
     if len(deleteModel) != 0:
-        for target1 in deleteModel:
-            if os.path.exists(target1): 
-                os.remove(target1)
-                print("Model " + target1 + " is removed!")
+        for folder in deleteModel:
+            if os.path.exists(folder): 
+                os.remove(folder)
+                print("Model " + folder + " is removed!")
+            else: print("Model " + folder + " is not found!")
     else:
         print("Model(s) " + target + " is/are not found!")
         
