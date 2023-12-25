@@ -49,7 +49,7 @@ def writeNamesTransformers(folder, cachedModels, cachedTokenizers):
 def textModelsPy():
     
     metaFolders = glob.glob(TRANSFORMERS_CACHE + '/models--*')
-    print(f"metaFiles: \n'): {metaFolders}")
+    #print(f"metaFiles: \n'): {metaFolders}")
 
     
     cachedModels = []
@@ -92,7 +92,9 @@ def textModelsRMPy(target="default"):
                 deleteModel.append(target1)
     if len(deleteModel) != 0:
         for target1 in deleteModel:
-            if os.path.exists(target1): os.remove(target1)
+            if os.path.exists(target1): 
+                os.remove(target1)
+                print("Model " + target1 + " is removed!")
     else:
         print("Model(s) " + target + " is/are not found!")
         
