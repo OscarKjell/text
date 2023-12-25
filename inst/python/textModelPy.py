@@ -42,22 +42,6 @@ def writeNamesTransformers(folder, cachedModels, cachedTokenizers):
         cachedModels.append(modelName)
     if fileFinder(folder, tokenizerRegex):
         cachedTokenizers.append(modelName)
-        
-
-    
-    ###
-    
-##    with open(fileJ) as j:
-##        data = json.load(j)
-##        isM = re.search(modelRegex, data['url'])
-##        if isM:
-##            temp = isM.group(1)[:-1]
-##            temp = nameFinder(temp)
-##            cachedModels[temp] = fileJ
-##        else:
-##            temp = data['url'].partition('huggingface.co/')[2]
-##            temp = nameFinder(temp)
-##            cachedTokenizers[temp] = fileJ
 
     return cachedModels, cachedTokenizers
     
@@ -97,24 +81,34 @@ def textModelsPy():
 def textModelsRMPy(target="default"):
 
     # transformerLists = textModelsPy()
-    metaFiles = glob.glob(TRANSFORMERS_CACHE + '/*.json')
+    metaFolders = glob.glob(TRANSFORMERS_CACHE + '/models--*')
 
-    toDelete = 0
-    targetFind = 0
-    for file in metaFiles:
-        with open(file) as j:
-            data = json.load(j)
-            if isinstance(target, str):
-                if data['url'].find(target) != -1:
-                    toDelete = file.find(".json")
-                    targetFind += 1
-        if toDelete != 0:
-            if os.path.exists(file[0:toDelete]): os.remove(file[0:toDelete])
-            if os.path.exists(file[0:toDelete] + ".json"): os.remove(file[0:toDelete] + ".json")
-            if os.path.exists(file[0:toDelete] + ".lock"): os.remove(file[0:toDelete] + ".lock")
-            toDelete = 0
-    if targetFind == 0:
-        print("Model(s) " + target + " do/does not exist!")
+    deleteModel = []
+    for folder in metaFiles:
+        for target1 in target:
+            if "/" in target1:
+                target1 = target1.replace("/", "--")
+            if target1 in folder:
+                deleteModel.append(target1)
+    if len(deleteModel) != 0:
+        for target1 in deleteModel:
+            if os.path.exists(target1): os.remove(target1)
+    else:
+        print("Model(s) " + target + " is/are not found!")
+        
+        #with open(file) as j:
+        #    data = json.load(j)
+        #    if isinstance(target, str):
+        #        if data['url'].find(target) != -1:
+        #            toDelete = file.find(".json")
+        #            targetFind += 1
+        #if toDelete != 0:
+        #    if os.path.exists(file[0:toDelete]): os.remove(file[0:toDelete])
+        #    if os.path.exists(file[0:toDelete] + ".json"): os.remove(file[0:toDelete] + ".json")
+        #    if os.path.exists(file[0:toDelete] + ".lock"): os.remove(file[0:toDelete] + ".lock")
+        #    toDelete = 0
+    #if targetFind == 0:
+       # print("Model(s) " + target + " do/does not exist!")
 
     return 0
 
@@ -129,9 +123,9 @@ if __name__ == '__main__':
      for a in temp:
          print(a)
 
-#     textModelsRMPy(target="bert-base-uncased")
+     textModelsRMPy(target="bert-base-uncased")
 
-#     # Show the model again after deleting.
-#     temp = textModelsPy()
-#     for a in temp:
-#         print(a)
+     # Show the model again after deleting.
+     temp = textModelsPy()
+     for a in temp:
+         print(a)
