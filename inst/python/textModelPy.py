@@ -117,14 +117,14 @@ def textModelsRMPy(target="default"):
 # main for test
 if __name__ == '__main__':
 
-     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-     model = AutoModelForMaskedLM.from_pretrained("distilbert-base-uncased")
-
+     textModelsRMPy(target="distilbert-base-uncased")
      # Show the downloaded model.
      temp = textModelsPy()
      for a in temp:
          print(a)
 
+     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+     model = AutoModelForMaskedLM.from_pretrained("distilbert-base-uncased")
      textModelsRMPy(target="distilbert-base-uncased")
 
      # Show the model again after deleting.
