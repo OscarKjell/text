@@ -3,8 +3,8 @@ import os, glob, re
 #import json
 #from collections import OrderedDict
 from transformers import TRANSFORMERS_CACHE
-from tokenizers import Tokenizer
-from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
+#from tokenizers import Tokenizer
+#from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
 
 #modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\.h5$)"
 modelRegex = "(.*)(pytorch_model.bin$|tf_model.h5$)"
@@ -60,10 +60,7 @@ def textModelsPy():
                                              folder
                                              ,cachedModels
                                              ,cachedTokenizers
-                                             )   
-    
-    #if cachedTokenizers:
-    #    cachedTokenizers = OrderedDict(sorted(cachedTokenizers.items(), key=lambda k: k[0]))
+                                             )  
 
     if cachedModels and not cachedTokenizers:
         returnTarget = (list(sorted(cachedModels)), ("NoTokenizersAvailable"))
