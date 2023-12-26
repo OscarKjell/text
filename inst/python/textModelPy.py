@@ -8,8 +8,8 @@ from transformers import TRANSFORMERS_CACHE
 #from transformers import AutoTokenizer, AutoModelForMaskedLM  # for test only
 
 #modelRegex = "huggingface\.co\/(.*)(pytorch_model\.bin$|resolve\/main\/tf_model\.h5$)"
-modelRegex = "(.*)(.model$|pytorch_model.bin$|tf_model.h5$)"
-tokenizerRegex = "(tokenizer.json$)"
+modelRegex = "(.*)(model.safetensors$|.model$|pytorch_model.bin$|tf_model.h5$)"
+tokenizerRegex = "(tokenizer.json$|tokenizer_config.json$)"
 
 
 def fileFinder(folder, pattern):
