@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, glob, re
+from shutil import rmtree
 #import json
 #from collections import OrderedDict
 from transformers import TRANSFORMERS_CACHE
@@ -91,7 +92,7 @@ def textModelsRMPy(target="default"):
     if len(deleteModel) != 0:
         for folder in deleteModel:
             if os.path.exists(folder): 
-                os.remove(folder)
+                rmtree(folder)
                 print("Model " + target + " is removed!")
             else: print("Fail to remove model " + target + "!")
     else:
