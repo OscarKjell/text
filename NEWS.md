@@ -2,9 +2,12 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.1.04
+- Updating code to work with "transformers==4.36.0"
 
 # text 1.1.03
 - `textFineTuneTask()` and `textFineTuneDomain()` removes problematic characters. 
+
 
 # text 1.1.02
 - `textFineTuneDomain()` is implemented as experimental
