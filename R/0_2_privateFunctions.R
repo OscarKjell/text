@@ -511,6 +511,10 @@ implicit_motives_results <- function(model_reference,
     column_name <- model_reference
   }
   
+  if (length(texts) != length(user_id)) {
+    stop('texts and user_id must be of same length.')
+  }
+  
   # Retrieve Data
   implicit_motives <- implicit_motives(texts, user_id, predicted_scores2)
   
@@ -535,4 +539,25 @@ implicit_motives_results <- function(model_reference,
   
   return(summary_list)
 }
+
+# Function to expand predictions and bind them to the data
+bind_predictions <- function(data, predictions) {
+  na_rows <- max(0, nrow(data) - nrow(predictions))
+  dplyr::bind_rows(predictions,
+                   tibble::as_tibble(matrix(NA, 
+                                            ncol = ncol(predictions), 
+                                            nrow = na_rows)) %>%
+                     setNames(names(predictions)))
+}
+
+# Function to bind original data with a list of tibbles
+bind_data <- function(original_data, prediction_list) {
+  for(predictions in prediction_list) {
+    original_data <- dplyr::bind_cols(original_data, bind_predictions(original_data, predictions))
+  }
+  original_data
+}
+
+# Usage example (replace with actual tibble names)
+# final_data <- bind_data(data, list(tibble1, tibble2))
 

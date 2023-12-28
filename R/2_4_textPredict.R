@@ -2,13 +2,9 @@
 #A helper function to textPredict giving it the capabilities of textPredictEntireProcedure. 
 #' @param text_to_predict (character) Text to predict. If this argument is specified, then argument "premade_embeddings" must be set to NULL (default = NULL).
 #' @param premade_embeddings (Embeddings from e.g., textEmbed) Embeddings to predict. If this argument is specified, then argument "texts" must be set to NULL (default = NULL).
-#' @param model_platform (character) Either "github" or "local" (default = "github"). 
 #' @param model_reference (character) Link to github-model (default = "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS",
 #' a model that predicts harmony in life score). 
-#' @param save_model (boolean) If set to true, the model will be saved in work-directory (default = FALSE). If TRUE, then argument "model_name" must be defined.  
-#' @param model_name (character) Optional. If the 'save_model' argument is set to TRUE and you wish to assign a custom name to your model, 
-#' provide a file path along with the desired filename, for example, 'C:/Users/Name/Models/linear_model.RDS' (default is NULL). If this is not defined 
-#' but 'save_model' is set to TRUE, the model will be saved as 'imported_model.RDS'.
+#' @param save_model (boolean) The model will by default be saved in work directory (deafult = TRUE). 
 #' @param type (character) Choose either 'class' or 'prob'. If your model is a logistic or multinomial model, specify whether you want to receive the 
 #' model's classification "class" or the underlying probabilities "prob" (default = "class").
 #' @param max_token_to_sentence (numeric) This information will be automatically extracted from your model, so this argument is typically not used. 
@@ -20,54 +16,63 @@
 textReturnModelAndEmbedding <- function(
     text_to_predict = NULL,
     premade_embeddings = NULL, 
-    model_platform = "github", 
     model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS", 
-    save_model = FALSE, 
-    model_name = NULL, 
+    save_model = TRUE, 
     type = "class",
     device = "cpu",
     story_id = NULL
 ) {
+  # extend the timeout time for larger models. 
+  options(timeout=5*50)
   
-  # Load model from github. 
-  if (model_platform == "github"){
+  # extract model_name 
+  model_name <- basename(model_reference)
+  
+  # find model in wd 
+  model_exists <- file.exists(model_name)
+  
+  # diaplay message to user 
+  cat(colourise("Loading model...", fg = "red"))
+  cat("\n")
+  
+  # determine how to load model
+  if (grepl("github.com/", model_reference) & isFALSE(model_exists) & isTRUE(save_model)){
+    # load from github
+    loaded_model <- readRDS(url(model_reference))
+    # save model 
+    saveRDS(loaded_model, model_name)
+    
+    # display message to user 
+    loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded and saved in.", getwd()), sep = "")
+    cat(colourise(loaded_model_confirm, fg = "green"))
+    cat("\n")
+  }
+  else if (grepl("github.com/", model_reference) & isFALSE(model_exists) & isFALSE(save_model)){
+    # load from github, don't save
     loaded_model <- readRDS(url(model_reference))
     
-    #display message to user
-    loaded_model_confirm <- paste0(c("The model:", model_reference, "has been loaded."), sep = "")
+    # display message to user 
+    loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_reference), sep = "")
     cat(colourise(loaded_model_confirm, fg = "green"))
     cat("\n")
+  }
+  else if (grepl("github.com/", model_reference) & isTRUE(model_exists)){
+    # retrive model from wd if it's already downloaded 
+    loaded_model <- readRDS(model_name)
     
-    # Save model into working-directory and automatically save it as "imported_model".  
-    if (save_model == TRUE & is.null(model_name)){
-      saveRDS(loaded_model, "imported_model.RDS")
-      
-      #display message to user
-      loaded_model_confirm <- paste0(c("The model:", model_reference, "has been saved as imported_model.RDS in your work directory."), sep = "")
-      cat(colourise(loaded_model_confirm, fg = "green"))
-      cat("\n")
-    }
-    #  Save model into working-directory and automatically save it as model_name.  
-    else if (save_model == TRUE & !is.null(model_name)){
-      saveRDS(loaded_model, model_name)
-      #display message to user
-      loaded_model_confirm <- paste0(c("The model:", model_reference, "has been downloaded as", model_name), sep = "")
-      cat(colourise(loaded_model_confirm, fg = "green"))
-      cat("\n")
-    }
-  } 
-  
-  # Load model from local, "model_reference" should now be its filepath. 
-  else if (model_platform == "local") {
+    # display message to user 
+    loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", getwd()), sep = "")
+    cat(colourise(loaded_model_confirm, fg = "green"))
+    cat("\n")
+  }
+  else if (isFALSE(grepl("github.com/", model_reference))){
+    # load model from specific path (if it exists somewhere else than in the work directory) 
     loaded_model <- readRDS(model_reference)
     
-    #display message to user
-    loaded_model_confirm <- paste0(c("The model:", model_reference, "has been loaded."), sep = "")
+    # display message to user 
+    loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_reference), sep = "")
     cat(colourise(loaded_model_confirm, fg = "green"))
     cat("\n")
-  } 
-  else {
-    stop('Choose either "github" or "local" as argument: model_platform')
   }
   
   # Check that both text_to_predict and premade_embeddings aren't defined. 
@@ -147,7 +152,7 @@ textReturnModelAndEmbedding <- function(
       dplyr::mutate(across(starts_with("Dim"), running_avg)) %>%
       dplyr::ungroup()
     
-    # If you want to remove grouping, you can use ungroup()
+    # Ungroup (remove the storyid column)
     embeddings$texts$texts <- dplyr::ungroup(embeddings$texts$texts)
     
     T2_story_id <- Sys.time()
@@ -179,13 +184,9 @@ textReturnModelAndEmbedding <- function(
 #' (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 #' word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.
 #' @param texts (character) Text to predict. If this argument is specified, then arguments "word_embeddings" and "premade embeddings" cannot be defined (default = NULL).
-#' @param model_platform (character) Either "github" or "local" (default = "github"). 
 #' @param model_reference (character) Link to github-model (default = "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS",
 #' a model that predicts harmony in life score). 
-#' @param save_model (boolean) If set to true, the model will be saved to the work-directory (default = FALSE). If TRUE, then argument "model_name" must be defined.  
-#' @param model_name (character) Optional. If the 'save_model' argument is set to TRUE and you wish to assign a custom name to your model, 
-#' provide a file path along with the desired filename, for example, 'C:/Users/Name/Models/linear_model.RDS' (default is NULL). If this is not defined 
-#' but 'save_model' is set to TRUE, the model will be saved as 'imported_model.RDS'.
+#' @param save_model (boolean) The model will by default be saved in your work-directory (default = TRUE). 
 #' @param threshold (numeric) Determine threshold if you are using a logistic model (default = 0.5). 
 #' @param show_prob (boolean) If you are using a logistic model and show_prob is set to TRUE, then both classification and the underlying probabilities will be 
 #' @param show_texts (boolean) Show texts together with predictions (default = FALSE). 
@@ -213,7 +214,6 @@ textReturnModelAndEmbedding <- function(
 #' 
 #' # Example 4: (predict using a pretrained github model and save the model locally)
 #' prediction3 <- textPredict(texts = text_to_predict, 
-#'                             model_platform = "github", 
 #'                             model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS",
 #'                             save_model = TRUE)
 #'                            
@@ -256,10 +256,8 @@ textPredict <- function(model_info = NULL,
                         type = NULL,
                         dim_names = TRUE,
                         texts = NULL,
-                        model_platform = "github",
                         model_reference = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS",
-                        save_model = FALSE, 
-                        model_name = NULL,
+                        save_model = TRUE, 
                         threshold = NULL, 
                         show_prob = FALSE,
                         show_texts = FALSE, 
@@ -314,10 +312,8 @@ textPredict <- function(model_info = NULL,
     # Retrieve embeddings that are compatible with the pretrained model, and the model object itself.  
     emb_and_mod <- textReturnModelAndEmbedding(text_to_predict = texts,
                                                premade_embeddings = word_embeddings, 
-                                               model_platform = model_platform, 
                                                model_reference = model_reference, 
                                                save_model = save_model, 
-                                               model_name = model_name, 
                                                type = type, 
                                                device = device, 
                                                story_id = story_id)
@@ -392,7 +388,14 @@ textPredict <- function(model_info = NULL,
   )
   new_data1 <- new_data1$x1
   
+  
+  # Original structure: 
+  # Dealing with NAs
+  # new_data1$id_nr <- c(seq_len(nrow(new_data1)))
+  # new_data1 <- new_data1[complete.cases(new_data1), ]
+  # new_data_id_nr_col <- tibble::as_tibble_col(seq_len(nrow(new_data1)), column_name = "id_nr")
   # Dealing with NAs # Position of new_data_id_nr_col and new_data1 has noe been switched.  
+  
   new_data1$id_nr <- c(seq_len(nrow(new_data1)))
   new_data_id_nr_col <- tibble::as_tibble_col(seq_len(nrow(new_data1)), column_name = "id_nr")
   new_data1 <- new_data1[complete.cases(new_data1), ]
@@ -415,7 +418,7 @@ textPredict <- function(model_info = NULL,
     class1_col_name <- paste0(class1, "_prob")
     class2_col_name <- paste0(class2, "_prob")
     
-    # Retrieve the probabilities 
+    # Predict
     predicted_scores2 <- data_prepared_with_recipe %>%
       dplyr::bind_cols(stats::predict(model_info$final_model, new_data = new_data1, type = "prob")) %>% # , ...
       dplyr::select(-!!colnames_to_b_removed) %>%
