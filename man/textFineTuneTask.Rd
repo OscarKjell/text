@@ -21,7 +21,6 @@ textFineTuneTask(
   set_seed = 2022,
   label_names = NULL,
   tokenizer_parallelism = FALSE,
-  remove_utf8 = TRUE,
   ...
 )
 }
@@ -68,8 +67,6 @@ for their predictions. If this argument is set to a positive int, the Trainer wi
 \item{label_names}{label name in case of classification; e.g., label_names = c("female", "male").}
 
 \item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.}
-
-\item{remove_utf8}{Boolean (RStudio crashes when including characters being transformed to utf-8; so for now we are removing them)}
 
 \item{...}{Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.}
 }
