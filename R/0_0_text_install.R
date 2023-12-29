@@ -63,7 +63,8 @@ textrpp_install <- function(conda = "auto",
                        "nltk==3.6.7",
                        "scikit-learn==1.3.0",
                        "datasets==2.9.0",
-                       "evaluate==0.4.0")
+                       "evaluate==0.4.0",
+                       "accelerate==0.20.1")
     }
     if (is_windows()) {
       rpp_version <- c("torch==2.0.0",
@@ -73,7 +74,8 @@ textrpp_install <- function(conda = "auto",
                        "nltk==3.6.7",
                        "scikit-learn==1.3.0",
                        "datasets==2.9.0",
-                       "evaluate==0.4.0")
+                       "evaluate==0.4.0",
+                       "accelerate==0.20.1")
     }
   }
 
@@ -103,6 +105,7 @@ textrpp_install <- function(conda = "auto",
   # install rust for singularity machine -- but it gives error in github action
   # reticulate::py_run_string("import os\nos.system(\"curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y\")")
   system("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y")
+  system("source $HOME/.cargo/env")
 
   # resolve and look for conda help(conda_binary)
   conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
