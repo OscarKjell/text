@@ -539,9 +539,9 @@ textPredictAll <- function(models,
   # i = 1
   for (i in seq_len(length(models))) {
     preds <- textPredict(
-      models[[i]],
-      word_embeddings,
-      x_append, ...
+      model_info = models[[i]],
+      word_embeddings = word_embeddings,
+      x_append = x_append, ...
     )
     
     output_predictions[[i]] <- preds

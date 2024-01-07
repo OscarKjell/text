@@ -31,7 +31,7 @@ textPredict(
 \item{x_append}{(tibble) Variables to be appended after the word embeddings (x).}
 
 \item{type}{(character) Defines what output to give after logistic regression prediction. Either probabilities, 
-classifications or both are returned (default = "class". For probabilities use "prob". For both use "class&prob").}
+classifications or both are returned (default = "class". For probabilities use "prob". For both use "class_prob").}
 
 \item{dim_names}{(boolean) Account for specific dimension names from textEmbed()
 (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
@@ -78,7 +78,7 @@ prediction3 <- textPredict(texts = text_to_predict,
 # Example 3: (predict using a pretrained logistic github model and return probabilities and classifications)
 prediction4 <- textPredict(texts = text_to_predict, 
                            model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_github_model_logistic.RDS",
-                           type = "class&prob",
+                           type = "class_prob",
                            threshold = 0.7)
                        
 # Example 4: (Automatic implicit motive coding with story_id concatenation)
