@@ -349,13 +349,14 @@ path_exist_download_files <- function(wanted_file) {
 #' @noRd
 implicit_motives <- function(texts, user_id, predicted_scores2){
   
-  # Create a table with the number of sentences per user 
+  # Create a table with the number of sentences per user
   table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
   num_persons <- length(table_uniques2)
   
   # Define variables 
   user_id_column <- c()
   current <- 0
+  
   # Create user_id_column
   for (i in 1:num_persons) {
     current <- current + table_uniques2[[i]]
@@ -372,8 +373,8 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
   
   # Summarize classes and probabilities (for the first row)
   summations[1, c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB")] <- c(
-    OUTCOME_USER_SUM_CLASS = sum(as.numeric(predicted_scores2[[1]][1:table_uniques2[[1]]]), na.rm = TRUE),
-    OUTCOME_USER_SUM_PROB = sum(as.numeric(predicted_scores2[[3]][1:table_uniques2[[1]]]), na.rm = TRUE)
+    OUTCOME_USER_SUM_CLASS = sum(as.numeric(as.character(predicted_scores2[[1]][1:table_uniques2[[1]]])), na.rm = TRUE),
+    OUTCOME_USER_SUM_PROB = sum(as.numeric(as.character(predicted_scores2[[3]][1:table_uniques2[[1]]])), na.rm = TRUE)
   )
   
   # Summarize classes and probabilities (for the rest of the rows)
@@ -382,10 +383,12 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
     end_idx <- sum(table_uniques2[1:user_ids])
     
     summations[user_ids, c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB")] <- c(
-      OUTCOME_USER_SUM_CLASS = sum(as.numeric(predicted_scores2[[1]][start_idx:end_idx]), na.rm = TRUE),
-      OUTCOME_USER_SUM_PROB = sum(as.numeric(predicted_scores2[[3]][start_idx:end_idx]), na.rm = TRUE)
+      OUTCOME_USER_SUM_CLASS = sum(as.numeric(as.character(predicted_scores2[[1]][start_idx:end_idx])), na.rm = TRUE),
+      OUTCOME_USER_SUM_PROB = sum(as.numeric(as.character(predicted_scores2[[3]][start_idx:end_idx])), na.rm = TRUE)
     )
   }
+  
+
   
   # Calculate wc_person_per_1000 (for the first row)
   summations[1, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[1:table_uniques2[[1]]], ' ')), na.rm = TRUE) / 1000
@@ -400,6 +403,8 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
   }
   
   summations["user_ids"] <- user_id_column
+  
+  
   return(summations)
 }
 
@@ -408,13 +413,15 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
 #' @return implicit_motives_pred returns residuals from robust linear regression. 
 #' @noRd
 implicit_motives_pred <- function(sqrt_implicit_motives){
+  
   #square root transform
-  sqrt_implicit_motives[1:3] <- sqrt(sqrt_implicit_motives[1:3])
+  sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
+  
   # For OUTCOME_USER_SUM_PROB
   lm.OUTCOME_USER_SUM_PROB <- stats::lm(OUTCOME_USER_SUM_PROB  ~ wc_person_per_1000, data = sqrt_implicit_motives)
   OUTCOME_USER_SUM_PROB.residual1 <- resid(lm.OUTCOME_USER_SUM_PROB)
   OUTCOME_USER_SUM_PROB.residual1.z <- scale(OUTCOME_USER_SUM_PROB.residual1)
-  
+
   # For OUTCOME_USER_SUM_CLASS
   lm.OUTCOME_USER_SUM_CLASS <- stats::lm(OUTCOME_USER_SUM_CLASS  ~ wc_person_per_1000, data = sqrt_implicit_motives)
   OUTCOME_USER_SUM_CLASS.residual1 <- resid(lm.OUTCOME_USER_SUM_CLASS)
@@ -426,7 +433,7 @@ implicit_motives_pred <- function(sqrt_implicit_motives){
     person_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
     person_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)
   )
-  
+
   return(implicit_motives_pred)
 }
 
@@ -511,10 +518,14 @@ implicit_motives_results <- function(model_reference,
     column_name <- model_reference
   }
   
+  if (length(texts) != length(user_id)) {
+    stop('texts and user_id must be of same length.')
+  }
+  
   # Retrieve Data
   implicit_motives <- implicit_motives(texts, user_id, predicted_scores2)
   
-  # Predict 
+  # Predicts
   predicted <- implicit_motives_pred(implicit_motives)
   
   # Full column name
@@ -535,4 +546,76 @@ implicit_motives_results <- function(model_reference,
   
   return(summary_list)
 }
+
+#' Function that is called in the beginning of textPredict to create the conditions for implicit motives to work. 
+#' @param model_infomodel_info (character or r-object) model_info has three options. 1: R model object (e.g, saved output from textTrain). 2:link to github-model 
+#' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"). 3: Path to a model stored locally (e.g, "path/to/your/model"). 
+#' @param user_id A column with user ids. 
+#' @param show_texts Show texts, TRUE / FALSE 
+#' @return Returns a list of conditions for implicit motive coding to work
+#' @noRd
+get_model_info <- function(model_info, user_id, show_texts, type) {
+  # Show_prob is by default FALSE
+  show_prob <- FALSE
+  if (is.character(model_info)){
+  lower_case_model <- tolower(model_info)
+    if (
+      grepl("power", lower_case_model) ||
+      grepl("achievement", lower_case_model) ||
+      grepl("affiliation", lower_case_model) && !is.null(user_id)
+    ) {
+      type <- "class"  # type must be class for these conditions
+      
+      # Switch to the correct model URL
+      if (lower_case_model == "power") {
+        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_power_pen_30.rds"
+        } else if (lower_case_model == "achievement") {
+        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_achievement_pen_30.rds"
+      } else if (lower_case_model == "affiliation") {
+        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_affiliation_pen_30.rds"
+      }
+  
+      # Specific configuration for implicit motive coding
+      if (!is.null(user_id)){
+        show_texts <- TRUE 
+        show_prob <- TRUE 
+        type <- "class"
+      }
+    }
+  }
+  
+  # The stats package just takes "class" or "prob", therefore, allocate to "show_prob". 
+  if (!is.null(type) && type == "class_prob") {
+    type = "class"
+    show_prob = TRUE
+  }
+  
+  # Return a list containing the required information
+  return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type))
+}
+
+#' Function that binds predictions to their original dataset
+#' @param data Dataset, ex csv file
+#' @param predictions Predictions from textPredict as a vector
+#' @return Returns the original dataset with predictions included. 
+#' @noRd
+bind_predictions <- function(data, predictions) {
+  na_rows <- max(0, nrow(data) - nrow(predictions))
+  dplyr::bind_rows(predictions,
+                   tibble::as_tibble(matrix(NA, 
+                                            ncol = ncol(predictions), 
+                                            nrow = na_rows)) %>%
+                     setNames(names(predictions)))
+}
+
+# Function to bind original data with a list of tibbles
+bind_data <- function(original_data, prediction_list) {
+  for(predictions in prediction_list) {
+    original_data <- dplyr::bind_cols(original_data, bind_predictions(original_data, predictions))
+  }
+  original_data
+}
+
+# Usage example (replace with actual tibble names)
+# final_data <- bind_data(data, list(tibble1, tibble2))
 
