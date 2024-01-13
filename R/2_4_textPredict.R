@@ -16,7 +16,7 @@
 textReturnModelAndEmbedding <- function(
     texts = NULL,
     word_embeddings = NULL, 
-    model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS", 
+    model_info = NULL, 
     save_model = TRUE, 
     type = "class",
     device = "cpu",
@@ -197,6 +197,7 @@ textReturnModelAndEmbedding <- function(
 #' shown (default = FALSE). 
 #' @param story_id (list) story_id associates sentences with their stories. If story_id is defined, then the mean of the current and previous 
 #' word-embedding per story-id will be calculated. (default = NULL)
+#' @param dataset (R-object, tibble) Insert your data here to integrate predictions to dataset, (default = NULL). 
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predictions from word-embedding or text input. 
 #' @examples
@@ -226,7 +227,8 @@ textReturnModelAndEmbedding <- function(
 #' implicit_motives <- textPredict(texts = schone_training$text,
 #'                                 model_info = "power",
 #'                                 user_id = schone_training$participant_id, 
-#'                                 story_id = schone_training$story_id) 
+#'                                 story_id = schone_training$story_id,
+#'                                 dataset = schone_training) 
 #' }
 #' 
 #' \dontrun{
@@ -257,7 +259,8 @@ textPredict <- function(model_info = NULL,
                         show_texts = FALSE, 
                         device = "cpu", 
                         user_id = NULL, 
-                        story_id = NULL, 
+                        story_id = NULL,
+                        dataset = NULL,
                         ...) {
   
   # Stop message if user defines both word_embeddings and texts
@@ -487,7 +490,8 @@ textPredict <- function(model_info = NULL,
         implicit_motives_results(model_reference = model_info, 
                                  user_id = user_id, 
                                  predicted_scores2 = predicted_scores2, 
-                                 texts = texts)
+                                 texts = texts, 
+                                 dataset = dataset)
         #### End Implicit motives section ##### 
     } else {
       #display message to user
