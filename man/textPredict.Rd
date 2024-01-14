@@ -17,6 +17,7 @@ textPredict(
   device = "cpu",
   user_id = NULL,
   story_id = NULL,
+  dataset = NULL,
   ...
 )
 }
@@ -51,6 +52,8 @@ shown (default = FALSE).}
 
 \item{story_id}{(list) story_id associates sentences with their stories. If story_id is defined, then the mean of the current and previous 
 word-embedding per story-id will be calculated. (default = NULL)}
+
+\item{dataset}{(R-object, tibble) Insert your data here to integrate predictions to dataset, (default = NULL).}
 
 \item{...}{Setting from stats::predict can be called.}
 }
@@ -87,7 +90,8 @@ schone_training <- read.RDS("schone_training.rds")
 implicit_motives <- textPredict(texts = schone_training$text,
                                 model_info = "power",
                                 user_id = schone_training$participant_id, 
-                                story_id = schone_training$story_id) 
+                                story_id = schone_training$story_id,
+                                dataset = schone_training) 
 }
 
 \dontrun{

@@ -487,7 +487,8 @@ update_user_and_texts <- function(df) {
 implicit_motives_results <- function(model_reference, 
                                      user_id, 
                                      predicted_scores2, 
-                                     texts){
+                                     texts, 
+                                     dataset){
   
   #### Make sure there is just one sentence per user_id ####
   
@@ -537,8 +538,19 @@ implicit_motives_results <- function(model_reference,
   # Change from df to tibble 
   predicted_scores2 <- tibble::as_tibble(predicted_scores2)
   
-  # Summarize all predictions
-  summary_list <- list(sentence_predictions = predicted_scores2, person_predictions = predicted) 
+  # Two different summary lists depending on if including the dataset with integrated predictions or not
+  if (is.null(dataset)){
+    # Summarize all predictions
+    summary_list <- list(sentence_predictions = predicted_scores2, person_predictions = predicted) 
+  } else{
+    # predicted_scores2 = sentence predictions, predicted = person predictions
+    to_insert <- list(predicted_scores2, predicted)
+    # integrate predictions into dataset
+    integrated_dataset <- bind_data(dataset, to_insert)
+    
+    # Summarize all predictions
+    summary_list <- list(sentence_predictions = predicted_scores2, person_predictions = predicted, dataset = integrated_dataset)
+  }
   
   # Display message to user
   cat(colourise("Predictions of implicit motives are ready!", fg = "green"))
@@ -589,33 +601,27 @@ get_model_info <- function(model_info, user_id, show_texts, type) {
     type = "class"
     show_prob = TRUE
   }
-  
-  # Return a list containing the required information
+
   return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type))
 }
 
 #' Function that binds predictions to their original dataset
-#' @param data Dataset, ex csv file
-#' @param predictions Predictions from textPredict as a vector
+#' @param original_data Dataset, ex csv file
+#' @param prediction_list Predictions from textPredict as a list
 #' @return Returns the original dataset with predictions included. 
 #' @noRd
-bind_predictions <- function(data, predictions) {
-  na_rows <- max(0, nrow(data) - nrow(predictions))
-  dplyr::bind_rows(predictions,
-                   tibble::as_tibble(matrix(NA, 
-                                            ncol = ncol(predictions), 
-                                            nrow = na_rows)) %>%
-                     setNames(names(predictions)))
-}
-
-# Function to bind original data with a list of tibbles
 bind_data <- function(original_data, prediction_list) {
-  for(predictions in prediction_list) {
+  # iterate through each set of predictions
+  for(i in seq_along(prediction_list)) {
+    predictions <- prediction_list[[i]]
+    
+    # separator column
+    empty_col_name <- paste0("separator_col_", i) 
+    original_data[[empty_col_name]] <- NA
+    
+    # predictions are added to the original dataset
     original_data <- dplyr::bind_cols(original_data, bind_predictions(original_data, predictions))
   }
   original_data
 }
-
-# Usage example (replace with actual tibble names)
-# final_data <- bind_data(data, list(tibble1, tibble2))
 
