@@ -2,18 +2,10 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-# text 1.1.04
-- Updating code to work with "transformers==4.36.0"
 
-# text 1.1.03
-- `textFineTuneTask()` and `textFineTuneDomain()` removes problematic characters. 
-
-
-# text 1.1.02
-- `textFineTuneDomain()` is implemented as experimental
-- `textTrainN()` and `textTrainNPlot()` are implemented as experimental
-- `textPredict()` has the option to download models (experimental)
-
+# text 1.2
+## Functions
+- `get_bert_topic()` trains a BERTopic model with different modules and returns the model, data, and topic_document distributions based on c-td-idf
 # text 1.1
 ## Functions
 - `textEmbed()` is now fully embedding one column at the time; and reducing word_types for each column. This can break some code; and produc different results in plots where word_types and based on several embedded columns.
