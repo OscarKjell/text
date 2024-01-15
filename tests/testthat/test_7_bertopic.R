@@ -23,7 +23,7 @@ test_that("textTopic.", {
                     embedding_model = "distilroberta",
                     representation_model= "mmr",
                     min_df=2,
-                    stop_words="english",
+                    stopwords="english",
                     bm25_weighting=FALSE,
                     reduce_frequent_words=TRUE,
                     n_gram_range=c(1,3),

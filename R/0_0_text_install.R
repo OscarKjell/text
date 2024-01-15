@@ -139,7 +139,7 @@ textrpp_install <- function(conda = "auto",
     }
 
     if (is_windows()) {
-      python_version <- "3.10.0"
+      python_version <- "3.9.0"
     }
   }
 
