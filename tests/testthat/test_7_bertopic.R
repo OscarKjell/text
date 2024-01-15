@@ -6,22 +6,33 @@ library(testthat)
 test_that("textProjection MEAN and PCA produces a tibble with character variable and numeric variable.", {
   skip_on_cran()
 
-  bertopic <- text::get_bertopic_model(data=data,
-                                 data_var=data_cols[j],
-                                 embedding_model=embedding_models[i],
-                                 umap_model=umap_model,
-                                 hdbscan_model=hdbscan_model,
-                                 vectorizer_model=vectorizer_model,
-                                 representation_model=representation_model,
-                                 num_top_words=num_top_words,
-                                 n_gram_range=n_gram_window,
-                                 min_df=min_df,
-                                 bm25_weighting=bm25_weighting,
-                                 reduce_frequent_words=reduce_frequent_words,
-                                 stop_words=stop_words,
-                                 save_dir="./results")
-  testthat::expect_is(bertopic$model$summary, is.data.frame())
-  testthat::expect_is(bertopic$preds, is.data.frame())
-  testthat::expect_is(bertopic$train_data, is.data.frame())
+
+  data1 <- Language_based_assessment_data_8[c("satisfactiontexts", "swlstotal")]
+  colnames(data1) <- c("text", "score")
+
+  data2 <- Language_based_assessment_data_8[c("harmonytexts", "hilstotal")]
+  colnames(data2) <- c("text", "score")
+
+  data3 <- Language_based_assessment_data_3_100[1:2]
+  colnames(data3) <- c("text", "score")
+
+  data <- dplyr::bind_rows(data1, data2, data3)
+  #data$score <- as.character(data$score)
+
+
+  test <- textTopic(data = data,
+                    variable_name = "text",
+                    embedding_model = "distilroberta",
+                    representation_model= "mmr", #"keybert",
+                    min_df=2,
+                    stop_words="english",
+                    bm25_weighting=FALSE,
+                    reduce_frequent_words=TRUE,
+                    n_gram_range=c(1,3),
+                    save_dir="./results")
+
+  testthat::expect_equal(test$preds$t_1[2], .1115696, tolerance = 0.0001)
+
+  unlink("./results", recursive = TRUE)
 
 })
