@@ -3,7 +3,7 @@ library(dplyr)
 library(text)
 library(testthat)
 
-test_that("textProjection MEAN and PCA produces a tibble with character variable and numeric variable.", {
+test_that("textTopic.", {
   skip_on_cran()
 
 
@@ -17,13 +17,11 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
   colnames(data3) <- c("text", "score")
 
   data <- dplyr::bind_rows(data1, data2, data3)
-  #data$score <- as.character(data$score)
-
 
   test <- textTopic(data = data,
                     variable_name = "text",
                     embedding_model = "distilroberta",
-                    representation_model= "mmr", #"keybert",
+                    representation_model= "mmr",
                     min_df=2,
                     stop_words="english",
                     bm25_weighting=FALSE,

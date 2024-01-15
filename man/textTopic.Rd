@@ -2,7 +2,7 @@
 % Please edit documentation in R/7_1_textTopic.R
 \name{textTopic}
 \alias{textTopic}
-\title{BERTopic implementation with prediction extraction (EXPERIMENTAL)}
+\title{BERTopic implementation with prediction extraction (EXPERIMENTAL - saving training-data)}
 \usage{
 textTopic(
   data,
@@ -14,7 +14,7 @@ textTopic(
   representation_model = "mmr",
   num_top_words = 10,
   n_gram_range = c(1, 3),
-  stop_words = "english",
+  stopwords = "english",
   min_df = 10,
   bm25_weighting = FALSE,
   reduce_frequent_words = TRUE,
@@ -32,6 +32,8 @@ that can be used later in the pipeline for significance test topics according to
 
 \item{umap_model}{(string) dimension reduction algorithm, currently only "default" supported}
 
+\item{hdbscan_model}{(string) clustering algorihtm, currently only "default" supported}
+
 \item{vectorizer_model}{(string) vectorizer model, currently only "default" supported}
 
 \item{representation_model}{(string) representation models used for topics, "keybert" or "mmr"}
@@ -39,6 +41,8 @@ that can be used later in the pipeline for significance test topics according to
 \item{num_top_words}{(int) determine the number of top words for each topic}
 
 \item{n_gram_range}{(list) ngram range used for vectorizer model}
+
+\item{stopwords}{(string)}
 
 \item{min_df}{(int) minimum document frequency of terms}
 
@@ -49,14 +53,10 @@ that can be used later in the pipeline for significance test topics according to
 \item{seed}{(int) set random seed for intialization of umap model}
 
 \item{save_dir}{(string) set directory for saving results, defaults to "./results"}
-
-\item{hdbscan}{(string) clustering algorihtm, currently only "default" supported}
-
-\item{stopwords}{(string)}
 }
 \value{
 A folder containing the model, data, another folder with terms and values for each topic, document-topic matrix
 }
 \description{
-BERTopic implementation with prediction extraction (EXPERIMENTAL)
+BERTopic implementation with prediction extraction (EXPERIMENTAL - saving training-data)
 }
