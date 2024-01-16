@@ -20,7 +20,7 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   r: 'release'}
-###          - {os: windows-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
 #          - {os: ubuntu-20.04,   r: 'release'}
 
 #          - {os: macOS-latest,   r: '4.2'}
@@ -56,12 +56,12 @@ jobs:
 
       - uses: actions/setup-python@v2
         with:
-           python-version: 3.6
+           python-version: 3.9
 
       - uses: goanpeca/setup-miniconda@v1
         with:
           auto-update-conda: true
-          python-version: 3.6
+          python-version: 3.9
 
       - name: Install Python dependencies
         run: |
