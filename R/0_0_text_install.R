@@ -135,7 +135,7 @@ textrpp_install <- function(conda = "auto",
 
   if (python_version == "python_version_system_specific_defaults") {
     if (is_osx() | is_linux()) {
-      python_version <- "3.9.5"
+      python_version <- "3.9.11"
     }
 
     if (is_windows()) {

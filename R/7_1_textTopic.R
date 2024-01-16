@@ -17,7 +17,7 @@
 #' @param save_dir (string) set directory for saving results, defaults to "./results"
 #' @return A folder containing the model, data, another folder with terms and values for each topic, document-topic matrix
 #' @export
-textTopic <- function(data,
+textTopics <- function(data,
                       variable_name,
                       embedding_model = "distilroberta",
                       umap_model = "default",

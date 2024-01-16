@@ -18,7 +18,7 @@ test_that("textTopic.", {
 
   data <- dplyr::bind_rows(data1, data2, data3)
 
-  test <- textTopic(data = data,
+  test <- textTopics(data = data,
                     variable_name = "text",
                     embedding_model = "distilroberta",
                     representation_model= "mmr",
