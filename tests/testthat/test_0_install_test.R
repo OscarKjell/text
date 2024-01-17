@@ -5,7 +5,9 @@ test_that("installing text", {
   skip_on_cran()
 
   .rs.restartR()
-  textrpp_install(prompt = FALSE)
+  textrpp_install(prompt = FALSE,
+                  update_conda = TRUE,
+                  force_conda = TRUE)
 
   textrpp_initialize(textEmbed_test = FALSE)
 
