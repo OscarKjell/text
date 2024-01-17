@@ -4,6 +4,7 @@ library(text)
 test_that("installing text", {
   skip_on_cran()
 
+  .rs.restartR()
   textrpp_install(prompt = FALSE)
 
   textrpp_initialize(textEmbed_test = FALSE)
