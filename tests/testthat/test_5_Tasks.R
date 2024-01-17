@@ -141,7 +141,7 @@ test_that("textTranslate test", {
     source_lang = "en",
     target_lang = "fr",
     model = "t5-small",
-    max_length = 400
+    max_length = 400L
   )
 
   testthat::expect_that(translation_example$en_to_fr_satisfactiontexts, testthat::is_a("character"))

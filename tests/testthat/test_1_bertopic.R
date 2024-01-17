@@ -6,7 +6,6 @@ library(testthat)
 test_that("textTopic.", {
   skip_on_cran()
 
-
   data1 <- Language_based_assessment_data_8[c("satisfactiontexts", "swlstotal")]
   colnames(data1) <- c("text", "score")
 
