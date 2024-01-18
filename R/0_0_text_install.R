@@ -66,7 +66,7 @@ textrpp_install <- function(conda = "auto",
         "scikit-learn==1.3.0",
         "datasets==2.9.0",
         "evaluate==0.4.0",
-        "accelerate", ### ==0.20.1 from 0.20.1
+        "accelerate==0.26.0", ### ==0.20.1 from 0.20.1
 
 
         # "torch==2.0.0",
@@ -138,7 +138,7 @@ textrpp_install <- function(conda = "auto",
         "scikit-learn==1.3.0",
         "datasets==2.9.0",
         "evaluate==0.4.0",
-        "accelerate", ### from 0.20.1
+        "accelerate==0.26.0", ### works with no version.
 
 
        # "torch==2.0.0",
