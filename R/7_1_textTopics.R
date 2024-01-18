@@ -1,20 +1,21 @@
 #' BERTopic implementation with prediction extraction
-#' @param data (data.frame)
-#' @param variable_name (string)  data variable to perform topic modeling on
-#' @param embedding_model (string) embedding model to use for embedding data, choose from miniLM, mpnet, multi-mpnet, distilroberta
-#' @param umap_model (string) dimension reduction algorithm, currently only "default" supported
-#' @param hdbscan (string) clustering algorihtm, currently only "default" supported
-#' @param vectorizer_model (string) vectorizer model, currently only "default" supported
-#' @param representation_model (string) representation models used for topics, "keybert" or "mmr"
-#' @param n_gram_range (list) ngram range used for vectorizer model
-#' @param stopwords (string)
-#' @param min_df (int) minimum document frequency of terms
-#' @param bm25_weighting (bool) determine whether bm25_weighting is used for ClassTfidfTransformer
-#' @param reduce_frequent_words (bool) determine whether frequent words are reduced by ClassTfidfTransformer
-#' @param num_top_words (int) determine the number of top words for each topic
-#' @param seed (int) set random seed for intialization of umap model
-#' @param save_dir (string) set directory for saving results, defaults to "./results"
-#' @return A folder containing the model, data, another folder with terms and values for each topic, document-topic matrix
+#' @param data (tibble/data.frame) A tibble with a text-variable to be analysed, and optional numeric/categorical variables that you
+#' might want to use for later analyses testing the significance of topics in relation to these variables.
+#' @param variable_name (string)  Name of the text-variable in the data tibble that you want to perform topic modeling on.
+#' @param embedding_model (string) Name of the embedding model to use such as "miniLM", "mpnet", "multi-mpnet", "distilroberta".
+#' @param umap_model (string) The dimension reduction algorithm, currently only "default" is supported.
+#' @param hdbscan_model (string) The clustering algorithm to use, currently only "default" is supported.
+#' @param vectorizer_model (string) Name of the vectorizer model, currently only "default" is supported.
+#' @param representation_model (string) Name of the representation model used for topics, including "keybert" or "mmr".
+#' @param n_gram_range (vector) Two-dimensional vector indicating the ngram range used for the vectorizer model.
+#' @param stopwords (string) Name of the stopword dictionary to use.
+#' @param min_df (integer) The minimum document frequency of terms.
+#' @param bm25_weighting (boolean) Determine whether bm25_weighting is used for ClassTfidfTransformer.
+#' @param reduce_frequent_words (boolean) Determine whether frequent words are reduced by ClassTfidfTransformer.
+#' @param num_top_words (integer) Determine the number of top words presented for each topic.
+#' @param seed (integer) The random seed for initialization of the umap model.
+#' @param save_dir (string) The directory for saving results.
+#' @return A folder containing the model, data, folder with terms and values for each topic, and the document-topic matrix.
 #' @export
 textTopics <- function(data,
                        variable_name,
@@ -56,8 +57,17 @@ textTopics <- function(data,
                                  seed = seed,
                                  save_dir = save_dir  # provide a value for save_dir
   )
+
   model$summary <- data.frame(model[2])
-  preds <- data.frame(read.csv(paste0(save_dir,"/seed_",seed,"/topic_distr.csv")))
-  train_data <- data.frame(read.csv(paste0(save_dir,"/seed_",seed,"/data.csv")))
-  return(list(model=model, preds=preds, train_data=train_data))
+  preds <- data.frame(read.csv(
+    paste0(save_dir,"/seed_",seed,"/topic_distr.csv")))
+
+  train_data <- data.frame(read.csv(
+    paste0(save_dir,"/seed_",seed,"/data.csv")))
+
+  return(list(
+    model = model,
+    preds = preds,
+    train_data = train_data))
+
 }

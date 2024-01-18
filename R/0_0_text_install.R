@@ -78,7 +78,7 @@ textrpp_install <- function(conda = "auto",
                          #"tensorflow_text",
                          "gensim>=4.0.0",
                          "Pillow>=9.2.0",
-                         "accelerate>=0.19.0",
+                         "accelerate==0.20.1",
                          "bertopic",
                          "nltk==3.6.7")
     }
