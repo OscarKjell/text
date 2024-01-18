@@ -79,7 +79,8 @@ textrpp_install <- function(conda = "auto",
                          "gensim>=4.0.0",
                          "Pillow>=9.2.0",
                          "accelerate>=0.19.0",
-                         "bertopic")
+                         "bertopic",
+                         "nltk==3.6.7")
     }
     if (is_windows()) {
       rpp_version <- c("torch==2.0.0",
