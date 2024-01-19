@@ -56,26 +56,46 @@ textrpp_install <- function(conda = "auto",
   # Set system specific default versions
   if (rpp_version[[1]] == "rpp_version_system_specific_defaults") {
     if (is_osx() | is_linux()) {
-      rpp_version <- c("torch==2.0.0",
-                       "transformers==4.36.0",
-                       "numpy==1.25.2",
-                       "pandas==2.0.3",
-                       "nltk==3.6.7",
-                       "scikit-learn==1.3.0",
-                       "datasets==2.9.0",
-                       "evaluate==0.4.0",
-                       "accelerate==0.20.1")
+      rpp_version <- c(
+
+        "torch==2.0.0",
+        "transformers==4.36.0",
+        "numpy==1.26.0",
+        "pandas==2.0.3",
+        "nltk==3.6.7",
+        "scikit-learn==1.3.0",
+        "datasets==2.16.1", # 2.9.0
+        "evaluate==0.4.0",
+        "accelerate==0.26.0", ### ==0.20.1 from 0.20.1
+
+        "bertopic==0.16.0", ### 0.15.0
+        "jsonschema==4.19.2",
+        "sentence-transformers==2.2.2",
+        "flair==0.13.0",
+        "umap-learn==0.5.4",
+        "hdbscan==0.8.33"
+
+      )
     }
     if (is_windows()) {
-      rpp_version <- c("torch==2.0.0",
-                       "transformers==4.36.0",
-                       "numpy==1.25.2",
-                       "pandas==2.0.3",
-                       "nltk==3.6.7",
-                       "scikit-learn==1.3.0",
-                       "datasets==2.9.0",
-                       "evaluate==0.4.0",
-                       "accelerate==0.20.1")
+      rpp_version <- c(
+        "torch==2.0.0",
+        "transformers==4.36.0",
+        "numpy==1.26.0",
+        "pandas==2.0.3",
+        "nltk==3.6.7",
+        "scikit-learn==1.3.0",
+        "datasets==2.16.1",      ### works with 2.9.0
+        "evaluate==0.4.0",
+        "accelerate==0.26.0",    ### works with no version.
+
+         "bertopic==0.16.0",     ### works with 0.15.0
+         "jsonschema==4.19.2",
+         "sentence-transformers==2.2.2",
+         "flair==0.13.0",
+         "umap-learn==0.5.4",
+         "hdbscan==0.8.33"
+      )
     }
   }
 
@@ -105,7 +125,6 @@ textrpp_install <- function(conda = "auto",
   # install rust for singularity machine -- but it gives error in github action
   # reticulate::py_run_string("import os\nos.system(\"curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y\")")
   system("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y")
-  system("source $HOME/.cargo/env")
 
   # resolve and look for conda help(conda_binary)
   conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
