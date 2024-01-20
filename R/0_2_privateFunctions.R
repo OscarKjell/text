@@ -337,6 +337,25 @@ path_exist_download_files <- function(wanted_file) {
 }
 
 
+# Replaces NA values with imputed data using KNN
+#' @param data (tibble) Tibble with values.
+#' @param col (list) Column with NA values. 
+#' @return data with replaced NA values 
+#' @noRd
+impute_data <- function(data, col){
+  # data = data_train
+  recipe_obj <- recipes::recipe(~ ., data = data) %>%
+    recipes::step_impute_knn(col, neighbors = 10) 
+  
+  # recipe??? - instruktion 
+  prepared_recipe <- recipes::prep(recipe_obj)
+  
+  # impute using KNN 
+  imputed_data <- recipes::bake(prepared_recipe, new_data = NULL) 
+  
+  return(imputed_data)
+}
+
 ######################################                          ###################################### 
 ###################################### Implicit motives section ###################################### 
 ######################################                          ###################################### 
@@ -603,6 +622,20 @@ get_model_info <- function(model_info, user_id, show_texts, type) {
   }
 
   return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type))
+}
+
+#' Function that binds predictions to their original dataset
+#' @param data Dataset, ex csv file
+#' @param predictions Predictions from textPredict as a vector
+#' @return Returns the original dataset with predictions included. 
+#' @noRd
+bind_predictions <- function(data, predictions) {
+  na_rows <- max(0, nrow(data) - nrow(predictions))
+  dplyr::bind_rows(predictions,
+                   tibble::as_tibble(matrix(NA, 
+                                            ncol = ncol(predictions), 
+                                            nrow = na_rows)) %>%
+                     setNames(names(predictions)))
 }
 
 #' Function that binds predictions to their original dataset
