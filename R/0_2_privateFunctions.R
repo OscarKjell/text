@@ -337,25 +337,6 @@ path_exist_download_files <- function(wanted_file) {
 }
 
 
-# Replaces NA values with imputed data using KNN
-#' @param data (tibble) Tibble with values.
-#' @param col (list) Column with NA values. 
-#' @return data with replaced NA values 
-#' @noRd
-impute_data <- function(data, col){
-  # data = data_train
-  recipe_obj <- recipes::recipe(~ ., data = data) %>%
-    recipes::step_impute_knn(col, neighbors = 10) 
-  
-  # recipe??? - instruktion 
-  prepared_recipe <- recipes::prep(recipe_obj)
-  
-  # impute using KNN 
-  imputed_data <- recipes::bake(prepared_recipe, new_data = NULL) 
-  
-  return(imputed_data)
-}
-
 ######################################                          ###################################### 
 ###################################### Implicit motives section ###################################### 
 ######################################                          ###################################### 
