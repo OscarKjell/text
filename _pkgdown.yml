@@ -116,7 +116,9 @@ reference:
     - PC_projections_satisfactionwords_40
 - title: BERTopic
   contents:
-    - get_bert_topic
+    - textTopics
+    - textTopicsTest
+    - textTopicsWordcloud
 
 
 articles:
