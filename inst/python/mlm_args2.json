@@ -28,7 +28,7 @@
     "streaming": false
   },
   "TrainingArguments": {
-    "output_dir": null,
+    "output_dir": "./runs/mlm_trial1",
     "overwrite_output_dir": false,
     "do_train": true,
     "do_eval": false,
@@ -56,7 +56,7 @@
     "log_level": "passive",
     "log_level_replica": "passive",
     "log_on_each_node": true,
-    "logging_dir": null,
+    "logging_dir": "./logs/mlm_trial1",
     "logging_strategy": "steps",
     "logging_first_step": false,
     "logging_steps": 500,
@@ -76,7 +76,6 @@
     "fp16_full_eval": false,
     "tf32": null,
     "local_rank": -1,
-    "xpu_backend": null,
     "tpu_num_cores": null,
     "tpu_metrics_debug": false,
     "debug": [],
@@ -92,7 +91,6 @@
     "metric_for_best_model": null,
     "greater_is_better": null,
     "ignore_data_skip": false,
-    "sharded_ddp": [],
     "fsdp": [],
     "fsdp_min_num_params": 0,
     "deepspeed": null,
@@ -119,7 +117,6 @@
     "push_to_hub_model_id": null,
     "push_to_hub_organization": null,
     "push_to_hub_token": "<PUSH_TO_HUB_TOKEN>",
-    "_n_gpu": -1,
     "mp_parameters": "",
     "auto_find_batch_size": false,
     "full_determinism": false
