@@ -18,4 +18,7 @@ def basic_mlm_test(**kwargs):
     return 
 
 
-# kwargs: output_dir="/data/aviricnhipur/text_dummy_run/models/", seed=2023, do_train=True, do_eval=True, evaluation_strategy="epoch"    
+# kwargs: output_dir="/data/avirinchipur/text_dummy_run/models/", seed=2023, do_train=True, do_eval=True, evaluation_strategy="epoch"    
+
+if __name__ == "__main__":
+    basic_mlm_test()

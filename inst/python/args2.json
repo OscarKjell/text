@@ -73,7 +73,6 @@
     "metric_for_best_model": null,
     "greater_is_better": null,
     "ignore_data_skip": false,
-    "sharded_ddp": false,
     "deepspeed": null,
     "label_smoothing_factor": 0.0,
     "adafactor": false
