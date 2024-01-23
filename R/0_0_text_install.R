@@ -56,47 +56,46 @@ textrpp_install <- function(conda = "auto",
   # Set system specific default versions
   if (rpp_version[[1]] == "rpp_version_system_specific_defaults") {
     if (is_osx() | is_linux()) {
-      rpp_version <- c(  "pytest>=5.4.3",
-                         "pytest-cov>=2.6.1",
-                         "mkdocs==1.1",
-                         "mkdocs-material==4.6.3",
-                         "mkdocstrings==0.8.0",
-                         "numpy>=1.20.0",
-                         "hdbscan>=0.8.29",
-                         "umap-learn>=0.5.0",
-                         "pandas>=1.1.5",
-                         "scikit-learn>=0.22.2.post1",
-                         "tqdm>=4.41.1",
-                         "sentence-transformers>=0.4.1",
-                         "plotly>=4.7.0",
-                         "transformers>=3.5.1",
-                         "torch>=1.4.0",
-                         "flair>=0.7",
-                         "spacy>=3.0.1",
-                         "tensorflow",
-                         "tensorflow_hub",
-                         #"tensorflow_text",
-                         "gensim>=4.0.0",
-                         "Pillow>=9.2.0",
-                         "accelerate>=0.19.0",
-                         "bertopic")
+      rpp_version <- c(
+
+        "torch==2.0.0",
+        "transformers==4.36.0",
+        "numpy==1.26.0",
+        "pandas==2.0.3",
+        "nltk==3.6.7",
+        "scikit-learn==1.3.0",
+        "datasets==2.16.1", # 2.9.0
+        "evaluate==0.4.0",
+        "accelerate==0.26.0", ### ==0.20.1 from 0.20.1
+
+        "bertopic==0.16.0", ### 0.15.0
+        "jsonschema==4.19.2",
+        "sentence-transformers==2.2.2",
+        "flair==0.13.0",
+        "umap-learn==0.5.4",
+        "hdbscan==0.8.33"
+
+      )
     }
     if (is_windows()) {
-      rpp_version <- c("torch==2.0.0",
-                       "transformers==4.36.0",
-                       "numpy==1.25.2",
-                       "pandas==2.0.3",
-                       "nltk==3.6.7",
-                       "scikit-learn==1.3.0",
-                       "datasets==2.9.0",
-                       "evaluate==0.4.0",
-                       "accelerate==0.20.1", #)
-                       "bertopic==0.15.0",
-                       "jsonschema==4.19.2",
-                       "sentence-transformers==2.2.2",
-                       "flair==0.13.0",
-                       "umap-learn==0.5.4",
-                       "hdbscan==0.8.33")
+      rpp_version <- c(
+        "torch==2.0.0",
+        "transformers==4.36.0",
+        "numpy==1.26.0",
+        "pandas==2.0.3",
+        "nltk==3.6.7",
+        "scikit-learn==1.3.0",
+        "datasets==2.16.1",      ### works with 2.9.0
+        "evaluate==0.4.0",
+        "accelerate==0.26.0",    ### works with no version.
+
+         "bertopic==0.16.0",     ### works with 0.15.0
+         "jsonschema==4.19.2",
+         "sentence-transformers==2.2.2",
+         "flair==0.13.0",
+         "umap-learn==0.5.4",
+         "hdbscan==0.8.33"
+      )
     }
   }
 

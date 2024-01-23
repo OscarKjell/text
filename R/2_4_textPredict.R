@@ -23,60 +23,62 @@ textReturnModelAndEmbedding <- function(
     story_id = NULL
 ) {
   # extend the timeout time for larger models. 
-  options(timeout=5*50)
+  options(timeout=5*60)
   
-  # extract model_name 
-  model_name <- basename(model_info)
-  
-  # find model in wd 
-  model_exists <- file.exists(model_name)
   
   # diaplay message to user 
   cat(colourise("Loading model...", fg = "red"))
   cat("\n")
   
-  # determine how to load model
-  if (grepl("github.com/", model_info) & isFALSE(model_exists) & isTRUE(save_model)){
-    # load from github
-    loaded_model <- readRDS(url(model_info))
-    # save model 
-    saveRDS(loaded_model, model_name)
+  # extract model_name if its a url or filepath
+  if (is.character(model_info)){ 
+    model_name <- basename(model_info)
+    # find model in wd 
+    model_exists <- file.exists(model_name)
     
-    # display message to user 
-    loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded and saved in:", getwd()), sep = "")
-    cat(colourise(loaded_model_confirm, fg = "green"))
-    cat("\n")
-  }
-  else if (grepl("github.com/", model_info) & isFALSE(model_exists) & isFALSE(save_model)){
-    # load from github, don't save
-    loaded_model <- readRDS(url(model_info))
-    
-    # display message to user 
-    loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
-    cat(colourise(loaded_model_confirm, fg = "green"))
-    cat("\n")
-  }
-  else if (grepl("github.com/", model_info) & isTRUE(model_exists)){
-    # retrive model from wd if it's already downloaded 
-    loaded_model <- readRDS(model_name)
-    
-    # display message to user 
-    loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", getwd()), sep = "")
-    cat(colourise(loaded_model_confirm, fg = "green"))
-    cat("\n")
-  }
-  else if (isFALSE(grepl("github.com/", model_info))){
-    # load model from specific path (if it exists somewhere else than in the work directory) 
-    loaded_model <- readRDS(model_info)
-    
-    # display message to user 
-    loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
-    cat(colourise(loaded_model_confirm, fg = "green"))
-    cat("\n")
-  } 
-  else{
+    # determine how to load model
+    if (grepl("github.com/", model_info) & isFALSE(model_exists) & isTRUE(save_model)){
+      # load from github
+      loaded_model <- readRDS(url(model_info))
+      # save model 
+      saveRDS(loaded_model, model_name)
+      
+      # display message to user 
+      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded and saved in:", getwd()), sep = "")
+      cat(colourise(loaded_model_confirm, fg = "green"))
+      cat("\n")
+    } else if (grepl("github.com/", model_info) & isFALSE(model_exists) & isFALSE(save_model)){
+      # load from github, don't save
+      loaded_model <- readRDS(url(model_info))
+      
+      # display message to user 
+      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
+      cat(colourise(loaded_model_confirm, fg = "green"))
+      cat("\n")
+    } else if (grepl("github.com/", model_info) & isTRUE(model_exists)){
+      # retrive model from wd if it's already downloaded 
+      loaded_model <- readRDS(model_name)
+      
+      # display message to user 
+      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", getwd()), sep = "")
+      cat(colourise(loaded_model_confirm, fg = "green"))
+      cat("\n")
+    } else {
+      # load model from specific path (if it exists somewhere else than in the work directory) 
+      loaded_model <- readRDS(model_info)
+      
+      # display message to user 
+      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
+      cat(colourise(loaded_model_confirm, fg = "green"))
+      cat("\n")
+      }
+    } else{
     # model was an R object of a model
     loaded_model <- model_info
+    # display message to user 
+    loaded_model_confirm <- paste0(c("The model has been loaded from your global environment."), sep = "")
+    cat(colourise(loaded_model_confirm, fg = "green"))
+    cat("\n")
   }
   
   # Check that both texts and word_embeddings aren't defined. 
@@ -169,7 +171,7 @@ textReturnModelAndEmbedding <- function(
   
   ##### End special treatment for automatic implicit motive coding ##### 
   
-  # store classes 
+  # store classes
   classes <- loaded_model$final_recipe$levels$y$values
   
   emb_and_model <- list(loaded_model = loaded_model, embeddings = embeddings, classes = classes)
@@ -315,8 +317,8 @@ textPredict <- function(model_info = NULL,
   if (dim_names == TRUE) {
     # Select the predictor variables needed for the prediction
     target_variables_names <- loaded_model$final_recipe$var_info$variable[loaded_model$final_recipe$var_info$role == "predictor"]
-    
-    ## Get Word Embedding Names
+   
+     ## Get Word Embedding Names
     # remove those starting with Dim0
     We_names1 <- target_variables_names[!grepl("^Dim0", target_variables_names)]
     

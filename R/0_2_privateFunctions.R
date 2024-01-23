@@ -606,6 +606,20 @@ get_model_info <- function(model_info, user_id, show_texts, type) {
 }
 
 #' Function that binds predictions to their original dataset
+#' @param data Dataset, ex csv file
+#' @param predictions Predictions from textPredict as a vector
+#' @return Returns the original dataset with predictions included. 
+#' @noRd
+bind_predictions <- function(data, predictions) {
+  na_rows <- max(0, nrow(data) - nrow(predictions))
+  dplyr::bind_rows(predictions,
+                   tibble::as_tibble(matrix(NA, 
+                                            ncol = ncol(predictions), 
+                                            nrow = na_rows)) %>%
+                     setNames(names(predictions)))
+}
+
+#' Function that binds predictions to their original dataset
 #' @param original_data Dataset, ex csv file
 #' @param prediction_list Predictions from textPredict as a list
 #' @return Returns the original dataset with predictions included. 
