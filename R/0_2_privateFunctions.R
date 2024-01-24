@@ -348,7 +348,6 @@ path_exist_download_files <- function(wanted_file) {
 #' @return Returns a tibble with values relevant for calculating implicit motives 
 #' @noRd
 implicit_motives <- function(texts, user_id, predicted_scores2){
-  
   # Create a table with the number of sentences per user
   table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
   num_persons <- length(table_uniques2)
@@ -496,8 +495,6 @@ bind_predictions <- function(data, predictions) {
   
   dplyr::bind_rows(predictions, na_predictions)
 }
-
-
 
 #' Function that binds predictions to their original dataset
 #' @param original_data Dataset, ex csv file
