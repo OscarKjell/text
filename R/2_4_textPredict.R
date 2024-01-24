@@ -489,6 +489,7 @@ textPredict <- function(model_info = NULL,
         # Wraper function that prepares data for 
         # automatic implicit motive coding and returns 
         # a list with predictions, class residuals and probability residuals.
+        
         implicit_motives_results(model_reference = model_info, 
                                  user_id = user_id, 
                                  predicted_scores2 = predicted_scores2, 
