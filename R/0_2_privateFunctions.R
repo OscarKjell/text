@@ -348,7 +348,6 @@ path_exist_download_files <- function(wanted_file) {
 #' @return Returns a tibble with values relevant for calculating implicit motives 
 #' @noRd
 implicit_motives <- function(texts, user_id, predicted_scores2){
-  
   # Create a table with the number of sentences per user
   table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
   num_persons <- length(table_uniques2)
@@ -414,20 +413,20 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
 #' @noRd
 implicit_motives_pred <- function(sqrt_implicit_motives){
   
-  #square root transform
+  # square root transform
   sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
   
-  # For OUTCOME_USER_SUM_PROB
+  # for OUTCOME_USER_SUM_PROB
   lm.OUTCOME_USER_SUM_PROB <- stats::lm(OUTCOME_USER_SUM_PROB  ~ wc_person_per_1000, data = sqrt_implicit_motives)
   OUTCOME_USER_SUM_PROB.residual1 <- resid(lm.OUTCOME_USER_SUM_PROB)
   OUTCOME_USER_SUM_PROB.residual1.z <- scale(OUTCOME_USER_SUM_PROB.residual1)
 
-  # For OUTCOME_USER_SUM_CLASS
+  # for OUTCOME_USER_SUM_CLASS
   lm.OUTCOME_USER_SUM_CLASS <- stats::lm(OUTCOME_USER_SUM_CLASS  ~ wc_person_per_1000, data = sqrt_implicit_motives)
   OUTCOME_USER_SUM_CLASS.residual1 <- resid(lm.OUTCOME_USER_SUM_CLASS)
   OUTCOME_USER_SUM_CLASS.residual1.z <- scale(OUTCOME_USER_SUM_CLASS.residual1)
   
-  # Insert residuals into a tibble
+  # insert residuals into a tibble
   implicit_motives_pred <- tibble::tibble(
     user_id = sqrt_implicit_motives$user_id,
     person_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
@@ -477,6 +476,46 @@ update_user_and_texts <- function(df) {
   return(updated_df)
 }
 
+#' Function that binds predictions to their original dataset
+#' @param data Dataset, ex csv file
+#' @param predictions Predictions from textPredict as a vector
+#' @return Returns the original dataset with predictions included. 
+#' @noRd
+bind_predictions <- function(data, predictions) {
+  na_rows <- max(0, nrow(data) - nrow(predictions))
+  
+  # create a NA tibble with correct column names
+  na_predictions <- if (na_rows > 0) {
+    na_matrix <- matrix(NA, ncol = ncol(predictions), nrow = na_rows)
+    colnames(na_matrix) <- names(predictions)
+    tibble::as_tibble(na_matrix)
+  } else {
+    tibble::tibble()
+  }
+  
+  dplyr::bind_rows(predictions, na_predictions)
+}
+
+#' Function that binds predictions to their original dataset
+#' @param original_data Dataset, ex csv file
+#' @param prediction_list Predictions from textPredict as a list
+#' @return Returns the original dataset with predictions included. 
+#' @noRd
+bind_data <- function(original_data, prediction_list) {
+  # iterate through each set of predictions
+  for(i in seq_along(prediction_list)) {
+    predictions <- prediction_list[[i]]
+    
+    # separator column
+    empty_col_name <- paste0("separator_col_", i) 
+    original_data[[empty_col_name]] <- NA
+    
+    # predictions are added to the original dataset
+    original_data <- dplyr::bind_cols(original_data, bind_predictions(original_data, predictions))
+  }
+  original_data
+}
+
 #' Wrapper function that prepares the data and returns a list with predictions, class residuals and probability residuals. 
 #' @param model_reference Reference to implicit motive model, either github URL or file-path. 
 #' @param user_id A column with user ids. 
@@ -494,15 +533,14 @@ implicit_motives_results <- function(model_reference,
   
   # prepare dataframe for update_user_and_texts function
   id_and_texts <- data.frame(user_id = user_id, texts = texts)
-  
+ 
   # correct for multiple sentences per row. 
   update_user_and_texts <- update_user_and_texts(id_and_texts)
-  
   # update user_id
   user_id = update_user_and_texts$user_id
   # update texts
   texts = update_user_and_texts$texts
-  
+
   #### Assign correct column name #### 
   lower_case_model <- tolower(model_reference)
   
@@ -525,8 +563,8 @@ implicit_motives_results <- function(model_reference,
   
   # Retrieve Data
   implicit_motives <- implicit_motives(texts, user_id, predicted_scores2)
-  
-  # Predicts
+
+  # Predict
   predicted <- implicit_motives_pred(implicit_motives)
   
   # Full column name
@@ -603,39 +641,5 @@ get_model_info <- function(model_info, user_id, show_texts, type) {
   }
 
   return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type))
-}
-
-#' Function that binds predictions to their original dataset
-#' @param data Dataset, ex csv file
-#' @param predictions Predictions from textPredict as a vector
-#' @return Returns the original dataset with predictions included. 
-#' @noRd
-bind_predictions <- function(data, predictions) {
-  na_rows <- max(0, nrow(data) - nrow(predictions))
-  dplyr::bind_rows(predictions,
-                   tibble::as_tibble(matrix(NA, 
-                                            ncol = ncol(predictions), 
-                                            nrow = na_rows)) %>%
-                     setNames(names(predictions)))
-}
-
-#' Function that binds predictions to their original dataset
-#' @param original_data Dataset, ex csv file
-#' @param prediction_list Predictions from textPredict as a list
-#' @return Returns the original dataset with predictions included. 
-#' @noRd
-bind_data <- function(original_data, prediction_list) {
-  # iterate through each set of predictions
-  for(i in seq_along(prediction_list)) {
-    predictions <- prediction_list[[i]]
-    
-    # separator column
-    empty_col_name <- paste0("separator_col_", i) 
-    original_data[[empty_col_name]] <- NA
-    
-    # predictions are added to the original dataset
-    original_data <- dplyr::bind_cols(original_data, bind_predictions(original_data, predictions))
-  }
-  original_data
 }
 

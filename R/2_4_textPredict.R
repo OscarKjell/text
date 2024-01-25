@@ -203,7 +203,6 @@ textReturnModelAndEmbedding <- function(
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predictions from word-embedding or text input. 
 #' @examples
-#' 
 #' \dontrun{
 #' 
 #' # Text data from Language_based_assessment_data_8
