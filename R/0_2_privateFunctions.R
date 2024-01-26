@@ -349,9 +349,12 @@ path_exist_download_files <- function(wanted_file) {
 #' @noRd
 implicit_motives <- function(texts, user_id, predicted_scores2){
   # Create a table with the number of sentences per user
-  table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
-  num_persons <- length(table_uniques2)
+  #table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
+  table_uniques2 <- table(user_id[1:length(user_id)])
   
+  
+  num_persons <- length(table_uniques2)
+ 
   # Define variables 
   user_id_column <- c()
   current <- 0
@@ -386,8 +389,6 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
       OUTCOME_USER_SUM_PROB = sum(as.numeric(as.character(predicted_scores2[[3]][start_idx:end_idx])), na.rm = TRUE)
     )
   }
-  
-
   
   # Calculate wc_person_per_1000 (for the first row)
   summations[1, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[1:table_uniques2[[1]]], ' ')), na.rm = TRUE) / 1000
@@ -484,11 +485,10 @@ update_user_and_texts <- function(df) {
 bind_predictions <- function(data, predictions) {
   na_rows <- max(0, nrow(data) - nrow(predictions))
   
-  # create a NA tibble with correct column names
   na_predictions <- if (na_rows > 0) {
     na_matrix <- matrix(NA, ncol = ncol(predictions), nrow = na_rows)
     colnames(na_matrix) <- names(predictions)
-    tibble::as_tibble(na_matrix)
+    tibble::as_tibble(na_matrix, .name_repair = "minimal")
   } else {
     tibble::tibble()
   }
@@ -496,22 +496,24 @@ bind_predictions <- function(data, predictions) {
   dplyr::bind_rows(predictions, na_predictions)
 }
 
+
 #' Function that binds predictions to their original dataset
 #' @param original_data Dataset, ex csv file
 #' @param prediction_list Predictions from textPredict as a list
 #' @return Returns the original dataset with predictions included. 
 #' @noRd
 bind_data <- function(original_data, prediction_list) {
-  # iterate through each set of predictions
+  # Iterate through each set of predictions
   for(i in seq_along(prediction_list)) {
     predictions <- prediction_list[[i]]
     
-    # separator column
+    # Separator column
     empty_col_name <- paste0("separator_col_", i) 
     original_data[[empty_col_name]] <- NA
     
-    # predictions are added to the original dataset
-    original_data <- dplyr::bind_cols(original_data, bind_predictions(original_data, predictions))
+    # Predictions are added to the original dataset
+    # Added .name_repair = "minimal" to avoid automatic renaming
+    original_data <- dplyr::bind_cols(original_data, bind_predictions(original_data, predictions), .name_repair = "minimal")
   }
   original_data
 }
@@ -534,7 +536,7 @@ implicit_motives_results <- function(model_reference,
   # prepare dataframe for update_user_and_texts function
   id_and_texts <- data.frame(user_id = user_id, texts = texts)
  
-  # correct for multiple sentences per row. 
+  # correct for multiple sentences per row. # CORRECT
   update_user_and_texts <- update_user_and_texts(id_and_texts)
   # update user_id
   user_id = update_user_and_texts$user_id
@@ -563,7 +565,7 @@ implicit_motives_results <- function(model_reference,
   
   # Retrieve Data
   implicit_motives <- implicit_motives(texts, user_id, predicted_scores2)
-
+  
   # Predict
   predicted <- implicit_motives_pred(implicit_motives)
   
