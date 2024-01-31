@@ -483,19 +483,27 @@ update_user_and_texts <- function(df) {
 #' @return Returns the original dataset with predictions included. 
 #' @noRd
 bind_predictions <- function(data, predictions) {
-  na_rows <- max(0, nrow(data) - nrow(predictions))
+
+  predictions <- tibble::as_tibble(predictions)
+
+  row_diff <- nrow(data) - nrow(predictions)
   
-  na_predictions <- if (na_rows > 0) {
-    na_matrix <- matrix(NA, ncol = ncol(predictions), nrow = na_rows)
-    colnames(na_matrix) <- names(predictions)
-    tibble::as_tibble(na_matrix, .name_repair = "minimal")
-  } else {
-    tibble::tibble()
+  if (row_diff > 0) {
+    # if data has more rows, add NA rows to predictions
+    na_predictions <- tibble::as_tibble(matrix(NA, nrow = row_diff, ncol = ncol(predictions)))
+    colnames(na_predictions) <- colnames(predictions)
+    predictions <- rbind(predictions, na_predictions)
+  } else if (row_diff < 0) {
+    # if predictions have more rows, add NA rows to data
+    row_diff <- abs(row_diff)
+    na_data <- tibble::as_tibble(matrix(NA, nrow = row_diff, ncol = ncol(data)))
+    colnames(na_data) <- colnames(data)
+    data <- rbind(data, na_data)
   }
   
-  dplyr::bind_rows(predictions, na_predictions)
+  # bind the columns
+  return(dplyr::bind_cols(data, predictions))
 }
-
 
 #' Function that binds predictions to their original dataset
 #' @param original_data Dataset, ex csv file
@@ -503,19 +511,27 @@ bind_predictions <- function(data, predictions) {
 #' @return Returns the original dataset with predictions included. 
 #' @noRd
 bind_data <- function(original_data, prediction_list) {
-  # Iterate through each set of predictions
+  # copy of original_data
+  result_data <- original_data
+  
+  # iterate through each "prediction" 
   for(i in seq_along(prediction_list)) {
     predictions <- prediction_list[[i]]
     
-    # Separator column
-    empty_col_name <- paste0("separator_col_", i) 
-    original_data[[empty_col_name]] <- NA
+    # rename columns in predictions to ensure they are unique
+    col_names <- names(predictions)
+    unique_col_names <- paste0(col_names, "_", i)
+    names(predictions) <- unique_col_names
     
-    # Predictions are added to the original dataset
-    # Added .name_repair = "minimal" to avoid automatic renaming
-    original_data <- dplyr::bind_cols(original_data, bind_predictions(original_data, predictions), .name_repair = "minimal")
+    # add a separator column with NA values before binding the new predictions
+    separator_col_name <- paste0("separator_col_", i)
+    result_data[[separator_col_name]] <- NA
+    
+    # bind the predictions with the result_data
+    result_data <- bind_predictions(result_data, predictions)
   }
-  original_data
+  
+  return(result_data)
 }
 
 #' Wrapper function that prepares the data and returns a list with predictions, class residuals and probability residuals. 
@@ -534,14 +550,14 @@ implicit_motives_results <- function(model_reference,
   #### Make sure there is just one sentence per user_id ####
   
   # prepare dataframe for update_user_and_texts function
-  id_and_texts <- data.frame(user_id = user_id, texts = texts)
+  #id_and_texts <- data.frame(user_id = user_id, texts = texts)
  
   # correct for multiple sentences per row. # CORRECT
-  update_user_and_texts <- update_user_and_texts(id_and_texts)
+  #update_user_and_texts <- update_user_and_texts(id_and_texts)
   # update user_id
-  user_id = update_user_and_texts$user_id
+  #user_id = update_user_and_texts$user_id
   # update texts
-  texts = update_user_and_texts$texts
+  #texts = update_user_and_texts$texts
 
   #### Assign correct column name #### 
   lower_case_model <- tolower(model_reference)
@@ -606,8 +622,8 @@ implicit_motives_results <- function(model_reference,
 #' @param show_texts Show texts, TRUE / FALSE 
 #' @return Returns a list of conditions for implicit motive coding to work
 #' @noRd
-get_model_info <- function(model_info, user_id, show_texts, type) {
-  # Show_prob is by default FALSE
+get_model_info <- function(model_info, user_id, show_texts, type, texts) {
+  # show_prob is by default FALSE
   show_prob <- FALSE
   if (is.character(model_info)){
   lower_case_model <- tolower(model_info)
@@ -618,7 +634,7 @@ get_model_info <- function(model_info, user_id, show_texts, type) {
     ) {
       type <- "class"  # type must be class for these conditions
       
-      # Switch to the correct model URL
+      # switch to the correct model URL
       if (lower_case_model == "power") {
         model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_power_pen_30.rds"
         } else if (lower_case_model == "achievement") {
@@ -627,11 +643,23 @@ get_model_info <- function(model_info, user_id, show_texts, type) {
         model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_affiliation_pen_30.rds"
       }
   
-      # Specific configuration for implicit motive coding
+      # specific configuration for implicit motive coding
       if (!is.null(user_id)){
         show_texts <- TRUE 
         show_prob <- TRUE 
         type <- "class"
+        
+      # separate multiple sentences, and add corresponding user-id
+      id_and_texts <- data.frame(user_id = user_id, texts = texts)
+        
+      # correct for multiple sentences per row. # CORRECT
+      update_user_and_texts <- update_user_and_texts(id_and_texts)
+      
+      # update user_id
+      user_id = update_user_and_texts$user_id
+      # update texts
+      texts = update_user_and_texts$texts
+      
       }
     }
   }
@@ -642,6 +670,6 @@ get_model_info <- function(model_info, user_id, show_texts, type) {
     show_prob = TRUE
   }
 
-  return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type))
+  return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type, user_id = user_id, texts = texts))
 }
 
