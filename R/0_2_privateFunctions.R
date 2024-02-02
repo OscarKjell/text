@@ -664,7 +664,7 @@ get_model_info <- function(model_info, user_id, show_texts, type, texts) {
     }
   }
   
-  # The stats package just takes "class" or "prob", therefore, allocate to "show_prob". 
+  # the stats package just takes "class" or "prob", therefore, allocate to "show_prob". 
   if (!is.null(type) && type == "class_prob") {
     type = "class"
     show_prob = TRUE
