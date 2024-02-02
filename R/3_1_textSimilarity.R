@@ -220,7 +220,7 @@ textSimilarityMatrix <- function(
 
   # Throw an error if the method didn't match
   else {
-    stop(sprintf("Unknown method: “%s”", method))
+    stop(sprintf("Unknown method: %s", method))
   }
 
   # Add embedding metadata
@@ -285,7 +285,7 @@ textDistanceMatrix <- function(
 
   # Throw an error if the method didn't match
   else {
-    stop(sprintf("Unknown method: “%s”", method))
+    stop(sprintf("Unknown method: %s", method))
   }
 
   # Add embedding metadata
