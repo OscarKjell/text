@@ -636,11 +636,11 @@ get_model_info <- function(model_info, user_id, show_texts, type, texts) {
       
       # switch to the correct model URL
       if (lower_case_model == "power") {
-        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_power_pen_30.rds"
+        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-power-motive-model/schone_training_rob_la_l23_to_ach_10k.rds"
         } else if (lower_case_model == "achievement") {
-        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_achievement_pen_30.rds"
+        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-power-motive-model/schone_training_rob_la_l23_to_ach_10k.rds"
       } else if (lower_case_model == "affiliation") {
-        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_affiliation_pen_30.rds"
+        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-power-motive-model/schone_training_rob_la_l23_to_aff_10k.rds"
       }
   
       # specific configuration for implicit motive coding
