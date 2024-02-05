@@ -22,7 +22,7 @@ textTopicsWordcloud(
 \arguments{
 \item{model}{(data.frame) The model returned from textTopics()$model.}
 
-\item{model_type}{(string) "bert_topic", "mallet", or "textmineR"}
+\item{model_type}{(string) "bert_topic", or "mallet" ("textmineR" not supported)}
 
 \item{test}{(data.frame) the test returned from textTopicTest()}
 

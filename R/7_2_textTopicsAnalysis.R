@@ -83,7 +83,7 @@ textTopicTest <- function(model,
 #' @param multiple_comparison (string) The p-correction method
 #' @importFrom dplyr select everything
 # @importFrom tibble select everything
-#' @importFrom textmineR GetTopTerms
+# @importFrom textmineR GetTopTerms
 #' @importFrom purrr map
 #' @seealso See \code{\link{textTrainRegression}}
 #' @return the test as a data.frame
@@ -141,18 +141,18 @@ topic_test <- function(topic_terms,
   }
 
 
-  if (FALSE){
-    model1$prevalence <- colSums(model1$theta) / sum(model1$theta) * 100
-    model1$top_terms <- textmineR::GetTopTerms(phi = model1$phi, M = 5)
-    model1$summary <- data.frame(topic = rownames(model1$phi),
-                                 label = model1$labels,
-                                 coherence = round(model1$coherence, 3),
-                                 prevalence = round(model1$prevalence,3),
-                                 top_terms = apply(model1$top_terms, 2, function(x){
-                                   paste(x, collapse = ", ")
-                                 }),
-                                 stringsAsFactors = FALSE)
-  }
+#  if (FALSE){
+#    model1$prevalence <- colSums(model1$theta) / sum(model1$theta) * 100
+#    model1$top_terms <- textmineR::GetTopTerms(phi = model1$phi, M = 5)
+#    model1$summary <- data.frame(topic = rownames(model1$phi),
+#                                 label = model1$labels,
+#                                 coherence = round(model1$coherence, 3),
+#                                 prevalence = round(model1$prevalence,3),
+#                                 top_terms = apply(model1$top_terms, 2, function(x){
+#                                   paste(x, collapse = ", ")
+#                                 }),
+#                                 stringsAsFactors = FALSE)
+#  }
 
   if (test_method == "correlation"){
     if (TRUE){
@@ -385,7 +385,7 @@ topic_test <- function(topic_terms,
 #' This is a private function and used internally by textTopicsWordcloud
 #' @param df_list (list) a list of data frames with each topic
 #' @param phi (data.frame) data frame with topic word scores
-#' @param model_type (string) "mallet", "bert_topic", or "textmineR"
+#' @param model_type (string) "mallet", or "bert_topic" ("textmineR" not supported)
 #' @return list of data.frames with assigned phi
 #' @noRd
 assign_phi_to_words <- function(df_list, phi, model_type){
@@ -532,7 +532,7 @@ create_df_list_bert_topics <- function(save_dir, num_topics){
 
 #' The function plotting wordclouds of topics
 #' @param model (data.frame) The model returned from textTopics()$model.
-#' @param model_type (string) "bert_topic", "mallet", or "textmineR"
+#' @param model_type (string) "bert_topic", or "mallet" ("textmineR" not supported)
 #' @param test (data.frame) the test returned from textTopicTest()
 #' @param test_type (string) "linear_regression", or "binary_regression"
 #' @param cor_var (string) Variable for t-test, linear, binary or ridge regression
@@ -563,9 +563,9 @@ textTopicsWordcloud <- function(model,
     model <- name_cols_with_vocab(model, "phi", model$vocabulary)
     df_list <- create_topic_words_dfs(model$summary)
     df_list <- assign_phi_to_words(df_list, model$phi, model_type)
-  } else if (model_type =="textmineR"){
-    df_list <- create_topic_words_dfs(model$summary)
-    df_list <- assign_phi_to_words(df_list, model$phi, model_type)
+#  } else if (model_type =="textmineR"){
+#    df_list <- create_topic_words_dfs(model$summary)
+#    df_list <- assign_phi_to_words(df_list, model$phi, model_type)
   } else if (model_type=="neural_topic_model"){
     df_list <- create_topic_words_dfs(model$summary)
     df_list <- assign_phi_to_words(df_list, model$phi, "mallet")
