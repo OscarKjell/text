@@ -1,8 +1,5 @@
-library(tidyverse)
 library(dplyr)
 library(text)
-library(ggwordcloud)
-library(stats)
 library(ggplot2)
 
 #' The function for topic testing
@@ -88,7 +85,6 @@ textTopicTest <- function(model,
 #' @importFrom tibble select everything
 #' @importFrom textmineR GetTopTerms
 #' @importFrom purr map
-#' @importFrom stats select everything
 #' @importFrom text textTrainRegression
 #' @return the test as a data.frame
 #' @noRd
@@ -100,7 +96,7 @@ topic_test <- function(topic_terms,
                        split = "median",
                        n_min_max = 20,
                        multiple_comparison = "bonferroni"){
-  require(stats)
+  #require(stats)
   require(purrr)
   require(dplyr)
   require(tidyr)
@@ -244,7 +240,7 @@ topic_test <- function(topic_terms,
     preds <- topics_loadings # load topics_loading into different variable to reduce naming errors
     for (topic in lda_topics) {
       mean_value <- mean(preds[[topic]])
-      std_dev <- stats::sd(preds[[topic]])
+      std_dev <- sd(preds[[topic]])
       preds[[paste0("z_",topic)]] <- (preds[[topic]] - mean_value) / std_dev#preds[[topic]] # scale(preds[[topic]])
     }
 
@@ -272,14 +268,14 @@ topic_test <- function(topic_terms,
 
 
       for (topic in z_lda_topics) {
-        formula <- stats::as.formula(paste0(topic, formula_tail))
-        multi_models[[paste0("t_",topic)]] <- stats::lm(formula, data = preds)
+        formula <- as.formula(paste0(topic, formula_tail))
+        multi_models[[paste0("t_",topic)]] <- lm(formula, data = preds)
       }
     }
 
     if (test_method == "logistic_regression"){
       for (topic in z_lda_topics){
-        multi_models[[paste0("t_", topic)]] <- stats::glm(paste0("z_",control_variables[1], " ~ ", topic), data = preds)
+        multi_models[[paste0("t_", topic)]] <- glm(paste0("z_",control_variables[1], " ~ ", topic), data = preds)
       }
     }
 
@@ -330,7 +326,7 @@ topic_test <- function(topic_terms,
 
     if (test_method == "linear_regression"){
       for (variable in control_variables){
-        p_adjusted <- stats::p.adjust(control_variable_summary[[variable]][["p"]],
+        p_adjusted <- p.adjust(control_variable_summary[[variable]][["p"]],
                                       multiple_comparison,
                                       length(multi_models))
         control_variable_summary[[variable]][[paste0("p_adjusted")]] <- c(control_variable_summary[[variable]][["p_adjusted"]],
@@ -338,7 +334,7 @@ topic_test <- function(topic_terms,
       }
     }
     if (test_method == "logistic_regression"){
-      p_adjusted <- stats::p.adjust(control_variable_summary[["p"]],
+      p_adjusted <- p.adjust(control_variable_summary[["p"]],
                                     multiple_comparison,
                                     length(multi_models))
       control_variable_summary[[paste0("p_adjusted")]] <- c(control_variable_summary[["p_adjusted"]],
@@ -422,7 +418,7 @@ create_topic_words_dfs <- function(summary){
   for (i in 1:n) {
     word_vector <- unlist(strsplit(summary[paste0("t_",i),]$top_terms, ", "))
     df <- data.frame(Word = word_vector) # Create an empty dataframe
-    df <- df_cleaned <- df[stats::complete.cases(df), ]
+    df <- df_cleaned <- df[complete.cases(df), ]
     df_list[[i]] <- df  # Add the dataframe to the list
 
     name <- paste("t", i, sep = "_")  # Create the name for the dataframe
