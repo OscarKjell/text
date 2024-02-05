@@ -1,6 +1,6 @@
-library(dplyr)
-library(text)
-library(ggplot2)
+#library(dplyr)
+#library(text)
+#library(ggplot2)
 
 #' The function for topic testing
 #' @param model (data.frame) The model returned from textTopics()$model.
@@ -85,7 +85,7 @@ textTopicTest <- function(model,
 #' @importFrom tibble select everything
 #' @importFrom textmineR GetTopTerms
 #' @importFrom purr map
-#' @importFrom text textTrainRegression
+#' @seealso See \code{\link{textTrainRegression}}
 #' @return the test as a data.frame
 #' @noRd
 topic_test <- function(topic_terms,
@@ -371,7 +371,7 @@ topic_test <- function(topic_terms,
     for (col in colnames(dims)) {
       dims[[col]] <- as.numeric(dims[[col]])
     }
-    trained_model <- text::textTrainRegression(
+    trained_model <- textTrainRegression(
       x = dims,
       y = grouping_variable,
       multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
