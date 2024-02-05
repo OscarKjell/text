@@ -7,15 +7,15 @@
 unique_freq_words <- function(words) {
   # Make all words lower case
   words <- tolower(words)
-
+  
   # separate words/tokens combined with /
   words <- gsub("/", " ", words)
-
+  
   # Tokenize with nltk
   nltk <- reticulate::import("nltk")
   tokenizerNLTK <- nltk$tokenize$word_tokenize
   words_group <- unlist(lapply(words, tokenizerNLTK))
-
+  
   words_groupb <- tibble::as_tibble(words_group)
   sort(words_groupb$value)
   words_groupb <- table(words_groupb)
@@ -53,25 +53,25 @@ addEqualNrNArows <- function(x, y) {
 p_value_comparing_with_Null <- function(Observedresult,
                                         NULLresults,
                                         alternative = c("two_sided", "less", "greater")) {
-
+  
   #  NULLresults= c(1:10, NA) Observedresult = 1 NA alternative = "two_sided"
   NULLresults <- NULLresults %>%
     tibble::as_tibble_col() %>%
     tidyr::drop_na()
-
+  
   p_left <- sum(NULLresults <= Observedresult) / nrow(NULLresults)
   p_right <- sum(NULLresults >= Observedresult) / nrow(NULLresults)
-
+  
   switch(alternative,
-    "less" = {
-      p_value <- p_left
-    },
-    "greater" = {
-      p_value <- p_right
-    },
-    "two_sided" = {
-      p_value <- min(p_left, p_right) * 2
-    }
+         "less" = {
+           p_value <- p_left
+         },
+         "greater" = {
+           p_value <- p_right
+         },
+         "two_sided" = {
+           p_value <- min(p_left, p_right) * 2
+         }
   )
   if (!is.na(p_value)) {
     if (p_value == 0) {
@@ -102,33 +102,33 @@ p_value_comparing_with_Null <- function(Observedresult,
 add_variables_to_we <- function(word_embeddings,
                                 data,
                                 append_first = FALSE) {
-
+  
   # Add Names to new Variables
   colnames(data) <- paste("Dim0", "_", colnames(data), sep = "") # 1:ncol(data),
-
+  
   # Remove single_we if exist
   word_embeddings$singlewords_we <- NULL
-
+  
   # If not list of word embeddings
   if (!is.data.frame(word_embeddings)) {
-
+    
     # Add append_first
     if (append_first == TRUE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(data, .x))
     # Add last
     if (append_first == FALSE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(.x, data))
-
+    
     ratings_embeddings_tibble <- lapply(ratings_embeddings, tibble::as_tibble)
   }
-
+  
   # If list of word embeddings
   if (is.data.frame(word_embeddings)) {
-
+    
     # Add append_first
     if (append_first == TRUE) ratings_embeddings_tibble <- dplyr::bind_cols(data, word_embeddings)
     # Add last
     if (append_first == FALSE) ratings_embeddings_tibble <- dplyr::bind_cols(word_embeddings, data)
   }
-
+  
   return(ratings_embeddings_tibble)
 }
 
@@ -142,7 +142,7 @@ add_variables_to_we <- function(word_embeddings,
 #' @noRd
 sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
   variable_name_index_pca <- NA
-
+  
   if (!is.null(x)) {
     # In case the embedding is in list form get the tibble form
     if (!tibble::is_tibble(x) & length(x) == 1) {
@@ -157,7 +157,7 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
       x_name <- names(x)
       x_name <- paste(x_name, sep = " ", collapse = " & ")
       x_name <- paste("input:", x_name, sep = " ", collapse = " ")
-
+      
       embedding_description <- comment(x[[1]])
       # In case it is just one word embedding as tibble
     } else {
@@ -166,7 +166,7 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
       embedding_description <- comment(x)
     }
   }
-
+  
   # Get names for the added variables to save to description
   x_append_names <- paste(names(x_append), collapse = ", ")
   # Possibility to train without word embeddings
@@ -180,35 +180,35 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
     x_name <- NULL
     embedding_description <- NULL
   }
-
+  
   ############ Arranging word embeddings to be concatenated from different texts ############
   ##################################################
-
+  
   if (!tibble::is_tibble(x) & length(x) > 1) {
-
+    
     # Select all variables that starts with Dim in each dataframe of the list.
     xlist <- lapply(x, function(X) {
       X <- dplyr::select(X, dplyr::starts_with("Dim"))
     })
-
+    
     Nword_variables <- length(xlist)
     # Give each column specific names with indexes so that they can be handled separately in the PCAs
     for (i in 1:Nword_variables) {
       colnames(xlist[[i]]) <- paste("DimWs", i, ".", colnames(xlist[[i]]), sep = "")
     }
-
+    
     # Make vector with each index so that we can allocate them separately for the PCAs
     variable_name_index_pca <- list()
     for (i in 1:Nword_variables) {
       variable_name_index_pca[i] <- paste("DimWs", i, sep = "")
     }
-
+    
     # Make one df rather then list.
     x1 <- dplyr::bind_cols(xlist)
   }
   ############ End for multiple word embeddings ############
   ##########################################################
-
+  
   #### Add other variables to word embeddings x_append=NULL
   if (!is.null(x_append)) {
     x1 <- add_variables_to_we(
@@ -218,7 +218,7 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
       ...
     )
   }
-
+  
   x1 <- dplyr::select(x1, dplyr::starts_with("Dim"))
   variables_names <- list(
     x1, x_name, embedding_description,
@@ -228,7 +228,7 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
     "x1", "x_name", "embedding_description",
     "x_append_names", "variable_name_index_pca"
   )
-
+  
   return(variables_names)
 }
 
@@ -243,14 +243,14 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
 cohens_d <- function(x, y) {
   lx <- length(x) - 1
   ly <- length(y) - 1
-
+  
   # mean difference (numerator)
   md <- abs(mean(x) - mean(y))
   # Sigma; denominator
   csd <- lx * var(x) + ly * var(y)
   csd <- csd / (lx + ly)
   csd <- sqrt(csd)
-
+  
   cd <- md / csd
   # Cohen's d
   cd
@@ -269,12 +269,12 @@ extract_comment <- function(comment,
     model_text <- sub(".*textEmbedRawLayers: model: ", "", comment)
     output <- sub(" ; layers.*", "", model_text)
   }
-
+  
   if (part == "layers") {
     layer_text <- sub(".*layers: ", "", comment)
     output <- sub(" ; word_type_embeddings:.*", "", layer_text)
   }
-
+  
   return(output)
 }
 
@@ -289,43 +289,43 @@ extract_comment <- function(comment,
 #' @importFrom utils download.file
 #' @noRd
 path_exist_download_files <- function(wanted_file) {
-
+  
   destfile <- list.files(path = system.file("extdata/",
                                             "", #file_name,
                                             package = "text",
                                             mustWork = TRUE),
                          pattern = "")
-
+  
   # Check if already downloaded; and if not, download
   if (startsWith(wanted_file, "http:")  |
       startsWith(wanted_file, "https:") |
       startsWith(wanted_file, "www.") ) {
-
+    
     # Get file names to check if already downloaded
     file_name <- basename(wanted_file)
-
+    
     # Download if not there
     if (!file_name %in% destfile){
-
+      
       utils::download.file(url = wanted_file,
                            destfile = paste(system.file("extdata/",
                                                         "", #file_name,
-                                                  # envir = NULL,
-                                                  package = "text",
-                                                  mustWork = TRUE
+                                                        # envir = NULL,
+                                                        package = "text",
+                                                        mustWork = TRUE
                            ), "/", file_name, sep = ""),
                            method = "auto")
     }
-
+    
     path_to_file <-  system.file("extdata/",
-                file_name,
-                # envir = NULL,
-                package = "text",
-                mustWork = TRUE
-                )
-
+                                 file_name,
+                                 # envir = NULL,
+                                 package = "text",
+                                 mustWork = TRUE
+    )
+    
   } else if (wanted_file %in% destfile) {
-
+    
     path_to_file <- system.file("extdata/",
                                 wanted_file,
                                 # envir = NULL,
@@ -348,9 +348,11 @@ path_exist_download_files <- function(wanted_file) {
 #' @return Returns a tibble with values relevant for calculating implicit motives 
 #' @noRd
 implicit_motives <- function(texts, user_id, predicted_scores2){
-  
   # Create a table with the number of sentences per user
-  table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
+  #table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
+  table_uniques2 <- table(user_id[1:length(user_id)])
+  
+  
   num_persons <- length(table_uniques2)
   
   # Define variables 
@@ -388,8 +390,6 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
     )
   }
   
-
-  
   # Calculate wc_person_per_1000 (for the first row)
   summations[1, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[1:table_uniques2[[1]]], ' ')), na.rm = TRUE) / 1000
   
@@ -414,26 +414,26 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
 #' @noRd
 implicit_motives_pred <- function(sqrt_implicit_motives){
   
-  #square root transform
+  # square root transform
   sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
   
-  # For OUTCOME_USER_SUM_PROB
+  # for OUTCOME_USER_SUM_PROB
   lm.OUTCOME_USER_SUM_PROB <- stats::lm(OUTCOME_USER_SUM_PROB  ~ wc_person_per_1000, data = sqrt_implicit_motives)
   OUTCOME_USER_SUM_PROB.residual1 <- resid(lm.OUTCOME_USER_SUM_PROB)
   OUTCOME_USER_SUM_PROB.residual1.z <- scale(OUTCOME_USER_SUM_PROB.residual1)
-
-  # For OUTCOME_USER_SUM_CLASS
+  
+  # for OUTCOME_USER_SUM_CLASS
   lm.OUTCOME_USER_SUM_CLASS <- stats::lm(OUTCOME_USER_SUM_CLASS  ~ wc_person_per_1000, data = sqrt_implicit_motives)
   OUTCOME_USER_SUM_CLASS.residual1 <- resid(lm.OUTCOME_USER_SUM_CLASS)
   OUTCOME_USER_SUM_CLASS.residual1.z <- scale(OUTCOME_USER_SUM_CLASS.residual1)
   
-  # Insert residuals into a tibble
+  # insert residuals into a tibble
   implicit_motives_pred <- tibble::tibble(
     user_id = sqrt_implicit_motives$user_id,
     person_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
     person_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)
   )
-
+  
   return(implicit_motives_pred)
 }
 
@@ -477,6 +477,63 @@ update_user_and_texts <- function(df) {
   return(updated_df)
 }
 
+#' Function that binds predictions to their original dataset
+#' @param data Dataset, ex csv file
+#' @param predictions Predictions from textPredict as a vector
+#' @return Returns the original dataset with predictions included. 
+#' @noRd
+bind_predictions <- function(data, predictions) {
+  
+  predictions <- tibble::as_tibble(predictions)
+  
+  row_diff <- nrow(data) - nrow(predictions)
+  
+  if (row_diff > 0) {
+    # if data has more rows, add NA rows to predictions
+    na_predictions <- tibble::as_tibble(matrix(NA, nrow = row_diff, ncol = ncol(predictions)))
+    colnames(na_predictions) <- colnames(predictions)
+    predictions <- rbind(predictions, na_predictions)
+  } else if (row_diff < 0) {
+    # if predictions have more rows, add NA rows to data
+    row_diff <- abs(row_diff)
+    na_data <- tibble::as_tibble(matrix(NA, nrow = row_diff, ncol = ncol(data)))
+    colnames(na_data) <- colnames(data)
+    data <- rbind(data, na_data)
+  }
+  
+  # bind the columns
+  return(dplyr::bind_cols(data, predictions))
+}
+
+#' Function that binds predictions to their original dataset
+#' @param original_data Dataset, ex csv file
+#' @param prediction_list Predictions from textPredict as a list
+#' @return Returns the original dataset with predictions included. 
+#' @noRd
+bind_data <- function(original_data, prediction_list) {
+  # copy of original_data
+  result_data <- original_data
+  
+  # iterate through each "prediction" 
+  for(i in seq_along(prediction_list)) {
+    predictions <- prediction_list[[i]]
+    
+    # rename columns in predictions to ensure they are unique
+    col_names <- names(predictions)
+    unique_col_names <- paste0(col_names, "_", i)
+    names(predictions) <- unique_col_names
+    
+    # add a separator column with NA values before binding the new predictions
+    separator_col_name <- paste0("separator_col_", i)
+    result_data[[separator_col_name]] <- NA
+    
+    # bind the predictions with the result_data
+    result_data <- bind_predictions(result_data, predictions)
+  }
+  
+  return(result_data)
+}
+
 #' Wrapper function that prepares the data and returns a list with predictions, class residuals and probability residuals. 
 #' @param model_reference Reference to implicit motive model, either github URL or file-path. 
 #' @param user_id A column with user ids. 
@@ -493,15 +550,14 @@ implicit_motives_results <- function(model_reference,
   #### Make sure there is just one sentence per user_id ####
   
   # prepare dataframe for update_user_and_texts function
-  id_and_texts <- data.frame(user_id = user_id, texts = texts)
+  #id_and_texts <- data.frame(user_id = user_id, texts = texts)
   
-  # correct for multiple sentences per row. 
-  update_user_and_texts <- update_user_and_texts(id_and_texts)
-  
+  # correct for multiple sentences per row. # CORRECT
+  #update_user_and_texts <- update_user_and_texts(id_and_texts)
   # update user_id
-  user_id = update_user_and_texts$user_id
+  #user_id = update_user_and_texts$user_id
   # update texts
-  texts = update_user_and_texts$texts
+  #texts = update_user_and_texts$texts
   
   #### Assign correct column name #### 
   lower_case_model <- tolower(model_reference)
@@ -526,7 +582,7 @@ implicit_motives_results <- function(model_reference,
   # Retrieve Data
   implicit_motives <- implicit_motives(texts, user_id, predicted_scores2)
   
-  # Predicts
+  # Predict
   predicted <- implicit_motives_pred(implicit_motives)
   
   # Full column name
@@ -566,11 +622,11 @@ implicit_motives_results <- function(model_reference,
 #' @param show_texts Show texts, TRUE / FALSE 
 #' @return Returns a list of conditions for implicit motive coding to work
 #' @noRd
-get_model_info <- function(model_info, user_id, show_texts, type) {
-  # Show_prob is by default FALSE
+get_model_info <- function(model_info, user_id, show_texts, type, texts) {
+  # show_prob is by default FALSE
   show_prob <- FALSE
   if (is.character(model_info)){
-  lower_case_model <- tolower(model_info)
+    lower_case_model <- tolower(model_info)
     if (
       grepl("power", lower_case_model) ||
       grepl("achievement", lower_case_model) ||
@@ -578,20 +634,32 @@ get_model_info <- function(model_info, user_id, show_texts, type) {
     ) {
       type <- "class"  # type must be class for these conditions
       
-      # Switch to the correct model URL
+      # switch to the correct model URL
       if (lower_case_model == "power") {
-        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_power_pen_30.rds"
-        } else if (lower_case_model == "achievement") {
-        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_achievement_pen_30.rds"
+        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-power-motive-model/schone_training_rob_la_l23_to_power_10k.rds"
+      } else if (lower_case_model == "achievement") {
+        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-power-motive-model/schone_training_rob_la_l23_to_ach_10k.rds"
       } else if (lower_case_model == "affiliation") {
-        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-motive-model/schone5k_rob_la_l23_to_affiliation_pen_30.rds"
+        model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/releases/download/implicit-power-motive-model/schone_training_rob_la_l23_to_aff_10k.rds"
       }
-  
-      # Specific configuration for implicit motive coding
+      
+      # specific configuration for implicit motive coding
       if (!is.null(user_id)){
         show_texts <- TRUE 
         show_prob <- TRUE 
         type <- "class"
+        
+        # separate multiple sentences, and add corresponding user-id
+        id_and_texts <- data.frame(user_id = user_id, texts = texts)
+        
+        # correct for multiple sentences per row. # CORRECT
+        update_user_and_texts <- update_user_and_texts(id_and_texts)
+        
+        # update user_id
+        user_id = update_user_and_texts$user_id
+        # update texts
+        texts = update_user_and_texts$texts
+        
       }
     }
   }
@@ -601,41 +669,6 @@ get_model_info <- function(model_info, user_id, show_texts, type) {
     type = "class"
     show_prob = TRUE
   }
-
-  return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type))
+  
+  return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type, user_id = user_id, texts = texts))
 }
-
-#' Function that binds predictions to their original dataset
-#' @param data Dataset, ex csv file
-#' @param predictions Predictions from textPredict as a vector
-#' @return Returns the original dataset with predictions included. 
-#' @noRd
-bind_predictions <- function(data, predictions) {
-  na_rows <- max(0, nrow(data) - nrow(predictions))
-  dplyr::bind_rows(predictions,
-                   tibble::as_tibble(matrix(NA, 
-                                            ncol = ncol(predictions), 
-                                            nrow = na_rows)) %>%
-                     setNames(names(predictions)))
-}
-
-#' Function that binds predictions to their original dataset
-#' @param original_data Dataset, ex csv file
-#' @param prediction_list Predictions from textPredict as a list
-#' @return Returns the original dataset with predictions included. 
-#' @noRd
-bind_data <- function(original_data, prediction_list) {
-  # iterate through each set of predictions
-  for(i in seq_along(prediction_list)) {
-    predictions <- prediction_list[[i]]
-    
-    # separator column
-    empty_col_name <- paste0("separator_col_", i) 
-    original_data[[empty_col_name]] <- NA
-    
-    # predictions are added to the original dataset
-    original_data <- dplyr::bind_cols(original_data, bind_predictions(original_data, predictions))
-  }
-  original_data
-}
-

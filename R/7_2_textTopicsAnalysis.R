@@ -1,14 +1,6 @@
-#library(textmineR)
-library(tidyverse)
-#library(mallet)
-#library(rJava)
-#library(tokenizers)
-#library(reticulate)
-#library(text2vec)
-library(dplyr)
-#library(quanteda)
-library(text)
-library(ggwordcloud)
+#library(dplyr)
+#library(text)
+#library(ggplot2)
 
 #' The function for topic testing
 #' @param model (data.frame) The model returned from textTopics()$model.
@@ -21,10 +13,12 @@ library(ggwordcloud)
 #' @param seed (int) random seed
 #' @param load_dir (string) if specified, the function returns the precomputed analysis from the directory, otherwise leave blank
 #' @param save_dir (string) save analysis in specified directory, if left blank, analysis is not saved
+#' @importFrom dplyr bind_cols
+#' @importFrom tibble tibble
 #' @return Test
 #' @export
 textTopicTest <- function(model,
-                         preds, 
+                         preds,
                          data,
                          group_var, # only one in the case of t-test
                          control_vars,
@@ -36,14 +30,14 @@ textTopicTest <- function(model,
     test <- readRDS(paste0(load_dir, "/seed_", seed, "/test.rds"))
   } else {
     if (!(group_var %in% names(preds))){
-      preds <- bind_cols(data[group_var], preds)
+      preds <- dplyr::bind_cols(data[group_var], preds)
     }
     for (control_var in control_vars){
       if (!(control_var %in% names(preds))){
-        preds <- bind_cols(data[control_var], preds)
+        preds <- dplyr::bind_cols(data[control_var], preds)
       }
     }
-    preds <- preds %>% tibble()
+    preds <- preds %>% tibble::tibble()
     test <- topic_test(topic_terms = model$summary,
                        topics_loadings = preds,
                        grouping_variable = preds[group_var],
@@ -53,7 +47,7 @@ textTopicTest <- function(model,
                        n_min_max = 20,
                        multiple_comparison = "fdr")
   }
-  
+
   if (!is.null(save_dir)){
     if (!dir.exists(save_dir)) {
       # Create the directory
@@ -88,7 +82,12 @@ textTopicTest <- function(model,
 #' @param n_min_max (integer) If split = "min_max", the number of records to test per group.
 #' @param multiple_comparison (string) The p-correction method
 #' @importFrom dplyr select everything
-#' @return Results
+#' @importFrom tibble select everything
+#' @importFrom textmineR GetTopTerms
+#' @importFrom purr map
+#' @seealso See \code{\link{textTrainRegression}}
+#' @return the test as a data.frame
+#' @noRd
 topic_test <- function(topic_terms,
                        topics_loadings,
                        grouping_variable,
@@ -97,19 +96,19 @@ topic_test <- function(topic_terms,
                        split = "median",
                        n_min_max = 20,
                        multiple_comparison = "bonferroni"){
-  require(stats)
+  #require(stats)
   require(purrr)
   require(dplyr)
   require(tidyr)
-  #require(textmineR)
+
   colnames(grouping_variable) <- "value"
   topics_groupings <- bind_cols(topics_loadings,
                                 grouping_variable)
-  
+
   topics_loadings <- topics_loadings[complete.cases(topics_groupings), ]
   grouping_variable <- grouping_variable[complete.cases(topics_groupings), ]
-  
-  
+
+
   if (TRUE){
     # format checker
     if (!tibble::is_tibble(topics_loadings)) {
@@ -140,8 +139,8 @@ topic_test <- function(topic_terms,
       `hommel`, `bonferroni`, `BH`, `BY`,`fdr`, or `none`.")
     }
   }
-  
-  
+
+
   if (FALSE){
     model1$prevalence <- colSums(model1$theta) / sum(model1$theta) * 100
     model1$top_terms <- textmineR::GetTopTerms(phi = model1$phi, M = 5)
@@ -154,30 +153,8 @@ topic_test <- function(topic_terms,
                                  }),
                                  stringsAsFactors = FALSE)
   }
-  
-  
-  #  if (TRUE){
-  #    # continuous or categorical grouping variable
-  #    threshold <- 50
-  #    if (grouping_variable %>% tibble::as_tibble() %>%
-  #        is_continuous_variable(
-  #          ., threshold
-  #        )){
-  #      con_cat_grouping <- "con"}else{con_cat_grouping <- "cat"}
-  #  }
-  #
-  
-  
+
   if (test_method == "correlation"){
-    
-    #    # median split
-    #    if (FALSE){
-    #      output <- median_split_test_topics(topics_tibble,
-    #                                         grouping_variable,
-    #                                         colnames(dplyr::select(topics_tibble,
-    #                                                                -grouping_variable)))
-    #    }
-    # corr
     if (TRUE){
       temp <- cbind(grouping_variable, topics_loadings)
       colnames(temp)[1] <- colnames(grouping_variable)[1]
@@ -194,7 +171,7 @@ topic_test <- function(topic_terms,
       names(output)[1] <- c("topic_name")
       output <- dplyr::left_join(output, topic_terms,
                                  by = join_by(topic_name == topic))
-      
+
       output <- output %>%
         dplyr::select(
           topic_name,
@@ -206,7 +183,7 @@ topic_test <- function(topic_terms,
           dplyr::everything()  # this will include the rest of the columns in their original order
         )
     }
-    
+
     return (output %>% sort_stats_tibble())
   }
   if (test_method == "t-test"){
@@ -217,7 +194,7 @@ topic_test <- function(topic_terms,
     temp <- NULL
     result <- topics_t_test_grouping(topics_loadings,
                                      method1 = multiple_comparison)
-    
+
     # Produce the topic list through the pairs of categories
     output_list <- purrr::map(names(result), function(name) {
       output <- extract_topic_stats_cate(result[[name]])
@@ -226,7 +203,7 @@ topic_test <- function(topic_terms,
       #output <- dplyr::left_join(output, topic_terms, by = join_by(topic_name == topic))
       output <- dplyr::left_join(output, topic_terms, by = join_by(topic_name == topic))
       #output <- dplyr::left_join(output, topic_terms, by = join_by(topic))
-      
+
       output <- output %>%
         dplyr::select(
           topic_name,
@@ -246,19 +223,19 @@ topic_test <- function(topic_terms,
       return(output)
     })
     names(output_list) <- names(result)
-    
+
     return (output_list)
   }
   if (test_method == "linear_regression" | test_method == "logistic_regression"){
     # still get number of topics automatically
     num_topics <- sum(grepl("t_", names(topics_loadings)))
-    
+
     lda_topics <- character(num_topics)
     # Create the list of LDA topics
     for (i in 1:num_topics) {
       lda_topics[i] <- paste("t_", i, sep = "")
     }
-    
+
 
     preds <- topics_loadings # load topics_loading into different variable to reduce naming errors
     for (topic in lda_topics) {
@@ -271,7 +248,7 @@ topic_test <- function(topic_terms,
     for (variable in control_variables){
       preds[[paste0("z_",variable)]] <- scale(preds[[variable]])
     }
-    
+
     # Initialize an empty list to store the topic names
     z_lda_topics <- character(num_topics)
     for (i in 1:num_topics) {
@@ -279,34 +256,29 @@ topic_test <- function(topic_terms,
     }
     # Loop through each LDA topic and create a linear model
     multi_models <- list()
-    
     preds[is.na(preds)] <- 0
-    
+
 
     if (test_method == "linear_regression"){
-      
+
       formula_tail <- "~"
       for (variable in control_variables){
         formula_tail <- paste0(formula_tail, " + z_", variable)
       }
-      
-      
+
+
       for (topic in z_lda_topics) {
         formula <- as.formula(paste0(topic, formula_tail))
         multi_models[[paste0("t_",topic)]] <- lm(formula, data = preds)
       }
-    } 
-    
+    }
+
     if (test_method == "logistic_regression"){
       for (topic in z_lda_topics){
         multi_models[[paste0("t_", topic)]] <- glm(paste0("z_",control_variables[1], " ~ ", topic), data = preds)
       }
     }
-    
-    
-    #print(multi_models)
-    #print(length(multi_models))
-    
+
     control_variable_summary <- list()
     topics <- c()
     if (test_method=="linear_regression"){
@@ -324,7 +296,7 @@ topic_test <- function(topic_terms,
       control_variable_summary[["p"]] <- c()
       control_variable_summary[["p_adjusted"]] <- c()
     }
-    
+
     for (i in 1:length(multi_models)){
       temp <- multi_models[[i]]
       p_values <- summary(temp)$coefficients[, "Pr(>|t|)"]
@@ -349,12 +321,12 @@ topic_test <- function(topic_terms,
         control_variable_summary[["p"]] <- c(control_variable_summary[["p"]],
                                              p_values[[paste0("z_t_",i )]])
       }
-      
+
     }
-    
+
     if (test_method == "linear_regression"){
       for (variable in control_variables){
-        p_adjusted <- stats::p.adjust(control_variable_summary[[variable]][["p"]],
+        p_adjusted <- p.adjust(control_variable_summary[[variable]][["p"]],
                                       multiple_comparison,
                                       length(multi_models))
         control_variable_summary[[variable]][[paste0("p_adjusted")]] <- c(control_variable_summary[[variable]][["p_adjusted"]],
@@ -362,41 +334,40 @@ topic_test <- function(topic_terms,
       }
     }
     if (test_method == "logistic_regression"){
-      p_adjusted <- stats::p.adjust(control_variable_summary[["p"]],
+      p_adjusted <- p.adjust(control_variable_summary[["p"]],
                                     multiple_comparison,
                                     length(multi_models))
       control_variable_summary[[paste0("p_adjusted")]] <- c(control_variable_summary[["p_adjusted"]],
                                                             p_adjusted)
     }
-    
+
     #return (control_variable_summary)
     control_variable_summary$topic <- lda_topics
-    
+
     output <- right_join(topic_terms[c("topic", "top_terms")], data.frame(control_variable_summary), by = join_by(topic))
     # add the adjustment for bonferroni
-    return(output)    
-    
-    
+    return(output)
+
+
   }
-  
+
   if (test_method == "ridge_regression"){
     num_topics <- nrow(topic_terms)
     preds <- topics_loadings
-    
+
     # rename topic columns
     for (i in 1:num_topics) {
       old_column_name <- paste0("t_", i)
       new_column_name <- paste0("Dim", i, "_texts")
-      
+
       if (old_column_name %in% colnames(preds)) {
         colnames(preds)[colnames(preds) == old_column_name] <- new_column_name
       }
     }
-    
-    dims <- as.data.frame(preds) %>% select(contains("Dim"))
-    #dims <- step_zv(dims)
-    dims <- as_tibble(dims)
-    preds <- as_tibble(preds)
+
+    dims <- as.data.frame(preds) %>% dplyr::select(contains("Dim"))
+    dims <- tibble::as_tibble(dims)
+    preds <- tibble::as_tibble(preds)
     for (col in colnames(dims)) {
       dims[[col]] <- as.numeric(dims[[col]])
     }
@@ -405,20 +376,21 @@ topic_test <- function(topic_terms,
       y = grouping_variable,
       multi_cores = FALSE # This is FALSE due to CRAN testing and Windows machines.
     )
-    
-    # Examine results (t-value, degree of freedom (df), p-value, alternative-hypothesis,
-    # confidence interval, correlation coefficient).
-    
+
     return (trained_model$results)
-    
   }
-  
+
 }
 
 #' This is a private function and used internally by textTopicsWordcloud
+#' @param df_list (list) a list of data frames with each topic
+#' @param phi (data.frame) data frame with topic word scores
+#' @param model_type (string) "mallet", "bert_topic", or "textmineR"
+#' @return list of data.frames with assigned phi
+#' @noRd
 assign_phi_to_words <- function(df_list, phi, model_type){
   for (i in 1:length(df_list)){
-    df <- data.frame(df_list[[i]]) 
+    df <- data.frame(df_list[[i]])
     colnames(df)[1] <- "Word"
     phi_vector <- c()
     for (j in 1:nrow(df)){
@@ -436,6 +408,9 @@ assign_phi_to_words <- function(df_list, phi, model_type){
 }
 
 #' This is a private function and used internally by textTopicsWordcloud
+#' @param summary (data.frame) the models summary
+#' @return a list of dataframes for each topic filled with top terms
+#' @noRd
 create_topic_words_dfs <- function(summary){
   n <- nrow(summary)
   df_list <- vector("list", n)
@@ -445,19 +420,31 @@ create_topic_words_dfs <- function(summary){
     df <- data.frame(Word = word_vector) # Create an empty dataframe
     df <- df_cleaned <- df[complete.cases(df), ]
     df_list[[i]] <- df  # Add the dataframe to the list
-    
+
     name <- paste("t", i, sep = "_")  # Create the name for the dataframe
     assign(name, df_list[[i]])  # Assign the dataframe to a variable with the specified name
   }
-  
+
   return(df_list)
 }
 
 
 #' This is a private function and used internally by textTopicsWordcloud
-create_plots <- function(df_list, 
+#' @param df_list (list) list of data.frames with topics most frequent words and assigned topic term scores
+#' @param test (data.frame) the test returned from textTopicTest()
+#' @param test_type (string) "linear_regression", or "binary_regression"
+#' @param cor_var (string) Variable for t-test, linear, binary or ridge regression
+#' @param color_negative_cor (scale_color_gradient) color of topic cloud with negative correlation
+#' @param color_positive_cor (scale_color_gradient) color of topic cloud with positive correlation
+#' @param scale_size (bool) if True, then the size of the topic cloud is scaled by the prevalence of the topic
+#' @param plot_topics_idx (list) if specified, then only the specified topics are plotted
+#' @param p_threshold (float) set threshold which determines which topics are plotted
+#' @param save_dir (string) save plots in specified directory, if left blank, plots is not saved, thus save_dir is necessary
+#' @param seed (int) seed is needed for saving the plots in the correct directory
+#' @noRd
+create_plots <- function(df_list,
                          summary,
-                         test, 
+                         test,
                          test_type,
                          cor_var,
                          color_negative_cor,
@@ -468,9 +455,8 @@ create_plots <- function(df_list,
                          save_dir="."){
   if (is.null(plot_topics_idx)){
     plot_topics_idx <- seq(1, length(df_list))
-  } 
+  }
   for (i in plot_topics_idx){
-    #for (i in 1:length(df_list)){
     if (test_type == "linear_regression"){
       estimate_col <- paste0(cor_var,".estimate") # grep(partial_name, data_frame_names, value = TRUE)
       p_adjusted_col <- paste0(cor_var,".p_adjusted")
@@ -486,15 +472,15 @@ create_plots <- function(df_list,
       prevalence <- summary[paste0("t_",i),]$prevalence
     }
 
-    
+
     # this will ensure that all topics are plotted
     if (is.null(p_threshold) ){
-      p_threshold <- p_adjusted +1 
+      p_threshold <- p_adjusted +1
     }
-    
+
     if (!is.nan(p_adjusted) & p_adjusted < p_threshold){
-      
-      
+
+
       #estimate <- test[i,][[grep(estimate_col, colnames(test), value=TRUE)]]# $PHQtot.estimate
       #p_adjusted <- test[i,][[grep("p_adjusted", colnames(test), value=TRUE)]] # $PHQtot.p_adjustedfdr
       if (estimate < 0){
@@ -509,33 +495,36 @@ create_plots <- function(df_list,
         max_size <- 10
         y <- ""
       }
-      plot <- ggplot(df_list[[i]], aes(label = Word, size = phi, color = phi))+#,x=estimate)) +
+      plot <- ggplot2::ggplot(df_list[[i]], aes(label = Word, size = phi, color = phi))+#,x=estimate)) +
         geom_text_wordcloud() +
         scale_size_area(max_size = max_size) +
         theme_minimal() +
-        #theme(plot.margin = margin(0,0,0,0, "cm")) +
-        color_scheme + 
+        color_scheme +
         labs(x = paste0("r = ", estimate),
              y= y)
-      
+
       if (!dir.exists(save_dir)) {
-        # Create the directory
         dir.create(save_dir)
         cat("Directory created successfully.\n")
-      } 
+      }
       if(!dir.exists(paste0(save_dir, "/seed_", seed, "/wordclouds"))){
         dir.create(paste0(save_dir, "/seed_", seed, "/wordclouds"))
       }
       p_adjusted <- sprintf("%.2e", p_adjusted)
-      ggsave(paste0(save_dir,"/seed_", seed, "/wordclouds/t_", i, "_r_", estimate, "_p_", p_adjusted,".png"), plot = plot, width = 10, height = 8, units = "in")
+      ggplot2::ggsave(paste0(save_dir,"/seed_", seed, "/wordclouds/t_", i, "_r_", estimate, "_p_", p_adjusted,".png"), plot = plot, width = 10, height = 8, units = "in")
     }
   }
 }
 
+#' Create list of data.frames with topics most frequent words and topic term scores
+#' @param save_dir (string) directory where to get data from
+#' @param num_topics (int) the number of topics
+#' @return list of data.frames
+#' @noRd
 create_df_list_bert_topics <- function(save_dir, num_topics){
   df_list <- list()
   for (i in 1:num_topics){
-    df_list[[i]] <- read_csv(paste0(save_dir,"/seed_",seed,"/df_list_term_phi/", i, "_top_words.csv"))
+    df_list[[i]] <- read.csv(paste0(save_dir,"/seed_",seed,"/df_list_term_phi/", i, "_top_words.csv"))
   }
   return(df_list)
 }
@@ -551,6 +540,7 @@ create_df_list_bert_topics <- function(save_dir, num_topics){
 #' @param color_positive_cor (scale_color_gradient) color of topic cloud with positive correlation
 #' @param scale_size (bool) if True, then the size of the topic cloud is scaled by the prevalence of the topic
 #' @param plot_topics_idx (list) if specified, then only the specified topics are plotted
+#' @param p_threshold (float) set threshold which determines which topics are plotted
 #' @param save_dir (string) save plots in specified directory, if left blank, plots is not saved, thus save_dir is necessary
 #' @param seed (int) seed is needed for saving the plots in the correct directory
 #' @export
@@ -580,10 +570,10 @@ textTopicsWordcloud <- function(model,
     df_list <- create_topic_words_dfs(model$summary)
     df_list <- assign_phi_to_words(df_list, model$phi, "mallet")
   }
-  create_plots(df_list = df_list, 
+  create_plots(df_list = df_list,
                summary=model$summary,
-               test=test, 
-               test_type="linear_regression",
+               test=test,
+               test_type=test_type,
                cor_var=cor_var,
                color_negative_cor = color_negative_cor,
                color_positive_cor = color_positive_cor,
@@ -593,9 +583,3 @@ textTopicsWordcloud <- function(model,
                save_dir=save_dir)
   print(paste0("The plots are saved in ", save_dir, "/seed", seed, "/wordclouds"))
 }
-
-get_doc_length <- function(string){
-  words <- strsplit(string, "\\s+")  # Split the string by spaces
-  return(length(words[[1]]))  # Count the words and return the number
-}
-

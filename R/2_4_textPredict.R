@@ -203,7 +203,6 @@ textReturnModelAndEmbedding <- function(
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predictions from word-embedding or text input. 
 #' @examples
-#' 
 #' \dontrun{
 #' 
 #' # Text data from Language_based_assessment_data_8
@@ -273,12 +272,15 @@ textPredict <- function(model_info = NULL,
   #### Special treatment for implicit motives - see private functions #### 
   
   # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding automatically
-  get_model_info <- get_model_info(model_info, user_id, show_texts = show_texts, type = type)
+  get_model_info <- get_model_info(model_info, user_id, show_texts = show_texts, type = type, texts = texts)
   
   model_info <- get_model_info$model_info
   show_texts <- get_model_info$show_texts
   show_prob <- get_model_info$show_prob
   type <- get_model_info$type
+  texts <- get_model_info$texts
+  user_id <- get_model_info$user_id
+  
   #### End Special treatment for implicit motives #### 
   
   #### Automatically extract embeddings that are compatible with the model ####
