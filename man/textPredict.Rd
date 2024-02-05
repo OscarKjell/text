@@ -64,7 +64,6 @@ Predictions from word-embedding or text input.
 Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict new scores or classes from embeddings or text using textPredict.
 }
 \examples{
-
 \dontrun{
 
 # Text data from Language_based_assessment_data_8
