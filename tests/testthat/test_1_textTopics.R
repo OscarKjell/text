@@ -1,21 +1,21 @@
-library(tibble)
-library(dplyr)
-library(text)
-library(testthat)
-
-test_that("textTopic.", {
-  skip_on_cran()
-
+#library(tibble)
+#library(dplyr)
+#library(text)
+#library(testthat)
+#
+#test_that("textTopic.", {
+#  skip_on_cran()
+#
 #
 # data1 <- Language_based_assessment_data_8[c("satisfactiontexts", "swlstotal")]
 # colnames(data1) <- c("text", "score")
-
+#
 # data2 <- Language_based_assessment_data_8[c("harmonytexts", "hilstotal")]
 # colnames(data2) <- c("text", "score")
-
+#
 # data3 <- Language_based_assessment_data_3_100[1:2]
 # colnames(data3) <- c("text", "score")
-
+#
 # data <- dplyr::bind_rows(data1, data2, data3)
 #
 #  test <- textTopics(data = data,
@@ -32,5 +32,5 @@ test_that("textTopic.", {
 #  testthat::expect_equal(test$preds$t_1[2], .1115696, tolerance = 0.0001)
 #
 #  unlink("./results", recursive = TRUE)
-
-})
+#
+#})

@@ -82,9 +82,9 @@ textTopicTest <- function(model,
 #' @param n_min_max (integer) If split = "min_max", the number of records to test per group.
 #' @param multiple_comparison (string) The p-correction method
 #' @importFrom dplyr select everything
-#' @importFrom tibble select everything
+# @importFrom tibble select everything
 #' @importFrom textmineR GetTopTerms
-#' @importFrom purr map
+#' @importFrom purrr map
 #' @seealso See \code{\link{textTrainRegression}}
 #' @return the test as a data.frame
 #' @noRd
@@ -97,9 +97,9 @@ topic_test <- function(topic_terms,
                        n_min_max = 20,
                        multiple_comparison = "bonferroni"){
   #require(stats)
-  require(purrr)
-  require(dplyr)
-  require(tidyr)
+ # require(purrr)
+ # require(dplyr)
+ # require(tidyr)
 
   colnames(grouping_variable) <- "value"
   topics_groupings <- bind_cols(topics_loadings,
