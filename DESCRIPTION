@@ -41,7 +41,8 @@ Imports:
     yardstick,
     future,
     furrr,
-    overlapping
+    overlapping,
+    ggwordcloud
 RoxygenNote: 7.2.3
 Suggests: 
     knitr,

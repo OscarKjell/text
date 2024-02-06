@@ -1,12 +1,8 @@
-#library(dplyr)
-#library(text)
-#library(ggplot2)
 
 #' The function for topic testing
-#' @param model (data.frame) The model returned from textTopics()$model.
+#' @param model_info (data.frame) The model returned from textTopics()$model.
 #' @param preds (data.frame) The preds returned from textTopics()$preds
 #' @param data (data.frame) The data on which the topic model was trained on, returned from textTopics()$train_data
-#' @param model (data.frame) The model returned from textTopics()$model.
 #' @param group_var (string) Variable for t-test, linear, binary or ridge regression
 #' @param control_vars (list) Control variable for linear or binary regression
 #' @param test_method (string) Choose between "correlation", "t-test", "binary_regression", "linear_regression" or "ridge_regression"
@@ -15,7 +11,7 @@
 #' @param save_dir (string) save analysis in specified directory, if left blank, analysis is not saved
 #' @importFrom dplyr bind_cols
 #' @importFrom tibble tibble
-#' @return Test
+#' @return Results from
 #' @export
 textTopicTest <- function(model,
                          preds,
@@ -64,14 +60,13 @@ textTopicTest <- function(model,
                  estimate = test$estimate,
                  t_value = test$statistic,
                  p_value = test$p.value)
-      write_csv(data.frame(df), paste0(save_dir, "/seed_", seed, "/textTrain_regression.csv"))
+      utils::write.csv(data.frame(df), paste0(save_dir, "/seed_", seed, "/textTrain_regression.csv"))
     }
     saveRDS(test, paste0(save_dir, "/seed_", seed, "/test_",test_method, ".rds"))
     print(paste0("The test was saved in: ", save_dir,"/seed_", seed, "/test_",test_method, ".rds"))
   }
   return(test)
 }
-
 
 
 #' The function for topic testing
@@ -82,9 +77,7 @@ textTopicTest <- function(model,
 #' @param n_min_max (integer) If split = "min_max", the number of records to test per group.
 #' @param multiple_comparison (string) The p-correction method
 #' @importFrom dplyr select everything
-#' @importFrom tibble select everything
-#' @importFrom textmineR GetTopTerms
-#' @importFrom purr map
+#' @importFrom purrr map
 #' @seealso See \code{\link{textTrainRegression}}
 #' @return the test as a data.frame
 #' @noRd
@@ -96,10 +89,7 @@ topic_test <- function(topic_terms,
                        split = "median",
                        n_min_max = 20,
                        multiple_comparison = "bonferroni"){
-  #require(stats)
-  require(purrr)
-  require(dplyr)
-  require(tidyr)
+
 
   colnames(grouping_variable) <- "value"
   topics_groupings <- bind_cols(topics_loadings,
@@ -141,18 +131,18 @@ topic_test <- function(topic_terms,
   }
 
 
-  if (FALSE){
-    model1$prevalence <- colSums(model1$theta) / sum(model1$theta) * 100
-    model1$top_terms <- textmineR::GetTopTerms(phi = model1$phi, M = 5)
-    model1$summary <- data.frame(topic = rownames(model1$phi),
-                                 label = model1$labels,
-                                 coherence = round(model1$coherence, 3),
-                                 prevalence = round(model1$prevalence,3),
-                                 top_terms = apply(model1$top_terms, 2, function(x){
-                                   paste(x, collapse = ", ")
-                                 }),
-                                 stringsAsFactors = FALSE)
-  }
+#  if (FALSE){
+#    model1$prevalence <- colSums(model1$theta) / sum(model1$theta) * 100
+#    model1$top_terms <- textmineR::GetTopTerms(phi = model1$phi, M = 5)
+#    model1$summary <- data.frame(topic = rownames(model1$phi),
+#                                 label = model1$labels,
+#                                 coherence = round(model1$coherence, 3),
+#                                 prevalence = round(model1$prevalence,3),
+#                                 top_terms = apply(model1$top_terms, 2, function(x){
+#                                   paste(x, collapse = ", ")
+#                                 }),
+#                                 stringsAsFactors = FALSE)
+#  }
 
   if (test_method == "correlation"){
     if (TRUE){
@@ -385,7 +375,7 @@ topic_test <- function(topic_terms,
 #' This is a private function and used internally by textTopicsWordcloud
 #' @param df_list (list) a list of data frames with each topic
 #' @param phi (data.frame) data frame with topic word scores
-#' @param model_type (string) "mallet", "bert_topic", or "textmineR"
+#' @param model_type (string) "mallet", or "bert_topic" ("textmineR" not supported)
 #' @return list of data.frames with assigned phi
 #' @noRd
 assign_phi_to_words <- function(df_list, phi, model_type){
@@ -441,12 +431,15 @@ create_topic_words_dfs <- function(summary){
 #' @param p_threshold (float) set threshold which determines which topics are plotted
 #' @param save_dir (string) save plots in specified directory, if left blank, plots is not saved, thus save_dir is necessary
 #' @param seed (int) seed is needed for saving the plots in the correct directory
+#' @importFrom ggplot2 select everything
+#' @importFrom ggwordcloud geom_text_worcloud
 #' @noRd
 create_plots <- function(df_list,
                          summary,
                          test,
                          test_type,
                          cor_var,
+                         seed,
                          color_negative_cor,
                          color_positive_cor,
                          scale_size=TRUE,
@@ -496,7 +489,7 @@ create_plots <- function(df_list,
         y <- ""
       }
       plot <- ggplot2::ggplot(df_list[[i]], aes(label = Word, size = phi, color = phi))+#,x=estimate)) +
-        geom_text_wordcloud() +
+        ggwordcloud::geom_text_wordcloud() +
         scale_size_area(max_size = max_size) +
         theme_minimal() +
         color_scheme +
@@ -521,7 +514,7 @@ create_plots <- function(df_list,
 #' @param num_topics (int) the number of topics
 #' @return list of data.frames
 #' @noRd
-create_df_list_bert_topics <- function(save_dir, num_topics){
+create_df_list_bert_topics <- function(save_dir,seed, num_topics){
   df_list <- list()
   for (i in 1:num_topics){
     df_list[[i]] <- read.csv(paste0(save_dir,"/seed_",seed,"/df_list_term_phi/", i, "_top_words.csv"))
@@ -532,7 +525,7 @@ create_df_list_bert_topics <- function(save_dir, num_topics){
 
 #' The function plotting wordclouds of topics
 #' @param model (data.frame) The model returned from textTopics()$model.
-#' @param model_type (string) "bert_topic", "mallet", or "textmineR"
+#' @param model_type (string) "bert_topic", or "mallet" ("textmineR" not supported)
 #' @param test (data.frame) the test returned from textTopicTest()
 #' @param test_type (string) "linear_regression", or "binary_regression"
 #' @param cor_var (string) Variable for t-test, linear, binary or ridge regression
@@ -558,28 +551,30 @@ textTopicsWordcloud <- function(model,
                             seed){
   if (model_type=="bert_topic"){
     num_topics <- nrow(test)
-    df_list <- create_df_list_bert_topics(save_dir, num_topics)
+    df_list <- create_df_list_bert_topics(save_dir, seed, num_topics)
   } else if (model_type=="mallet"){
     model <- name_cols_with_vocab(model, "phi", model$vocabulary)
     df_list <- create_topic_words_dfs(model$summary)
     df_list <- assign_phi_to_words(df_list, model$phi, model_type)
-  } else if (model_type =="textmineR"){
-    df_list <- create_topic_words_dfs(model$summary)
-    df_list <- assign_phi_to_words(df_list, model$phi, model_type)
+#  } else if (model_type =="textmineR"){
+#    df_list <- create_topic_words_dfs(model$summary)
+#    df_list <- assign_phi_to_words(df_list, model$phi, model_type)
   } else if (model_type=="neural_topic_model"){
     df_list <- create_topic_words_dfs(model$summary)
     df_list <- assign_phi_to_words(df_list, model$phi, "mallet")
   }
+
   create_plots(df_list = df_list,
                summary=model$summary,
                test=test,
                test_type=test_type,
                cor_var=cor_var,
+               seed = seed,
                color_negative_cor = color_negative_cor,
                color_positive_cor = color_positive_cor,
                scale_size=scale_size,
                plot_topics_idx=plot_topics_idx,
                p_threshold=p_threshold,
                save_dir=save_dir)
-  print(paste0("The plots are saved in ", save_dir, "/seed", seed, "/wordclouds"))
+  print(paste0("The plots are saved in ", save_dir, "/seed_", seed, "/wordclouds"))
 }
