@@ -1,12 +1,8 @@
-#library(dplyr)
-#library(text)
-#library(ggplot2)
 
 #' The function for topic testing
-#' @param model (data.frame) The model returned from textTopics()$model.
+#' @param model_info (data.frame) The model returned from textTopics()$model.
 #' @param preds (data.frame) The preds returned from textTopics()$preds
 #' @param data (data.frame) The data on which the topic model was trained on, returned from textTopics()$train_data
-#' @param model (data.frame) The model returned from textTopics()$model.
 #' @param group_var (string) Variable for t-test, linear, binary or ridge regression
 #' @param control_vars (list) Control variable for linear or binary regression
 #' @param test_method (string) Choose between "correlation", "t-test", "binary_regression", "linear_regression" or "ridge_regression"
@@ -15,7 +11,7 @@
 #' @param save_dir (string) save analysis in specified directory, if left blank, analysis is not saved
 #' @importFrom dplyr bind_cols
 #' @importFrom tibble tibble
-#' @return Test
+#' @return Results from
 #' @export
 textTopicTest <- function(model,
                          preds,
@@ -64,14 +60,13 @@ textTopicTest <- function(model,
                  estimate = test$estimate,
                  t_value = test$statistic,
                  p_value = test$p.value)
-      write_csv(data.frame(df), paste0(save_dir, "/seed_", seed, "/textTrain_regression.csv"))
+      utils::write.csv(data.frame(df), paste0(save_dir, "/seed_", seed, "/textTrain_regression.csv"))
     }
     saveRDS(test, paste0(save_dir, "/seed_", seed, "/test_",test_method, ".rds"))
     print(paste0("The test was saved in: ", save_dir,"/seed_", seed, "/test_",test_method, ".rds"))
   }
   return(test)
 }
-
 
 
 #' The function for topic testing
@@ -82,8 +77,6 @@ textTopicTest <- function(model,
 #' @param n_min_max (integer) If split = "min_max", the number of records to test per group.
 #' @param multiple_comparison (string) The p-correction method
 #' @importFrom dplyr select everything
-# @importFrom tibble select everything
-# @importFrom textmineR GetTopTerms
 #' @importFrom purrr map
 #' @seealso See \code{\link{textTrainRegression}}
 #' @return the test as a data.frame
@@ -96,10 +89,7 @@ topic_test <- function(topic_terms,
                        split = "median",
                        n_min_max = 20,
                        multiple_comparison = "bonferroni"){
-  #require(stats)
- # require(purrr)
- # require(dplyr)
- # require(tidyr)
+
 
   colnames(grouping_variable) <- "value"
   topics_groupings <- bind_cols(topics_loadings,
@@ -570,6 +560,7 @@ textTopicsWordcloud <- function(model,
     df_list <- create_topic_words_dfs(model$summary)
     df_list <- assign_phi_to_words(df_list, model$phi, "mallet")
   }
+
   create_plots(df_list = df_list,
                summary=model$summary,
                test=test,
