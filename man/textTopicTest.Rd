@@ -17,8 +17,6 @@ textTopicTest(
 )
 }
 \arguments{
-\item{model}{(data.frame) The model returned from textTopics()$model.}
-
 \item{preds}{(data.frame) The preds returned from textTopics()$preds}
 
 \item{data}{(data.frame) The data on which the topic model was trained on, returned from textTopics()$train_data}
@@ -34,9 +32,11 @@ textTopicTest(
 \item{load_dir}{(string) if specified, the function returns the precomputed analysis from the directory, otherwise leave blank}
 
 \item{save_dir}{(string) save analysis in specified directory, if left blank, analysis is not saved}
+
+\item{model_info}{(data.frame) The model returned from textTopics()$model.}
 }
 \value{
-Test
+Results from
 }
 \description{
 The function for topic testing

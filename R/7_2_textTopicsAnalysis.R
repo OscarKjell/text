@@ -431,8 +431,9 @@ create_topic_words_dfs <- function(summary){
 #' @param p_threshold (float) set threshold which determines which topics are plotted
 #' @param save_dir (string) save plots in specified directory, if left blank, plots is not saved, thus save_dir is necessary
 #' @param seed (int) seed is needed for saving the plots in the correct directory
-#' @importFrom ggplot2 select everything
-#' @importFrom ggwordcloud geom_text_worcloud
+#' @importFrom ggplot2 ggplot ggsave
+#' @importFrom dplyr select everything
+#' @importFrom ggwordcloud geom_text_wordcloud
 #' @noRd
 create_plots <- function(df_list,
                          summary,
