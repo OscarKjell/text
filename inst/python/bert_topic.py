@@ -14,7 +14,7 @@ from bertopic.representation import KeyBERTInspired, MaximalMarginalRelevance, P
 import os
 
 # Set the maximum number of active parallel levels to 2
-os.environ['OMP_MAX_ACTIVE_LEVELS'] = '2'
+os.environ['OMP_MAX_ACTIVE_LEVELS'] = '1'
 #from sentence_transformers import SentenceTransformer
 
 
@@ -53,7 +53,7 @@ def create_bertopic_model(data,
                        seed=1234,
                        save_dir="./results"):
 
-    os.environ['OMP_MAX_ACTIVE_LEVELS'] = '2'
+    os.environ['OMP_MAX_ACTIVE_LEVELS'] = '1'
 
     #data = pd.read_csv('../data/depression_anxiety_cleaned.csv')
     data = data
