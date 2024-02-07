@@ -73,8 +73,8 @@ textrpp_install <- function(conda = "auto",
         "sentence-transformers==2.2.2",
         "flair==0.13.0",
         "umap-learn==0.5.4",
-        "hdbscan==0.8.33",
-        "numba==0.58.1"
+        "hdbscan==0.8.33"#,
+#        "numba==0.58.1"
 
       )
     }
@@ -95,8 +95,8 @@ textrpp_install <- function(conda = "auto",
          "sentence-transformers==2.2.2",
          "flair==0.13.0",
          "umap-learn==0.5.4",
-         "hdbscan==0.8.33",
-        "numba==0.58.1"
+         "hdbscan==0.8.33"#,
+#        "numba==0.58.1"
       )
     }
   }
