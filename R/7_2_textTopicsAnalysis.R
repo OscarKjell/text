@@ -1,27 +1,33 @@
 
-#' The function for topic testing
-#' @param model_info (data.frame) The model returned from textTopics()$model.
-#' @param preds (data.frame) The preds returned from textTopics()$preds
-#' @param data (data.frame) The data on which the topic model was trained on, returned from textTopics()$train_data
-#' @param group_var (string) Variable for t-test, linear, binary or ridge regression
-#' @param control_vars (list) Control variable for linear or binary regression
+#' This function tests the relationship between a single topic or all topics and a variable of interest. Available tests include correlation, t-test, linear regression, binary regression, and ridge regression.
+#' @param model (data.frame) The model returned from textTopics().
+#' @param group_var (string) Grouping variable for t-test
+#' @param pred_var (string) Variable of interest for linear or binary regression
+#' @param control_vars (list) Control variables for linear or binary regression
 #' @param test_method (string) Choose between "correlation", "t-test", "binary_regression", "linear_regression" or "ridge_regression"
-#' @param seed (int) random seed
 #' @param load_dir (string) if specified, the function returns the precomputed analysis from the directory, otherwise leave blank
-#' @param save_dir (string) save analysis in specified directory, if left blank, analysis is not saved
 #' @importFrom dplyr bind_cols
 #' @importFrom tibble tibble
-#' @return Results from
+#' @return Metadata and results of the test such as estimate, t-value, p-value, and variable name.
 #' @export
 textTopicTest <- function(model,
-                         preds,
-                         data,
-                         group_var, # only one in the case of t-test
-                         control_vars,
-                         test_method,
-                         seed,
-                         load_dir=NULL,
-                         save_dir=NULL){
+                          pred_var,
+                          group_var = NULL, # only one in the case of t-test
+                          control_vars = c(),
+                          test_method="linear_regression",
+                          multiple_comparison = "fdr",
+                          load_dir=NULL){
+
+  model_info <- model
+  model <- model_info$model
+  preds <- model_info$preds
+  data <- model_info$train_data
+  seed <- model_info$seed
+  save_dir <- model_info$save_dir
+  control_vars <- c(pred_var, control_vars)
+  if (is.null(group_var)){
+    group_var <- pred_var
+  }
   if (!is.null(load_dir)){
     test <- readRDS(paste0(load_dir, "/seed_", seed, "/test.rds"))
   } else {
@@ -41,7 +47,7 @@ textTopicTest <- function(model,
                        test_method = test_method,
                        split = "median",
                        n_min_max = 20,
-                       multiple_comparison = "fdr")
+                       multiple_comparison = multiple_comparison)
   }
 
   if (!is.null(save_dir)){
@@ -65,7 +71,11 @@ textTopicTest <- function(model,
     saveRDS(test, paste0(save_dir, "/seed_", seed, "/test_",test_method, ".rds"))
     print(paste0("The test was saved in: ", save_dir,"/seed_", seed, "/test_",test_method, ".rds"))
   }
-  return(test)
+  #comment(test) <- test_method
+  return_test <- list(test = test,
+                      test_method = test_method,
+                      pred_var = pred_var)
+  return(return_test)
 }
 
 
@@ -431,8 +441,9 @@ create_topic_words_dfs <- function(summary){
 #' @param p_threshold (float) set threshold which determines which topics are plotted
 #' @param save_dir (string) save plots in specified directory, if left blank, plots is not saved, thus save_dir is necessary
 #' @param seed (int) seed is needed for saving the plots in the correct directory
-#' @importFrom ggplot2 select everything
-#' @importFrom ggwordcloud geom_text_worcloud
+#' @importFrom ggplot2 ggplot ggsave
+#' @importFrom dplyr select everything
+#' @importFrom ggwordcloud geom_text_wordcloud
 #' @noRd
 create_plots <- function(df_list,
                          summary,
@@ -523,43 +534,40 @@ create_df_list_bert_topics <- function(save_dir,seed, num_topics){
 }
 
 
-#' The function plotting wordclouds of topics
-#' @param model (data.frame) The model returned from textTopics()$model.
-#' @param model_type (string) "bert_topic", or "mallet" ("textmineR" not supported)
+#' This functions plots wordclouds of topics from a Topic Model based on their significance determined by a linear or binary regression
+#' @param model (data.frame) The model returned from textTopics().
 #' @param test (data.frame) the test returned from textTopicTest()
-#' @param test_type (string) "linear_regression", or "binary_regression"
-#' @param cor_var (string) Variable for t-test, linear, binary or ridge regression
-#' @param color_negative_cor (scale_color_gradient) color of topic cloud with negative correlation
-#' @param color_positive_cor (scale_color_gradient) color of topic cloud with positive correlation
+#' @param color_negative_cor (ggplot2::scale_color_gradient()) color gradient of topic cloud with negative correlation
+#' @param color_positive_cor (ggplot2::scale_color_gradient) color gradient of topic cloud with positive correlation
 #' @param scale_size (bool) if True, then the size of the topic cloud is scaled by the prevalence of the topic
 #' @param plot_topics_idx (list) if specified, then only the specified topics are plotted
-#' @param p_threshold (float) set threshold which determines which topics are plotted
-#' @param save_dir (string) save plots in specified directory, if left blank, plots is not saved, thus save_dir is necessary
-#' @param seed (int) seed is needed for saving the plots in the correct directory
+#' @param p_threshold (float) set significance threshold which determines which topics are plotted
+#' @importFrom ggplot2 scale_color_gradient
 #' @export
 textTopicsWordcloud <- function(model,
-                            model_type,
-                            test,
-                            test_type,
-                            cor_var,
-                            color_negative_cor,
-                            color_positive_cor,
-                            scale_size=TRUE,
-                            plot_topics_idx,
-                            p_threshold,
-                            save_dir,
-                            seed){
-  if (model_type=="bert_topic"){
+                                test,
+                                color_negative_cor=ggplot2::scale_color_gradient(low = "darkred", high = "red"),
+                                color_positive_cor=ggplot2::scale_color_gradient(low = "darkgreen", high = "green"),
+                                scale_size=FALSE,
+                                plot_topics_idx=NULL,
+                                p_threshold=0.05){
+
+  model_info <- model
+  model <- model_info$model
+  cor_var <- test$pred_var
+  test_method <- test$test_method
+  test <- test$test
+  save_dir <- model_info$save_dir
+  seed <- model_info$seed
+  model_type <- model_info$model_type
+  if (model_type == "bert_topic"){
     num_topics <- nrow(test)
     df_list <- create_df_list_bert_topics(save_dir, seed, num_topics)
-  } else if (model_type=="mallet"){
+  } else if (model_type =="mallet"){
     model <- name_cols_with_vocab(model, "phi", model$vocabulary)
     df_list <- create_topic_words_dfs(model$summary)
     df_list <- assign_phi_to_words(df_list, model$phi, model_type)
-#  } else if (model_type =="textmineR"){
-#    df_list <- create_topic_words_dfs(model$summary)
-#    df_list <- assign_phi_to_words(df_list, model$phi, model_type)
-  } else if (model_type=="neural_topic_model"){
+  } else if (model_type =="neural_topic_model"){
     df_list <- create_topic_words_dfs(model$summary)
     df_list <- assign_phi_to_words(df_list, model$phi, "mallet")
   }
@@ -567,7 +575,7 @@ textTopicsWordcloud <- function(model,
   create_plots(df_list = df_list,
                summary=model$summary,
                test=test,
-               test_type=test_type,
+               test_type=test_method,
                cor_var=cor_var,
                seed = seed,
                color_negative_cor = color_negative_cor,
@@ -576,5 +584,5 @@ textTopicsWordcloud <- function(model,
                plot_topics_idx=plot_topics_idx,
                p_threshold=p_threshold,
                save_dir=save_dir)
-  print(paste0("The plots are saved in ", save_dir, "/seed_", seed, "/wordclouds"))
+  print(paste0("The plots (p<",p_threshold,") are saved in ", save_dir, "/seed_", seed, "/wordclouds"))
 }

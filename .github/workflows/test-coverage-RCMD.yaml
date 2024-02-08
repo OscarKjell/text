@@ -87,8 +87,13 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install system dependencies
+      - name: Setting for BertTopic
         if: runner.os == 'Linux'
+        run: |
+          export OMP_MAX_ACTIVE_LEVELS=1
+
+      - name: Install system dependencies
+        if: runner.os != 'Windows'
         run: |
           while read -r cmd
           do

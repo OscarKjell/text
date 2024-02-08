@@ -73,7 +73,8 @@ textrpp_install <- function(conda = "auto",
         "sentence-transformers==2.2.2",
         "flair==0.13.0",
         "umap-learn==0.5.4",
-        "hdbscan==0.8.33"
+        "hdbscan==0.8.33"#,
+#        "numba==0.58.1"
 
       )
     }
@@ -94,7 +95,8 @@ textrpp_install <- function(conda = "auto",
          "sentence-transformers==2.2.2",
          "flair==0.13.0",
          "umap-learn==0.5.4",
-         "hdbscan==0.8.33"
+         "hdbscan==0.8.33"#,
+#        "numba==0.58.1"
       )
     }
   }
@@ -397,37 +399,6 @@ textrpp_uninstall <- function(conda = "auto",
 
   invisible(NULL)
 }
-
-
-#text_install_miniconda <- function() {
-#  if (is_osx()) {
-#    message("Downloading installation script")
-#    system(paste(
-#      "curl https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o ~/miniconda.sh;",
-#      "echo \"Running installation script\";",
-#      "bash ~/miniconda.sh -b -p $HOME/miniconda"
-#    ))
-#    system('echo \'export PATH="$PATH:$HOME/miniconda/bin"\' >> $HOME/.bash_profile; rm ~/miniconda.sh')
-#    message(colourise(
-#      "Installation of miniconda complete",
-#      fg = "green", bg = NULL
-#    ))
-#  } else if (is_linux()) {
-#    message("Downloading installation script")
-#    system(paste(
-#      "wget -nv https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh;",
-#      "echo \"Running installation script\";",
-#      "bash ~/miniconda.sh -b -p $HOME/miniconda"
-#    ))
-#    system('echo \'export PATH="$PATH:$HOME/miniconda/bin"\' >> $HOME/.bashrc; rm ~/miniconda.sh')
-#    message(colourise(
-#      "Installation of miniconda complete",
-#      fg = "green", bg = NULL
-#    ))
-#  } else {
-#    stop("miniconda installation is available only for Mac or Linux")
-#  }
-#}
 
 
 pip_get_version <- function(cmd, major_version) {

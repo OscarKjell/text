@@ -12,6 +12,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 from bertopic.vectorizers import ClassTfidfTransformer
 from bertopic.representation import KeyBERTInspired, MaximalMarginalRelevance, PartOfSpeech
 import os
+
+# turning off parallelism for transformers
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 #from sentence_transformers import SentenceTransformer
 
 
@@ -50,7 +53,8 @@ def create_bertopic_model(data,
                        seed=1234,
                        save_dir="./results"):
 
-
+    # turning off parallelism for transformers
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
     #data = pd.read_csv('../data/depression_anxiety_cleaned.csv')
     data = data
     print(data)
