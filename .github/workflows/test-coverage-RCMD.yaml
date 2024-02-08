@@ -87,19 +87,13 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
- #     - name: Setting for BertTopic
- #       if: runner.os == 'Linux'
- #       run: |
- #         export OMP_MAX_ACTIVE_LEVELS=1
-
       - name: Install system dependencies
-        if: runner.os != 'Windows'
+        if: runner.os == 'Linux'
         run: |
           while read -r cmd
           do
             eval sudo $cmd
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "16.04"), sep = "\n")')
-
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
