@@ -25,6 +25,8 @@ textTopicTest(
 
 \item{test_method}{(string) Choose between "correlation", "t-test", "binary_regression", "linear_regression" or "ridge_regression"}
 
+\item{multiple_comparison}{Method for correction of multiple tests (e.g., "fdr", "bonferroni").}
+
 \item{load_dir}{(string) if specified, the function returns the precomputed analysis from the directory, otherwise leave blank}
 }
 \value{

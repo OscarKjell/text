@@ -5,6 +5,7 @@
 #' @param pred_var (string) Variable of interest for linear or binary regression
 #' @param control_vars (list) Control variables for linear or binary regression
 #' @param test_method (string) Choose between "correlation", "t-test", "binary_regression", "linear_regression" or "ridge_regression"
+#' @param multiple_comparison Method for correction of multiple tests (e.g., "fdr", "bonferroni").
 #' @param load_dir (string) if specified, the function returns the precomputed analysis from the directory, otherwise leave blank
 #' @importFrom dplyr bind_cols
 #' @importFrom tibble tibble
