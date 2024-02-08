@@ -2,48 +2,33 @@
 % Please edit documentation in R/7_2_textTopicsAnalysis.R
 \name{textTopicsWordcloud}
 \alias{textTopicsWordcloud}
-\title{The function plotting wordclouds of topics}
+\title{This functions plots wordclouds of topics from a Topic Model based on their significance determined by a linear or binary regression}
 \usage{
 textTopicsWordcloud(
   model,
-  model_type,
   test,
-  test_type,
-  cor_var,
-  color_negative_cor,
-  color_positive_cor,
-  scale_size = TRUE,
-  plot_topics_idx,
-  p_threshold,
-  save_dir,
-  seed
+  color_negative_cor = ggplot2::scale_color_gradient(low = "darkred", high = "red"),
+  color_positive_cor = ggplot2::scale_color_gradient(low = "darkgreen", high = "green"),
+  scale_size = FALSE,
+  plot_topics_idx = NULL,
+  p_threshold = 0.05
 )
 }
 \arguments{
-\item{model}{(data.frame) The model returned from textTopics()$model.}
-
-\item{model_type}{(string) "bert_topic", or "mallet" ("textmineR" not supported)}
+\item{model}{(data.frame) The model returned from textTopics().}
 
 \item{test}{(data.frame) the test returned from textTopicTest()}
 
-\item{test_type}{(string) "linear_regression", or "binary_regression"}
+\item{color_negative_cor}{(ggplot2::scale_color_gradient()) color gradient of topic cloud with negative correlation}
 
-\item{cor_var}{(string) Variable for t-test, linear, binary or ridge regression}
-
-\item{color_negative_cor}{(scale_color_gradient) color of topic cloud with negative correlation}
-
-\item{color_positive_cor}{(scale_color_gradient) color of topic cloud with positive correlation}
+\item{color_positive_cor}{(ggplot2::scale_color_gradient) color gradient of topic cloud with positive correlation}
 
 \item{scale_size}{(bool) if True, then the size of the topic cloud is scaled by the prevalence of the topic}
 
 \item{plot_topics_idx}{(list) if specified, then only the specified topics are plotted}
 
-\item{p_threshold}{(float) set threshold which determines which topics are plotted}
-
-\item{save_dir}{(string) save plots in specified directory, if left blank, plots is not saved, thus save_dir is necessary}
-
-\item{seed}{(int) seed is needed for saving the plots in the correct directory}
+\item{p_threshold}{(float) set significance threshold which determines which topics are plotted}
 }
 \description{
-The function plotting wordclouds of topics
+This functions plots wordclouds of topics from a Topic Model based on their significance determined by a linear or binary regression
 }

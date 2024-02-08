@@ -2,42 +2,34 @@
 % Please edit documentation in R/7_2_textTopicsAnalysis.R
 \name{textTopicTest}
 \alias{textTopicTest}
-\title{The function for topic testing}
+\title{This function tests the relationship between a single topic or all topics and a variable of interest. Available tests include correlation, t-test, linear regression, binary regression, and ridge regression.}
 \usage{
 textTopicTest(
   model,
-  preds,
-  data,
-  group_var,
-  control_vars,
-  test_method,
-  seed,
-  load_dir = NULL,
-  save_dir = NULL
+  pred_var,
+  group_var = NULL,
+  control_vars = c(),
+  test_method = "linear_regression",
+  multiple_comparison = "fdr",
+  load_dir = NULL
 )
 }
 \arguments{
-\item{preds}{(data.frame) The preds returned from textTopics()$preds}
+\item{model}{(data.frame) The model returned from textTopics().}
 
-\item{data}{(data.frame) The data on which the topic model was trained on, returned from textTopics()$train_data}
+\item{pred_var}{(string) Variable of interest for linear or binary regression}
 
-\item{group_var}{(string) Variable for t-test, linear, binary or ridge regression}
+\item{group_var}{(string) Grouping variable for t-test}
 
-\item{control_vars}{(list) Control variable for linear or binary regression}
+\item{control_vars}{(list) Control variables for linear or binary regression}
 
 \item{test_method}{(string) Choose between "correlation", "t-test", "binary_regression", "linear_regression" or "ridge_regression"}
 
-\item{seed}{(int) random seed}
-
 \item{load_dir}{(string) if specified, the function returns the precomputed analysis from the directory, otherwise leave blank}
-
-\item{save_dir}{(string) save analysis in specified directory, if left blank, analysis is not saved}
-
-\item{model_info}{(data.frame) The model returned from textTopics()$model.}
 }
 \value{
-Results from
+Metadata and results of the test such as estimate, t-value, p-value, and variable name.
 }
 \description{
-The function for topic testing
+This function tests the relationship between a single topic or all topics and a variable of interest. Available tests include correlation, t-test, linear regression, binary regression, and ridge regression.
 }

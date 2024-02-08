@@ -2,7 +2,7 @@
 % Please edit documentation in R/7_1_textTopics.R
 \name{textTopics}
 \alias{textTopics}
-\title{BERTopic implementation with prediction extraction}
+\title{This function creates and trains a BERTopic model (based on bertopic python packaged) on a text-variable in a tibble/data.frame.}
 \usage{
 textTopics(
   data,
@@ -18,7 +18,7 @@ textTopics(
   min_df = 5,
   bm25_weighting = FALSE,
   reduce_frequent_words = TRUE,
-  seed = 1234,
+  set_seed = 8,
   save_dir = "./results"
 )
 }
@@ -50,13 +50,13 @@ might want to use for later analyses testing the significance of topics in relat
 
 \item{reduce_frequent_words}{(boolean) Determine whether frequent words are reduced by ClassTfidfTransformer.}
 
-\item{seed}{(integer) The random seed for initialization of the umap model.}
+\item{set_seed}{(integer) The random seed for initialization of the umap model.}
 
 \item{save_dir}{(string) The directory for saving results.}
 }
 \value{
-A folder containing the model, data, folder with terms and values for each topic, and the document-topic matrix.
+A folder containing the model, data, folder with terms and values for each topic, and the document-topic matrix. Moreover the model itself is returned formatted as a data.frame together with metdata
 }
 \description{
-BERTopic implementation with prediction extraction
+This function creates and trains a BERTopic model (based on bertopic python packaged) on a text-variable in a tibble/data.frame.
 }
