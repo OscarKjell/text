@@ -4,7 +4,7 @@ library(text)
 library(testthat)
 library(ggplot2)
 
-textrpp_initialize()
+#textrpp_initialize()
 
 test_that("Bertopic", {
   skip_on_cran()
