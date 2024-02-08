@@ -1,4 +1,4 @@
-#' BERTopic implementation with prediction extraction
+#' This function creates and trains a BERTopic model (based on bertopic python packaged) on a text-variable in a tibble/data.frame.
 #' @param data (tibble/data.frame) A tibble with a text-variable to be analysed, and optional numeric/categorical variables that you
 #' might want to use for later analyses testing the significance of topics in relation to these variables.
 #' @param variable_name (string)  Name of the text-variable in the data tibble that you want to perform topic modeling on.
@@ -13,9 +13,9 @@
 #' @param bm25_weighting (boolean) Determine whether bm25_weighting is used for ClassTfidfTransformer.
 #' @param reduce_frequent_words (boolean) Determine whether frequent words are reduced by ClassTfidfTransformer.
 #' @param num_top_words (integer) Determine the number of top words presented for each topic.
-#' @param seed (integer) The random seed for initialization of the umap model.
+#' @param set_seed (integer) The random seed for initialization of the umap model.
 #' @param save_dir (string) The directory for saving results.
-#' @return A folder containing the model, data, folder with terms and values for each topic, and the document-topic matrix.
+#' @return A folder containing the model, data, folder with terms and values for each topic, and the document-topic matrix. Moreover the model itself is returned formatted as a data.frame together with metdata
 #' @export
 textTopics <- function(data,
                        variable_name,
@@ -30,8 +30,9 @@ textTopics <- function(data,
                        min_df = 5,
                        bm25_weighting = FALSE,
                        reduce_frequent_words = TRUE,
-                       seed = 1234,
+                       set_seed = 8,
                        save_dir = "./results"){
+
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
@@ -54,20 +55,24 @@ textTopics <- function(data,
                                  bm25_weighting = bm25_weighting,
                                  reduce_frequent_words = reduce_frequent_words,
                                  stop_words = stopwords,  # provide a value for n_gram_range
-                                 seed = seed,
+                                 seed = set_seed,
                                  save_dir = save_dir  # provide a value for save_dir
   )
 
   model$summary <- data.frame(model[2])
   preds <- data.frame(read.csv(
-    paste0(save_dir,"/seed_",seed,"/topic_distr.csv")))
+    paste0(save_dir,"/seed_",set_seed,"/topic_distr.csv")))
 
   train_data <- data.frame(read.csv(
-    paste0(save_dir,"/seed_",seed,"/data.csv")))
+    paste0(save_dir,"/seed_",set_seed,"/data.csv")))
 
-  return(list(
-    model = model,
-    preds = preds,
-    train_data = train_data))
+  # save a dataframe with model_type, seed and save_dir inside the comment
+
+  return(list(model = model,
+              preds = preds,
+              train_data = train_data,
+              model_type = "bert_topic",
+              seed = set_seed,
+              save_dir = save_dir))
 
 }
