@@ -54,7 +54,63 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #' @param n_cross_val (numeric) Value that determines the number of times to repeat the cross-validation.
 #' (default = 1, i.e., cross-validation is only performed once). Warning: The training process gets proportionately slower to the number of cross-validations, 
 #' resulting in a time complexity that increases with a factor of n (n cross-validations).
-#' @param seed (numeric) Set different seed (default = 2023).
+#' @param x_append (optional) Variables to be appended after the word embeddings (x); if wanting to preappend them before
+#' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL (default = NULL).
+#' @param append_first (boolean) Option to add variables before or after all word embeddings (default = False).
+#' @param cv_method (character) Cross-validation method to use within a pipeline of nested outer and inner loops
+#' of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
+#' using rsample::validation_split in the inner loop to achieve a development and assessment set (note that
+#' for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds"
+#' uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.
+#' @param outside_folds (numeric) Number of folds for the outer folds (default = 10).
+#' @param inside_folds (numeric) The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
+#' For more information see validation_split in rsample.
+#' @param strata (string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
+#' training set - if you want to stratify according to another variable you can include it as a tibble (please note you
+#' can only add 1 variable to stratify according). Can set it to NULL.
+#' @param outside_strata (boolean) Whether to stratify the outside folds.
+#' @param outside_breaks (numeric) The number of bins wanted to stratify a numeric stratification variable in the
+#' outer cross-validation loop (default = 4).
+#' @param inside_strata Whether to stratify the outside folds.
+#' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner
+#' cross-validation loop (default = 4).
+#' @param model Type of model. Default is "regression"; see also "logistic" and "multinomial" for classification.
+#' @param eval_measure (character) Type of evaluative measure to select models from. Default = "rmse" for regression and
+#' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
+#'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
+#'  the yardstick package).
+#' @param preprocess_step_center (boolean) Normalizes dimensions to have a mean of zero; default is set to TRUE.
+#' For more info see (step_center in recipes).
+#' @param preprocess_step_scale (boolean) Normalize dimensions to have a standard deviation of one; default is set to TRUE.
+#' For more info see (step_scale in recipes).
+#' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
+#' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
+#' number of components to select (e.g., 10). Default is "min_halving", which is a function
+#' that selects the number of PCA components based on number  of participants and feature (word embedding dimensions)
+#' in the data. The formula is:
+#' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
+#' @param penalty (numeric) Hyper parameter that is tuned (default = 10^seq(-16,16)).
+#' @param mixture A number between 0 and 1 (inclusive) that reflects the proportion of L1 regularization
+#' (i.e. lasso) in the model (for more information see the linear_reg-function in the parsnip-package).
+#' When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
+#' used (specific engines only).
+#' @param first_n_predictors By default this setting is turned off (i.e., NA). To use this method,
+#' set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
+#' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
+#' then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
+#' This option is currently only possible for one embedding at the time.
+#' @param method_cor Type of correlation used in evaluation (default "pearson";
+#' can set to "spearman" or "kendall").
+#' @param impute_missing Default FALSE (can be set to TRUE if something else than word_embeddings are trained).
+#' @param model_description (character) Text to describe your model (optional; good when sharing the model with others).
+#' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it
+#'  (i.e., only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
+#'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
+#' @param save_output (character) Option not to save all output; default = "all". see also "only_results"
+#'  and "only_results_predictions".
+#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
+#' in larger than 2 × 2 tables.
+#' @param seed (numeric) Set different seed (default = 2024).
 #' @return A tibble containing correlations for each sample. If n_cross_val > 1, correlations for each new cross-validation, 
 #' along with standard-deviation and mean correlation is included in the tibble. The information in the tibble is 
 #' visualised via the textTrainNPlot function. 
@@ -86,7 +142,31 @@ textTrainN <- function(
     sample_percents = c(25,50,75,100),
     handle_word_embeddings = "individually",
     n_cross_val = 1,
-    seed = 2023
+    x_append = NULL,
+    append_first = FALSE,
+    cv_method = "validation_split",
+    outside_folds = 10,
+    inside_folds = 3 / 4,
+    strata = "y",
+    outside_strata = TRUE,
+    outside_breaks = 4,
+    inside_strata = TRUE,
+    inside_breaks = 4,
+    model = "regression",
+    eval_measure = "default",
+    preprocess_step_center = TRUE,
+    preprocess_step_scale = TRUE,
+    preprocess_PCA = NA,
+    penalty = 10^seq(-16, 16),
+    mixture = c(0),
+    first_n_predictors = NA,
+    impute_missing = FALSE,
+    method_cor = "pearson",
+    model_description = "Consider writing a description of your model here",
+    multi_cores = "multi_cores_sys_default",
+    save_output = "all",
+    simulate.p.value = FALSE,
+    seed = 2024
 ) {
   set.seed(seed)
 
@@ -141,19 +221,72 @@ textTrainN <- function(
       if (handle_word_embeddings == "individually"){
         trained <- textTrainRegression(
           x = x[indexes[[check]][[idx]],],
-          y = y[indexes[[check]][[idx]]]
+          y = y[indexes[[check]][[idx]]],
+          x_append = x_append,
+          append_first = append_first,
+          cv_method = cv_method,
+          outside_folds = outside_folds,
+          inside_folds = inside_folds,
+          strata = strata,
+          outside_strata = outside_strata,
+          outside_breaks = outside_breaks,
+          inside_strata = inside_strata,
+          inside_breaks = inside_breaks,
+          model = model,
+          eval_measure = eval_measure,
+          preprocess_step_center = preprocess_step_center,
+          preprocess_step_scale = preprocess_step_scale,
+          preprocess_PCA = preprocess_PCA,
+          penalty = penalty,
+          mixture = mixture,
+          first_n_predictors = first_n_predictors,
+          impute_missing = impute_missing,
+          method_cor = method_cor,
+          model_description = model_description,
+          multi_cores = multi_cores,
+          save_output = save_output,
+          simulate.p.value = simulate.p.value,
+          seed = seed
         )
       }
-      
       if (handle_word_embeddings == "concatenate"){
         trained <- textTrainRegression(
           x = lapply(x, function(x) x[indexes[[check]][[idx]], ]), 
-          y = y[indexes[[check]][[idx]]]
+          y = y[indexes[[check]][[idx]]],
+          x_append = x_append,
+          append_first = append_first,
+          cv_method = cv_method,
+          outside_folds = outside_folds,
+          inside_folds = inside_folds,
+          strata = strata,
+          outside_strata = outside_strata,
+          outside_breaks = outside_breaks,
+          inside_strata = inside_strata,
+          inside_breaks = inside_breaks,
+          model = model,
+          eval_measure = eval_measure,
+          preprocess_step_center = preprocess_step_center,
+          preprocess_step_scale = preprocess_step_scale,
+          preprocess_PCA = preprocess_PCA,
+          penalty = penalty,
+          mixture = mixture,
+          first_n_predictors = first_n_predictors,
+          impute_missing = impute_missing,
+          method_cor = method_cor,
+          model_description = model_description,
+          multi_cores = multi_cores,
+          save_output = save_output,
+          simulate.p.value = simulate.p.value,
+          seed = seed
         )
       }
       
-      # Extract the correlation-coefficient and assign it to results_df
-      value_to_insert <- trained$results[4]
+      # Extract the correlation-coefficient or AUC and assign it to results_df
+      if (model == "logistic" || model == "multinomial"){
+        value_to_insert <- trained$results[8,3]
+      } else {
+        value_to_insert <- trained$results[4]
+      }
       column_name <- sprintf("Test%s", as.character(check))
       results_df[idx, column_name] <- value_to_insert
     }
@@ -294,9 +427,9 @@ textTrainNPlot <- function(
       ) + 
       # determines whether to plot a smooth or straight line
       (if (line_type == "smooth") {
-        ggplot2::geom_smooth(size = line_size, color = line_color, method = "auto")
+        ggplot2::geom_smooth(linewidth = line_size, color = line_color, method = "auto")
       } else {
-        ggplot2::geom_line(size = line_size, color = line_color)
+        ggplot2::geom_line(linewidth = line_size, color = line_color)
       }) +
       # set axis-labels 
       ggplot2::labs(
