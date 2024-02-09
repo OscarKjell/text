@@ -54,6 +54,7 @@ test_that("textProjection with QUARTILE, 0.9 PCA and
 test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
   skip_on_cran()
 
+  #remotes::install_github("tidyverse/ggplot2", ref = remotes::github_pull("5592"))
   # Dot Product Projection Plot help(textProjectionPlot)
   p1 <- text::textProjectionPlot(
     word_data = DP_projections_HILS_SWLS_100,
@@ -194,11 +195,11 @@ test_that("textCentralityPlot produces a plot.", {
 
 
 
-test_that("textCentrality produces a tibble with character variable and numeric variable.", {
+test_that("textPCA produces a tibble with character variable and numeric variable.", {
   skip_on_cran()
 
 
-  df_for_plotting2d <- text::textPCA(
+  df_for_plotting2d <- textPCA(
     words = Language_based_assessment_data_8$harmonywords,
     word_types_embeddings = word_embeddings_4$word_types
   )

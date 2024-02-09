@@ -5,6 +5,7 @@
 #' @param words Word or text variable to be plotted.
 #' @param word_types_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., decontextualized embeddings).
+#' @param to_lower_case Lower case words
 #' @param seed Set different seed.
 #' @return A dataframe with words, their frquency and two PCA dimensions from the word_embeddings
 #' for the individual words that is used for the plotting in the textPCAPlot function.
@@ -23,6 +24,7 @@
 #' @export
 textPCA <- function(words,
                     word_types_embeddings = word_types_embeddings_df,
+                    to_lower_case = TRUE,
                     seed = 1010) {
   textPCA_comment <- paste(
     "words =", substitute(words),
@@ -33,9 +35,13 @@ textPCA <- function(words,
   set.seed(seed)
   # PCA on word_types_embeddings
   # Select word embeddings to be included in plot
-  no_upcase_embedding_words <- !any(grepl("[A-Z]", word_types_embeddings$words))
-  uniques_words_all <- unique_freq_words(words, tolower = no_upcase_embedding_words)
-  uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, word_types_embeddings, tolower = no_upcase_embedding_words)
+  # no_upcase_embedding_words <- !any(grepl("[A-Z]", word_types_embeddings$words))
+
+  uniques_words_all <- unique_freq_words(words = words, upper_case = to_lower_case)
+
+  uniques_words_all_wordembedding <- sapply(uniques_words_all$words,
+                                            applysemrep, word_types_embeddings,
+                                            tolower = to_lower_case)
   uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
   rec_pca <- recipes::recipe(~., data = uniques_words_all_wordembedding)
