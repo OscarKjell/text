@@ -18,8 +18,6 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 #from sentence_transformers import SentenceTransformer
 
 
-
-
 embedding_models = {"miniLM":SentenceTransformer("all-MiniLM-L6-v2"),
                     #"roberta": TransformerDocumentEmbeddings('roberta-base'),
                     "mpnet": SentenceTransformer("all-mpnet-base-v2"),

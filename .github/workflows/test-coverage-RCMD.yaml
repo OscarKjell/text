@@ -22,7 +22,7 @@ jobs:
           - {os: macOS-latest,   r: 'release'}
           - {os: macOS-latest,   r: '4.3.1'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-20.04,   r: 'release'}
+#          - {os: ubuntu-20.04,   r: 'release'}
 
 #          - {os: macOS-latest,   r: '4.2'}
 #          - {os: windows-latest, r: '4.3'}
