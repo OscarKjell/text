@@ -66,6 +66,6 @@ jobs:
 
       - name: Test coverage
         env:
-          OMP_MAX_ACTIVE_LEVELS: 1
+          OMP_MAX_ACTIVE_LEVELS: 0
         run: covr::codecov()
         shell: Rscript {0}

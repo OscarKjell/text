@@ -22,7 +22,7 @@ jobs:
           - {os: macOS-latest,   r: 'release'}
           - {os: macOS-latest,   r: '4.3.1'}
           - {os: windows-latest, r: 'release'}
-#          - {os: ubuntu-20.04,   r: 'release'}
+          - {os: ubuntu-20.04,   r: 'release'}
 
 #          - {os: macOS-latest,   r: '4.2'}
 #          - {os: windows-latest, r: '4.3'}
@@ -69,8 +69,6 @@ jobs:
           python -m pip install --upgrade pip
 #          pip install torch==0.4.1 -f https://download.pytorch.org/whl/torch_stable.html
 #          pip install transformers==3.3.1
-#          pip install nltk
-#          pip install numpy
 
       - name: Query dependencies
         run: |
@@ -110,7 +108,7 @@ jobs:
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_: false
-          OMP_MAX_ACTIVE_LEVELS: 1
+          OMP_MAX_ACTIVE_LEVELS: 0
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
