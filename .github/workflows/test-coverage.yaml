@@ -39,10 +39,8 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install torch==1.8.0 -f https://download.pytorch.org/whl/torch_stable.html
-          pip install transformers==4.12.5
-          pip install nltk
-          pip install numpy
+#          pip install torch==1.8.0 -f https://download.pytorch.org/whl/torch_stable.html
+#          pip install transformers==4.12.5
 
       - name: Query dependencies
         run: |
@@ -65,5 +63,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Test coverage
+        env:
+          OMP_MAX_ACTIVE_LEVELS: 0
         run: covr::codecov()
         shell: Rscript {0}

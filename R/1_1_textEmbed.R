@@ -820,18 +820,29 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' @param raw_layers Layers returned by the textEmbedRawLayers function with NA values.
 #' @return Layers returned by the textEmbedRawLayers with inserted NA-placeholder vectors.  
 #' @noRd
-generate_placement_vector <- function(raw_layers) {
+generate_placement_vector <- function(raw_layers, texts) {
+  
+  # Extract column name, if there is one. 
+  column_name <- colnames(texts)
+  
   context_tokens <- NULL
   
-  # Check if raw_layers$context_tokens$value is not NULL, and use it
+  
   if (!is.null(raw_layers$context_tokens$value)) {
     context_tokens <- raw_layers$context_tokens$value
   }
   # If raw_layers$context_tokens$value is NULL, check if raw_layers$context_tokens$texts is not NULL and use it
-  else if (!is.null(raw_layers$context_tokens$texts)) {
+  
+  if (!is.null(raw_layers$context_tokens$texts)) {
     context_tokens <- raw_layers$context_tokens$texts
   }
   
+  # Try with column name
+  if (!is.null(column_name)) {
+    context_tokens <- raw_layers$context_tokens[[column_name]]
+  }
+  
+  # Check if raw_layers$context_tokens$value is not NULL, and use it
   if (is.null(context_tokens)) {
     stop("Neither raw_layers$context_tokens$value nor raw_layers$context_tokens$texts found or both are NULL.")
   }
@@ -883,8 +894,12 @@ generate_placement_vector <- function(raw_layers) {
   # Replace the original layers with the modified
   if (!is.null(raw_layers$context_tokens$value)) {
     raw_layers$context_tokens$value <- modified_embeddings
-  } else if (!is.null(raw_layers$context_tokens$texts)) {
+  }
+  if (!is.null(raw_layers$context_tokens$texts)) {
     raw_layers$context_tokens$texts <- modified_embeddings
+  }
+  if (!is.null(raw_layers$context_tokens[[column_name]])) {
+    raw_layers$context_tokens[[column_name]] <- modified_embeddings
   }
   
   return(raw_layers)
@@ -1062,7 +1077,8 @@ textEmbed <- function(texts,
     
   # Generate placement vectors if there are NA:s in texts. 
   if (sum(is.na(texts) > 0)){
-    all_wanted_layers <- generate_placement_vector(raw_layers = all_wanted_layers)
+    all_wanted_layers <- generate_placement_vector(raw_layers = all_wanted_layers, 
+                                                   texts = texts)
   }
     
   if (!decontextualize) {

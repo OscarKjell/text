@@ -12,7 +12,6 @@ textGeneration(
   logging_level = "warning",
   return_incorrect_results = FALSE,
   return_tensors = FALSE,
-  return_text = TRUE,
   return_full_text = TRUE,
   clean_up_tokenization_spaces = FALSE,
   prefix = "",
@@ -40,8 +39,6 @@ dictionary contain the key "answer", is sentiments from textClassify containing 
  and "negative").}
 
 \item{return_tensors}{(boolean)  Whether or not the output should include the prediction tensors (as token indices).}
-
-\item{return_text}{(boolean)  Whether or not the outputs should include the decoded text.}
 
 \item{return_full_text}{(boolean) If FALSE only the added text is returned, otherwise the full text is returned.
 (This setting is only meaningful if return_text is set to TRUE)}

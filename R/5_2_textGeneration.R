@@ -14,7 +14,6 @@
 #' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"
 #'  and "negative").
 #' @param return_tensors (boolean)  Whether or not the output should include the prediction tensors (as token indices).
-#' @param return_text (boolean)  Whether or not the outputs should include the decoded text.
 #' @param return_full_text (boolean) If FALSE only the added text is returned, otherwise the full text is returned.
 #'  (This setting is only meaningful if return_text is set to TRUE)
 #' @param clean_up_tokenization_spaces (boolean)  Option to clean up the potential extra spaces in the returned text.
@@ -45,7 +44,6 @@ textGeneration <- function(x,
                            logging_level = "warning",
                            return_incorrect_results = FALSE,
                            return_tensors = FALSE,
-                           return_text = TRUE,
                            return_full_text = TRUE,
                            clean_up_tokenization_spaces = FALSE,
                            prefix = "",
@@ -78,7 +76,7 @@ textGeneration <- function(x,
       logging_level = logging_level,
       return_incorrect_results = return_incorrect_results,
       return_tensors = return_tensors,
-      return_text = return_text,
+    #  return_text = return_text,
       return_full_text = return_full_text,
       clean_up_tokenization_spaces = clean_up_tokenization_spaces,
       prefix = prefix,

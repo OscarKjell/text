@@ -49,6 +49,8 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #' @param y Numeric variable to predict.
 #' @param sample_percents (numeric) Numeric vector that specifies the percentages of the total number of data points to include in each sample (default = c(25,50,75,100), i.e., correlations are evaluated for 25%%,50%%,75%% and 100%% of 
 #' the datapoints). The datapoints in each sample are chosen randomly for each new sample.  
+#' @param handle_word_embeddings Determine whether to use a list of word embeddings or an individual word_embedding (default = "individually", also "concatenate"). If a list of word embeddings are 
+#' provided, then they will be concatenated. 
 #' @param n_cross_val (numeric) Value that determines the number of times to repeat the cross-validation.
 #' (default = 1, i.e., cross-validation is only performed once). Warning: The training process gets proportionately slower to the number of cross-validations, 
 #' resulting in a time complexity that increases with a factor of n (n cross-validations).
@@ -65,9 +67,9 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #'       x = word_embeddings_4$texts$harmonytext,
 #'       y = Language_based_assessment_data_8$hilstotal,
 #'       sample_percents = c(25,50,75,100),
-#'       n_cross_val = 3,
+#'       n_cross_val = 3
 #' )
-#' 
+#'                     
 #' # tibble_to_plot contains correlation-coefficients for each cross_validation and 
 #' # standard deviation and mean value for each sample. The tibble can be plotted 
 #' # using the testTrainNPlot function.
@@ -82,16 +84,19 @@ textTrainN <- function(
     x = word_embeddings_4$texts$harmonytext,
     y = Language_based_assessment_data_8$hilstotal,
     sample_percents = c(25,50,75,100),
+    handle_word_embeddings = "individually",
     n_cross_val = 1,
     seed = 2023
 ) {
+  set.seed(seed)
+
   # number of tests (i.e., number of samples for each cross-validation)
   n_tests = length(sample_percents)
   
   # number of elements 
   len <- length(y)
   
-  # instantiate dataframe 
+  # dataframe 
   results_df <- data.frame()
   
   # vector´that will contain the quantity of elements in each sample.  
@@ -99,7 +104,7 @@ textTrainN <- function(
   
   # Add "percent" column to dataframe 
   for (test in 1:n_tests){
-    num_samples <- sample_percents[test]/100 * len
+    num_samples <- round((sample_percents[test] / 100) * len)
     results_df[test, "percent"] <- sample_percents[test]
     sample_sizes <- c(sample_sizes, num_samples)
   }
@@ -118,24 +123,37 @@ textTrainN <- function(
   columns_to_calculate <- c()
   
   #### Training & Cross-Validation #### 
+  x_vectors <- list()
+  y_vectors <- list()
   
   # Number of cross-validation
   for (check in 1:n_cross_val) {
-    # Adds column names for each cross validation to columns_to_calculate
+    # Initialize empty vectors for each cross-validation fold
+    x_vectors[[check]] <- list()
+    y_vectors[[check]] <- list()
+    
+    # Adds column names for each cross-validation to columns_to_calculate
     columns_to_calculate <- c(columns_to_calculate, sprintf("Test%s", as.character(check)))
-   
-    #Performs each cross-validation. 
+    
+    # Performs each cross-validation. 
     for (idx in 1:n_tests) {
       # Trains model with data in each sample (i.e., with elements in each nested list in indexes)
-      trained <- text::textTrain(
-        x = x[indexes[[check]][[idx]],],
-        y = y[indexes[[check]][[idx]]]
-      )
+      if (handle_word_embeddings == "individually"){
+        trained <- textTrainRegression(
+          x = x[indexes[[check]][[idx]],],
+          y = y[indexes[[check]][[idx]]]
+        )
+      }
       
-      # Extract the correlation-coefficient
+      if (handle_word_embeddings == "concatenate"){
+        trained <- textTrainRegression(
+          x = lapply(x, function(x) x[indexes[[check]][[idx]], ]), 
+          y = y[indexes[[check]][[idx]]]
+        )
+      }
+      
+      # Extract the correlation-coefficient and assign it to results_df
       value_to_insert <- trained$results[4]
-      
-      # Assign the correlation-coefficient to results_df
       column_name <- sprintf("Test%s", as.character(check))
       results_df[idx, column_name] <- value_to_insert
     }
@@ -146,7 +164,8 @@ textTrainN <- function(
   results_df["std"] <- apply(results_df[columns_to_calculate], 1, sd)
   
   # Convert to dataframe to tibble 
-  results_df <- as_tibble(results_df)
+  results_df <- tibble::as_tibble(results_df)
+  
   return(results_df)
 }
 
@@ -217,10 +236,10 @@ textTrainNPlot <- function(
   
   if (n_cross_val == 1) {
     # Create the ggplot object and specify aesthetics
-    TrainNPlot <- ggplot2::ggplot(data = tibble, aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
+    TrainNPlot <- ggplot2::ggplot(data = tibble, ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
       ggplot2::geom_point(color = point_color, size = point_size) +
       ggplot2::geom_errorbar(
-        aes(ymin = mean - std, ymax = mean + std),
+        ggplot2::aes(ymin = mean - std, ymax = mean + std),
         size = bar_size, 
         width = bar_width,
         color = bar_color
@@ -265,10 +284,10 @@ textTrainNPlot <- function(
   
   if (n_cross_val > 1) {
     # Create the ggplot object and specify aesthetics
-    TrainNPlot <- ggplot2::ggplot(data = tibble, aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
+    TrainNPlot <- ggplot2::ggplot(data = tibble, ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
       ggplot2::geom_point(color = point_color, size = point_size) +
       ggplot2::geom_errorbar(
-        aes(ymin = mean - std, ymax = mean + std),
+        ggplot2::aes(ymin = mean - std, ymax = mean + std),
         size = bar_size, 
         width = bar_width,
         color = bar_color

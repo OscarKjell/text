@@ -3,6 +3,12 @@ from task_finetune import main as task_finetuner
 from run_mlm import main as mlm_finetuner
 import json
 
+def set_tokenizer_parallelism(tokenizer_parallelism):
+    if tokenizer_parallelism:
+        os.environ["TOKENIZERS_PARALLELISM"] = "true"
+    else:
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 
 def hgTransformerMLM(json_path, text_df_train, text_df_val, text_df_test, **kwargs):
     """
@@ -27,8 +33,14 @@ def hgTransformerMLM(json_path, text_df_train, text_df_val, text_df_test, **kwar
     return mlm_finetuner(args, text_df_train, text_df_val, text_df_test, **kwargs)
 
 
-def hgTransformerFineTune(json_path, text_outcome_df_train, text_outcome_df_val, text_outcome_df_test, 
-                        is_regression = True, label_names = None, **kwargs):
+def hgTransformerFineTune(json_path, 
+                            text_outcome_df_train, 
+                            text_outcome_df_val, 
+                            text_outcome_df_test,
+                            is_regression = True,
+                            tokenizer_parallelism = False,
+                            label_names = None, 
+                            **kwargs):
 
     """
     Simple Python method for fine tuning pretrained Hugging Face models

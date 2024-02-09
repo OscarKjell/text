@@ -20,6 +20,7 @@ textFineTuneTask(
   past_index = -1,
   set_seed = 2022,
   label_names = NULL,
+  tokenizer_parallelism = FALSE,
   ...
 )
 }
@@ -64,6 +65,8 @@ for their predictions. If this argument is set to a positive int, the Trainer wi
 \item{set_seed}{(Numeric) Set the seed}
 
 \item{label_names}{label name in case of classification; e.g., label_names = c("female", "male").}
+
+\item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 
 \item{...}{Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.}
 }

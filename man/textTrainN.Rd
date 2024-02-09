@@ -9,6 +9,7 @@ textTrainN(
   x = word_embeddings_4$texts$harmonytext,
   y = Language_based_assessment_data_8$hilstotal,
   sample_percents = c(25, 50, 75, 100),
+  handle_word_embeddings = "individually",
   n_cross_val = 1,
   seed = 2023
 )
@@ -21,6 +22,9 @@ If several word embedding are provided in a list they will be concatenated.}
 
 \item{sample_percents}{(numeric) Numeric vector that specifies the percentages of the total number of data points to include in each sample (default = c(25,50,75,100), i.e., correlations are evaluated for 25%%,50%%,75%% and 100%% of 
 the datapoints). The datapoints in each sample are chosen randomly for each new sample.}
+
+\item{handle_word_embeddings}{Determine whether to use a list of word embeddings or an individual word_embedding (default = "individually", also "concatenate"). If a list of word embeddings are 
+provided, then they will be concatenated.}
 
 \item{n_cross_val}{(numeric) Value that determines the number of times to repeat the cross-validation.
 (default = 1, i.e., cross-validation is only performed once). Warning: The training process gets proportionately slower to the number of cross-validations, 
@@ -46,9 +50,9 @@ tibble_to_plot <- textTrainN(
       x = word_embeddings_4$texts$harmonytext,
       y = Language_based_assessment_data_8$hilstotal,
       sample_percents = c(25,50,75,100),
-      n_cross_val = 3,
+      n_cross_val = 3
 )
-
+                    
 # tibble_to_plot contains correlation-coefficients for each cross_validation and 
 # standard deviation and mean value for each sample. The tibble can be plotted 
 # using the testTrainNPlot function.

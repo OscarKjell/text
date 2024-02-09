@@ -316,7 +316,7 @@ textPCAPlot <- function(word_data,
         title.position = "top",
         direction = "horizontal",
         label.position = "bottom",
-        ggplot2::element_text(color = titles_color)
+        title.theme = ggplot2::element_text(color = titles_color)
       )
     ) +
 
