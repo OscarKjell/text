@@ -337,8 +337,6 @@ path_exist_download_files <- function(wanted_file) {
   return(path_to_file)
 }
 
-=======
-
 #' Takes all words as input and arrange them in column with an accompanying column with frequency.
 #' @param words Words
 #' @return Column with all words and an accompanying column with their frequency.
