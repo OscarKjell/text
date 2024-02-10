@@ -675,15 +675,16 @@ path_exist_download_files <- function(wanted_file) {
   return(path_to_file)
 }
 
-######################################                          ###################################### 
-###################################### Implicit motives section ###################################### 
-######################################                          ###################################### 
 
-#' Returns a tibble with values relevant for calculating implicit motives 
+######################################                          ######################################
+###################################### Implicit motives section ######################################
+######################################                          ######################################
+
+#' Returns a tibble with values relevant for calculating implicit motives
 #' @param texts Texts to predict
-#' @param user_id A column with user ids. 
-#' @param predicted_scores2 Predictions from textPredict. 
-#' @return Returns a tibble with values relevant for calculating implicit motives 
+#' @param user_id A column with user ids.
+#' @param predicted_scores2 Predictions from textPredict.
+#' @return Returns a tibble with values relevant for calculating implicit motives
 #' @noRd
 implicit_motives <- function(texts, user_id, predicted_scores2){
   # Create a table with the number of sentences per user
@@ -693,7 +694,7 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
   
   num_persons <- length(table_uniques2)
   
-  # Define variables 
+  # Define variables
   user_id_column <- c()
   current <- 0
   
@@ -703,7 +704,7 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
     user_id_column <- c(user_id_column, user_id[current])
   }
   
-  # Create dataframe 
+  # Create dataframe
   summations <- data.frame(
     OUTCOME_USER_SUM_CLASS = numeric(num_persons),
     OUTCOME_USER_SUM_PROB = numeric(num_persons),
@@ -746,9 +747,9 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
   return(summations)
 }
 
-#' implicit_motives_pred returns residuals from robust linear regression. 
-#' @param sqrt_implicit_motives Tibble returned from function implicit_motives. 
-#' @return implicit_motives_pred returns residuals from robust linear regression. 
+#' implicit_motives_pred returns residuals from robust linear regression.
+#' @param sqrt_implicit_motives Tibble returned from function implicit_motives.
+#' @return implicit_motives_pred returns residuals from robust linear regression.
 #' @noRd
 implicit_motives_pred <- function(sqrt_implicit_motives){
   
@@ -775,9 +776,9 @@ implicit_motives_pred <- function(sqrt_implicit_motives){
   return(implicit_motives_pred)
 }
 
-#' Separates text sentence-wise and adds additional sentences to new rows with correpsonding user_id:s. 
-#' @param df Dataframe with two columns, user_id and texts. 
-#' @return Returns a tibble with user_id:s and texts, where each user_id is matched to an individual sentence. 
+#' Separates text sentence-wise and adds additional sentences to new rows with correpsonding user_id:s.
+#' @param df Dataframe with two columns, user_id and texts.
+#' @return Returns a tibble with user_id:s and texts, where each user_id is matched to an individual sentence.
 #' @noRd
 update_user_and_texts <- function(df) {
   updated_user_id <- integer()
@@ -806,7 +807,7 @@ update_user_and_texts <- function(df) {
   
   updated_df <- data.frame(user_id = updated_user_id, texts = updated_texts)
   
-  # since empty rows were deleted, any extra must now be added again. 
+  # since empty rows were deleted, any extra must now be added again.
   missing_rows <- setdiff(df$user_id, updated_df$user_id)
   if (length(missing_rows) > 0) {
     updated_df <- rbind(updated_df, data.frame(user_id = missing_rows, texts = ""))
@@ -818,7 +819,7 @@ update_user_and_texts <- function(df) {
 #' Function that binds predictions to their original dataset
 #' @param data Dataset, ex csv file
 #' @param predictions Predictions from textPredict as a vector
-#' @return Returns the original dataset with predictions included. 
+#' @return Returns the original dataset with predictions included.
 #' @noRd
 bind_predictions <- function(data, predictions) {
   
@@ -846,13 +847,13 @@ bind_predictions <- function(data, predictions) {
 #' Function that binds predictions to their original dataset
 #' @param original_data Dataset, ex csv file
 #' @param prediction_list Predictions from textPredict as a list
-#' @return Returns the original dataset with predictions included. 
+#' @return Returns the original dataset with predictions included.
 #' @noRd
 bind_data <- function(original_data, prediction_list) {
   # copy of original_data
   result_data <- original_data
   
-  # iterate through each "prediction" 
+  # iterate through each "prediction"
   for(i in seq_along(prediction_list)) {
     predictions <- prediction_list[[i]]
     
@@ -872,28 +873,46 @@ bind_data <- function(original_data, prediction_list) {
   return(result_data)
 }
 
-#' Wrapper function that prepares the data and returns a list with predictions, class residuals and probability residuals. 
-#' @param model_reference Reference to implicit motive model, either github URL or file-path. 
-#' @param user_id A column with user ids. 
-#' @param predicted_scores2 Predictions from textPredict() function. 
-#' @param texts Texts to predict from textPredict() function. 
-#' @return Returns a tibble with values relevant for calculating implicit motives 
+#' Wrapper function that prepares the data and returns a list with predictions, class residuals and probability residuals.
+#' @param model_reference Reference to implicit motive model, either github URL or file-path.
+#' @param user_id A column with user ids.
+#' @param predicted_scores2 Predictions from textPredict() function.
+#' @param texts Texts to predict from textPredict() function.
+#' @return Returns a tibble with values relevant for calculating implicit motives
 #' @noRd
-implicit_motives_results <- function(model_reference, 
-                                     user_id, 
-                                     predicted_scores2, 
-                                     texts, 
+implicit_motives_results <- function(model_reference,
+                                     user_id,
+                                     predicted_scores2,
+                                     texts,
                                      dataset){
   
-  #### Assign correct column name #### 
+  #### Make sure there is just one sentence per user_id ####
+  
+  # prepare dataframe for update_user_and_texts function
+  #id_and_texts <- data.frame(user_id = user_id, texts = texts)
+  
+  # correct for multiple sentences per row. # CORRECT
+  #update_user_and_texts <- update_user_and_texts(id_and_texts)
+  # update user_id
+  #user_id = update_user_and_texts$user_id
+  # update texts
+  #texts = update_user_and_texts$texts
+  
+  #### Assign correct column name ####
   lower_case_model <- tolower(model_reference)
+  
   if (grepl("power", lower_case_model)){
     column_name <- "power"
-  } else if (grepl("affiliation", lower_case_model)){
+  }
+  else if (grepl("affiliation", lower_case_model)){
     column_name <- "affiliation"
-  } else if (grepl("achievement", lower_case_model)){
+  }
+  else if (grepl("achievement", lower_case_model)){
     column_name <- "achievement"
-  } 
+  }
+  else if (model_reference == "achievment" | model_reference == "power" | model_reference == "affiliation" ){
+    column_name <- model_reference
+  }
   
   if (length(texts) != length(user_id)) {
     stop('texts and user_id must be of same length.')
@@ -908,16 +927,16 @@ implicit_motives_results <- function(model_reference,
   # Full column name
   class_col_name <- paste0(column_name, "_class")
   
-  # Change column name in predicted_scores2 
+  # Change column name in predicted_scores2
   colnames(predicted_scores2)[1] <- class_col_name
   
-  # Change from df to tibble 
+  # Change from df to tibble
   predicted_scores2 <- tibble::as_tibble(predicted_scores2)
   
   # Two different summary lists depending on if including the dataset with integrated predictions or not
   if (is.null(dataset)){
     # Summarize all predictions
-    summary_list <- list(sentence_predictions = predicted_scores2, person_predictions = predicted) 
+    summary_list <- list(sentence_predictions = predicted_scores2, person_predictions = predicted)
   } else{
     # predicted_scores2 = sentence predictions, predicted = person predictions
     to_insert <- list(predicted_scores2, predicted)
@@ -935,11 +954,11 @@ implicit_motives_results <- function(model_reference,
   return(summary_list)
 }
 
-#' Function that is called in the beginning of textPredict to create the conditions for implicit motives to work. 
-#' @param model_infomodel_info (character or r-object) model_info has three options. 1: R model object (e.g, saved output from textTrain). 2:link to github-model 
-#' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"). 3: Path to a model stored locally (e.g, "path/to/your/model"). 
-#' @param user_id A column with user ids. 
-#' @param show_texts Show texts, TRUE / FALSE 
+#' Function that is called in the beginning of textPredict to create the conditions for implicit motives to work.
+#' @param model_infomodel_info (character or r-object) model_info has three options. 1: R model object (e.g, saved output from textTrain). 2:link to github-model
+#' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"). 3: Path to a model stored locally (e.g, "path/to/your/model").
+#' @param user_id A column with user ids.
+#' @param show_texts Show texts, TRUE / FALSE
 #' @return Returns a list of conditions for implicit motive coding to work
 #' @noRd
 get_model_info <- function(model_info, user_id, show_texts, type, texts) {
@@ -965,8 +984,8 @@ get_model_info <- function(model_info, user_id, show_texts, type, texts) {
       
       # specific configuration for implicit motive coding
       if (!is.null(user_id)){
-        show_texts <- TRUE 
-        show_prob <- TRUE 
+        show_texts <- TRUE
+        show_prob <- TRUE
         type <- "class"
         
         # separate multiple sentences, and add corresponding user-id
@@ -984,7 +1003,7 @@ get_model_info <- function(model_info, user_id, show_texts, type, texts) {
     }
   }
   
-  # The stats package just takes "class" or "prob", therefore, allocate to "show_prob". 
+  # The stats package just takes "class" or "prob", therefore, allocate to "show_prob".
   if (!is.null(type) && type == "class_prob") {
     type = "class"
     show_prob = TRUE
