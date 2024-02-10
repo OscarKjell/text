@@ -82,15 +82,22 @@ prediction4 <- textPredict(texts = text_to_predict,
                            model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_github_model_logistic.RDS",
                            type = "class_prob",
                            threshold = 0.7)
-                       
-# Example 4: (Automatic implicit motive coding with story_id concatenation)
-schone_training <- read.RDS("schone_training.rds")
+                           
 
-implicit_motives <- textPredict(texts = schone_training$text,
+##### Automatic implicit motive coding section ######   
+              
+# Create example dataset
+implicit_motive_data <- dplyr::mutate(.data =Language_based_assessment_data_8, user_id = row_number())
+
+# Code implicit motives. (In this example, person_class will be NaN due to the absence of sentences classified as 'power')
+implicit_motives <- textPredict(texts =  implicit_motive_data$satisfactiontexts,
                                 model_info = "power",
-                                user_id = schone_training$participant_id, 
-                                story_id = schone_training$story_id,
-                                dataset = schone_training) 
+                                user_id = implicit_motive_data$user_id, 
+                                dataset = implicit_motive_data)
+                                 
+# Examine results
+implicit_motives$sentence_predictions
+implicit_motives$person_predictions
 }
 
 \dontrun{
