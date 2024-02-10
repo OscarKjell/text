@@ -1086,80 +1086,70 @@ textTrainRegression <- function(x,
     env_final_recipe <- new.env(parent = globalenv())
     env_final_recipe$xy_all <- xy_all
     env_final_recipe$final_recipe <- final_recipe
-
-    with(env_final_recipe, preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe,
-                                                                                       xy_all,
-                                                                                       retain = FALSE
-    )))
+    
+    preprocessing_recipe_save <- with(env_final_recipe, 
+                                      suppressWarnings(recipes::prep(final_recipe, xy_all, retain = FALSE)))
+    
+    # Optionally remove xy_all if you are concerned about memory and it's no longer needed
+    remove("xy_all", envir = env_final_recipe)
+    remove("final_recipe", envir = env_final_recipe)
+    
+    return(preprocessing_recipe_save)
   }
-
+  
   preprocessing_recipe_save <- recipe_save_small_size(
     final_recipe = final_recipe,
     xy_all = xy_all
   )
-
+  
   # Check number of predictors (to later decide standard or multiple regression)
   # To load the prepared training data into a variable juice() is used.
   # It extracts the data from the xy_recipe object.
   preprocessing_recipe_prep <- recipes::prep(final_recipe, xy_all)
-
+  
   nr_predictors <- recipes::juice(preprocessing_recipe_prep)
-
+  
   # This is so that nr_predictors > 3 and nr_predictors == 3 should work
   if("strata" %in% colnames(nr_predictors)){
     nr_predictors <- nr_predictors %>%
       select(-strata)
   }
   nr_predictors <- length(nr_predictors)
-
-
+  
   ####### NEW ENVIRONMENT
-  model_save_small_size <- function(xy_all, final_recipe, results_split_parameter, model, nr_predictors) {
+  model_save_small_size <- function(xy_all, final_recipe, penalty, mixture, model, nr_predictors) {
     env_final_model <- new.env(parent = globalenv())
     env_final_model$xy_all <- xy_all
     env_final_model$final_recipe <- final_recipe
-    env_final_model$penalty_mode <- statisticalMode(results_split_parameter$penalty)
-    env_final_model$mixture_mode <- statisticalMode(results_split_parameter$mixture)
+    env_final_model$penalty_mode <- statisticalMode(penalty)
+    env_final_model$mixture_mode <- statisticalMode(mixture)
     env_final_model$model <- model
     env_final_model$nr_predictors <- nr_predictors
     env_final_model$statisticalMode <- statisticalMode
     env_final_model$`%>%` <- `%>%`
-
-    with(
-      env_final_model,
+    
+    final_predictive_model <- with(env_final_model, {
       if (nr_predictors > 3) {
-        # Create and fit model; penalty = NULL mixture = NULL
         final_predictive_model_spec <-
-          {
-            if (model == "regression") {
-              parsnip::linear_reg(penalty = penalty_mode, mixture = mixture_mode)
-            } else if (model == "logistic") {
-              parsnip::logistic_reg(
-                mode = "classification",
-                penalty = penalty_mode,
-                mixture = mixture_mode
-              )
-            } else if (model == "multinomial") {
-              parsnip::multinom_reg(
-                mode = "classification",
-                penalty = penalty_mode,
-                mixture = mixture_mode
-              )
-            }
-          } %>%
+          if (model == "regression") {
+            parsnip::linear_reg(penalty = penalty_mode, mixture = mixture_mode)
+          } else if (model == "logistic") {
+            parsnip::logistic_reg(mode = "classification", penalty = penalty_mode, mixture = mixture_mode)
+          } else if (model == "multinomial") {
+            parsnip::multinom_reg(mode = "classification", penalty = penalty_mode, mixture = mixture_mode)
+          }
+        
+        final_predictive_model_spec <- final_predictive_model_spec %>%
           parsnip::set_engine("glmnet")
-
+        
         # Create Workflow (to know variable roles from recipes) help(workflow)
         wf_final <- workflows::workflow() %>%
           workflows::add_model(final_predictive_model_spec) %>%
           workflows::add_recipe(final_recipe)
-
-        # Fit model
-        final_predictive_model <- parsnip::fit(wf_final, data = xy_all)
-
-        # Standard regression
+        
+        parsnip::fit(wf_final, data = xy_all)
       } else if (nr_predictors == 3) {
-        final_predictive_model_spec <- {
+        final_predictive_model_spec <-
           if (model == "regression") {
             parsnip::linear_reg(mode = "regression") %>%
               parsnip::set_engine("lm")
@@ -1170,23 +1160,23 @@ textTrainRegression <- function(x,
             parsnip::multinom_reg(mode = "classification") %>%
               parsnip::set_engine("glmnet")
           }
-        }
-
-
-        # Create Workflow (to know variable roles from recipes) help(workflow)
+        
         wf_final <- workflows::workflow() %>%
           workflows::add_model(final_predictive_model_spec) %>%
           workflows::add_recipe(final_recipe)
-
-        # Fit model
-        final_predictive_model <- parsnip::fit(wf_final, data = xy_all)
+        
+        parsnip::fit(wf_final, data = xy_all)
       }
+    }
     )
+    remove("final_recipe", envir = env_final_model)
+    remove("xy_all", envir = env_final_model)
+    return(final_predictive_model)
   }
 
   final_predictive_model <- model_save_small_size(
-    xy_all, final_recipe, results_split_parameter, model, nr_predictors
-    )
+    xy_all, preprocessing_recipe_save, results_split_parameter$penalty, results_split_parameter$mixture, model, nr_predictors
+  )
 
 
   ##### NEW ENVIRONMENT END
@@ -1407,7 +1397,15 @@ textTrainRegression <- function(x,
   remove(outputlist_results_outer)
   remove(xy_all)
   remove(final_recipe)
-
+  
+  # Remove objects to further minimize model size when saved to rds
+  remove(embedding_description)
+  remove(x_append_names_description)
+  remove(x_append_names)
+  remove(variable_name_index_pca)
+  remove(preprocessing_recipe_prep)
+  remove(nr_predictors)
+  
   final_results
 }
 
