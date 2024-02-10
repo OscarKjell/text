@@ -27,6 +27,7 @@
 #' (usually index 2) as the past state and feed it to the model at the next training step under the keyword argument mems.
 #' @param set_seed (Numeric) Set the seed
 #' @param label_names label name in case of classification; e.g., label_names = c("female", "male").
+#' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param ... Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.
 #' @return A folder containing the pretrained model and output data. The model can then be used, for example, by
 #' textEmbed() by providing the model parameter with a the path to the output folder.
@@ -54,6 +55,7 @@ textFineTuneTask <- function(text_outcome_data,
                              past_index = -1,
                              set_seed = 2022,
                              label_names = NULL,
+                             tokenizer_parallelism = FALSE,
                              ...
                              ){
 
@@ -88,13 +90,16 @@ textFineTuneTask <- function(text_outcome_data,
   }
 
   # Only include complete cases
-  n_befor <- nrow(text_outcome_data)
+  n_before <- nrow(text_outcome_data)
   text_outcome_data <- text_outcome_data[complete.cases(text_outcome_data),]
   n_after <- nrow(text_outcome_data)
 
-  if(n_befor>n_after){
-    print(paste("Removed incomplete cases. Only using", n_after, "complete cases."))
+  if(n_before>n_after){
+    incomplete_info <- paste("Removed incomplete cases. Only using",
+                             n_after, "complete cases.", "\n")
+    print(incomplete_info)
   }
+
 
   # Data set partitioning
   train_proportion = 1 - validation_proportion - evaluation_proportion
@@ -125,6 +130,7 @@ textFineTuneTask <- function(text_outcome_data,
                         eval_accumulation_steps = eval_accumulation_steps,
                         num_train_epochs = num_train_epochs,
                         past_index = past_index,
+                        tokenizer_parallelism = tokenizer_parallelism,
                         label_names = label_names,
                         ...)
 
@@ -132,10 +138,18 @@ textFineTuneTask <- function(text_outcome_data,
   # Return all datasets
 
   T2 <- Sys.time()
-  T2-T1
-  colourise("Completed",
+
+  print(T2-T1)
+
+  if(n_before>n_after){
+    cat(colourise(incomplete_info,
+                  fg = "brown", bg = NULL
+    ))
+  }
+
+  cat(colourise("Completed",
             fg = "green", bg = NULL
-  )
+  ))
 
 }
 

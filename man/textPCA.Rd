@@ -4,13 +4,20 @@
 \alias{textPCA}
 \title{Compute 2 PCA dimensions of the word embeddings for individual words.}
 \usage{
-textPCA(words, word_types_embeddings = word_types_embeddings_df, seed = 1010)
+textPCA(
+  words,
+  word_types_embeddings = word_types_embeddings_df,
+  to_lower_case = TRUE,
+  seed = 1010
+)
 }
 \arguments{
 \item{words}{Word or text variable to be plotted.}
 
 \item{word_types_embeddings}{Word embeddings from textEmbed for individual words
 (i.e., decontextualized embeddings).}
+
+\item{to_lower_case}{Lower case words}
 
 \item{seed}{Set different seed.}
 }

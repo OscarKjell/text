@@ -116,8 +116,8 @@ as well as tibble with processed data used to plot.
 Plot words according to semantic similarity to the aggregated word embedding.
 }
 \examples{
-#Plot a centrality plot from the dataframe df_for_plotting 
-#that is returned by the textCentrality function. 
+#Plot a centrality plot from the dataframe df_for_plotting
+#that is returned by the textCentrality function.
 \dontrun{
 textCentralityPlot(
   df_for_plotting,

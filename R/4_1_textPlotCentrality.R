@@ -17,22 +17,22 @@
 #' @return A dataframe with variables (e.g., including semantic similarity, frequencies)
 #' for the individual words that are used as input for the plotting in the textCentralityPlot function.
 #' @examples
-#' #Computes the semantic similarity between the individual word embeddings (Iwe) 
-#' #in the "harmonywords" column of the pre-installed dataset: Language_based_assessment_data_8, 
-#' #and the aggregated word embedding (Awe). 
-#' #The Awe can be interpreted the latent meaning of the text. 
-#' 
+#' #Computes the semantic similarity between the individual word embeddings (Iwe)
+#' #in the "harmonywords" column of the pre-installed dataset: Language_based_assessment_data_8,
+#' #and the aggregated word embedding (Awe).
+#' #The Awe can be interpreted the latent meaning of the text.
+#'
 #' \dontrun{
 #' df_for_plotting <- textCentrality(
 #'   words = Language_based_assessment_data_8["harmonywords"],
 #'   word_embeddings = word_embeddings_4$texts$harmonywords,
 #'   word_types_embeddings = word_embeddings_4$word_types
 #' )
-#' 
-#' #df_for_plotting contain variables (e.g., semantic similarity, frequencies) for 
-#' #the individual words that are used for plotting by the textCentralityPlot function. 
+#'
+#' #df_for_plotting contain variables (e.g., semantic similarity, frequencies) for
+#' #the individual words that are used for plotting by the textCentralityPlot function.
 #' }
-#' @seealso See \code{\link{textCentralityPlot}} and \code{\link{textProjection}}. 
+#' @seealso See \code{\link{textCentralityPlot}} and \code{\link{textProjection}}.
 #' @importFrom dplyr bind_rows
 #' @importFrom tibble tibble
 #' @export
@@ -120,8 +120,8 @@ textCentrality <- function(words,
 #' as well as tibble with processed data used to plot.
 #' @seealso See \code{\link{textCentrality}} and \code{\link{textProjection}}.
 #' @examples
-#' #Plot a centrality plot from the dataframe df_for_plotting 
-#' #that is returned by the textCentrality function. 
+#' #Plot a centrality plot from the dataframe df_for_plotting
+#' #that is returned by the textCentrality function.
 #' \dontrun{
 #' textCentralityPlot(
 #'   df_for_plotting,
@@ -155,7 +155,7 @@ textCentrality <- function(words,
 #'   seed = 1007
 #' )
 #' }
-#' 
+#'
 #' @importFrom dplyr arrange slice filter between left_join transmute mutate case_when
 #' @importFrom ggplot2 position_jitter element_text element_blank coord_fixed theme
 #' theme_void theme_minimal aes labs scale_color_identity
@@ -320,7 +320,7 @@ textCentralityPlot <- function(word_data,
         title.position = "top",
         direction = "horizontal",
         label.position = "bottom",
-        ggplot2::element_text(color = titles_color)
+        title.theme = ggplot2::element_text(color = titles_color)
       )
     ) +
 

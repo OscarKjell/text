@@ -21,19 +21,19 @@ cosines <- function(x, y) {
 #' (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.
 #' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered)
 #' columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.
-#' @return A vector comprising semantic similarity scores. The closer the value is to 1 when using the default method, "cosine", the higher the semantic similarity.  
+#' @return A vector comprising semantic similarity scores. The closer the value is to 1 when using the default method, "cosine", the higher the semantic similarity.
 #' @examples
-#' #Compute the semantic similarity between the embeddings from "harmonytext" and "satisfactiontext". 
+#' #Compute the semantic similarity between the embeddings from "harmonytext" and "satisfactiontext".
 #' \dontrun{
 #' similarity_scores <- textSimilarity(
 #'   x = word_embeddings_4$texts$harmonytext,
 #'   y = word_embeddings_4$texts$satisfactiontext
 #' )
-#' 
+#'
 #' #Show information about how similarity_scores were constructed.
 #' comment(similarity_scores)
 #' }
-#' @seealso See \code{\link{textDistance}} and \code{\link{textSimilarityNorm}}. 
+#' @seealso See \code{\link{textDistance}} and \code{\link{textSimilarityNorm}}.
 #' @export
 textSimilarity <- function(x,
                            y,
@@ -100,24 +100,24 @@ textSimilarity <- function(x,
 #' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the embedding mean
 #' (omitting NAs) of x from each of its dimension, and if center is FALSE, no centering is done.
 #' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the
-#' (centered) embedding dimensions by the standard deviation of the embedding if center is TRUE, 
+#' (centered) embedding dimensions by the standard deviation of the embedding if center is TRUE,
 #'  and the root mean square otherwise.
 #' @return A vector comprising semantic distance scores.
 #' @examples
-#' #Compute the semantic distance score between the embeddings 
-#' #from "harmonytext" and "satisfactiontext". 
-#' 
+#' #Compute the semantic distance score between the embeddings
+#' #from "harmonytext" and "satisfactiontext".
+#'
 #' \dontrun{
 #' distance_scores <- textDistance(
 #'   x = word_embeddings_4$texts$harmonytext,
 #'   y = word_embeddings_4$texts$satisfactiontext
 #' )
-#' 
+#'
 #' #Show information about how distance_scores were constructed.
-#' 
+#'
 #' comment(distance_scores)
 #' }
-#' @seealso See  \code{\link{textSimilarity}} and \code{\link{textSimilarityNorm}}. 
+#' @seealso See  \code{\link{textSimilarity}} and \code{\link{textSimilarityNorm}}.
 #' @export
 textDistance <- function(x,
                          y,
@@ -172,24 +172,67 @@ textDistance <- function(x,
 #' round(similarity_scores, 3)
 #' @seealso see \code{\link{textSimilarityNorm}}
 #' @export
-textSimilarityMatrix <- function(x,
-                                 method = "cosine",
-                                 center = TRUE,
-                                 scale = FALSE) {
-  ss_matrix <- matrix(nrow = nrow(x), ncol = nrow(x))
+textSimilarityMatrix <- function(
+    x,
+    method = "cosine",
+    center = TRUE,
+    scale = FALSE
+) {
+  # Extract a numeric matrix
+  X <- as.matrix(dplyr::select(x, dplyr::starts_with("Dim")))
 
-  for (i in seq_len(nrow(x))) {
-    for (j in seq_len(nrow(x))) {
-      ss_matrix[i, j] <- text::textSimilarity(
-        x[i, ],
-        x[j, ],
-        method,
-        scale = scale,
-        center = center
+  # Normalise if needed
+  if (scale || center) {
+    # `apply()` returns it transposed (and that's by design)
+    X <- t(
+      apply(
+        X,
+        1,
+        function(row) scale(row, center = center, scale = scale),
+        simplify = TRUE
       )
-    }
+    )
   }
-  ss_matrix
+
+  # Correlations
+  if (method == "spearman" | method == "pearson") {
+    S <- as.matrix(cor(t(X), method = method))
+    # For unification: let dimension names be missing regardless of the method used
+    dimnames(S) <- NULL
+  }
+
+  # Cosine similarity
+  else if (method == "cosine") {
+    # A vector of row norms `||r||`
+    norms <- sqrt(rowSums(X^2, na.rm = TRUE))
+    S <- (X %*% t(X)) / (norms %*% t(norms))
+    dimnames(S) <- NULL
+  }
+
+  # Traditional built-in distance metrics
+  else if (method %in% c(
+    "euclidean", "maximum", "manhattan",
+    "canberra", "binary", "minkowski"
+  )) {
+    S <- 1 - as.matrix(dist(X, method = method))
+    dimnames(S) <- NULL
+  }
+
+  # Throw an error if the method didn't match
+  else {
+    stop(sprintf("Unknown method: %s", method))
+  }
+
+  # Add embedding metadata
+  embedding_descriptions <- comment(x)
+  comment(S) <- paste(
+    "Text collection embedding = ", embedding_descriptions,
+    "method = ", method,
+    "center = ", center,
+    "scale = ", scale,
+    sep = ".", collapse = " "
+  )
+  return(S)
 }
 
 #' Compute semantic distance scores between all combinations in a word embedding
@@ -200,24 +243,61 @@ textSimilarityMatrix <- function(x,
 #' round(distance_scores, 3)
 #' @seealso see \code{\link{textDistanceNorm}}
 #' @export
-textDistanceMatrix <- function(x,
-                               method = "euclidean",
-                               center = FALSE,
-                               scale = FALSE) {
-  ss_matrix <- matrix(nrow = nrow(x), ncol = nrow(x))
+textDistanceMatrix <- function(
+    x,
+    method = "euclidean",
+    center = FALSE,
+    scale = FALSE
+) {
+  # Extract a numeric matrix
+  X <- as.matrix(dplyr::select(x, dplyr::starts_with("Dim")))
 
-  for (i in seq_len(nrow(x))) {
-    for (j in seq_len(nrow(x))) {
-      ss_matrix[i, j] <- text::textDistance(
-        x[i, ],
-        x[j, ],
-        method,
-        center = center,
-        scale = scale
+  # Normalise if needed
+  if (scale || center) {
+    # `apply()` returns it transposed (and that's by design)
+    X <- t(
+      apply(
+        X,
+        1,
+        function(row) scale(row, center = center, scale = scale),
+        simplify = TRUE
       )
-    }
+    )
   }
-  ss_matrix
+
+  # Traditional built-in distance metrics
+  if (method %in% c(
+    "euclidean", "maximum", "manhattan",
+    "canberra", "binary", "minkowski"
+  )) {
+    S <- as.matrix(dist(X, method = method))
+    # For unification: let dimension names be missing regardless of the method used
+    dimnames(S) <- NULL
+  }
+
+  # Cosine distance
+  else if (method == "cosine") {
+    # A vector of row norms `||r||`
+    norms <- sqrt(rowSums(X^2, na.rm = TRUE))
+    S <- 1 - (X %*% t(X)) / (norms %*% t(norms))
+    dimnames(S) <- NULL
+  }
+
+  # Throw an error if the method didn't match
+  else {
+    stop(sprintf("Unknown method: %s", method))
+  }
+
+  # Add embedding metadata
+  embedding_descriptions <- comment(x)
+  comment(S) <- paste(
+    "Text collection embedding = ", embedding_descriptions,
+    "method = ", method,
+    "center = ", center,
+    "scale = ", scale,
+    sep = ".", collapse = " "
+  )
+  return(S)
 }
 
 

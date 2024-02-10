@@ -56,24 +56,48 @@ textrpp_install <- function(conda = "auto",
   # Set system specific default versions
   if (rpp_version[[1]] == "rpp_version_system_specific_defaults") {
     if (is_osx() | is_linux()) {
-      rpp_version <- c("torch==2.0.0",
-                       "transformers==4.19.2",
-                       "numpy",
-                       "pandas",
-                       "nltk==3.6.7",
-                       "scikit-learn",
-                       "datasets==2.9.0",
-                       "evaluate")
+      rpp_version <- c(
+
+        "torch==2.0.0",
+        "transformers==4.36.0",
+        "numpy==1.26.0",
+        "pandas==2.0.3",
+        "nltk==3.6.7",
+        "scikit-learn==1.3.0",
+        "datasets==2.16.1", # 2.9.0
+        "evaluate==0.4.0",
+        "accelerate==0.26.0", ### ==0.20.1 from 0.20.1
+
+        "bertopic==0.16.0", ### 0.15.0
+        "jsonschema==4.19.2",
+        "sentence-transformers==2.2.2",
+        "flair==0.13.0",
+        "umap-learn==0.5.4",
+        "hdbscan==0.8.33"#,
+#        "numba==0.58.1"
+
+      )
     }
     if (is_windows()) {
-      rpp_version <- c("torch==2.0.0",
-                       "transformers==4.19.2",
-                       "numpy",
-                       "pandas",
-                       "nltk==3.6.7",
-                       "scikit-learn",
-                       "datasets==2.9.0",
-                       "evaluate")
+      rpp_version <- c(
+        "torch==2.0.0",
+        "transformers==4.36.0",
+        "numpy==1.26.0",
+        "pandas==2.0.3",
+        "nltk==3.6.7",
+        "scikit-learn==1.3.0",
+        "datasets==2.16.1",      ### works with 2.9.0
+        "evaluate==0.4.0",
+        "accelerate==0.26.0",    ### works with no version.
+
+         "bertopic==0.16.0",     ### works with 0.15.0
+         "jsonschema==4.19.2",
+         "sentence-transformers==2.2.2",
+         "flair==0.13.0",
+         "umap-learn==0.5.4",
+         "hdbscan==0.8.33"#,
+#        "numba==0.58.1"
+      )
     }
   }
 
@@ -374,37 +398,6 @@ textrpp_uninstall <- function(conda = "auto",
   cat("\nUninstallation complete.\n\n")
 
   invisible(NULL)
-}
-
-
-text_install_miniconda <- function() {
-  if (is_osx()) {
-    message("Downloading installation script")
-    system(paste(
-      "curl https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o ~/miniconda.sh;",
-      "echo \"Running installation script\";",
-      "bash ~/miniconda.sh -b -p $HOME/miniconda"
-    ))
-    system('echo \'export PATH="$PATH:$HOME/miniconda/bin"\' >> $HOME/.bash_profile; rm ~/miniconda.sh')
-    message(colourise(
-      "Installation of miniconda complete",
-      fg = "green", bg = NULL
-    ))
-  } else if (is_linux()) {
-    message("Downloading installation script")
-    system(paste(
-      "wget -nv https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh;",
-      "echo \"Running installation script\";",
-      "bash ~/miniconda.sh -b -p $HOME/miniconda"
-    ))
-    system('echo \'export PATH="$PATH:$HOME/miniconda/bin"\' >> $HOME/.bashrc; rm ~/miniconda.sh')
-    message(colourise(
-      "Installation of miniconda complete",
-      fg = "green", bg = NULL
-    ))
-  } else {
-    stop("miniconda installation is available only for Mac or Linux")
-  }
 }
 
 

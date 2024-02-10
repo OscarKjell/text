@@ -317,13 +317,13 @@ def hgTransformerGetTextGeneration(text_strings,
                             return_incorrect_results = False,
                             set_seed = None,
                             return_tensors = False,
-                            return_text = True,
+                            #return_text = True,
                             return_full_text = True,
                             clean_up_tokenization_spaces = False,
                             prefix = '', 
                             handle_long_generation = None):
     if return_tensors:
-        if return_text or return_full_text:
+        if return_full_text:
             print("Warning: you set return_tensors and return_text (or return_full_text)")
             print("         Returning tensors only, as you cannot return both tensors and text.")
             print("         Please set return_tensors = FALSE if you need the generated text.")
@@ -348,8 +348,8 @@ def hgTransformerGetTextGeneration(text_strings,
                             logging_level = logging_level,
                             return_incorrect_results = return_incorrect_results,
                             set_seed = set_seed,
-                            return_tensors = return_tensors, 
-                            return_text = return_text, 
+                            #return_tensors = return_tensors, 
+                            #return_text = return_text, 
                             return_full_text = return_full_text, 
                             clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
                             prefix = prefix,
