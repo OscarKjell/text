@@ -903,15 +903,10 @@ implicit_motives_results <- function(model_reference,
   
   if (grepl("power", lower_case_model)){
     column_name <- "power"
-  }
-  else if (grepl("affiliation", lower_case_model)){
+  } else if (grepl("affiliation", lower_case_model)){
     column_name <- "affiliation"
-  }
-  else if (grepl("achievement", lower_case_model)){
+  } else if (grepl("achievement", lower_case_model)){
     column_name <- "achievement"
-  }
-  else if (model_reference == "achievment" | model_reference == "power" | model_reference == "affiliation" ){
-    column_name <- model_reference
   }
   
   if (length(texts) != length(user_id)) {
