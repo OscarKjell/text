@@ -1094,6 +1094,14 @@ textTrainRegression <- function(x,
     remove("xy_all", envir = env_final_recipe)
     remove("final_recipe", envir = env_final_recipe)
     
+    if(exists("xy_all", envir = .GlobalEnv)) {
+      remove("xy_all", envir = .GlobalEnv)
+    }
+    
+    if(exists("final_recipe", envir = .GlobalEnv)) {
+      remove("final_recipe", envir = .GlobalEnv)
+    }
+    
     return(preprocessing_recipe_save)
   }
   
@@ -1169,8 +1177,18 @@ textTrainRegression <- function(x,
       }
     }
     )
+    
     remove("final_recipe", envir = env_final_model)
     remove("xy_all", envir = env_final_model)
+    
+    if(exists("xy_all", envir = .GlobalEnv)) {
+      remove("xy_all", envir = .GlobalEnv)
+    }
+    
+    if(exists("final_recipe", envir = .GlobalEnv)) {
+      remove("final_recipe", envir = .GlobalEnv)
+    }
+    
     return(final_predictive_model)
   }
 
