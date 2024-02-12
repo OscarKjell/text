@@ -103,7 +103,7 @@ add_variables_to_we <- function(word_embeddings,
                                 data,
                                 append_first = FALSE) {
   # Add Names to new Variables
-  colnames(data) <- paste("Dim0", "_", colnames(data), sep = "") # 1:ncol(data),
+  colnames(data) <- paste("Dim0", "_", colnames(data), sep = "")
 
   # Remove single_we if exist
   word_embeddings$singlewords_we <- NULL
@@ -142,7 +142,7 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
 
   if (!is.null(x)) {
     # In case the embedding is in list form get the tibble form
-    if (!tibble::is_tibble(x) & length(x) == 1) {
+    if (!tibble::is_tibble(x) && length(x) == 1) {
       x1 <- x[[1]]
       # Get names for description
       x_name <- names(x)
@@ -150,7 +150,7 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
       embedding_description <- comment(x[[1]])
       # In case there are several embeddings in list form get the x_names and
       # embedding description for model description
-    } else if (!tibble::is_tibble(x) & length(x) > 1) {
+    } else if (!tibble::is_tibble(x) && length(x) > 1) {
       x_name <- names(x)
       x_name <- paste(x_name, sep = " ", collapse = " & ")
       x_name <- paste("input:", x_name, sep = " ", collapse = " ")
@@ -181,7 +181,7 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
   ############ Arranging word embeddings to be concatenated from different texts ############
   ##################################################
 
-  if (!tibble::is_tibble(x) & length(x) > 1) {
+  if (!tibble::is_tibble(x) && length(x) > 1) {
     # Select all variables that starts with Dim in each dataframe of the list.
     xlist <- lapply(x, function(X) {
       X <- dplyr::select(X, dplyr::starts_with("Dim"))
@@ -295,9 +295,9 @@ path_exist_download_files <- function(wanted_file) {
   )
 
   # Check if already downloaded; and if not, download
-  if (startsWith(wanted_file, "http:") |
-    startsWith(wanted_file, "https:") |
-    startsWith(wanted_file, "www.")) {
+  if (startsWith(wanted_file, "http:") ||
+        startsWith(wanted_file, "https:") ||
+      startsWith(wanted_file, "www.")) {
     # Get file names to check if already downloaded
     file_name <- basename(wanted_file)
 
@@ -306,13 +306,13 @@ path_exist_download_files <- function(wanted_file) {
       utils::download.file(
         url = wanted_file,
         destfile = paste(system.file("extdata/",
-          "", # file_name,
-          # envir = NULL,
-          package = "text",
-          mustWork = TRUE
-        ), "/", file_name, sep = ""),
+                                     "", # file_name,
+                                     # envir = NULL,
+                                     package = "text",
+                                     mustWork = TRUE
+                                     ), "/", file_name, sep = ""),
         method = "auto"
-      )
+        )
     }
 
     path_to_file <- system.file("extdata/",
@@ -331,31 +331,6 @@ path_exist_download_files <- function(wanted_file) {
   }
   return(path_to_file)
 }
-
-# #' Takes all words as input and arrange them in column with an accompanying column with frequency.
-# #' @param words Words
-# #' @return Column with all words and an accompanying column with their frequency.
-# #' @importFrom tibble as_tibble
-# #' @noRd
-# unique_freq_words <- function(words) {
-#   # Make all words lower case
-#   words <- tolower(words)
-#
-#   # separate words/tokens combined with /
-#   words <- gsub("/", " ", words)
-#
-#   # Tokenize with nltk
-#   nltk <- reticulate::import("nltk")
-#   tokenizerNLTK <- nltk$tokenize$word_tokenize
-#   words_group <- unlist(lapply(words, tokenizerNLTK))
-#
-#   words_groupb <- tibble::as_tibble(words_group)
-#   sort(words_groupb$value)
-#   words_groupb <- table(words_groupb)
-#   words_groupb_freq <- tibble::as_tibble(words_groupb, .name_repair = make.names)
-#   colnames(words_groupb_freq) <- c("words", "n")
-#   words_groupb_freq
-# }
 
 #' Make x and y into same length for when we will randomly draw K-folds from them
 #' Function to add rows of NA until y and x have the same number of rows.
@@ -435,7 +410,7 @@ add_variables_to_we <- function(word_embeddings,
                                 data,
                                 append_first = FALSE) {
   # Add Names to new Variables
-  colnames(data) <- paste("Dim0", "_", colnames(data), sep = "") # 1:ncol(data),
+  colnames(data) <- paste("Dim0", "_", colnames(data), sep = "")
 
   # Remove single_we if exist
   word_embeddings$singlewords_we <- NULL
@@ -474,7 +449,7 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
 
   if (!is.null(x)) {
     # In case the embedding is in list form get the tibble form
-    if (!tibble::is_tibble(x) & length(x) == 1) {
+    if (!tibble::is_tibble(x) && length(x) == 1) {
       x1 <- x[[1]]
       # Get names for description
       x_name <- names(x)
@@ -482,7 +457,7 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
       embedding_description <- comment(x[[1]])
       # In case there are several embeddings in list form get the x_names and
       # embedding description for model description
-    } else if (!tibble::is_tibble(x) & length(x) > 1) {
+    } else if (!tibble::is_tibble(x) && length(x) > 1) {
       x_name <- names(x)
       x_name <- paste(x_name, sep = " ", collapse = " & ")
       x_name <- paste("input:", x_name, sep = " ", collapse = " ")
@@ -513,7 +488,7 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
   ############ Arranging word embeddings to be concatenated from different texts ############
   ##################################################
 
-  if (!tibble::is_tibble(x) & length(x) > 1) {
+  if (!tibble::is_tibble(x) && length(x) > 1) {
     # Select all variables that starts with Dim in each dataframe of the list.
     xlist <- lapply(x, function(X) {
       X <- dplyr::select(X, dplyr::starts_with("Dim"))
@@ -627,9 +602,9 @@ path_exist_download_files <- function(wanted_file) {
   )
 
   # Check if already downloaded; and if not, download
-  if (startsWith(wanted_file, "http:") |
-    startsWith(wanted_file, "https:") |
-    startsWith(wanted_file, "www.")) {
+  if (startsWith(wanted_file, "http:") ||
+      startsWith(wanted_file, "https:") ||
+      startsWith(wanted_file, "www.")) {
     # Get file names to check if already downloaded
     file_name <- basename(wanted_file)
 
@@ -677,7 +652,6 @@ path_exist_download_files <- function(wanted_file) {
 #' @noRd
 implicit_motives <- function(texts, user_id, predicted_scores2) {
   # Create a table with the number of sentences per user
-  # table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
   table_uniques2 <- table(user_id[1:length(user_id)])
 
 
@@ -872,17 +846,6 @@ implicit_motives_results <- function(model_reference,
                                      predicted_scores2,
                                      texts,
                                      dataset) {
-  #### Make sure there is just one sentence per user_id ####
-
-  # prepare dataframe for update_user_and_texts function
-  # id_and_texts <- data.frame(user_id = user_id, texts = texts)
-
-  # correct for multiple sentences per row. # CORRECT
-  # update_user_and_texts <- update_user_and_texts(id_and_texts)
-  # update user_id
-  # user_id = update_user_and_texts$user_id
-  # update texts
-  # texts = update_user_and_texts$texts
 
   #### Assign correct column name ####
   lower_case_model <- tolower(model_reference)
@@ -893,7 +856,9 @@ implicit_motives_results <- function(model_reference,
     column_name <- "affiliation"
   } else if (grepl("achievement", lower_case_model)) {
     column_name <- "achievement"
-  } else if (model_reference == "achievment" | model_reference == "power" | model_reference == "affiliation") {
+  } else if (model_reference == "achievment" ||
+             model_reference == "power" ||
+             model_reference == "affiliation") {
     column_name <- model_reference
   }
 
@@ -919,7 +884,8 @@ implicit_motives_results <- function(model_reference,
   # Two different summary lists depending on if including the dataset with integrated predictions or not
   if (is.null(dataset)) {
     # Summarize all predictions
-    summary_list <- list(sentence_predictions = predicted_scores2, person_predictions = predicted)
+    summary_list <- list(sentence_predictions = predicted_scores2,
+                         person_predictions = predicted)
   } else {
     # predicted_scores2 = sentence predictions, predicted = person predictions
     to_insert <- list(predicted_scores2, predicted)
@@ -927,7 +893,9 @@ implicit_motives_results <- function(model_reference,
     integrated_dataset <- bind_data(dataset, to_insert)
 
     # Summarize all predictions
-    summary_list <- list(sentence_predictions = predicted_scores2, person_predictions = predicted, dataset = integrated_dataset)
+    summary_list <- list(sentence_predictions = predicted_scores2,
+                         person_predictions = predicted,
+                         dataset = integrated_dataset)
   }
 
   # Display message to user

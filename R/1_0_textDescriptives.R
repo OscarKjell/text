@@ -96,7 +96,6 @@ textDescriptives <- function(words,
     collapse_text_df <- as.data.frame(table(collapse_text))
 
     collapse_text_df_freqs1 <- collapse_text_df$Freq / sum(collapse_text_df$Freq)
-    # collapse_text_df_freqs1 <- freqs.empirical(collapse_text_df$Freq)
 
     # entropy.empirical estimates the Shannon entropy H of the random
     # variable Y from the corresponding observed counts y by plug-in of the empirical frequencies.

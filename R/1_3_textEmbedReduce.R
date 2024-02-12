@@ -64,7 +64,7 @@ check_reduce <- function(embeddings) {
   )
 
   # stop if no support
-  if (!model_name == "roberta-base" | !layer_name == "11") {
+  if (!model_name == "roberta-base" || !layer_name == "11") {
     stop("Embedding reduction is currently only supported for roberta-base layer 11")
   }
 }
@@ -80,7 +80,6 @@ check_reduce <- function(embeddings) {
 #' @return Returns embeddings with reduced number of dimensions.
 #' @examples
 #' \dontrun{
-# 10 + 10
 #' embeddings <- textEmbedReduce(word_embeddings_4$texts)
 #' }
 #' @seealso \code{\link{textEmbed}}
@@ -98,7 +97,8 @@ check_reduce <- function(embeddings) {
 textEmbedReduce <- function(
     embeddings,
     n_dim = NULL,
-    scalar = "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv",
+    scalar = "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/
+    master/models/fb20/scalar.csv",
     pca = "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/rpca_roberta_768_D_20.csv") {
   ### Get the right cvs library(text)
 

@@ -9,7 +9,6 @@
 textModels <- function() {
   reticulate::source_python(system.file("python",
     "textModelPy.py",
-    # envir = NULL,
     package = "text",
     mustWork = TRUE
   ))
@@ -58,7 +57,6 @@ textModelLayers <- function(target_model) {
 textModelsRemove <- function(target_model) {
   reticulate::source_python(system.file("python",
     "textModelPy.py",
-    # envir = NULL,
     package = "text",
     mustWork = TRUE
   ))

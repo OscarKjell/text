@@ -219,16 +219,14 @@ set_textrpp_python_option <- function(python_executable = NULL,
     message(colourise(message_text1,
       fg = "blue", bg = NULL
     ))
-  }
-  # a user can specify only one
-  else if (sum(!is.null(c(python_executable, virtualenv, condaenv))) > 1) {
+    # a user can specify only one
+  } else if (sum(!is.null(c(python_executable, virtualenv, condaenv))) > 1) {
     stop(paste(
       "Too many python environments are specified, please select only one",
       "from python_executable, virtualenv, and condaenv"
     ))
-  }
-  # give warning when nothing is specified
-  else if (sum(!is.null(c(python_executable, virtualenv, condaenv))) == 1) {
+    # give warning when nothing is specified
+  } else if (sum(!is.null(c(python_executable, virtualenv, condaenv))) == 1) {
     if (!is.null(python_executable)) {
       if (check_textrpp_model(python_executable) != "OK") {
         stop("Text required python packages ", " are not installed in ", python_executable)
@@ -243,8 +241,8 @@ set_textrpp_python_option <- function(python_executable = NULL,
       options(textrpp_condaenv = condaenv)
     }
   } else if (check_env &&
-    !(is.null(tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL))) &&
-    "textrpp_condaenv" %in% reticulate::conda_list(conda = "auto")$name) {
+               !(is.null(tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL))) &&
+               "textrpp_condaenv" %in% reticulate::conda_list(conda = "auto")$name) {
     message(colourise(
       "Found 'textrpp_condaenv'. text will use this environment \n",
       fg = "green", bg = NULL

@@ -25,7 +25,7 @@ semanticrepresentation <- function(x,
   # If empty return a "semantic representation" with NA
   if (length(x) == 0) {
     x2 <- data.frame(matrix(ncol = length(single_word_embeddings2 %>%
-      dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
+                                            dplyr::select(dplyr::starts_with("Dim"))), nrow = 1))
     x2 <- as.numeric(x2)
   } else {
     # Create a matrix with all the semantic representations using the applysemrep function
@@ -40,7 +40,7 @@ semanticrepresentation <- function(x,
     # If all values are 0 they should be NA instead; otherwise return the semantic representation.
     if (all(x2 == 0 | x2 == Inf | x2 == -Inf | is.nan(x2)) == TRUE) {
       dim_length <- length(single_word_embeddings2 %>%
-        dplyr::select(dplyr::starts_with("Dim")))
+                             dplyr::select(dplyr::starts_with("Dim")))
 
       x2 <- data.frame(t(rep(NA_real_, dim_length))) # tibble::as_tibble
       colnames(x2) <- paste0("Dim", sep = "", seq_len(dim_length))
@@ -78,7 +78,7 @@ applysemrep <- function(x,
     # of dimensions as columns with Dim
   } else {
     dim_length <- length(single_word_embeddings1 %>%
-      dplyr::select(dplyr::starts_with("Dim")))
+                           dplyr::select(dplyr::starts_with("Dim")))
 
     wordrep <- data.frame(t(rep(NA_real_, dim_length)))
 
@@ -173,10 +173,10 @@ textEmbedStatic <- function(df,
   for (i in seq_len(length(df_characters))) {
     # Apply the semantic representation function to all rows; transpose the resulting matrix and making a tibble
     df_output <- data.frame(t(sapply(df_characters[[i]],
-      semanticrepresentation,
-      single_word_embeddings2,
-      aggregation_from_tokens_to_texts,
-      single_word_embeddings1 = single_word_embeddings1
+                                     semanticrepresentation,
+                                     single_word_embeddings2,
+                                     aggregation_from_tokens_to_texts,
+                                     single_word_embeddings1 = single_word_embeddings1
     )))
 
 
