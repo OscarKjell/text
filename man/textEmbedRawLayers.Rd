@@ -2,7 +2,8 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textEmbedRawLayers}
 \alias{textEmbedRawLayers}
-\title{Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.}
+\title{Extract layers of hidden states (word embeddings) for all character variables
+in a given dataframe.}
 \usage{
 textEmbedRawLayers(
   texts,
@@ -23,13 +24,14 @@ textEmbedRawLayers(
 \arguments{
 \item{texts}{A character variable or a tibble with at least one character variable.}
 
-\item{model}{(character) Character string specifying pre-trained language model (default = 'bert-base-uncased').
- For full list of options see pretrained models at
+\item{model}{(character) Character string specifying pre-trained language model
+(default = 'bert-base-uncased'). For full list of options see pretrained models at
  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
  For example use "bert-base-multilingual-cased", "openai-gpt",
-"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
-"roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
- malicious model can execute arbitrary code on your computer).}
+"gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024",
+"distilbert-base-cased", "roberta-base", or "xlm-roberta-base". Only load models that
+you trust from HuggingFace; loading a malicious model can execute arbitrary code on
+your computer).}
 
 \item{layers}{(character or numeric) Specify the layers that should be extracted
 (default -2, which give the second to last layer). It is more efficient to only extract the
@@ -38,25 +40,29 @@ or all by setting this parameter to "all". Layer 0 is the decontextualized input
 (i.e., not comprising hidden states) and thus should normally not be used. These layers can then
  be aggregated in the textEmbedLayerAggregation function.}
 
-\item{return_tokens}{(boolean) If TRUE, provide the tokens used in the specified transformer model. (default = TRUE)}
+\item{return_tokens}{(boolean) If TRUE, provide the tokens used in the specified transformer
+model. (default = TRUE)}
 
-\item{word_type_embeddings}{(boolean) Wether to provide embeddings for each word/token type. (default = FALSE)}
+\item{word_type_embeddings}{(boolean) Wether to provide embeddings for each word/token type.
+(default = FALSE)}
 
-\item{decontextualize}{(boolean) Wether to dectonextualise embeddings (i.e., embedding one word at a time). (default = TRUE)}
+\item{decontextualize}{(boolean) Wether to dectonextualise embeddings (i.e., embedding one word
+at a time). (default = TRUE)}
 
 \item{keep_token_embeddings}{(boolean) Whether to keep token level embeddings in the output
 (when using word_types aggregation). (default= TRUE)}
 
-\item{device}{(character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-specific device number. (default = "cpu")}
+\item{device}{(character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+for MacOS, where k is a specific device number. (default = "cpu")}
 
-\item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism. (default = FALSE).}
+\item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism.
+(default = FALSE).}
 
-\item{model_max_length}{The maximum length (in number of tokens) for the inputs to the transformer model
-(default the value stored for the associated model).}
+\item{model_max_length}{The maximum length (in number of tokens) for the inputs to the
+transformer model (default the value stored for the associated model).}
 
-\item{max_token_to_sentence}{(numeric) Maximum number of tokens in a string to handle before switching to embedding
-text sentence by sentence. (default= 4)}
+\item{max_token_to_sentence}{(numeric) Maximum number of tokens in a string to handle before
+switching to embedding text sentence by sentence. (default= 4)}
 
 \item{logging_level}{(character) Set the logging level. (default ="error")
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
@@ -64,19 +70,20 @@ Options (ordered from less logging to more logging): critical, error, warning, i
 \item{sort}{(boolean) If TRUE sort the output to tidy format. (default = TRUE)}
 }
 \value{
-The textEmbedRawLayers() takes text as input, and returns the hidden states for each token of the text,
-including the [CLS] and the [SEP].
+The textEmbedRawLayers() takes text as input, and returns the hidden states for
+each token of the text, including the [CLS] and the [SEP].
 Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 }
 \description{
-Extract layers of hidden states (word embeddings) for all character variables in a given dataframe.
+Extract layers of hidden states (word embeddings) for all character variables
+in a given dataframe.
 }
 \examples{
 # Get hidden states of layer 11 and 12 for "I am fine".
 \dontrun{
 imf_embeddings_11_12 <- textEmbedRawLayers(
-                                  "I am fine",
-                                  layers = 11:12
+  "I am fine",
+  layers = 11:12
 )
 
 # Show hidden states of layer 11 and 12.

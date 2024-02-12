@@ -31,9 +31,22 @@ utils::globalVariables(c(
   "predictions", "truth", "value", ".pred_1", ".pred_2",
   "data_train",
   "textTrainCVpredictions", "textTrainCVpredictionsRF",
+  "strata",
+
+  # textTrainNPlot
+  "sample_size", "percent", "std",
 
   # textPredcitTest
   "stats_on_bootstrap",
+
+  # textPredict
+  ":=",
+
+  # implicit motives
+  "resid",
+
+  # Similarity
+  "dist",
 
   # Language Tasks
   "NamesNer",
@@ -61,5 +74,16 @@ utils::globalVariables(c(
   "word_data_extrem_min_PC1", "word_data_extrem_min_PC2", "word_data_frequency", "n_g1.x", "n_g2.x",
   "centrality", "projection", "superviced",
   "x_plotted", "y_plotted", "mixture_mode", "penalty_mode",
-  "tokens"
+  "tokens",
+
+  # Finetuning
+  "hgTransformerMLM",
+
+
+  ### BertTopic
+  # create_plots:
+  "Word", "phi", "scale_size_area", "create_bertopic_model", "name_cols_with_vocab",
+  "topics_corr_grouping", "extract_topic_stats_corr",
+  "adjust.p_value", "mean_group_1", "mean_group_2", "sort_stats_tibble", "label_1", "top_terms"
+
 ))

@@ -86,7 +86,7 @@ df_for_plotting <- textProjection(
   Npermutations = 10,
   n_per_split = 1
 )
-#Run df_for_plotting to examine result.
+# Run df_for_plotting to examine result.
 df_for_plotting
 }
 }

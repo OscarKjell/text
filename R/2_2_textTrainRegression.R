@@ -68,7 +68,7 @@ fit_model_rmse <- function(object,
     if (!impute_missing) {
       xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
     } else if (impute_missing) {
-      xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10) # , skip = TRUE
+      xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10)
     }
 
     if (preprocess_step_center) {
@@ -114,7 +114,7 @@ fit_model_rmse <- function(object,
     if (!impute_missing) {
       xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
     } else if (impute_missing) {
-      xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10) # , skip = TRUE
+      xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10)
     }
 
     if (preprocess_step_center) {
@@ -149,7 +149,7 @@ fit_model_rmse <- function(object,
 
   # Figure out how many predictors to know whether to use simple or multiple regression, which
   # depend on number of of PCA components that are retrived and/or whether first_n_predictors is used
-  if (!is.na(first_n_predictors) & is.na(preprocess_PCA)) {
+  if (!is.na(first_n_predictors) && is.na(preprocess_PCA)) {
     # Get number of predictors from receipe
     nr_predictors <- table(xy_recipe_prep[[1]]$role)[["predictor"]]
   } else if (!is.na(preprocess_PCA)) {
@@ -158,7 +158,7 @@ fit_model_rmse <- function(object,
     nr_predictors <- recipes::juice(xy_recipe_prep)
     # Count number of PCAs
     nr_predictors <- length(grep(x = colnames(nr_predictors), pattern = "PC"))
-  } else if (is.na(preprocess_PCA) & is.na(first_n_predictors)) {
+  } else if (is.na(preprocess_PCA) && is.na(first_n_predictors)) {
     nr_predictors <- recipes::juice(xy_recipe_prep)
     nr_predictors <- length(nr_predictors) - 2
   }
@@ -227,7 +227,7 @@ fit_model_rmse <- function(object,
     holdout_pred <-
       stats::predict(mod, xy_testing) %>%
       dplyr::bind_cols(rsample::assessment(object) %>%
-        dplyr::select(y, id_nr))
+                         dplyr::select(y, id_nr))
 
     # Get RMSE; eval_measure = "rmse" library(tidyverse)
     eval_result <- select_eval_measure_val(eval_measure,
@@ -244,13 +244,13 @@ fit_model_rmse <- function(object,
     holdout_pred_class <-
       stats::predict(mod, xy_testing, type = c("class")) %>%
       dplyr::bind_cols(rsample::assessment(object) %>%
-        dplyr::select(y, id_nr))
+                         dplyr::select(y, id_nr))
 
 
     holdout_pred <-
       stats::predict(mod, xy_testing, type = c("prob")) %>%
       dplyr::bind_cols(rsample::assessment(object) %>%
-        dplyr::select(y, id_nr))
+                         dplyr::select(y, id_nr))
 
     holdout_pred$.pred_class <- holdout_pred_class$.pred_class
 
@@ -282,13 +282,13 @@ fit_model_rmse <- function(object,
     holdout_pred_class <-
       stats::predict(mod, xy_testing, type = c("class")) %>%
       dplyr::bind_cols(rsample::assessment(object) %>%
-        dplyr::select(y, id_nr))
+                         dplyr::select(y, id_nr))
 
 
     holdout_pred <-
       stats::predict(mod, xy_testing, type = c("prob")) %>%
       dplyr::bind_cols(rsample::assessment(object) %>%
-        dplyr::select(y, id_nr))
+                         dplyr::select(y, id_nr))
 
     holdout_pred$.pred_class <- holdout_pred_class$.pred_class
 
@@ -559,44 +559,13 @@ summarize_tune_results <- function(object,
 }
 
 
-
-# x = word_embeddings_4$texts$harmonytext
-# y = Language_based_assessment_data_8$hilstotal
-#
-# x_append = NULL
-# append_first = FALSE
-# cv_method = "validation_split"
-# outside_folds = 10
-# inside_folds = 3 / 4
-# strata = "y"
-# outside_strata = TRUE
-# outside_breaks = 4
-# inside_strata = TRUE
-# inside_breaks = 4
-# model = "regression"
-# eval_measure = "default"
-# preprocess_step_center = TRUE
-# preprocess_step_scale = TRUE
-# preprocess_PCA = NA
-# penalty = 10^seq(-16, 16)
-# mixture = c(0)
-# first_n_predictors = NA
-# impute_missing = FALSE
-# method_cor = "pearson"
-# model_description = "Consider writing a description of your model here"
-# multi_cores = "multi_cores_sys_default"
-# save_output = "all"
-# simulate.p.value = FALSE
-# seed = 2020
-
-
-
 #' Train word embeddings to a numeric variable.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
 #' provided in a list they will be concatenated.
 #' @param y Numeric variable to predict.
-#' @param x_append (optional) Variables to be appended after the word embeddings (x); if wanting to preappend them before
-#' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL (default = NULL).
+#' @param x_append (optional) Variables to be appended after the word embeddings (x);
+#' if wanting to preappend them before the word embeddings use the option first = TRUE.
+#' If not wanting to train with word embeddings, set x = NULL (default = NULL).
 #' @param append_first (boolean) Option to add variables before or after all word embeddings (default = False).
 #' @param cv_method (character) Cross-validation method to use within a pipeline of nested outer and inner loops
 #' of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
@@ -606,8 +575,9 @@ summarize_tune_results <- function(object,
 #' @param outside_folds (numeric) Number of folds for the outer folds (default = 10).
 #' @param inside_folds (numeric) The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
 #' For more information see validation_split in rsample.
-#' @param strata (string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
-#' training set - if you want to stratify according to another variable you can include it as a tibble (please note you
+#' @param strata (string or tibble; default "y") Variable to stratify according;
+#' if a string the variable needs to be in the training set - if you want to stratify
+#' according to another variable you can include it as a tibble (please note you
 #' can only add 1 variable to stratify according). Can set it to NULL.
 #' @param outside_strata (boolean) Whether to stratify the outside folds.
 #' @param outside_breaks (numeric) The number of bins wanted to stratify a numeric stratification variable in the
@@ -622,8 +592,8 @@ summarize_tune_results <- function(object,
 #'  the yardstick package).
 #' @param preprocess_step_center (boolean) Normalizes dimensions to have a mean of zero; default is set to TRUE.
 #' For more info see (step_center in recipes).
-#' @param preprocess_step_scale (boolean) Normalize dimensions to have a standard deviation of one; default is set to TRUE.
-#' For more info see (step_scale in recipes).
+#' @param preprocess_step_scale (boolean) Normalize dimensions to have a standard deviation of one;
+#'  default is set to TRUE. For more info see (step_scale in recipes).
 #' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
 #' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function
@@ -649,8 +619,8 @@ summarize_tune_results <- function(object,
 #'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output (character) Option not to save all output; default = "all". see also "only_results"
 #'  and "only_results_predictions".
-#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
-#' in larger than 2 × 2 tables.
+#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by
+#' Monte Carlo simulation, in larger than 2 × 2 tables.
 #' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A (one-sided) correlation test between predicted and observed values; tibble
@@ -719,9 +689,9 @@ textTrainRegression <- function(x,
 
 
   # Select correct eval_measure depending on model when default
-  if (model == "regression" & eval_measure == "default") {
+  if (model == "regression" && eval_measure == "default") {
     eval_measure <- "rmse"
-  } else if (model == "logistic" | model == "multinomial" & eval_measure == "default") {
+  } else if (model == "logistic" || model == "multinomial" && eval_measure == "default") {
     eval_measure <- "bal_accuracy"
   }
 
@@ -734,7 +704,7 @@ textTrainRegression <- function(x,
   }
 
   # Sorting out y
-  if (tibble::is_tibble(y) | is.data.frame(y)) {
+  if (tibble::is_tibble(y) || is.data.frame(y)) {
     y_name <- colnames(y)
 
     y <- tibble::as_tibble_col(y[[1]], column_name = "y")
@@ -743,7 +713,7 @@ textTrainRegression <- function(x,
     y <- tibble::as_tibble_col(y, column_name = "y")
   }
 
-  if (model == "logistic" & anyNA(y[1])) {
+  if (model == "logistic" && anyNA(y[1])) {
     stop("In logistic regression you cannot currently have any NA(s) in y.")
   }
 
@@ -847,7 +817,6 @@ textTrainRegression <- function(x,
   }
 
 
-  # preprocess_PCA = 1
   if (multi_cores_use == FALSE) {
     tuning_results <- purrr::map(
       .x = results_nested_resampling$inner_resamples,
@@ -960,7 +929,7 @@ textTrainRegression <- function(x,
 
   ##### Construct final model to be saved and applied on other data  ########
   ############################################################################
-  # colnames(xy)
+
   if ("strata" %in% colnames(xy)) {
     xy_all <- xy %>%
       dplyr::select(-strata)
@@ -978,12 +947,7 @@ textTrainRegression <- function(x,
       Nvariable_totals <- length(xy_all)
       variable_names <- colnames(xy_all[(first_n_predictors + 1):(Nvariable_totals - 2)])
     } else {
-      # Dont need strata here since we have removed it above
-      #      if("strata" %in% colnames(xy_all)){
-      #        variable_names <- c("id_nr", "strata")
-      #      } else {
       variable_names <- c("id_nr")
-      #      }
     }
 
     # [0,] is added to just get the col names (and avoid saving all the data with the receipt) help(step_naomit)
@@ -1031,12 +995,6 @@ textTrainRegression <- function(x,
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome")
-
-    # Not needed since strata column is removed from this last training of the model
-    #    if("strata" %in% colnames(xy_all)) {
-    #      final_recipe <- final_recipe %>%
-    #        recipes::update_role(strata, new_role = "strata", bake = FALSE)
-    #    }
 
     if (!impute_missing) {
       final_recipe <- recipes::step_naomit(final_recipe, recipes::all_predictors(), skip = TRUE)
@@ -1172,7 +1130,8 @@ textTrainRegression <- function(x,
   }
 
   final_predictive_model <- model_save_small_size(
-    xy_all, preprocessing_recipe_save, results_split_parameter$penalty, results_split_parameter$mixture, model, nr_predictors
+    xy_all, preprocessing_recipe_save, results_split_parameter$penalty,
+    results_split_parameter$mixture, model, nr_predictors
   )
 
 

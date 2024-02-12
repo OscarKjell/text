@@ -234,7 +234,7 @@ plot_projection <- textProjectionPlot(
 
 plot_projection
 
-#Investigate elements in DP_projections_HILS_SWLS_100.
+# Investigate elements in DP_projections_HILS_SWLS_100.
 names(DP_projections_HILS_SWLS_100)
 }
 \seealso{

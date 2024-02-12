@@ -56,9 +56,10 @@ to achieve n-folds in both the outer and inner loops.}
 
 \item{inside_folds}{(numeric) Number of folds for the inner folds (default = 3/4).}
 
-\item{strata}{(string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
-training set - if you want to stratify according to another variable you can include it as a tibble (please note you
-can only add 1 variable to stratify according). Can set it to NULL.}
+\item{strata}{(string or tibble; default "y") Variable to stratify according; if a string the
+variable needs to be in the training set - if you want to stratify according to another variable
+you can include it as a tibble (please note you can only add 1 variable to stratify according).
+Can set it to NULL.}
 
 \item{outside_strata}{(boolean) Whether to stratify the outside folds.}
 
@@ -75,14 +76,14 @@ in the inner cross-validation loop (default = 4).}
 \item{preprocess_step_center}{(boolean) Normalizes dimensions to have a mean of zero; default is set to FALSE
 For more info see (step_center in recipes).}
 
-\item{preprocess_scale_center}{(boolean) Normalizes dimensions to have a standard deviation of one; default is set to FALSE.
-For more info see (step_scale in recipes).}
+\item{preprocess_scale_center}{(boolean) Normalizes dimensions to have a standard deviation of one;
+default is set to FALSE. For more info see (step_scale in recipes).}
 
 \item{preprocess_PCA}{Pre-processing threshold for PCA. Can select amount of variance to
 retain (e.g., .90 or as a grid c(0.80, 0.90)); or
-number of components to select (e.g., 10). (To skip this step, set preprocess_PCA to NA) Default is "min_halving", which is a function that
-selects the number of PCA components based on number of participants and feature (word embedding
-dimensions) in the data. The formula is:
+number of components to select (e.g., 10). (To skip this step, set preprocess_PCA to NA) Default is "min_halving",
+which is a function that selects the number of PCA components based on number of participants and feature
+(word embedding dimensions) in the data. The formula is:
 preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).}
 
 \item{extremely_randomised_splitrule}{Default is "extratrees", which thus implement a random forest;
@@ -96,8 +97,9 @@ for details on implementations).}
 
 \item{trees}{Number of trees to use (default 1000).}
 
-\item{eval_measure}{(character) Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
-see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".}
+\item{eval_measure}{(character) Measure to evaluate the models in order to select the best
+hyperparameters default "roc_auc"; see also "accuracy", "bal_accuracy", "sens", "spec", "precision",
+"kappa", "f_measure".}
 
 \item{model_description}{(character) Text to describe your model (optional; good when sharing the model with others).}
 
@@ -108,8 +110,8 @@ only on unix, not windows). Hence it makes the analyses considerably faster to r
 \item{save_output}{(character) Option not to save all output; default "all". See also "only_results" and
 "only_results_predictions".}
 
-\item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
-in larger than 2 × 2 tables.}
+\item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values
+by Monte Carlo simulation, in larger than 2 × 2 tables.}
 
 \item{seed}{(numeric) Set different seed (default = 2020).}
 
@@ -124,8 +126,8 @@ f_meas and roc_auc (for details on these measures see the yardstick r-package do
 Train word embeddings to a categorical variable using random forest.
 }
 \examples{
-#Examines how well the embeddings from column "harmonywords" in
-#Language_based_assessment_data_8 can binarily classify gender.
+# Examines how well the embeddings from column "harmonywords" in
+# Language_based_assessment_data_8 can binarily classify gender.
 
 \dontrun{
 trained_model <- textTrainRandomForest(

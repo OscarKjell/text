@@ -97,10 +97,10 @@ Extract layers and aggregate them to word embeddings, for all character variable
 # Language_based_assessment_data_8 (included in text-package), to embeddings.
 \dontrun{
 word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
-                              layers = 10:11,
-                              aggregation_from_layers_to_tokens = "concatenate",
-                              aggregation_from_tokens_to_texts = "mean",
-                              aggregation_from_tokens_to_word_types = "mean"
+  layers = 10:11,
+  aggregation_from_layers_to_tokens = "concatenate",
+  aggregation_from_tokens_to_texts = "mean",
+  aggregation_from_tokens_to_word_types = "mean"
 )
 
 # Show information about how the embeddings were constructed.

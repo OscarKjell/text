@@ -3,7 +3,7 @@
 \name{textTrainNPlot}
 \alias{textTrainNPlot}
 \title{(experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
-returned by the textTrainN function. If the number of cross-validations exceed one, then 
+returned by the textTrainN function. If the number of cross-validations exceed one, then
 error-bars will be included in the plot.}
 \usage{
 textTrainNPlot(
@@ -28,10 +28,10 @@ textTrainNPlot(
 \arguments{
 \item{tibble}{(tibble) Object returned by the function textTrainN.}
 
-\item{sample_percents}{(numeric) Vector containing the percents of the total number of datapoints that is 
+\item{sample_percents}{(numeric) Vector containing the percents of the total number of datapoints that is
 included in each sample (default = c(25,50,75,100)).}
 
-\item{n_cross_val}{(numeric) Value of the number of times cross-validation has been repeated (default = 1, 
+\item{n_cross_val}{(numeric) Value of the number of times cross-validation has been repeated (default = 1,
 i.e., cross-validation has only been applied once).}
 
 \item{x_unit}{(character, "percent" or "quantity") Determines whether the x-axis-values should represent the number of elements in each sample,
@@ -62,16 +62,16 @@ or the number of percent of the total data they represent (default = "percent").
 \item{point_size}{(numeric) Determine points size (default = 1).}
 }
 \value{
-A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis. 
+A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis.
 If number och cross-validations exceed 1, then error bars measuring standard deviations will be plotted.
 }
 \description{
 (experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
-returned by the textTrainN function. If the number of cross-validations exceed one, then 
+returned by the textTrainN function. If the number of cross-validations exceed one, then
 error-bars will be included in the plot.
 }
 \section{Plot Example}{
- Example of a plot created by textTrainNPlot. 
+ Example of a plot created by textTrainNPlot.
 \if{html}{\figure{textTrainNPlot.image.png}{options: width=100\%}}
 }
 
@@ -81,12 +81,12 @@ error-bars will be included in the plot.
 
 \dontrun{
 plot_object <- textTrainNPlot(
-                    tibble = tibble_to_plot, 
-                    n_cross_val = 3, 
-                    x_unit = "quantity"
+  tibble = tibble_to_plot,
+  n_cross_val = 3,
+  x_unit = "quantity"
 )
 
-# Visualize plot 
+# Visualize plot
 plot_object
 }
 }

@@ -54,8 +54,8 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
 #'
 #' @param outputlist_results_outer Results from outer predictions.
 #' @param id_nr ID numbers
-#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
-#' in larger than 2 × 2 tables.
+#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to
+#' compute p-values by Monte Carlo simulation, in larger than 2 × 2 tables.
 #' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
 #' @importFrom  tidyr unnest
 #' @importFrom  tibble is_tibble
@@ -124,8 +124,8 @@ classification_results <- function(outputlist_results_outer,
 #'
 #' @param outputlist_results_outer Results from outer predictions.
 #' @param id_nr ID numbers
-#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
-#' in larger than 2 × 2 tables.
+#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to
+#'  compute p-values by Monte Carlo simulation, in larger than 2 × 2 tables.
 #' @return returns sorted predictions and truth, chi-square test, fisher test, and all evaluation metrics/measures
 #' @importFrom  tidyr unnest
 #' @importFrom  tibble is_tibble
@@ -346,12 +346,12 @@ fit_model_accuracy_rf <- function(object,
   # Apply model on new data
   holdout_pred_class <-
     stats::predict(mod, xy_testing %>%
-      dplyr::select(-y), type = c("class")) %>%
+                     dplyr::select(-y), type = c("class")) %>%
     dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
   holdout_pred <-
     stats::predict(mod, xy_testing %>%
-      dplyr::select(-y), type = c("prob")) %>%
+                     dplyr::select(-y), type = c("prob")) %>%
     dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
 
   holdout_pred$.pred_class <- holdout_pred_class$.pred_class
@@ -596,9 +596,10 @@ summarize_tune_results_rf <- function(object,
 #' to achieve n-folds in both the outer and inner loops.
 #' @param outside_folds (numeric) Number of folds for the outer folds (default = 10).
 #' @param inside_folds (numeric) Number of folds for the inner folds (default = 3/4).
-#' @param strata (string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
-#' training set - if you want to stratify according to another variable you can include it as a tibble (please note you
-#' can only add 1 variable to stratify according). Can set it to NULL.
+#' @param strata (string or tibble; default "y") Variable to stratify according; if a string the
+#' variable needs to be in the training set - if you want to stratify according to another variable
+#' you can include it as a tibble (please note you can only add 1 variable to stratify according).
+#' Can set it to NULL.
 #' @param outside_strata (boolean) Whether to stratify the outside folds.
 #' @param outside_breaks (numeric) The number of bins wanted to stratify a numeric stratification variable
 #' in the outer cross-validation loop (default = 4).
@@ -608,13 +609,13 @@ summarize_tune_results_rf <- function(object,
 #' @param mode_rf Default is "classification" ("regression" is not supported yet).
 #' @param preprocess_step_center (boolean) Normalizes dimensions to have a mean of zero; default is set to FALSE
 #' For more info see (step_center in recipes).
-#' @param preprocess_scale_center (boolean) Normalizes dimensions to have a standard deviation of one; default is set to FALSE.
-#' For more info see (step_scale in recipes).
+#' @param preprocess_scale_center (boolean) Normalizes dimensions to have a standard deviation of one;
+#' default is set to FALSE. For more info see (step_scale in recipes).
 #' @param preprocess_PCA Pre-processing threshold for PCA. Can select amount of variance to
 #' retain (e.g., .90 or as a grid c(0.80, 0.90)); or
-#' number of components to select (e.g., 10). (To skip this step, set preprocess_PCA to NA) Default is "min_halving", which is a function that
-#' selects the number of PCA components based on number of participants and feature (word embedding
-#' dimensions) in the data. The formula is:
+#' number of components to select (e.g., 10). (To skip this step, set preprocess_PCA to NA) Default is "min_halving",
+#' which is a function that selects the number of PCA components based on number of participants and feature
+#' (word embedding dimensions) in the data. The formula is:
 #' preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).
 #' @param extremely_randomised_splitrule Default is "extratrees", which thus implement a random forest;
 #' can also select: NULL, "gini" or "hellinger"; if these are selected your mtry settings will
@@ -623,16 +624,17 @@ summarize_tune_results_rf <- function(object,
 #' @param mtry Hyper parameter that may be tuned; default: c(1, 20, 40),
 #' @param min_n Hyper parameter that may be tuned; default: c(1, 20, 40)
 #' @param trees Number of trees to use (default 1000).
-#' @param eval_measure (character) Measure to evaluate the models in order to select the best hyperparameters default "roc_auc";
-#' see also "accuracy", "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure".
+#' @param eval_measure (character) Measure to evaluate the models in order to select the best
+#' hyperparameters default "roc_auc"; see also "accuracy", "bal_accuracy", "sens", "spec", "precision",
+#' "kappa", "f_measure".
 #' @param model_description (character) Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it (i.e.,
 #'  only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
 #'   "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output (character) Option not to save all output; default "all". See also "only_results" and
 #' "only_results_predictions".
-#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
-#' in larger than 2 × 2 tables.
+#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values
+#' by Monte Carlo simulation, in larger than 2 × 2 tables.
 #' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe,
@@ -704,7 +706,7 @@ textTrainRandomForest <- function(x,
   set.seed(seed)
 
   # Sorting out y
-  if (tibble::is_tibble(y) | is.data.frame(y)) {
+  if (tibble::is_tibble(y) || is.data.frame(y)) {
     y_name <- colnames(y)
     y <- tibble::as_tibble_col(y[[1]], column_name = "y")
   } else {
@@ -910,7 +912,6 @@ textTrainRandomForest <- function(x,
   ##### Construct final model to be saved and applied on other data  ########
   ############################################################################
 
-  # colnames(xy)
   if ("strata" %in% colnames(xy)) {
     xy_all <- xy %>%
       dplyr::select(-strata)
@@ -925,11 +926,6 @@ textTrainRandomForest <- function(x,
       recipes::recipe(y ~ ., xy_all[0, ]) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
       recipes::update_role(y, new_role = "outcome")
-
-    #    if("strata" %in% colnames(xy_all)) {
-    #      final_recipe <- final_recipe %>%
-    #        recipes::update_role(strata, new_role = "strata")
-    #    }
 
     final_recipe <- final_recipe %>%
       recipes::step_naomit(recipes::all_predictors(), skip = FALSE) # %>%
@@ -970,10 +966,6 @@ textTrainRandomForest <- function(x,
       recipes::step_naomit(recipes::all_predictors(), skip = TRUE) # %>%
     # recipes::step_BoxCox(recipes::all_predictors()) %>%
 
-    #    if("strata" %in% colnames(xy_all)) {
-    #      final_recipe <- final_recipe %>%
-    #        recipes::update_role(strata, new_role = "strata")
-    #    }
 
     if (preprocess_step_center) {
       final_recipe <- recipes::step_center(final_recipe, recipes::all_predictors())
@@ -1016,8 +1008,8 @@ textTrainRandomForest <- function(x,
     env_final_recipe$final_recipe <- final_recipe
 
     with(env_final_recipe, preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe,
-      xy_all,
-      retain = FALSE
+                                                                                       xy_all,
+                                                                                       retain = FALSE
     )))
   }
   preprocessing_recipe_save <- recipe_save_small_size(final_recipe = final_recipe, xy_all = xy_all)

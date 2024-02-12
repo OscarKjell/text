@@ -41,11 +41,11 @@ textTrain <- function(x,
                       force_train_method = "automatic",
                       ...) {
   # Figure out which train_method to use (textTrainRegression or textTrainRandomForest)
-  if (is.numeric(y) == TRUE & force_train_method == "automatic") {
+  if (is.numeric(y) == TRUE && force_train_method == "automatic") {
     train_method <- "regression"
-  } else if (is.factor(y) == TRUE & force_train_method == "automatic") {
+  } else if (is.factor(y) == TRUE && force_train_method == "automatic") {
     train_method <- "logistic"
-  } else if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "automatic") {
+  } else if ((tibble::is_tibble(y) || is.data.frame(y) && length(y) > 1) && force_train_method == "automatic") {
     # Create a dataframe with only one type (numeric or categorical) depending on most frequent type
     # Select all numeric variables
     y_n <- dplyr::select_if(y, is.numeric)
@@ -59,10 +59,10 @@ textTrain <- function(x,
       y <- y_f
       train_method <- "logistic"
     }
-  } else if (((tibble::is_tibble(y) | is.data.frame(y)) & length(y) > 1) & force_train_method == "regression") {
+  } else if (((tibble::is_tibble(y) || is.data.frame(y)) && length(y) > 1) && force_train_method == "regression") {
     y <- dplyr::select_if(y, is.numeric)
     train_method <- "regression"
-  } else if (((tibble::is_tibble(y) | is.data.frame(y)) & length(y) > 1) & force_train_method == "random_forest") {
+  } else if (((tibble::is_tibble(y) || is.data.frame(y)) && length(y) > 1) && force_train_method == "random_forest") {
     y <- dplyr::select_if(y, is.factor)
     train_method <- "random_forest"
   } else if (force_train_method == "regression") {
@@ -72,9 +72,9 @@ textTrain <- function(x,
   }
 
   # Analyze according to train_method decided above.
-  if (train_method == "regression" | train_method == "logistic") {
+  if (train_method == "regression" || train_method == "logistic") {
     # textTrainLists x; if more than one wordembedding list; or more than one column of numeric/categorical variable
-    if ((!tibble::is_tibble(x) & length(x) > 1) | ((tibble::is_tibble(y) | is.data.frame(y)) & length(y) > 1)) {
+    if ((!tibble::is_tibble(x) && length(x) > 1) || ((tibble::is_tibble(y) || is.data.frame(y)) && length(y) > 1)) {
       repression_output <- textTrainLists(
         x = x,
         y = y,
@@ -92,7 +92,7 @@ textTrain <- function(x,
       repression_output
     }
   } else if (train_method == "random_forest") {
-    if ((!tibble::is_tibble(x) & length(x) > 1) | (tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1)) {
+    if ((!tibble::is_tibble(x) && length(x) > 1) || (tibble::is_tibble(y) || is.data.frame(y) && length(y) > 1)) {
       random_forest_output <- textTrainLists(
         x = x,
         y = y,
@@ -132,7 +132,7 @@ sort_regression_output_list <- function(output, method_cor, save_output, descrip
     output_ordered_named <- data.frame(cbind(descriptions, output_r, output_df, output_p, output_t, output_a))
     colnames(output_ordered_named) <- c("descriptions", "correlation", "df", "p_value", "t_statistics", "alternative")
     rownames(output_ordered_named) <- NULL
-  } else if (method_cor == "spearman" | method_cor == "kendall") {
+  } else if (method_cor == "spearman" || method_cor == "kendall") {
     output_S <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[1]][c(1)])))
     output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[2]][c(1)])))
     output_r <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[3]][c(1)])))
@@ -152,7 +152,7 @@ sort_regression_output_list <- function(output, method_cor, save_output, descrip
   # Remove predictions from output since they are saved together
   output1 <- purrr::map(output, ~ purrr::discard(.x, names(.x) == "predictions"))
 
-  if (save_output == "all" | save_output == "only_results_predictions") {
+  if (save_output == "all" || save_output == "only_results_predictions") {
     output_predscore <- as.data.frame(lapply(output, function(output) unlist(output$predictions)))
     output_predscore_reg <- output_predscore[grep("predictions", rownames(output_predscore)), ]
     colnames(output_predscore_reg) <- c(paste(descriptions, "_pred", sep = ""))
@@ -204,7 +204,7 @@ sort_classification_output_list <- function(output, save_output, descriptions, t
 
 
   # Get and sort the Prediction scores; names(output$harmonywords_factors2)
-  if (save_output == "all" | save_output == "only_results_predictions") {
+  if (save_output == "all" || save_output == "only_results_predictions") {
     if (train_method == "random_forest") output_predscore <- lapply(output, "[[", "truth_predictions")
     if (train_method == "logistic") output_predscore <- lapply(output, "[[", "predictions")
     # Append dataframe name to each of its columns within a list of dataframes
@@ -232,7 +232,8 @@ sort_classification_output_list <- function(output, save_output, descriptions, t
 
 
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables.
-#' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation). It is possible to have word embeddings from one text variable and several numeric/categorical variables;
+#' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation). It is possible to have word embeddings
+#' from one text variable and several numeric/categorical variables;
 #' or vice verse, word embeddings from several text variables to one numeric/categorical variable.
 #' It is not possible to mix numeric and categorical variables.
 #' @param y Tibble with several numeric or categorical variables to predict. Please note that you cannot mix numeric and
@@ -297,15 +298,15 @@ textTrainLists <- function(x,
   }
 
   # Force or decide regression or random forest (and select only categorical or numeric variables for multiple input).
-  if (is.numeric(y) == TRUE & force_train_method == "automatic") {
+  if (is.numeric(y) == TRUE && force_train_method == "automatic") {
     train_method <- "regression"
   } else if (force_train_method == "regression") {
     train_method <- "regression"
-  } else if (is.factor(y) == TRUE & force_train_method == "automatic") {
+  } else if (is.factor(y) == TRUE && force_train_method == "automatic") {
     train_method <- "logistic"
   } else if (force_train_method == "random_forest") {
     train_method <- "random_forest"
-  } else if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "automatic") {
+  } else if ((tibble::is_tibble(y) || is.data.frame(y) && length(y) > 1) && force_train_method == "automatic") {
     # Create a dataframe only comprising numeric or categorical depending on most frequent type
     # Select all numeric variables
     y_n <- dplyr::select_if(y, is.numeric)
@@ -319,10 +320,10 @@ textTrainLists <- function(x,
       y <- y_f
       train_method <- "logistic"
     }
-  } else if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "regression") {
+  } else if ((tibble::is_tibble(y) || is.data.frame(y) && length(y) > 1) && force_train_method == "regression") {
     y <- dplyr::select_if(y, is.numeric)
     train_method <- "regression"
-  } else if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "random_forest") {
+  } else if ((tibble::is_tibble(y) || is.data.frame(y) && length(y) > 1) && force_train_method == "random_forest") {
     y <- dplyr::select_if(y, is.factor)
     train_method <- "random_forest"
   }
@@ -340,7 +341,7 @@ textTrainLists <- function(x,
   # Creating descriptions of which variables are used in training, which is  added to the output.
   descriptions <- paste(rep(names(x), length(y)), "_", names(y1), sep = "")
 
-  if (train_method == "regression" | train_method == "logistic") {
+  if (train_method == "regression" || train_method == "logistic") {
     # Using mapply to loop over the word embeddings and the outcome variables to train the different combinations
 
     output <- mapply(textTrainRegression, x = x, y = y1, MoreArgs = list(

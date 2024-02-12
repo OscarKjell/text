@@ -16,7 +16,8 @@ textTrainLists(
 )
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation). It is possible to have word embeddings from one text variable and several numeric/categorical variables;
+\item{x}{Word embeddings from textEmbed (or textEmbedLayerAggreation). It is possible to have word embeddings
+from one text variable and several numeric/categorical variables;
 or vice verse, word embeddings from several text variables to one numeric/categorical variable.
 It is not possible to mix numeric and categorical variables.}
 
@@ -32,24 +33,24 @@ and "only_results_predictions".}
 
 \item{eval_measure}{(character) Type of evaluative measure to assess models on (default "rmse").}
 
-\item{p_adjust_method}{Method to adjust/correct p-values for multiple comparisons. 
+\item{p_adjust_method}{Method to adjust/correct p-values for multiple comparisons.
 (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").}
 
 \item{...}{Arguments from textTrainRegression or textTrainRandomForest (the textTrain function).}
 }
 \value{
-Correlations between predicted and observed values (t-value, degree of freedom (df), p-value, 
+Correlations between predicted and observed values (t-value, degree of freedom (df), p-value,
 confidence interval, alternative hypothesis, correlation coefficient) stored in a dataframe.
 }
 \description{
 Individually trains word embeddings from several text variables to several numeric or categorical variables.
 }
 \examples{
-#Examines how well the embeddings from Language_based_assessment_data_8 can
-#predict the numerical numerical variables in Language_based_assessment_data_8. 
-#The training is done combination wise, i.e., correlations are tested pair wise, 
-#column: 1-5,1-6,2-5,2-6, resulting in a dataframe with four rows. 
-   
+# Examines how well the embeddings from Language_based_assessment_data_8 can
+# predict the numerical numerical variables in Language_based_assessment_data_8.
+# The training is done combination wise, i.e., correlations are tested pair wise,
+# column: 1-5,1-6,2-5,2-6, resulting in a dataframe with four rows.
+
 \dontrun{
 word_embeddings <- word_embeddings_4$texts[1:2]
 ratings_data <- Language_based_assessment_data_8[5:6]
@@ -59,9 +60,9 @@ trained_model <- textTrainLists(
   y = ratings_data
 )
 
-#Examine results (t-value, degree of freedom (df), p-value, 
-#alternative-hypothesis, confidence interval, correlation coefficient).
- 
+# Examine results (t-value, degree of freedom (df), p-value,
+# alternative-hypothesis, confidence interval, correlation coefficient).
+
 trained_model$results
 }
 

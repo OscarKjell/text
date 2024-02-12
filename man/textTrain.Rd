@@ -25,16 +25,16 @@ the textTrain function.}
 }
 \value{
 A correlation between predicted and observed values; as well as a
- tibble of predicted values (t-value, degree of freedom (df), p-value, 
+ tibble of predicted values (t-value, degree of freedom (df), p-value,
  alternative-hypothesis, confidence interval, correlation coefficient).
 }
 \description{
 Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 }
 \examples{
-#Examines how well the embeddings from "harmonytext" can
-#predict the numeric variable "hilstotal" in the pre-included 
-#dataset "Language_based_assessment_data_8". 
+# Examines how well the embeddings from "harmonytext" can
+# predict the numeric variable "hilstotal" in the pre-included
+# dataset "Language_based_assessment_data_8".
 
 \dontrun{
 trained_model <- textTrain(
@@ -42,13 +42,13 @@ trained_model <- textTrain(
   y = Language_based_assessment_data_8$hilstotal
 )
 
-#Examine results (t-value, degree of freedom (df), p-value, 
-#alternative-hypothesis, confidence interval, correlation coefficient).
- 
+# Examine results (t-value, degree of freedom (df), p-value,
+# alternative-hypothesis, confidence interval, correlation coefficient).
+
 trained_model$results
 }
 }
 \seealso{
-See \code{\link{textTrainRegression}}, \code{\link{textTrainRandomForest}} and 
+See \code{\link{textTrainRegression}}, \code{\link{textTrainRandomForest}} and
 \code{\link{textTrainLists}}.
 }

@@ -22,9 +22,10 @@ textEmbedLayerAggregation(
 Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 Selecting 'all' thus removes layer 0 (default = "all")}
 
-\item{aggregation_from_layers_to_tokens}{(character) Method to carry out the aggregation among the layers for each word/token,
-including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
-or "concatenate", which links together each layer of the word embedding to one long row (default = "concatenate").}
+\item{aggregation_from_layers_to_tokens}{(character) Method to carry out the aggregation among
+the layers for each word/token, including "min", "max" and "mean" which takes the minimum,
+maximum or mean across each column; or "concatenate", which links together each layer of the
+word embedding to one long row (default = "concatenate").}
 
 \item{aggregation_from_tokens_to_texts}{(character) Method to carry out the aggregation among the word embeddings
 for the words/tokens, including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
@@ -46,18 +47,18 @@ the transformer, which is normally not used.
 Select and aggregate layers of hidden states to form a word embedding.
 }
 \examples{
-#Aggregate the hidden states from textEmbedRawLayers
-#to create a word embedding representing the entire text.
-#This is achieved by concatenating layer 11 and 12.
+# Aggregate the hidden states from textEmbedRawLayers
+# to create a word embedding representing the entire text.
+# This is achieved by concatenating layer 11 and 12.
 \dontrun{
 word_embedding <- textEmbedLayerAggregation(
-                    imf_embeddings_11_12$context_tokens,
-                    layers = 11:12,
-                    aggregation_from_layers_to_tokens = "concatenate",
-                    aggregation_from_tokens_to_texts = "mean"
+  imf_embeddings_11_12$context_tokens,
+  layers = 11:12,
+  aggregation_from_layers_to_tokens = "concatenate",
+  aggregation_from_tokens_to_texts = "mean"
 )
 
-#Examine word_embedding
+# Examine word_embedding
 word_embedding
 }
 }

@@ -7,10 +7,8 @@
 textEmbedReduce(
   embeddings,
   n_dim = NULL,
-  scalar =
-    "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv",
-  pca =
-    "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/rpca_roberta_768_D_20.csv"
+  scalar = "fb20/scalar.csv",
+  pca = "fb20/rpca_roberta_768_D_20.csv"
 )
 }
 \arguments{
@@ -35,9 +33,10 @@ Pre-trained dimension reduction (experimental)
 To use this method please see and cite:\cr
 Ganesan, A. V., Matero, M., Ravula, A. R., Vu, H., & Schwartz, H. A. (2021, June).
 Empirical evaluation of pre-trained transformers for human-level nlp: The role of sample size and dimensionality.
-In Proceedings of the conference. Association for Computational Linguistics. North American Chapter. Meeting (Vol. 2021, p. 4515).
+In Proceedings of the conference. Association for Computational Linguistics. North American Chapter. Meeting
+(Vol. 2021, p. 4515).
 NIH Public Access.\cr\cr
-See also \href{https://adithya8.github.io/blog/paper/2021/04/15/Empirical-Evaluation.html}{Git-Hub Empirical-Evaluation}
+See \href{https://adithya8.github.io/blog/paper/2021/04/15/Empirical-Evaluation.html}{Git-Hub Empirical-Evaluation}
 }
 \examples{
 \dontrun{

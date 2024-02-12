@@ -135,8 +135,8 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #' @importFrom tibble tibble
 #' @export
 textTrainN <- function(
-    x = word_embeddings_4$texts$harmonytext,
-    y = Language_based_assessment_data_8$hilstotal,
+    x,
+    y,
     sample_percents = c(25, 50, 75, 100),
     handle_word_embeddings = "individually",
     n_cross_val = 1,

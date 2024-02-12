@@ -2,7 +2,8 @@
 % Please edit documentation in R/2_4_textPredict.R
 \name{textPredict}
 \alias{textPredict}
-\title{Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict new scores or classes from embeddings or text using textPredict.}
+\title{Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
+new scores or classes from embeddings or text using textPredict.}
 \usage{
 textPredict(
   model_info = NULL,
@@ -22,23 +23,29 @@ textPredict(
 )
 }
 \arguments{
-\item{model_info}{(character or r-object) model_info has three options. 1: R model object (e.g, saved output from textTrain). 2:link to github-model 
-(e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"). 3: Path to a model stored locally (e.g, "path/to/your/model").}
+\item{model_info}{(character or r-object) model_info has three options. 1: R model object
+(e.g, saved output from textTrain). 2:link to github-model
+(e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS").
+3: Path to a model stored locally (e.g, "path/to/your/model").}
 
-\item{word_embeddings}{(tibble) Embeddings from e.g., textEmbed(). If you're using a pretrained model, then texts and embeddings cannot be submitted simultaneously (default = NULL).}
+\item{word_embeddings}{(tibble) Embeddings from e.g., textEmbed(). If you're using a pretrained model,
+then texts and embeddings cannot be submitted simultaneously (default = NULL).}
 
-\item{texts}{(character) Text to predict. If this argument is specified, then arguments "word_embeddings" and "premade embeddings" cannot be defined (default = NULL).}
+\item{texts}{(character) Text to predict. If this argument is specified, then arguments "word_embeddings"
+and "premade embeddings" cannot be defined (default = NULL).}
 
 \item{x_append}{(tibble) Variables to be appended after the word embeddings (x).}
 
-\item{type}{(character) Defines what output to give after logistic regression prediction. Either probabilities, 
-classifications or both are returned (default = "class". For probabilities use "prob". For both use "class_prob").}
+\item{type}{(character) Defines what output to give after logistic regression prediction.
+Either probabilities, classifications or both are returned (default = "class".
+For probabilities use "prob". For both use "class_prob").}
 
 \item{dim_names}{(boolean) Account for specific dimension names from textEmbed()
 (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.}
 
-\item{save_model}{(boolean) The model will by default be saved in your work-directory (default = TRUE). If the model already exists in your work-directory, it will automatically be loaded from there.}
+\item{save_model}{(boolean) The model will by default be saved in your work-directory (default = TRUE).
+If the model already exists in your work-directory, it will automatically be loaded from there.}
 
 \item{threshold}{(numeric) Determine threshold if you are using a logistic model (default = 0.5).}
 
@@ -47,13 +54,15 @@ word embeddings created with dim_names FALSE, so that embeddings were only calle
 \item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 specific device number such as 'mps:1'.}
 
-\item{user_id}{(list) user_id associates sentences with their writers. User_id must be defined when calculating implicit motives. (default = NULL)
-shown (default = FALSE).}
+\item{user_id}{(list) user_id associates sentences with their writers. User_id must be defined when
+calculating implicit motives. (default = NULL)  shown (default = FALSE).}
 
-\item{story_id}{(list) story_id associates sentences with their stories. If story_id is defined, then the mean of the current and previous 
+\item{story_id}{(list) story_id associates sentences with their stories. If story_id is defined,
+then the mean of the current and previous
 word-embedding per story-id will be calculated. (default = NULL)}
 
-\item{dataset}{(R-object, tibble) Insert your data here to integrate predictions to dataset, (default = NULL).}
+\item{dataset}{(R-object, tibble) Insert your data here to integrate predictions to dataset,
+(default = NULL).}
 
 \item{...}{Setting from stats::predict can be called.}
 }
@@ -61,52 +70,62 @@ word-embedding per story-id will be calculated. (default = NULL)}
 Predictions from word-embedding or text input.
 }
 \description{
-Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict new scores or classes from embeddings or text using textPredict.
+Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
+new scores or classes from embeddings or text using textPredict.
 }
 \examples{
 \dontrun{
 
 # Text data from Language_based_assessment_data_8
-text_to_predict = "I am not in harmony in my life as much as I would like to be." 
+text_to_predict <- "I am not in harmony in my life as much as I would like to be."
 
 # Example 1: (predict using pre-made embeddings and an R model-object)
-prediction1 <- textPredict(trained_model, 
-                           word_embeddings_4$texts$satisfactiontexts)
+prediction1 <- textPredict(
+  trained_model,
+  word_embeddings_4$texts$satisfactiontexts
+)
 
 # Example 2: (predict using a pretrained github model)
-prediction3 <- textPredict(texts = text_to_predict, 
-                           model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS")
-                           
-# Example 3: (predict using a pretrained logistic github model and return probabilities and classifications)
-prediction4 <- textPredict(texts = text_to_predict, 
-                           model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_github_model_logistic.RDS",
-                           type = "class_prob",
-                           threshold = 0.7)
-                       
-##### Automatic implicit motive coding section ######   
-              
-# Create example dataset
-implicit_motive_data <- dplyr::mutate(.data =Language_based_assessment_data_8, user_id = row_number())
+prediction3 <- textPredict(
+  texts = text_to_predict,
+  model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS"
+)
 
-# Code implicit motives. (In this example, person_class will be NaN due to the absence of sentences classified as 'power')
-implicit_motives <- textPredict(texts =  implicit_motive_data$satisfactiontexts,
-                                model_info = "power",
-                                user_id = implicit_motive_data$user_id, 
-                                dataset = implicit_motive_data)
-                                 
+# Example 3: (predict using a pretrained logistic github model and return probabilities and classifications)
+prediction4 <- textPredict(
+  texts = text_to_predict,
+  model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_github_model_logistic.RDS",
+  type = "class_prob",
+  threshold = 0.7
+)
+
+##### Automatic implicit motive coding section ######
+
+# Create example dataset
+implicit_motive_data <- dplyr::mutate(.data = Language_based_assessment_data_8, user_id = row_number())
+
+# Code implicit motives. (In this example, person_class will be NaN due to the absence of
+# sentences classified as 'power')
+implicit_motives <- textPredict(
+  texts = implicit_motive_data$satisfactiontexts,
+  model_info = "power",
+  user_id = implicit_motive_data$user_id,
+  dataset = implicit_motive_data
+)
+
 # Examine results
 implicit_motives$sentence_predictions
 implicit_motives$person_predictions
 }
 
 \dontrun{
-#Examine the correlation between the predicted values and
-#the Satisfaction with life scale score (pre-included in text).
+# Examine the correlation between the predicted values and
+# the Satisfaction with life scale score (pre-included in text).
 
 psych::corr.test(
- predictions1$word_embeddings__ypred,
- Language_based_assessment_data_8$swlstotal
-) 
+  predictions1$word_embeddings__ypred,
+  Language_based_assessment_data_8$swlstotal
+)
 }
 }
 \seealso{

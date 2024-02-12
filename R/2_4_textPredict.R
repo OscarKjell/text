@@ -1,16 +1,24 @@
 # A helper function to textPredict giving it the capabilities of textPredictEntireProcedure.
-#' @param texts (character) Text to predict. If this argument is specified, then argument "premade_embeddings" must be set to NULL (default = NULL).
-#' @param word_embeddings (Embeddings from e.g., textEmbed) Embeddings to predict. If this argument is specified, then argument "texts" must be set to NULL (default = NULL).
-#' @param model_info (character or r-object) model_info has three options. 1: R model object (e.g, saved output from textTrain). 2:link to github-model
-#' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"). 3: Path to a model stored locally (e.g, "path/to/your/model").
+#' @param texts (character) Text to predict. If this argument is specified, then argument
+#' "premade_embeddings" must be set to NULL (default = NULL).
+#' @param word_embeddings (Embeddings from e.g., textEmbed) Embeddings to predict. If
+#' this argument is specified, then argument "texts" must be set to NULL (default = NULL).
+#' @param model_info (character or r-object) model_info has three options. 1: R model object
+#' (e.g, saved output from textTrain). 2:link to github-model
+#' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS").
+#' 3: Path to a model stored locally (e.g, "path/to/your/model").
 #' @param save_model (boolean) The model will by default be saved in work directory (deafult = TRUE).
-#' @param type (character) Choose either 'class' or 'prob'. If your model is a logistic or multinomial model, specify whether you want to receive the
+#' @param type (character) Choose either 'class' or 'prob'. If your model is a logistic or multinomial
+#'  model, specify whether you want to receive the
 #' model's classification "class" or the underlying probabilities "prob" (default = "class").
-#' @param max_token_to_sentence (numeric) This information will be automatically extracted from your model, so this argument is typically not used.
+#' @param max_token_to_sentence (numeric) This information will be automatically extracted from your
+#' model, so this argument is typically not used.
 #' However, if it's not defined in your model_description, you can assign a value here (default = 4).
-#' @param aggregation_from_layers_to_tokens (character) This information will be automatically extracted from your model, so this argument is typically not used.
+#' @param aggregation_from_layers_to_tokens (character) This information will be automatically extracted
+#' from your model, so this argument is typically not used.
 #' However, if it's not defined in your model_description, you can assign a value here (default = "concatenate").
-#' @param aggregation_from_tokens_to_texts (character) This information will be automatically extracted from your model, so this argument is typically not used.
+#' @param aggregation_from_tokens_to_texts (character) This information will be automatically
+#' extracted from your model, so this argument is typically not used.
 #' @noRd
 textReturnModelAndEmbedding <- function(
     texts = NULL,
@@ -35,7 +43,7 @@ textReturnModelAndEmbedding <- function(
     model_exists <- file.exists(model_name)
 
     # determine how to load model
-    if (grepl("github.com/", model_info) & isFALSE(model_exists) & isTRUE(save_model)) {
+    if (grepl("github.com/", model_info) && isFALSE(model_exists) && isTRUE(save_model)) {
       # load from github
       loaded_model <- readRDS(url(model_info))
       # save model
@@ -45,7 +53,7 @@ textReturnModelAndEmbedding <- function(
       loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded and saved in:", getwd()), sep = "")
       cat(colourise(loaded_model_confirm, fg = "green"))
       cat("\n")
-    } else if (grepl("github.com/", model_info) & isFALSE(model_exists) & isFALSE(save_model)) {
+    } else if (grepl("github.com/", model_info) && isFALSE(model_exists) && isFALSE(save_model)) {
       # load from github, don't save
       loaded_model <- readRDS(url(model_info))
 
@@ -53,7 +61,7 @@ textReturnModelAndEmbedding <- function(
       loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
       cat(colourise(loaded_model_confirm, fg = "green"))
       cat("\n")
-    } else if (grepl("github.com/", model_info) & isTRUE(model_exists)) {
+    } else if (grepl("github.com/", model_info) && isTRUE(model_exists)) {
       # retrive model from wd if it's already downloaded
       loaded_model <- readRDS(model_name)
 
@@ -80,19 +88,20 @@ textReturnModelAndEmbedding <- function(
   }
 
   # Check that both texts and word_embeddings aren't defined.
-  if (!is.null(texts) & !is.null(word_embeddings)) {
+  if (!is.null(texts) && !is.null(word_embeddings)) {
     stop('Both arguments: "texts" and "word_embeddings" cannot be defined simultaneously. Choose one or the other.')
   }
 
   ###### Create embeddings based on information stored in the pre-trained model ######
 
-  if (!is.null(texts) & is.null(word_embeddings)) {
+  if (!is.null(texts) && is.null(word_embeddings)) {
     # Save default values for later use
     default_max_token_to_sentence <- 4
     default_aggregation_from_layers_to_tokens <- "concatenate"
     default_aggregation_from_tokens_to_texts <- "mean"
 
-    # Finds the line number for the line with "impute_missing_setting" (the line above the line we're looking for, which is the model description)
+    # Finds the line number for the line with "impute_missing_setting" (the line above the
+    # line we're looking for, which is the model description)
     line_number <- grep("impute_missing_setting", loaded_model$model_description)
     new_line_number <- line_number + 1
 
@@ -100,7 +109,8 @@ textReturnModelAndEmbedding <- function(
     model_type <- extract_comment(loaded_model$model_description[new_line_number], "model")
     model_layers <- as.numeric(extract_comment(loaded_model$model_description[new_line_number], "layers"))
 
-    # Extracts the max_token_to_sentence, aggregation_from_layers_to_tokens, aggregation_from_tokens_to_texts from the model.
+    # Extracts the max_token_to_sentence, aggregation_from_layers_to_tokens,
+    # and aggregation_from_tokens_to_texts from the model.
     input_string <- loaded_model$model_description[new_line_number]
 
     max_token_to_sentence <- as.numeric(sub(".*max_token_to_sentence: (\\d+).*", "\\1", input_string))
@@ -134,7 +144,7 @@ textReturnModelAndEmbedding <- function(
     )
   }
   # If text isn't provided, but premade word-embeddings, then load them instead.
-  else if (!is.null(word_embeddings) & is.null(texts)) {
+  else if (!is.null(word_embeddings) && is.null(texts)) {
     embeddings <- word_embeddings
   }
 
@@ -176,27 +186,36 @@ textReturnModelAndEmbedding <- function(
 }
 
 
-#' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict new scores or classes from embeddings or text using textPredict.
-#' @param model_info (character or r-object) model_info has three options. 1: R model object (e.g, saved output from textTrain). 2:link to github-model
-#' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"). 3: Path to a model stored locally (e.g, "path/to/your/model").
-#' @param word_embeddings (tibble) Embeddings from e.g., textEmbed(). If you're using a pretrained model, then texts and embeddings cannot be submitted simultaneously (default = NULL).
+#' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
+#' new scores or classes from embeddings or text using textPredict.
+#' @param model_info (character or r-object) model_info has three options. 1: R model object
+#' (e.g, saved output from textTrain). 2:link to github-model
+#' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS").
+#' 3: Path to a model stored locally (e.g, "path/to/your/model").
+#' @param word_embeddings (tibble) Embeddings from e.g., textEmbed(). If you're using a pretrained model,
+#'  then texts and embeddings cannot be submitted simultaneously (default = NULL).
 #' @param x_append (tibble) Variables to be appended after the word embeddings (x).
-#' @param type (character) Defines what output to give after logistic regression prediction. Either probabilities,
-#' classifications or both are returned (default = "class". For probabilities use "prob". For both use "class_prob").
+#' @param type (character) Defines what output to give after logistic regression prediction.
+#' Either probabilities, classifications or both are returned (default = "class".
+#' For probabilities use "prob". For both use "class_prob").
 #' @param dim_names (boolean) Account for specific dimension names from textEmbed()
 #' (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 #' word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.
-#' @param texts (character) Text to predict. If this argument is specified, then arguments "word_embeddings" and "premade embeddings" cannot be defined (default = NULL).
-#' @param save_model (boolean) The model will by default be saved in your work-directory (default = TRUE). If the model already exists in your work-directory, it will automatically be loaded from there.
+#' @param texts (character) Text to predict. If this argument is specified, then arguments "word_embeddings"
+#' and "premade embeddings" cannot be defined (default = NULL).
+#' @param save_model (boolean) The model will by default be saved in your work-directory (default = TRUE).
+#' If the model already exists in your work-directory, it will automatically be loaded from there.
 #' @param threshold (numeric) Determine threshold if you are using a logistic model (default = 0.5).
 #' @param show_texts (boolean) Show texts together with predictions (default = FALSE).
 #' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 #' specific device number such as 'mps:1'.
-#' @param user_id (list) user_id associates sentences with their writers. User_id must be defined when calculating implicit motives. (default = NULL)
-#' shown (default = FALSE).
-#' @param story_id (list) story_id associates sentences with their stories. If story_id is defined, then the mean of the current and previous
+#' @param user_id (list) user_id associates sentences with their writers. User_id must be defined when
+#' calculating implicit motives. (default = NULL)  shown (default = FALSE).
+#' @param story_id (list) story_id associates sentences with their stories. If story_id is defined,
+#' then the mean of the current and previous
 #' word-embedding per story-id will be calculated. (default = NULL)
-#' @param dataset (R-object, tibble) Insert your data here to integrate predictions to dataset, (default = NULL).
+#' @param dataset (R-object, tibble) Insert your data here to integrate predictions to dataset,
+#'  (default = NULL).
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predictions from word-embedding or text input.
 #' @examples
@@ -230,7 +249,8 @@ textReturnModelAndEmbedding <- function(
 #' # Create example dataset
 #' implicit_motive_data <- dplyr::mutate(.data = Language_based_assessment_data_8, user_id = row_number())
 #'
-#' # Code implicit motives. (In this example, person_class will be NaN due to the absence of sentences classified as 'power')
+#' # Code implicit motives. (In this example, person_class will be NaN due to the absence of
+#' # sentences classified as 'power')
 #' implicit_motives <- textPredict(
 #'   texts = implicit_motive_data$satisfactiontexts,
 #'   model_info = "power",
@@ -257,7 +277,7 @@ textReturnModelAndEmbedding <- function(
 #' @importFrom recipes prep bake
 #' @importFrom stats predict
 #' @importFrom tibble is_tibble as_tibble_col
-#' @importFrom dplyr bind_cols select full_join arrange
+#' @importFrom dplyr bind_cols select full_join arrange everything
 #' @importFrom magrittr %>%
 #' @export
 textPredict <- function(model_info = NULL,
@@ -275,8 +295,9 @@ textPredict <- function(model_info = NULL,
                         dataset = NULL,
                         ...) {
   # Stop message if user defines both word_embeddings and texts
-  if (!is.null(texts) & !is.null(word_embeddings)) {
-    stop('Both arguments: "texts" and "word_embeddings" cannot be defined simultaneously. Choose one or the other.')
+  if (!is.null(texts) && !is.null(word_embeddings)) {
+    stop('Both arguments: "texts" and "word_embeddings" cannot be defined simultaneously.
+         Choose one or the other.')
   }
 
   #### Special treatment for implicit motives - see private functions ####
@@ -323,7 +344,7 @@ textPredict <- function(model_info = NULL,
     stop("No model was found.")
   }
   # check if embeddings are defined
-  if (is.null(word_embeddings) & is.null(x_append)) {
+  if (is.null(word_embeddings) && is.null(x_append)) {
     stop("No embeddings were found.")
   }
 
@@ -422,7 +443,7 @@ textPredict <- function(model_info = NULL,
       )
 
     # If the user desires to only view class, then remove the probabilty columns.
-    if (type == "class" & show_prob == FALSE) {
+    if (type == "class" && show_prob == FALSE) {
       predicted_scores2 <- predicted_scores2 %>%
         dplyr::mutate(predicted_class = ifelse(!!rlang::sym(class1_col_name) >= threshold, class1, class2)) %>%
         dplyr::select(predicted_class)
@@ -436,13 +457,12 @@ textPredict <- function(model_info = NULL,
       y_name <- gsub("y=", "", y_name)
 
       colnames(predicted_scores2) <- paste(we_names, "_", v_names, "_", y_name, "pred", sep = "")
-    }
 
     # If the user desires to view the classes and the probability columns.
-    else if (type == "class" & show_prob == TRUE) {
+    } else if (type == "class" && show_prob == TRUE) {
       predicted_scores2 <- predicted_scores2 %>%
         dplyr::mutate(predicted_class = ifelse(!!rlang::sym(class1_col_name) >= threshold, class1, class2)) %>%
-        dplyr::select(predicted_class, everything())
+        dplyr::select(predicted_class, dplyr::everything())
     } else if (is.null(type)) {}
   }
   # If no threshold is defined, then use the predefined threshold of 50%.
@@ -552,7 +572,6 @@ textPredictAll <- function(models,
     word_embeddings$singlewords_we <- NULL
   }
 
-  # i = 1
   for (i in seq_len(length(models))) {
     preds <- textPredict(
       model_info = models[[i]],

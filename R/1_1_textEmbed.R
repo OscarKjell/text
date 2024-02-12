@@ -987,6 +987,7 @@ generate_placement_vector <- function(raw_layers, texts) {
 #' @seealso See \code{\link{textEmbedLayerAggregation}}, \code{\link{textEmbedRawLayers}} and
 #' \code{\link{textDimName}}.
 #' @importFrom reticulate source_python
+#' @importFrom utils modifyList
 #' @export
 textEmbed <- function(texts,
                       model = "bert-base-uncased",
@@ -1230,7 +1231,7 @@ textEmbed <- function(texts,
   }
 
   if (ncol(data_character_variables) > 1) {
-    output1 <- Reduce(modifyList, outcome_list)
+    output1 <- Reduce(utils::modifyList, outcome_list)
   } else {
     output1 <- outcome_list[[1]]
   }

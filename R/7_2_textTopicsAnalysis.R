@@ -8,6 +8,7 @@
 #' @param load_dir (string) if specified, the function returns the precomputed analysis from the directory, otherwise leave blank
 #' @importFrom dplyr bind_cols
 #' @importFrom tibble tibble
+#' @importFrom stats as.formula glm p.adjust
 #' @return Metadata and results of the test such as estimate, t-value, p-value, and variable name.
 #' @export
 textTopicTest <- function(model,
@@ -91,7 +92,7 @@ textTopicTest <- function(model,
 #' @param split (string) How to split the CONTINUOUS test_values for testing
 #' @param n_min_max (integer) If split = "min_max", the number of records to test per group.
 #' @param multiple_comparison (string) The p-correction method
-#' @importFrom dplyr select everything
+#' @importFrom dplyr select everything right_join contains
 #' @importFrom purrr map
 #' @seealso See \code{\link{textTrainRegression}}
 #' @return the test as a data.frame
@@ -148,19 +149,6 @@ topic_test <- function(topic_terms,
   }
 
 
-  #  if (FALSE){
-  #    model1$prevalence <- colSums(model1$theta) / sum(model1$theta) * 100
-  #    model1$top_terms <- textmineR::GetTopTerms(phi = model1$phi, M = 5)
-  #    model1$summary <- data.frame(topic = rownames(model1$phi),
-  #                                 label = model1$labels,
-  #                                 coherence = round(model1$coherence, 3),
-  #                                 prevalence = round(model1$prevalence,3),
-  #                                 top_terms = apply(model1$top_terms, 2, function(x){
-  #                                   paste(x, collapse = ", ")
-  #                                 }),
-  #                                 stringsAsFactors = FALSE)
-  #  }
-
   if (test_method == "correlation") {
     if (TRUE) {
       temp <- cbind(grouping_variable, topics_loadings)
@@ -178,7 +166,7 @@ topic_test <- function(topic_terms,
       output <- extract_topic_stats_corr(result)
       names(output)[1] <- c("topic_name")
       output <- dplyr::left_join(output, topic_terms,
-        by = join_by(topic_name == topic)
+        by = dplyr::join_by(topic_name == topic)
       )
 
       output <- output %>%
@@ -209,10 +197,7 @@ topic_test <- function(topic_terms,
     output_list <- purrr::map(names(result), function(name) {
       output <- extract_topic_stats_cate(result[[name]])
       names(output)[1] <- c("topic_name")
-      # names(output)[1] <- "topic_name"
-      # output <- dplyr::left_join(output, topic_terms, by = join_by(topic_name == topic))
-      output <- dplyr::left_join(output, topic_terms, by = join_by(topic_name == topic))
-      # output <- dplyr::left_join(output, topic_terms, by = join_by(topic))
+      output <- dplyr::left_join(output, topic_terms, by = dplyr::join_by(topic_name == topic))
 
       output <- output %>%
         dplyr::select(
@@ -277,14 +262,15 @@ topic_test <- function(topic_terms,
 
 
       for (topic in z_lda_topics) {
-        formula <- as.formula(paste0(topic, formula_tail))
+        formula <- stats::as.formula(paste0(topic, formula_tail))
         multi_models[[paste0("t_", topic)]] <- lm(formula, data = preds)
       }
     }
 
     if (test_method == "logistic_regression") {
       for (topic in z_lda_topics) {
-        multi_models[[paste0("t_", topic)]] <- glm(paste0("z_", control_variables[1], " ~ ", topic), data = preds)
+        multi_models[[paste0("t_", topic)]] <- stats::glm(paste0("z_", control_variables[1], " ~ ", topic),
+                                                          data = preds)
       }
     }
 
@@ -346,7 +332,7 @@ topic_test <- function(topic_terms,
 
     if (test_method == "linear_regression") {
       for (variable in control_variables) {
-        p_adjusted <- p.adjust(
+        p_adjusted <- stats::p.adjust(
           control_variable_summary[[variable]][["p"]],
           multiple_comparison,
           length(multi_models)
@@ -358,7 +344,7 @@ topic_test <- function(topic_terms,
       }
     }
     if (test_method == "logistic_regression") {
-      p_adjusted <- p.adjust(
+      p_adjusted <- stats::p.adjust(
         control_variable_summary[["p"]],
         multiple_comparison,
         length(multi_models)
@@ -372,7 +358,9 @@ topic_test <- function(topic_terms,
     # return (control_variable_summary)
     control_variable_summary$topic <- lda_topics
 
-    output <- right_join(topic_terms[c("topic", "top_terms")], data.frame(control_variable_summary), by = join_by(topic))
+    output <- dplyr::right_join(topic_terms[c("topic", "top_terms")],
+                         data.frame(control_variable_summary),
+                         by = dplyr::join_by(topic))
     # add the adjustment for bonferroni
     return(output)
   }
@@ -391,7 +379,7 @@ topic_test <- function(topic_terms,
       }
     }
 
-    dims <- as.data.frame(preds) %>% dplyr::select(contains("Dim"))
+    dims <- as.data.frame(preds) %>% dplyr::select(dplyr::contains("Dim"))
     dims <- tibble::as_tibble(dims)
     preds <- tibble::as_tibble(preds)
     for (col in colnames(dims)) {

@@ -43,10 +43,10 @@ Compute semantic similarity score between single words' word embeddings
 and the aggregated word embedding of all words.
 }
 \examples{
-#Computes the semantic similarity between the individual word embeddings (Iwe)
-#in the "harmonywords" column of the pre-installed dataset: Language_based_assessment_data_8,
-#and the aggregated word embedding (Awe).
-#The Awe can be interpreted the latent meaning of the text.
+# Computes the semantic similarity between the individual word embeddings (Iwe)
+# in the "harmonywords" column of the pre-installed dataset: Language_based_assessment_data_8,
+# and the aggregated word embedding (Awe).
+# The Awe can be interpreted the latent meaning of the text.
 
 \dontrun{
 df_for_plotting <- textCentrality(
@@ -55,8 +55,8 @@ df_for_plotting <- textCentrality(
   word_types_embeddings = word_embeddings_4$word_types
 )
 
-#df_for_plotting contain variables (e.g., semantic similarity, frequencies) for
-#the individual words that are used for plotting by the textCentralityPlot function.
+# df_for_plotting contain variables (e.g., semantic similarity, frequencies) for
+# the individual words that are used for plotting by the textCentralityPlot function.
 }
 }
 \seealso{

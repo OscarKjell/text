@@ -29,8 +29,8 @@ A vector comprising semantic distance scores.
 Compute the semantic distance between two text variables.
 }
 \examples{
-#Compute the semantic distance score between the embeddings
-#from "harmonytext" and "satisfactiontext".
+# Compute the semantic distance score between the embeddings
+# from "harmonytext" and "satisfactiontext".
 
 \dontrun{
 distance_scores <- textDistance(
@@ -38,7 +38,7 @@ distance_scores <- textDistance(
   y = word_embeddings_4$texts$satisfactiontext
 )
 
-#Show information about how distance_scores were constructed.
+# Show information about how distance_scores were constructed.
 
 comment(distance_scores)
 }

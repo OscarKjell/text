@@ -28,14 +28,14 @@ A vector comprising semantic similarity scores. The closer the value is to 1 whe
 Compute the semantic similarity between two text variables.
 }
 \examples{
-#Compute the semantic similarity between the embeddings from "harmonytext" and "satisfactiontext".
+# Compute the semantic similarity between the embeddings from "harmonytext" and "satisfactiontext".
 \dontrun{
 similarity_scores <- textSimilarity(
   x = word_embeddings_4$texts$harmonytext,
   y = word_embeddings_4$texts$satisfactiontext
 )
 
-#Show information about how similarity_scores were constructed.
+# Show information about how similarity_scores were constructed.
 comment(similarity_scores)
 }
 }
