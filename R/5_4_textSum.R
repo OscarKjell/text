@@ -1,5 +1,3 @@
-
-
 #' Summarize texts. (experimental)
 #' @param x (string)  A variable or a tibble/dataframe with at least one character variable.
 #' @param min_length (explicit integer; e.g., 10L)  The minimum number of tokens in the summed output.

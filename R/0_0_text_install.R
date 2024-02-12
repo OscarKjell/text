@@ -52,30 +52,25 @@ textrpp_install <- function(conda = "auto",
                             pip = TRUE,
                             python_path = NULL,
                             prompt = TRUE) {
-
   # Set system specific default versions
   if (rpp_version[[1]] == "rpp_version_system_specific_defaults") {
     if (is_osx() | is_linux()) {
       rpp_version <- c(
-
         "torch==2.0.0",
         "transformers==4.36.0",
         "numpy==1.26.0",
         "pandas==2.0.3",
         "nltk==3.6.7",
         "scikit-learn==1.3.0",
-        "datasets==2.16.1", # 2.9.0
+        "datasets==2.16.1",
         "evaluate==0.4.0",
-        "accelerate==0.26.0", ### ==0.20.1 from 0.20.1
-
-        "bertopic==0.16.0", ### 0.15.0
+        "accelerate==0.26.0",
+        "bertopic==0.16.0",
         "jsonschema==4.19.2",
         "sentence-transformers==2.2.2",
         "flair==0.13.0",
         "umap-learn==0.5.4",
-        "hdbscan==0.8.33"#,
-#        "numba==0.58.1"
-
+        "hdbscan==0.8.33"
       )
     }
     if (is_windows()) {
@@ -86,17 +81,15 @@ textrpp_install <- function(conda = "auto",
         "pandas==2.0.3",
         "nltk==3.6.7",
         "scikit-learn==1.3.0",
-        "datasets==2.16.1",      ### works with 2.9.0
+        "datasets==2.16.1",
         "evaluate==0.4.0",
-        "accelerate==0.26.0",    ### works with no version.
-
-         "bertopic==0.16.0",     ### works with 0.15.0
-         "jsonschema==4.19.2",
-         "sentence-transformers==2.2.2",
-         "flair==0.13.0",
-         "umap-learn==0.5.4",
-         "hdbscan==0.8.33"#,
-#        "numba==0.58.1"
+        "accelerate==0.26.0",
+        "bertopic==0.16.0",
+        "jsonschema==4.19.2",
+        "sentence-transformers==2.2.2",
+        "flair==0.13.0",
+        "umap-learn==0.5.4",
+        "hdbscan==0.8.33"
       )
     }
   }
@@ -168,7 +161,6 @@ textrpp_install <- function(conda = "auto",
 
     # Windows installation
   } else {
-
     # determine whether we have system python help(py_versions_windows)
     if (python_version == "find_python") {
       python_versions <- reticulate::py_versions_windows()
@@ -185,7 +177,6 @@ textrpp_install <- function(conda = "auto",
 
     # validate that we have conda:
     if (!have_conda) {
-
       # OK adds help(install_miniconda)
       reticulate::install_miniconda(update = update_conda)
       conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
@@ -273,7 +264,6 @@ textrpp_install_virtualenv <- function(rpp_version = c("torch==2.0.0", "transfor
                                        pip_version = NULL,
                                        envname = "textrpp_virtualenv",
                                        prompt = TRUE) {
-
   # find system python binary
   python <- if (!is.null(python_path)) python_path else python_unix_binary("python")
   if (is.null(python)) {
@@ -345,7 +335,6 @@ python_unix_binary <- function(bin) {
 
 
 python_version_function <- function(python) {
-
   # check for the version
   result <- system2(python, "--version", stdout = TRUE, stderr = TRUE)
 

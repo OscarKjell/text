@@ -1,4 +1,3 @@
-
 #' Compute cosine
 #'
 #' @param x A word embedding.
@@ -23,14 +22,14 @@ cosines <- function(x, y) {
 #' columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.
 #' @return A vector comprising semantic similarity scores. The closer the value is to 1 when using the default method, "cosine", the higher the semantic similarity.
 #' @examples
-#' #Compute the semantic similarity between the embeddings from "harmonytext" and "satisfactiontext".
+#' # Compute the semantic similarity between the embeddings from "harmonytext" and "satisfactiontext".
 #' \dontrun{
 #' similarity_scores <- textSimilarity(
 #'   x = word_embeddings_4$texts$harmonytext,
 #'   y = word_embeddings_4$texts$satisfactiontext
 #' )
 #'
-#' #Show information about how similarity_scores were constructed.
+#' # Show information about how similarity_scores were constructed.
 #' comment(similarity_scores)
 #' }
 #' @seealso See \code{\link{textDistance}} and \code{\link{textSimilarityNorm}}.
@@ -40,7 +39,6 @@ textSimilarity <- function(x,
                            method = "cosine",
                            center = TRUE,
                            scale = FALSE) {
-
   # Select necessary columns
   x1 <- dplyr::select(x, dplyr::starts_with("Dim"))
   y1 <- dplyr::select(y, dplyr::starts_with("Dim"))
@@ -104,8 +102,8 @@ textSimilarity <- function(x,
 #'  and the root mean square otherwise.
 #' @return A vector comprising semantic distance scores.
 #' @examples
-#' #Compute the semantic distance score between the embeddings
-#' #from "harmonytext" and "satisfactiontext".
+#' # Compute the semantic distance score between the embeddings
+#' # from "harmonytext" and "satisfactiontext".
 #'
 #' \dontrun{
 #' distance_scores <- textDistance(
@@ -113,7 +111,7 @@ textSimilarity <- function(x,
 #'   y = word_embeddings_4$texts$satisfactiontext
 #' )
 #'
-#' #Show information about how distance_scores were constructed.
+#' # Show information about how distance_scores were constructed.
 #'
 #' comment(distance_scores)
 #' }
@@ -176,8 +174,7 @@ textSimilarityMatrix <- function(
     x,
     method = "cosine",
     center = TRUE,
-    scale = FALSE
-) {
+    scale = FALSE) {
   # Extract a numeric matrix
   X <- as.matrix(dplyr::select(x, dplyr::starts_with("Dim")))
 
@@ -247,8 +244,7 @@ textDistanceMatrix <- function(
     x,
     method = "euclidean",
     center = FALSE,
-    scale = FALSE
-) {
+    scale = FALSE) {
   # Extract a numeric matrix
   X <- as.matrix(dplyr::select(x, dplyr::starts_with("Dim")))
 

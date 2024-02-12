@@ -1,5 +1,3 @@
-
-
 #' Question Answering. (experimental)
 #' @param question (string)  A question
 #' @param context (string)  The context(s) where the model will look for the answer.

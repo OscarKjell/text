@@ -1,5 +1,3 @@
-
-
 #' Named Entity Recognition. (experimental)
 #' @param x (string)  A  variable or a tibble/dataframe with at least one character variable.
 #' @param model (string)  Specification of a pre-trained language model for token classification

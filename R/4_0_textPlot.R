@@ -1,4 +1,3 @@
-
 #### Supervised Dimension Projection #####
 
 #' Creates the plot object (except for the legend).
@@ -49,7 +48,7 @@ textPlotting <- function(word_data_all = word_data_all,
     # ggrepel geom, make arrows transparent, color by rank, size by n
     ggrepel::geom_text_repel(
       data = word_data_all_yadjusted,
-      segment.alpha  = arrow_transparency,
+      segment.alpha = arrow_transparency,
       position = ggplot2::position_jitter(h = position_jitter_hight, w = position_jitter_width),
       ggplot2::aes(color = colour_categories, size = n, family = word_font),
     ) +
@@ -290,17 +289,14 @@ textOwnWordsProjection <- function(word_data = word_data,
                                    space = space,
                                    text_plot_comment = text_plot_comment,
                                    scaling = scaling) {
-
   # For loop for different batches of added words; i_add_w=1 explore_words = "happy harmony love"
   forloops_add_w <- length(explore_words)
   added_words_information <- list()
 
   # i_add_w = 1
   for (i_add_w in 1:forloops_add_w) {
-
     # If using a contextualized language model
     if (is.null(space) == TRUE) {
-
       # Creating word embeddings for the words.
       model_text <- sub(".*model: ", "", text_plot_comment)
       model_name <- sub(" ;.*", "", model_text)
@@ -368,11 +364,12 @@ textOwnWordsProjection <- function(word_data = word_data,
       manual_words_mean1 <- bind_rows(singlewords_we_x_scaled_w_n, Mean1)
     } else {
       # Aggregate the words
-      Aggregated_embedding_added_words <- tibble::as_tibble_row(textEmbeddingAggregation(dplyr::select(
-        explore_words_embeddings$word_types[[1]],
-        dplyr::starts_with("Dim")
-      ),
-      aggregation = explore_words_aggregation
+      Aggregated_embedding_added_words <- tibble::as_tibble_row(textEmbeddingAggregation(
+        dplyr::select(
+          explore_words_embeddings$word_types[[1]],
+          dplyr::starts_with("Dim")
+        ),
+        aggregation = explore_words_aggregation
       ))
       Mean1 <- dplyr::bind_cols(words, n_words, Aggregated_embedding_added_words)
       manual_words_mean1 <- bind_rows(explore_words_embeddings$word_types[[1]], Mean1)
@@ -484,17 +481,14 @@ textOwnWordPrediction <- function(word_data = word_data,
                                   space = space,
                                   text_plot_comment = text_plot_comment,
                                   scaling = scaling) {
-
   # For loop for different batches of added words; i_add_w=1 explore_words = "happy harmony love"
   forloops_add_w <- length(explore_words)
   added_words_information <- list()
 
 
   for (i_add_w in 1:forloops_add_w) {
-
     # If using a contextualized language model
     if (is.null(space) == TRUE) {
-
       # Creating word embeddings for the words.
       model_text <- sub(".*model: ", "", text_plot_comment)
       model_name <- sub(" ; layer.*", "", model_text)
@@ -539,11 +533,12 @@ textOwnWordPrediction <- function(word_data = word_data,
     colnames(n_words) <- "n"
 
     # Aggregate the words
-    Aggregated_embedding_added_words <- tibble::as_tibble_row(textEmbeddingAggregation(dplyr::select(
-      explore_words_embeddings$word_types,
-      dplyr::starts_with("Dim")
-    ),
-    aggregation = explore_words_aggregation
+    Aggregated_embedding_added_words <- tibble::as_tibble_row(textEmbeddingAggregation(
+      dplyr::select(
+        explore_words_embeddings$word_types,
+        dplyr::starts_with("Dim")
+      ),
+      aggregation = explore_words_aggregation
     ))
     Mean1 <- dplyr::bind_cols(words, n_words, Aggregated_embedding_added_words)
     manual_words_mean1 <- bind_rows(explore_words_embeddings$word_types, Mean1)
@@ -808,8 +803,6 @@ textPlot <- function(word_data,
                      n_contrast_group_remove = FALSE,
                      space = NULL,
                      scaling = FALSE) {
-
-
   ##### Comment to be saved ####
   text_plot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",
@@ -868,7 +861,7 @@ textPlot <- function(word_data,
   }
 
   #### Allow overlapping ####
-  if (overlapping == TRUE){
+  if (overlapping == TRUE) {
     options(ggrepel.max.overlaps = 1000)
   }
 
@@ -894,10 +887,10 @@ textPlot <- function(word_data,
   }
   # word_data_padjusted$p_values_x
   word_data_padjusted$adjusted_p_values.x <- stats::p.adjust(purrr::as_vector(word_data_padjusted[, "p_values_x"]),
-                                                             method = p_adjust_method
+    method = p_adjust_method
   )
   word_data1 <- dplyr::left_join(word_data$word_data, word_data_padjusted[, c("words", "adjusted_p_values.x")],
-                                 by = "words"
+    by = "words"
   )
   # word_data$adjusted_p_values.x
 
@@ -1018,19 +1011,19 @@ textPlot <- function(word_data,
 
   word_data1_x <- word_data1 %>%
     dplyr::left_join(data_p_sq_all %>%
-                       dplyr::transmute(words, check_p_square = 1), by = "words") %>%
+      dplyr::transmute(words, check_p_square = 1), by = "words") %>%
     dplyr::left_join(data_p_x_neg %>%
-                       dplyr::transmute(words, check_p_x_neg = 1), by = "words") %>%
+      dplyr::transmute(words, check_p_x_neg = 1), by = "words") %>%
     dplyr::left_join(data_p_x_pos %>%
-                       dplyr::transmute(words, check_p_x_pos = 1), by = "words") %>%
+      dplyr::transmute(words, check_p_x_pos = 1), by = "words") %>%
     dplyr::left_join(word_data1_extrem_max_x %>%
-                       dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
     dplyr::left_join(word_data1_extrem_min_x %>%
-                       dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
     dplyr::left_join(word_data1_frequency_x %>%
-                       dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
     dplyr::left_join(word_data1_middle_x %>%
-                       dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
+      dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
     dplyr::mutate(extremes_all_x = rowSums(cbind(
       check_p_square, check_p_x_neg, check_p_x_pos, check_extreme_max_x, check_extreme_min_x,
       check_extreme_frequency_x, check_middle_x
@@ -1074,17 +1067,17 @@ textPlot <- function(word_data,
 
     word_data_all <- word_data1_x %>%
       dplyr::left_join(data_p_y_pos %>%
-                         dplyr::transmute(words, check_p_y_pos = 1), by = "words") %>%
+        dplyr::transmute(words, check_p_y_pos = 1), by = "words") %>%
       dplyr::left_join(data_p_y_neg %>%
-                         dplyr::transmute(words, check_p_y_neg = 1), by = "words") %>%
+        dplyr::transmute(words, check_p_y_neg = 1), by = "words") %>%
       dplyr::left_join(word_data1_extrem_max_y %>%
-                         dplyr::transmute(words, check_extreme_max_y = 1), by = "words") %>%
+        dplyr::transmute(words, check_extreme_max_y = 1), by = "words") %>%
       dplyr::left_join(word_data1_extrem_min_y %>%
-                         dplyr::transmute(words, check_extreme_min_y = 1), by = "words") %>%
+        dplyr::transmute(words, check_extreme_min_y = 1), by = "words") %>%
       dplyr::left_join(word_data1_frequency_y %>%
-                         dplyr::transmute(words, check_extreme_frequency_y = 1), by = "words") %>%
+        dplyr::transmute(words, check_extreme_frequency_y = 1), by = "words") %>%
       dplyr::left_join(word_data1_middle_y %>%
-                         dplyr::transmute(words, check_middle_y = 1), by = "words") %>%
+        dplyr::transmute(words, check_middle_y = 1), by = "words") %>%
       dplyr::mutate(extremes_all_y = rowSums(cbind(
         check_p_y_neg, check_p_y_pos, check_extreme_max_y, check_extreme_min_y,
         check_extreme_frequency_y, check_middle_y
@@ -1122,16 +1115,15 @@ textPlot <- function(word_data,
 
   #### Colorize words that are more frequent on the opposite side of the dot product projection ####
   if (is.character(n_contrast_group_color) == TRUE) {
-
     # Select words with MORE words in G1 and POSITIVE dot product (i.e., remove words that are
     # more represented in the opposite group of its dot product projection)
     word_data_all$colour_categories[(abs(word_data_all$n_g1.x) > abs(word_data_all$n_g2.x) &
-                                       word_data_all$x_plotted > 0)] <- n_contrast_group_color
+      word_data_all$x_plotted > 0)] <- n_contrast_group_color
 
     # Select words with MORE words in G2 and POSITIVE dot product (i.e., remove words that are more
     # represented in the opposite group of its dot product projection)
     word_data_all$colour_categories[(abs(word_data_all$n_g1.x) < abs(word_data_all$n_g2.x) &
-                                       word_data_all$x_plotted < 0)] <- n_contrast_group_color
+      word_data_all$x_plotted < 0)] <- n_contrast_group_color
   }
 
   #### Remove more frequent words on the opposite side of the dot product projection ####
@@ -1140,13 +1132,13 @@ textPlot <- function(word_data,
       # Select words with MORE words in G1 and NEGATIVE dot product (i.e., do not select words
       # that are more represented in the opposite group of its dot product projection)
       filter((abs(n_g1.x) > abs(n_g2.x) &
-                x_plotted < 0))
+        x_plotted < 0))
 
     word_data_all2 <- word_data_all %>%
       # Select words with MORE words in G2 and POSITIVE dot product (i.e., do not select words that
       # are more represented in the opposite group of its dot product projection)
       filter((abs(n_g1.x) < abs(n_g2.x) &
-                x_plotted > 0))
+        x_plotted > 0))
 
     word_data_all <- bind_rows(word_data_all1, word_data_all2)
   }
@@ -1271,14 +1263,10 @@ textPlot <- function(word_data,
 
   #### Plot both figure and legend help(null_dev_env) ####
   final_plot <- suppressWarnings(cowplot::ggdraw() +
-                                   cowplot::draw_plot(plot, 0, 0, 1, 1) +
-                                   cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
+    cowplot::draw_plot(plot, 0, 0, 1, 1) +
+    cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
 
   output_plot_data <- list(final_plot, text_plot_comment, word_data_all)
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")
   output_plot_data
-
 }
-
-
-

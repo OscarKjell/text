@@ -1,5 +1,3 @@
-
-
 #' Task Adapted Pre-Training (EXPERIMENTAL - under development)
 #' @param text_outcome_data A dataframe, where the first column contain text data,
 #' and the second column the to-be-predicted variable (numeric or categorical).
@@ -56,9 +54,7 @@ textFineTuneTask <- function(text_outcome_data,
                              set_seed = 2022,
                              label_names = NULL,
                              tokenizer_parallelism = FALSE,
-                             ...
-                             ){
-
+                             ...) {
   T1 <- Sys.time()
   set.seed(set_seed)
 
@@ -66,90 +62,94 @@ textFineTuneTask <- function(text_outcome_data,
   # Setting path in python -- so it finds task_finetune module/file
   reticulate::py_run_string(paste0("import sys; sys.path.append('", text_path, "')"))
   reticulate::source_python(system.file("python",
-                                        "huggingface_Interface4.py",
-                                        # envir = NULL,
-                                        package = "text",
-                                        mustWork = TRUE
+    "huggingface_Interface4.py",
+    # envir = NULL,
+    package = "text",
+    mustWork = TRUE
   ))
 
-  if(ncol(text_outcome_data)>2){
+  if (ncol(text_outcome_data) > 2) {
     stop("Please only input a text and label column")
   }
 
 
-  colnames(text_outcome_data) <-  c("text", "label")
+  colnames(text_outcome_data) <- c("text", "label")
   text_outcome_data$idx <- 1:nrow(text_outcome_data)
   text_outcome_data <- text_outcome_data[, c(3, 1, 2)]
 
   # Ensuring label variable has appropriate type
-  if(is_regression){
+  if (is_regression) {
     text_outcome_data$label <- as.numeric(text_outcome_data$label)
   }
-  if(!is_regression){
+  if (!is_regression) {
     text_outcome_data$label <- as.character(text_outcome_data$label)
   }
 
   # Only include complete cases
   n_before <- nrow(text_outcome_data)
-  text_outcome_data <- text_outcome_data[complete.cases(text_outcome_data),]
+  text_outcome_data <- text_outcome_data[complete.cases(text_outcome_data), ]
   n_after <- nrow(text_outcome_data)
 
-  if(n_before>n_after){
-    incomplete_info <- paste("Removed incomplete cases. Only using",
-                             n_after, "complete cases.", "\n")
+  if (n_before > n_after) {
+    incomplete_info <- paste(
+      "Removed incomplete cases. Only using",
+      n_after, "complete cases.", "\n"
+    )
     print(incomplete_info)
   }
 
 
   # Data set partitioning
-  train_proportion = 1 - validation_proportion - evaluation_proportion
-  total_size = nrow(text_outcome_data)
-  props <- c(rep("train",      ceiling(train_proportion*total_size)),
-             rep("validation", ceiling(validation_proportion*total_size)),
-             rep("evaluation", ceiling(evaluation_proportion*total_size)))
+  train_proportion <- 1 - validation_proportion - evaluation_proportion
+  total_size <- nrow(text_outcome_data)
+  props <- c(
+    rep("train", ceiling(train_proportion * total_size)),
+    rep("validation", ceiling(validation_proportion * total_size)),
+    rep("evaluation", ceiling(evaluation_proportion * total_size))
+  )
   props <- props[1:total_size]
 
-  train_data1 <-  tibble::as_tibble(text_outcome_data[props=="train", ])
-  val_data1   <-  tibble::as_tibble(text_outcome_data[props=="validation", ])
-  test_data1  <-  tibble::as_tibble(text_outcome_data[props=="evaluation", ])
+  train_data1 <- tibble::as_tibble(text_outcome_data[props == "train", ])
+  val_data1 <- tibble::as_tibble(text_outcome_data[props == "validation", ])
+  test_data1 <- tibble::as_tibble(text_outcome_data[props == "evaluation", ])
 
   # Setting file to fine-tuning arguments in python
   json_path1 <- paste0(text_path, "/args2.json")
 
-  hgTransformerFineTune(json_path = json_path1,
-                        model_name_or_path = model_name_or_path,
-                        output_dir = output_dir,
-                        text_outcome_df_train = train_data1,
-                        text_outcome_df_val = val_data1,
-                        text_outcome_df_test = test_data1,
-                        is_regression = is_regression,
-                        config_name = config_name,
-                        tokenizer_name = tokenizer_name,
-                        max_seq_length = max_seq_length,
-                        evaluation_strategy = evaluation_strategy,
-                        eval_accumulation_steps = eval_accumulation_steps,
-                        num_train_epochs = num_train_epochs,
-                        past_index = past_index,
-                        tokenizer_parallelism = tokenizer_parallelism,
-                        label_names = label_names,
-                        ...)
+  hgTransformerFineTune(
+    json_path = json_path1,
+    model_name_or_path = model_name_or_path,
+    output_dir = output_dir,
+    text_outcome_df_train = train_data1,
+    text_outcome_df_val = val_data1,
+    text_outcome_df_test = test_data1,
+    is_regression = is_regression,
+    config_name = config_name,
+    tokenizer_name = tokenizer_name,
+    max_seq_length = max_seq_length,
+    evaluation_strategy = evaluation_strategy,
+    eval_accumulation_steps = eval_accumulation_steps,
+    num_train_epochs = num_train_epochs,
+    past_index = past_index,
+    tokenizer_parallelism = tokenizer_parallelism,
+    label_names = label_names,
+    ...
+  )
 
 
   # Return all datasets
 
   T2 <- Sys.time()
 
-  print(T2-T1)
+  print(T2 - T1)
 
-  if(n_before>n_after){
+  if (n_before > n_after) {
     cat(colourise(incomplete_info,
-                  fg = "brown", bg = NULL
+      fg = "brown", bg = NULL
     ))
   }
 
   cat(colourise("Completed",
-            fg = "green", bg = NULL
+    fg = "green", bg = NULL
   ))
-
 }
-

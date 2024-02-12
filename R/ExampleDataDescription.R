@@ -1,4 +1,3 @@
-
 #' Text and numeric data for 10 participants.
 #'
 #' The dataset is a shortened version of the data sets of Study 3-5

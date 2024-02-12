@@ -1,4 +1,3 @@
-
 #' @importFrom utils packageVersion
 #' @noRd
 .onAttach <- function(libname, pkgname) {

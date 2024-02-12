@@ -1,4 +1,3 @@
-
 #' Takes all words as input and arrange them in column with an accompanying column with frequency.
 #' @param words Words
 #' @param upper_case use tolower or not
@@ -8,7 +7,7 @@
 unique_freq_words <- function(words,
                               upper_case = TRUE) {
   # Make all words lower case
-  if(upper_case) words <- tolower(words)
+  if (upper_case) words <- tolower(words)
 
   # separate words/tokens combined with /
   words <- gsub("/", " ", words)
@@ -55,7 +54,6 @@ addEqualNrNArows <- function(x, y) {
 p_value_comparing_with_Null <- function(Observedresult,
                                         NULLresults,
                                         alternative = c("two_sided", "less", "greater")) {
-
   #  NULLresults= c(1:10, NA) Observedresult = 1 NA alternative = "two_sided"
   NULLresults <- NULLresults %>%
     tibble::as_tibble_col() %>%
@@ -104,7 +102,6 @@ p_value_comparing_with_Null <- function(Observedresult,
 add_variables_to_we <- function(word_embeddings,
                                 data,
                                 append_first = FALSE) {
-
   # Add Names to new Variables
   colnames(data) <- paste("Dim0", "_", colnames(data), sep = "") # 1:ncol(data),
 
@@ -113,7 +110,6 @@ add_variables_to_we <- function(word_embeddings,
 
   # If not list of word embeddings
   if (!is.data.frame(word_embeddings)) {
-
     # Add append_first
     if (append_first == TRUE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(data, .x))
     # Add last
@@ -124,7 +120,6 @@ add_variables_to_we <- function(word_embeddings,
 
   # If list of word embeddings
   if (is.data.frame(word_embeddings)) {
-
     # Add append_first
     if (append_first == TRUE) ratings_embeddings_tibble <- dplyr::bind_cols(data, word_embeddings)
     # Add last
@@ -187,7 +182,6 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
   ##################################################
 
   if (!tibble::is_tibble(x) & length(x) > 1) {
-
     # Select all variables that starts with Dim in each dataframe of the list.
     xlist <- lapply(x, function(X) {
       X <- dplyr::select(X, dplyr::starts_with("Dim"))
@@ -282,7 +276,7 @@ extract_comment <- function(comment,
 
 
 
-#wanted_file <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
+# wanted_file <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
 #' Name to Path
 #' See if file exist in "inst/extdata/"
 #' if file does not exist download it.
@@ -291,48 +285,48 @@ extract_comment <- function(comment,
 #' @importFrom utils download.file
 #' @noRd
 path_exist_download_files <- function(wanted_file) {
-
-  destfile <- list.files(path = system.file("extdata/",
-                                            "", #file_name,
-                                            package = "text",
-                                            mustWork = TRUE),
-                         pattern = "")
+  destfile <- list.files(
+    path = system.file("extdata/",
+      "", # file_name,
+      package = "text",
+      mustWork = TRUE
+    ),
+    pattern = ""
+  )
 
   # Check if already downloaded; and if not, download
-  if (startsWith(wanted_file, "http:")  |
-      startsWith(wanted_file, "https:") |
-      startsWith(wanted_file, "www.") ) {
-
+  if (startsWith(wanted_file, "http:") |
+    startsWith(wanted_file, "https:") |
+    startsWith(wanted_file, "www.")) {
     # Get file names to check if already downloaded
     file_name <- basename(wanted_file)
 
     # Download if not there
-    if (!file_name %in% destfile){
-
-      utils::download.file(url = wanted_file,
-                           destfile = paste(system.file("extdata/",
-                                                        "", #file_name,
-                                                  # envir = NULL,
-                                                  package = "text",
-                                                  mustWork = TRUE
-                           ), "/", file_name, sep = ""),
-                           method = "auto")
+    if (!file_name %in% destfile) {
+      utils::download.file(
+        url = wanted_file,
+        destfile = paste(system.file("extdata/",
+          "", # file_name,
+          # envir = NULL,
+          package = "text",
+          mustWork = TRUE
+        ), "/", file_name, sep = ""),
+        method = "auto"
+      )
     }
 
-    path_to_file <-  system.file("extdata/",
-                file_name,
-                # envir = NULL,
-                package = "text",
-                mustWork = TRUE
-                )
-
-  } else if (wanted_file %in% destfile) {
-
     path_to_file <- system.file("extdata/",
-                                wanted_file,
-                                # envir = NULL,
-                                package = "text",
-                                mustWork = TRUE
+      file_name,
+      # envir = NULL,
+      package = "text",
+      mustWork = TRUE
+    )
+  } else if (wanted_file %in% destfile) {
+    path_to_file <- system.file("extdata/",
+      wanted_file,
+      # envir = NULL,
+      package = "text",
+      mustWork = TRUE
     )
   }
   return(path_to_file)
@@ -392,7 +386,6 @@ addEqualNrNArows <- function(x, y) {
 p_value_comparing_with_Null <- function(Observedresult,
                                         NULLresults,
                                         alternative = c("two_sided", "less", "greater")) {
-
   #  NULLresults= c(1:10, NA) Observedresult = 1 NA alternative = "two_sided"
   NULLresults <- NULLresults %>%
     tibble::as_tibble_col() %>%
@@ -402,15 +395,15 @@ p_value_comparing_with_Null <- function(Observedresult,
   p_right <- sum(NULLresults >= Observedresult) / nrow(NULLresults)
 
   switch(alternative,
-         "less" = {
-           p_value <- p_left
-         },
-         "greater" = {
-           p_value <- p_right
-         },
-         "two_sided" = {
-           p_value <- min(p_left, p_right) * 2
-         }
+    "less" = {
+      p_value <- p_left
+    },
+    "greater" = {
+      p_value <- p_right
+    },
+    "two_sided" = {
+      p_value <- min(p_left, p_right) * 2
+    }
   )
   if (!is.na(p_value)) {
     if (p_value == 0) {
@@ -441,7 +434,6 @@ p_value_comparing_with_Null <- function(Observedresult,
 add_variables_to_we <- function(word_embeddings,
                                 data,
                                 append_first = FALSE) {
-
   # Add Names to new Variables
   colnames(data) <- paste("Dim0", "_", colnames(data), sep = "") # 1:ncol(data),
 
@@ -450,7 +442,6 @@ add_variables_to_we <- function(word_embeddings,
 
   # If not list of word embeddings
   if (!is.data.frame(word_embeddings)) {
-
     # Add append_first
     if (append_first == TRUE) ratings_embeddings <- purrr::map(word_embeddings, ~ cbind(data, .x))
     # Add last
@@ -461,7 +452,6 @@ add_variables_to_we <- function(word_embeddings,
 
   # If list of word embeddings
   if (is.data.frame(word_embeddings)) {
-
     # Add append_first
     if (append_first == TRUE) ratings_embeddings_tibble <- dplyr::bind_cols(data, word_embeddings)
     # Add last
@@ -524,7 +514,6 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
   ##################################################
 
   if (!tibble::is_tibble(x) & length(x) > 1) {
-
     # Select all variables that starts with Dim in each dataframe of the list.
     xlist <- lapply(x, function(X) {
       X <- dplyr::select(X, dplyr::starts_with("Dim"))
@@ -619,7 +608,7 @@ extract_comment <- function(comment,
 
 
 
-#wanted_file <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
+# wanted_file <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
 #' Name to Path
 #' See if file exist in "inst/extdata/"
 #' if file does not exist download it.
@@ -628,48 +617,48 @@ extract_comment <- function(comment,
 #' @importFrom utils download.file
 #' @noRd
 path_exist_download_files <- function(wanted_file) {
-
-  destfile <- list.files(path = system.file("extdata/",
-                                            "", #file_name,
-                                            package = "text",
-                                            mustWork = TRUE),
-                         pattern = "")
+  destfile <- list.files(
+    path = system.file("extdata/",
+      "", # file_name,
+      package = "text",
+      mustWork = TRUE
+    ),
+    pattern = ""
+  )
 
   # Check if already downloaded; and if not, download
-  if (startsWith(wanted_file, "http:")  |
-      startsWith(wanted_file, "https:") |
-      startsWith(wanted_file, "www.") ) {
-
+  if (startsWith(wanted_file, "http:") |
+    startsWith(wanted_file, "https:") |
+    startsWith(wanted_file, "www.")) {
     # Get file names to check if already downloaded
     file_name <- basename(wanted_file)
 
     # Download if not there
-    if (!file_name %in% destfile){
-
-      utils::download.file(url = wanted_file,
-                           destfile = paste(system.file("extdata/",
-                                                        "", #file_name,
-                                                        # envir = NULL,
-                                                        package = "text",
-                                                        mustWork = TRUE
-                           ), "/", file_name, sep = ""),
-                           method = "auto")
+    if (!file_name %in% destfile) {
+      utils::download.file(
+        url = wanted_file,
+        destfile = paste(system.file("extdata/",
+          "", # file_name,
+          # envir = NULL,
+          package = "text",
+          mustWork = TRUE
+        ), "/", file_name, sep = ""),
+        method = "auto"
+      )
     }
 
-    path_to_file <-  system.file("extdata/",
-                                 file_name,
-                                 # envir = NULL,
-                                 package = "text",
-                                 mustWork = TRUE
-    )
-
-  } else if (wanted_file %in% destfile) {
-
     path_to_file <- system.file("extdata/",
-                                wanted_file,
-                                # envir = NULL,
-                                package = "text",
-                                mustWork = TRUE
+      file_name,
+      # envir = NULL,
+      package = "text",
+      mustWork = TRUE
+    )
+  } else if (wanted_file %in% destfile) {
+    path_to_file <- system.file("extdata/",
+      wanted_file,
+      # envir = NULL,
+      package = "text",
+      mustWork = TRUE
     )
   }
   return(path_to_file)
@@ -686,9 +675,9 @@ path_exist_download_files <- function(wanted_file) {
 #' @param predicted_scores2 Predictions from textPredict.
 #' @return Returns a tibble with values relevant for calculating implicit motives
 #' @noRd
-implicit_motives <- function(texts, user_id, predicted_scores2){
+implicit_motives <- function(texts, user_id, predicted_scores2) {
   # Create a table with the number of sentences per user
-  #table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
+  # table_uniques2 <- table(user_id[1:dim(predicted_scores2)[1]])
   table_uniques2 <- table(user_id[1:length(user_id)])
 
 
@@ -730,7 +719,7 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
   }
 
   # Calculate wc_person_per_1000 (for the first row)
-  summations[1, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[1:table_uniques2[[1]]], ' ')), na.rm = TRUE) / 1000
+  summations[1, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[1:table_uniques2[[1]]], " ")), na.rm = TRUE) / 1000
 
   # Calculate wc_person_per_1000 (for the rest of the rows)
   for (user_ids in 2:length(table_uniques2)) {
@@ -738,7 +727,7 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
     start_idx <- sum(table_uniques2[1:(user_ids - 1)]) + 1
     end_idx <- sum(table_uniques2[1:user_ids])
 
-    summations[user_ids, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[start_idx:end_idx], ' ')), na.rm = TRUE) / 1000
+    summations[user_ids, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[start_idx:end_idx], " ")), na.rm = TRUE) / 1000
   }
 
   summations["user_ids"] <- user_id_column
@@ -751,18 +740,17 @@ implicit_motives <- function(texts, user_id, predicted_scores2){
 #' @param sqrt_implicit_motives Tibble returned from function implicit_motives.
 #' @return implicit_motives_pred returns residuals from robust linear regression.
 #' @noRd
-implicit_motives_pred <- function(sqrt_implicit_motives){
-
+implicit_motives_pred <- function(sqrt_implicit_motives) {
   # square root transform
   sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
 
   # for OUTCOME_USER_SUM_PROB
-  lm.OUTCOME_USER_SUM_PROB <- stats::lm(OUTCOME_USER_SUM_PROB  ~ wc_person_per_1000, data = sqrt_implicit_motives)
+  lm.OUTCOME_USER_SUM_PROB <- stats::lm(OUTCOME_USER_SUM_PROB ~ wc_person_per_1000, data = sqrt_implicit_motives)
   OUTCOME_USER_SUM_PROB.residual1 <- resid(lm.OUTCOME_USER_SUM_PROB)
   OUTCOME_USER_SUM_PROB.residual1.z <- scale(OUTCOME_USER_SUM_PROB.residual1)
 
   # for OUTCOME_USER_SUM_CLASS
-  lm.OUTCOME_USER_SUM_CLASS <- stats::lm(OUTCOME_USER_SUM_CLASS  ~ wc_person_per_1000, data = sqrt_implicit_motives)
+  lm.OUTCOME_USER_SUM_CLASS <- stats::lm(OUTCOME_USER_SUM_CLASS ~ wc_person_per_1000, data = sqrt_implicit_motives)
   OUTCOME_USER_SUM_CLASS.residual1 <- resid(lm.OUTCOME_USER_SUM_CLASS)
   OUTCOME_USER_SUM_CLASS.residual1.z <- scale(OUTCOME_USER_SUM_CLASS.residual1)
 
@@ -822,7 +810,6 @@ update_user_and_texts <- function(df) {
 #' @return Returns the original dataset with predictions included.
 #' @noRd
 bind_predictions <- function(data, predictions) {
-
   predictions <- tibble::as_tibble(predictions)
 
   row_diff <- nrow(data) - nrow(predictions)
@@ -854,7 +841,7 @@ bind_data <- function(original_data, prediction_list) {
   result_data <- original_data
 
   # iterate through each "prediction"
-  for(i in seq_along(prediction_list)) {
+  for (i in seq_along(prediction_list)) {
     predictions <- prediction_list[[i]]
 
     # rename columns in predictions to ensure they are unique
@@ -884,38 +871,34 @@ implicit_motives_results <- function(model_reference,
                                      user_id,
                                      predicted_scores2,
                                      texts,
-                                     dataset){
-
+                                     dataset) {
   #### Make sure there is just one sentence per user_id ####
 
   # prepare dataframe for update_user_and_texts function
-  #id_and_texts <- data.frame(user_id = user_id, texts = texts)
+  # id_and_texts <- data.frame(user_id = user_id, texts = texts)
 
   # correct for multiple sentences per row. # CORRECT
-  #update_user_and_texts <- update_user_and_texts(id_and_texts)
+  # update_user_and_texts <- update_user_and_texts(id_and_texts)
   # update user_id
-  #user_id = update_user_and_texts$user_id
+  # user_id = update_user_and_texts$user_id
   # update texts
-  #texts = update_user_and_texts$texts
+  # texts = update_user_and_texts$texts
 
   #### Assign correct column name ####
   lower_case_model <- tolower(model_reference)
 
-  if (grepl("power", lower_case_model)){
+  if (grepl("power", lower_case_model)) {
     column_name <- "power"
-  }
-  else if (grepl("affiliation", lower_case_model)){
+  } else if (grepl("affiliation", lower_case_model)) {
     column_name <- "affiliation"
-  }
-  else if (grepl("achievement", lower_case_model)){
+  } else if (grepl("achievement", lower_case_model)) {
     column_name <- "achievement"
-  }
-  else if (model_reference == "achievment" | model_reference == "power" | model_reference == "affiliation" ){
+  } else if (model_reference == "achievment" | model_reference == "power" | model_reference == "affiliation") {
     column_name <- model_reference
   }
 
   if (length(texts) != length(user_id)) {
-    stop('texts and user_id must be of same length.')
+    stop("texts and user_id must be of same length.")
   }
 
   # Retrieve Data
@@ -934,10 +917,10 @@ implicit_motives_results <- function(model_reference,
   predicted_scores2 <- tibble::as_tibble(predicted_scores2)
 
   # Two different summary lists depending on if including the dataset with integrated predictions or not
-  if (is.null(dataset)){
+  if (is.null(dataset)) {
     # Summarize all predictions
     summary_list <- list(sentence_predictions = predicted_scores2, person_predictions = predicted)
-  } else{
+  } else {
     # predicted_scores2 = sentence predictions, predicted = person predictions
     to_insert <- list(predicted_scores2, predicted)
     # integrate predictions into dataset
@@ -964,14 +947,14 @@ implicit_motives_results <- function(model_reference,
 get_model_info <- function(model_info, user_id, show_texts, type, texts) {
   # show_prob is by default FALSE
   show_prob <- FALSE
-  if (is.character(model_info)){
+  if (is.character(model_info)) {
     lower_case_model <- tolower(model_info)
     if (
       grepl("power", lower_case_model) ||
-      grepl("achievement", lower_case_model) ||
-      grepl("affiliation", lower_case_model) && !is.null(user_id)
+        grepl("achievement", lower_case_model) ||
+        grepl("affiliation", lower_case_model) && !is.null(user_id)
     ) {
-      type <- "class"  # type must be class for these conditions
+      type <- "class" # type must be class for these conditions
 
       # switch to the correct model URL
       if (lower_case_model == "power") {
@@ -983,7 +966,7 @@ get_model_info <- function(model_info, user_id, show_texts, type, texts) {
       }
 
       # specific configuration for implicit motive coding
-      if (!is.null(user_id)){
+      if (!is.null(user_id)) {
         show_texts <- TRUE
         show_prob <- TRUE
         type <- "class"
@@ -995,18 +978,17 @@ get_model_info <- function(model_info, user_id, show_texts, type, texts) {
         update_user_and_texts <- update_user_and_texts(id_and_texts)
 
         # update user_id
-        user_id = update_user_and_texts$user_id
+        user_id <- update_user_and_texts$user_id
         # update texts
-        texts = update_user_and_texts$texts
-
+        texts <- update_user_and_texts$texts
       }
     }
   }
 
   # The stats package just takes "class" or "prob", therefore, allocate to "show_prob".
   if (!is.null(type) && type == "class_prob") {
-    type = "class"
-    show_prob = TRUE
+    type <- "class"
+    show_prob <- TRUE
   }
 
   return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type, user_id = user_id, texts = texts))

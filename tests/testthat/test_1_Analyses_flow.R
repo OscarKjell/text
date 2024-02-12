@@ -1,5 +1,3 @@
-
-
 library(testthat)
 library(tibble)
 library(text)
@@ -28,13 +26,13 @@ test_that("Testing textEmbed as well as train", {
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
 
-  dim1for1 <- harmony_word_embeddings$word_types$harmonytexts[[3]][harmony_word_embeddings$word_types$harmonytexts$words=="you"]
+  dim1for1 <- harmony_word_embeddings$word_types$harmonytexts[[3]][harmony_word_embeddings$word_types$harmonytexts$words == "you"]
   expect_equal(dim1for1, -0.2809616, tolerance = 0.00001)
 
-  dim1for1 <- harmony_word_embeddings$word_types$satisfactiontexts[[3]][harmony_word_embeddings$word_types$harmonytexts$words=="you"]
+  dim1for1 <- harmony_word_embeddings$word_types$satisfactiontexts[[3]][harmony_word_embeddings$word_types$harmonytexts$words == "you"]
   expect_equal(dim1for1, 0.1417716, tolerance = 0.00001)
 
-  dim1for1 <- harmony_word_embeddings$word_types$harmonytexts[[3]][harmony_word_embeddings$word_types$harmonytexts$words=="-"]
+  dim1for1 <- harmony_word_embeddings$word_types$harmonytexts[[3]][harmony_word_embeddings$word_types$harmonytexts$words == "-"]
   expect_equal(dim1for1, 0.5637481, tolerance = 0.00001)
 
   text_train_results1 <- textTrainRegression(
@@ -191,17 +189,18 @@ test_that("Testing textEmbed as well as train", {
 })
 
 test_that("Testing textEmbedReduce as well as train", {
-
   skip_on_cran()
-  embedding_roberta <- textEmbed(Language_based_assessment_data_3_100[1,1],
-                                 model = "roberta-base",
-                                 layer = 11)
+  embedding_roberta <- textEmbed(Language_based_assessment_data_3_100[1, 1],
+    model = "roberta-base",
+    layer = 11
+  )
 
   textModelsRemove("roberta-base")
 
-  pca5 <- text::textEmbedReduce(embeddings = embedding_roberta,
-                                n_dim = 5)
+  pca5 <- text::textEmbedReduce(
+    embeddings = embedding_roberta,
+    n_dim = 5
+  )
 
   testthat::expect_equal(pca5$texts$harmonywords[[1]], -9.569476, tolerance = 0.0001)
-
 })

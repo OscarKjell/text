@@ -1,4 +1,3 @@
-
 #' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 #'
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation).
@@ -14,26 +13,26 @@
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest
 #' the textTrain function.
 #' @return A correlation between predicted and observed values; as well as a
-#'  tibble of predicted values (t-value, degree of freedom (df), p-value, 
+#'  tibble of predicted values (t-value, degree of freedom (df), p-value,
 #'  alternative-hypothesis, confidence interval, correlation coefficient).
 #' @examples
-#' #Examines how well the embeddings from "harmonytext" can
-#' #predict the numeric variable "hilstotal" in the pre-included 
-#' #dataset "Language_based_assessment_data_8". 
-#' 
+#' # Examines how well the embeddings from "harmonytext" can
+#' # predict the numeric variable "hilstotal" in the pre-included
+#' # dataset "Language_based_assessment_data_8".
+#'
 #' \dontrun{
 #' trained_model <- textTrain(
 #'   x = word_embeddings_4$texts$harmonytext,
 #'   y = Language_based_assessment_data_8$hilstotal
 #' )
-#' 
-#' #Examine results (t-value, degree of freedom (df), p-value, 
-#' #alternative-hypothesis, confidence interval, correlation coefficient).
-#'  
+#'
+#' # Examine results (t-value, degree of freedom (df), p-value,
+#' # alternative-hypothesis, confidence interval, correlation coefficient).
+#'
 #' trained_model$results
 #' }
-#' @seealso See \code{\link{textTrainRegression}}, \code{\link{textTrainRandomForest}} and 
-#' \code{\link{textTrainLists}}. 
+#' @seealso See \code{\link{textTrainRegression}}, \code{\link{textTrainRandomForest}} and
+#' \code{\link{textTrainLists}}.
 #' @importFrom tibble is_tibble
 #' @importFrom dplyr select_if
 #' @export
@@ -41,14 +40,12 @@ textTrain <- function(x,
                       y,
                       force_train_method = "automatic",
                       ...) {
-
   # Figure out which train_method to use (textTrainRegression or textTrainRandomForest)
   if (is.numeric(y) == TRUE & force_train_method == "automatic") {
     train_method <- "regression"
   } else if (is.factor(y) == TRUE & force_train_method == "automatic") {
     train_method <- "logistic"
   } else if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "automatic") {
-
     # Create a dataframe with only one type (numeric or categorical) depending on most frequent type
     # Select all numeric variables
     y_n <- dplyr::select_if(y, is.numeric)
@@ -245,32 +242,32 @@ sort_classification_output_list <- function(output, save_output, descriptions, t
 #' and "only_results_predictions".
 #' @param method_cor (character) A character string describing type of correlation (default "Pearson").
 #' @param eval_measure (character) Type of evaluative measure to assess models on (default "rmse").
-#' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons. 
+#' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons.
 #' (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
 #' @param ... Arguments from textTrainRegression or textTrainRandomForest (the textTrain function).
-#' @return Correlations between predicted and observed values (t-value, degree of freedom (df), p-value, 
+#' @return Correlations between predicted and observed values (t-value, degree of freedom (df), p-value,
 #' confidence interval, alternative hypothesis, correlation coefficient) stored in a dataframe.
 #' @examples
-#' #Examines how well the embeddings from Language_based_assessment_data_8 can
-#' #predict the numerical numerical variables in Language_based_assessment_data_8. 
-#' #The training is done combination wise, i.e., correlations are tested pair wise, 
-#' #column: 1-5,1-6,2-5,2-6, resulting in a dataframe with four rows. 
-#'    
+#' # Examines how well the embeddings from Language_based_assessment_data_8 can
+#' # predict the numerical numerical variables in Language_based_assessment_data_8.
+#' # The training is done combination wise, i.e., correlations are tested pair wise,
+#' # column: 1-5,1-6,2-5,2-6, resulting in a dataframe with four rows.
+#'
 #' \dontrun{
 #' word_embeddings <- word_embeddings_4$texts[1:2]
 #' ratings_data <- Language_based_assessment_data_8[5:6]
-#' 
+#'
 #' trained_model <- textTrainLists(
 #'   x = word_embeddings,
 #'   y = ratings_data
 #' )
 #'
-#' #Examine results (t-value, degree of freedom (df), p-value, 
-#' #alternative-hypothesis, confidence interval, correlation coefficient).
-#'  
+#' # Examine results (t-value, degree of freedom (df), p-value,
+#' # alternative-hypothesis, confidence interval, correlation coefficient).
+#'
 #' trained_model$results
 #' }
-#' 
+#'
 #' @seealso See \code{\link{textTrain}}, \code{\link{textTrainRegression}} and  \code{\link{textTrainRandomForest}}.
 #' @importFrom stats cor.test
 #' @importFrom tibble as_tibble
@@ -309,7 +306,6 @@ textTrainLists <- function(x,
   } else if (force_train_method == "random_forest") {
     train_method <- "random_forest"
   } else if ((tibble::is_tibble(y) | is.data.frame(y) & length(y) > 1) & force_train_method == "automatic") {
-
     # Create a dataframe only comprising numeric or categorical depending on most frequent type
     # Select all numeric variables
     y_n <- dplyr::select_if(y, is.numeric)
@@ -369,7 +365,6 @@ textTrainLists <- function(x,
       )
     }
   } else if (train_method == "random_forest") {
-
     # Apply textTrainRandomForest function between each list element and sort outcome.
     output <- mapply(textTrainRandomForest,
       x = x, y = y1,

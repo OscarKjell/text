@@ -25,54 +25,56 @@ textTopics <- function(data,
                        vectorizer_model = "default",
                        representation_model = "mmr",
                        num_top_words = 10,
-                       n_gram_range = c(1,3),
+                       n_gram_range = c(1, 3),
                        stopwords = "english",
                        min_df = 5,
                        bm25_weighting = FALSE,
                        reduce_frequent_words = TRUE,
                        set_seed = 8,
-                       save_dir = "./results"){
-
-
+                       save_dir = "./results") {
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
-                                        "bert_topic.py",
-                                        # envir = NULL,
-                                        package = "text",
-                                        mustWork = TRUE
+    "bert_topic.py",
+    # envir = NULL,
+    package = "text",
+    mustWork = TRUE
   ))
 
-  model <- create_bertopic_model(data = data,
-                                 data_var = variable_name,
-                                 embedding_model = embedding_model,  # provide a value for embedding_model
-                                 umap_model = umap_model,       # provide a value for umap_model
-                                 hdbscan_model = hdbscan_model,    # provide a value for hdbscan_model
-                                 vectorizer_model = vectorizer_model,  # provide a value for vectorizer_model
-                                 representation_model = representation_model,  # provide a value for representation_model
-                                 top_n_words = num_top_words,  # provide a value for top_n_words
-                                 n_gram_range = n_gram_range,
-                                 min_df = min_df,
-                                 bm25_weighting = bm25_weighting,
-                                 reduce_frequent_words = reduce_frequent_words,
-                                 stop_words = stopwords,  # provide a value for n_gram_range
-                                 seed = set_seed,
-                                 save_dir = save_dir  # provide a value for save_dir
+  model <- create_bertopic_model(
+    data = data,
+    data_var = variable_name,
+    embedding_model = embedding_model, # provide a value for embedding_model
+    umap_model = umap_model, # provide a value for umap_model
+    hdbscan_model = hdbscan_model, # provide a value for hdbscan_model
+    vectorizer_model = vectorizer_model, # provide a value for vectorizer_model
+    representation_model = representation_model, # provide a value for representation_model
+    top_n_words = num_top_words, # provide a value for top_n_words
+    n_gram_range = n_gram_range,
+    min_df = min_df,
+    bm25_weighting = bm25_weighting,
+    reduce_frequent_words = reduce_frequent_words,
+    stop_words = stopwords, # provide a value for n_gram_range
+    seed = set_seed,
+    save_dir = save_dir # provide a value for save_dir
   )
 
   model$summary <- data.frame(model[2])
   preds <- data.frame(read.csv(
-    paste0(save_dir,"/seed_",set_seed,"/topic_distr.csv")))
+    paste0(save_dir, "/seed_", set_seed, "/topic_distr.csv")
+  ))
 
   train_data <- data.frame(read.csv(
-    paste0(save_dir,"/seed_",set_seed,"/data.csv")))
+    paste0(save_dir, "/seed_", set_seed, "/data.csv")
+  ))
 
   # save a dataframe with model_type, seed and save_dir inside the comment
 
-  return(list(model = model,
-              preds = preds,
-              train_data = train_data,
-              model_type = "bert_topic",
-              seed = set_seed,
-              save_dir = save_dir))
-
+  return(list(
+    model = model,
+    preds = preds,
+    train_data = train_data,
+    model_type = "bert_topic",
+    seed = set_seed,
+    save_dir = save_dir
+  ))
 }

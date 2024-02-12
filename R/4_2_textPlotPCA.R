@@ -1,4 +1,3 @@
-
 ####  textPCA and textPCAPlot #####
 
 #' Compute 2 PCA dimensions of the word embeddings for individual words.
@@ -40,8 +39,9 @@ textPCA <- function(words,
   uniques_words_all <- unique_freq_words(words = words, upper_case = to_lower_case)
 
   uniques_words_all_wordembedding <- sapply(uniques_words_all$words,
-                                            applysemrep, word_types_embeddings,
-                                            tolower = to_lower_case)
+    applysemrep, word_types_embeddings,
+    tolower = to_lower_case
+  )
   uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
   rec_pca <- recipes::recipe(~., data = uniques_words_all_wordembedding)
@@ -301,7 +301,7 @@ textPCAPlot <- function(word_data,
     # ggrepel geom, make arrows transparent, color by rank, size by n word_data_all_yadjusted$colour_categories
     ggrepel::geom_text_repel(
       data = word_data_all_yadjusted,
-      segment.alpha  = arrow_transparency,
+      segment.alpha = arrow_transparency,
       position = ggplot2::position_jitter(h = position_jitter_hight, w = position_jitter_width),
       ggplot2::aes(color = colour_categories, size = n, family = word_font),
     ) +

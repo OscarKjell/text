@@ -1,4 +1,3 @@
-
 #' semanticrepresentation
 #' Apply an aggregated semantic representation for ALL words in a "CELL";
 #' and if there are no words return a vector with NAs. The function is using
@@ -149,7 +148,6 @@ textEmbedStatic <- function(df,
                             aggregation_from_tokens_to_texts = "mean",
                             dim_name = FALSE,
                             tolower = FALSE) {
-
   # Select the tk or dk matrix derived from the lsa (svd)
   if (tk_df == "tk") {
     # If variable names start with V (as in V1) rename to Dim1

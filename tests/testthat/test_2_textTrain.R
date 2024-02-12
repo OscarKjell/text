@@ -136,44 +136,44 @@ test_that("textTrain Regression produces list of results with prediction being n
   testthat::expect_is(trained_NA$predictions$predictions[1], "numeric")
   testthat::expect_equal(trained_NA$predictions$predictions[1], 28.5811, tolerance = 0.001)
 
-  #test multinomial logistic regression with 3 outcomes
-trained_multinomial <- text::textTrainRegression(
-  x = word_embeddings_4$texts["harmonywords"],
-  y = as.factor(ntile(Language_based_assessment_data_8$hilstotal,3)),
-  cv_method = "validation_split",
-  outside_folds = 10,
-  inside_folds = 3 / 4,
-  model = "multinomial",
-  eval_measure = "bal_accuracy",
-  penalty = c(1),
-  mixture = c(0),
-  preprocess_PCA = "min_halving",
-  multi_cores = "multi_cores_sys_default",
-  save_output = "only_results"
-)
+  # test multinomial logistic regression with 3 outcomes
+  trained_multinomial <- text::textTrainRegression(
+    x = word_embeddings_4$texts["harmonywords"],
+    y = as.factor(ntile(Language_based_assessment_data_8$hilstotal, 3)),
+    cv_method = "validation_split",
+    outside_folds = 10,
+    inside_folds = 3 / 4,
+    model = "multinomial",
+    eval_measure = "bal_accuracy",
+    penalty = c(1),
+    mixture = c(0),
+    preprocess_PCA = "min_halving",
+    multi_cores = "multi_cores_sys_default",
+    save_output = "only_results"
+  )
 
-testthat::expect_that(trained_multinomial, testthat::is_a("list"))
-testthat::expect_is(trained_multinomial$results_metrics$.estimate[[1]], "numeric")
-testthat::expect_equal(trained_multinomial$results_metrics$.estimate[[1]], 0.675)
+  testthat::expect_that(trained_multinomial, testthat::is_a("list"))
+  testthat::expect_is(trained_multinomial$results_metrics$.estimate[[1]], "numeric")
+  testthat::expect_equal(trained_multinomial$results_metrics$.estimate[[1]], 0.675)
 
-#test multinomial logistic regression with four outcomes. Note that the data has few observations so there will be many warnings.
-trained_multinomial4 <- text::textTrainRegression(
-  x = word_embeddings_4$texts["harmonywords"],
-  y = as.factor(ntile(Language_based_assessment_data_8$hilstotal, 4)),
-  cv_method = "validation_split",
-  outside_folds = 10,
-  inside_folds = 3 / 4,
-  model = "multinomial",
-  eval_measure = "bal_accuracy",
-  penalty = c(1),
-  mixture = c(0),
-  preprocess_PCA = "min_halving",
-  multi_cores = "multi_cores_sys_default"
-)
+  # test multinomial logistic regression with four outcomes. Note that the data has few observations so there will be many warnings.
+  trained_multinomial4 <- text::textTrainRegression(
+    x = word_embeddings_4$texts["harmonywords"],
+    y = as.factor(ntile(Language_based_assessment_data_8$hilstotal, 4)),
+    cv_method = "validation_split",
+    outside_folds = 10,
+    inside_folds = 3 / 4,
+    model = "multinomial",
+    eval_measure = "bal_accuracy",
+    penalty = c(1),
+    mixture = c(0),
+    preprocess_PCA = "min_halving",
+    multi_cores = "multi_cores_sys_default"
+  )
 
-testthat::expect_that(trained_multinomial4, testthat::is_a("list"))
-testthat::expect_is(trained_multinomial4$results_metrics$.estimate[[1]], "numeric")
-testthat::expect_equal(trained_multinomial4$results_metrics$.estimate[[1]], 0.275)
+  testthat::expect_that(trained_multinomial4, testthat::is_a("list"))
+  testthat::expect_is(trained_multinomial4$results_metrics$.estimate[[1]], "numeric")
+  testthat::expect_equal(trained_multinomial4$results_metrics$.estimate[[1]], 0.275)
 })
 
 
@@ -207,7 +207,7 @@ test_that("textTrain Random Forest produces list of results with prediction bein
 
   testthat::expect_that(trained1, testthat::is_a("list"))
   testthat::expect_is(trained1$truth_predictions$truth[1], "factor")
-#  testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.297) R.4.2
+  #  testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.297) R.4.2
   testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.324)
 
   trained2 <- text::textTrain(
@@ -285,7 +285,7 @@ test_that("textTrainRandomForest with Extremely
 
   testthat::expect_that(trained_rf_95, testthat::is_a("list"))
   testthat::expect_is(trained_rf_95$results$.estimate[1], "numeric")
-#  testthat::expect_equal(trained_rf_95$results$.estimate[1], 0.4102564, tolerance = 0.001) R4.2
+  #  testthat::expect_equal(trained_rf_95$results$.estimate[1], 0.4102564, tolerance = 0.001) R4.2
   testthat::expect_equal(trained_rf_95$results$.estimate[1], 0.4615385, tolerance = 0.001)
 
   example_categories <- as.factor(c(
@@ -313,7 +313,7 @@ test_that("textTrainRandomForest with Extremely
 
   testthat::expect_that(trained_rf_3, testthat::is_a("list"))
   testthat::expect_is(trained_rf_3$truth_predictions$truth[1], "factor")
-#  testthat::expect_equal(trained_rf_3$truth_predictions$.pred_1[1], 0.107) R4.2
+  #  testthat::expect_equal(trained_rf_3$truth_predictions$.pred_1[1], 0.107) R4.2
   testthat::expect_equal(trained_rf_3$truth_predictions$.pred_1[1], 0.134)
 
   example_categories_tibble <- tibble::as_tibble_col(example_categories)
@@ -411,11 +411,11 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   testthat::expect_that(results_or_p2, testthat::is_a("list"))
   testthat::expect_is(results_or_p2$results$.estimate[1], "numeric")
   testthat::expect_equal(results_or_p2$results$.estimate[1], 0.525, tolerance = 0.001)
-  #testthat::expect_equal(results_or_p2D$results$.estimate[1], 0.500, tolerance = 0.001)
-  #testthat::expect_equal(results_or_p2F$results$.estimate[1], 0.500, tolerance = 0.001)
-  #testthat::expect_equal(results_or_p2T$results$.estimate[1], 0.500, tolerance = 0.001)
-  #testthat::expect_equal(results_or_p2$results$.estimate[1], 0.425, tolerance = 0.001)
-  #testthat::expect_equal(results_or_p2$results$.estimate[1], 0.475, tolerance = 0.001)
+  # testthat::expect_equal(results_or_p2D$results$.estimate[1], 0.500, tolerance = 0.001)
+  # testthat::expect_equal(results_or_p2F$results$.estimate[1], 0.500, tolerance = 0.001)
+  # testthat::expect_equal(results_or_p2T$results$.estimate[1], 0.500, tolerance = 0.001)
+  # testthat::expect_equal(results_or_p2$results$.estimate[1], 0.425, tolerance = 0.001)
+  # testthat::expect_equal(results_or_p2$results$.estimate[1], 0.475, tolerance = 0.001)
 
 
   factors1 <- as.factor(Language_based_assessment_data_8$gender)
@@ -496,7 +496,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
   testthat::expect_that(results_rf_et, testthat::is_a("list"))
   testthat::expect_is(results_rf_et$results$p_value[1], "character")
-#  testthat::expect_equal(results_rf_et$results$precision[1], 0.4705882, tolerance = 0.0001) R 4.2
+  #  testthat::expect_equal(results_rf_et$results$precision[1], 0.4705882, tolerance = 0.0001) R 4.2
   testthat::expect_equal(results_rf_et$results$precision[1], 0.4444444, tolerance = 0.0001)
 
   results_rf <- text::textTrain(
@@ -534,12 +534,12 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     trees = c(1000),
     eval_measure = "precision",
     save_output = "only_results_predictions",
-    multi_cores =FALSE
+    multi_cores = FALSE
   )
 
   testthat::expect_that(results_rf_or_p, testthat::is_a("list"))
   testthat::expect_is(results_rf_or_p$results$p_value[1], "character")
-#  testthat::expect_equal(results_rf_or_p$results$precision[1], 0.4705882, tolerance = 0.0001) # R 4.2
+  #  testthat::expect_equal(results_rf_or_p$results$precision[1], 0.4705882, tolerance = 0.0001) # R 4.2
   testthat::expect_equal(results_rf_or_p$results$precision[1], 0.4444444, tolerance = 0.0001) # R 4.3
 
 
@@ -562,7 +562,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
   testthat::expect_that(results_rf_or, testthat::is_a("list"))
   testthat::expect_is(results_rf_or$results$p_value[1], "character")
-#  testthat::expect_equal(results_rf_or$results$roc_auc[1], 0.38625) # R 4.2
+  #  testthat::expect_equal(results_rf_or$results$roc_auc[1], 0.38625) # R 4.2
   testthat::expect_equal(results_rf_or$results$roc_auc[1], 0.375)
 })
 
@@ -667,8 +667,8 @@ test_that("textTrainRandomForest adding word_embedding together", {
 
   testthat::expect_that(multi_we_RF_PCA_3, testthat::is_a("list"))
   testthat::expect_is(multi_we_RF_PCA_3$results$.estimate[[1]], "numeric")
-#  testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.375) #R4.2
-  testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.4) #R4.3
+  #  testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.375) #R4.2
+  testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.4) # R4.3
 
 
   multi_we_RF_PCA_NA <- text::textTrainRandomForest(
@@ -702,20 +702,23 @@ test_that("textPredictTest t-test and bootstrapped test", {
   yhat2 <- runif(10)
 
   boot_test <- text::textPredictTest(y1,
-                                     yhat1,
-                                     y2,
-                                     yhat2,
-                                     method = "bootstrap",
-                                     bootstraps_times = 10)
+    yhat1,
+    y2,
+    yhat2,
+    method = "bootstrap",
+    bootstraps_times = 10
+  )
 
   testthat::expect_that(boot_test, testthat::is_a("list"))
   testthat::expect_equal(boot_test$overlapp_p_value, 0.7398745, tolerance = 0.0001)
 
-  boot_test2 <- text::textPredictTest(y1 = y1,
-                                      yhat1,
-                                      y2 = NULL,
-                                      yhat2,
-                                      method = "t-test")
+  boot_test2 <- text::textPredictTest(
+    y1 = y1,
+    yhat1,
+    y2 = NULL,
+    yhat2,
+    method = "t-test"
+  )
 
   testthat::expect_that(boot_test2, testthat::is_a("list"))
   testthat::expect_equal(boot_test2$Test$statistic[[1]], 0.233267, tolerance = 0.0001)
@@ -731,33 +734,36 @@ test_that("textPredictTest t-test and bootstrapped test", {
   yhat2 <- runif(20)
 
 
-  boot_test_auc1 <- text::textPredictTest(y1 = y1,
-                                      yhat1,
-                                      y2 = y2,
-                                      yhat2,
-                                      method = "bootstrap",
-                                      statistic = "auc",
-                                      times = 10)
+  boot_test_auc1 <- text::textPredictTest(
+    y1 = y1,
+    yhat1,
+    y2 = y2,
+    yhat2,
+    method = "bootstrap",
+    statistic = "auc",
+    times = 10
+  )
 
   testthat::expect_equal(boot_test_auc1$overlapp_p_value, 0.4530578, tolerance = 0.0001)
 
 
-  boot_test_auc2 <- text::textPredictTest(y1 = y1,
-                                         yhat1,
-                                         y2 = y1,
-                                         yhat2,
-                                         method = "bootstrap",
-                                         statistic = "auc",
-                                         bootstraps_times = 10)
+  boot_test_auc2 <- text::textPredictTest(
+    y1 = y1,
+    yhat1,
+    y2 = y1,
+    yhat2,
+    method = "bootstrap",
+    statistic = "auc",
+    bootstraps_times = 10
+  )
 
   testthat::expect_equal(boot_test_auc2$overlapp_p_value, 0.5782996, tolerance = 0.0001)
-
 })
 
 
 test_that("training with only x_append (without word embeddings)", {
   skip_on_cran()
-  #help("textTrainRegression")
+  # help("textTrainRegression")
   test_firstTRUE <- text::textTrainRegression(
     x = word_embeddings_4$texts$harmonywords,
     x_append = Language_based_assessment_data_8[6:7],

@@ -1,4 +1,3 @@
-
 #### Supervised Dimension Projection ######
 
 #' Compute Supervised Dimension Projection and related variables for plotting words.
@@ -45,7 +44,7 @@
 #'   Npermutations = 10,
 #'   n_per_split = 1
 #' )
-#' #Run df_for_plotting to examine result.
+#' # Run df_for_plotting to examine result.
 #' df_for_plotting
 #' }
 #' @seealso See \code{\link{textProjectionPlot}}.
@@ -71,11 +70,10 @@ textProjection <- function(words,
                            Npermutations = 10000,
                            n_per_split = 50000,
                            seed = 1003) {
-
   # This avoids breaking the Psych Method tutorial code
   # If there only is one word_types in a list, get it:
-  if(length(word_types_embeddings) == 1){
-    word_types_embeddings = word_types_embeddings[[1]]
+  if (length(word_types_embeddings) == 1) {
+    word_types_embeddings <- word_types_embeddings[[1]]
   }
 
   # Description to include as a comment in the end of function
@@ -147,7 +145,6 @@ textProjection <- function(words,
 
   # For-loop for x and y input/dimensions; i.e., y if the plot has two dimensions (i_dim=1 i_dim=2) remove(i_dim)
   for (i_dim in seq_len(ncol(x))) {
-
     # Get the word embeddings and scale/category for the plot dimension (i.e., x or y from above)
     x0 <- x[i_dim]
     x1 <- cbind(words, x0)
@@ -159,10 +156,8 @@ textProjection <- function(words,
 
     # 1. Responses are divided into two groups (G1 and G2 ####
     if (split == "mean" | split == "quartile") {
-
       # split="median" split = "quartile" or create interval sensitive
       if (split == "mean") {
-
         # Splitting datasets up to low versus high according to median split
         group1 <- x2 %>%
           dplyr::filter(value < mean(purrr::as_vector(value), na.rm = TRUE))
@@ -255,7 +250,6 @@ textProjection <- function(words,
 
       # Interval: No split. Weighting embeddings according to interval scale.
     } else if (split == "no") {
-
       # Getting unique words and their frequency
       words_group1b_freq <- unique_freq_words(x2$words)
       words_group1b_freq <- words_group1b_freq[words_group1b_freq$n >= min_freq_words_test, ]
@@ -586,77 +580,6 @@ textProjection <- function(words,
 #############
 
 
-
-
-
-
-word_data = proj
-k_n_words_to_test = FALSE
-min_freq_words_test = 1
-min_freq_words_plot = 1
-plot_n_words_square = 3
-plot_n_words_p = 5
-plot_n_word_extreme = 5
-plot_n_word_frequency = 5
-plot_n_words_middle = 5
-titles_color = "#61605e"
-# x_axes = TRUE
-y_axes = TRUE
-p_alpha = 0.05
-overlapping = TRUE
-p_adjust_method = "none"
-title_top = "Supervised Dimension Projection"
-x_axes_label = "Supervised Dimension Projection (SDP)"
-y_axes_label = "Supervised Dimension Projection (SDP)"
-scale_x_axes_lim = NULL
-scale_y_axes_lim = NULL
-word_font = NULL
-bivariate_color_codes = c(
-  "#398CF9", "#60A1F7", "#5dc688",
-  "#e07f6a", "#EAEAEA", "#40DD52",
-  "#FF0000", "#EA7467", "#85DB8E"
-)
-word_size_range = c(3, 8)
-position_jitter_hight = .0
-position_jitter_width = .03
-point_size = 0.5
-arrow_transparency = 0.1
-points_without_words_size = 0.2
-points_without_words_alpha = 0.2
-legend_title = "SDP"
-legend_x_axes_label = "x"
-legend_y_axes_label = "y"
-legend_x_position = 0.02
-legend_y_position = 0.02
-legend_h_size = 0.2
-legend_w_size = 0.2
-legend_title_size = 7
-legend_number_size = 2
-group_embeddings1 = FALSE
-group_embeddings2 = FALSE
-projection_embedding = FALSE
-aggregated_point_size = 0.8
-aggregated_shape = 8
-aggregated_color_G1 = "black"
-aggregated_color_G2 = "black"
-projection_color = "blue"
-seed = 1005
-explore_words = c("happy")
-explore_words_color = "#ad42f5"
-explore_words_point = "ALL_1"
-explore_words_aggregation = "mean"
-remove_words = NULL
-n_contrast_group_color = NULL
-n_contrast_group_remove = FALSE
-space = NULL
-scaling = FALSE
-
-
-
-
-
-
-
 #' Plot words according to Supervised Dimension Projection.
 #' @param word_data Dataframe from textProjection
 #' @param k_n_words_to_test Select the k most frequent words to significance
@@ -769,7 +692,7 @@ scaling = FALSE
 #'
 #' plot_projection
 #'
-#' #Investigate elements in DP_projections_HILS_SWLS_100.
+#' # Investigate elements in DP_projections_HILS_SWLS_100.
 #' names(DP_projections_HILS_SWLS_100)
 #' @seealso See \code{\link{textProjection}}.
 #' @importFrom tibble as_tibble tibble

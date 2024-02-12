@@ -1,4 +1,3 @@
-
 #### Semantic Centrality Plot SC ####
 
 #' Compute semantic similarity score between single words' word embeddings
@@ -17,10 +16,10 @@
 #' @return A dataframe with variables (e.g., including semantic similarity, frequencies)
 #' for the individual words that are used as input for the plotting in the textCentralityPlot function.
 #' @examples
-#' #Computes the semantic similarity between the individual word embeddings (Iwe)
-#' #in the "harmonywords" column of the pre-installed dataset: Language_based_assessment_data_8,
-#' #and the aggregated word embedding (Awe).
-#' #The Awe can be interpreted the latent meaning of the text.
+#' # Computes the semantic similarity between the individual word embeddings (Iwe)
+#' # in the "harmonywords" column of the pre-installed dataset: Language_based_assessment_data_8,
+#' # and the aggregated word embedding (Awe).
+#' # The Awe can be interpreted the latent meaning of the text.
 #'
 #' \dontrun{
 #' df_for_plotting <- textCentrality(
@@ -29,8 +28,8 @@
 #'   word_types_embeddings = word_embeddings_4$word_types
 #' )
 #'
-#' #df_for_plotting contain variables (e.g., semantic similarity, frequencies) for
-#' #the individual words that are used for plotting by the textCentralityPlot function.
+#' # df_for_plotting contain variables (e.g., semantic similarity, frequencies) for
+#' # the individual words that are used for plotting by the textCentralityPlot function.
 #' }
 #' @seealso See \code{\link{textCentralityPlot}} and \code{\link{textProjection}}.
 #' @importFrom dplyr bind_rows
@@ -120,8 +119,8 @@ textCentrality <- function(words,
 #' as well as tibble with processed data used to plot.
 #' @seealso See \code{\link{textCentrality}} and \code{\link{textProjection}}.
 #' @examples
-#' #Plot a centrality plot from the dataframe df_for_plotting
-#' #that is returned by the textCentrality function.
+#' # Plot a centrality plot from the dataframe df_for_plotting
+#' # that is returned by the textCentrality function.
 #' \dontrun{
 #' textCentralityPlot(
 #'   df_for_plotting,
@@ -299,7 +298,7 @@ textCentralityPlot <- function(word_data,
     # ggrepel geom, make arrows transparent, color by rank, size by n
     ggrepel::geom_text_repel(
       data = word_data1_all[word_data1_all$extremes_all_x >= 1, ],
-      segment.alpha  = arrow_transparency,
+      segment.alpha = arrow_transparency,
       position = ggplot2::position_jitter(h = position_jitter_hight, w = position_jitter_width),
       ggplot2::aes(color = colour_categories, size = n, family = word_font),
     ) +

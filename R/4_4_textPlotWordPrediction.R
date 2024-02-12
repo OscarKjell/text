@@ -1,4 +1,3 @@
-
 #### textWordPrediction ####
 
 #' Function to compute associated mean value of "x" for each word.

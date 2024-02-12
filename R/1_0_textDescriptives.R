@@ -1,4 +1,3 @@
-
 #' Compute descriptive statistics of character variables.
 #'
 #' @param words One or several character variables; if its a tibble or dataframe,
@@ -40,7 +39,7 @@ textDescriptives <- function(words,
                              compute_total = TRUE,
                              entropy_unit = "log2",
                              na.rm = TRUE,
-                             locale = 'en_US') {
+                             locale = "en_US") {
   if (tibble::is_tibble(words) | is.data.frame(words)) {
     # Select all character variables and make them UTF-8 coded.
     words <- select_character_v_utf8(words)
@@ -71,7 +70,6 @@ textDescriptives <- function(words,
   }
 
   word_descriptives <- function(words, entropy_unit) {
-
     # Total words
     w_total <- sum(stringi::stri_count_words(words, locale), na.rm = na.rm)
 

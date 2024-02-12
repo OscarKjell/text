@@ -1,5 +1,3 @@
-
-
 #' Predicts the words that will follow a specified text prompt. (experimental)
 #' @param x (string)  A variable or a tibble/dataframe with at least one character variable.
 #' @param model (string)  Specification of a pre-trained language model that have been trained with an
@@ -76,7 +74,7 @@ textGeneration <- function(x,
       logging_level = logging_level,
       return_incorrect_results = return_incorrect_results,
       return_tensors = return_tensors,
-    #  return_text = return_text,
+      #  return_text = return_text,
       return_full_text = return_full_text,
       clean_up_tokenization_spaces = clean_up_tokenization_spaces,
       prefix = prefix,

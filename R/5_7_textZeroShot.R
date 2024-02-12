@@ -1,5 +1,3 @@
-
-
 #' Zero Shot Classification (Experimental)
 #' @param sequences (string)  The sequence(s) to classify (not that they will be truncated if the model input is too large).
 #' @param candidate_labels (string) The set of class labels that is possible in the to classification of each sequence.
@@ -60,16 +58,18 @@ textZeroShot <- function(sequences,
     mustWork = TRUE
   ))
 
-  hg_zeroshot <- hgTransformerGetZeroShot(sequences = sequences,
-                                          candidate_labels = candidate_labels,
-                                          hypothesis_template = hypothesis_template,
-                                          multi_label = multi_label,
-                                          model = model,
-                                          device = device,
-                                          tokenizer_parallelism = tokenizer_parallelism,
-                                          logging_level = logging_level,
-                                          return_incorrect_results = return_incorrect_results,
-                                          set_seed = set_seed)
+  hg_zeroshot <- hgTransformerGetZeroShot(
+    sequences = sequences,
+    candidate_labels = candidate_labels,
+    hypothesis_template = hypothesis_template,
+    multi_label = multi_label,
+    model = model,
+    device = device,
+    tokenizer_parallelism = tokenizer_parallelism,
+    logging_level = logging_level,
+    return_incorrect_results = return_incorrect_results,
+    set_seed = set_seed
+  )
 
   T1_text_all <- Sys.time()
 
@@ -81,17 +81,20 @@ textZeroShot <- function(sequences,
     ) %>%
     dplyr::ungroup() %>%
     tidyr::pivot_wider(
-      id_cols= sequence,
+      id_cols = sequence,
       names_from = no,
       names_prefix = "x_",
       values_from = c(labels, scores),
-      names_sort=TRUE
+      names_sort = TRUE
     )
 
   # Re-arrange to mix order of labels and scores. help(pivot_wider)
-  hg_zeroshot1 <- cbind(hg_zeroshot1[1],
-                        hg_zeroshot1[c(matrix(names(hg_zeroshot1)[-1], 2,
-                                              byrow = TRUE))])
+  hg_zeroshot1 <- cbind(
+    hg_zeroshot1[1],
+    hg_zeroshot1[c(matrix(names(hg_zeroshot1)[-1], 2,
+      byrow = TRUE
+    ))]
+  )
 
 
   # Time to complete all variables
@@ -114,7 +117,3 @@ textZeroShot <- function(sequences,
   )
   return(hg_zeroshot1)
 }
-
-
-
-

@@ -1,5 +1,3 @@
-
-
 #' Translation. (experimental)
 #' @param x (string)  The text to be translated.
 #' @param source_lang (string)  The input language. Might be needed for multilingual models

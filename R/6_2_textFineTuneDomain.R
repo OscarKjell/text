@@ -1,5 +1,3 @@
-
-
 #' Domain Adapted Pre-Training (EXPERIMENTAL - under development)
 #' @param text_data A dataframe, where the first column contain text data,
 #' and the second column the to-be-predicted variable (numeric or categorical).
@@ -51,9 +49,7 @@ textFineTuneDomain <- function(
     num_train_epochs = 3,
     past_index = -1,
     set_seed = 2022,
-    ...
-){
-
+    ...) {
   T1 <- Sys.time()
   set.seed(set_seed)
 
@@ -61,78 +57,81 @@ textFineTuneDomain <- function(
   # Setting path in python -- so it finds task_finetune module/file
   reticulate::py_run_string(paste0("import sys; sys.path.append('", text_path, "')"))
   reticulate::source_python(system.file("python",
-                                        "huggingface_Interface4.py",
-                                        # envir = NULL,
-                                        package = "text",
-                                        mustWork = TRUE
+    "huggingface_Interface4.py",
+    # envir = NULL,
+    package = "text",
+    mustWork = TRUE
   ))
 
-  if(ncol(text_data)>1){
+  if (ncol(text_data) > 1) {
     stop("Please only input a text column")
   }
 
 
-  colnames(text_data) <-  c("text")
+  colnames(text_data) <- c("text")
   text_data$idx <- 1:nrow(text_data)
 
   # Only include complete cases
   n_before <- nrow(text_data)
-  text_data <- text_data[complete.cases(text_data),]
+  text_data <- text_data[complete.cases(text_data), ]
   n_after <- nrow(text_data)
 
-  if(n_before>n_after){
-    incomplete_info <- paste("Removed incomplete cases. Only using",
-                             n_after,
-                             "complete cases.", "\n")
+  if (n_before > n_after) {
+    incomplete_info <- paste(
+      "Removed incomplete cases. Only using",
+      n_after,
+      "complete cases.", "\n"
+    )
     print(incomplete_info)
   }
 
   # Data set partitioning
-  train_proportion = 1 - validation_proportion - evaluation_proportion
-  total_size = nrow(text_data)
-  props <- c(rep("train",      ceiling(train_proportion*total_size)),
-             rep("validation", ceiling(validation_proportion*total_size)),
-             rep("evaluation", ceiling(evaluation_proportion*total_size)))
+  train_proportion <- 1 - validation_proportion - evaluation_proportion
+  total_size <- nrow(text_data)
+  props <- c(
+    rep("train", ceiling(train_proportion * total_size)),
+    rep("validation", ceiling(validation_proportion * total_size)),
+    rep("evaluation", ceiling(evaluation_proportion * total_size))
+  )
   props <- props[1:total_size]
 
-  train_data1 <-  tibble::as_tibble(text_data[props=="train", ])
-  val_data1   <-  tibble::as_tibble(text_data[props=="validation", ])
-  test_data1  <-  tibble::as_tibble(text_data[props=="evaluation", ])
+  train_data1 <- tibble::as_tibble(text_data[props == "train", ])
+  val_data1 <- tibble::as_tibble(text_data[props == "validation", ])
+  test_data1 <- tibble::as_tibble(text_data[props == "evaluation", ])
 
   # Setting file to fine-tuning arguments in python
   json_path1 <- paste0(text_path, "/mlm_args2.json")
 
-  hgTransformerMLM(json_path = json_path1,
-                        model_name_or_path = model_name_or_path,
-                        output_dir = output_dir,
-                        text_df_train = train_data1,
-                        text_df_val = val_data1,
-                        text_df_test = test_data1,
-                        config_name = config_name,
-                        tokenizer_name = tokenizer_name,
-                        max_seq_length = max_seq_length,
-                        evaluation_strategy = evaluation_strategy,
-                        eval_accumulation_steps = eval_accumulation_steps,
-                        num_train_epochs = num_train_epochs,
-                        past_index = past_index,
-                        ...
-                   )
+  hgTransformerMLM(
+    json_path = json_path1,
+    model_name_or_path = model_name_or_path,
+    output_dir = output_dir,
+    text_df_train = train_data1,
+    text_df_val = val_data1,
+    text_df_test = test_data1,
+    config_name = config_name,
+    tokenizer_name = tokenizer_name,
+    max_seq_length = max_seq_length,
+    evaluation_strategy = evaluation_strategy,
+    eval_accumulation_steps = eval_accumulation_steps,
+    num_train_epochs = num_train_epochs,
+    past_index = past_index,
+    ...
+  )
 
 
   # Return all datasets
   T2 <- Sys.time()
 
-  print(T2-T1)
+  print(T2 - T1)
 
-  if(n_before>n_after){
+  if (n_before > n_after) {
     cat(colourise(incomplete_info,
-                  fg = "brown", bg = NULL
+      fg = "brown", bg = NULL
     ))
   }
 
   cat(colourise("Completed!",
-            fg = "green", bg = NULL
+    fg = "green", bg = NULL
   ))
-
 }
-
