@@ -163,7 +163,10 @@ textReturnModelAndEmbedding <- function(
 
     # Apply the running average function to each embedding column by story_id
     embeddings$texts$texts <- dplyr::group_by(embeddings$texts$texts, story_id) %>%
-      dplyr::mutate(across(starts_with("Dim"), running_avg)) %>%
+      dplyr::mutate(
+        dplyr::across(
+        dplyr::starts_with("Dim"),
+        running_avg)) %>%
       dplyr::ungroup()
 
     # Ungroup (remove the storyid column)
@@ -236,10 +239,12 @@ textReturnModelAndEmbedding <- function(
 #'   model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS"
 #' )
 #'
-#' # Example 3: (predict using a pretrained logistic github model and return probabilities and classifications)
+#' # Example 3: (predict using a pretrained logistic github model and return
+#' # probabilities and classifications)
 #' prediction4 <- textPredict(
 #'   texts = text_to_predict,
-#'   model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_github_model_logistic.RDS",
+#'   model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/
+#'   trained_github_model_logistic.RDS",
 #'   type = "class_prob",
 #'   threshold = 0.7
 #' )

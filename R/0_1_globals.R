@@ -40,7 +40,7 @@ utils::globalVariables(c(
   "stats_on_bootstrap",
 
   # textPredict
-  ":=",
+  ":=", "predicted_class",
 
   # implicit motives
   "resid",
@@ -84,6 +84,8 @@ utils::globalVariables(c(
   # create_plots:
   "Word", "phi", "scale_size_area", "create_bertopic_model", "name_cols_with_vocab",
   "topics_corr_grouping", "extract_topic_stats_corr",
-  "adjust.p_value", "mean_group_1", "mean_group_2", "sort_stats_tibble", "label_1", "top_terms"
+  "adjust.p_value", "mean_group_1", "mean_group_2", "sort_stats_tibble", "label_1", "top_terms",
+  "topics_t_test_grouping", "extract_topic_stats_cate", "topic_name", "p.value",
+  "adjusted_p.value", "cohen_d", "prevalence", "coherence"
 
 ))

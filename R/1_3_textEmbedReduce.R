@@ -102,7 +102,7 @@ textEmbedReduce <- function(
     pca = "fb20/rpca_roberta_768_D_20.csv") {
   ### Get the right cvs library(text)
 
-  if (scalar == "fb20/scalar") {
+  if (scalar == "fb20/scalar.csv") {
     scalar <- paste0("https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/",
                      "master/models/fb20/scalar.csv")
   }
