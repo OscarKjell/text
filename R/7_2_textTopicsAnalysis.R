@@ -11,7 +11,7 @@
 #' @importFrom stats as.formula glm p.adjust
 #' @return Metadata and results of the test such as estimate, t-value, p-value, and variable name.
 #' @export
-textTopicTest <- function(model,
+textTopicsTest <- function(model,
                           pred_var,
                           group_var = NULL, # only one in the case of t-test
                           control_vars = c(),

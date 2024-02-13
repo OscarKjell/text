@@ -41,8 +41,7 @@ Imports:
     yardstick,
     future,
     furrr,
-    overlapping,
-    ggwordcloud
+    overlapping
 RoxygenNote: 7.2.3
 Suggests: 
     knitr,
@@ -54,6 +53,7 @@ Suggests:
     covr,
     xml2,
     ranger,
-    utils
+    utils,
+    ggwordcloud
 VignetteBuilder: knitr
 Depends: R (>= 4.00)
