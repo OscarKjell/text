@@ -81,8 +81,8 @@ textCentrality <- function(words,
 #' (i.e., even if not significant;  duplicates are removed).
 #' @param plot_n_word_frequency Number of words to plot according to their frequency (default = 10).
 #' (i.e., even if not significant).
-#' @param plot_n_words_middle Number of words to plot that are in the middle in Supervised Dimension Projection score (default = 10).
-#' (i.e., even if not significant; duplicates are removed).
+#' @param plot_n_words_middle Number of words to plot that are in the middle in Supervised Dimension
+#' Projection score (default = 10). (i.e., even if not significant; duplicates are removed).
 #' @param title_top Title (default: "  ").
 #' @param titles_color Color for all the titles (default: "#61605e").
 #' @param x_axes Variable to be plotted on the x-axes (default: "central_semantic_similarity",
@@ -94,8 +94,8 @@ textCentrality <- function(words,
 #' @param scale_y_axes_lim Length of the y-axes (default: NULL, which uses c(-1, 1);
 #' change e.g., by trying c(-5, 5)).
 #' @param word_font Type of font (default: NULL).
-#' @param centrality_color_codes (HTML color codes. type = character) Colors of the words selected as plot_n_word_extreme
-#' (minimum values), plot_n_words_middle, plot_n_word_extreme (maximum values) and
+#' @param centrality_color_codes (HTML color codes. type = character) Colors of the words selected as
+#' plot_n_word_extreme (minimum values), plot_n_words_middle, plot_n_word_extreme (maximum values) and
 #' plot_n_word_frequency; the default is c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d", respectively.
 #' @param word_size_range Vector with minimum and maximum font size (default: c(3, 8)).
 #' @param position_jitter_hight Jitter height (default: .0).
@@ -248,17 +248,17 @@ textCentralityPlot <- function(word_data,
 
   word_data1_all <- word_data1 %>%
     dplyr::left_join(word_data1_extrem_max_x %>%
-      dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
+                       dplyr::transmute(words, check_extreme_max_x = 1), by = "words") %>%
     dplyr::left_join(word_data1_extrem_min_x %>%
-      dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
+                       dplyr::transmute(words, check_extreme_min_x = 1), by = "words") %>%
     dplyr::left_join(word_data1_frequency_x %>%
-      dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
+                       dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
     dplyr::left_join(word_data1_middle_x %>%
-      dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
+                       dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
     dplyr::mutate(extremes_all_x = rowSums(cbind(
       check_extreme_max_x, check_extreme_min_x,
       check_extreme_frequency_x, check_middle_x
-    ), na.rm = T))
+    ), na.rm = TRUE))
 
   # Categorise words to apply specific color View(word_data1_all)
   word_data1_all <- word_data1_all %>%
@@ -270,15 +270,15 @@ textCentralityPlot <- function(word_data,
     ))
 
   if (is.null(scale_x_axes_lim)) {
-    scale_x_axes_lim <- c(min(word_data1[[eval(x_axes)]], na.rm = T) -
-      0.05, max(word_data1[[eval(x_axes)]], na.rm = T) + 0.05)
+    scale_x_axes_lim <- c(min(word_data1[[eval(x_axes)]], na.rm = TRUE) -
+                            0.05, max(word_data1[[eval(x_axes)]], na.rm = TRUE) + 0.05)
   }
   if (is.null(scale_y_axes_lim)) {
     scale_y_axes_lim <- c(-1, 1)
   }
 
   # This solution is because it is not possible to send "0" as a parameter
-  only_x_dimension <- 0
+  # only_x_dimension <- 0
   y_axes <- "only_x_dimension"
 
   # Plot

@@ -20,7 +20,8 @@ cosines <- function(x, y) {
 #' (omitting NAs) of x from their corresponding columns, and if center is FALSE, no centering is done.
 #' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the (centered)
 #' columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.
-#' @return A vector comprising semantic similarity scores. The closer the value is to 1 when using the default method, "cosine", the higher the semantic similarity.
+#' @return A vector comprising semantic similarity scores. The closer the value is to 1 when using the default
+#'  method, "cosine", the higher the semantic similarity.
 #' @examples
 #' # Compute the semantic similarity between the embeddings from "harmonytext" and "satisfactiontext".
 #' \dontrun{
@@ -53,9 +54,9 @@ textSimilarity <- function(x,
   }
 
   # Compute correlation
-  if (method == "spearman" | method == "pearson") {
+  if (method == "spearman" || method == "pearson") {
     ss <- list()
-    # i =1
+
     for (i in seq_len(nrow(x1))) {
       ss[[i]] <- cor(as_vector(x1[i, ]),
         as_vector(y1[i, ]),
@@ -92,10 +93,12 @@ textSimilarity <- function(x,
 #'
 #' @param x Word embeddings (from textEmbed).
 #' @param y Word embeddings (from textEmbed).
-#' @param method (character) Character string describing type of measure to be computed; default is "euclidean" (see also
-#' measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
-#' It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).
-#' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting the embedding mean
+#' @param method (character) Character string describing type of measure to be computed; default is
+#' "euclidean" (see also measures from stats:dist() including "maximum", "manhattan", "canberra",
+#' "binary" and "minkowski". It is also possible to use "cosine", which computes the cosine distance
+#' (i.e., 1 - cosine(x, y)).
+#' @param center (boolean; from base::scale) If center is TRUE then centering is done by subtracting
+#' the embedding mean
 #' (omitting NAs) of x from each of its dimension, and if center is FALSE, no centering is done.
 #' @param scale (boolean; from base::scale) If scale is TRUE then scaling is done by dividing the
 #' (centered) embedding dimensions by the standard deviation of the embedding if center is TRUE,
@@ -192,31 +195,28 @@ textSimilarityMatrix <- function(
   }
 
   # Correlations
-  if (method == "spearman" | method == "pearson") {
+  if (method == "spearman" || method == "pearson") {
     S <- as.matrix(cor(t(X), method = method))
     # For unification: let dimension names be missing regardless of the method used
     dimnames(S) <- NULL
-  }
 
-  # Cosine similarity
-  else if (method == "cosine") {
+    # Cosine similarity
+  } else if (method == "cosine") {
     # A vector of row norms `||r||`
     norms <- sqrt(rowSums(X^2, na.rm = TRUE))
     S <- (X %*% t(X)) / (norms %*% t(norms))
     dimnames(S) <- NULL
-  }
 
-  # Traditional built-in distance metrics
-  else if (method %in% c(
+    # Traditional built-in distance metrics
+  } else if (method %in% c(
     "euclidean", "maximum", "manhattan",
     "canberra", "binary", "minkowski"
   )) {
     S <- 1 - as.matrix(dist(X, method = method))
     dimnames(S) <- NULL
-  }
 
-  # Throw an error if the method didn't match
-  else {
+    # Throw an error if the method didn't match
+  } else {
     stop(sprintf("Unknown method: %s", method))
   }
 
@@ -269,18 +269,16 @@ textDistanceMatrix <- function(
     S <- as.matrix(dist(X, method = method))
     # For unification: let dimension names be missing regardless of the method used
     dimnames(S) <- NULL
-  }
 
-  # Cosine distance
-  else if (method == "cosine") {
+    # Cosine distance
+  } else if (method == "cosine") {
     # A vector of row norms `||r||`
     norms <- sqrt(rowSums(X^2, na.rm = TRUE))
     S <- 1 - (X %*% t(X)) / (norms %*% t(norms))
     dimnames(S) <- NULL
-  }
 
-  # Throw an error if the method didn't match
-  else {
+    # Throw an error if the method didn't match
+  } else {
     stop(sprintf("Unknown method: %s", method))
   }
 

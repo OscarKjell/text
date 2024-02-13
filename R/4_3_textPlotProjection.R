@@ -7,9 +7,11 @@
 #' @param word_types_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., decontextualized embeddings).
 #' @param x Numeric variable that the words should be plotted according to on the x-axes.
-#' @param y Numeric variable that the words should be plotted according to on the y-axes (default = NULL, i.e., a 1-dimensional plot is created).
-#' @param pca Number of PCA dimensions applied to the word embeddings in the beginning of the function (default = NULL).
-#' A number below 1 takes out \% of variance; An integer specify number of components to extract.
+#' @param y Numeric variable that the words should be plotted according to on the y-axes
+#' (default = NULL, i.e., a 1-dimensional plot is created).
+#' @param pca Number of PCA dimensions applied to the word embeddings in the beginning of the
+#' function (default = NULL).
+#'  A number below 1 takes out \% of variance; An integer specify number of components to extract.
 #' (default is NULL as this setting has not yet been evaluated).
 #' @param aggregation (character) Method to aggregate the word embeddings
 #' (default = "mean"; see also "min", "max", and "[CLS]").
@@ -106,7 +108,8 @@ textProjection <- function(words,
     )
 
 
-    uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep, word_types_embeddings, tolower = FALSE)
+    uniques_words_all_wordembedding <- sapply(uniques_words_all$words, applysemrep,
+                                              word_types_embeddings, tolower = FALSE)
     uniques_words_all_wordembedding <- tibble::as_tibble(t(uniques_words_all_wordembedding))
 
     rec_pca <- recipes::recipe(~., data = uniques_words_all_wordembedding)
@@ -155,7 +158,7 @@ textProjection <- function(words,
     # Pre-processing: Create Projection embedding ####
 
     # 1. Responses are divided into two groups (G1 and G2 ####
-    if (split == "mean" | split == "quartile") {
+    if (split == "mean" || split == "quartile") {
       # split="median" split = "quartile" or create interval sensitive
       if (split == "mean") {
         # Splitting datasets up to low versus high according to median split
@@ -276,18 +279,22 @@ textProjection <- function(words,
 
       words_single_wordembedding_d_scaled <- scale(words_single_wordembedding_d)
 
-      words_group2_agg_single_wordembedding_d <- tibble::as_tibble((words_single_wordembedding_d_scaled * weights) / mean(weights))
+      words_group2_agg_single_wordembedding_d <- tibble::as_tibble(
+                                                        (words_single_wordembedding_d_scaled * weights) / mean(weights))
 
       # reversed weights
-      weight_rev <- (max(words_single_wordembedding_c$value) + 1 - words_single_wordembedding_c$value)^word_weight_power
-      words_group1_agg_single_wordembedding_d <- tibble::as_tibble((words_single_wordembedding_d_scaled * weight_rev) / mean(weight_rev))
+      weight_rev <- (max(
+        words_single_wordembedding_c$value) + 1 - words_single_wordembedding_c$value)^word_weight_power
+      words_group1_agg_single_wordembedding_d <- tibble::as_tibble(
+        (words_single_wordembedding_d_scaled * weight_rev) / mean(weight_rev))
 
       ## Get dataframe with ALL embeddings to randomly draw from (without log transformed,
       # and quartiles) for Comparison distribution
       # Shuffle weights/values
       weights_shuffled <- sample(words_single_wordembedding_c$value, replace = FALSE)
-      words_single_wordembedding_d_weights_shuffled <- tibble::as_tibble((words_single_wordembedding_d_scaled * weights_shuffled) /
-        mean(weights_shuffled))
+      words_single_wordembedding_d_weights_shuffled <- tibble::as_tibble(
+        (words_single_wordembedding_d_scaled * weights_shuffled) /
+          mean(weights_shuffled))
 
       words_group1_2_agg_single_wordembedding_e1 <- words_single_wordembedding_d_weights_shuffled
     } # end of split == "no"
@@ -357,7 +364,7 @@ textProjection <- function(words,
 
     # Position the embedding; i.e., taking the word embedding subtracted with aggregated word embedding
     embedding_to_anchour_with <- tibble::as_tibble_row((Aggregated_word_embedding_group2 +
-      Aggregated_word_embedding_group1) / 2)
+                                                          Aggregated_word_embedding_group1) / 2)
 
     embedding_to_anchour_with <- embedding_to_anchour_with %>%
       dplyr::slice(rep(1:dplyr::n(), each = nrow(all_unique_words_we_b)))
@@ -427,14 +434,15 @@ textProjection <- function(words,
         dplyr::slice(rep(1:dplyr::n(), each = nrow(random_group2_embedding)))
 
       words_positioned_embeddings_random <- random_group2_embedding - (Aggregated_word_embedding_group2_long +
-        Aggregated_word_embedding_group1) / 2
+                                                                         Aggregated_word_embedding_group1) / 2
 
       # project the embeddings using dot products
 
       projected_embedding_random_long <- tibble::as_tibble_row(projected_embedding_random) %>%
         dplyr::slice(rep(1:dplyr::n(), each = nrow(words_positioned_embeddings_random)))
 
-      dot_products_null <- tibble::as_tibble(rowSums(words_positioned_embeddings_random * projected_embedding_random_long))
+      dot_products_null <- tibble::as_tibble(rowSums(
+        words_positioned_embeddings_random * projected_embedding_random_long))
 
       dot_null_distribution[i] <- dot_products_null
 
@@ -493,8 +501,10 @@ textProjection <- function(words,
 
     # Adding the scale parameters for the word embeddings so that words can be manually added in the textProjectionPlot.
     if (split == "no") {
-      to_be_saved_below$scale_centre <- tibble::as_tibble_row(attr(words_single_wordembedding_d_scaled, "scaled:center"))
-      to_be_saved_below$scale_scale <- tibble::as_tibble_row(attr(words_single_wordembedding_d_scaled, "scaled:scale"))
+      to_be_saved_below$scale_centre <- tibble::as_tibble_row(attr(
+        words_single_wordembedding_d_scaled, "scaled:center"))
+      to_be_saved_below$scale_scale <- tibble::as_tibble_row(attr(
+        words_single_wordembedding_d_scaled, "scaled:scale"))
     }
 
     aggregated_embeddings_dot_null_distribution[i_dim] <- list(to_be_saved_below)
@@ -715,7 +725,6 @@ textProjectionPlot <- function(word_data,
                                plot_n_word_frequency = 5,
                                plot_n_words_middle = 5,
                                titles_color = "#61605e",
-                               # x_axes = TRUE,
                                y_axes = FALSE,
                                p_alpha = 0.05,
                                overlapping = TRUE,
@@ -776,7 +785,6 @@ textProjectionPlot <- function(word_data,
     plot_n_word_frequency = plot_n_word_frequency,
     plot_n_words_middle = plot_n_words_middle,
     titles_color = titles_color,
-    # x_axes = TRUE,
     y_axes = y_axes,
     p_alpha = p_alpha,
     overlapping = overlapping,

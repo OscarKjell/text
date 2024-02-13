@@ -19,9 +19,10 @@
 #' before being moved to the CPU (faster but requires more memory).
 #' @param num_train_epochs (Numeric) Total number of training epochs to perform
 #' (if not an integer, will perform the decimal part percents of the last epoch before stopping training).
-#' @param past_index (Numeric, defaults to -1) Some models like TransformerXL or XLNet can make use of the past hidden states
-#' for their predictions. If this argument is set to a positive int, the Trainer will use the corresponding output
-#' (usually index 2) as the past state and feed it to the model at the next training step under the keyword argument mems.
+#' @param past_index (Numeric, defaults to -1) Some models like TransformerXL or XLNet can make use of the
+#' past hidden states for their predictions. If this argument is set to a positive int, the Trainer will use
+#' the corresponding output (usually index 2) as the past state and feed it to the model at the next
+#' training step under the keyword argument mems.
 #' @param set_seed (Numeric) Set the seed
 #' @param ... Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.
 #' @return A folder containing the pretrained model and output data. The model can then be used, for example, by
@@ -31,8 +32,10 @@
 #' textFineTuneDomain(text_data)
 #' }
 #' @seealso see \code{\link{textEmbed}}, \code{\link{textEmbed}}
-#' @details Information about more parameters see inst/python/args2.json (https://github.com/OscarKjell/text/tree/master/inst/python/args2.json).
-#' Descriptions of settings can be found in inst/python/task_finetune.py under "class ModelArguments" and "class DataTrainingArguments" as well as
+#' @details Information about more parameters see inst/python/args2.json
+#' (https://github.com/OscarKjell/text/tree/master/inst/python/args2.json).
+#' Descriptions of settings can be found in inst/python/task_finetune.py under
+#' "class ModelArguments" and "class DataTrainingArguments" as well as
 #' online at https://huggingface.co/docs/transformers/main_classes/trainer.
 #' @export
 textFineTuneDomain <- function(
@@ -58,7 +61,6 @@ textFineTuneDomain <- function(
   reticulate::py_run_string(paste0("import sys; sys.path.append('", text_path, "')"))
   reticulate::source_python(system.file("python",
     "huggingface_Interface4.py",
-    # envir = NULL,
     package = "text",
     mustWork = TRUE
   ))

@@ -51,7 +51,6 @@ textGeneration <- function(x,
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
     "huggingface_Interface3.py",
-    # envir = NULL,
     package = "text",
     mustWork = TRUE
   ))
@@ -74,7 +73,6 @@ textGeneration <- function(x,
       logging_level = logging_level,
       return_incorrect_results = return_incorrect_results,
       return_tensors = return_tensors,
-      #  return_text = return_text,
       return_full_text = return_full_text,
       clean_up_tokenization_spaces = clean_up_tokenization_spaces,
       prefix = prefix,

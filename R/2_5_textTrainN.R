@@ -45,15 +45,20 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation).
 #' If several word embedding are provided in a list they will be concatenated.
 #' @param y Numeric variable to predict.
-#' @param sample_percents (numeric) Numeric vector that specifies the percentages of the total number of data points to include in each sample (default = c(25,50,75,100), i.e., correlations are evaluated for 25%%,50%%,75%% and 100%% of
-#' the datapoints). The datapoints in each sample are chosen randomly for each new sample.
-#' @param handle_word_embeddings Determine whether to use a list of word embeddings or an individual word_embedding (default = "individually", also "concatenate"). If a list of word embeddings are
+#' @param sample_percents (numeric) Numeric vector that specifies the percentages of the total number of
+#' data points to include in each sample (default = c(25,50,75,100), i.e., correlations are evaluated
+#' for 25%%,50%%,75%% and 100%% of the datapoints). The datapoints in each sample are chosen randomly for
+#' each new sample.
+#' @param handle_word_embeddings Determine whether to use a list of word embeddings or an individual
+#' word_embedding (default = "individually", also "concatenate"). If a list of word embeddings are
 #' provided, then they will be concatenated.
 #' @param n_cross_val (numeric) Value that determines the number of times to repeat the cross-validation.
-#' (default = 1, i.e., cross-validation is only performed once). Warning: The training process gets proportionately slower to the number of cross-validations,
-#' resulting in a time complexity that increases with a factor of n (n cross-validations).
-#' @param x_append (optional) Variables to be appended after the word embeddings (x); if wanting to preappend them before
-#' the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL (default = NULL).
+#' (default = 1, i.e., cross-validation is only performed once). Warning: The training process gets
+#' proportionately slower to the number of cross-validations, resulting in a time complexity that increases
+#' with a factor of n (n cross-validations).
+#' @param x_append (optional) Variables to be appended after the word embeddings (x); if wanting to preappend
+#' them before the word embeddings use the option first = TRUE. If not wanting to train with word embeddings,
+#' set x = NULL (default = NULL).
 #' @param append_first (boolean) Option to add variables before or after all word embeddings (default = False).
 #' @param cv_method (character) Cross-validation method to use within a pipeline of nested outer and inner loops
 #' of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
@@ -63,9 +68,9 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #' @param outside_folds (numeric) Number of folds for the outer folds (default = 10).
 #' @param inside_folds (numeric) The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
 #' For more information see validation_split in rsample.
-#' @param strata (string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
-#' training set - if you want to stratify according to another variable you can include it as a tibble (please note you
-#' can only add 1 variable to stratify according). Can set it to NULL.
+#' @param strata (string or tibble; default "y") Variable to stratify according; if a string the variable
+#' needs to be in the training set - if you want to stratify according to another variable you can include
+#' it as a tibble (please note you can only add 1 variable to stratify according). Can set it to NULL.
 #' @param outside_strata (boolean) Whether to stratify the outside folds.
 #' @param outside_breaks (numeric) The number of bins wanted to stratify a numeric stratification variable in the
 #' outer cross-validation loop (default = 4).
@@ -79,8 +84,8 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #'  the yardstick package).
 #' @param preprocess_step_center (boolean) Normalizes dimensions to have a mean of zero; default is set to TRUE.
 #' For more info see (step_center in recipes).
-#' @param preprocess_step_scale (boolean) Normalize dimensions to have a standard deviation of one; default is set to TRUE.
-#' For more info see (step_scale in recipes).
+#' @param preprocess_step_scale (boolean) Normalize dimensions to have a standard deviation of one;
+#' default is set to TRUE. For more info see (step_scale in recipes).
 #' @param preprocess_PCA Pre-processing threshold for PCA (to skip this step set it to NA).
 #' Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
 #' number of components to select (e.g., 10). Default is "min_halving", which is a function
@@ -106,12 +111,12 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output (character) Option not to save all output; default = "all". see also "only_results"
 #'  and "only_results_predictions".
-#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
-#' in larger than 2 × 2 tables.
+#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values
+#' by Monte Carlo simulation, in larger than 2 × 2 tables.
 #' @param seed (numeric) Set different seed (default = 2024).
-#' @return A tibble containing correlations for each sample. If n_cross_val > 1, correlations for each new cross-validation,
-#' along with standard-deviation and mean correlation is included in the tibble. The information in the tibble is
-#' visualised via the textTrainNPlot function.
+#' @return A tibble containing correlations for each sample. If n_cross_val > 1, correlations for
+#'  each new cross-validation, along with standard-deviation and mean correlation is included in the
+#'  tibble. The information in the tibble is visualised via the textTrainNPlot function.
 #' @examples
 #' # Compute correlations for 25%, 50%, 75% and 100% of the data in word_embeddings and perform
 #' # cross-validation thrice.
@@ -199,7 +204,7 @@ textTrainN <- function(
   # columns_to_calculate will be "Test1", "Test2", "Test3"
   columns_to_calculate <- c()
 
-  #### Training & Cross-Validation ####
+  ## Training & Cross-Validation ##
   x_vectors <- list()
   y_vectors <- list()
 
@@ -309,10 +314,13 @@ textTrainN <- function(
 #' included in each sample (default = c(25,50,75,100)).
 #' @param n_cross_val (numeric) Value of the number of times cross-validation has been repeated (default = 1,
 #' i.e., cross-validation has only been applied once).
-#' @param x_unit (character, "percent" or "quantity") Determines whether the x-axis-values should represent the number of elements in each sample,
-#' or the number of percent of the total data they represent (default = "percent").
-#' @param y_range (numeric) Optional. Determines the y_range. E.g, y_range = c(1,2) sets the y_range from 1 to 2 (default = NULL).
-#' @param title (character) Determine plot title (default = "Cross-validated correlation coefficients across different sample sizes").
+#' @param x_unit (character, "percent" or "quantity") Determines whether the x-axis-values should represent
+#'  the number of elements in each sample, or the number of percent of the total data they represent
+#'  (default = "percent").
+#' @param y_range (numeric) Optional. Determines the y_range. E.g, y_range = c(1,2) sets the y_range from
+#' 1 to 2 (default = NULL).
+#' @param title (character) Determine plot title (default = "Cross-validated correlation coefficients
+#'  across different sample sizes").
 #' @param x_axes_label (character) Determine x-axis-label (default = "Sample Size (percent)").
 #' @param y_axes_label (character) Determine y-axis-label (default = "Correlation Coefficient (r)").
 #' @param point_color (character, (Hex color codes)) Determine point color (default = "#5dc688").
@@ -365,7 +373,8 @@ textTrainNPlot <- function(
 
   if (n_cross_val == 1) {
     # Create the ggplot object and specify aesthetics
-    TrainNPlot <- ggplot2::ggplot(data = tibble, ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
+    TrainNPlot <- ggplot2::ggplot(data = tibble,
+                                  ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
       ggplot2::geom_point(color = point_color, size = point_size) +
       ggplot2::geom_errorbar(
         ggplot2::aes(ymin = mean - std, ymax = mean + std),
@@ -413,7 +422,8 @@ textTrainNPlot <- function(
 
   if (n_cross_val > 1) {
     # Create the ggplot object and specify aesthetics
-    TrainNPlot <- ggplot2::ggplot(data = tibble, ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
+    TrainNPlot <- ggplot2::ggplot(data = tibble,
+                                  ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
       ggplot2::geom_point(color = point_color, size = point_size) +
       ggplot2::geom_errorbar(
         ggplot2::aes(ymin = mean - std, ymax = mean + std),

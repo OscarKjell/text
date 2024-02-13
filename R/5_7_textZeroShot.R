@@ -1,11 +1,14 @@
 #' Zero Shot Classification (Experimental)
-#' @param sequences (string)  The sequence(s) to classify (not that they will be truncated if the model input is too large).
-#' @param candidate_labels (string) The set of class labels that is possible in the to classification of each sequence.
-#' It may be a single label, a string of comma-separated labels, or a list of labels.
+#' @param sequences (string)  The sequence(s) to classify (not that they will be truncated
+#' if the model input is too large).
+#' @param candidate_labels (string) The set of class labels that is possible in the to
+#' classification of each sequence. It may be a single label, a string of comma-separated
+#' labels, or a list of labels.
 #' @param hypothesis_template (string; optional)
 #' The template that is used for turning each of the label into an NLI-style hypothesis.
-#' This template must include a "{}" or similar syntax so that the candidate label can be inserted into the template.
-#' For example, the default template is "This example is {}." With the candidate label "sports",
+#' This template must include a "{}" or similar syntax so that the candidate label can be
+#' inserted into the template. For example, the default template is
+#' "This example is {}." With the candidate label "sports",
 #' this would be fed into the model like "<cls> sequence to classify <sep> This example is sports . <sep>".
 #' The default template works well in many cases, but it may be worthwhile to experiment with different templates
 #' depending on the task setting (see https://huggingface.co/docs/transformers/).
@@ -53,7 +56,6 @@ textZeroShot <- function(sequences,
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
     "huggingface_Interface3.py",
-    # envir = NULL,
     package = "text",
     mustWork = TRUE
   ))
@@ -92,7 +94,7 @@ textZeroShot <- function(sequences,
   hg_zeroshot1 <- cbind(
     hg_zeroshot1[1],
     hg_zeroshot1[c(matrix(names(hg_zeroshot1)[-1], 2,
-      byrow = TRUE
+                          byrow = TRUE
     ))]
   )
 

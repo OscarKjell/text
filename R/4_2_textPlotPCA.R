@@ -236,25 +236,25 @@ textPCAPlot <- function(word_data,
   # Combine selected words
   word_data_all <- word_data %>%
     dplyr::left_join(word_data_extrem_max_PC1 %>%
-      dplyr::transmute(words, check_extreme_max_PC1 = 1), by = "words") %>%
+                       dplyr::transmute(words, check_extreme_max_PC1 = 1), by = "words") %>%
     dplyr::left_join(word_data_extrem_max_PC2 %>%
-      dplyr::transmute(words, check_extreme_max_PC2 = 1), by = "words") %>%
+                       dplyr::transmute(words, check_extreme_max_PC2 = 1), by = "words") %>%
     dplyr::left_join(word_data_extrem_min_PC1 %>%
-      dplyr::transmute(words, check_extreme_min_PC1 = 1), by = "words") %>%
+                       dplyr::transmute(words, check_extreme_min_PC1 = 1), by = "words") %>%
     dplyr::left_join(word_data_extrem_min_PC2 %>%
-      dplyr::transmute(words, check_extreme_min_PC2 = 1), by = "words") %>%
+                       dplyr::transmute(words, check_extreme_min_PC2 = 1), by = "words") %>%
     dplyr::left_join(word_data_frequency %>%
-      dplyr::transmute(words, check_extreme_frequency = 1), by = "words") %>%
+                       dplyr::transmute(words, check_extreme_frequency = 1), by = "words") %>%
     dplyr::left_join(word_data_middle_PC1 %>%
-      dplyr::transmute(words, check_middle_PC1 = 1), by = "words") %>%
+                       dplyr::transmute(words, check_middle_PC1 = 1), by = "words") %>%
     dplyr::left_join(word_data_middle_PC2 %>%
-      dplyr::transmute(words, check_middle_PC2 = 1), by = "words") %>%
+                       dplyr::transmute(words, check_middle_PC2 = 1), by = "words") %>%
     dplyr::mutate(extremes_all = rowSums(cbind(
       check_extreme_max_PC1, check_extreme_max_PC2,
       check_extreme_min_PC1, check_extreme_min_PC2,
       check_extreme_frequency,
       check_middle_PC1, check_middle_PC2
-    ), na.rm = T))
+    ), na.rm = TRUE))
 
   # Changing NAs to 0
   word_data_all$check_extreme_max_PC1[is.na(word_data_all$check_extreme_max_PC1)] <- 0
@@ -375,39 +375,48 @@ textPCAPlot <- function(word_data,
     ) +
     ggplot2::theme_void() +
     ggplot2::annotate(
-      geom = "text", x = 1, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[1], na.rm = T),
+      geom = "text", x = 1, y = 3,
+      label = sum(word_data_all$colour_categories == bivariate_color_codes[1], na.rm = TRUE),
       color = titles_color, size = legend_number_size
     ) +
     ggplot2::annotate(
-      geom = "text", x = 2, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[2], na.rm = T),
+      geom = "text", x = 2, y = 3,
+      label = sum(word_data_all$colour_categories == bivariate_color_codes[2], na.rm = TRUE),
       color = titles_color, size = legend_number_size
     ) +
     ggplot2::annotate(
-      geom = "text", x = 3, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[3], na.rm = T),
+      geom = "text", x = 3, y = 3,
+      label = sum(word_data_all$colour_categories == bivariate_color_codes[3], na.rm = TRUE),
       color = titles_color, size = legend_number_size
     ) +
     ggplot2::annotate(
-      geom = "text", x = 1, y = 2, label = sum(word_data_all$colour_categories == bivariate_color_codes[4], na.rm = T),
+      geom = "text", x = 1, y = 2,
+      label = sum(word_data_all$colour_categories == bivariate_color_codes[4], na.rm = TRUE),
       color = titles_color, size = legend_number_size
     ) +
     ggplot2::annotate(
-      geom = "text", x = 2, y = 2, label = sum(word_data_all$colour_categories == bivariate_color_codes[5], na.rm = T),
+      geom = "text", x = 2, y = 2,
+      label = sum(word_data_all$colour_categories == bivariate_color_codes[5], na.rm = TRUE),
       color = titles_color, size = legend_number_size
     ) +
     ggplot2::annotate(
-      geom = "text", x = 3, y = 2, label = sum(word_data_all$colour_categories == bivariate_color_codes[6], na.rm = T),
+      geom = "text", x = 3, y = 2,
+      label = sum(word_data_all$colour_categories == bivariate_color_codes[6], na.rm = TRUE),
       color = titles_color, size = legend_number_size
     ) +
     ggplot2::annotate(
-      geom = "text", x = 1, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[7], na.rm = T),
+      geom = "text", x = 1, y = 1,
+      label = sum(word_data_all$colour_categories == bivariate_color_codes[7], na.rm = TRUE),
       color = titles_color, size = legend_number_size
     ) +
     ggplot2::annotate(
-      geom = "text", x = 2, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[8], na.rm = T),
+      geom = "text", x = 2, y = 1,
+      label = sum(word_data_all$colour_categories == bivariate_color_codes[8], na.rm = TRUE),
       color = titles_color, size = legend_number_size
     ) +
     ggplot2::annotate(
-      geom = "text", x = 3, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[9], na.rm = T),
+      geom = "text", x = 3, y = 1,
+      label = sum(word_data_all$colour_categories == bivariate_color_codes[9], na.rm = TRUE),
       color = titles_color, size = legend_number_size
     ) +
     ggplot2::theme(
@@ -422,8 +431,12 @@ textPCAPlot <- function(word_data,
 
   # Plot both figure and legend together
   final_plot <- suppressWarnings(cowplot::ggdraw() +
-    cowplot::draw_plot(plot, 0, 0, 1, 1) +
-    cowplot::draw_plot(legend, legend_x_position, legend_y_position, legend_h_size, legend_w_size))
+                                   cowplot::draw_plot(plot, 0, 0, 1, 1) +
+                                   cowplot::draw_plot(legend,
+                                                      legend_x_position,
+                                                      legend_y_position,
+                                                      legend_h_size,
+                                                      legend_w_size))
 
   output_plot_data <- list(final_plot, textPCAPlot_comment, word_data_all)
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")
