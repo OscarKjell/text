@@ -189,7 +189,8 @@ test_that("textCentralityPlot produces a plot.", {
 
   expect_true(ggplot2::is.ggplot(centrality_plot$final_plot))
   expect_equal(centrality_plot$processed_word_data$n[2], 21)
-  expect_equal(centrality_plot$processed_word_data$central_semantic_similarity[2], 0.5079464, tolerance = 0.00001)
+  expect_equal(centrality_plot$processed_word_data$central_semantic_similarity[2],
+               0.5079464, tolerance = 0.00001)
 })
 
 

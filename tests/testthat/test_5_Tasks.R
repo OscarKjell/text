@@ -47,7 +47,9 @@ test_that("textGeneration test", {
     set_seed = 22L
   )
   # torch 1.11
-  # expect_equal(generated_text$x_generated, "The meaning of life is to live for the sake of one's children, and to take the name or life of another, and not as the child of a dead person. It is a name, a life, and not as the son, daughter")
+  # expect_equal(generated_text$x_generated, "The meaning of life is to live for
+  # the sake of one's children, and to take the name or life of another, and not as
+  # the child of a dead person. It is a name, a life, and not as the son, daughter")
   expect_that(generated_text$x_generated, is_a("character"))
 
   # Return token IDs

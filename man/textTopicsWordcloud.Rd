@@ -2,7 +2,8 @@
 % Please edit documentation in R/7_2_textTopicsAnalysis.R
 \name{textTopicsWordcloud}
 \alias{textTopicsWordcloud}
-\title{This functions plots wordclouds of topics from a Topic Model based on their significance determined by a linear or binary regression}
+\title{This functions plots wordclouds of topics from a Topic Model based on their significance
+determined by a linear or binary regression}
 \usage{
 textTopicsWordcloud(
   model,
@@ -19,16 +20,20 @@ textTopicsWordcloud(
 
 \item{test}{(data.frame) the test returned from textTopicTest()}
 
-\item{color_negative_cor}{(ggplot2::scale_color_gradient()) color gradient of topic cloud with negative correlation}
+\item{color_negative_cor}{(ggplot2::scale_color_gradient()) color gradient of topic cloud
+with negative correlation}
 
-\item{color_positive_cor}{(ggplot2::scale_color_gradient) color gradient of topic cloud with positive correlation}
+\item{color_positive_cor}{(ggplot2::scale_color_gradient) color gradient of topic cloud
+with positive correlation}
 
-\item{scale_size}{(bool) if True, then the size of the topic cloud is scaled by the prevalence of the topic}
+\item{scale_size}{(bool) if True, then the size of the topic cloud is scaled by the
+prevalence of the topic}
 
 \item{plot_topics_idx}{(list) if specified, then only the specified topics are plotted}
 
 \item{p_threshold}{(float) set significance threshold which determines which topics are plotted}
 }
 \description{
-This functions plots wordclouds of topics from a Topic Model based on their significance determined by a linear or binary regression
+This functions plots wordclouds of topics from a Topic Model based on their significance
+determined by a linear or binary regression
 }

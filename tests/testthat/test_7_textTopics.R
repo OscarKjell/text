@@ -35,7 +35,7 @@ test_that("Bertopic", {
                          tolerance = 0.0001)
 
   # Testing if we can predict "score" from from topic-document distribution
-  test <- text::textTopicTest(model = bert_model,
+  test <- text::textTopicsTest(model = bert_model,
                               pred_var = "score",
                               test_method = "ridge_regression")
 
@@ -44,7 +44,7 @@ test_that("Bertopic", {
                          tolerance = 0.0001)
 
   # Testing which how individual topics are associated with "score"
-  test2 <- text::textTopicTest(model = bert_model,
+  test2 <- text::textTopicsTest(model = bert_model,
                                pred_var = "score",
                                test_method = "linear_regression")
 

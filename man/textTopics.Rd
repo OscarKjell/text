@@ -2,7 +2,8 @@
 % Please edit documentation in R/7_1_textTopics.R
 \name{textTopics}
 \alias{textTopics}
-\title{This function creates and trains a BERTopic model (based on bertopic python packaged) on a text-variable in a tibble/data.frame.}
+\title{This function creates and trains a BERTopic model (based on bertopic python packaged) on a
+text-variable in a tibble/data.frame.}
 \usage{
 textTopics(
   data,
@@ -23,24 +24,32 @@ textTopics(
 )
 }
 \arguments{
-\item{data}{(tibble/data.frame) A tibble with a text-variable to be analysed, and optional numeric/categorical variables that you
-might want to use for later analyses testing the significance of topics in relation to these variables.}
+\item{data}{(tibble/data.frame) A tibble with a text-variable to be analysed, and optional
+numeric/categorical variables that you might want to use for later analyses testing the
+significance of topics in relation to these variables.}
 
-\item{variable_name}{(string)  Name of the text-variable in the data tibble that you want to perform topic modeling on.}
+\item{variable_name}{(string)  Name of the text-variable in the data tibble that you want
+to perform topic modeling on.}
 
-\item{embedding_model}{(string) Name of the embedding model to use such as "miniLM", "mpnet", "multi-mpnet", "distilroberta".}
+\item{embedding_model}{(string) Name of the embedding model to use such as "miniLM", "mpnet",
+"multi-mpnet", "distilroberta".}
 
-\item{umap_model}{(string) The dimension reduction algorithm, currently only "default" is supported.}
+\item{umap_model}{(string) The dimension reduction algorithm, currently only "default"
+is supported.}
 
-\item{hdbscan_model}{(string) The clustering algorithm to use, currently only "default" is supported.}
+\item{hdbscan_model}{(string) The clustering algorithm to use, currently only "default"
+is supported.}
 
-\item{vectorizer_model}{(string) Name of the vectorizer model, currently only "default" is supported.}
+\item{vectorizer_model}{(string) Name of the vectorizer model, currently only "default"
+is supported.}
 
-\item{representation_model}{(string) Name of the representation model used for topics, including "keybert" or "mmr".}
+\item{representation_model}{(string) Name of the representation model used for topics,
+including "keybert" or "mmr".}
 
 \item{num_top_words}{(integer) Determine the number of top words presented for each topic.}
 
-\item{n_gram_range}{(vector) Two-dimensional vector indicating the ngram range used for the vectorizer model.}
+\item{n_gram_range}{(vector) Two-dimensional vector indicating the ngram range used for
+the vectorizer model.}
 
 \item{stopwords}{(string) Name of the stopword dictionary to use.}
 
@@ -55,8 +64,11 @@ might want to use for later analyses testing the significance of topics in relat
 \item{save_dir}{(string) The directory for saving results.}
 }
 \value{
-A folder containing the model, data, folder with terms and values for each topic, and the document-topic matrix. Moreover the model itself is returned formatted as a data.frame together with metdata
+A folder containing the model, data, folder with terms and values for each topic,
+and the document-topic matrix. Moreover the model itself is returned formatted as a data.frame
+together with metdata
 }
 \description{
-This function creates and trains a BERTopic model (based on bertopic python packaged) on a text-variable in a tibble/data.frame.
+This function creates and trains a BERTopic model (based on bertopic python packaged) on a
+text-variable in a tibble/data.frame.
 }

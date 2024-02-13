@@ -1,23 +1,29 @@
-#' This function tests the relationship between a single topic or all topics and a variable of interest. Available tests include correlation, t-test, linear regression, binary regression, and ridge regression.
+#' This function tests the relationship between a single topic or all topics and a
+#' variable of interest. Available tests include correlation, t-test, linear regression,
+#' binary regression, and ridge regression. (EXPERIMENTAL - under development)
 #' @param model (data.frame) The model returned from textTopics().
 #' @param group_var (string) Grouping variable for t-test
 #' @param pred_var (string) Variable of interest for linear or binary regression
 #' @param control_vars (list) Control variables for linear or binary regression
-#' @param test_method (string) Choose between "correlation", "t-test", "binary_regression", "linear_regression" or "ridge_regression"
-#' @param multiple_comparison Method for correction of multiple tests (e.g., "fdr", "bonferroni").
-#' @param load_dir (string) if specified, the function returns the precomputed analysis from the directory, otherwise leave blank
+#' @param test_method (string) Choose between "correlation", "t-test", "binary_regression",
+#'  "linear_regression" or "ridge_regression"
+#' @param multiple_comparison Method for correction of multiple tests
+#' (e.g., "fdr", "bonferroni").
+#' @param load_dir (string) if specified, the function returns the precomputed analysis
+#' from the directory, otherwise leave blank
 #' @importFrom dplyr bind_cols
 #' @importFrom tibble tibble
 #' @importFrom stats as.formula glm p.adjust
-#' @return Metadata and results of the test such as estimate, t-value, p-value, and variable name.
+#' @return Metadata and results of the test such as estimate, t-value, p-value,
+#' and variable name.
 #' @export
 textTopicsTest <- function(model,
-                          pred_var,
-                          group_var = NULL, # only one in the case of t-test
-                          control_vars = c(),
-                          test_method = "linear_regression",
-                          multiple_comparison = "fdr",
-                          load_dir = NULL) {
+                           pred_var,
+                           group_var = NULL, # only one in the case of t-test
+                           control_vars = c(),
+                           test_method = "linear_regression",
+                           multiple_comparison = "fdr",
+                           load_dir = NULL) {
   model_info <- model
   model <- model_info$model
   preds <- model_info$preds
@@ -75,7 +81,7 @@ textTopicsTest <- function(model,
     saveRDS(test, paste0(save_dir, "/seed_", seed, "/test_", test_method, ".rds"))
     print(paste0("The test was saved in: ", save_dir, "/seed_", seed, "/test_", test_method, ".rds"))
   }
-  # comment(test) <- test_method
+
   return_test <- list(
     test = test,
     test_method = test_method,
@@ -221,7 +227,7 @@ topic_test <- function(topic_terms,
 
     return(output_list)
   }
-  if (test_method == "linear_regression" | test_method == "logistic_regression") {
+  if (test_method == "linear_regression" || test_method == "logistic_regression") {
     # still get number of topics automatically
     num_topics <- sum(grepl("t_", names(topics_loadings)))
 
@@ -236,7 +242,7 @@ topic_test <- function(topic_terms,
     for (topic in lda_topics) {
       mean_value <- mean(preds[[topic]])
       std_dev <- sd(preds[[topic]])
-      preds[[paste0("z_", topic)]] <- (preds[[topic]] - mean_value) / std_dev # preds[[topic]] # scale(preds[[topic]])
+      preds[[paste0("z_", topic)]] <- (preds[[topic]] - mean_value) / std_dev
     }
 
     control_variables <- control_vars
@@ -359,8 +365,8 @@ topic_test <- function(topic_terms,
     control_variable_summary$topic <- lda_topics
 
     output <- dplyr::right_join(topic_terms[c("topic", "top_terms")],
-                         data.frame(control_variable_summary),
-                         by = dplyr::join_by(topic))
+                                data.frame(control_variable_summary),
+                                by = dplyr::join_by(topic))
     # add the adjustment for bonferroni
     return(output)
   }
@@ -452,11 +458,12 @@ create_topic_words_dfs <- function(summary) {
 #' @param scale_size (bool) if True, then the size of the topic cloud is scaled by the prevalence of the topic
 #' @param plot_topics_idx (list) if specified, then only the specified topics are plotted
 #' @param p_threshold (float) set threshold which determines which topics are plotted
-#' @param save_dir (string) save plots in specified directory, if left blank, plots is not saved, thus save_dir is necessary
+#' @param save_dir (string) save plots in specified directory, if left blank, plots is not saved,
+#' thus save_dir is necessary
 #' @param seed (int) seed is needed for saving the plots in the correct directory
 #' @importFrom ggplot2 ggplot ggsave
 #' @importFrom dplyr select everything
-#' @importFrom ggwordcloud geom_text_wordcloud
+# @importFrom ggwordcloud geom_text_wordcloud (removing this since it is required through requireNamespace)
 #' @noRd
 create_plots <- function(df_list,
                          summary,
@@ -470,12 +477,19 @@ create_plots <- function(df_list,
                          plot_topics_idx = NULL,
                          p_threshold = NULL,
                          save_dir = ".") {
+
+  if (!requireNamespace("ggwordcloud", quietly = TRUE)) {
+    stop("ggwordcloud is required for this feature.
+         Please install it using install.packages('ggwordcloud').", call. = FALSE)
+  }
+
+
   if (is.null(plot_topics_idx)) {
     plot_topics_idx <- seq(1, length(df_list))
   }
   for (i in plot_topics_idx) {
     if (test_type == "linear_regression") {
-      estimate_col <- paste0(cor_var, ".estimate") # grep(partial_name, data_frame_names, value = TRUE)
+      estimate_col <- paste0(cor_var, ".estimate")
       p_adjusted_col <- paste0(cor_var, ".p_adjusted")
     } else if (test_type == "t-test") {
       estimate_col <- "cohens d" # probably doesnt work yet
@@ -495,13 +509,12 @@ create_plots <- function(df_list,
       p_threshold <- p_adjusted + 1
     }
 
-    if (!is.nan(p_adjusted) & p_adjusted < p_threshold) {
-      # estimate <- test[i,][[grep(estimate_col, colnames(test), value=TRUE)]]# $PHQtot.estimate
-      # p_adjusted <- test[i,][[grep("p_adjusted", colnames(test), value=TRUE)]] # $PHQtot.p_adjustedfdr
+    if (!is.nan(p_adjusted) && p_adjusted < p_threshold) {
+
       if (estimate < 0) {
-        color_scheme <- color_negative_cor # scale_color_gradient(low = "darkgreen", high = "green")
+        color_scheme <- color_negative_cor
       } else {
-        color_scheme <- color_positive_cor # scale_color_gradient(low = "darkred", high = "red")
+        color_scheme <- color_positive_cor
       }
       if (scale_size == TRUE) {
         max_size <- 10 * log(prevalence)
@@ -528,7 +541,13 @@ create_plots <- function(df_list,
         dir.create(paste0(save_dir, "/seed_", seed, "/wordclouds"))
       }
       p_adjusted <- sprintf("%.2e", p_adjusted)
-      ggplot2::ggsave(paste0(save_dir, "/seed_", seed, "/wordclouds/t_", i, "_r_", estimate, "_p_", p_adjusted, ".png"), plot = plot, width = 10, height = 8, units = "in")
+      ggplot2::ggsave(paste0(save_dir,
+                             "/seed_",
+                             seed,
+                             "/wordclouds/t_",
+                             i, "_r_", estimate,
+                             "_p_", p_adjusted, ".png"),
+                      plot = plot, width = 10, height = 8, units = "in")
     }
   }
 }
@@ -547,12 +566,16 @@ create_df_list_bert_topics <- function(save_dir, seed, num_topics) {
 }
 
 
-#' This functions plots wordclouds of topics from a Topic Model based on their significance determined by a linear or binary regression
+#' This functions plots wordclouds of topics from a Topic Model based on their significance
+#' determined by a linear or binary regression
 #' @param model (data.frame) The model returned from textTopics().
 #' @param test (data.frame) the test returned from textTopicTest()
-#' @param color_negative_cor (ggplot2::scale_color_gradient()) color gradient of topic cloud with negative correlation
-#' @param color_positive_cor (ggplot2::scale_color_gradient) color gradient of topic cloud with positive correlation
-#' @param scale_size (bool) if True, then the size of the topic cloud is scaled by the prevalence of the topic
+#' @param color_negative_cor (ggplot2::scale_color_gradient()) color gradient of topic cloud
+#' with negative correlation
+#' @param color_positive_cor (ggplot2::scale_color_gradient) color gradient of topic cloud
+#' with positive correlation
+#' @param scale_size (bool) if True, then the size of the topic cloud is scaled by the
+#'  prevalence of the topic
 #' @param plot_topics_idx (list) if specified, then only the specified topics are plotted
 #' @param p_threshold (float) set significance threshold which determines which topics are plotted
 #' @importFrom ggplot2 scale_color_gradient

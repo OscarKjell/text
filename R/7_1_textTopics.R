@@ -1,13 +1,22 @@
-#' This function creates and trains a BERTopic model (based on bertopic python packaged) on a text-variable in a tibble/data.frame.
-#' @param data (tibble/data.frame) A tibble with a text-variable to be analysed, and optional numeric/categorical variables that you
-#' might want to use for later analyses testing the significance of topics in relation to these variables.
-#' @param variable_name (string)  Name of the text-variable in the data tibble that you want to perform topic modeling on.
-#' @param embedding_model (string) Name of the embedding model to use such as "miniLM", "mpnet", "multi-mpnet", "distilroberta".
-#' @param umap_model (string) The dimension reduction algorithm, currently only "default" is supported.
-#' @param hdbscan_model (string) The clustering algorithm to use, currently only "default" is supported.
-#' @param vectorizer_model (string) Name of the vectorizer model, currently only "default" is supported.
-#' @param representation_model (string) Name of the representation model used for topics, including "keybert" or "mmr".
-#' @param n_gram_range (vector) Two-dimensional vector indicating the ngram range used for the vectorizer model.
+#' This function creates and trains a BERTopic model (based on bertopic python packaged) on a
+#' text-variable in a tibble/data.frame. (EXPERIMENTAL)
+#' @param data (tibble/data.frame) A tibble with a text-variable to be analysed, and optional
+#' numeric/categorical variables that you might want to use for later analyses testing the
+#' significance of topics in relation to these variables.
+#' @param variable_name (string)  Name of the text-variable in the data tibble that you want
+#' to perform topic modeling on.
+#' @param embedding_model (string) Name of the embedding model to use such as "miniLM", "mpnet",
+#' "multi-mpnet", "distilroberta".
+#' @param umap_model (string) The dimension reduction algorithm, currently only "default"
+#' is supported.
+#' @param hdbscan_model (string) The clustering algorithm to use, currently only "default"
+#'  is supported.
+#' @param vectorizer_model (string) Name of the vectorizer model, currently only "default"
+#' is supported.
+#' @param representation_model (string) Name of the representation model used for topics,
+#' including "keybert" or "mmr".
+#' @param n_gram_range (vector) Two-dimensional vector indicating the ngram range used for
+#' the vectorizer model.
 #' @param stopwords (string) Name of the stopword dictionary to use.
 #' @param min_df (integer) The minimum document frequency of terms.
 #' @param bm25_weighting (boolean) Determine whether bm25_weighting is used for ClassTfidfTransformer.
@@ -15,7 +24,9 @@
 #' @param num_top_words (integer) Determine the number of top words presented for each topic.
 #' @param set_seed (integer) The random seed for initialization of the umap model.
 #' @param save_dir (string) The directory for saving results.
-#' @return A folder containing the model, data, folder with terms and values for each topic, and the document-topic matrix. Moreover the model itself is returned formatted as a data.frame together with metdata
+#' @return A folder containing the model, data, folder with terms and values for each topic,
+#' and the document-topic matrix. Moreover the model itself is returned formatted as a data.frame
+#' together with metdata
 #' @export
 textTopics <- function(data,
                        variable_name,
@@ -35,7 +46,6 @@ textTopics <- function(data,
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
     "bert_topic.py",
-    # envir = NULL,
     package = "text",
     mustWork = TRUE
   ))

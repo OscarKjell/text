@@ -156,7 +156,8 @@ test_that("textTrain Regression produces list of results with prediction being n
   testthat::expect_is(trained_multinomial$results_metrics$.estimate[[1]], "numeric")
   testthat::expect_equal(trained_multinomial$results_metrics$.estimate[[1]], 0.675)
 
-  # test multinomial logistic regression with four outcomes. Note that the data has few observations so there will be many warnings.
+  # test multinomial logistic regression with four outcomes. Note that the data has
+  # few observations so there will be many warnings.
   trained_multinomial4 <- text::textTrainRegression(
     x = word_embeddings_4$texts["harmonywords"],
     y = as.factor(ntile(Language_based_assessment_data_8$hilstotal, 4)),
@@ -389,7 +390,8 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
   testthat::expect_that(results_or_p1, testthat::is_a("list"))
   testthat::expect_is(results_or_p1$results$correlation[1], "character")
-  testthat::expect_equal(as.numeric(results_or_p1$results$correlation[1]), .3744373834122, tolerence = 0.0000000001) # "0.374437383412246" "0.374436371225743"
+  testthat::expect_equal(as.numeric(results_or_p1$results$correlation[1]), .3744373834122,
+                         tolerence = 0.0000000001) # "0.374437383412246" "0.374436371225743"
 
   # FORCE RANDOM FORREST Even though categorical variables are not most present
   results_or_p2 <- text::textTrain(

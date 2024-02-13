@@ -7,10 +7,11 @@
 ## Functions
 - `textTopics()` trains a BERTopic model with different modules and returns the model, data, and topic_document distributions based on c-td-idf
 - `textTopicsTest()` can perform multiple tests (correlation, t-test, regression) between a BERTopic model from `textTopics()` and data
-- `textTopicsWordcloud()` can plot wordclouds of topics tested with `textTopicsTest()`
+- `textTopicsWordcloud()` can plot word clouds of topics tested with `textTopicsTest()`
+
 # text 1.1
 ## Functions
-- `textEmbed()` is now fully embedding one column at the time; and reducing word_types for each column. This can break some code; and produc different results in plots where word_types and based on several embedded columns.
+- `textEmbed()` is now fully embedding one column at the time; and reducing word_types for each column. This can break some code; and produce different results in plots where word_types are based on several embedded columns.
 - `textTrainN()` and `textTrainNPlot()` evaluates prediction accuracy across number of cases. 
 - `textTrainRegression()` and `textTrainRandomForest` now takes tibble as input in strata. 
 
