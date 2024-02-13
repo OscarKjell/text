@@ -34,12 +34,15 @@ included in each sample (default = c(25,50,75,100)).}
 \item{n_cross_val}{(numeric) Value of the number of times cross-validation has been repeated (default = 1,
 i.e., cross-validation has only been applied once).}
 
-\item{x_unit}{(character, "percent" or "quantity") Determines whether the x-axis-values should represent the number of elements in each sample,
-or the number of percent of the total data they represent (default = "percent").}
+\item{x_unit}{(character, "percent" or "quantity") Determines whether the x-axis-values should represent
+the number of elements in each sample, or the number of percent of the total data they represent
+(default = "percent").}
 
-\item{y_range}{(numeric) Optional. Determines the y_range. E.g, y_range = c(1,2) sets the y_range from 1 to 2 (default = NULL).}
+\item{y_range}{(numeric) Optional. Determines the y_range. E.g, y_range = c(1,2) sets the y_range from
+1 to 2 (default = NULL).}
 
-\item{title}{(character) Determine plot title (default = "Cross-validated correlation coefficients across different sample sizes").}
+\item{title}{(character) Determine plot title (default = "Cross-validated correlation coefficients
+across different sample sizes").}
 
 \item{x_axes_label}{(character) Determine x-axis-label (default = "Sample Size (percent)").}
 

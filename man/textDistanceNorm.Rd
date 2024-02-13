@@ -12,11 +12,13 @@ textDistanceNorm(x, y, method = "euclidean", center = FALSE, scale = FALSE)
 
 \item{y}{Word embedding from textEmbed (from only one text).}
 
-\item{method}{(character) Character string describing type of measure to be computed; default is "euclidean" (see also
-measures from stats:dist() including "maximum", "manhattan", "canberra", "binary" and "minkowski".
-It is also possible to use "cosine", which computes the cosine distance (i.e., 1 - cosine(x, y)).}
+\item{method}{(character) Character string describing type of measure to be computed; default is
+"euclidean" (see also measures from stats:dist() including "maximum", "manhattan", "canberra",
+"binary" and "minkowski". It is also possible to use "cosine", which computes the cosine distance
+(i.e., 1 - cosine(x, y)).}
 
-\item{center}{(boolean; from base::scale) If center is TRUE then centering is done by subtracting the embedding mean
+\item{center}{(boolean; from base::scale) If center is TRUE then centering is done by subtracting
+the embedding mean
 (omitting NAs) of x from each of its dimension, and if center is FALSE, no centering is done.}
 
 \item{scale}{(boolean; from base::scale) If scale is TRUE then scaling is done by dividing the

@@ -49,8 +49,8 @@ Supervised Dimension Projection value (default = 10).
 \item{plot_n_word_frequency}{Number of words to plot according to their frequency (default = 10).
 (i.e., even if not significant).}
 
-\item{plot_n_words_middle}{Number of words to plot that are in the middle in Supervised Dimension Projection score (default = 10).
-(i.e., even if not significant; duplicates are removed).}
+\item{plot_n_words_middle}{Number of words to plot that are in the middle in Supervised Dimension
+Projection score (default = 10). (i.e., even if not significant; duplicates are removed).}
 
 \item{titles_color}{Color for all the titles (default: "#61605e").}
 
@@ -70,8 +70,8 @@ change e.g., by trying c(-5, 5)).}
 
 \item{word_font}{Type of font (default: NULL).}
 
-\item{centrality_color_codes}{(HTML color codes. type = character) Colors of the words selected as plot_n_word_extreme
-(minimum values), plot_n_words_middle, plot_n_word_extreme (maximum values) and
+\item{centrality_color_codes}{(HTML color codes. type = character) Colors of the words selected as
+plot_n_word_extreme (minimum values), plot_n_words_middle, plot_n_word_extreme (maximum values) and
 plot_n_word_frequency; the default is c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d", respectively.}
 
 \item{word_size_range}{Vector with minimum and maximum font size (default: c(3, 8)).}

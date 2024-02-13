@@ -22,7 +22,8 @@ including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkows
 columns of x by their standard deviations if center is TRUE, and the root mean square otherwise.}
 }
 \value{
-A vector comprising semantic similarity scores. The closer the value is to 1 when using the default method, "cosine", the higher the semantic similarity.
+A vector comprising semantic similarity scores. The closer the value is to 1 when using the default
+ method, "cosine", the higher the semantic similarity.
 }
 \description{
 Compute the semantic similarity between two text variables.

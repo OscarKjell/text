@@ -33,10 +33,12 @@ textProjection(
 
 \item{x}{Numeric variable that the words should be plotted according to on the x-axes.}
 
-\item{y}{Numeric variable that the words should be plotted according to on the y-axes (default = NULL, i.e., a 1-dimensional plot is created).}
+\item{y}{Numeric variable that the words should be plotted according to on the y-axes
+(default = NULL, i.e., a 1-dimensional plot is created).}
 
-\item{pca}{Number of PCA dimensions applied to the word embeddings in the beginning of the function (default = NULL).
-A number below 1 takes out \% of variance; An integer specify number of components to extract.
+\item{pca}{Number of PCA dimensions applied to the word embeddings in the beginning of the
+function (default = NULL).
+ A number below 1 takes out \% of variance; An integer specify number of components to extract.
 (default is NULL as this setting has not yet been evaluated).}
 
 \item{aggregation}{(character) Method to aggregate the word embeddings

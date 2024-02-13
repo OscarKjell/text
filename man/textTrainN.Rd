@@ -44,18 +44,23 @@ If several word embedding are provided in a list they will be concatenated.}
 
 \item{y}{Numeric variable to predict.}
 
-\item{sample_percents}{(numeric) Numeric vector that specifies the percentages of the total number of data points to include in each sample (default = c(25,50,75,100), i.e., correlations are evaluated for 25%%,50%%,75%% and 100%% of
-the datapoints). The datapoints in each sample are chosen randomly for each new sample.}
+\item{sample_percents}{(numeric) Numeric vector that specifies the percentages of the total number of
+data points to include in each sample (default = c(25,50,75,100), i.e., correlations are evaluated
+for 25%%,50%%,75%% and 100%% of the datapoints). The datapoints in each sample are chosen randomly for
+each new sample.}
 
-\item{handle_word_embeddings}{Determine whether to use a list of word embeddings or an individual word_embedding (default = "individually", also "concatenate"). If a list of word embeddings are
+\item{handle_word_embeddings}{Determine whether to use a list of word embeddings or an individual
+word_embedding (default = "individually", also "concatenate"). If a list of word embeddings are
 provided, then they will be concatenated.}
 
 \item{n_cross_val}{(numeric) Value that determines the number of times to repeat the cross-validation.
-(default = 1, i.e., cross-validation is only performed once). Warning: The training process gets proportionately slower to the number of cross-validations,
-resulting in a time complexity that increases with a factor of n (n cross-validations).}
+(default = 1, i.e., cross-validation is only performed once). Warning: The training process gets
+proportionately slower to the number of cross-validations, resulting in a time complexity that increases
+with a factor of n (n cross-validations).}
 
-\item{x_append}{(optional) Variables to be appended after the word embeddings (x); if wanting to preappend them before
-the word embeddings use the option first = TRUE. If not wanting to train with word embeddings, set x = NULL (default = NULL).}
+\item{x_append}{(optional) Variables to be appended after the word embeddings (x); if wanting to preappend
+them before the word embeddings use the option first = TRUE. If not wanting to train with word embeddings,
+set x = NULL (default = NULL).}
 
 \item{append_first}{(boolean) Option to add variables before or after all word embeddings (default = False).}
 
@@ -70,9 +75,9 @@ uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.}
 \item{inside_folds}{(numeric) The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
 For more information see validation_split in rsample.}
 
-\item{strata}{(string or tibble; default "y") Variable to stratify according; if a string the variable needs to be in the
-training set - if you want to stratify according to another variable you can include it as a tibble (please note you
-can only add 1 variable to stratify according). Can set it to NULL.}
+\item{strata}{(string or tibble; default "y") Variable to stratify according; if a string the variable
+needs to be in the training set - if you want to stratify according to another variable you can include
+it as a tibble (please note you can only add 1 variable to stratify according). Can set it to NULL.}
 
 \item{outside_strata}{(boolean) Whether to stratify the outside folds.}
 
@@ -94,8 +99,8 @@ cross-validation loop (default = 4).}
 \item{preprocess_step_center}{(boolean) Normalizes dimensions to have a mean of zero; default is set to TRUE.
 For more info see (step_center in recipes).}
 
-\item{preprocess_step_scale}{(boolean) Normalize dimensions to have a standard deviation of one; default is set to TRUE.
-For more info see (step_scale in recipes).}
+\item{preprocess_step_scale}{(boolean) Normalize dimensions to have a standard deviation of one;
+default is set to TRUE. For more info see (step_scale in recipes).}
 
 \item{preprocess_PCA}{Pre-processing threshold for PCA (to skip this step set it to NA).
 Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
@@ -131,15 +136,15 @@ can set to "spearman" or "kendall").}
 \item{save_output}{(character) Option not to save all output; default = "all". see also "only_results"
 and "only_results_predictions".}
 
-\item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values by Monte Carlo simulation,
-in larger than 2 × 2 tables.}
+\item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values
+by Monte Carlo simulation, in larger than 2 × 2 tables.}
 
 \item{seed}{(numeric) Set different seed (default = 2024).}
 }
 \value{
-A tibble containing correlations for each sample. If n_cross_val > 1, correlations for each new cross-validation,
-along with standard-deviation and mean correlation is included in the tibble. The information in the tibble is
-visualised via the textTrainNPlot function.
+A tibble containing correlations for each sample. If n_cross_val > 1, correlations for
+ each new cross-validation, along with standard-deviation and mean correlation is included in the
+ tibble. The information in the tibble is visualised via the textTrainNPlot function.
 }
 \description{
 (experimental) Compute cross-validated correlations for different sample-sizes of a data set.

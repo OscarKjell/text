@@ -53,9 +53,10 @@ before being moved to the CPU (faster but requires more memory).}
 \item{num_train_epochs}{(Numeric) Total number of training epochs to perform
 (if not an integer, will perform the decimal part percents of the last epoch before stopping training).}
 
-\item{past_index}{(Numeric, defaults to -1) Some models like TransformerXL or XLNet can make use of the past hidden states
-for their predictions. If this argument is set to a positive int, the Trainer will use the corresponding output
-(usually index 2) as the past state and feed it to the model at the next training step under the keyword argument mems.}
+\item{past_index}{(Numeric, defaults to -1) Some models like TransformerXL or XLNet can make use of the
+past hidden states for their predictions. If this argument is set to a positive int, the Trainer will use
+the corresponding output (usually index 2) as the past state and feed it to the model at the next
+training step under the keyword argument mems.}
 
 \item{set_seed}{(Numeric) Set the seed}
 
@@ -69,8 +70,10 @@ textEmbed() by providing the model parameter with a the path to the output folde
 Domain Adapted Pre-Training (EXPERIMENTAL - under development)
 }
 \details{
-Information about more parameters see inst/python/args2.json (https://github.com/OscarKjell/text/tree/master/inst/python/args2.json).
-Descriptions of settings can be found in inst/python/task_finetune.py under "class ModelArguments" and "class DataTrainingArguments" as well as
+Information about more parameters see inst/python/args2.json
+(https://github.com/OscarKjell/text/tree/master/inst/python/args2.json).
+Descriptions of settings can be found in inst/python/task_finetune.py under
+"class ModelArguments" and "class DataTrainingArguments" as well as
 online at https://huggingface.co/docs/transformers/main_classes/trainer.
 }
 \examples{

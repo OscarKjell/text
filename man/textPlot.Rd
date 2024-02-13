@@ -92,13 +92,14 @@ where duplicates are removed).}
 (i.e., even if not significant).}
 
 \item{plot_n_words_middle}{Number of words plotted that are in the middle in Supervised
-Dimension Projection score (default = 5). (i.e., even if not significant;  per dimensions, where duplicates are removed).}
+Dimension Projection score (default = 5). (i.e., even if not significant;  per dimensions,
+where duplicates are removed).}
 
 \item{titles_color}{Color for all the titles (default: "#61605e").}
 
-\item{y_axes}{(boolean) If TRUE, also plotting on the y-axes (default = FALSE, i.e, a 1-dimensional plot is generated). Also plotting on
-y-axes produces a two dimension 2-dimensional plot, but the textProjection function has to
-have had a variable on the y-axes.}
+\item{y_axes}{(boolean) If TRUE, also plotting on the y-axes (default = FALSE, i.e, a 1-dimensional
+plot is generated). Also plotting on y-axes produces a two dimension 2-dimensional plot, but the
+textProjection function has to have had a variable on the y-axes.}
 
 \item{p_alpha}{Alpha (default = .05).}
 
@@ -121,9 +122,9 @@ ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c
 
 \item{word_font}{Font type (default = NULL).}
 
-\item{bivariate_color_codes}{(HTML color codes. Type = character) The different colors of the words. Note that, at the moment, two
-squares should not have the exact same colour-code because the numbers within the squares of the
-legend will then be aggregated (and show the same, incorrect  value).
+\item{bivariate_color_codes}{(HTML color codes. Type = character) The different colors of the words.
+ Note that, at the moment, two squares should not have the exact same colour-code because the numbers
+ within the squares of the legend will then be aggregated (and show the same, incorrect  value).
 (default: c("#398CF9", "#60A1F7", "#5dc688",
 "#e07f6a", "#EAEAEA", "#40DD52",
 "#FF0000", "#EA7467", "#85DB8E")).}

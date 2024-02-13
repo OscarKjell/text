@@ -103,17 +103,18 @@ textEmbedReduce <- function(
   ### Get the right cvs library(text)
 
   if (scalar == "fb20/scalar.csv") {
-   # scalar <- paste0("https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/",
-   #                  "master/models/fb20/scalar.csv")
+    scalar <- paste0("https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/",
+                     "master/models/fb20/scalar.csv")
 
-    scalar <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
+   # scalar <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
   }
 
-  if (scalar == "fb20/rpca_roberta_768_D_20.csv") {
-    pca <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/rpca_roberta_768_D_20.csv"
+  if (pca == "fb20/rpca_roberta_768_D_20.csv") {
+    pca <- paste0("https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/",
+                  "master/models/fb20/rpca_roberta_768_D_20.csv")
 
-#    pca <- paste0("https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/",
-#                  "master/models/fb20/rpca_roberta_768_D_20.csv")
+    #    pca <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/rpca_roberta_768_D_20.csv"
+
   }
 
   if (is.character(scalar)) {
