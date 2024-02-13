@@ -4,7 +4,7 @@
 \alias{textTopicsTest}
 \title{This function tests the relationship between a single topic or all topics and a
 variable of interest. Available tests include correlation, t-test, linear regression,
-binary regression, and ridge regression.}
+binary regression, and ridge regression. (EXPERIMENTAL - under development)}
 \usage{
 textTopicsTest(
   model,
@@ -41,5 +41,5 @@ and variable name.
 \description{
 This function tests the relationship between a single topic or all topics and a
 variable of interest. Available tests include correlation, t-test, linear regression,
-binary regression, and ridge regression.
+binary regression, and ridge regression. (EXPERIMENTAL - under development)
 }

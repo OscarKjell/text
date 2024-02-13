@@ -3,7 +3,7 @@
 \name{textTopics}
 \alias{textTopics}
 \title{This function creates and trains a BERTopic model (based on bertopic python packaged) on a
-text-variable in a tibble/data.frame.}
+text-variable in a tibble/data.frame. (EXPERIMENTAL)}
 \usage{
 textTopics(
   data,
@@ -70,5 +70,5 @@ together with metdata
 }
 \description{
 This function creates and trains a BERTopic model (based on bertopic python packaged) on a
-text-variable in a tibble/data.frame.
+text-variable in a tibble/data.frame. (EXPERIMENTAL)
 }
