@@ -49,7 +49,10 @@ hypotheses in social and behavior sciences for both relatively small and
 large datasets. *Text* is continuously tested on Ubuntu, Mac OS and
 Windows using the latest stable R version.
 
-[Tutorial preprint paper](https://psyarxiv.com/293kt/)
+Please reference our tutorial article when using the package: [The
+text-package: An R-package for Analyzing and Visualizing Human Language
+Using Natural Language Processing and Deep
+Learning](https://osf.io/preprints/psyarxiv/293kt/).
 
 ### Short installation guide
 

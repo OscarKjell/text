@@ -252,7 +252,8 @@ textReturnModelAndEmbedding <- function(
 #' ##### Automatic implicit motive coding section ######
 #'
 #' # Create example dataset
-#' implicit_motive_data <- dplyr::mutate(.data = Language_based_assessment_data_8, user_id = row_number())
+#' implicit_motive_data <- dplyr::mutate(.data = Language_based_assessment_data_8,
+#' user_id = row_number())
 #'
 #' # Code implicit motives. (In this example, person_class will be NaN due to the absence of
 #' # sentences classified as 'power')

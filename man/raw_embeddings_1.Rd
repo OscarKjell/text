@@ -13,7 +13,7 @@ A list with token-level word embeddings for harmony words.
 }
 }
 \source{
-\url{https://psyarxiv.com/er6t7/}
+\url{https://osf.io/preprints/psyarxiv/er6t7/}
 }
 \usage{
 raw_embeddings_1

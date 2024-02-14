@@ -15,7 +15,7 @@ mean aggregation of layer 11 and 12.
 }
 }
 \source{
-\url{https://psyarxiv.com/er6t7/}
+\url{https://osf.io/preprints/psyarxiv/er6t7/}
 }
 \usage{
 word_embeddings_4

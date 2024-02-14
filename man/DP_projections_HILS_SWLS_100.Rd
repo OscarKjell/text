@@ -23,7 +23,7 @@ A data frame with 583 rows and 12 variables:
 }
 }
 \source{
-\url{https://psyarxiv.com/er6t7/}
+\url{https://osf.io/preprints/psyarxiv/er6t7/}
 }
 \usage{
 DP_projections_HILS_SWLS_100

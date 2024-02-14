@@ -22,11 +22,13 @@ knitr::opts_chunk$set(
 )
 evaluate = FALSE
 ```
-The *text*-package uses Hugging Face transformers language models, natural language processing and machine learning methods to examine text and numerical variables.  
+The *text*-package uses Hugging Face transformers language models, natural language processing and machine learning methods to examine text and numerical variables.
+
+Please reference our tutorial article when using the package: [The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://osf.io/preprints/psyarxiv/293kt/).
 
 To learn more about the textEmbed() functions see the tutorial called: [HuggingFace Transformers in R: Word Embeddings Defaults and Specifications](https://www.r-text.org/articles/huggingface_in_r.html).
 
-This Getting Started tutorial is going through some central *text* functions. The data comes from the [Kjell et al., 2019](https://pubmed.ncbi.nlm.nih.gov/29963879/) ([pre-print](https://psyarxiv.com/er6t7/)), which show how individuals' open-ended text answers can be used to *measure*, *describe* and *differentiate* psychological constructs.  
+This Getting Started tutorial is going through some central *text* functions. The data comes from the [Kjell et al., 2019](https://pubmed.ncbi.nlm.nih.gov/29963879/) ([pre-print](https://osf.io/preprints/psyarxiv/er6t7/)), which show how individuals' open-ended text answers can be used to *measure*, *describe* and *differentiate* psychological constructs.  
 
 In short the workflow includes to first transform text variables into text-level and word type-level word embeddings. These word embeddings are then used to predict numerical variables, compute semantic similarity scores, and plot words in the word embedding space.  
 
@@ -127,7 +129,9 @@ plot_projection_2D$final_plot
 
 
 ### Articles using the text-package
-[Natural language analyzed with AI‐based transformers predict traditional subjective well‐being measures approaching the theoretical upper limits in accuracy](https://www.nature.com/articles/s41598-022-07520-w/) *Kjell et al., (2022). Scientific Reports*
+[Beyond rating scales: With targeted evaluation, large language models are poised for psychological assessment](https://www.sciencedirect.com/science/article/pii/S0165178123006170) *Kjell, Kjell and Schwartz. (2024). Psychiatry Research*
+
+[Natural language analyzed with AI‐based transformers predict traditional subjective well‐being measures approaching the theoretical upper limits in accuracy](https://www.nature.com/articles/s41598-022-07520-w) *Kjell et al., (2022). Scientific Reports*
 
 [Doing well-being: Self-reported activities are related to subjective well-being](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0270503).
 *Nilsson, et al., (2022). PLOSONE*
@@ -141,13 +145,13 @@ The below list consists of papers analyzing human language in a similar fashion 
 
 ***Methods Articles***
 
-[The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://psyarxiv.com/293kt/)
-*Kjell, Salvatore, & Schwartz. (2023) Psychological Methods.*
+[The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://osf.io/preprints/psyarxiv/293kt/)
+*Kjell, Salvatore, & Schwartz. (2024) Psychological Methods.*
 
 [Gaining insights from social media language: Methodologies and challenges](http://www.peggykern.org/uploads/5/6/6/7/56678211/kern_2016_-_gaining_insights_from_social_media_language-_methodologies_and_challenges.pdf).  
 *Kern et al., (2016). Psychological Methods.*
 
-[Semantic measures: Using natural language processing to measure, differentiate, and describe psychological constructs.](https://pubmed.ncbi.nlm.nih.gov/29963879/) [Pre-print](https://psyarxiv.com/er6t7/)  
+[Semantic measures: Using natural language processing to measure, differentiate, and describe psychological constructs.](https://pubmed.ncbi.nlm.nih.gov/29963879/) [Pre-print](https://osf.io/preprints/psyarxiv/er6t7/)  
 *Kjell et al.,  (2019). Psychological Methods.*
 
 ***Clinical Psychology***  
@@ -173,7 +177,7 @@ Psychological language on Twitter predicts county-level heart disease mortality
 
 ***Positive Psychology***  
 
-[The Harmony in Life Scale Complements the Satisfaction with Life Scale: Expanding the Conceptualization of the Cognitive Component of Subjective Well-Being](https://link.springer.com/article/10.1007/s11205-015-0903-z/)  
+[The Harmony in Life Scale Complements the Satisfaction with Life Scale: Expanding the Conceptualization of the Cognitive Component of Subjective Well-Being](https://link.springer.com/article/10.1007/s11205-015-0903-z)  
 *Kjell, et al., (2016). Social Indicators Research*
 
 ***Computer Science: Python Software***  
@@ -182,7 +186,7 @@ Psychological language on Twitter predicts county-level heart disease mortality
 *Schwartz, H. A., Giorgi, et al., (2017).  In Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing: System Demonstrations* 
 
 
-[DLATK](http://dlatk.wwbp.org/)
+[DLATK](https://github.com/dlatk/dlatk)
 
 
 
