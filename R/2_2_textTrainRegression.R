@@ -623,6 +623,14 @@ summarize_tune_results <- function(object,
 #' Monte Carlo simulation, in larger than 2 × 2 tables.
 #' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
+#' @details
+#' By default, NAs are treated as follows: 
+#'    1. rows with NAs in word embeddings are removed.
+#'    2. rows with NAs in y are removed
+#'    3. rows with NAs in  x_append are removed; if impute_missing is set to 
+#'       TRUE, missing values will be imputed using k-nearest neighbours. 
+#'    When rows are omitted, the user will get a warning. 
+#'    The CV predictions will include NAs with the same length as the input. 
 #' @return A (one-sided) correlation test between predicted and observed values; tibble
 #' of predicted values (t-value, degree of freedom (df), p-value,
 #'  alternative-hypothesis, confidence interval, correlation coefficient), as well as information about
@@ -701,6 +709,28 @@ textTrainRegression <- function(x,
     comment(eval_measure) <- "1"
   } else {
     comment(eval_measure) <- paste(length(x))
+  }
+  
+  # display warnings if x_append, x or y contain NA-values. 
+  if (sum(is.na(x_append)) > 0){
+    warning("NAs in x_append have been omitted.")
+  } else if (sum(is.na(x)) > 0){
+    warning("NAs in x have been omitted.")
+  } else if (sum(is.na(y)) > 0){
+    warning("NAs in y have been omitted.")
+  }
+  
+  # save for later use
+  y_original <- y
+  
+  # Search and remove NA-values in y
+  if (sum(is.na(y)) > 0){
+    # find indexes of NA elements in y
+    na_idx <- which(is.na(y) == TRUE)
+    # remove rows with NA values in x and y
+    y <- y[-c(na_idx)]
+    x <- x[-c(na_idx),]
+    x_append <- x_append[-c(na_idx),]
   }
 
   # Sorting out y
@@ -925,7 +955,19 @@ textTrainRegression <- function(x,
     # Remove the predictions from list
     collected_results[[1]] <- NULL
   }
-
+  
+  # Correct for NA-values in y
+  # Insert NA's into predictions component of the model object at 
+  # the sae indexes as ehere there was NA-values in y
+  if (sum(is.na(y_original)) > 0){
+    for (idx in seq_along(1:length(y_original))){
+      if (idx %in% na_idx){
+        # create row with NA-values and insert into predy_y 
+        predy_y <- add_row(.before = c(idx), .data = predy_y)
+      }
+    }
+    predy_y$id_nr <- c(1:length(y_original))
+  }
 
   ##### Construct final model to be saved and applied on other data  ########
   ############################################################################

@@ -136,6 +136,15 @@ of predicted values (t-value, degree of freedom (df), p-value,
 \description{
 Train word embeddings to a numeric variable.
 }
+\details{
+By default, NAs are treated as follows: 
+   1. rows with NAs in word embeddings are removed.
+   2. rows with NAs in y are removed
+   3. rows with NAs in  x_append are removed; if impute_missing is set to 
+      TRUE, missing values will be imputed using k-nearest neighbours. 
+   When rows are omitted, the user will get a warning. 
+   The CV predictions will include NAs with the same length as the input.
+}
 \examples{
 # Examines how well the embeddings from the column "harmonytext" can
 # predict the numerical values in the column "hilstotal".
