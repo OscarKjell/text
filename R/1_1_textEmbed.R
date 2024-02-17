@@ -1024,11 +1024,11 @@ textEmbed <- function(texts,
       (decontextualize == TRUE && is.null(aggregation_from_layers_to_tokens))) {
     stop(cat(
       colourise("When using decontextualize = TRUE, it is required to set aggregation_from_tokens_to_texts,
-                aggregation_from_tokens_to_word_types as well as aggregation_from_tokens_to_word_types",
+                aggregation_from_tokens_to_word_types, and aggregation_from_layers_to_tokens",
         fg = "red"
       ),
       colourise("This is because both the token embeddings and text embeddings are
-                constrcuted from the word type embeddings.",
+                constructed from the word type embeddings. ",
         fg = "green"
       )
     ))
