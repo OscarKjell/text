@@ -203,4 +203,8 @@ test_that("Testing textEmbedReduce as well as train", {
   )
 
   testthat::expect_equal(pca5$texts$harmonywords[[1]], -9.569476, tolerance = 0.0001)
+
+  unlink("inst/extdata/rpca_roberta_768_D_20.csv")
+  unlink("inst/extdata/scalar.csv")
+
 })

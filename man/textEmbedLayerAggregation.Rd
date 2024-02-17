@@ -34,10 +34,10 @@ or "concatenate", which links together each layer of the word embedding to one l
 \item{return_tokens}{(boolean) If TRUE, provide the tokens used in the specified transformer model (default = FALSE).}
 
 \item{tokens_select}{(character) Option to only select embeddings linked to specific tokens
-such as "[CLS]" and "[SEP]" (default NULL).}
+in the textEmbedLayerAggregation() phase such as "[CLS]" and "[SEP]" (default NULL).}
 
-\item{tokens_deselect}{(character) Option to deselect embeddings linked to specific tokens
-such as "[CLS]" and "[SEP]" (default NULL).}
+\item{tokens_deselect}{(character) Option to deselect embeddings linked to specific tokens in
+the textEmbedLayerAggregation() phase such as "[CLS]" and "[SEP]" (default NULL).}
 }
 \value{
 A tibble with word embeddings. Note that layer 0 is the input embedding to
