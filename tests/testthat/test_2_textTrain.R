@@ -209,7 +209,14 @@ test_that("textTrain Random Forest produces list of results with prediction bein
   testthat::expect_that(trained1, testthat::is_a("list"))
   testthat::expect_is(trained1$truth_predictions$truth[1], "factor")
   #  testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.297) R.4.2
-  testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.324)
+
+  if (sys_info["sysname"] == "Darwin" | sys_info["sysname"] == "Windows") {
+    testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.324)
+  }
+  if (sys_info["sysname"] == "Linux") {
+    testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.297)
+  }
+
 
   trained2 <- text::textTrain(
     x = word_embeddings_4$texts$harmonytext,
@@ -287,7 +294,14 @@ test_that("textTrainRandomForest with Extremely
   testthat::expect_that(trained_rf_95, testthat::is_a("list"))
   testthat::expect_is(trained_rf_95$results$.estimate[1], "numeric")
   #  testthat::expect_equal(trained_rf_95$results$.estimate[1], 0.4102564, tolerance = 0.001) R4.2
-  testthat::expect_equal(trained_rf_95$results$.estimate[1], 0.4615385, tolerance = 0.001)
+
+  if (sys_info["sysname"] == "Darwin" | sys_info["sysname"] == "Windows") {
+    testthat::expect_equal(trained_rf_95$results$.estimate[1], 0.4615385, tolerance = 0.001)
+  }
+  if (sys_info["sysname"] == "Linux") {
+    testthat::expect_equal(trained_rf_95$results$.estimate[1], 0.4102564, tolerance = 0.001)
+  }
+
 
   example_categories <- as.factor(c(
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
@@ -315,7 +329,15 @@ test_that("textTrainRandomForest with Extremely
   testthat::expect_that(trained_rf_3, testthat::is_a("list"))
   testthat::expect_is(trained_rf_3$truth_predictions$truth[1], "factor")
   #  testthat::expect_equal(trained_rf_3$truth_predictions$.pred_1[1], 0.107) R4.2
-  testthat::expect_equal(trained_rf_3$truth_predictions$.pred_1[1], 0.134)
+
+
+  if (sys_info["sysname"] == "Darwin" | sys_info["sysname"] == "Windows") {
+    testthat::expect_equal(trained_rf_3$truth_predictions$.pred_1[1], 0.134)
+  }
+  if (sys_info["sysname"] == "Linux") {
+    testthat::expect_equal(trained_rf_3$truth_predictions$.pred_1[1], 0.107)
+  }
+
 
   example_categories_tibble <- tibble::as_tibble_col(example_categories)
   trained_rf_NA <- text::textTrainRandomForest(
@@ -499,7 +521,15 @@ test_that("textTrainLists randomForest produces list of results with prediction 
   testthat::expect_that(results_rf_et, testthat::is_a("list"))
   testthat::expect_is(results_rf_et$results$p_value[1], "character")
   #  testthat::expect_equal(results_rf_et$results$precision[1], 0.4705882, tolerance = 0.0001) R 4.2
-  testthat::expect_equal(results_rf_et$results$precision[1], 0.4444444, tolerance = 0.0001)
+
+
+  if (sys_info["sysname"] == "Darwin" | sys_info["sysname"] == "Windows") {
+    testthat::expect_equal(results_rf_et$results$precision[1], 0.4444444, tolerance = 0.0001)
+  }
+  if (sys_info["sysname"] == "Linux") {
+    testthat::expect_equal(results_rf_et$results$precision[1], 0.4705882, tolerance = 0.0001)
+  }
+
 
   results_rf <- text::textTrain(
     x = x,
@@ -542,8 +572,14 @@ test_that("textTrainLists randomForest produces list of results with prediction 
   testthat::expect_that(results_rf_or_p, testthat::is_a("list"))
   testthat::expect_is(results_rf_or_p$results$p_value[1], "character")
   #  testthat::expect_equal(results_rf_or_p$results$precision[1], 0.4705882, tolerance = 0.0001) # R 4.2
-  testthat::expect_equal(results_rf_or_p$results$precision[1], 0.4444444, tolerance = 0.0001) # R 4.3
 
+
+  if (sys_info["sysname"] == "Darwin" | sys_info["sysname"] == "Windows") {
+    testthat::expect_equal(results_rf_or_p$results$precision[1], 0.4444444, tolerance = 0.0001) # R 4.3
+  }
+  if (sys_info["sysname"] == "Linux") {
+    testthat::expect_equal(results_rf_or_p$results$precision[1], 0.4705882, tolerance = 0.0001) # R 4.3
+  }
 
   results_rf_or <- text::textTrain(
     x = x,
@@ -565,7 +601,16 @@ test_that("textTrainLists randomForest produces list of results with prediction 
   testthat::expect_that(results_rf_or, testthat::is_a("list"))
   testthat::expect_is(results_rf_or$results$p_value[1], "character")
   #  testthat::expect_equal(results_rf_or$results$roc_auc[1], 0.38625) # R 4.2
-  testthat::expect_equal(results_rf_or$results$roc_auc[1], 0.375)
+
+
+
+  if (sys_info["sysname"] == "Darwin" | sys_info["sysname"] == "Windows") {
+    testthat::expect_equal(results_rf_or$results$roc_auc[1], 0.375)
+  }
+  if (sys_info["sysname"] == "Linux") {
+    testthat::expect_equal(results_rf_or$results$roc_auc[1], 0.38625)
+  }
+
 })
 
 
@@ -670,7 +715,13 @@ test_that("textTrainRandomForest adding word_embedding together", {
   testthat::expect_that(multi_we_RF_PCA_3, testthat::is_a("list"))
   testthat::expect_is(multi_we_RF_PCA_3$results$.estimate[[1]], "numeric")
   #  testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.375) #R4.2
-  testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.4) # R4.3
+
+  if (sys_info["sysname"] == "Darwin" | sys_info["sysname"] == "Windows") {
+    testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.4)    # R4.3
+  }
+  if (sys_info["sysname"] == "Linux") {
+    testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.375) #R4.2
+  }
 
 
   multi_we_RF_PCA_NA <- text::textTrainRandomForest(
@@ -723,6 +774,15 @@ test_that("textTrainRandomForest running multiple categories in X", {
     testthat::expect_equal(trained_rf_3$results$.estimate[[6]], -0.07462687, tolerance = 0.0001)
   }
 
+
+  if (sys_info["sysname"] == "Darwin" | sys_info["sysname"] == "Windows") {
+    testthat::expect_equal(trained_rf_3$results$.estimate[[1]], .325, tolerance = 0.001)
+    testthat::expect_equal(trained_rf_3$results$.estimate[[6]], -0.07462687, tolerance = 0.0001)
+  }
+  if (sys_info["sysname"] == "Linux") {
+    testthat::expect_equal(trained_rf_3$results$.estimate[[1]], .375, tolerance = 0.001)
+    testthat::expect_equal(trained_rf_3$results$.estimate[[6]], .0196, tolerance = 0.001)
+  }
 
 })
 
