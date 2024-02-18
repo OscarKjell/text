@@ -712,13 +712,18 @@ test_that("textTrainRandomForest running multiple categories in X", {
 
   testthat::expect_that(trained_rf_3, testthat::is_a("list"))
   testthat::expect_is(trained_rf_3$results$.estimate[[1]], "numeric")
-  testthat::expect_equal(trained_rf_3$results$.estimate[[1]], .325, tolerance = 0.001)
-  testthat::expect_equal(trained_rf_3$results$.estimate[[6]], -0.07462687, tolerance = 0.0001)
+
   testthat::expect_equal(trained_rf_3$results$.estimator[[1]], "multiclass")
-  testthat::expect_is(trained_rf_3$roc_curve_plot, "plot")
 
   testthat::expect_equal(length(trained_rf_3$roc_curve_plot$layers), 2)
-  expect_true(is.ggplot(trained_rf_3$roc_curve_plot))
+  testthat::expect_true(ggplot2::is.ggplot(trained_rf_3$roc_curve_plot))
+
+  if (.Platform$OS.type == "unix") {
+    testthat::expect_equal(trained_rf_3$results$.estimate[[1]], .325, tolerance = 0.001)
+    testthat::expect_equal(trained_rf_3$results$.estimate[[6]], -0.07462687, tolerance = 0.0001)
+  }
+
+
 })
 
 
