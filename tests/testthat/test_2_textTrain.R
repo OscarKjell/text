@@ -693,6 +693,31 @@ test_that("textTrainRandomForest adding word_embedding together", {
 })
 
 
+test_that("textTrainRandomForest multiple categories in X", {
+  skip_on_cran()
+
+  tibble_copy <- Language_based_assessment_data_8 %>%
+    #mutate(kind_2=sample(letters[1:2],n(),T) %>% as.factor) %>%
+    mutate(kind_3 = sample(letters[1:3], n(), T) %>% as.factor)
+
+
+  ## this does not work
+  trained_rf_3 <- text::textTrainRandomForest(
+    x = word_embeddings_4$texts$harmonywords,
+    y = tibble_copy$kind_3,
+    simulate.p.value = T
+  )
+
+  testthat::expect_that(trained_rf_3, testthat::is_a("list"))
+  testthat::expect_is(trained_rf_3$results$.estimate[[1]], "numeric")
+  testthat::expect_equal(trained_rf_3$results$.estimate[[1]], .2750000)
+  testthat::expect_equal(trained_rf_3$results$.estimate[[6]], -0.1111111)
+  testthat::expect_equal(trained_rf_3$results$.estimator[[1]], "multiclass")
+})
+
+
+
+
 test_that("textPredictTest t-test and bootstrapped test", {
   skip_on_cran()
   set.seed(1)

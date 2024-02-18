@@ -91,13 +91,20 @@ classification_results <- function(outputlist_results_outer,
   )
 
 
-  accuracy <- yardstick::accuracy(predy_y, truth, estimate, ...)
-  bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate, ...)
-  sens <- yardstick::sens(predy_y, truth, estimate, ...)
-  spec <- yardstick::spec(predy_y, truth, estimate, ...)
-  precision <- yardstick::precision(predy_y, truth, estimate, ...)
-  kappa <- yardstick::kap(predy_y, truth, estimate, ...)
-  f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...)
+  accuracy <- yardstick::accuracy(predy_y, truth, estimate, ...
+                                  )
+  bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate, ...
+                                          )
+  sens <- yardstick::sens(predy_y, truth, estimate, ...
+                          )
+  spec <- yardstick::spec(predy_y, truth, estimate, ...
+                          )
+  precision <- yardstick::precision(predy_y, truth, estimate, ...
+                                    )
+  kappa <- yardstick::kap(predy_y, truth, estimate, ...
+                          )
+  f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...
+                                 )
 
   roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3]))
   roc_curve_data <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[3]))
@@ -143,7 +150,7 @@ classification_results_multi <- function(outputlist_results_outer,
     tidyr::unnest(outputlist_results_outer$estimate, cols = c(estimate)),
     tidyr::unnest(outputlist_results_outer$id_nr, cols = c(id_nr))
   )
-  for (i in 1:length(unique(levels(outputlist_results_outer$truth$truth[[1]]))))
+  for (i in 1:(length(unique(levels(outputlist_results_outer$truth$truth[[1]])))))
   {
     predy_y[3 + i] <- tibble::tibble(tidyr::unnest(outputlist_results_outer[[i]], cols = c(paste(".pred_", i, sep = ""))))
   }
@@ -163,13 +170,20 @@ classification_results_multi <- function(outputlist_results_outer,
   )
 
 
-  accuracy <- yardstick::accuracy(predy_y, truth, estimate, ...)
-  bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate, ...)
-  sens <- yardstick::sens(predy_y, truth, estimate, ...)
-  spec <- yardstick::spec(predy_y, truth, estimate, ...)
-  precision <- yardstick::precision(predy_y, truth, estimate, ...)
-  kappa <- yardstick::kap(predy_y, truth, estimate, ...)
-  f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...)
+  accuracy <- yardstick::accuracy(predy_y, truth, estimate, ...
+                                  )
+  bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate, ...
+                                          )
+  sens <- yardstick::sens(predy_y, truth, estimate, ...
+                          )
+  spec <- yardstick::spec(predy_y, truth, estimate, ...
+                          )
+  precision <- yardstick::precision(predy_y, truth, estimate, ...
+                                    )
+  kappa <- yardstick::kap(predy_y, truth, estimate, ...
+                          )
+  f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...
+                                 )
 
   roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[4:(length(predy_y))]))
   roc_curve_data <- yardstick::roc_curve(predy_y, truth, colnames(predy_y[4:(length(predy_y))]))
@@ -344,46 +358,94 @@ fit_model_accuracy_rf <- function(object,
   # look at xy_testing: glimpse(xy_testing)
 
   # Apply model on new data
+  if (length(levels(data_train$y)) == 2){
+
+    holdout_pred_class <-
+      stats::predict(mod, xy_testing %>%
+                       dplyr::select(-y), type = c("class")) %>%
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
+
+    holdout_pred <-
+      stats::predict(mod, xy_testing %>%
+                       dplyr::select(-y), type = c("prob")) %>%
+      dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
+
+    holdout_pred$.pred_class <- holdout_pred_class$.pred_class
+    class <- colnames(holdout_pred[2])
+
+    eval_measure_val <- select_eval_measure_val(
+      eval_measure = eval_measure,
+      holdout_pred = holdout_pred,
+      truth = y,
+      estimate = .pred_class,
+      class = class
+    )
+
+    # Sort output of RMSE, predictions and truth (observed y)
+    output <- list(
+      list(eval_measure_val),
+      list(holdout_pred$.pred_class),
+      list(holdout_pred$y),
+      list(holdout_pred[1]),
+      list(holdout_pred[2]),
+      list(preprocess_PCA),
+      list(holdout_pred$id_nr)
+    ) # New
+    names(output) <- c(
+      "eval_measure_val",
+      "estimate",
+      "truth",
+      ".pred_1",
+      ".pred_2",
+      "preprocess_PCA",
+      "id_nr"
+    ) # New
+  } else if (length(levels(data_train$y)) > 2) {
   holdout_pred_class <-
-    stats::predict(mod, xy_testing %>%
-                     dplyr::select(-y), type = c("class")) %>%
-    dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
+    stats::predict(mod, xy_testing, type = c("class")) %>%
+    dplyr::bind_cols(rsample::assessment(object) %>%
+                       dplyr::select(y, id_nr))
+
 
   holdout_pred <-
-    stats::predict(mod, xy_testing %>%
-                     dplyr::select(-y), type = c("prob")) %>%
-    dplyr::bind_cols(rsample::assessment(object) %>% dplyr::select(y, id_nr))
+    stats::predict(mod, xy_testing, type = c("prob")) %>%
+    dplyr::bind_cols(rsample::assessment(object) %>%
+                       dplyr::select(y, id_nr))
 
   holdout_pred$.pred_class <- holdout_pred_class$.pred_class
-  class <- colnames(holdout_pred[2])
 
-  eval_measure_val <- select_eval_measure_val(
-    eval_measure = eval_measure,
-    holdout_pred = holdout_pred,
-    truth = y,
-    estimate = .pred_class,
-    class = class
-  )
-
+  # Get RMSE; eval_measure = "rmse"
+  eval_measure_val <- select_eval_measure_val(eval_measure,
+                                         holdout_pred = holdout_pred,
+                                         truth = y, estimate = .pred_class
+  ) #$.estimate
   # Sort output of RMSE, predictions and truth (observed y)
   output <- list(
     list(eval_measure_val),
     list(holdout_pred$.pred_class),
-    list(holdout_pred$y),
-    list(holdout_pred[1]),
-    list(holdout_pred[2]),
-    list(preprocess_PCA),
-    list(holdout_pred$id_nr)
-  ) # New
+    list(holdout_pred$y)
+  )
+  for (i in 1:length(unique(levels(holdout_pred$y))))
+  {
+    output[[3 + i]] <- list(holdout_pred[i])
+  }
+  output[[length(output) + 1]] <- list(preprocess_PCA)
+  output[[length(output) + 1]] <- list(holdout_pred$id_nr)
+
+  pred_names <- list()
+  for (i in 1:length(unique(levels(holdout_pred$y))))
+  {
+    pred_names[i] <- paste(".pred_", i, sep = "")
+  }
   names(output) <- c(
     "eval_measure_val",
     "estimate",
     "truth",
-    ".pred_1",
-    ".pred_2",
+    pred_names,
     "preprocess_PCA",
     "id_nr"
-  ) # New
+  )
+}
   output
 }
 
@@ -504,6 +566,7 @@ tune_over_cost_rf <- function(object,
     purrr::map(na.omit)
 
   # Extract the Accuracy
+#  tune_eval_result <- unlist(tune_outputlist$eval_measure_val$eval_measure_val)
   tune_accuracy <- (dplyr::bind_rows(tune_outputlist$eval_measure_val$eval_measure_val))$.estimate
   # Add accuracy to the grid
   grid_inner_accuracy <- grid_inner %>%
@@ -726,8 +789,7 @@ textTrainRandomForest <- function(x,
   variables_and_names <- sorting_xs_and_x_append(
     x = x,
     x_append = x_append,
-    append_first = append_first,
-    ...
+    append_first = append_first, ...
   )
   x1 <- variables_and_names$x1
   x_name <- variables_and_names$x_name
@@ -900,12 +962,24 @@ textTrainRandomForest <- function(x,
     purrr::map(na.omit)
 
   # Get  predictions and evaluation results help(full_join)
-  results_collected <- classification_results(
-    outputlist_results_outer = outputlist_results_outer,
-    id_nr,
-    simulate.p.value = simulate.p.value,
-    ...
-  )
+  if(length(levels(y$y)) == 2){
+    results_collected <- classification_results(
+      outputlist_results_outer = outputlist_results_outer,
+      id_nr,
+      simulate.p.value = simulate.p.value, ...
+    )
+  }
+
+
+  if(length(levels(y$y)) > 2){
+    results_collected <- classification_results_multi(
+      outputlist_results_outer = outputlist_results_outer,
+      id_nr,
+      simulate.p.value = simulate.p.value, ...
+    )
+  }
+
+
   names(results_collected) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
 
 
