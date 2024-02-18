@@ -105,7 +105,8 @@ hyperparameters default "roc_auc"; see also "accuracy", "bal_accuracy", "sens", 
 
 \item{multi_cores}{If TRUE it enables the use of multiple cores if the computer system allows for it (i.e.,
 only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
- "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.}
+ "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
+ Note that having it to TRUE does not enable reproducable results at the moment (i.e., cannot set seed).}
 
 \item{save_output}{(character) Option not to save all output; default "all". See also "only_results" and
 "only_results_predictions".}

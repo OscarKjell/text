@@ -641,8 +641,6 @@ summarize_tune_results_rf <- function(object,
 }
 
 
-
-
 #' Train word embeddings to a categorical variable using random forest.
 #'
 #' @param x Word embeddings from textEmbed.
@@ -694,6 +692,7 @@ summarize_tune_results_rf <- function(object,
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it (i.e.,
 #'  only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
 #'   "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
+#'   Note that having it to TRUE does not enable reproducable results at the moment (i.e., cannot set seed).
 #' @param save_output (character) Option not to save all output; default "all". See also "only_results" and
 #' "only_results_predictions".
 #' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values

@@ -654,7 +654,7 @@ summarize_tune_results <- function(object,
 #' @seealso See \code{\link{textEmbedLayerAggregation}}, \code{\link{textTrainLists}} and
 #' \code{\link{textTrainRandomForest}}.
 #' @importFrom stats cor.test na.omit lm
-#' @importFrom dplyr bind_cols select starts_with filter all_of
+#' @importFrom dplyr bind_cols select starts_with filter all_of add_row
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
 #' @importFrom rsample vfold_cv
 #' @importFrom parsnip linear_reg set_engine multinom_reg
@@ -962,7 +962,7 @@ textTrainRegression <- function(x,
     for (idx in seq_along(1:length(y_original))){
       if (idx %in% na_idx){
         # create row with NA-values and insert into predy_y
-        predy_y <- add_row(.before = c(idx), .data = predy_y)
+        predy_y <- dplyr::add_row(.before = c(idx), .data = predy_y)
       }
     }
     predy_y$id_nr <- c(1:length(y_original))

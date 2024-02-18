@@ -693,26 +693,32 @@ test_that("textTrainRandomForest adding word_embedding together", {
 })
 
 
-test_that("textTrainRandomForest multiple categories in X", {
+test_that("textTrainRandomForest running multiple categories in X", {
   skip_on_cran()
 
+  set.seed(1)
   tibble_copy <- Language_based_assessment_data_8 %>%
     #mutate(kind_2=sample(letters[1:2],n(),T) %>% as.factor) %>%
     mutate(kind_3 = sample(letters[1:3], n(), T) %>% as.factor)
 
-
-  ## this does not work
+  ## testing with three categories
   trained_rf_3 <- text::textTrainRandomForest(
     x = word_embeddings_4$texts$harmonywords,
     y = tibble_copy$kind_3,
-    simulate.p.value = T
+    simulate.p.value = T,
+    multi_cores = FALSE # This makes it reproducable, and so it runs the same on Windows
   )
+
 
   testthat::expect_that(trained_rf_3, testthat::is_a("list"))
   testthat::expect_is(trained_rf_3$results$.estimate[[1]], "numeric")
-  testthat::expect_equal(trained_rf_3$results$.estimate[[1]], .2750000)
-  testthat::expect_equal(trained_rf_3$results$.estimate[[6]], -0.1111111)
+  testthat::expect_equal(trained_rf_3$results$.estimate[[1]], .325, tolerance = 0.001)
+  testthat::expect_equal(trained_rf_3$results$.estimate[[6]], -0.07462687, tolerance = 0.0001)
   testthat::expect_equal(trained_rf_3$results$.estimator[[1]], "multiclass")
+  testthat::expect_is(trained_rf_3$roc_curve_plot, "plot")
+
+  testthat::expect_equal(length(trained_rf_3$roc_curve_plot$layers), 2)
+  expect_true(is.ggplot(trained_rf_3$roc_curve_plot))
 })
 
 
