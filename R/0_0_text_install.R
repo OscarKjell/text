@@ -3,7 +3,6 @@
 
 conda_args <- reticulate:::conda_args
 
-
 #' Install text required python packages in conda or virtualenv environment
 #'
 #' @description Install text required python packages (rpp) in a self-contained environment.
@@ -250,6 +249,52 @@ process_textrpp_installation_conda <- function(conda,
 }
 
 
+
+process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/python3.9",
+                                                    rpp_version,
+                                                    pip_version,
+                                                    envname = "textrpp_virtualenv",
+                                                    prompt = TRUE) {
+  libraries <- paste(rpp_version, collapse = ", ")
+  cat(sprintf(
+    'A new virtual environment called "%s" will be created using "%s" \n and,
+    the following text reuired python packages will be installed: \n "%s" \n \n',
+    envname, python, libraries
+  ))
+  if (prompt) {
+    ans <- utils::menu(c("No", "Yes"), title = "Proceed?")
+    if (ans == 1) stop("Virtualenv setup is cancelled by user", call. = FALSE)
+  }
+
+  # Make python path help(virtualenv_create)
+  reticulate::virtualenv_create(envname, python, pip_version = NULL, required = TRUE)
+
+  reticulate::use_virtualenv(envname, required = TRUE)
+
+  #
+  for (i in seq_len(length(rpp_version))) {
+    reticulate::py_install(rpp_version[[i]], envname = envname, pip = TRUE)
+  }
+
+  message(colourise(
+    "\nSuccess!\n",
+    fg = "green", bg = NULL
+  ))
+}
+
+# Check whether "bin"/something exists in the bin folder
+# For example, bin = "pip3" bin = "python3.9" bin = ".virtualenv"
+# And for example: file.exists("/usr/local/bin/.virtualenvs") /Users/oscarkjell/.virtualenvs
+python_unix_binary <- function(bin) {
+  locations <- file.path(c("/usr/local/bin", "/usr/bin"), bin)
+  locations <- locations[file.exists(locations)]
+  if (length(locations) > 0) {
+    locations[[1]]
+  } else {
+    NULL
+  }
+}
+
 #' @rdname textrpp_install
 #' @description If you wish to install Python in a "virtualenv", use the
 #'   \code{textrpp_install_virtualenv} function. It requires that you have a python version
@@ -293,75 +338,6 @@ textrpp_install_virtualenv <- function(rpp_version = c("torch==2.0.0",
 }
 
 
-process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/python3.9",
-                                                    rpp_version,
-                                                    pip_version,
-                                                    envname = "textrpp_virtualenv",
-                                                    prompt = TRUE) {
-  libraries <- paste(rpp_version, collapse = ", ")
-  cat(sprintf(
-    'A new virtual environment called "%s" will be created using "%s" \n and,
-    the following text reuired python packages will be installed: \n "%s" \n \n',
-    envname, python, libraries
-  ))
-  if (prompt) {
-    ans <- utils::menu(c("No", "Yes"), title = "Proceed?")
-    if (ans == 1) stop("Virtualenv setup is cancelled by user", call. = FALSE)
-  }
-
-  # Make python path help(virtualenv_create)
-  reticulate::virtualenv_create(envname, python, pip_version = NULL, required = TRUE)
-
-  reticulate::use_virtualenv(envname, required = TRUE)
-
-  #
-  for (i in seq_len(length(rpp_version))) {
-    reticulate::py_install(rpp_version[[i]], envname = envname, pip = TRUE)
-  }
-
-  message(colourise(
-    "\nSuccess!\n",
-    fg = "green", bg = NULL
-  ))
-}
-
-
-# Check whether "bin"/something exists in the bin folder
-# For example, bin = "pip3" bin = "python3.9" bin = ".virtualenv"
-# And for example: file.exists("/usr/local/bin/.virtualenvs") /Users/oscarkjell/.virtualenvs
-python_unix_binary <- function(bin) {
-  locations <- file.path(c("/usr/local/bin", "/usr/bin"), bin)
-  locations <- locations[file.exists(locations)]
-  if (length(locations) > 0) {
-    locations[[1]]
-  } else {
-    NULL
-  }
-}
-
-
-python_version_function <- function(python) {
-  # check for the version
-  result <- system2(python, "--version", stdout = TRUE, stderr = TRUE)
-
-  # check for error
-  error_status <- attr(result, "status")
-  if (!is.null(error_status)) {
-    stop("Error ", error_status, " occurred while checking for python version", call. = FALSE)
-  }
-
-  # parse out the major and minor version numbers
-  matches <- regexec("^[^ ]+\\s+(\\d+)\\.(\\d+).*$", result)
-  matches <- regmatches(result, matches)[[1]]
-  if (length(matches) != 3) {
-    stop("Unable to parse Python version '", result[[1]], "'", call. = FALSE)
-  }
-
-  # return as R numeric version
-  numeric_version(paste(matches[[2]], matches[[3]], sep = "."))
-}
-
-
 #' Uninstall textrpp conda environment
 #'
 #' Removes the conda environment created by textrpp_install()
@@ -395,45 +371,6 @@ textrpp_uninstall <- function(conda = "auto",
   invisible(NULL)
 }
 
-
-pip_get_version <- function(cmd, major_version) {
-  regex <- "^(\\S+)\\s?(.*)$"
-  cmd1 <- sub(regex, "\\1", cmd)
-  cmd2 <- sub(regex, "\\2", cmd)
-  oldw <- getOption("warn")
-  options(warn = -1)
-  result <- paste(system2(cmd1, cmd2, stdout = TRUE, stderr = TRUE),
-    collapse = " "
-  )
-  options(warn = oldw)
-  version_check_regex <- sprintf(".+(%s.\\d+\\.\\d+).+", major_version)
-  return(sub(version_check_regex, "\\1", result))
-}
-
-
-conda_get_version <- function(major_version = NA, conda, envname) {
-  condaenv_bin <- function(bin) path.expand(file.path(dirname(conda), bin))
-  cmd <- sprintf(
-    "%s%s %s && conda search torch -c conda-forge%s",
-    ifelse(is_windows(), "", ifelse(is_osx(), "source ", "/bin/bash -c \"source ")),
-    shQuote(path.expand(condaenv_bin("activate"))),
-    envname,
-    ifelse(is_windows(), "", ifelse(is_osx(), "", "\""))
-  )
-  regex <- "^(\\S+)\\s?(.*)$"
-  cmd1 <- sub(regex, "\\1", cmd)
-  cmd2 <- sub(regex, "\\2", cmd)
-
-  result <- system2(cmd1, cmd2, stdout = TRUE, stderr = TRUE)
-  result <- sub("\\S+\\s+(\\S+)\\s.+", "\\1", result)
-  if (!is.na(major_version)) {
-    result <- grep(paste0("^", major_version, "\\."), result, value = TRUE)
-  }
-  #
-  return(result[length(result)])
-}
-
-
 ###### see utils.R in spacyr
 # checking OS functions, thanks to r-tensorflow;
 
@@ -453,11 +390,71 @@ is_linux <- function() {
   identical(tolower(Sys.info()[["sysname"]]), "linux")
 }
 
-is_ubuntu <- function() {
-  if (is_unix() && file.exists("/etc/lsb-release")) {
-    lsbrelease <- readLines("/etc/lsb-release")
-    any(grepl("Ubuntu", lsbrelease))
-  } else {
-    FALSE
-  }
-}
+#is_ubuntu <- function() {
+#  if (is_unix() && file.exists("/etc/lsb-release")) {
+#    lsbrelease <- readLines("/etc/lsb-release")
+#    any(grepl("Ubuntu", lsbrelease))
+#  } else {
+#    FALSE
+#  }
+#}
+
+#python_version_function <- function(python) {
+#  # check for the version
+#  result <- system2(python, "--version", stdout = TRUE, stderr = TRUE)
+#
+#  # check for error
+#  error_status <- attr(result, "status")
+#  if (!is.null(error_status)) {
+#    stop("Error ", error_status, " occurred while checking for python version", call. = FALSE)
+#  }
+#
+#  # parse out the major and minor version numbers
+#  matches <- regexec("^[^ ]+\\s+(\\d+)\\.(\\d+).*$", result)
+#  matches <- regmatches(result, matches)[[1]]
+#  if (length(matches) != 3) {
+#    stop("Unable to parse Python version '", result[[1]], "'", call. = FALSE)
+#  }
+#
+#  # return as R numeric version
+#  numeric_version(paste(matches[[2]], matches[[3]], sep = "."))
+#}
+
+#pip_get_version <- function(cmd, major_version) {
+#  regex <- "^(\\S+)\\s?(.*)$"
+#  cmd1 <- sub(regex, "\\1", cmd)
+#  cmd2 <- sub(regex, "\\2", cmd)
+#  oldw <- getOption("warn")
+#  options(warn = -1)
+#  result <- paste(system2(cmd1, cmd2, stdout = TRUE, stderr = TRUE),
+#    collapse = " "
+#  )
+#  options(warn = oldw)
+#  version_check_regex <- sprintf(".+(%s.\\d+\\.\\d+).+", major_version)
+#  return(sub(version_check_regex, "\\1", result))
+#}
+
+
+#conda_get_version <- function(major_version = NA, conda, envname) {
+#  condaenv_bin <- function(bin) path.expand(file.path(dirname(conda), bin))
+#  cmd <- sprintf(
+#    "%s%s %s && conda search torch -c conda-forge%s",
+#    ifelse(is_windows(), "", ifelse(is_osx(), "source ", "/bin/bash -c \"source ")),
+#    shQuote(path.expand(condaenv_bin("activate"))),
+#    envname,
+#    ifelse(is_windows(), "", ifelse(is_osx(), "", "\""))
+#  )
+#  regex <- "^(\\S+)\\s?(.*)$"
+#  cmd1 <- sub(regex, "\\1", cmd)
+#  cmd2 <- sub(regex, "\\2", cmd)
+#
+#  result <- system2(cmd1, cmd2, stdout = TRUE, stderr = TRUE)
+#  result <- sub("\\S+\\s+(\\S+)\\s.+", "\\1", result)
+#  if (!is.na(major_version)) {
+#    result <- grep(paste0("^", major_version, "\\."), result, value = TRUE)
+#  }
+#  #
+#  return(result[length(result)])
+#}
+
+

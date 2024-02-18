@@ -191,7 +191,11 @@ test_that("textTrainRandomForest with Extremely
 
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
   skip_on_cran()
-
+  word_embedding <- word_embeddings_4$texts[1]
+  ratings_data1 <- Language_based_assessment_data_8[5]
+  ratings_data2 <- Language_based_assessment_data_8[6]
+  factors1 <- tibble::as_tibble_col(as.factor(Language_based_assessment_data_8$gender))
+  ratings_data <- cbind(ratings_data1, ratings_data2, factors1)
 
   # FORCE RANDOM FORREST Even though categorical variables are not most present
   results_or_p2 <- text::textTrain(
@@ -213,11 +217,6 @@ test_that("textTrainLists Regression produces a list of results with prediction 
   testthat::expect_that(results_or_p2, testthat::is_a("list"))
   testthat::expect_is(results_or_p2$results$.estimate[1], "numeric")
   testthat::expect_equal(results_or_p2$results$.estimate[1], 0.525, tolerance = 0.001)
-  # testthat::expect_equal(results_or_p2D$results$.estimate[1], 0.500, tolerance = 0.001)
-  # testthat::expect_equal(results_or_p2F$results$.estimate[1], 0.500, tolerance = 0.001)
-  # testthat::expect_equal(results_or_p2T$results$.estimate[1], 0.500, tolerance = 0.001)
-  # testthat::expect_equal(results_or_p2$results$.estimate[1], 0.425, tolerance = 0.001)
-  # testthat::expect_equal(results_or_p2$results$.estimate[1], 0.475, tolerance = 0.001)
 
 
   factors1 <- as.factor(Language_based_assessment_data_8$gender)
