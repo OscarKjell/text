@@ -7,7 +7,8 @@ test_that("installing text", {
   textrpp_install(prompt = FALSE)
 
   textrpp_initialize(textEmbed_test = TRUE,
-                     save_profile = TRUE)
+                     save_profile = TRUE,
+                     prompt = FALSE)
 
   text_test <- textEmbed("hello")
 
