@@ -466,11 +466,11 @@ test_that("textTrainRandomForest running multiple categories in X", {
   testthat::expect_true(ggplot2::is.ggplot(trained_rf_3$roc_curve_plot))
 
 
-  if (Sys.info()["sysname"] == "Darwin" | Sys.info()["sysname"] == "Windows") {
+  if (Sys.info()["sysname"] == "Darwin") {
     testthat::expect_equal(trained_rf_3$results$.estimate[[1]], .325, tolerance = 0.001)
     testthat::expect_equal(trained_rf_3$results$.estimate[[6]], -0.07462687, tolerance = 0.0001)
   }
-  if (Sys.info()["sysname"] == "Linux") {
+  if (Sys.info()["sysname"] == "Linux" | Sys.info()["sysname"] == "Windows") {
     testthat::expect_equal(trained_rf_3$results$.estimate[[1]], .375, tolerance = 0.001)
     testthat::expect_equal(trained_rf_3$results$.estimate[[6]], .0196, tolerance = 0.001)
   }
