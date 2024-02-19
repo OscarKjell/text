@@ -7,7 +7,7 @@ on:
     branches:
       - master
 
-name: System specific installation WithPy
+name: System specific installation
 
 jobs:
   R-CMD-check:
@@ -48,7 +48,6 @@ jobs:
       - name: Query dependencies
         run: |
           install.packages('remotes')
-          remotes::install_version("workflows", version = "1.1.3")
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
@@ -92,6 +91,7 @@ jobs:
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
+          remotes::install_version("workflows", version = "1.1.3")
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
