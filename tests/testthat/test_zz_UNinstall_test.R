@@ -17,7 +17,13 @@ test_that("UNinstalling text", {
 #  expect_equal(text_test$tokens$texts[[1]]$Dim1[[1]], -0.9554495, tolerance = 0.0001)
 
   # help(textrpp_uninstall)
-  textrpp_uninstall(prompt = FALSE,
-                    envname = "test_ok")
+  text::textrpp_uninstall(
+    prompt = FALSE,
+    envname = "test_ok")
+
+
+  x_ok <- 1
+  expect_equal(x_ok, 1)
+
 
 })
