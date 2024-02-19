@@ -192,7 +192,8 @@ test_that("Testing textEmbedReduce as well as train", {
   skip_on_cran()
   embedding_roberta <- textEmbed(Language_based_assessment_data_3_100[1, 1],
     model = "roberta-base",
-    layer = 11
+    layer = 11,
+    aggregation_from_tokens_to_word_types = "mean"
   )
 
   textModelsRemove("roberta-base")
@@ -203,6 +204,7 @@ test_that("Testing textEmbedReduce as well as train", {
   )
 
   testthat::expect_equal(pca5$texts$harmonywords[[1]], -9.569476, tolerance = 0.0001)
+  testthat::expect_equal(pca5$word_types$harmonywords$Dim1[[1]], -0.0542851, tolerance = 0.0001)
 
   unlink("inst/extdata/rpca_roberta_768_D_20.csv")
   unlink("inst/extdata/scalar.csv")
