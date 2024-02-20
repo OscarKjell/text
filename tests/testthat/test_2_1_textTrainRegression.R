@@ -227,8 +227,14 @@ test_that("textTrain Regression without saving models", {
   testthat::expect_equal(trained_multinomial$results_metrics$.estimate[[1]], 0.675)
 
 
+  factors1 <- as.factor(Language_based_assessment_data_8$gender)
+  factors2 <- as.factor(Language_based_assessment_data_8$gender)
+  rating1 <- Language_based_assessment_data_8$hilstotal
+
+  ratings_data_factors <- tibble::tibble(factors1, factors2, rating1)
+
   results_list_logistic <- text::textTrain(
-    x = word_embedding,
+    x = word_embeddings_4$texts$harmonywords,
     y = ratings_data_factors,
     preprocess_PCA = c(0.90),
     outside_folds = 2,
@@ -415,7 +421,7 @@ test_that("training with only x_append (without word embeddings)", {
   testthat::expect_equal(emb_append$results[[1]][[1]], 8.184946)
 
   model_emb_append <- textPredict(
-    model_info = emb_appened,
+    model_info = emb_append,
     word_embeddings = word_embeddings_4$texts["harmonywords"],
     x_append = Language_based_assessment_data_8[6:7],
     dim_names = TRUE,

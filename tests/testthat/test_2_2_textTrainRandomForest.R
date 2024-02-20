@@ -11,7 +11,7 @@ test_that("textTrain Random Forest produces list of results with prediction bein
 
  set.seed(1)
  example_categories1 <- sample(c(1, 2), 40, replace = T)
- example_categories1 <- as.factor(example_categories)
+ example_categories1 <- as.factor(example_categories1)
 
   model_rf_1 <- text::textTrain(
     x = word_embeddings_4$texts$harmonytext,
