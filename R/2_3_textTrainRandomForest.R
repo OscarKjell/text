@@ -1080,10 +1080,15 @@ textTrainRandomForest <- function(x,
     env_final_recipe$xy_all <- xy_all
     env_final_recipe$final_recipe <- final_recipe
 
-    with(env_final_recipe, preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe,
-                                                                                       xy_all,
-                                                                                       retain = FALSE
-    )))
+#    with(env_final_recipe, preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe,
+#                                                                                       xy_all,
+#                                                                                       retain = FALSE
+#    )))
+
+    preprocessing_recipe <- with(
+      env_final_recipe, final_recipe
+    )
+    return(preprocessing_recipe)
   }
   preprocessing_recipe_save <- recipe_save_small_size(final_recipe = final_recipe, xy_all = xy_all)
 
@@ -1129,7 +1134,12 @@ textTrainRandomForest <- function(x,
     )
   }
 
-  final_predictive_model <- model_save_small_size(xy_all, final_recipe, results_split_parameter, mode_rf)
+  final_predictive_model <- model_save_small_size(
+    xy_all,
+    final_recipe,
+    results_split_parameter,
+    mode_rf
+    )
 
 
 
@@ -1239,7 +1249,7 @@ textTrainRandomForest <- function(x,
     final_results <- list(
       results_collected$roc_curve_data,
       results_collected$predy_y,
-      preprocessing_recipe_save,
+    #  preprocessing_recipe_save,
       final_predictive_model,
       results_collected$roc_curve_plot,
       model_description_detail,
@@ -1250,7 +1260,7 @@ textTrainRandomForest <- function(x,
     names(final_results) <- c(
       "roc_curve_data",
       "truth_predictions",
-      "final_recipe",
+   #   "final_recipe",
       "final_model",
       "roc_curve_plot",
       "model_description",

@@ -9,16 +9,13 @@ context("Random Forest")
 test_that("textTrain Random Forest produces list of results with prediction being categorical", {
   skip_on_cran()
 
+ set.seed(1)
+ example_categories1 <- sample(c(1, 2), 40, replace = T)
+ example_categories1 <- as.factor(example_categories)
 
-  example_categories <- as.factor(c(
-    1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-    1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-    1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-    1, 2, 1, 2, 1, 2, 1, 2, 1, 2
-  ))
-  trained1 <- text::textTrain(
+  model_rf_1 <- text::textTrain(
     x = word_embeddings_4$texts$harmonytext,
-    y = example_categories,
+    y = example_categories1,
     cv_method = "validation_split",
     outside_folds = 2,
     inside_folds = 3 / 4,
@@ -33,17 +30,33 @@ test_that("textTrain Random Forest produces list of results with prediction bein
     force_train_method = "random_forest"
   )
 
-  testthat::expect_that(trained1, testthat::is_a("list"))
-  testthat::expect_is(trained1$truth_predictions$truth[1], "factor")
-  #  testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.297) R.4.2
+  testthat::expect_that(model_rf_1, testthat::is_a("list"))
+  testthat::expect_is(model_rf_1$truth_predictions$truth[1], "factor")
 
   if (Sys.info()["sysname"] == "Darwin" | Sys.info()["sysname"] == "Windows") {
-    testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.324)
+    testthat::expect_equal(model_rf_1$truth_predictions$.pred_1[1], 0.412)
   }
   if (Sys.info()["sysname"] == "Linux") {
-    testthat::expect_equal(trained1$truth_predictions$.pred_1[1], 0.297)
+    testthat::expect_equal(model_rf_1$truth_predictions$.pred_1[1], 0.297)
   }
 
+  model_rf_1_pred <- textPredict(
+    model_info = model_rf_1,
+    word_embeddings = word_embeddings_4$texts["harmonytexts"]
+  )
+  model_rf_1_pred$`harmonytexts__cv_method="validation_split"pred`
+  testthat::expect_equal(as.character(model_rf_1_pred[[1]][1]), "1")
+  testthat::expect_equal(as.character(model_rf_1_pred[[1]][2]), "2")
+  testthat::expect_equal(as.character(model_rf_1_pred[[1]][3]), "1")
+  testthat::expect_equal(as.character(model_rf_1_pred[[1]][4]), "1")
+  testthat::expect_equal(as.character(model_rf_1_pred[[1]][5]), "2")
+
+  example_categories <- as.factor(c(
+    1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+    1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+    1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+    1, 2, 1, 2, 1, 2, 1, 2, 1, 2
+  ))
 
   trained2 <- text::textTrain(
     x = word_embeddings_4$texts$harmonytext,

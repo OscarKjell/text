@@ -912,7 +912,11 @@ implicit_motives_results <- function(model_reference,
 #' @param show_texts Show texts, TRUE / FALSE
 #' @return Returns a list of conditions for implicit motive coding to work
 #' @noRd
-get_model_info <- function(model_info, user_id, show_texts, type, texts) {
+get_model_info <- function(model_info,
+                           user_id,
+                           show_texts,
+                           type,
+                           texts) {
   # show_prob is by default FALSE
   show_prob <- FALSE
   if (is.character(model_info)) {

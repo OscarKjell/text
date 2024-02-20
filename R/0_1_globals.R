@@ -32,6 +32,7 @@ utils::globalVariables(c(
   "data_train",
   "textTrainCVpredictions", "textTrainCVpredictionsRF",
   "strata",
+  "data_prepared_with_recipe",
 
   # textTrainNPlot
   "sample_size", "percent", "std",

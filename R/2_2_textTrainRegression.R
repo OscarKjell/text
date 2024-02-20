@@ -231,8 +231,8 @@ fit_model_rmse <- function(object,
 
     # Get RMSE; eval_measure = "rmse" library(tidyverse)
     eval_result <- select_eval_measure_val(eval_measure,
-      holdout_pred = holdout_pred,
-      truth = y, estimate = .pred
+                                           holdout_pred = holdout_pred,
+                                           truth = y, estimate = .pred
     )$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
     output <- list(
@@ -256,8 +256,8 @@ fit_model_rmse <- function(object,
 
     # Get RMSE; eval_measure = "rmse"
     eval_result <- select_eval_measure_val(eval_measure,
-      holdout_pred = holdout_pred,
-      truth = y, estimate = .pred_class
+                                           holdout_pred = holdout_pred,
+                                           truth = y, estimate = .pred_class
     )$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
     output <- list(
@@ -294,8 +294,8 @@ fit_model_rmse <- function(object,
 
     # Get RMSE; eval_measure = "rmse"
     eval_result <- select_eval_measure_val(eval_measure,
-      holdout_pred = holdout_pred,
-      truth = y, estimate = .pred_class
+                                           holdout_pred = holdout_pred,
+                                           truth = y, estimate = .pred_class
     )$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
     output <- list(
@@ -353,16 +353,16 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
                                    preprocess_step_scale = preprocess_step_scale,
                                    impute_missing = impute_missing) {
   fit_model_rmse(object,
-    model,
-    eval_measure,
-    penalty,
-    mixture,
-    preprocess_PCA = preprocess_PCA,
-    variable_name_index_pca = variable_name_index_pca,
-    first_n_predictors = first_n_predictors,
-    preprocess_step_center = preprocess_step_center,
-    preprocess_step_scale = preprocess_step_scale,
-    impute_missing = impute_missing
+                 model,
+                 eval_measure,
+                 penalty,
+                 mixture,
+                 preprocess_PCA = preprocess_PCA,
+                 variable_name_index_pca = variable_name_index_pca,
+                 first_n_predictors = first_n_predictors,
+                 preprocess_step_center = preprocess_step_center,
+                 preprocess_step_scale = preprocess_step_scale,
+                 impute_missing = impute_missing
   )
 }
 
@@ -1016,11 +1016,11 @@ textTrainRegression <- function(x,
         if (!is.na(preprocess_PCA[1])) {
           if (preprocess_PCA[1] >= 1) {
             recipes::step_pca(., recipes::all_predictors(),
-              num_comp = statisticalMode(results_split_parameter$preprocess_PCA)
+                              num_comp = statisticalMode(results_split_parameter$preprocess_PCA)
             )
           } else if (preprocess_PCA[1] < 1) {
             recipes::step_pca(., recipes::all_predictors(),
-              threshold = statisticalMode(results_split_parameter$preprocess_PCA)
+                              threshold = statisticalMode(results_split_parameter$preprocess_PCA)
             )
           } else {
             .
@@ -1082,16 +1082,20 @@ textTrainRegression <- function(x,
     env_final_recipe$xy_all <- xy_all
     env_final_recipe$final_recipe <- final_recipe
 
-    preprocessing_recipe_save <- with(
-      env_final_recipe,
-      suppressWarnings(recipes::prep(final_recipe, xy_all, retain = FALSE))
+#    preprocessing_recipe_save_trained <- with(
+#      env_final_recipe,
+#      suppressWarnings(recipes::prep(final_recipe, xy_all, retain = FALSE))
+#    )
+
+    preprocessing_recipe <- with(
+      env_final_recipe, final_recipe
     )
 
     # Optionally remove xy_all if you are concerned about memory and it's no longer needed
     remove("xy_all", envir = env_final_recipe)
     remove("final_recipe", envir = env_final_recipe)
 
-    return(preprocessing_recipe_save)
+    return(list(preprocessing_recipe)) # preprocessing_recipe_save_trained
   }
 
   preprocessing_recipe_save <- recipe_save_small_size(
@@ -1142,7 +1146,7 @@ textTrainRegression <- function(x,
         # Create Workflow (to know variable roles from recipes) help(workflow)
         wf_final <- workflows::workflow() %>%
           workflows::add_model(final_predictive_model_spec) %>%
-          workflows::add_recipe(final_recipe)
+          workflows::add_recipe(final_recipe[[1]])
 
         parsnip::fit(wf_final, data = xy_all)
       } else if (nr_predictors == 3) {
@@ -1160,7 +1164,7 @@ textTrainRegression <- function(x,
 
         wf_final <- workflows::workflow() %>%
           workflows::add_model(final_predictive_model_spec) %>%
-          workflows::add_recipe(final_recipe)
+          workflows::add_recipe(final_recipe[[1]])
 
         parsnip::fit(wf_final, data = xy_all)
       }
@@ -1236,9 +1240,9 @@ textTrainRegression <- function(x,
   )
   Date_textTrainRegression <- Sys.time()
   time_date <- paste(Time_textTrainRegression,
-    "; Date created: ", Date_textTrainRegression,
-    sep = "",
-    collapse = " "
+                     "; Date created: ", Date_textTrainRegression,
+                     sep = "",
+                     collapse = " "
   )
 
 
@@ -1279,11 +1283,11 @@ textTrainRegression <- function(x,
   if (model == "regression") {
     if (save_output == "all") {
       final_results <- list(
-        predy_y, preprocessing_recipe_save, final_predictive_model, model_description_detail,
+        predy_y, final_predictive_model, model_description_detail, #preprocessing_recipe_save[[1]],
         collected_results[[2]]
       )
       names(final_results) <- c(
-        "predictions", "final_recipe", "final_model", "model_description",
+        "predictions",  "final_model", "model_description", #"final_recipe",
         "results"
       )
     } else if (save_output == "only_results_predictions") {
@@ -1302,12 +1306,12 @@ textTrainRegression <- function(x,
   } else if (model == "logistic") {
     if (save_output == "all") {
       final_results <- list(
-        predy_y, preprocessing_recipe_save, final_predictive_model, model_description_detail,
+        predy_y, final_predictive_model, model_description_detail, # preprocessing_recipe_save
         collected_results$roc_curve_data, collected_results$roc_curve_plot, collected_results$fisher,
         collected_results$chisq, collected_results$results_collected
       )
       names(final_results) <- c(
-        "predictions", "final_recipe", "final_model", "model_description",
+        "predictions",  "final_model", "model_description", #"final_recipe",
         "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_metrics"
       )
       final_results
@@ -1338,12 +1342,12 @@ textTrainRegression <- function(x,
   } else if (model == "multinomial") {
     if (save_output == "all") {
       final_results <- list(
-        predy_y, preprocessing_recipe_save, final_predictive_model, model_description_detail,
+        predy_y, final_predictive_model, model_description_detail, # preprocessing_recipe_save,
         collected_results$roc_curve_data, collected_results$roc_curve_plot, collected_results$fisher,
         collected_results$chisq, collected_results$results_collected
       )
       names(final_results) <- c(
-        "predictions", "final_recipe", "final_model", "model_description",
+        "predictions", "final_model", "model_description",  # "final_recipe",
         "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_metrics"
       )
       final_results
