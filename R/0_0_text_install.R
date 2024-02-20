@@ -13,7 +13,7 @@ conda_args <- reticulate:::conda_args
 #'   install one if none exists.
 #'
 #'   For Windows, automatic installation of miniconda installation is not currently
-#'   available, so the user will need to
+#'   available, so the user will need to install
 #'   \href{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda
 #'    (or Anaconda) manually}.
 #' @param conda character; path to conda executable. Default "auto" which
@@ -267,7 +267,10 @@ process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/pyt
   }
 
   # Make python path help(virtualenv_create)
-  reticulate::virtualenv_create(envname, python, pip_version = NULL, required = TRUE)
+  reticulate::virtualenv_create(envname,
+                                python,
+                                pip_version = NULL,
+                                required = TRUE)
 
   reticulate::use_virtualenv(envname, required = TRUE)
 
@@ -311,7 +314,7 @@ textrpp_install_virtualenv <- function(rpp_version = c("torch==2.0.0",
                                                        "numpy",
                                                        "pandas",
                                                        "nltk"),
-                                       python_path = "/usr/local/bin/python3.9",
+                                       python_path = NULL, #"/usr/local/bin/python3.9",
                                        pip_version = NULL,
                                        envname = "textrpp_virtualenv",
                                        prompt = TRUE) {
@@ -319,7 +322,7 @@ textrpp_install_virtualenv <- function(rpp_version = c("torch==2.0.0",
   if (!is.null(python_path)) {
     python <- python_path
     } else {
-      python <-  python_unix_binary("python3")
+      python <-  python_unix_binary("python3.9")
     }
 
 

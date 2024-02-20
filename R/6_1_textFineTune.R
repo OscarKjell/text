@@ -151,7 +151,8 @@ textFineTuneTask <- function(text_outcome_data,
     ))
   }
 
-  cat(colourise("Completed",
+  cat(colourise("Completed - see results in the created output folder (output_dir)",
     fg = "green", bg = NULL
   ))
+  return("Completed - see results in the created output folder (output_dir)")
 }
