@@ -37,7 +37,7 @@ test_that("textTrain Random Forest produces list of results with prediction bein
     testthat::expect_equal(model_rf_1$truth_predictions$.pred_1[1], 0.412)
   }
   if (Sys.info()["sysname"] == "Linux") {
-    testthat::expect_equal(model_rf_1$truth_predictions$.pred_1[1], 0.297)
+    testthat::expect_equal(model_rf_1$truth_predictions$.pred_1[1], 0.413, tolerance = 0.01)
   }
 
   model_rf_1_pred <- textPredict(

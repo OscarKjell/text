@@ -316,7 +316,12 @@ textrpp_install_virtualenv <- function(rpp_version = c("torch==2.0.0",
                                        envname = "textrpp_virtualenv",
                                        prompt = TRUE) {
   # find system python binary
-  python <- if (!is.null(python_path)) python_path else python_unix_binary("python")
+  if (!is.null(python_path)) {
+    python <- python_path
+    } else {
+      python <-  python_unix_binary("python3")
+    }
+
 
   if (is.null(python)) {
     stop("Unable to locate Python on this system.", call. = FALSE)
