@@ -56,9 +56,20 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #' (default = 1, i.e., cross-validation is only performed once). Warning: The training process gets
 #' proportionately slower to the number of cross-validations, resulting in a time complexity that increases
 #' with a factor of n (n cross-validations).
+#' @param legend (character) Determine legend to be used in textTrainNPlot (default = NULL). 
 #' @param x_append (optional) Variables to be appended after the word embeddings (x); if wanting to preappend
 #' them before the word embeddings use the option first = TRUE. If not wanting to train with word embeddings,
 #' set x = NULL (default = NULL).
+#' @param point_color (character, (Hex color codes)) Determine point color (default = "#5dc688").
+#' @param bar_color (character, (Hex color codes)) Determine error-bar color (default = "#60A1F7").
+#' @param line_color (character, (Hex color codes)) Determine line color (default = "grey").
+#' @param bar_width (numeric) Determine bar-width (default = 1).
+#' @param bar_size (numeric) Determine bar-size (default = 1).
+#' @param line_size (numeric) Determine line-size (default = 1).
+#' @param line_type (character, either "straight" or "smooth") Determine line-type (default = "straight").
+#' @param point_size (numeric) Determine points size (default = 1).
+#' @return A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis.
+#' If number och cross-validations exceed 1, then error bars measuring standard deviations will be plotted.
 #' @param append_first (boolean) Option to add variables before or after all word embeddings (default = False).
 #' @param cv_method (character) Cross-validation method to use within a pipeline of nested outer and inner loops
 #' of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
@@ -126,7 +137,8 @@ indexing <- function(n_cross_val = 1, sample_percents, len, seed) {
 #'   x = word_embeddings_4$texts$harmonytext,
 #'   y = Language_based_assessment_data_8$hilstotal,
 #'   sample_percents = c(25, 50, 75, 100),
-#'   n_cross_val = 3
+#'   n_cross_val = 3, 
+#'   
 #' )
 #'
 #' # tibble_to_plot contains correlation-coefficients for each cross_validation and
@@ -145,7 +157,16 @@ textTrainN <- function(
     sample_percents = c(25, 50, 75, 100),
     handle_word_embeddings = "individually",
     n_cross_val = 1,
+    legend = NULL, 
     x_append = NULL,
+    point_color = "#5dc688",
+    bar_color = "#60A1F7",
+    line_color = "grey",
+    bar_width = 1,
+    bar_size = 0.8,
+    line_size = 0.6,
+    line_type = "straight",
+    point_size = 3,
     append_first = FALSE,
     cv_method = "validation_split",
     outside_folds = 10,
@@ -170,8 +191,8 @@ textTrainN <- function(
     save_output = "all",
     simulate.p.value = FALSE,
     seed = 2024) {
+  
   set.seed(seed)
-
   # number of tests (i.e., number of samples for each cross-validation)
   n_tests <- length(sample_percents)
 
@@ -300,8 +321,12 @@ textTrainN <- function(
 
   # Convert to dataframe to tibble
   results_df <- tibble::as_tibble(results_df)
+  
+  # save legend and dataframe in a list 
+  results <- list(results_df = results_df, legend = legend, point_color = point_color, bar_color = bar_color, line_color = line_color, bar_width = bar_width,
+                  bar_size = bar_size, line_size = line_size, line_type = line_type, line_type = line_type, point_size = point_size, n_cross_val = n_cross_val)
 
-  return(results_df)
+  return(results)
 }
 
 #### textTrainNPlot function ####
@@ -309,11 +334,9 @@ textTrainN <- function(
 #' (experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
 #' returned by the textTrainN function. If the number of cross-validations exceed one, then
 #' error-bars will be included in the plot.
-#' @param tibble (tibble) Object returned by the function textTrainN.
+#' @param train_data (tibble) Object returned by the function textTrainN.
 #' @param sample_percents (numeric) Vector containing the percents of the total number of datapoints that is
 #' included in each sample (default = c(25,50,75,100)).
-#' @param n_cross_val (numeric) Value of the number of times cross-validation has been repeated (default = 1,
-#' i.e., cross-validation has only been applied once).
 #' @param x_unit (character, "percent" or "quantity") Determines whether the x-axis-values should represent
 #'  the number of elements in each sample, or the number of percent of the total data they represent
 #'  (default = "percent").
@@ -323,16 +346,6 @@ textTrainN <- function(
 #'  across different sample sizes").
 #' @param x_axes_label (character) Determine x-axis-label (default = "Sample Size (percent)").
 #' @param y_axes_label (character) Determine y-axis-label (default = "Correlation Coefficient (r)").
-#' @param point_color (character, (Hex color codes)) Determine point color (default = "#5dc688").
-#' @param bar_color (character, (Hex color codes)) Determine error-bar color (default = "#60A1F7").
-#' @param line_color (character, (Hex color codes)) Determine line color (default = "grey").
-#' @param bar_width (numeric) Determine bar-width (default = 1).
-#' @param bar_size (numeric) Determine bar-size (default = 1).
-#' @param line_size (numeric) Determine line-size (default = 1).
-#' @param line_type (character, either "straight" or "smooth") Determine line-type (default = "straight").
-#' @param point_size (numeric) Determine points size (default = 1).
-#' @return A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis.
-#' If number och cross-validations exceed 1, then error bars measuring standard deviations will be plotted.
 #' @section Plot Example: Example of a plot created by textTrainNPlot.
 #' \if{html}{\figure{textTrainNPlot.image.png}{options: width=100\%}}
 #' @examples
@@ -341,9 +354,7 @@ textTrainN <- function(
 #'
 #' \dontrun{
 #' plot_object <- textTrainNPlot(
-#'   tibble = tibble_to_plot,
-#'   n_cross_val = 3,
-#'   x_unit = "quantity"
+#'   tibble = object_returned_by_textTrainN
 #' )
 #'
 #' # Visualize plot
@@ -353,119 +364,73 @@ textTrainN <- function(
 #' @importFrom tibble tibble
 #' @export
 textTrainNPlot <- function(
-    tibble,
+    train_data, # A list of tibbles
     sample_percents = c(25, 50, 75, 100),
-    n_cross_val = 1,
     x_unit = "percent",
     y_range = NULL,
     title = "Cross-validated correlation coefficients across different sample sizes",
     x_axes_label = "Sample Size (percent)",
-    y_axes_label = "Correlation Coefficient (r)",
-    point_color = "#5dc688",
-    bar_color = "#60A1F7",
-    line_color = "grey",
-    bar_width = 1,
-    bar_size = 0.8,
-    line_size = 0.6,
-    line_type = "straight",
-    point_size = 3) {
-  sample_sizes <- tibble$sample_size
-
-  if (n_cross_val == 1) {
-    # Create the ggplot object and specify aesthetics
-    TrainNPlot <- ggplot2::ggplot(data = tibble,
-                                  ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
-      ggplot2::geom_point(color = point_color, size = point_size) +
-      ggplot2::geom_errorbar(
-        ggplot2::aes(ymin = mean - std, ymax = mean + std),
-        size = bar_size,
-        width = bar_width,
-        color = bar_color
-      ) +
-      # determines whether to plot a smooth or straight line
-      (if (line_type == "smooth") {
-        ggplot2::geom_smooth(size = line_size, color = line_color, method = "auto")
-      } else {
-        ggplot2::geom_line(size = line_size, color = line_color)
-      }) +
-      # set axis-labels
-      ggplot2::labs(
-        title = title,
-        x = if (x_unit == "quantity") "Sample Size (quantity)" else x_axes_label,
-        y = y_axes_label
-      ) +
-      ggplot2::theme_minimal() +
-      ggplot2::theme(
-        axis.text = ggplot2::element_text(size = 12),
-        axis.title = ggplot2::element_text(size = 14),
-        plot.title = ggplot2::element_text(size = 16),
-        legend.position = "none"
-      )
-
-    # changes y limit if not set to NULL
-    if (!is.null(y_range)) {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::ylim(y_range[1], y_range[2])
+    y_axes_label = "Correlation Coefficient (r)"
+) {
+  combined_list <- list()
+  
+  # Ensure each tibble has 'n_cross_val' initialized
+  for (i in seq_along(train_data)) {
+    if(!"n_cross_val" %in% names(train_data[[i]])) {
+      train_data[[i]]$n_cross_val <- 1 # Default value if not specified
     }
-
-    # Set x-axis breaks
-    if (x_unit == "quantity") {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::scale_x_continuous(breaks = sample_sizes)
-    } else {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::scale_x_continuous(breaks = sample_percents)
-    }
-
-    return(TrainNPlot)
   }
-
-  if (n_cross_val > 1) {
-    # Create the ggplot object and specify aesthetics
-    TrainNPlot <- ggplot2::ggplot(data = tibble,
-                                  ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
-      ggplot2::geom_point(color = point_color, size = point_size) +
-      ggplot2::geom_errorbar(
-        ggplot2::aes(ymin = mean - std, ymax = mean + std),
-        size = bar_size,
-        width = bar_width,
-        color = bar_color
-      ) +
-      # determines whether to plot a smooth or straight line
-      (if (line_type == "smooth") {
-        ggplot2::geom_smooth(linewidth = line_size, color = line_color, method = "auto")
-      } else {
-        ggplot2::geom_line(linewidth = line_size, color = line_color)
-      }) +
-      # set axis-labels
-      ggplot2::labs(
-        title = title,
-        x = if (x_unit == "quantity") "Sample Size (quantity)" else x_axes_label,
-        y = y_axes_label
-      ) +
-      ggplot2::theme_minimal() +
-      ggplot2::theme(
-        axis.text = ggplot2::element_text(size = 12),
-        axis.title = ggplot2::element_text(size = 14),
-        plot.title = ggplot2::element_text(size = 16),
-        legend.position = "none"
-      )
-
-    # changes y limit if not set to NULL
-    if (!is.null(y_range)) {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::ylim(y_range[1], y_range[2])
-    }
-
-    # Set x-axis breaks
-    if (x_unit == "quantity") {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::scale_x_continuous(breaks = sample_sizes)
-    } else {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::scale_x_continuous(breaks = sample_percents)
-    }
-
-    return(TrainNPlot)
+  
+  # Process each tibble
+  for (i in seq_along(train_data)) {
+    tibble <- train_data[[i]]
+    df <- tibble$results_df
+    df$model <- as.factor(paste("Model", i))
+    df$point_color <- tibble$point_color
+    df$line_color <- tibble$line_color
+    df$line_size <- tibble$line_size
+    df$point_size <- tibble$point_size
+    df$n_cross_val <- rep(tibble$n_cross_val, nrow(df)) # Ensure the vector length matches
+    df$bar_width <- ifelse(df$n_cross_val > 1, tibble$bar_width, NA)
+    df$bar_color <- ifelse(df$n_cross_val > 1, tibble$bar_color, NA)
+    df$legend <- if(!is.null(tibble$legend)) tibble$legend else NA
+    
+    combined_list[[i]] <- df
   }
+  
+  combined_df <- dplyr::bind_rows(combined_list)
+  
+  # Plotting
+  plot <- ggplot2::ggplot(data = combined_df, ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean, group = model)) +
+    ggplot2::geom_line(ggplot2::aes(color = line_color), size = unique(combined_df$line_size)[1]) +
+    ggplot2::geom_point(ggplot2::aes(color = point_color), size = unique(combined_df$point_size)[1]) +
+    ggplot2::labs(title = title, x = x_axes_label, y = y_axes_label) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(axis.text = ggplot2::element_text(size = 12), axis.title = ggplot2::element_text(size = 14), plot.title = ggplot2::element_text(size = 16), legend.position = "right") +
+    ggplot2::scale_color_identity(guide = "none")
+  
+  # Adjust y-axis range if specified
+  if (!is.null(y_range)) {
+    plot <- plot + ggplot2::ylim(y_range[1], y_range[2])
+  }
+  
+  # Add error bars conditionally
+  if (any(combined_df$n_cross_val > 1)) {
+    plot <- plot + ggplot2::geom_errorbar(ggplot2::aes(ymin = mean - std, ymax = mean + std, color = bar_color), width = unique(combined_df$bar_width)[1], position = ggplot2::position_dodge(width = 0.1))
+  }
+  
+  # Add labels for lines if legend is defined
+  if(any(!is.na(combined_df$legend))) {
+    label_positions <- combined_df %>%
+      dplyr::group_by(model) %>%
+      dplyr::summarize(x = max(if (x_unit == "quantity") sample_size else percent), y = max(mean), .groups = 'drop') %>%
+      dplyr::left_join(combined_df %>% dplyr::select(model, legend) %>% dplyr::distinct(), by = "model")
+    
+    plot <- plot + ggplot2::geom_text(data = label_positions, ggplot2::aes(x = x, y = y, label = legend), hjust = -0.1, vjust = 0)
+  }
+  
+  # Remove the color legend since it's not meaningful with identity mapping
+  plot <- plot + ggplot2::scale_color_identity(guide = "none")
+  
+  return(plot)
 }

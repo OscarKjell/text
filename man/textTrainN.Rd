@@ -11,7 +11,16 @@ textTrainN(
   sample_percents = c(25, 50, 75, 100),
   handle_word_embeddings = "individually",
   n_cross_val = 1,
+  legend = NULL,
   x_append = NULL,
+  point_color = "#5dc688",
+  bar_color = "#60A1F7",
+  line_color = "grey",
+  bar_width = 1,
+  bar_size = 0.8,
+  line_size = 0.6,
+  line_type = "straight",
+  point_size = 3,
   append_first = FALSE,
   cv_method = "validation_split",
   outside_folds = 10,
@@ -58,9 +67,27 @@ provided, then they will be concatenated.}
 proportionately slower to the number of cross-validations, resulting in a time complexity that increases
 with a factor of n (n cross-validations).}
 
+\item{legend}{(character) Determine legend to be used in textTrainNPlot (default = NULL).}
+
 \item{x_append}{(optional) Variables to be appended after the word embeddings (x); if wanting to preappend
 them before the word embeddings use the option first = TRUE. If not wanting to train with word embeddings,
 set x = NULL (default = NULL).}
+
+\item{point_color}{(character, (Hex color codes)) Determine point color (default = "#5dc688").}
+
+\item{bar_color}{(character, (Hex color codes)) Determine error-bar color (default = "#60A1F7").}
+
+\item{line_color}{(character, (Hex color codes)) Determine line color (default = "grey").}
+
+\item{bar_width}{(numeric) Determine bar-width (default = 1).}
+
+\item{bar_size}{(numeric) Determine bar-size (default = 1).}
+
+\item{line_size}{(numeric) Determine line-size (default = 1).}
+
+\item{line_type}{(character, either "straight" or "smooth") Determine line-type (default = "straight").}
+
+\item{point_size}{(numeric) Determine points size (default = 1).}
 
 \item{append_first}{(boolean) Option to add variables before or after all word embeddings (default = False).}
 
@@ -142,6 +169,9 @@ by Monte Carlo simulation, in larger than 2 × 2 tables.}
 \item{seed}{(numeric) Set different seed (default = 2024).}
 }
 \value{
+A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis.
+If number och cross-validations exceed 1, then error bars measuring standard deviations will be plotted.
+
 A tibble containing correlations for each sample. If n_cross_val > 1, correlations for
  each new cross-validation, along with standard-deviation and mean correlation is included in the
  tibble. The information in the tibble is visualised via the textTrainNPlot function.
@@ -159,7 +189,8 @@ tibble_to_plot <- textTrainN(
   x = word_embeddings_4$texts$harmonytext,
   y = Language_based_assessment_data_8$hilstotal,
   sample_percents = c(25, 50, 75, 100),
-  n_cross_val = 3
+  n_cross_val = 3, 
+  
 )
 
 # tibble_to_plot contains correlation-coefficients for each cross_validation and

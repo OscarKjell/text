@@ -7,32 +7,20 @@ returned by the textTrainN function. If the number of cross-validations exceed o
 error-bars will be included in the plot.}
 \usage{
 textTrainNPlot(
-  tibble,
+  train_data,
   sample_percents = c(25, 50, 75, 100),
-  n_cross_val = 1,
   x_unit = "percent",
   y_range = NULL,
   title = "Cross-validated correlation coefficients across different sample sizes",
   x_axes_label = "Sample Size (percent)",
-  y_axes_label = "Correlation Coefficient (r)",
-  point_color = "#5dc688",
-  bar_color = "#60A1F7",
-  line_color = "grey",
-  bar_width = 1,
-  bar_size = 0.8,
-  line_size = 0.6,
-  line_type = "straight",
-  point_size = 3
+  y_axes_label = "Correlation Coefficient (r)"
 )
 }
 \arguments{
-\item{tibble}{(tibble) Object returned by the function textTrainN.}
+\item{train_data}{(tibble) Object returned by the function textTrainN.}
 
 \item{sample_percents}{(numeric) Vector containing the percents of the total number of datapoints that is
 included in each sample (default = c(25,50,75,100)).}
-
-\item{n_cross_val}{(numeric) Value of the number of times cross-validation has been repeated (default = 1,
-i.e., cross-validation has only been applied once).}
 
 \item{x_unit}{(character, "percent" or "quantity") Determines whether the x-axis-values should represent
 the number of elements in each sample, or the number of percent of the total data they represent
@@ -47,26 +35,6 @@ across different sample sizes").}
 \item{x_axes_label}{(character) Determine x-axis-label (default = "Sample Size (percent)").}
 
 \item{y_axes_label}{(character) Determine y-axis-label (default = "Correlation Coefficient (r)").}
-
-\item{point_color}{(character, (Hex color codes)) Determine point color (default = "#5dc688").}
-
-\item{bar_color}{(character, (Hex color codes)) Determine error-bar color (default = "#60A1F7").}
-
-\item{line_color}{(character, (Hex color codes)) Determine line color (default = "grey").}
-
-\item{bar_width}{(numeric) Determine bar-width (default = 1).}
-
-\item{bar_size}{(numeric) Determine bar-size (default = 1).}
-
-\item{line_size}{(numeric) Determine line-size (default = 1).}
-
-\item{line_type}{(character, either "straight" or "smooth") Determine line-type (default = "straight").}
-
-\item{point_size}{(numeric) Determine points size (default = 1).}
-}
-\value{
-A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis.
-If number och cross-validations exceed 1, then error bars measuring standard deviations will be plotted.
 }
 \description{
 (experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
@@ -84,9 +52,7 @@ error-bars will be included in the plot.
 
 \dontrun{
 plot_object <- textTrainNPlot(
-  tibble = tibble_to_plot,
-  n_cross_val = 3,
-  x_unit = "quantity"
+  tibble = object_returned_by_textTrainN
 )
 
 # Visualize plot
