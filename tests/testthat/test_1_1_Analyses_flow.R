@@ -22,7 +22,7 @@ test_that("Testing textEmbed as well as train", {
     aggregation_from_tokens_to_word_types = "mean"
   )
 
-  textModelsRemove("bert-base-uncased")
+#  textModelsRemove("bert-base-uncased")
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][1], 0.3403273, tolerance = 0.0001)
   expect_equal(harmony_word_embeddings$texts$satisfactiontexts[[1]][2], 0.1531016, tolerance = 0.00001)
 
@@ -53,6 +53,18 @@ test_that("Testing textEmbed as well as train", {
   expect_gt(text_train_results1$results$estimate[1], .3)
   expect_equal(text_train_results1$results$estimate[[1]], 0.3273128, tolerance = 0.00001)
 
+
+  hils_predicted_scores1 <- text::textPredict(
+    model_info = text_train_results1,
+    word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"],
+    dim_names = TRUE
+  )
+
+  expect_that(hils_predicted_scores1[[1]], is_a("numeric"))
+  expect_equal(hils_predicted_scores1[[1]][1], 11.89219, tolerance = 0.0001)
+  expect_equal(hils_predicted_scores1[[1]][2], 25.90329, tolerance = 0.0001)
+
+
   # Train with x_variable
   train_x_append <- text::textTrainRegression(
     x = harmony_word_embeddings$texts["satisfactiontexts"],
@@ -70,14 +82,17 @@ test_that("Testing textEmbed as well as train", {
   )
 
   # Predict
-  hils_predicted_scores1 <- text::textPredict(
-    model_info = text_train_results1,
+  hils_predicted_scores2 <- text::textPredict(
+    model_info = train_x_append,
+    x_append = Language_based_assessment_data_8[1:20, 6:7],
+    append_first = TRUE,
     word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"],
     dim_names = TRUE
   )
 
-  expect_that(hils_predicted_scores1[[1]], is_a("numeric"))
-  expect_equal(hils_predicted_scores1[[1]][1], 11.89, tolerance = 0.1)
+  expect_that(hils_predicted_scores2[[1]], is_a("numeric"))
+  expect_equal(hils_predicted_scores2[[1]][1], 12.40038, tolerance = 0.1)
+  expect_equal(hils_predicted_scores2[[1]][2], 25.89001, tolerance = 0.1)
 
   # Same as above with different input
   hils_predicted_scores1b <- textPredict(
@@ -86,7 +101,7 @@ test_that("Testing textEmbed as well as train", {
     dim_names = TRUE
   )
   expect_that(hils_predicted_scores1b[[1]], is_a("numeric"))
-  expect_equal(hils_predicted_scores1b[[1]][1], 11.89, tolerance = 0.1)
+  expect_equal(hils_predicted_scores1b[[1]][1], 11.89219, tolerance = 0.1)
 
   # Including x_append
   hils_predicted_scores1 <- textPredict(
@@ -192,10 +207,11 @@ test_that("Testing textEmbedReduce as well as train", {
   skip_on_cran()
   embedding_roberta <- textEmbed(Language_based_assessment_data_3_100[1, 1],
     model = "roberta-base",
-    layer = 11
+    layer = 11,
+    aggregation_from_tokens_to_word_types = "mean"
   )
 
-  textModelsRemove("roberta-base")
+#  textModelsRemove("roberta-base")
 
   pca5 <- text::textEmbedReduce(
     embeddings = embedding_roberta,
@@ -203,4 +219,9 @@ test_that("Testing textEmbedReduce as well as train", {
   )
 
   testthat::expect_equal(pca5$texts$harmonywords[[1]], -9.569476, tolerance = 0.0001)
+  testthat::expect_equal(pca5$word_types$harmonywords$Dim1[[1]], -0.0542851, tolerance = 0.0001)
+
+  unlink("inst/extdata/rpca_roberta_768_D_20.csv")
+  unlink("inst/extdata/scalar.csv")
+
 })
