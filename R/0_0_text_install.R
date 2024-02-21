@@ -30,7 +30,8 @@ conda_args <- reticulate:::conda_args
 #' @param python_version character; default is "python_version_system_specific_defaults". You can specify your
 #' Python version for the condaenv yourself.
 #'   installation.
-#' @param python_path character; path to Python in virtualenv installation
+#' @param python_path character; path to Python only for virtualenvironment installation
+#' @param bin character; e.g., "python", only for virtualenvironment installation
 #' @param envname character; name of the conda-environment to install text required python packages.
 #'   Default is "textrpp_condaenv".
 #' @param prompt logical; ask whether to proceed during the installation

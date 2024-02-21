@@ -50,11 +50,13 @@ Default is "textrpp_condaenv".}
 \item{pip}{\code{TRUE} to use pip for installing rpp If \code{FALSE}, conda
 package manager with conda-forge channel will be used for installing rpp.}
 
-\item{python_path}{character; path to Python in virtualenv installation}
+\item{python_path}{character; path to Python only for virtualenvironment installation}
 
 \item{prompt}{logical; ask whether to proceed during the installation}
 
 \item{pip_version}{character;}
+
+\item{bin}{character; e.g., "python", only for virtualenvironment installation}
 }
 \description{
 Install text required python packages (rpp) in a self-contained environment.
