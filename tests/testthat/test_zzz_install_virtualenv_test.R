@@ -7,7 +7,7 @@ test_that("Installing a virtual environment", {
   # help(textrpp_install_virtualenv)
   textrpp_install_virtualenv(
     prompt = FALSE,
-    python_path = NULL
+    python_path = "/Users/runner/hostedtoolcache/Python/3.9.18/x64"
     )
 
   x_ok <- 1

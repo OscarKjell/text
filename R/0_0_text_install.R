@@ -314,15 +314,16 @@ textrpp_install_virtualenv <- function(rpp_version = c("torch==2.0.0",
                                                        "numpy",
                                                        "pandas",
                                                        "nltk"),
-                                       python_path = NULL, #"/usr/local/bin/python3.9",
+                                       python_path = NULL, # "/usr/local/bin/python3.9",
                                        pip_version = NULL,
+                                       bin = "python3",
                                        envname = "textrpp_virtualenv",
                                        prompt = TRUE) {
   # find system python binary
   if (!is.null(python_path)) {
     python <- python_path
     } else {
-      python <-  python_unix_binary("python3.9")
+      python <-  python_unix_binary(bin = bin)
     }
 
 

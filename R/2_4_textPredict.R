@@ -182,7 +182,8 @@ textReturnModelAndEmbedding <- function(
   ##### End special treatment for automatic implicit motive coding #####
 
   # store classes
-  classes <- loaded_model$final_recipe$levels$y$values
+  #classes <- loaded_model$final_recipe$levels$y$values
+  classes <- loaded_model$final_model$pre$actions$recipe$recipe$orig_lvls$y$values
 
   emb_and_model <- list(loaded_model = loaded_model, embeddings = embeddings, classes = classes)
   return(emb_and_model)

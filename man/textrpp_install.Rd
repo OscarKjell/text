@@ -21,6 +21,7 @@ textrpp_install_virtualenv(
   rpp_version = c("torch==2.0.0", "transformers==4.19.2", "numpy", "pandas", "nltk"),
   python_path = NULL,
   pip_version = NULL,
+  bin = "python3",
   envname = "textrpp_virtualenv",
   prompt = TRUE
 )

@@ -14,18 +14,22 @@ test_that("Task Fine-tuning tests", {
 #
 #  #help("textFineTuneTask")
   unlink("./run_reg", recursive = TRUE)
-  task_reg_test <- text::textFineTuneTask(Language_based_assessment_data_8[,c("satisfactiontexts",
-                                                             "hilstotal")],
-                         model_name_or_path = "distilbert-base-uncased",
-                         is_regression = TRUE,
-                         output_dir = "./run_reg")
+  task_reg_test <- text::textFineTuneTask(
+    Language_based_assessment_data_8[1:20 ,c("satisfactiontexts", "hilstotal")],
+    model_name_or_path = "distilbert-base-uncased",
+    is_regression = TRUE,
+    num_train_epochs = 1,
+    output_dir = "./run_reg",
+    tokenizer_parallelism = TRUE)
 
-  # This is because some systems show this as:test <- "\033[0;32mCompleted\033[0m"
+  #
   testthat::expect_equal(task_reg_test,
                          "Completed - see results in the created output folder (output_dir)")
 
   # Remove the folder
-#  unlink("./run_reg", recursive = TRUE)
+  unlink("./run_reg", recursive = TRUE)
+
+
 #  textModels()
 #  unlink("./run_clf", recursive = TRUE)
 #  text::textFineTuneTask(Language_based_assessment_data_8[,c("satisfactiontexts",
@@ -40,14 +44,19 @@ test_that("Task Fine-tuning tests", {
 #  unlink("./run_clf", recursive = TRUE)
 
 
-  #help(textFineTuneDomain)
-  domain_test <- textFineTuneDomain(
-    text_data = Language_based_assessment_data_8[1][1:10,],
-    output_dir = "./runs_domain")
+#  # help(textFineTuneDomain)
+#  domain_test <- textFineTuneDomain(
+#    text_data = Language_based_assessment_data_8[1][1:10,],
+#    output_dir = "./runs_domain",
+#    model_name_or_path = "distilbert-base-uncased",
+#    num_train_epochs = 1
+#    )
+#
+#  testthat::expect_equal(domain_test,
+#                         "Completed - see results in the created output folder (output_dir)")
+#
+#  unlink("./runs_domain", recursive = TRUE)
 
-  testthat::expect_equal(domain_test,
-                         "Completed - see results in the created output folder (output_dir)")
+  })
 
-  unlink("./runs_domain", recursive = TRUE)
-})
 

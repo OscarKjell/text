@@ -2,6 +2,7 @@
 from task_finetune import main as task_finetuner
 from run_mlm import main as mlm_finetuner
 import json
+import os
 
 def set_tokenizer_parallelism(tokenizer_parallelism):
     if tokenizer_parallelism:

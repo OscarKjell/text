@@ -114,8 +114,9 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
    testthat::expect_equal(model_multinomial4_preds[[3]][1], 20.16958, tolerance = 0.0001)
    testthat::expect_equal(model_multinomial4_preds[[4]][1], 15.67582, tolerance = 0.0001)
 
-
 })
+
+
 
 
 test_that("textTrain Regression without saving models", {

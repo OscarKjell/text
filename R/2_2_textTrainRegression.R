@@ -559,6 +559,35 @@ summarize_tune_results <- function(object,
 }
 
 
+#x = word_embeddings_4$texts["harmonywords"]
+#y = as.factor(ntile(Language_based_assessment_data_8$hilstotal, 4))
+#x_append = NULL
+#append_first = FALSE
+#cv_method = "validation_split"
+#outside_folds = 10
+#inside_folds = 3 / 4
+#strata = "y"
+#outside_strata = TRUE
+#outside_breaks = 4
+#inside_strata = TRUE
+#inside_breaks = 4
+#model = "multinomial" # model = "multinomial"
+#eval_measure = "default"
+#preprocess_step_center = TRUE
+#preprocess_step_scale = TRUE
+#preprocess_PCA = NA
+#penalty = 10^seq(-16, 16)
+#mixture = c(0)
+#first_n_predictors = NA
+#impute_missing = FALSE
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#simulate.p.value = FALSE
+#seed = 2020
+
+
 #' Train word embeddings to a numeric variable.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
 #' provided in a list they will be concatenated.
@@ -945,8 +974,7 @@ textTrainRegression <- function(x,
   } else if (model == "multinomial") {
     collected_results <- classification_results_multi(
       outputlist_results_outer = outputlist_results_outer,
-      simulate.p.value = simulate.p.value,
-      ...
+      simulate.p.value = simulate.p.value, ...
     )
 
     #  Save predictions outside list to make similar structure as model == regression output.
@@ -978,7 +1006,7 @@ textTrainRegression <- function(x,
     xy_all <- xy
   }
 
-  colnames(xy_all)
+
   ######### One word embedding as input
   n_embbeddings <- as.numeric(comment(eval_measure))
   if (n_embbeddings == 1) {
@@ -1082,7 +1110,7 @@ textTrainRegression <- function(x,
     env_final_recipe$xy_all <- xy_all
     env_final_recipe$final_recipe <- final_recipe
 
-#    preprocessing_recipe_save_trained <- with(
+#    preprocessing_recipe <- with(
 #      env_final_recipe,
 #      suppressWarnings(recipes::prep(final_recipe, xy_all, retain = FALSE))
 #    )
@@ -1178,6 +1206,22 @@ textTrainRegression <- function(x,
     xy_all, preprocessing_recipe_save, results_split_parameter$penalty,
     results_split_parameter$mixture, model, nr_predictors
   )
+
+  # Removing parts of the model not needed for prediction
+
+  if(save_output == "small_model"){
+
+    final_predictive_model1 <- final_predictive_model
+
+    final_predictive_model1$pre$actions
+    final_predictive_model1$pre$actions$recipe$recipe$orig_lvls$y$values
+    final_predictive_model1$pre$mold$blueprint$recipe$
+
+    final_predictive_model1$post
+    final_predictive_model1$fit
+    final_predictive_model1$trained
+
+  }
 
 
   ##### NEW ENVIRONMENT END
@@ -1283,7 +1327,7 @@ textTrainRegression <- function(x,
   if (model == "regression") {
     if (save_output == "all") {
       final_results <- list(
-        predy_y, final_predictive_model, model_description_detail, #preprocessing_recipe_save[[1]],
+        predy_y, final_predictive_model, model_description_detail, #final_recipe <- preprocessing_recipe_save[[1]],
         collected_results[[2]]
       )
       names(final_results) <- c(
