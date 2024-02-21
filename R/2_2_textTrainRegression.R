@@ -559,35 +559,6 @@ summarize_tune_results <- function(object,
 }
 
 
-#x = word_embeddings_4$texts["harmonywords"]
-#y = as.factor(ntile(Language_based_assessment_data_8$hilstotal, 4))
-#x_append = NULL
-#append_first = FALSE
-#cv_method = "validation_split"
-#outside_folds = 10
-#inside_folds = 3 / 4
-#strata = "y"
-#outside_strata = TRUE
-#outside_breaks = 4
-#inside_strata = TRUE
-#inside_breaks = 4
-#model = "multinomial" # model = "multinomial"
-#eval_measure = "default"
-#preprocess_step_center = TRUE
-#preprocess_step_scale = TRUE
-#preprocess_PCA = NA
-#penalty = 10^seq(-16, 16)
-#mixture = c(0)
-#first_n_predictors = NA
-#impute_missing = FALSE
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#simulate.p.value = FALSE
-#seed = 2020
-
-
 #' Train word embeddings to a numeric variable.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
 #' provided in a list they will be concatenated.
@@ -648,6 +619,7 @@ summarize_tune_results <- function(object,
 #'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output (character) Option not to save all output; default = "all". see also "only_results"
 #'  and "only_results_predictions".
+#' @param save_output_size default: "small_model";  leve empty " ", if wanting to save all.
 #' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by
 #' Monte Carlo simulation, in larger than 2 × 2 tables.
 #' @param seed (numeric) Set different seed (default = 2020).
@@ -718,6 +690,7 @@ textTrainRegression <- function(x,
                                 model_description = "Consider writing a description of your model here",
                                 multi_cores = "multi_cores_sys_default",
                                 save_output = "all",
+                                save_output_size = "small_model",
                                 simulate.p.value = FALSE,
                                 seed = 2020,
                                 ...) {
@@ -1207,20 +1180,20 @@ textTrainRegression <- function(x,
     results_split_parameter$mixture, model, nr_predictors
   )
 
-  # Removing parts of the model not needed for prediction
+  # Removing parts of the model not needed for prediction (primarily removing training data)
+  if(save_output_size == "small_model"){
 
-  if(save_output == "small_model"){
+   # breakItDown = function(mod) {
+   #   sapply(mod, FUN=function(x){length(serialize(x, NULL))}, simplify=T)
+   # }
+    # final_predictive_model1 <- final_predictive_model
 
-    final_predictive_model1 <- final_predictive_model
+    # error: Error in `extract_mold()`: ! Can't extract a mold from an untrained workflow.
+    #final_predictive_model$pre$mold <- NULL
 
-    final_predictive_model1$pre$actions
-    final_predictive_model1$pre$actions$recipe$recipe$orig_lvls$y$values
-    final_predictive_model1$pre$mold$blueprint$recipe$
-
-    final_predictive_model1$post
-    final_predictive_model1$fit
-    final_predictive_model1$trained
-
+    final_predictive_model$pre$mold$predictors <- NULL
+    final_predictive_model$pre$mold$outcomes <- NULL
+    final_predictive_model$pre$mold$extras <- NULL
   }
 
 

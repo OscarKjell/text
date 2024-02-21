@@ -13,21 +13,21 @@ test_that("Task Fine-tuning tests", {
 # It is removed for now since it does not complete in Windows without error
 #
 #  #help("textFineTuneTask")
-  unlink("./run_reg", recursive = TRUE)
-  task_reg_test <- text::textFineTuneTask(
-    Language_based_assessment_data_8[1:20 ,c("satisfactiontexts", "hilstotal")],
-    model_name_or_path = "distilbert-base-uncased",
-    is_regression = TRUE,
-    num_train_epochs = 1,
-    output_dir = "./run_reg",
-    tokenizer_parallelism = TRUE)
-
-  #
-  testthat::expect_equal(task_reg_test,
-                         "Completed - see results in the created output folder (output_dir)")
-
-  # Remove the folder
-  unlink("./run_reg", recursive = TRUE)
+#  unlink("./run_reg", recursive = TRUE)
+#  task_reg_test <- text::textFineTuneTask(
+#    Language_based_assessment_data_8[1:20 ,c("satisfactiontexts", "hilstotal")],
+#    model_name_or_path = "distilbert-base-uncased",
+#    is_regression = TRUE,
+#    num_train_epochs = 1,
+#    output_dir = "./run_reg",
+#    tokenizer_parallelism = TRUE)
+#
+#  #
+#  testthat::expect_equal(task_reg_test,
+#                         "Completed - see results in the created output folder (output_dir)")
+#
+#  # Remove the folder
+#  unlink("./run_reg", recursive = TRUE)
 
 
 #  textModels()

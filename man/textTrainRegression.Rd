@@ -30,6 +30,7 @@ textTrainRegression(
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
   save_output = "all",
+  save_output_size = "small_model",
   simulate.p.value = FALSE,
   seed = 2020,
   ...
@@ -119,6 +120,8 @@ can set to "spearman" or "kendall").}
 
 \item{save_output}{(character) Option not to save all output; default = "all". see also "only_results"
 and "only_results_predictions".}
+
+\item{save_output_size}{default: "small_model";  leve empty " ", if wanting to save all.}
 
 \item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values by
 Monte Carlo simulation, in larger than 2 × 2 tables.}

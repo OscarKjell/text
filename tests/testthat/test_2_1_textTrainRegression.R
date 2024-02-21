@@ -9,7 +9,7 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
   skip_on_cran()
 
   # Regression
-  model_reg <- text::textTrain(
+  model_reg <- textTrainRegression(
     x = word_embeddings_4$texts$harmonytext,
     y = Language_based_assessment_data_8$hilstotal,
     outside_folds = 2,
@@ -19,21 +19,30 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = NA,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = "multi_cores_sys_default",
+    save_output_size = "small_model" #"small_model" # NULL #"all" # "small_model"
   )
+
+  breakItDown = function(mod) {
+     sapply(mod, FUN=function(x){length(serialize(x, NULL))}, simplify=T)
+   }
+  #breakItDown(model_reg1)
+  breakItDown(model_reg)
 
   testthat::expect_that(model_reg, is_a("list"))
   testthat::expect_is(model_reg$predictions$predictions[1], "numeric")
   testthat::expect_equal(model_reg$predictions$predictions[1], 28.5811, tolerance = 0.001)
-
 
   model_reg_preds <- text::textPredict(
     model_info = model_reg,
     word_embeddings = word_embeddings_4$texts["harmonytexts"]
   )
 
-  testthat::expect_equal(model_reg_preds$harmonytexts__ypred[1], 16.05805, tolerance = 0.001)
-  testthat::expect_equal(model_reg_preds$harmonytexts__ypred[2], 24.3845, tolerance = 0.001)
+#  testthat::expect_equal(model_reg_preds$harmonytexts__ypred[1], 16.05805, tolerance = 0.001)
+#  testthat::expect_equal(model_reg_preds$harmonytexts__ypred[2], 24.3845, tolerance = 0.001)
+
+  testthat::expect_equal(model_reg_preds[[1]][1], 16.05805, tolerance = 0.001)
+  testthat::expect_equal(model_reg_preds[[1]][2], 24.3845, tolerance = 0.001)
 
   # testing with one component; and thus a standard logistic.
   model_logistic_PCA1 <- text::textTrainRegression(
