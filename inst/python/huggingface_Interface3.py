@@ -52,6 +52,7 @@ def set_hg_gated_access(access_token):
         Or, visit URL: https://huggingface.co/settings/tokens
     """
     huggingface_hub.login(access_token)
+    print("Successfully login to Huggingface!")
     
 def del_hg_gated_access():
     """
@@ -59,6 +60,7 @@ def del_hg_gated_access():
 
     """
     huggingface_hub.logout()
+    print("Successfully logout to Huggingface!")
 
 def set_logging_level(logging_level):
     """
