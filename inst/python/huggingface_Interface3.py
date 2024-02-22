@@ -3,7 +3,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
-from huggingface_hub import HfFolder
+from huggingface_hub import HfApi
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 try:
     from transformers.utils import logging
