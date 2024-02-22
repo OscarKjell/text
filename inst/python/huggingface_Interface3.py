@@ -203,14 +203,12 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
             tokenizer = BloomTokenizerFast.from_pretrained(model)
             transformer_model = BloomModel.from_pretrained(model, config=config)
     else:
+        if hg_gated:
+            set_hg_gated_access(access_token=hg_token)
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
         if not config_only:
             tokenizer = AutoTokenizer.from_pretrained(model)
-            if hg_gated:
-                set_hg_gated_access(access_token=hg_token)
-                transformer_model = AutoModel.from_pretrained(model, config=config)
-            else:
-                transformer_model = AutoModel.from_pretrained(model, config=config)
+            transformer_model = AutoModel.from_pretrained(model, config=config)
             
     if config_only:
         return config
