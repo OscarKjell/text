@@ -374,14 +374,14 @@ textTrainNPlot <- function(
 ) {
   combined_list <- list()
   
-  # Ensure each tibble has 'n_cross_val' initialized
+  # ensure each tibble has 'n_cross_val' defined
   for (i in seq_along(train_data)) {
     if(!"n_cross_val" %in% names(train_data[[i]])) {
       train_data[[i]]$n_cross_val <- 1 # Default value if not specified
     }
   }
   
-  # Process each tibble
+  # process each tibble in train_data
   for (i in seq_along(train_data)) {
     tibble <- train_data[[i]]
     df <- tibble$results_df
@@ -400,7 +400,6 @@ textTrainNPlot <- function(
   
   combined_df <- dplyr::bind_rows(combined_list)
   
-  # Plotting
   plot <- ggplot2::ggplot(data = combined_df, ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean, group = model)) +
     ggplot2::geom_line(ggplot2::aes(color = line_color), size = unique(combined_df$line_size)[1]) +
     ggplot2::geom_point(ggplot2::aes(color = point_color), size = unique(combined_df$point_size)[1]) +
@@ -409,17 +408,17 @@ textTrainNPlot <- function(
     ggplot2::theme(axis.text = ggplot2::element_text(size = 12), axis.title = ggplot2::element_text(size = 14), plot.title = ggplot2::element_text(size = 16), legend.position = "right") +
     ggplot2::scale_color_identity(guide = "none")
   
-  # Adjust y-axis range if specified
+  #  y-axis range
   if (!is.null(y_range)) {
     plot <- plot + ggplot2::ylim(y_range[1], y_range[2])
   }
   
-  # Add error bars conditionally
+  # add error bars
   if (any(combined_df$n_cross_val > 1)) {
     plot <- plot + ggplot2::geom_errorbar(ggplot2::aes(ymin = mean - std, ymax = mean + std, color = bar_color), width = unique(combined_df$bar_width)[1], position = ggplot2::position_dodge(width = 0.1))
   }
   
-  # Add labels for lines if legend is defined
+  # add labels for lines 
   if(any(!is.na(combined_df$legend))) {
     label_positions <- combined_df %>%
       dplyr::group_by(model) %>%
@@ -429,7 +428,6 @@ textTrainNPlot <- function(
     plot <- plot + ggplot2::geom_text(data = label_positions, ggplot2::aes(x = x, y = y, label = legend), hjust = -0.1, vjust = 0)
   }
   
-  # Remove the color legend since it's not meaningful with identity mapping
   plot <- plot + ggplot2::scale_color_identity(guide = "none")
   
   return(plot)
