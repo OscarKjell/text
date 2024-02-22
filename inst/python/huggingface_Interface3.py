@@ -217,6 +217,8 @@ def hgTransformerGetPipeline(text_strings,
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
                             return_incorrect_results = False,
+                            hg_gated = False,
+                            hg_token = "",
                             set_seed = None,
                             **kwargs):
     """
@@ -241,6 +243,10 @@ def hgTransformerGetPipeline(text_strings,
         set logging level, options: critical, error, warning, info, debug
     return_incorrect_results : bool
         return results if they are not properly formatted for the task
+    hg_gated : bool
+        Set to True if the accessed model is gated
+    hg_token: str
+        The token needed to access the gated model, gen in huggingface website 
     set_seed : int
         integer value for manually setting seed
     kwargs : dict
@@ -265,7 +271,7 @@ def hgTransformerGetPipeline(text_strings,
     if not isinstance(text_strings, list):
         text_strings = [text_strings]
     if model:
-        config, tokenizer, transformer_model = get_model(model)
+        config, tokenizer, transformer_model = get_model(model,hg_gated=hg_gated, hg_token=hg_token)
         if device_num >= 0:
             task_pipeline = pipeline(task, model=model, tokenizer=tokenizer, device=device_num)
         else:
