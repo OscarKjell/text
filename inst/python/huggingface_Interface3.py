@@ -3,7 +3,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
-from huggingface_hub import HfApi
+import huggingface_hub
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 try:
     from transformers.utils import logging
@@ -51,14 +51,14 @@ def set_hg_gated_access(access_token):
         4. In the settings, you’ll find an option to generate a new token.
         Or, visit URL: https://huggingface.co/settings/tokens
     """
-    HfFolder.save_token(access_token)
+   huggingface_hub.login(access_token)
 
 def del_hg_gated_access():
     """
     Remove the access_token saved locally.
 
     """
-    HfFolder.delete_token()
+    huggingface_hub.logout()
 
 def set_logging_level(logging_level):
     """
