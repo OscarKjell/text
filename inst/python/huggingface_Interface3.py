@@ -680,6 +680,10 @@ def hgTokenizerGetTokens(text_strings,
         something
     model_max_length : int
         maximum length of the tokenized text
+    hg_gated : bool
+        Set to True if the accessed model is gated
+    hg_token: str
+        The token to access the gated model gen in hg website
     logging_level : str
         set logging level, options: critical, error, warning, info, debug
 
@@ -697,7 +701,7 @@ def hgTokenizerGetTokens(text_strings,
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
 
-    tokenizer = get_model(model, tokenizer_only=True)
+    tokenizer = get_model(model, tokenizer_only=True, hg_gated=hg_gated, hg_token=hg_token)
 
     if device != 'cpu':
         tokenizer.to(device)
