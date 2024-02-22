@@ -598,7 +598,10 @@ def hgTransformerGetEmbedding(text_strings,
     all_toks : list, optional
         tokenized version of text_strings
     """
-
+    print("I am in hgTransformerGetEmbedding function now!!!!")
+    print(f"!!!!hg_gated: {hg_gated} !!!")
+    print(f"!!!!hg_token: {hg_token} !!!")
+                                  
     set_logging_level(logging_level)
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
