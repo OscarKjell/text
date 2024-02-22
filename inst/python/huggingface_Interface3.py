@@ -660,6 +660,8 @@ def hgTokenizerGetTokens(text_strings,
                               device = 'cpu',
                               tokenizer_parallelism = False,
                               model_max_length = None,
+                              hg_gated = False,
+                              hg_token = "",
                               logging_level = 'warning'):
     """
     Simple Python method for embedding text with pretained Hugging Face models
