@@ -572,6 +572,8 @@ textEmbedRawLayers <- function(texts,
       tokenizer_parallelism = tokenizer_parallelism,
       model_max_length = model_max_length,
       max_token_to_sentence = max_token_to_sentence,
+      hg_gated = reticulate::r_to_py(hg_gated),
+      hg_token = reticulate::r_to_py(hg_token),
       logging_level = logging_level
     )
 
