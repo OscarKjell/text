@@ -350,6 +350,8 @@ textTokenize <- function(texts,
 #' transformer model (default the value stored for the associated model).
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #'  switching to embedding text sentence by sentence. (default= 4)
+#' @param hg_gated Set to TRUE if the accessed model is gated.
+#' @param hg_token The token needed to access the gated model generated in huggingface website.
 #' @param logging_level (character) Set the logging level. (default ="error")
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param sort (boolean) If TRUE sort the output to tidy format. (default = TRUE)
@@ -384,6 +386,8 @@ textEmbedRawLayers <- function(texts,
                                tokenizer_parallelism = FALSE,
                                model_max_length = NULL,
                                max_token_to_sentence = 4,
+                               hg_gated = FALSE,
+                               hg_token = "",
                                logging_level = "error",
                                sort = TRUE) {
   if (decontextualize == TRUE && word_type_embeddings == FALSE) {
@@ -445,6 +449,8 @@ textEmbedRawLayers <- function(texts,
         tokenizer_parallelism = tokenizer_parallelism,
         model_max_length = model_max_length,
         max_token_to_sentence = max_token_to_sentence,
+        hg_gated = hg_gated,
+        hg_token = hg_token,
         logging_level = logging_level
       )
 
