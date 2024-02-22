@@ -960,6 +960,8 @@ generate_placement_vector <- function(raw_layers, texts) {
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 #' specific device number such as 'mps:1'.
+#' @param hg_gated Set to TRUE if the accessed model is gated.
+#' @param hg_token The token to access the gated model generated in huggingface website.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param ... settings from textEmbedRawLayers().
@@ -1011,6 +1013,8 @@ textEmbed <- function(texts,
                       max_token_to_sentence = 4,
                       tokenizer_parallelism = FALSE,
                       device = "cpu",
+                      hg_gated = FALSE,
+                      hg_token = "",
                       logging_level = "error",
                       ...) {
   if (sum(is.na(texts) > 0)) {
@@ -1069,6 +1073,8 @@ textEmbed <- function(texts,
         tokenizer_parallelism = tokenizer_parallelism,
         model_max_length = model_max_length,
         max_token_to_sentence = max_token_to_sentence,
+        hg_gated = hg_gated,
+        hg_token = hg_token,
         logging_level = logging_level,
         ...
       )
