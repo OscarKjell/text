@@ -1083,10 +1083,6 @@ textTrainRegression <- function(x,
     env_final_recipe$xy_all <- xy_all
     env_final_recipe$final_recipe <- final_recipe
 
-#    preprocessing_recipe <- with(
-#      env_final_recipe,
-#      suppressWarnings(recipes::prep(final_recipe, xy_all, retain = FALSE))
-#    )
 
     preprocessing_recipe <- with(
       env_final_recipe, final_recipe
@@ -1176,25 +1172,18 @@ textTrainRegression <- function(x,
   }
 
   final_predictive_model <- model_save_small_size(
-    xy_all, preprocessing_recipe_save, results_split_parameter$penalty,
-    results_split_parameter$mixture, model, nr_predictors
+    xy_all,
+    preprocessing_recipe_save,
+    results_split_parameter$penalty,
+    results_split_parameter$mixture,
+    model,
+    nr_predictors
   )
 
   # Removing parts of the model not needed for prediction (primarily removing training data)
-  if(save_output_size == "small_model"){
-
-   # breakItDown = function(mod) {
-   #   sapply(mod, FUN=function(x){length(serialize(x, NULL))}, simplify=T)
-   # }
-    # final_predictive_model1 <- final_predictive_model
-
-    # error: Error in `extract_mold()`: ! Can't extract a mold from an untrained workflow.
-    #final_predictive_model$pre$mold <- NULL
-
-    final_predictive_model$pre$mold$predictors <- NULL
-    final_predictive_model$pre$mold$outcomes <- NULL
-    final_predictive_model$pre$mold$extras <- NULL
-  }
+  final_predictive_model$pre$mold$predictors <- NULL
+  final_predictive_model$pre$mold$outcomes <- NULL
+  final_predictive_model$pre$mold$extras <- NULL
 
 
   ##### NEW ENVIRONMENT END
@@ -1262,6 +1251,7 @@ textTrainRegression <- function(x,
                      collapse = " "
   )
 
+  text_version <- paste("; text_version: ", packageVersion("text"), ".", sep = "")
 
   # Describe model; adding user's-description + the name of the x and y
   model_description_detail <- c(
@@ -1291,7 +1281,8 @@ textTrainRegression <- function(x,
     impute_missing,
     embedding_description,
     model_description,
-    time_date
+    time_date,
+    text_version
   )
 
   ###### Saving and arranging output ######

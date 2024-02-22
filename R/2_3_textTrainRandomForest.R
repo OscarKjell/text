@@ -1080,11 +1080,6 @@ textTrainRandomForest <- function(x,
     env_final_recipe$xy_all <- xy_all
     env_final_recipe$final_recipe <- final_recipe
 
-#    with(env_final_recipe, preprocessing_recipe_save <- suppressWarnings(recipes::prep(final_recipe,
-#                                                                                       xy_all,
-#                                                                                       retain = FALSE
-#    )))
-
     preprocessing_recipe <- with(
       env_final_recipe, final_recipe
     )
@@ -1140,6 +1135,11 @@ textTrainRandomForest <- function(x,
     results_split_parameter,
     mode_rf
     )
+
+  # Removing parts of the model not needed for prediction (primarily removing training data)
+  final_predictive_model$pre$mold$predictors <- NULL
+  final_predictive_model$pre$mold$outcomes <- NULL
+  final_predictive_model$pre$mold$extras <- NULL
 
 
 
@@ -1209,6 +1209,7 @@ textTrainRandomForest <- function(x,
     collapse = " "
   )
 
+  text_version <- paste("; text_version: ", packageVersion("text"), ".", sep = "")
 
   # Describe model; adding user's-description + the name of the x and y and mtry and min_n
   model_description_detail <- c(
@@ -1239,7 +1240,8 @@ textTrainRandomForest <- function(x,
     trees_fold_description,
     embedding_description,
     model_description,
-    time_date
+    time_date,
+    text_version
   )
 
   ###### Saving and arranging output ######
