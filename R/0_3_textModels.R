@@ -32,7 +32,7 @@ textModels <- function() {
 #' @seealso see \code{\link{textModels}}
 #' @importFrom reticulate source_python
 #' @export
-textModelLayers <- function(target_model, hg_gated, hg_token) {
+textModelLayers <- function(target_model, hg_gated = FALSE, hg_token = "") {
   reticulate::source_python(system.file("python",
     "huggingface_Interface3.py",
     package = "text",
@@ -41,8 +41,8 @@ textModelLayers <- function(target_model, hg_gated, hg_token) {
 
   n_layer <- get_number_of_hidden_layers(target_model,
     logging_level = "error",
-    hg_gated = hg_gated,
-    hg_token = hg_token
+    hg_gated = reticulate::r_to_py(hg_gated),
+    hg_token = reticulate::r_to_py(hg_token)
   )
 
   return(n_layer)
