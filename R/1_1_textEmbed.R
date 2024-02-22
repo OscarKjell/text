@@ -414,7 +414,7 @@ textEmbedRawLayers <- function(texts,
   ))
 
   if (is.numeric(layers)) {
-    if (max(layers) > textModelLayers(model, hg_gated, hg_token)) {
+    if (max(layers) > textModelLayers(model, reticulate::r_to_py(hg_gated), reticulate::r_to_py(hg_token))) {
       stop("You are trying to extract layers that do not exist in this model.")
     }
   }
