@@ -131,7 +131,7 @@ def get_device(device):
 
     return device, device_num
 
-def get_model(model, tokenizer_only=False, config_only=False):
+def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg_token=""):
     """
     Get model and tokenizer from model string
 
@@ -140,6 +140,10 @@ def get_model(model, tokenizer_only=False, config_only=False):
     model : str
         shortcut name for Hugging Face pretained model
         Full list https://huggingface.co/transformers/pretrained_models.html
+    hg_gated : bool
+        Set to True if the model is gated
+    hg_token: str
+        The token got from huggingface website
     
     Returns
     -------
@@ -178,7 +182,10 @@ def get_model(model, tokenizer_only=False, config_only=False):
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
         if not config_only:
             tokenizer = AutoTokenizer.from_pretrained(model)
-            transformer_model = AutoModel.from_pretrained(model, config=config)
+            if hg_gated:
+                transformer_model = AutoModel.from_pretrained(model, config=config, token=hg_token)
+            else:
+                transformer_model = AutoModel.from_pretrained(model, config=config)
             
     if config_only:
         return config
