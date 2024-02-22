@@ -18,11 +18,10 @@ test_that("installing text", {
 
     expect_equal(text_test$tokens$texts[[1]]$Dim1[[1]], -0.9554495, tolerance = 0.0001)
 
+
     # help(textrpp_uninstall)
-    text::textrpp_initialize(textEmbed_test = TRUE,
-                             save_profile = TRUE,
-                             prompt = FALSE,
-                             condaenv = "uninstall")
+    text::textrpp_install(prompt = FALSE,
+                          envname = "uninstall")
 
     textrpp_uninstall(prompt = FALSE,
                       envname = "uninstall")
