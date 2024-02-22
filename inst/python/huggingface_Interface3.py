@@ -524,6 +524,8 @@ def hgTransformerGetEmbedding(text_strings,
                               device = 'cpu',
                               tokenizer_parallelism = False,
                               model_max_length = None,
+                              hg_gated = False,
+                              hg_token = "",
                               logging_level = 'warning'):
     """
     Simple Python method for embedding text with pretained Hugging Face models
@@ -548,6 +550,10 @@ def hgTransformerGetEmbedding(text_strings,
         something
     model_max_length : int
         maximum length of the tokenized text
+    hg_gated : bool
+        Whether the accessed model is gated
+    hg_token: str
+        The token generated in huggingface website
     logging_level : str
         set logging level, options: critical, error, warning, info, debug
 
@@ -563,7 +569,7 @@ def hgTransformerGetEmbedding(text_strings,
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
 
-    config, tokenizer, transformer_model = get_model(model)
+    config, tokenizer, transformer_model = get_model(model, hg_gated=hg_gated, hg_token=hg_token)
 
     if device != 'cpu':
         transformer_model.to(device)
