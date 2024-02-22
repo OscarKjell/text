@@ -1049,7 +1049,7 @@ textEmbed <- function(texts,
   output <- list()
 
   if (layers[1] < 0) {
-    n <- textModelLayers(model)
+    n <- textModelLayers(model, reticulate::r_to_py(hg_gated), reticulate::r_to_py(hg_token))
     layers <- 1 + n + layers
     layers
   }
