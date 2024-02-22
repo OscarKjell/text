@@ -3,6 +3,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
+from huggingface_hub import HfFolder
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 try:
     from transformers.utils import logging
@@ -35,6 +36,29 @@ PIPELINE_RESULTS_BY_TASK = {
     "text-generation": ["generated_text", "generated_token_ids"], 
     "zero-shot-classification": ["scores"], 
 }
+
+def set_hg_gated_access(access_token):
+    """
+    Local save of the access token for gated models on hg.
+    
+    Parameters
+    ----------
+    access_token : str
+        Steps to get the access_token:
+        1. Log in to your Hugging Face account.
+        2. Click on your profile picture in the top right corner.
+        3. Select ‘Settings’ from the dropdown menu.
+        4. In the settings, you’ll find an option to generate a new token.
+        Or, visit URL: https://huggingface.co/settings/tokens
+    """
+    HfFolder.save_token(access_token)
+
+def del_hg_gated_access():
+    """
+    Remove the access_token saved locally.
+
+    """
+    HfFolder.delete_token()
 
 def set_logging_level(logging_level):
     """
@@ -143,7 +167,7 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
     hg_gated : bool
         Set to True if the model is gated
     hg_token: str
-        The token got from huggingface website
+        The token to access the gated model got in huggingface website
     
     Returns
     -------
@@ -183,7 +207,8 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
         if not config_only:
             tokenizer = AutoTokenizer.from_pretrained(model)
             if hg_gated:
-                transformer_model = AutoModel.from_pretrained(model, config=config, token=hg_token)
+                set_hg_gated_access(access_token=hg_token)
+                transformer_model = AutoModel.from_pretrained(model, config=config)
             else:
                 transformer_model = AutoModel.from_pretrained(model, config=config)
             
