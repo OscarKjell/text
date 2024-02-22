@@ -177,6 +177,8 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
     tokenizer
     model
     """
+
+    print("I am in get_model function now!!!!")
     if "megatron-bert" in model:
         try:
             from transformers import BertTokenizer, MegatronBertForMaskedLM
