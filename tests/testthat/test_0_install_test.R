@@ -4,16 +4,18 @@ library(text)
 test_that("installing text", {
   skip_on_cran()
 
-  # On Linux get  error at reticulate:::pip_install(...)
+  # On Linux get error at reticulate:::pip_install(...)
 
   if (Sys.info()["sysname"] == "Darwin" | Sys.info()["sysname"] == "Windows") {
     text::textrpp_install(prompt = FALSE,
-                          envname = "test_ok")
+                          envname = "test_ok"
+                          )
 
     text::textrpp_initialize(textEmbed_test = TRUE,
                              save_profile = TRUE,
                              prompt = FALSE,
-                             condaenv = "test_ok")
+                             condaenv = "test_ok"
+                             )
 
     text_test <- text::textEmbed("hello")
 
