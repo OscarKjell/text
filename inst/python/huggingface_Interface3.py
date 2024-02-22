@@ -51,7 +51,7 @@ def set_hg_gated_access(access_token):
         4. In the settings, you’ll find an option to generate a new token.
         Or, visit URL: https://huggingface.co/settings/tokens
     """
-   huggingface_hub.login(access_token)
+    huggingface_hub.login(access_token)
 
 def del_hg_gated_access():
     """
