@@ -205,9 +205,9 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
             tokenizer = BloomTokenizerFast.from_pretrained(model)
             transformer_model = BloomModel.from_pretrained(model, config=config)
     else:
-        print("I am in get_model function now!!!!")
-        print(f"!!!!hg_gated: {hg_gated} !!!")
-        print(f"!!!!hg_token: {hg_token} !!!")
+        #print("I am in get_model function now!!!!")
+        #print(f"!!!!hg_gated: {hg_gated} !!!")
+        #print(f"!!!!hg_token: {hg_token} !!!")
         if hg_gated:
             set_hg_gated_access(access_token=hg_token)
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
@@ -598,9 +598,9 @@ def hgTransformerGetEmbedding(text_strings,
     all_toks : list, optional
         tokenized version of text_strings
     """
-    print("I am in hgTransformerGetEmbedding function now!!!!")
-    print(f"!!!!hg_gated: {hg_gated} !!!")
-    print(f"!!!!hg_token: {hg_token} !!!")
+    #print("I am in hgTransformerGetEmbedding function now!!!!")
+    #print(f"!!!!hg_gated: {hg_gated} !!!")
+    #print(f"!!!!hg_token: {hg_token} !!!")
                                   
     set_logging_level(logging_level)
     set_tokenizer_parallelism(tokenizer_parallelism)
