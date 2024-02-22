@@ -674,6 +674,7 @@ def hgTransformerGetEmbedding(text_strings,
                 if return_tokens:
                     all_toks.append(tokens)
 
+    del_hg_gated_access()                              
     if return_tokens:
         return all_embs, all_toks
     else:
