@@ -842,7 +842,6 @@ generate_placement_vector <- function(raw_layers, texts) {
 
   context_tokens <- NULL
 
-
   if (!is.null(raw_layers$context_tokens$value)) {
     context_tokens <- raw_layers$context_tokens$value
   }
@@ -893,12 +892,16 @@ generate_placement_vector <- function(raw_layers, texts) {
     token_embedding <- context_tokens[[i]]
     elements <- context_tokens[[i]][1]
 
-    # Check if "na" is present in any element of the list
-    if (any(sapply(elements, function(element) "na" %in% element)) ||
-        any(sapply(elements, function(element) "NA" %in% element))) {
-      # If so, then check for "na" in the token-embedding
+    # Check if "na" or "" is present in any element of the list
+    if ((((any(sapply(elements, function(element) "na" %in% element)) ||
+         any(sapply(elements, function(element) "NA" %in% element))) && 
+         nrow(token_embedding) == 3))|| 
+         nrow(token_embedding) == 2){
+       
+      # If so, then check for "na" (or "") in the token-embedding
       if (any(grepl("na", token_embedding$tokens, ignore.case = TRUE)) ||
-          any(grepl("NA", token_embedding$tokens, ignore.case = TRUE))) {
+          any(grepl("NA", token_embedding$tokens, ignore.case = TRUE)) ||
+          length(token_embedding$tokens) == 2) {
         # Replace only the numerical columns with NA values while keeping the first three columns
         token_embedding[, -(1:3)] <- NA # Exclude the first three columns
       }
