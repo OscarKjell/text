@@ -350,6 +350,8 @@ textTokenize <- function(texts,
 #' transformer model (default the value stored for the associated model).
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #'  switching to embedding text sentence by sentence. (default= 4)
+#' @param hg_gated Set to TRUE if the accessed model is gated.
+#' @param hg_token The token needed to access the gated model generated in huggingface website.
 #' @param logging_level (character) Set the logging level. (default ="error")
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param sort (boolean) If TRUE sort the output to tidy format. (default = TRUE)
@@ -384,6 +386,8 @@ textEmbedRawLayers <- function(texts,
                                tokenizer_parallelism = FALSE,
                                model_max_length = NULL,
                                max_token_to_sentence = 4,
+                               hg_gated = FALSE,
+                               hg_token = "",
                                logging_level = "error",
                                sort = TRUE) {
   if (decontextualize == TRUE && word_type_embeddings == FALSE) {
@@ -410,7 +414,7 @@ textEmbedRawLayers <- function(texts,
   ))
 
   if (is.numeric(layers)) {
-    if (max(layers) > textModelLayers(model)) {
+    if (max(layers) > textModelLayers(model, reticulate::r_to_py(hg_gated), reticulate::r_to_py(hg_token))) {
       stop("You are trying to extract layers that do not exist in this model.")
     }
   }
@@ -445,6 +449,8 @@ textEmbedRawLayers <- function(texts,
         tokenizer_parallelism = tokenizer_parallelism,
         model_max_length = model_max_length,
         max_token_to_sentence = max_token_to_sentence,
+        hg_gated = reticulate::r_to_py(hg_gated),
+        hg_token = reticulate::r_to_py(hg_token),
         logging_level = logging_level
       )
 
@@ -566,6 +572,8 @@ textEmbedRawLayers <- function(texts,
       tokenizer_parallelism = tokenizer_parallelism,
       model_max_length = model_max_length,
       max_token_to_sentence = max_token_to_sentence,
+      hg_gated = reticulate::r_to_py(hg_gated),
+      hg_token = reticulate::r_to_py(hg_token),
       logging_level = logging_level
     )
 
@@ -954,6 +962,8 @@ generate_placement_vector <- function(raw_layers, texts) {
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 #' specific device number such as 'mps:1'.
+#' @param hg_gated Set to TRUE if the accessed model is gated.
+#' @param hg_token The token to access the gated model generated in huggingface website.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param ... settings from textEmbedRawLayers().
@@ -1005,6 +1015,8 @@ textEmbed <- function(texts,
                       max_token_to_sentence = 4,
                       tokenizer_parallelism = FALSE,
                       device = "cpu",
+                      hg_gated = FALSE,
+                      hg_token = "",
                       logging_level = "error",
                       ...) {
   if (sum(is.na(texts) > 0)) {
@@ -1037,7 +1049,7 @@ textEmbed <- function(texts,
   output <- list()
 
   if (layers[1] < 0) {
-    n <- textModelLayers(model)
+    n <- textModelLayers(model, reticulate::r_to_py(hg_gated), reticulate::r_to_py(hg_token))
     layers <- 1 + n + layers
     layers
   }
@@ -1063,6 +1075,8 @@ textEmbed <- function(texts,
         tokenizer_parallelism = tokenizer_parallelism,
         model_max_length = model_max_length,
         max_token_to_sentence = max_token_to_sentence,
+        hg_gated = hg_gated,
+        hg_token = hg_token,
         logging_level = logging_level,
         ...
       )

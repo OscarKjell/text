@@ -3,6 +3,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
+import huggingface_hub
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 try:
     from transformers.utils import logging
@@ -35,6 +36,31 @@ PIPELINE_RESULTS_BY_TASK = {
     "text-generation": ["generated_text", "generated_token_ids"], 
     "zero-shot-classification": ["scores"], 
 }
+
+def set_hg_gated_access(access_token):
+    """
+    Local save of the access token for gated models on hg.
+    
+    Parameters
+    ----------
+    access_token : str
+        Steps to get the access_token:
+        1. Log in to your Hugging Face account.
+        2. Click on your profile picture in the top right corner.
+        3. Select ‘Settings’ from the dropdown menu.
+        4. In the settings, you’ll find an option to generate a new token.
+        Or, visit URL: https://huggingface.co/settings/tokens
+    """
+    huggingface_hub.login(access_token)
+    print("Successfully login to Huggingface!")
+    
+def del_hg_gated_access():
+    """
+    Remove the access_token saved locally.
+
+    """
+    huggingface_hub.logout()
+    print("Successfully logout to Huggingface!")
 
 def set_logging_level(logging_level):
     """
@@ -131,7 +157,7 @@ def get_device(device):
 
     return device, device_num
 
-def get_model(model, tokenizer_only=False, config_only=False):
+def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg_token=""):
     """
     Get model and tokenizer from model string
 
@@ -140,6 +166,10 @@ def get_model(model, tokenizer_only=False, config_only=False):
     model : str
         shortcut name for Hugging Face pretained model
         Full list https://huggingface.co/transformers/pretrained_models.html
+    hg_gated : bool
+        Set to True if the model is gated
+    hg_token: str
+        The token to access the gated model got in huggingface website
     
     Returns
     -------
@@ -175,6 +205,11 @@ def get_model(model, tokenizer_only=False, config_only=False):
             tokenizer = BloomTokenizerFast.from_pretrained(model)
             transformer_model = BloomModel.from_pretrained(model, config=config)
     else:
+        #print("I am in get_model function now!!!!")
+        #print(f"!!!!hg_gated: {hg_gated} !!!")
+        #print(f"!!!!hg_token: {hg_token} !!!")
+        if hg_gated:
+            set_hg_gated_access(access_token=hg_token)
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
         if not config_only:
             tokenizer = AutoTokenizer.from_pretrained(model)
@@ -187,13 +222,13 @@ def get_model(model, tokenizer_only=False, config_only=False):
     else:
         return config, tokenizer, transformer_model
 
-def get_number_of_hidden_layers(model, logging_level = "error"):
+def get_number_of_hidden_layers(model, logging_level = "error", hg_gated=False, hg_token=""):
     """
     Return the number of hidden layers for a given model.
     Returns -1 if the model's config doesn't have the num_hidden_layers parameter
     """
     set_logging_level(logging_level)
-    config = get_model(model, config_only=True)
+    config = get_model(model, config_only=True, hg_gated=hg_gated, hg_token=hg_token)
     number_of_hidden_layers = -1
     try:
         number_of_hidden_layers = config.num_hidden_layers
@@ -210,6 +245,8 @@ def hgTransformerGetPipeline(text_strings,
                             tokenizer_parallelism = False,
                             logging_level = 'warning',
                             return_incorrect_results = False,
+                            hg_gated = False,
+                            hg_token = "",
                             set_seed = None,
                             **kwargs):
     """
@@ -234,6 +271,10 @@ def hgTransformerGetPipeline(text_strings,
         set logging level, options: critical, error, warning, info, debug
     return_incorrect_results : bool
         return results if they are not properly formatted for the task
+    hg_gated : bool
+        Set to True if the accessed model is gated
+    hg_token: str
+        The token needed to access the gated model, gen in huggingface website 
     set_seed : int
         integer value for manually setting seed
     kwargs : dict
@@ -258,7 +299,7 @@ def hgTransformerGetPipeline(text_strings,
     if not isinstance(text_strings, list):
         text_strings = [text_strings]
     if model:
-        config, tokenizer, transformer_model = get_model(model)
+        config, tokenizer, transformer_model = get_model(model,hg_gated=hg_gated, hg_token=hg_token)
         if device_num >= 0:
             task_pipeline = pipeline(task, model=model, tokenizer=tokenizer, device=device_num)
         else:
@@ -517,6 +558,8 @@ def hgTransformerGetEmbedding(text_strings,
                               device = 'cpu',
                               tokenizer_parallelism = False,
                               model_max_length = None,
+                              hg_gated = False,
+                              hg_token = "",
                               logging_level = 'warning'):
     """
     Simple Python method for embedding text with pretained Hugging Face models
@@ -541,6 +584,10 @@ def hgTransformerGetEmbedding(text_strings,
         something
     model_max_length : int
         maximum length of the tokenized text
+    hg_gated : bool
+        Whether the accessed model is gated
+    hg_token: str
+        The token generated in huggingface website
     logging_level : str
         set logging level, options: critical, error, warning, info, debug
 
@@ -551,12 +598,15 @@ def hgTransformerGetEmbedding(text_strings,
     all_toks : list, optional
         tokenized version of text_strings
     """
-
+    #print("I am in hgTransformerGetEmbedding function now!!!!")
+    #print(f"!!!!hg_gated: {hg_gated} !!!")
+    #print(f"!!!!hg_token: {hg_token} !!!")
+                                  
     set_logging_level(logging_level)
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
 
-    config, tokenizer, transformer_model = get_model(model)
+    config, tokenizer, transformer_model = get_model(model, hg_gated=hg_gated, hg_token=hg_token)
 
     if device != 'cpu':
         transformer_model.to(device)
@@ -630,6 +680,7 @@ def hgTransformerGetEmbedding(text_strings,
                 if return_tokens:
                     all_toks.append(tokens)
 
+    del_hg_gated_access()                              
     if return_tokens:
         return all_embs, all_toks
     else:
@@ -641,6 +692,8 @@ def hgTokenizerGetTokens(text_strings,
                               device = 'cpu',
                               tokenizer_parallelism = False,
                               model_max_length = None,
+                              hg_gated = False,
+                              hg_token = "",
                               logging_level = 'warning'):
     """
     Simple Python method for embedding text with pretained Hugging Face models
@@ -661,6 +714,10 @@ def hgTokenizerGetTokens(text_strings,
         something
     model_max_length : int
         maximum length of the tokenized text
+    hg_gated : bool
+        Set to True if the accessed model is gated
+    hg_token: str
+        The token to access the gated model gen in hg website
     logging_level : str
         set logging level, options: critical, error, warning, info, debug
 
@@ -678,7 +735,7 @@ def hgTokenizerGetTokens(text_strings,
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
 
-    tokenizer = get_model(model, tokenizer_only=True)
+    tokenizer = get_model(model, tokenizer_only=True, hg_gated=hg_gated, hg_token=hg_token)
 
     if device != 'cpu':
         tokenizer.to(device)
