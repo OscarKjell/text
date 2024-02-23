@@ -4,19 +4,19 @@ library(testthat)
 
 context("Installation and Embedding of text and retrieval of word embeddings")
 
-# helper function to skip tests if we don't have the 'foo' module
-skip_if_no_transformers <- function() {
-  have_transformers <- reticulate::py_module_available("transformers")
-  if (!have_transformers) {
-    skip("transformers not available for testing")
-  }
-}
-skip_if_no_torch <- function() {
-  have_torch <- reticulate::py_module_available("torch")
-  if (!have_torch) {
-    skip("torch not available for testing")
-  }
-}
+## helper function to skip tests if we don't have the 'foo' module
+#skip_if_no_transformers <- function() {
+#  have_transformers <- reticulate::py_module_available("transformers")
+#  if (!have_transformers) {
+#    skip("transformers not available for testing")
+#  }
+#}
+#skip_if_no_torch <- function() {
+#  have_torch <- reticulate::py_module_available("torch")
+#  if (!have_torch) {
+#    skip("torch not available for testing")
+#  }
+#}
 
 
 test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {

@@ -20,6 +20,8 @@ textEmbed(
   max_token_to_sentence = 4,
   tokenizer_parallelism = FALSE,
   device = "cpu",
+  hg_gated = FALSE,
+  hg_token = "",
   logging_level = "error",
   ...
 )
@@ -79,6 +81,10 @@ switching to embedding text sentence by sentence.}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 specific device number such as 'mps:1'.}
+
+\item{hg_gated}{Set to TRUE if the accessed model is gated.}
+
+\item{hg_token}{The token to access the gated model generated in huggingface website.}
 
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}

@@ -619,7 +619,6 @@ summarize_tune_results <- function(object,
 #'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output (character) Option not to save all output; default = "all". see also "only_results"
 #'  and "only_results_predictions".
-#' @param save_output_size default: "small_model";  leve empty " ", if wanting to save all.
 #' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by
 #' Monte Carlo simulation, in larger than 2 × 2 tables.
 #' @param seed (numeric) Set different seed (default = 2020).
@@ -690,7 +689,6 @@ textTrainRegression <- function(x,
                                 model_description = "Consider writing a description of your model here",
                                 multi_cores = "multi_cores_sys_default",
                                 save_output = "all",
-                                save_output_size = "small_model",
                                 simulate.p.value = FALSE,
                                 seed = 2020,
                                 ...) {
