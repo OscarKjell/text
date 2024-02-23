@@ -382,24 +382,24 @@ textTrainNPlot <- function(
     point_size = rep(3, length(tibble_list))) {
   
   tibble_list <- train_data
-  # Replace empty strings with the default color
-  default_color <- "grey"  # Define a default color for lines
+  
+  # replace empty strings with the default color
+  default_color <- "grey"  
   line_color <- sapply(line_color, function(color) if(color == "") default_color else color)
   
-  # Initialize the ggplot object
+  # initialize the ggplot object
   TrainNPlot <- ggplot2::ggplot()
   
-  # Iterate over each tibble in the list
+  # iterate over each model
   for (i in seq_along(tibble_list)) {
     tibble <- tibble_list[[i]]
-    
-    # Add points
+
     TrainNPlot <- TrainNPlot +
       ggplot2::geom_point(data = tibble,
                           ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean),
                           color = point_color[i], size = point_size[i])
     
-    # Add error bars if n_cross_val > 1 for the current tibble
+    # add error bars if n_cross_val > 1 for the current tibble
     if (n_cross_val[i] > 1) {
       TrainNPlot <- TrainNPlot +
         ggplot2::geom_errorbar(data = tibble,
@@ -408,7 +408,7 @@ textTrainNPlot <- function(
                                width = bar_width[i], color = bar_color[i], size = bar_size[i])
     }
     
-    # Add lines (smooth or straight) based on the current setting
+    
     if (line_type[i] == "smooth") {
       TrainNPlot <- TrainNPlot + 
         ggplot2::geom_smooth(data = tibble,
@@ -422,7 +422,7 @@ textTrainNPlot <- function(
     }
   }
   
-  # Global settings (title, axes labels, theme)
+  # (title, axes labels, theme)
   TrainNPlot <- TrainNPlot +
     ggplot2::labs(title = title, x = x_axes_label, y = y_axes_label) +
     ggplot2::theme_minimal() +
@@ -431,7 +431,7 @@ textTrainNPlot <- function(
                    plot.title = ggplot2::element_text(size = 16),
                    legend.position = "none")
   
-  # Apply y-axis limits and x-axis breaks if specified
+  #  y-axis limits and x-axis breaks
   if (!is.null(y_range)) {
     TrainNPlot <- TrainNPlot + ggplot2::ylim(y_range[1], y_range[2])
   }
