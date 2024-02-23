@@ -119,6 +119,8 @@ test_that("textEmbedStatic with example space", {
 test_that("textEmbedRawLayers contexts=TRUE, decontextualize = FALSE returns a list", {
   skip_on_cran()
 
+  textrpp_initialize()
+
   text_to_test_import1 <- c("test this", "hope it works")
   text_to_test_import2 <- c("I am happy", "Let us go")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
@@ -163,6 +165,8 @@ test_that("textEmbedRawLayers bert-base-uncased contexts=FALSE, decontexts = TRU
 
 test_that("textEmbed", {
   skip_on_cran()
+
+  textrpp_initialize()
 
   text_to_test_import1 <- c("test this", "hope it works")
   text_to_test_import2 <- c("I am happy", "Let us go")

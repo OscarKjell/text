@@ -7,6 +7,8 @@ context("Big analyses flow")
 test_that("Testing textEmbed as well as train", {
   skip_on_cran()
 
+  textrpp_initialize()
+
   descr1 <- textDescriptives(Language_based_assessment_data_8[1])
   expect_that(descr1[[1]], is_a("character"))
   descr2 <- textDescriptives(Language_based_assessment_data_8[1:2])
