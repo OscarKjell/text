@@ -32,12 +32,12 @@ test_that("training with only x_append (without word embeddings)", {
 
 
   plot_object_1 <- textTrainNPlot(
-    train_data = tibble_to_plot_1,
+    train_data = list(tibble_to_plot_1),
     n_cross_val = 1,
     x_unit = "percent"
   )
 
-  testthat::expect_equal(length(plot_object_1$layers), 3)
+  testthat::expect_equal(length(plot_object_1$layers), 2)
   testthat::expect_true(ggplot2::is.ggplot(plot_object_1))
 
 
@@ -60,7 +60,7 @@ test_that("training with only x_append (without word embeddings)", {
 
 
   plot_object <- textTrainNPlot(
-    train_data = tibble_to_plot,
+    train_data = list(tibble_to_plot),
     n_cross_val = 3,
     x_unit = "quantity"
   )
