@@ -213,7 +213,7 @@ textReturnModelAndEmbedding <- function(
 #' @param show_texts (boolean) Show texts together with predictions (default = FALSE).
 #' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 #' specific device number such as 'mps:1'.
-#' @param user_id (list) user_id associates sentences with their writers. User_id must be defined when
+#' @param participant_id (list) participant_id associates sentences with their writers. participant_id must be defined when
 #' calculating implicit motives. (default = NULL)  shown (default = FALSE).
 #' @param story_id (list) story_id associates sentences with their stories. If story_id is defined,
 #' then the mean of the current and previous
@@ -254,14 +254,14 @@ textReturnModelAndEmbedding <- function(
 #'
 #' # Create example dataset
 #' implicit_motive_data <- dplyr::mutate(.data = Language_based_assessment_data_8,
-#' user_id = dplyr::row_number())
+#' participant_id = dplyr::row_number())
 #'
 #' # Code implicit motives. (In this example, person_class will be NaN due to the absence of
 #' # sentences classified as 'power')
 #' implicit_motives <- textPredict(
 #'   texts = implicit_motive_data$satisfactiontexts,
 #'   model_info = "power",
-#'   user_id = implicit_motive_data$user_id,
+#'   participant_id = implicit_motive_data$participant_id,
 #'   dataset = implicit_motive_data
 #' )
 #'
@@ -297,7 +297,7 @@ textPredict <- function(model_info = NULL,
                         threshold = NULL,
                         show_texts = FALSE,
                         device = "cpu",
-                        user_id = NULL,
+                        participant_id = NULL,
                         story_id = NULL,
                         dataset = NULL,
                         ...) {
@@ -311,7 +311,7 @@ textPredict <- function(model_info = NULL,
   
   # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding automatically
   get_model_info <- get_model_info(model_info,
-                                   user_id,
+                                   participant_id,
                                    show_texts = show_texts,
                                    type = type,
                                    texts = texts)
@@ -321,7 +321,7 @@ textPredict <- function(model_info = NULL,
   show_prob <- get_model_info$show_prob
   type <- get_model_info$type
   texts <- get_model_info$texts
-  user_id <- get_model_info$user_id
+  participant_id <- get_model_info$participant_id
   
   #### End Special treatment for implicit motives ####
   
@@ -545,14 +545,14 @@ textPredict <- function(model_info = NULL,
     if (
       grepl("power", lower_case_model) ||
       grepl("achievement", lower_case_model) ||
-      grepl("affiliation", lower_case_model) && !is.null(user_id)
+      grepl("affiliation", lower_case_model) && !is.null(participant_id)
     ) {
       # Wraper function that prepares data for
       # automatic implicit motive coding and returns
       # a list with predictions, class residuals and probability residuals.
       implicit_motives_results(
         model_reference = model_info,
-        user_id = user_id,
+        participant_id = participant_id,
         predicted_scores2 = predicted_scores2,
         texts = texts,
         dataset = dataset

@@ -345,7 +345,7 @@ textTrainN <- function(
 #' \dontrun{
 #' # Plot the performance of a single model across different sample sizes
 #' plot_object1 <- textTrainNPlot(
-#'   tibble = tibble_to_plot,
+#'   train_data = tibble_to_plot,
 #'   n_cross_val = 3,
 #'   x_unit = "quantity"
 #' )
@@ -354,9 +354,9 @@ textTrainN <- function(
 #' plot_object1
 #' 
 #' # Plot the performance of several models across different sample sizes. 
-#' plot_object2 <- textTrainNPlot(tibble = list(object1, object2, object3), 
-#'                               n_cross_val = c(2,1,1), 
-#'                               line_color = c("","","#0000FF")) # "" gives the default settings.
+#' plot_object2 <- textTrainNPlot(train_data = list(object1, object2, object3), 
+#'                                n_cross_val = c(2,1,1), 
+#'                                line_color = c("","","#0000FF")) # "" gives the default settings.
 #' # Visualize plot
 #' plot_object2
 #' }

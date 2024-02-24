@@ -646,13 +646,13 @@ path_exist_download_files <- function(wanted_file) {
 
 #' Returns a tibble with values relevant for calculating implicit motives
 #' @param texts Texts to predict
-#' @param user_id A column with user ids.
+#' @param participant_id A column with user ids.
 #' @param predicted_scores2 Predictions from textPredict.
 #' @return Returns a tibble with values relevant for calculating implicit motives
 #' @noRd
-implicit_motives <- function(texts, user_id, predicted_scores2) {
+implicit_motives <- function(texts, participant_id, predicted_scores2) {
   # Create a table with the number of sentences per user
-  table_uniques2 <- table(user_id[1:length(user_id)])
+  table_uniques2 <- table(participant_id[1:length(participant_id)])
 
 
   num_persons <- length(table_uniques2)
@@ -661,10 +661,10 @@ implicit_motives <- function(texts, user_id, predicted_scores2) {
   user_id_column <- c()
   current <- 0
 
-  # Create user_id_column
+  # Create participant_id
   for (i in 1:num_persons) {
     current <- current + table_uniques2[[i]]
-    user_id_column <- c(user_id_column, user_id[current])
+    user_id_column <- c(user_id_column, participant_id[current])
   }
 
   # Create dataframe
@@ -672,7 +672,7 @@ implicit_motives <- function(texts, user_id, predicted_scores2) {
     OUTCOME_USER_SUM_CLASS = numeric(num_persons),
     OUTCOME_USER_SUM_PROB = numeric(num_persons),
     wc_person_per_1000 = numeric(num_persons),
-    user_ids = numeric(num_persons)
+    participant_id = numeric(num_persons)
   )
 
   # Summarize classes and probabilities (for the first row)
@@ -730,7 +730,7 @@ implicit_motives_pred <- function(sqrt_implicit_motives) {
 
   # insert residuals into a tibble
   implicit_motives_pred <- tibble::tibble(
-    user_id = sqrt_implicit_motives$user_id,
+    participant_id = sqrt_implicit_motives$participant_id,
     person_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
     person_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)
   )
@@ -738,7 +738,7 @@ implicit_motives_pred <- function(sqrt_implicit_motives) {
   return(implicit_motives_pred)
 }
 
-#' Separates text sentence-wise and adds additional sentences to new rows with correpsonding user_id:s.
+#' Separates text sentence-wise and adds additional sentences to new rows with correpsonding participant_id:s.
 #' @param df Dataframe with two columns, user_id and texts.
 #' @return Returns a tibble with user_id:s and texts, where each user_id is matched to an individual sentence.
 #' @noRd
@@ -746,15 +746,15 @@ update_user_and_texts <- function(df) {
   updated_user_id <- integer()
   updated_texts <- character()
 
-  for (i in seq_along(df$user_id)) {
+  for (i in seq_along(df$participant_id)) {
     # split sentences on ".", "!", or "?"
     sentences <- stringi::stri_split(df$texts[i], regex = "[.!?]", simplify = TRUE)
 
     # remove any empty sentences
     sentences <- sentences[sentences != ""]
 
-    # if more than one sentence, repeat user_id and create a vector of updated texts
-    current_user_id <- rep(df$user_id[i], length(sentences))
+    # if more than one sentence, repeat participant_id and create a vector of updated texts
+    current_user_id <- rep(df$participant_id[i], length(sentences))
     current_texts <- sentences
 
     # check if the "next" sentence should be split based on its length (if it exceeds two words)
@@ -762,17 +762,17 @@ update_user_and_texts <- function(df) {
       length(unlist(stringi::stri_split(sentence, regex = "\\s+"))) > 2
     })
 
-    # append the updated user_id and texts to the results
-    updated_user_id <- c(updated_user_id, rep(df$user_id[i], sum(split_indices)))
+    # append the updated participant_id and texts to the results
+    updated_user_id <- c(updated_user_id, rep(df$participant_id[i], sum(split_indices)))
     updated_texts <- c(updated_texts, current_texts[split_indices])
   }
 
-  updated_df <- data.frame(user_id = updated_user_id, texts = updated_texts)
+  updated_df <- data.frame(participant_id = updated_user_id, texts = updated_texts)
 
   # since empty rows were deleted, any extra must now be added again.
-  missing_rows <- setdiff(df$user_id, updated_df$user_id)
+  missing_rows <- setdiff(df$participant_id, updated_df$participant_id)
   if (length(missing_rows) > 0) {
-    updated_df <- rbind(updated_df, data.frame(user_id = missing_rows, texts = ""))
+    updated_df <- rbind(updated_df, data.frame(participant_id = missing_rows, texts = ""))
   }
 
   return(updated_df)
@@ -836,13 +836,13 @@ bind_data <- function(original_data, prediction_list) {
 
 #' Wrapper function that prepares the data and returns a list with predictions, class residuals and probability residuals.
 #' @param model_reference Reference to implicit motive model, either github URL or file-path.
-#' @param user_id A column with user ids.
+#' @param participant_id A column with user ids.
 #' @param predicted_scores2 Predictions from textPredict() function.
 #' @param texts Texts to predict from textPredict() function.
 #' @return Returns a tibble with values relevant for calculating implicit motives
 #' @noRd
 implicit_motives_results <- function(model_reference,
-                                     user_id,
+                                     participant_id,
                                      predicted_scores2,
                                      texts,
                                      dataset) {
@@ -862,12 +862,12 @@ implicit_motives_results <- function(model_reference,
     column_name <- model_reference
   }
 
-  if (length(texts) != length(user_id)) {
-    stop("texts and user_id must be of same length.")
+  if (length(texts) != length(participant_id)) {
+    stop("texts and participant_id must be of same length.")
   }
 
   # Retrieve Data
-  implicit_motives <- implicit_motives(texts, user_id, predicted_scores2)
+  implicit_motives <- implicit_motives(texts, participant_id, predicted_scores2)
 
   # Predict
   predicted <- implicit_motives_pred(implicit_motives)
@@ -908,12 +908,12 @@ implicit_motives_results <- function(model_reference,
 #' Function that is called in the beginning of textPredict to create the conditions for implicit motives to work.
 #' @param model_infomodel_info (character or r-object) model_info has three options. 1: R model object (e.g, saved output from textTrain). 2:link to github-model
 #' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"). 3: Path to a model stored locally (e.g, "path/to/your/model").
-#' @param user_id A column with user ids.
+#' @param participant_id A column with user ids.
 #' @param show_texts Show texts, TRUE / FALSE
 #' @return Returns a list of conditions for implicit motive coding to work
 #' @noRd
 get_model_info <- function(model_info,
-                           user_id,
+                           participant_id,
                            show_texts,
                            type,
                            texts) {
@@ -924,7 +924,7 @@ get_model_info <- function(model_info,
     if (
       grepl("power", lower_case_model) ||
         grepl("achievement", lower_case_model) ||
-        grepl("affiliation", lower_case_model) && !is.null(user_id)
+        grepl("affiliation", lower_case_model) && !is.null(participant_id)
     ) {
       type <- "class" # type must be class for these conditions
 
@@ -938,19 +938,19 @@ get_model_info <- function(model_info,
       }
 
       # specific configuration for implicit motive coding
-      if (!is.null(user_id)) {
+      if (!is.null(participant_id)) {
         show_texts <- TRUE
         show_prob <- TRUE
         type <- "class"
 
         # separate multiple sentences, and add corresponding user-id
-        id_and_texts <- data.frame(user_id = user_id, texts = texts)
+        id_and_texts <- data.frame(participant_id = participant_id, texts = texts)
 
         # correct for multiple sentences per row. # CORRECT
         update_user_and_texts <- update_user_and_texts(id_and_texts)
 
-        # update user_id
-        user_id <- update_user_and_texts$user_id
+        # update participant_id
+        participant_id <- update_user_and_texts$participant_id
         # update texts
         texts <- update_user_and_texts$texts
       }
@@ -963,5 +963,5 @@ get_model_info <- function(model_info,
     show_prob <- TRUE
   }
 
-  return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type, user_id = user_id, texts = texts))
+  return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type, participant_id = participant_id, texts = texts))
 }

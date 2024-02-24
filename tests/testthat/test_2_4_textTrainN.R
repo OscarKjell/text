@@ -32,7 +32,7 @@ test_that("training with only x_append (without word embeddings)", {
 
 
   plot_object_1 <- textTrainNPlot(
-    tibble = tibble_to_plot_1,
+    train_data = tibble_to_plot_1,
     n_cross_val = 1,
     x_unit = "percent"
   )
@@ -60,7 +60,7 @@ test_that("training with only x_append (without word embeddings)", {
 
 
   plot_object <- textTrainNPlot(
-    tibble = tibble_to_plot,
+    train_data = tibble_to_plot,
     n_cross_val = 3,
     x_unit = "quantity"
   )
