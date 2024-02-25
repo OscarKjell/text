@@ -9,19 +9,18 @@ on:
 name: test-coverage
 
 jobs:
-  test-coverage:
+  R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
-  strategy:
+    strategy:
       fail-fast: false
       matrix:
         config:
           - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-20.04,   r: 'release'}
-
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
