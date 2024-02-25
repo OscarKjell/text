@@ -21,6 +21,7 @@ test_that("Task Fine-tuning tests", {
     is_regression = TRUE,
     num_train_epochs = 1,
     output_dir = "./run_reg",
+    pytorch_mps_high_watermark_ratio = TRUE,
     tokenizer_parallelism = TRUE)
 
   #

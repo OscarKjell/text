@@ -26,6 +26,10 @@
 #' the next training step under the keyword argument mems.
 #' @param set_seed (Numeric) Set the seed
 #' @param label_names label name in case of classification; e.g., label_names = c("female", "male").
+#' @param pytorch_mps_high_watermark_ratio Set to TRUE to solve error
+#' RuntimeError: MPS backend out of memory.Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for
+#' memory allocations (may cause system failure). Monitor System Resources: If you decide to adjust this setting,
+#' closely monitor your system's resource usage to ensure it does not become unstable.
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param ... Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.
 #' @return A folder containing the pretrained model and output data. The model can then be used, for example, by
@@ -56,6 +60,7 @@ textFineTuneTask <- function(text_outcome_data,
                              past_index = -1,
                              set_seed = 2022,
                              label_names = NULL,
+                             pytorch_mps_high_watermark_ratio = FALSE,
                              tokenizer_parallelism = FALSE,
                              ...) {
   T1 <- Sys.time()
@@ -133,6 +138,7 @@ textFineTuneTask <- function(text_outcome_data,
     eval_accumulation_steps = eval_accumulation_steps,
     num_train_epochs = num_train_epochs,
     past_index = past_index,
+    pytorch_mps_high_watermark_ratio = pytorch_mps_high_watermark_ratio,
     tokenizer_parallelism = tokenizer_parallelism,
     label_names = label_names,
     ...

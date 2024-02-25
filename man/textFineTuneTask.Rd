@@ -20,6 +20,7 @@ textFineTuneTask(
   past_index = -1,
   set_seed = 2022,
   label_names = NULL,
+  pytorch_mps_high_watermark_ratio = FALSE,
   tokenizer_parallelism = FALSE,
   ...
 )
@@ -66,6 +67,11 @@ the next training step under the keyword argument mems.}
 \item{set_seed}{(Numeric) Set the seed}
 
 \item{label_names}{label name in case of classification; e.g., label_names = c("female", "male").}
+
+\item{pytorch_mps_high_watermark_ratio}{Set to TRUE to solve error
+RuntimeError: MPS backend out of memory.Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for
+memory allocations (may cause system failure). Monitor System Resources: If you decide to adjust this setting,
+closely monitor your system's resource usage to ensure it does not become unstable.}
 
 \item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 

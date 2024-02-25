@@ -4,6 +4,14 @@ from run_mlm import main as mlm_finetuner
 import json
 import os
 
+
+# Check if running on macOS and PYTORCH_MPS_HIGH_WATERMARK_RATIO is set to 'TRUE'
+if platform.system() == 'Darwin' and pytorch_mps_high_watermark_ratio:
+    os.environ['PYTORCH_MPS_HIGH_WATERMARK_RATIO'] = '0.0'
+    print("Setting PYTORCH_MPS_HIGH_WATERMARK_RATIO to '0.0' on macOS with enabled flag.")
+
+
+
 def set_tokenizer_parallelism(tokenizer_parallelism):
     if tokenizer_parallelism:
         os.environ["TOKENIZERS_PARALLELISM"] = "true"
