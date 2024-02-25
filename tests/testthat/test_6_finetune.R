@@ -10,6 +10,7 @@ context("Testing tasks")
 test_that("Task Fine-tuning tests", {
   skip_on_cran()
 
+  text::textrpp_initialize()
 # It is removed for now since it does not complete in Windows without error
 #
 #  #help("textFineTuneTask")
