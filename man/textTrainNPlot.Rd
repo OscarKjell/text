@@ -7,32 +7,35 @@ returned by the textTrainN function. If the number of cross-validations exceed o
 error-bars will be included in the plot.}
 \usage{
 textTrainNPlot(
-  tibble,
+  train_data,
   sample_percents = c(25, 50, 75, 100),
-  n_cross_val = 1,
+  n_cross_val = rep(1, length(tibble_list)),
   x_unit = "percent",
   y_range = NULL,
   title = "Cross-validated correlation coefficients across different sample sizes",
   x_axes_label = "Sample Size (percent)",
   y_axes_label = "Correlation Coefficient (r)",
-  point_color = "#5dc688",
-  bar_color = "#60A1F7",
-  line_color = "grey",
-  bar_width = 1,
-  bar_size = 0.8,
-  line_size = 0.6,
-  line_type = "straight",
-  point_size = 3
+  point_color = rep("#5dc688", length(tibble_list)),
+  bar_color = rep("#60A1F7", length(tibble_list)),
+  line_color = rep("grey", length(tibble_list)),
+  bar_width = rep(1, length(tibble_list)),
+  bar_size = rep(0.8, length(tibble_list)),
+  line_size = rep(0.6, length(tibble_list)),
+  line_type = rep("straight", length(tibble_list)),
+  point_size = rep(3, length(tibble_list))
 )
 }
 \arguments{
-\item{tibble}{(tibble) Object returned by the function textTrainN.}
+\item{train_data}{(list) One or several objects returned by the function textTrainN as a list (e.g, list(object1, object2)). Also, 
+If several models are provided, then one can add a vector c() with settings (i.e the parameters below) for each model 
+(make sure to add the settings in the order as the models are ordered, if you look to keep the original settings then write "").}
 
 \item{sample_percents}{(numeric) Vector containing the percents of the total number of datapoints that is
 included in each sample (default = c(25,50,75,100)).}
 
 \item{n_cross_val}{(numeric) Value of the number of times cross-validation has been repeated (default = 1,
-i.e., cross-validation has only been applied once).}
+i.e., cross-validation has only been applied once). If several models are provided, then one can add a vector c() 
+with settings for each model (make sure to add the settings in the order as the models are ordered).}
 
 \item{x_unit}{(character, "percent" or "quantity") Determines whether the x-axis-values should represent
 the number of elements in each sample, or the number of percent of the total data they represent
@@ -83,14 +86,22 @@ error-bars will be included in the plot.
 # returned by the textTrainN function.
 
 \dontrun{
-plot_object <- textTrainNPlot(
-  tibble = tibble_to_plot,
+# Plot the performance of a single model across different sample sizes
+plot_object1 <- textTrainNPlot(
+  train_data = tibble_to_plot,
   n_cross_val = 3,
   x_unit = "quantity"
 )
 
 # Visualize plot
-plot_object
+plot_object1
+
+# Plot the performance of several models across different sample sizes. 
+plot_object2 <- textTrainNPlot(train_data = list(object1, object2, object3), 
+                               n_cross_val = c(2,1,1), 
+                               line_color = c("","","#0000FF")) # "" gives the default settings.
+# Visualize plot
+plot_object2
 }
 }
 \seealso{

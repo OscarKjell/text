@@ -309,11 +309,14 @@ textTrainN <- function(
 #' (experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
 #' returned by the textTrainN function. If the number of cross-validations exceed one, then
 #' error-bars will be included in the plot.
-#' @param tibble (tibble) Object returned by the function textTrainN.
+#' @param train_data (list) One or several objects returned by the function textTrainN as a list (e.g, list(object1, object2)). Also, 
+#' If several models are provided, then one can add a vector c() with settings (i.e the parameters below) for each model 
+#' (make sure to add the settings in the order as the models are ordered, if you look to keep the original settings then write ""). 
 #' @param sample_percents (numeric) Vector containing the percents of the total number of datapoints that is
 #' included in each sample (default = c(25,50,75,100)).
 #' @param n_cross_val (numeric) Value of the number of times cross-validation has been repeated (default = 1,
-#' i.e., cross-validation has only been applied once).
+#' i.e., cross-validation has only been applied once). If several models are provided, then one can add a vector c() 
+#' with settings for each model (make sure to add the settings in the order as the models are ordered). 
 #' @param x_unit (character, "percent" or "quantity") Determines whether the x-axis-values should represent
 #'  the number of elements in each sample, or the number of percent of the total data they represent
 #'  (default = "percent").
@@ -340,132 +343,107 @@ textTrainN <- function(
 #' # returned by the textTrainN function.
 #'
 #' \dontrun{
-#' plot_object <- textTrainNPlot(
-#'   tibble = tibble_to_plot,
+#' # Plot the performance of a single model across different sample sizes
+#' plot_object1 <- textTrainNPlot(
+#'   train_data = tibble_to_plot,
 #'   n_cross_val = 3,
 #'   x_unit = "quantity"
 #' )
 #'
 #' # Visualize plot
-#' plot_object
+#' plot_object1
+#' 
+#' # Plot the performance of several models across different sample sizes. 
+#' plot_object2 <- textTrainNPlot(train_data = list(object1, object2, object3), 
+#'                                n_cross_val = c(2,1,1), 
+#'                                line_color = c("","","#0000FF")) # "" gives the default settings.
+#' # Visualize plot
+#' plot_object2
 #' }
 #' @seealso See \code{\link{textTrainN}}.
 #' @importFrom tibble tibble
 #' @export
 textTrainNPlot <- function(
-    tibble,
+    train_data,
     sample_percents = c(25, 50, 75, 100),
-    n_cross_val = 1,
+    n_cross_val = rep(1, length(tibble_list)),
     x_unit = "percent",
     y_range = NULL,
     title = "Cross-validated correlation coefficients across different sample sizes",
     x_axes_label = "Sample Size (percent)",
     y_axes_label = "Correlation Coefficient (r)",
-    point_color = "#5dc688",
-    bar_color = "#60A1F7",
-    line_color = "grey",
-    bar_width = 1,
-    bar_size = 0.8,
-    line_size = 0.6,
-    line_type = "straight",
-    point_size = 3) {
-  sample_sizes <- tibble$sample_size
+    point_color = rep("#5dc688", length(tibble_list)),  # Default point color
+    bar_color = rep("#60A1F7", length(tibble_list)),    # Default bar color
+    line_color = rep("grey", length(tibble_list)),      # Default line color
+    bar_width = rep(1, length(tibble_list)),
+    bar_size = rep(0.8, length(tibble_list)),
+    line_size = rep(0.6, length(tibble_list)),
+    line_type = rep("straight", length(tibble_list)),
+    point_size = rep(3, length(tibble_list))) {
+  
+  tibble_list <- train_data
+  
+  # replace empty strings with the default color
+  default_color <- "grey"  
+  line_color <- sapply(line_color, function(color) if(color == "") default_color else color)
+  
+  # initialize the ggplot object
+  TrainNPlot <- ggplot2::ggplot()
+  
+  # iterate over each model
+  for (i in seq_along(tibble_list)) {
+    tibble <- tibble_list[[i]]
 
-  if (n_cross_val == 1) {
-    # Create the ggplot object and specify aesthetics
-    TrainNPlot <- ggplot2::ggplot(data = tibble,
-                                  ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
-      ggplot2::geom_point(color = point_color, size = point_size) +
-      ggplot2::geom_errorbar(
-        ggplot2::aes(ymin = mean - std, ymax = mean + std),
-        size = bar_size,
-        width = bar_width,
-        color = bar_color
-      ) +
-      # determines whether to plot a smooth or straight line
-      (if (line_type == "smooth") {
-        ggplot2::geom_smooth(size = line_size, color = line_color, method = "auto")
-      } else {
-        ggplot2::geom_line(size = line_size, color = line_color)
-      }) +
-      # set axis-labels
-      ggplot2::labs(
-        title = title,
-        x = if (x_unit == "quantity") "Sample Size (quantity)" else x_axes_label,
-        y = y_axes_label
-      ) +
-      ggplot2::theme_minimal() +
-      ggplot2::theme(
-        axis.text = ggplot2::element_text(size = 12),
-        axis.title = ggplot2::element_text(size = 14),
-        plot.title = ggplot2::element_text(size = 16),
-        legend.position = "none"
-      )
-
-    # changes y limit if not set to NULL
-    if (!is.null(y_range)) {
+    TrainNPlot <- TrainNPlot +
+      ggplot2::geom_point(data = tibble,
+                          ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean),
+                          color = point_color[i], size = point_size[i])
+    
+    # add error bars if n_cross_val > 1 for the current tibble
+    if (n_cross_val[i] > 1) {
       TrainNPlot <- TrainNPlot +
-        ggplot2::ylim(y_range[1], y_range[2])
+        ggplot2::geom_errorbar(data = tibble,
+                               ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent,
+                                            ymin = mean - std, ymax = mean + std),
+                               width = bar_width[i], color = bar_color[i], size = bar_size[i])
     }
-
-    # Set x-axis breaks
-    if (x_unit == "quantity") {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::scale_x_continuous(breaks = sample_sizes)
+    
+    
+    if (line_type[i] == "smooth") {
+      TrainNPlot <- TrainNPlot + 
+        ggplot2::geom_smooth(data = tibble,
+                             ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean),
+                             size = line_size[i], color = line_color[i], method = "auto")
     } else {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::scale_x_continuous(breaks = sample_percents)
+      TrainNPlot <- TrainNPlot + 
+        ggplot2::geom_line(data = tibble,
+                           ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean),
+                           size = line_size[i], color = line_color[i])
     }
-
-    return(TrainNPlot)
   }
-
-  if (n_cross_val > 1) {
-    # Create the ggplot object and specify aesthetics
-    TrainNPlot <- ggplot2::ggplot(data = tibble,
-                                  ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean)) +
-      ggplot2::geom_point(color = point_color, size = point_size) +
-      ggplot2::geom_errorbar(
-        ggplot2::aes(ymin = mean - std, ymax = mean + std),
-        size = bar_size,
-        width = bar_width,
-        color = bar_color
-      ) +
-      # determines whether to plot a smooth or straight line
-      (if (line_type == "smooth") {
-        ggplot2::geom_smooth(linewidth = line_size, color = line_color, method = "auto")
-      } else {
-        ggplot2::geom_line(linewidth = line_size, color = line_color)
-      }) +
-      # set axis-labels
-      ggplot2::labs(
-        title = title,
-        x = if (x_unit == "quantity") "Sample Size (quantity)" else x_axes_label,
-        y = y_axes_label
-      ) +
-      ggplot2::theme_minimal() +
-      ggplot2::theme(
-        axis.text = ggplot2::element_text(size = 12),
-        axis.title = ggplot2::element_text(size = 14),
-        plot.title = ggplot2::element_text(size = 16),
-        legend.position = "none"
-      )
-
-    # changes y limit if not set to NULL
-    if (!is.null(y_range)) {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::ylim(y_range[1], y_range[2])
-    }
-
-    # Set x-axis breaks
-    if (x_unit == "quantity") {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::scale_x_continuous(breaks = sample_sizes)
-    } else {
-      TrainNPlot <- TrainNPlot +
-        ggplot2::scale_x_continuous(breaks = sample_percents)
-    }
-
-    return(TrainNPlot)
+  
+  # (title, axes labels, theme)
+  TrainNPlot <- TrainNPlot +
+    ggplot2::labs(title = title, x = x_axes_label, y = y_axes_label) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(axis.text = ggplot2::element_text(size = 12),
+                   axis.title = ggplot2::element_text(size = 14),
+                   plot.title = ggplot2::element_text(size = 16),
+                   legend.position = "none")
+  
+  #  y-axis limits and x-axis breaks
+  if (!is.null(y_range)) {
+    TrainNPlot <- TrainNPlot + ggplot2::ylim(y_range[1], y_range[2])
   }
+  if (x_unit == "quantity") {
+    TrainNPlot <- TrainNPlot + ggplot2::scale_x_continuous(breaks = unique(unlist(lapply(tibble_list, function(t) t$sample_size))))
+  } else {
+    TrainNPlot <- TrainNPlot + ggplot2::scale_x_continuous(breaks = sample_percents)
+  }
+  
+  return(TrainNPlot)
 }
+
+
+
+

@@ -16,7 +16,7 @@ textPredict(
   threshold = NULL,
   show_texts = FALSE,
   device = "cpu",
-  user_id = NULL,
+  participant_id = NULL,
   story_id = NULL,
   dataset = NULL,
   ...
@@ -54,7 +54,7 @@ If the model already exists in your work-directory, it will automatically be loa
 \item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 specific device number such as 'mps:1'.}
 
-\item{user_id}{(list) user_id associates sentences with their writers. User_id must be defined when
+\item{participant_id}{(list) participant_id associates sentences with their writers. participant_id must be defined when
 calculating implicit motives. (default = NULL)  shown (default = FALSE).}
 
 \item{story_id}{(list) story_id associates sentences with their stories. If story_id is defined,
@@ -105,14 +105,14 @@ prediction4 <- textPredict(
 
 # Create example dataset
 implicit_motive_data <- dplyr::mutate(.data = Language_based_assessment_data_8,
-user_id = dplyr::row_number())
+participant_id = dplyr::row_number())
 
 # Code implicit motives. (In this example, person_class will be NaN due to the absence of
 # sentences classified as 'power')
 implicit_motives <- textPredict(
   texts = implicit_motive_data$satisfactiontexts,
   model_info = "power",
-  user_id = implicit_motive_data$user_id,
+  participant_id = implicit_motive_data$participant_id,
   dataset = implicit_motive_data
 )
 
