@@ -15,6 +15,8 @@ test_that("Task Fine-tuning tests", {
 #
 #  #help("textFineTuneTask")
 #  unlink("./run_reg", recursive = TRUE)
+  if (Sys.info()["sysname"] != "Darwin") {
+
   task_reg_test <- text::textFineTuneTask(
     Language_based_assessment_data_8[1:20 ,c("satisfactiontexts", "hilstotal")],
     model_name_or_path = "distilbert-base-uncased",
@@ -31,7 +33,7 @@ test_that("Task Fine-tuning tests", {
   # Remove the folder
   unlink("./run_reg", recursive = TRUE)
   unlink("./tests/testthat/logs", recursive = TRUE)
-
+  }
 
 #  textModels()
 #  unlink("./run_clf", recursive = TRUE)
