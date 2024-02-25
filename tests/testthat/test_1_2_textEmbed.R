@@ -18,6 +18,31 @@ context("Installation and Embedding of text and retrieval of word embeddings")
 #  }
 #}
 
+test_that("textEmbed handling NAs", {
+  skip_on_cran()
+
+  # testing NA and empty strings
+  embeddings_with_NA <- textEmbed(c("hej",
+                                    NA,
+                                    "hej jag heter na",
+                                    "",
+                                    " ",
+                                    "    ",
+                                    "NA",
+                                    "Im NA"
+                                    ))
+
+  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][1], -0.04640419, tolerance = 0.0001)
+  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][2], NaN)
+  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][3], 0.2512017, tolerance = 0.0001)
+  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][4], NaN)
+  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][5], NaN)
+  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][6], NaN)
+  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][7], NaN)
+  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][8], -0.4003294, tolerance = 0.0001)
+
+  })
+
 
 test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' produces aggregated word embeddings", {
   skip_on_cran()

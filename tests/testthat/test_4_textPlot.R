@@ -24,6 +24,25 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
   testthat::expect_is(df_for_plotting1[[2]]$words[1], "character")
   testthat::expect_is(df_for_plotting1[[2]]$n[1], "numeric")
   testthat::expect_equal(df_for_plotting1[[2]]$dot.x[1], -3.847934, tolerance = 0.001)
+
+
+  # Pre-processing data for plotting
+  df_for_plotting1_no_split <- text::textProjection(
+    words = Language_based_assessment_data_8$harmonywords[1:10],
+    word_embeddings = word_embeddings_4$texts$harmonywords[1:10, ],
+    word_embeddings_4$word_types,
+    Language_based_assessment_data_8$hilstotal[1:10],
+    split = "no",
+    Npermutations = 2,
+    n_per_split = 1,
+    pca = 2
+  )
+
+  testthat::expect_true(tibble::is_tibble(df_for_plotting1_no_split[[2]]))
+  testthat::expect_is(df_for_plotting1_no_split[[2]]$words[1], "character")
+  testthat::expect_is(df_for_plotting1_no_split[[2]]$n[1], "numeric")
+  testthat::expect_equal(df_for_plotting1_no_split[[2]]$dot.x[1], -1.537714, tolerance = 0.001)
+
 })
 
 test_that("textProjection with QUARTILE, 0.9 PCA and
