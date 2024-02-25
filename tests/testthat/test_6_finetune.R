@@ -30,6 +30,7 @@ test_that("Task Fine-tuning tests", {
 
   # Remove the folder
   unlink("./run_reg", recursive = TRUE)
+  unlink("./tests/testthat/logs", recursive = TRUE)
 
 
 #  textModels()
