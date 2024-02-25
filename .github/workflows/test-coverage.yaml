@@ -11,9 +11,10 @@ name: test-coverage
 jobs:
   test-coverage:
     runs-on: ${{ matrix.config.os }}
+
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
-   strategy:
+  strategy:
       fail-fast: false
       matrix:
         config:
