@@ -4,9 +4,10 @@ from run_mlm import main as mlm_finetuner
 import json
 import os
 
+from platform import system
 
 # Check if running on macOS and PYTORCH_MPS_HIGH_WATERMARK_RATIO is set to 'TRUE'
-if platform.system() == 'Darwin' and pytorch_mps_high_watermark_ratio:
+if system() == 'Darwin' and pytorch_mps_high_watermark_ratio:
     os.environ['PYTORCH_MPS_HIGH_WATERMARK_RATIO'] = '0.0'
     print("Setting PYTORCH_MPS_HIGH_WATERMARK_RATIO to '0.0' on macOS with enabled flag.")
 
