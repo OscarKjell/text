@@ -69,7 +69,7 @@ jobs:
         run: |
           install.packages(c("remotes"))
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("covr")
+          remotes::install_cran("covr", dependencies = TRUE)
           remotes::install_cran("ggwordcloud")
         shell: Rscript {0}
 
