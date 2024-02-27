@@ -23,7 +23,10 @@ textModels <- function() {
 #' Get the number of layers in a given model.
 #' @param target_model (string) The name of the model to know the number of layers of.
 #' @param hg_gated Set to TRUE if the accessed model is gated.
-#' @param hg_token The token needed to access the gated model generated in huggingface website.
+#' @param hg_token The token needed to access the gated model.
+#' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
+#' the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
+#' be set to avoid the need to enter the token each time.
 #' @return Number of layers.
 #' @examples
 #' \dontrun{

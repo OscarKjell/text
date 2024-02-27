@@ -351,7 +351,10 @@ textTokenize <- function(texts,
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #'  switching to embedding text sentence by sentence. (default= 4)
 #' @param hg_gated Set to TRUE if the accessed model is gated.
-#' @param hg_token The token needed to access the gated model generated in huggingface website.
+#' @param hg_token The token needed to access the gated model.
+#' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
+#' the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
+#' be set to avoid the need to enter the token each time.
 #' @param logging_level (character) Set the logging level. (default ="error")
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param sort (boolean) If TRUE sort the output to tidy format. (default = TRUE)
@@ -967,7 +970,10 @@ generate_placement_vector <- function(raw_layers, texts) {
 #' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 #' specific device number such as 'mps:1'.
 #' @param hg_gated Set to TRUE if the accessed model is gated.
-#' @param hg_token The token to access the gated model generated in huggingface website.
+#' @param hg_token The token needed to access the gated model.
+#' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
+#' the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
+#' be set to avoid the need to enter the token each time.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param ... settings from textEmbedRawLayers().

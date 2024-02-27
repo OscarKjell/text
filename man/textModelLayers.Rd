@@ -15,7 +15,10 @@ textModelLayers(
 
 \item{hg_gated}{Set to TRUE if the accessed model is gated.}
 
-\item{hg_token}{The token needed to access the gated model generated in huggingface website.}
+\item{hg_token}{The token needed to access the gated model.
+Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
+the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
+be set to avoid the need to enter the token each time.}
 }
 \value{
 Number of layers.
