@@ -21,7 +21,7 @@ textEmbed(
   tokenizer_parallelism = FALSE,
   device = "cpu",
   hg_gated = FALSE,
-  hg_token = "",
+  hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
   logging_level = "error",
   ...
 )

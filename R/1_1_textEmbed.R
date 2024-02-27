@@ -387,7 +387,8 @@ textEmbedRawLayers <- function(texts,
                                model_max_length = NULL,
                                max_token_to_sentence = 4,
                                hg_gated = FALSE,
-                               hg_token = "",
+                               hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
+                                                     unset = ""),
                                logging_level = "error",
                                sort = TRUE) {
   if (decontextualize == TRUE && word_type_embeddings == FALSE) {
@@ -894,10 +895,10 @@ generate_placement_vector <- function(raw_layers, texts) {
 
     # Check if "na" or "" is present in any element of the list
     if ((((any(sapply(elements, function(element) "na" %in% element)) ||
-         any(sapply(elements, function(element) "NA" %in% element))) && 
-         nrow(token_embedding) == 3))|| 
+         any(sapply(elements, function(element) "NA" %in% element))) &&
+         nrow(token_embedding) == 3))||
          nrow(token_embedding) == 2){
-       
+
       # If so, then check for "na" (or "") in the token-embedding
       if (any(grepl("na", token_embedding$tokens, ignore.case = TRUE)) ||
           any(grepl("NA", token_embedding$tokens, ignore.case = TRUE)) ||
@@ -1019,7 +1020,8 @@ textEmbed <- function(texts,
                       tokenizer_parallelism = FALSE,
                       device = "cpu",
                       hg_gated = FALSE,
-                      hg_token = "",
+                      hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
+                                            unset = ""),
                       logging_level = "error",
                       ...) {
   if (sum(is.na(texts) > 0)) {

@@ -4,7 +4,11 @@
 \alias{textModelLayers}
 \title{Get the number of layers in a given model.}
 \usage{
-textModelLayers(target_model, hg_gated = FALSE, hg_token = "")
+textModelLayers(
+  target_model,
+  hg_gated = FALSE,
+  hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = "")
+)
 }
 \arguments{
 \item{target_model}{(string) The name of the model to know the number of layers of.}

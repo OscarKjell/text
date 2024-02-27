@@ -32,7 +32,10 @@ textModels <- function() {
 #' @seealso see \code{\link{textModels}}
 #' @importFrom reticulate source_python
 #' @export
-textModelLayers <- function(target_model, hg_gated = FALSE, hg_token = "") {
+textModelLayers <- function(target_model,
+                            hg_gated = FALSE,
+                            hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
+                                                  unset = "")) {
   reticulate::source_python(system.file("python",
     "huggingface_Interface3.py",
     package = "text",

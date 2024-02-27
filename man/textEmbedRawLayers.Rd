@@ -18,7 +18,7 @@ textEmbedRawLayers(
   model_max_length = NULL,
   max_token_to_sentence = 4,
   hg_gated = FALSE,
-  hg_token = "",
+  hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
   logging_level = "error",
   sort = TRUE
 )
