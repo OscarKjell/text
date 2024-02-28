@@ -21,7 +21,7 @@ textEmbed(
   tokenizer_parallelism = FALSE,
   device = "cpu",
   hg_gated = FALSE,
-  hg_token = "",
+  hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
   logging_level = "error",
   ...
 )
@@ -84,7 +84,10 @@ specific device number such as 'mps:1'.}
 
 \item{hg_gated}{Set to TRUE if the accessed model is gated.}
 
-\item{hg_token}{The token to access the gated model generated in huggingface website.}
+\item{hg_token}{The token needed to access the gated model.
+Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
+the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
+be set to avoid the need to enter the token each time.}
 
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
