@@ -7,7 +7,6 @@ library(dplyr)
 
 context("Prediction")
 
-
 test_that("textPredictTest t-test and bootstrapped test", {
   skip_on_cran()
   set.seed(1)
@@ -76,3 +75,32 @@ test_that("textPredictTest t-test and bootstrapped test", {
 
   testthat::expect_equal(boot_test_auc2$overlapp_p_value, 0.5782996, tolerance = 0.0001)
 })
+
+test_that("1. textPredict generates embeddings from text and 2. automatically codes implicit motives", {
+  skip_on_cran()
+  
+  # Test data
+  implicit_motive_data <- dplyr::mutate(.data = text::Language_based_assessment_data_8, participant_id = dplyr::row_number()) 
+  
+  predictions <- textPredict(texts = implicit_motive_data$satisfactiontexts,
+                             model_info = "power",
+                             participant_id = implicit_motive_data$participant_id,
+                             dataset = implicit_motive_data)
+  
+  testthat::expect_is(predictions$sentence_predictions$texts[1], "character")
+  testthat::expect_equal(predictions$person_predictions$person_prob[40], 0.06133574, tolerance = 0.0001)
+  
+  # Observe; when converting to numeric, zeros are replaced by ones, and ones are replaced by twos.  
+  testthat::expect_equal(as.numeric(predictions$sentence_predictions$power_class[24]), 2, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$sentence_predictions$power_class)), 194, tolerance = 0.0001)
+  
+  testthat::expect_equal(predictions$dataset$person_prob_2[40], 0.06133574, tolerance = 0.0001)
+})
+
+
+
+
+
+
+
+
