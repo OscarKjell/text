@@ -132,7 +132,11 @@ def create_bertopic_model(data,
             writer.writerow(['Word', 'phi'])
 
             # Write each row individually
-            writer.writerows(topic_data)
+            
+            for word_row in topic_data:
+                # Join the words with a underscore
+                joined_words = '_'.join(word_row[0].split())
+                writer.writerow([joined_words, word_row[1]])
     
     return [topic_model, model_summary]
 
