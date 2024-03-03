@@ -132,7 +132,7 @@ def get_device(device):
                 device = 'cuda'
                 device_num = list(range(torch.cuda.device_count()))[0]
                 attached = True
-            elif 'gpu:' in device or 'cuda:' in device
+            elif 'gpu:' in device or 'cuda:' in device:
                 try:
                     device_num = int(device.split(":")[-1])
                     device = 'cuda:' + str(device_num)
