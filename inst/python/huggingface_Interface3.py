@@ -130,7 +130,7 @@ def get_device(device):
             if device == 'gpu' or device == 'cuda': 
                 # assign to first gpu device number
                 device = 'cuda'
-                device_num = list(range(torch.cuda.device_count()))
+                device_num = list(range(torch.cuda.device_count()))[0]
                 attached = True
         elif "mps" in device:
             if not torch.backends.mps.is_available():
