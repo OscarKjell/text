@@ -127,7 +127,7 @@ def get_device(device):
             mps_available = False
         print(f"MPS for Mac available: {mps_available}")
         if torch.cuda.is_available():
-            if 'gpu' in device or 'cuda' in device: 
+            if device == 'gpu' or device == 'cuda': 
                 # assign to first gpu device number
                 device = 'cuda'
                 device_num = list(range(torch.cuda.device_count()))
