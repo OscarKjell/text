@@ -158,13 +158,8 @@ def get_device(device):
                 device = 'mps:' + str(device_num)
                 attached = True
                 print("Using Metal Performance Shaders (MPS) backend for GPU training acceleration!")
-        else: # assign to specific gpu device number
-                try:
-                    device_num = int(device.split(":")[-1])
-                    device = 'cuda:' + str(device_num)
-                    attached = True
-                except:
-                    attached = False
+        else:
+            attached = False
         if not attached:
             print("Unable to use MPS (Mac M1+), CUDA (GPU), using CPU")
             device = "cpu"
