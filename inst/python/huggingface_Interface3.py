@@ -132,7 +132,15 @@ def get_device(device):
                 device = 'cuda'
                 device_num = list(range(torch.cuda.device_count()))[0]
                 attached = True
-            else:
+            elif 'gpu:' in device or 'cuda:' in device
+                try:
+                    device_num = int(device.split(":")[-1])
+                    device = 'cuda:' + str(device_num)
+                    attached = True
+                except:
+                    attached = False
+                    print(f"Device {str(device_num)} does not exist!"})
+            elif 'gpus' in device:
                 device = 'cuda'
                 device_num = list(range(torch.cuda.device_count()))
                 device = [device + ':' + str(num1) for num1 in device_num]
