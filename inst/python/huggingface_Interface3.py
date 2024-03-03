@@ -139,13 +139,14 @@ def get_device(device):
                     attached = True
                 except:
                     attached = False
-                    print(f"Device {str(device_num)} does not exist!")
+                    print(f"Device number {str(device_num)} does not exist! Use 'gpus' to ")
             elif 'gpus' in device:
                 device = 'cuda'
                 device_num = list(range(torch.cuda.device_count()))
                 device = [device + ':' + str(num1) for num1 in device_num]
                 attached = True
                 print(f"Running on {str(len(device))} GPUs!")
+                print(f"Available gpus to set: \n {device}")
         elif "mps" in device:
             if not torch.backends.mps.is_available():
                 if not torch.backends.mps.is_built():
