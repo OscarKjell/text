@@ -139,7 +139,7 @@ def get_device(device):
                     attached = True
                 except:
                     attached = False
-                    print(f"Device number {str(device_num)} does not exist! Use 'gpus' to ")
+                    print(f"Device number {str(device_num)} does not exist! Use 'device = gpus' to see available gpus.")
             elif 'gpus' in device:
                 device = 'cuda'
                 device_num = list(range(torch.cuda.device_count()))
