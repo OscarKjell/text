@@ -137,6 +137,7 @@ def get_device(device):
                 device_num = list(range(torch.cuda.device_count()))
                 device = [device + ':' + str(num1) for num1 in device_num]
                 attached = True
+                print(f"Running on {str(len(device))} GPUs!")
         elif "mps" in device:
             if not torch.backends.mps.is_available():
                 if not torch.backends.mps.is_built():
