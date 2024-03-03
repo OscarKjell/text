@@ -7,9 +7,6 @@ library(dplyr)
 context("textTrainN")
 
 
-
-
-
 test_that("training with only x_append (without word embeddings)", {
   skip_on_cran()
 

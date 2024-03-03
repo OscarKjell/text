@@ -19,6 +19,11 @@
 #' However, if it's not defined in your model_description, you can assign a value here (default = "concatenate").
 #' @param aggregation_from_tokens_to_texts (character) This information will be automatically
 #' extracted from your model, so this argument is typically not used.
+#' @param save_embeddings (boolean) If set to TRUE, embeddings will be saved with a unique identifier, and 
+#' will be automatically opened next time textPredict is run with the same text. (default = TRUE)
+#' @param save_dir (character) Directory to save embeddings. (default = "wd" (i.e, work-directory))
+#' @param save_name (character) Name of the saved embeddings (will be combined with a unique identifier). 
+#' (default = "textPredict"). 
 #' @noRd
 textReturnModelAndEmbedding <- function(
     texts = NULL,
@@ -27,10 +32,12 @@ textReturnModelAndEmbedding <- function(
     save_model = TRUE,
     type = "class",
     device = "cpu",
-    story_id = NULL) {
+    story_id = NULL, 
+    save_embeddings = TRUE, 
+    save_dir = "wd", 
+    save_name = "textPredict") {
   # extend the timeout time for larger models.
   options(timeout = 5 * 60)
-  
   
   # diaplay message to user
   cat(colourise("Loading model...", fg = "red"))
@@ -92,9 +99,34 @@ textReturnModelAndEmbedding <- function(
     stop('Both arguments: "texts" and "word_embeddings" cannot be defined simultaneously. Choose one or the other.')
   }
   
-  ###### Create embeddings based on information stored in the pre-trained model ######
+  ###### Create or find embeddings based on information stored in the pre-trained model ######
+
+  # prepare to check if embeddings already exists
+  hash <- simple_hash(as.vector(texts))
+  file_name <- paste0(save_name,"_", hash,".RDS")
+  save_directory <- ifelse(save_dir == "wd", "", save_dir)
   
-  if (!is.null(texts) && is.null(word_embeddings)) {
+  # create a full path, and check if save_dir is "" or not.
+  if (nzchar(save_directory)) {
+    full_path <- file.path(save_directory, file_name)
+  } else {
+    #In this case, save_dir is ""
+    full_path <- file_name
+  }
+
+  if (!is.null(texts) && 
+      is.null(word_embeddings) && 
+      isTRUE(file.exists(full_path))){
+      
+      # get embeddings
+      embeddings <- readRDS(full_path)
+      
+      cat(colourise(paste0("Embeddings have been loaded from: ", full_path), fg = "green"))
+      cat("\n")
+      
+  } else if(!is.null(texts) && 
+            is.null(word_embeddings) && 
+            isFALSE(file.exists(full_path))){
     # Save default values for later use
     default_max_token_to_sentence <- 4
     default_aggregation_from_layers_to_tokens <- "concatenate"
@@ -142,9 +174,20 @@ textReturnModelAndEmbedding <- function(
       device = device,
       keep_token_embeddings = FALSE
     )
-  }
-  # If text isn't provided, but premade word-embeddings, then load them instead.
-  else if (!is.null(word_embeddings) && is.null(texts)) {
+    
+    # save embeddings if save_embeddings is set to true
+    if (isTRUE(save_embeddings) && save_dir == "wd"){
+      saveRDS(embeddings, file_name) 
+      cat(colourise(paste0("Embeddings have been saved: ", full_path), fg = "green"))
+      cat("\n")
+    } else if (isTRUE(save_embeddings) && save_dir != "wd"){
+      saveRDS(embeddings, full_path)
+      cat(colourise(paste0("Embeddings have been saved: ", full_path), fg = "green"))
+      cat("\n")
+    }
+    
+  } else if (!is.null(word_embeddings) && is.null(texts)) {
+    # If text isn't provided, but premade word-embeddings, then load them instead.
     embeddings <- word_embeddings
   }
   
@@ -220,6 +263,12 @@ textReturnModelAndEmbedding <- function(
 #' word-embedding per story-id will be calculated. (default = NULL)
 #' @param dataset (R-object, tibble) Insert your data here to integrate predictions to dataset,
 #'  (default = NULL).
+#' @param save_embeddings (boolean) If set to TRUE, embeddings will be saved with a unique identifier, and 
+#' will be automatically opened next time textPredict is run with the same text. (default = TRUE)
+#' @param save_dir (character) Directory to save embeddings. (default = "wd" (i.e, work-directory))
+#' @param save_name (character) Name of the saved embeddings (will be combined with a unique identifier). 
+#' (default = ""). Obs: If no save_name is provided, and model_info is a character, then save_name will be set
+#' to model_info. 
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predictions from word-embedding or text input.
 #' @examples
@@ -298,6 +347,9 @@ textPredict <- function(model_info = NULL,
                         show_texts = FALSE,
                         device = "cpu",
                         participant_id = NULL,
+                        save_embeddings = TRUE, 
+                        save_dir = "wd", 
+                        save_name = "", 
                         story_id = NULL,
                         dataset = NULL,
                         ...) {
@@ -314,8 +366,10 @@ textPredict <- function(model_info = NULL,
                                    participant_id,
                                    show_texts = show_texts,
                                    type = type,
-                                   texts = texts)
+                                   texts = texts
+                                  )
   
+  original_model_info <- model_info
   model_info <- get_model_info$model_info
   show_texts <- get_model_info$show_texts
   show_prob <- get_model_info$show_prob
@@ -328,23 +382,26 @@ textPredict <- function(model_info = NULL,
   #### Automatically extract embeddings that are compatible with the model ####
   if (!is.null(texts)) {
     # Retrieve embeddings that are compatible with the model.
-    emb_and_mod <- textReturnModelAndEmbedding(
+      emb_and_mod <- textReturnModelAndEmbedding(
       texts = texts,
       word_embeddings = word_embeddings,
       model_info = model_info,
       save_model = save_model,
       type = type,
       device = device,
-      story_id = story_id
+      story_id = story_id,
+      save_embeddings = save_embeddings, 
+      save_dir = save_dir, 
+      save_name = save_name
     )
     
-    # Retrieve model from emb_and_mod object
+    # retrieve model from emb_and_mod object
     loaded_model <- emb_and_mod$loaded_model
     
-    # Retrieve embeddings from emb_and_mod object
+    # retrieve embeddings from emb_and_mod object
     word_embeddings <- emb_and_mod$embeddings$texts
     
-    # Retrieve classes in case of logistic regression
+    # retrieve classes in case of logistic regression
     classes <- emb_and_mod$classes
   } else {
     loaded_model <- model_info
