@@ -275,6 +275,21 @@ extract_comment <- function(comment,
 }
 
 
+#' Generates a simple hash for text imput, which is used in textPredict
+#' @param text (character) text.
+#' @return hash.
+#' @noRd
+simple_hash <- function(texts) {
+  # combine all elements of texts into a single character
+  combined_text <- paste0(texts, collapse = "")
+  
+  # convert text to ASCII 
+  ascii_vals <- as.integer(charToRaw(combined_text))
+  
+  # create a hash like value
+  hash_val <- sum(ascii_vals * seq_along(ascii_vals)) %% 100000 
+  return(hash_val)
+}
 
 # wanted_file <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
 #' Name to Path
