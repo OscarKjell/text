@@ -17,6 +17,9 @@ textPredict(
   show_texts = FALSE,
   device = "cpu",
   participant_id = NULL,
+  save_embeddings = TRUE,
+  save_dir = "wd",
+  save_name = "",
   story_id = NULL,
   dataset = NULL,
   ...
@@ -56,6 +59,15 @@ specific device number such as 'mps:1'.}
 
 \item{participant_id}{(list) participant_id associates sentences with their writers. participant_id must be defined when
 calculating implicit motives. (default = NULL)  shown (default = FALSE).}
+
+\item{save_embeddings}{(boolean) If set to TRUE, embeddings will be saved with a unique identifier, and 
+will be automatically opened next time textPredict is run with the same text. (default = TRUE)}
+
+\item{save_dir}{(character) Directory to save embeddings. (default = "wd" (i.e, work-directory))}
+
+\item{save_name}{(character) Name of the saved embeddings (will be combined with a unique identifier). 
+(default = ""). Obs: If no save_name is provided, and model_info is a character, then save_name will be set
+to model_info.}
 
 \item{story_id}{(list) story_id associates sentences with their stories. If story_id is defined,
 then the mean of the current and previous
