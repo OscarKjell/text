@@ -210,6 +210,8 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
         #print(f"!!!!hg_token: {hg_token} !!!")
         if hg_gated:
             set_hg_gated_access(access_token=hg_token)
+        else: 
+            pass
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
         if not config_only:
             tokenizer = AutoTokenizer.from_pretrained(model)
@@ -680,7 +682,8 @@ def hgTransformerGetEmbedding(text_strings,
                 if return_tokens:
                     all_toks.append(tokens)
 
-    del_hg_gated_access()                              
+    if hg_gated:
+        del_hg_gated_access()                              
     if return_tokens:
         return all_embs, all_toks
     else:
