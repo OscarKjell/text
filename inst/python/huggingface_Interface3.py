@@ -132,6 +132,21 @@ def get_device(device):
                 device = 'cuda'
                 device_num = list(range(torch.cuda.device_count()))[0]
                 attached = True
+            elif 'gpu:' in device or 'cuda:' in device:
+                try:
+                    device_num = int(device.split(":")[-1])
+                    device = 'cuda:' + str(device_num)
+                    attached = True
+                except:
+                    attached = False
+                    print(f"Device number {str(device_num)} does not exist! Use 'device = gpus' to see available gpu numbers.")
+            elif 'gpus' in device:
+                device = 'cuda'
+                device_num = list(range(torch.cuda.device_count()))
+                device = [device + ':' + str(num1) for num1 in device_num]
+                attached = True
+                print(f"Running on {str(len(device))} GPUs!")
+                print(f"Available gpus to set: \n {device}")
         elif "mps" in device:
             if not torch.backends.mps.is_available():
                 if not torch.backends.mps.is_built():
@@ -143,13 +158,8 @@ def get_device(device):
                 device = 'mps:' + str(device_num)
                 attached = True
                 print("Using Metal Performance Shaders (MPS) backend for GPU training acceleration!")
-        else: # assign to specific gpu device number
-                try:
-                    device_num = int(device.split(":")[-1])
-                    device = 'cuda:' + str(device_num)
-                    attached = True
-                except:
-                    attached = False
+        else:
+            attached = False
         if not attached:
             print("Unable to use MPS (Mac M1+), CUDA (GPU), using CPU")
             device = "cpu"
