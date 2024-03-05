@@ -85,7 +85,7 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
   predictions <- textPredict(texts = implicit_motive_data$satisfactiontexts,
                              model_info = "power",
                              participant_id = implicit_motive_data$participant_id,
-                             dataset = implicit_motive_data)
+                             dataset_to_merge_predictions = implicit_motive_data)
   
   testthat::expect_is(predictions$sentence_predictions$texts[1], "character")
   testthat::expect_equal(predictions$person_predictions$person_prob[40], 0.06133574, tolerance = 0.0001)

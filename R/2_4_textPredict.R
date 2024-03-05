@@ -261,7 +261,7 @@ textReturnModelAndEmbedding <- function(
 #' @param story_id (list) story_id associates sentences with their stories. If story_id is defined,
 #' then the mean of the current and previous
 #' word-embedding per story-id will be calculated. (default = NULL)
-#' @param dataset (R-object, tibble) Insert your data here to integrate predictions to dataset,
+#' @param dataset_to_merge_predictions (R-object, tibble) Insert your data here to integrate predictions to your dataset,
 #'  (default = NULL).
 #' @param save_embeddings (boolean) If set to TRUE, embeddings will be saved with a unique identifier, and 
 #' will be automatically opened next time textPredict is run with the same text. (default = TRUE)
@@ -311,7 +311,7 @@ textReturnModelAndEmbedding <- function(
 #'   texts = implicit_motive_data$satisfactiontexts,
 #'   model_info = "power",
 #'   participant_id = implicit_motive_data$participant_id,
-#'   dataset = implicit_motive_data
+#'   dataset_to_merge_predictions = implicit_motive_data
 #' )
 #'
 #' # Examine results
@@ -351,7 +351,7 @@ textPredict <- function(model_info = NULL,
                         save_dir = "wd", 
                         save_name = "", 
                         story_id = NULL,
-                        dataset = NULL,
+                        dataset_to_merge_predictions = NULL,
                         ...) {
   # Stop message if user defines both word_embeddings and texts
   if (!is.null(texts) && !is.null(word_embeddings)) {
@@ -612,7 +612,7 @@ textPredict <- function(model_info = NULL,
         participant_id = participant_id,
         predicted_scores2 = predicted_scores2,
         texts = texts,
-        dataset = dataset
+        dataset = dataset_to_merge_predictions
       )
       #### End Implicit motives section #####
     } else {

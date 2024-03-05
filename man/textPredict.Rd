@@ -21,7 +21,7 @@ textPredict(
   save_dir = "wd",
   save_name = "",
   story_id = NULL,
-  dataset = NULL,
+  dataset_to_merge_predictions = NULL,
   ...
 )
 }
@@ -73,7 +73,7 @@ to model_info.}
 then the mean of the current and previous
 word-embedding per story-id will be calculated. (default = NULL)}
 
-\item{dataset}{(R-object, tibble) Insert your data here to integrate predictions to dataset,
+\item{dataset_to_merge_predictions}{(R-object, tibble) Insert your data here to integrate predictions to your dataset,
 (default = NULL).}
 
 \item{...}{Setting from stats::predict can be called.}
@@ -125,7 +125,7 @@ implicit_motives <- textPredict(
   texts = implicit_motive_data$satisfactiontexts,
   model_info = "power",
   participant_id = implicit_motive_data$participant_id,
-  dataset = implicit_motive_data
+  dataset_to_merge_predictions = implicit_motive_data
 )
 
 # Examine results
