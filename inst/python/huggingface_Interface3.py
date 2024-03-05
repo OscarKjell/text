@@ -227,14 +227,17 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
             tokenizer = AutoTokenizer.from_pretrained(model)
             transformer_model = AutoModel.from_pretrained(model, config=config)
             
-    if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
-        tokenizer.pad_token_id = tokenizer.eos_token_id
     if config_only:
         return config
     elif tokenizer_only:
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
+            tokenizer.pad_token_id = tokenizer.eos_token_id
         return tokenizer
     else:
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
+            tokenizer.pad_token_id = tokenizer.eos_token_id        
         return config, tokenizer, transformer_model
 
 def get_number_of_hidden_layers(model, logging_level = "error", hg_gated=False, hg_token=""):
