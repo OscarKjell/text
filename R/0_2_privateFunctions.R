@@ -753,43 +753,58 @@ implicit_motives_pred <- function(sqrt_implicit_motives) {
   return(implicit_motives_pred)
 }
 
-#' Separates text sentence-wise and adds additional sentences to new rows with correpsonding participant_id:s.
-#' @param df Dataframe with two columns, user_id and texts.
+#' Separates text sentence-wise and adds additional sentences to new rows with correpsonding participant_id:s and story_id:s if provided.
+#' @param df Dataframe with three columns, user_id, story_id and texts.
 #' @return Returns a tibble with user_id:s and texts, where each user_id is matched to an individual sentence.
 #' @noRd
 update_user_and_texts <- function(df) {
   updated_user_id <- integer()
   updated_texts <- character()
-
+  updated_story_id <- integer()
+  include_story_id <- "story_id" %in% names(df)
+  
+  # check if story_id column exists
+  has_story_id <- "story_id" %in% names(df)
+  
   for (i in seq_along(df$participant_id)) {
-    # split sentences on ".", "!", or "?"
     sentences <- stringi::stri_split(df$texts[i], regex = "[.!?]", simplify = TRUE)
-
-    # remove any empty sentences
     sentences <- sentences[sentences != ""]
-
-    # if more than one sentence, repeat participant_id and create a vector of updated texts
+    
     current_user_id <- rep(df$participant_id[i], length(sentences))
     current_texts <- sentences
-
-    # check if the "next" sentence should be split based on its length (if it exceeds two words)
+    
+    if (has_story_id) {
+      current_story_id <- rep(df$story_id[i], length(sentences))
+    }
+    
     split_indices <- sapply(current_texts, function(sentence) {
       length(unlist(stringi::stri_split(sentence, regex = "\\s+"))) > 2
     })
-
-    # append the updated participant_id and texts to the results
+    
     updated_user_id <- c(updated_user_id, rep(df$participant_id[i], sum(split_indices)))
     updated_texts <- c(updated_texts, current_texts[split_indices])
+    
+    if (has_story_id) {
+      updated_story_id <- c(updated_story_id, rep(df$story_id[i], sum(split_indices)))
+    }
   }
-
-  updated_df <- data.frame(participant_id = updated_user_id, texts = updated_texts)
-
-  # since empty rows were deleted, any extra must now be added again.
-  missing_rows <- setdiff(df$participant_id, updated_df$participant_id)
-  if (length(missing_rows) > 0) {
-    updated_df <- rbind(updated_df, data.frame(participant_id = missing_rows, texts = ""))
+  if (include_story_id) {
+    updated_df <- data.frame(participant_id = updated_user_id, story_id = updated_story_id, texts = updated_texts)
+  } else {
+    updated_df <- data.frame(participant_id = updated_user_id, texts = updated_texts)
   }
-
+  
+  # adjusted handling for missing rows
+  missing_participant_rows <- setdiff(df$participant_id, updated_df$participant_id)
+  if (length(missing_participant_rows) > 0) {
+    if (include_story_id) {
+      extra_rows <- data.frame(participant_id = missing_participant_rows, story_id = rep(NA, length(missing_participant_rows)), texts = rep("", length(missing_participant_rows)))
+    } else {
+      extra_rows <- data.frame(participant_id = missing_participant_rows, texts = rep("", length(missing_participant_rows)))
+    }
+    updated_df <- rbind(updated_df, extra_rows)
+  }
+  
   return(updated_df)
 }
 
@@ -931,9 +946,11 @@ get_model_info <- function(model_info,
                            participant_id,
                            show_texts,
                            type,
-                           texts) {
+                           texts, 
+                           story_id) {
   # show_prob is by default FALSE
   show_prob <- FALSE
+  
   if (is.character(model_info)) {
     lower_case_model <- tolower(model_info)
     if (
@@ -959,8 +976,11 @@ get_model_info <- function(model_info,
         type <- "class"
 
         # separate multiple sentences, and add corresponding user-id
-        id_and_texts <- data.frame(participant_id = participant_id, texts = texts)
-
+        if (!is.null(story_id)){
+          id_and_texts <- data.frame(participant_id = participant_id, texts = texts, story_id = story_id)
+        } else {
+          id_and_texts <- data.frame(participant_id = participant_id, texts = texts)
+        }
         # correct for multiple sentences per row. # CORRECT
         update_user_and_texts <- update_user_and_texts(id_and_texts)
 
@@ -968,6 +988,8 @@ get_model_info <- function(model_info,
         participant_id <- update_user_and_texts$participant_id
         # update texts
         texts <- update_user_and_texts$texts
+        # update story_id
+        story_id <- update_user_and_texts$story_id
       }
     }
   }
@@ -978,5 +1000,5 @@ get_model_info <- function(model_info,
     show_prob <- TRUE
   }
 
-  return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type, participant_id = participant_id, texts = texts))
+  return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type, participant_id = participant_id, texts = texts, story_id = story_id))
 }
