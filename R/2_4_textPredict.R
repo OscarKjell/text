@@ -192,14 +192,14 @@ textReturnModelAndEmbedding <- function(
   }
   
   ####### Special treatment for implicit motives ######
-  
+
   # Calculate the average of the current and the next word_embedding per story_id
   if (!is.null(story_id)) {
     T1_story_id <- Sys.time()
     
     embeddings$texts$texts$story_id <- as.numeric(as.factor(story_id))
     
-    # Define a custom function to calculate the running average
+    # calculate the running average
     running_avg <- function(x) {
       c(x[1], (x[-1] + x[-length(x)]) / 2)
     }
@@ -366,8 +366,8 @@ textPredict <- function(model_info = NULL,
                                    participant_id,
                                    show_texts = show_texts,
                                    type = type,
-                                   texts = texts
-                                  )
+                                   texts = texts, 
+                                   story_id = story_id)
   
   original_model_info <- model_info
   model_info <- get_model_info$model_info
@@ -376,6 +376,7 @@ textPredict <- function(model_info = NULL,
   type <- get_model_info$type
   texts <- get_model_info$texts
   participant_id <- get_model_info$participant_id
+  story_id = get_model_info$story_id
   
   #### End Special treatment for implicit motives ####
   
