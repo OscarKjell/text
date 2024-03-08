@@ -100,10 +100,16 @@ textReturnModelAndEmbedding <- function(
   }
   
   ###### Create or find embeddings based on information stored in the pre-trained model ######
-
+  
+  # extract the model descriptors
+  line_number <- grep("impute_missing_setting", loaded_model$model_description)
+  new_line_number <- line_number + 1
+  input_string <- loaded_model$model_description[new_line_number]
+  
+  hash1 <- simple_hash(as.vector(input_string))
   # prepare to check if embeddings already exists
-  hash <- simple_hash(as.vector(texts))
-  file_name <- paste0(save_name,"_", hash,".RDS")
+  hash2 <- simple_hash(as.vector(texts))
+  file_name <- paste0(save_name,"_", hash1, hash2, ".RDS")
   save_directory <- ifelse(save_dir == "wd", "", save_dir)
   
   # create a full path, and check if save_dir is "" or not.
@@ -127,6 +133,7 @@ textReturnModelAndEmbedding <- function(
   } else if(!is.null(texts) && 
             is.null(word_embeddings) && 
             isFALSE(file.exists(full_path))){
+    
     # Save default values for later use
     default_max_token_to_sentence <- 4
     default_aggregation_from_layers_to_tokens <- "concatenate"
