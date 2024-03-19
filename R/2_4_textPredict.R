@@ -242,6 +242,7 @@ textReturnModelAndEmbedding <- function(
   return(emb_and_model)
 }
 
+
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
 #' @param model_info (character or r-object) model_info has three options. 1: R model object
@@ -374,7 +375,7 @@ textPredict <- function(model_info = NULL,
   model_name <- gsub("^\"|\"$", "", deparse(substitute(model_info)))
   lower_case_model <- as.character(tolower(model_name))
   
-  # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding automatically
+  # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding 
   get_model_info <- get_model_info(model_info = model_info,
                                    participant_id = participant_id,
                                    show_texts = show_texts,
