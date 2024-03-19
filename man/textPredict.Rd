@@ -19,9 +19,10 @@ textPredict(
   participant_id = NULL,
   save_embeddings = TRUE,
   save_dir = "wd",
-  save_name = "",
+  save_name = "textPredict",
   story_id = NULL,
   dataset_to_merge_predictions = NULL,
+  previous_sentence = FALSE,
   ...
 )
 }
@@ -57,8 +58,8 @@ If the model already exists in your work-directory, it will automatically be loa
 \item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 specific device number such as 'mps:1'.}
 
-\item{participant_id}{(list) participant_id associates sentences with their writers. participant_id must be defined when
-calculating implicit motives. (default = NULL)  shown (default = FALSE).}
+\item{participant_id}{(list) Vector of participant-ids. Specify this for getting person level scores 
+(i.e., summed sentence probabilities to the person level corrected for word count). (default = NULL)}
 
 \item{save_embeddings}{(boolean) If set to TRUE, embeddings will be saved with a unique identifier, and 
 will be automatically opened next time textPredict is run with the same text. (default = TRUE)}
@@ -69,12 +70,15 @@ will be automatically opened next time textPredict is run with the same text. (d
 (default = ""). Obs: If no save_name is provided, and model_info is a character, then save_name will be set
 to model_info.}
 
-\item{story_id}{(list) story_id associates sentences with their stories. If story_id is defined,
-then the mean of the current and previous
-word-embedding per story-id will be calculated. (default = NULL)}
+\item{story_id}{(vector) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence 
+probabilities corrected for word count). When there is both story_id and participant_id indicated, the function 
+returns a list including both story level and person level prediction corrected for word count. (default = NULL)}
 
 \item{dataset_to_merge_predictions}{(R-object, tibble) Insert your data here to integrate predictions to your dataset,
 (default = NULL).}
+
+\item{previous_sentence}{If set to TRUE, word-embeddings will be averaged over the current and previous 
+sentence per story-id. For this, both participant-id and story-id must be specified.}
 
 \item{...}{Setting from stats::predict can be called.}
 }
@@ -119,8 +123,7 @@ prediction4 <- textPredict(
 implicit_motive_data <- dplyr::mutate(.data = Language_based_assessment_data_8,
 participant_id = dplyr::row_number())
 
-# Code implicit motives. (In this example, person_class will be NaN due to the absence of
-# sentences classified as 'power')
+# Code implicit motives.
 implicit_motives <- textPredict(
   texts = implicit_motive_data$satisfactiontexts,
   model_info = "power",
