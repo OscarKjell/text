@@ -56,10 +56,10 @@ test_that("Task Fine-tuning tests", {
   test_data <- dplyr::bind_rows(a, s, d, f, a, a, a, a, a)
   # help(textFineTuneDomain)
   domain_test <- textFineTuneDomain(
-    text_data = Language_based_assessment_data_8[1][1:10,],
+    text_data = test_data, # Language_based_assessment_data_8[1][1:10,],
     output_dir = "./runs_domain",
-    model_name_or_path = "bert-base",
-    num_train_epochs = 1
+    model_name_or_path = "bert-base-uncased",
+    num_train_epochs = 3
     )
 
   testthat::expect_equal(domain_test,
