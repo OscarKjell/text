@@ -86,7 +86,8 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
                              model_info = "power",
                              participant_id = implicit_motive_data$participant_id,
                              dataset_to_merge_predictions = implicit_motive_data, 
-                             story_id = implicit_motive_data$story_id)
+                             story_id = implicit_motive_data$story_id, 
+                             previous_sentence = TRUE)
   
   testthat::expect_is(predictions$sentence_predictions$texts[1], "character")
   testthat::expect_equal(predictions$person_predictions$person_prob[40], 0.1319319, tolerance = 0.0001)
@@ -94,6 +95,7 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
   # Observe; when converting to numeric, zeros are replaced by ones, and ones are replaced by twos.  
   testthat::expect_equal(as.numeric(predictions$sentence_predictions$power_class[24]), 1, tolerance = 0.0001)
   testthat::expect_equal(sum(as.numeric(predictions$sentence_predictions$power_class)), 190, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$person_predictions$participant_id[10])), 10, tolerance = 0.0001)
   
   testthat::expect_equal(predictions$dataset$person_prob_2[40], 0.1319319, tolerance = 0.0001)
 })

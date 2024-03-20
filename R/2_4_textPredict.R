@@ -24,6 +24,8 @@
 #' @param save_dir (character) Directory to save embeddings. (default = "wd" (i.e, work-directory))
 #' @param save_name (character) Name of the saved embeddings (will be combined with a unique identifier). 
 #' (default = "textPredict"). 
+#' @param previous_sentence If set to TRUE, word-embeddings will be averaged over the current and previous 
+#' sentence per story-id. For this, both participant-id and story-id must be specified.
 #' @noRd
 textReturnModelAndEmbedding <- function(
     texts = NULL,
@@ -35,7 +37,8 @@ textReturnModelAndEmbedding <- function(
     story_id = NULL, 
     save_embeddings = TRUE, 
     save_dir = "wd", 
-    save_name = "textPredict") {
+    save_name = "textPredict", 
+    previous_sentence = FALSE) {
   # extend the timeout time for larger models.
   options(timeout = 5 * 60)
   
@@ -201,7 +204,7 @@ textReturnModelAndEmbedding <- function(
   ####### Special treatment for implicit motives ######
 
   # Calculate the average of the current and the next word_embedding per story_id
-  if (!is.null(story_id)) {
+  if (isTRUE(previous_sentence)) {
     T1_story_id <- Sys.time()
     
     embeddings$texts$texts$story_id <- as.numeric(as.factor(story_id))
@@ -263,11 +266,11 @@ textReturnModelAndEmbedding <- function(
 #' @param show_texts (boolean) Show texts together with predictions (default = FALSE).
 #' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 #' specific device number such as 'mps:1'.
-#' @param participant_id (list) participant_id associates sentences with their writers. participant_id must be defined when
-#' calculating implicit motives. (default = NULL)  shown (default = FALSE).
-#' @param story_id (list) story_id associates sentences with their stories. If story_id is defined,
-#' then the mean of the current and previous
-#' word-embedding per story-id will be calculated. (default = NULL)
+#' @param participant_id (list) Vector of participant-ids. Specify this for getting person level scores 
+#' (i.e., summed sentence probabilities to the person level corrected for word count). (default = NULL)
+#' @param story_id (vector) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence 
+#' probabilities corrected for word count). When there is both story_id and participant_id indicated, the function 
+#' returns a list including both story level and person level prediction corrected for word count. (default = NULL)
 #' @param dataset_to_merge_predictions (R-object, tibble) Insert your data here to integrate predictions to your dataset,
 #'  (default = NULL).
 #' @param save_embeddings (boolean) If set to TRUE, embeddings will be saved with a unique identifier, and 
@@ -276,6 +279,8 @@ textReturnModelAndEmbedding <- function(
 #' @param save_name (character) Name of the saved embeddings (will be combined with a unique identifier). 
 #' (default = ""). Obs: If no save_name is provided, and model_info is a character, then save_name will be set
 #' to model_info. 
+#' @param previous_sentence If set to TRUE, word-embeddings will be averaged over the current and previous 
+#' sentence per story-id. For this, both participant-id and story-id must be specified.
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predictions from word-embedding or text input.
 #' @examples
@@ -312,8 +317,7 @@ textReturnModelAndEmbedding <- function(
 #' implicit_motive_data <- dplyr::mutate(.data = Language_based_assessment_data_8,
 #' participant_id = dplyr::row_number())
 #'
-#' # Code implicit motives. (In this example, person_class will be NaN due to the absence of
-#' # sentences classified as 'power')
+#' # Code implicit motives.
 #' implicit_motives <- textPredict(
 #'   texts = implicit_motive_data$satisfactiontexts,
 #'   model_info = "power",
@@ -356,9 +360,10 @@ textPredict <- function(model_info = NULL,
                         participant_id = NULL,
                         save_embeddings = TRUE, 
                         save_dir = "wd", 
-                        save_name = "", 
+                        save_name = "textPredict", 
                         story_id = NULL,
                         dataset_to_merge_predictions = NULL,
+                        previous_sentence = FALSE,
                         ...) {
   # Stop message if user defines both word_embeddings and texts
   if (!is.null(texts) && !is.null(word_embeddings)) {
@@ -367,16 +372,18 @@ textPredict <- function(model_info = NULL,
   }
   
   #### Special treatment for implicit motives - see private functions ####
+  model_name <- gsub("^\"|\"$", "", deparse(substitute(model_info)))
+  lower_case_model <- as.character(tolower(model_name))
   
-  # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding automatically
-  get_model_info <- get_model_info(model_info,
-                                   participant_id,
+  # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding 
+  get_model_info <- get_model_info(model_info = model_info,
+                                   participant_id = participant_id,
                                    show_texts = show_texts,
                                    type = type,
                                    texts = texts, 
-                                   story_id = story_id)
+                                   story_id = story_id, 
+                                   lower_case_model = lower_case_model)
   
-  original_model_info <- model_info
   model_info <- get_model_info$model_info
   show_texts <- get_model_info$show_texts
   show_prob <- get_model_info$show_prob
@@ -400,7 +407,8 @@ textPredict <- function(model_info = NULL,
       story_id = story_id,
       save_embeddings = save_embeddings, 
       save_dir = save_dir, 
-      save_name = save_name
+      save_name = save_name, 
+      previous_sentence = previous_sentence
     )
     
     # retrieve model from emb_and_mod object
@@ -502,12 +510,12 @@ textPredict <- function(model_info = NULL,
   # If the user has defined a threshold, then implement the threshold algorithm.
   if (!is.null(threshold)) {
     # Retrieves the two classes
-    class1 <- classes[1]
-    class2 <- classes[2]
+    #class1 <- classes[1]
+    #class2 <- classes[2]
     
     # Create column names
-    class1_col_name <- paste0(class1, "_prob")
-    class2_col_name <- paste0(class2, "_prob")
+    #class1_col_name <- paste0(class1, "_prob")
+    #class2_col_name <- paste0(class2, "_prob")
     
     # Predict
     predicted_scores2 <- new_data1 %>%
@@ -518,17 +526,18 @@ textPredict <- function(model_info = NULL,
       dplyr::select(-id_nr)
     
     # Rename columns
-    predicted_scores2 <- predicted_scores2 %>%
-      dplyr::rename(
-        !!class1_col_name := 1,
-        !!class2_col_name := 2
-      )
+    #predicted_scores2 <- predicted_scores2 %>%
+    #  dplyr::rename(
+    #     !!class1_col_name := 1,
+    #    !!class2_col_name := 2
+    # )
     
     # If the user desires to only view class, then remove the probabilty columns.
     if (type == "class" && show_prob == FALSE) {
       predicted_scores2 <- predicted_scores2 %>%
-        dplyr::mutate(predicted_class = ifelse(!!rlang::sym(class1_col_name) >= threshold, class1, class2)) %>%
+        dplyr::mutate(predicted_class = ifelse(.[[1]] >= threshold, 1, 0)) %>%
         dplyr::select(predicted_class)
+      
       
       ############## CHANGE!!!!! #############
       we_names <- paste(word_embeddings_names, collapse = "_", sep = "")
@@ -543,8 +552,9 @@ textPredict <- function(model_info = NULL,
       # If the user desires to view the classes and the probability columns.
     } else if (type == "class" && show_prob == TRUE) {
       predicted_scores2 <- predicted_scores2 %>%
-        dplyr::mutate(predicted_class = ifelse(!!rlang::sym(class1_col_name) >= threshold, class1, class2)) %>%
+        dplyr::mutate(predicted_class = ifelse(.[[1]] >= threshold, 1, 0)) %>%
         dplyr::select(predicted_class, dplyr::everything())
+      
       
     } else if (is.null(type)) {
       
@@ -604,31 +614,29 @@ textPredict <- function(model_info = NULL,
   #### Implicit motives section, see private_functions #####
   
   # Check for implicit motives configuration
-  if (is.character(model_info)) {
-    lower_case_model <- tolower(model_info)
+  
+  if (
+    grepl("power", lower_case_model) ||
+    grepl("achievement", lower_case_model) ||
+    grepl("affiliation", lower_case_model) ||
+    (grepl("implicit_motives", lower_case_model) && 
+     (!is.null(participant_id) || !is.null(story_id)))
+  ){
     
-    if (
-      grepl("power", lower_case_model) ||
-      grepl("achievement", lower_case_model) ||
-      grepl("affiliation", lower_case_model) && !is.null(participant_id)
-    ) {
-      # Wraper function that prepares data for
-      # automatic implicit motive coding and returns
-      # a list with predictions, class residuals and probability residuals.
-      implicit_motives_results(
-        model_reference = model_info,
-        participant_id = participant_id,
-        predicted_scores2 = predicted_scores2,
-        texts = texts,
-        dataset = dataset_to_merge_predictions
-      )
-      #### End Implicit motives section #####
-    } else {
-      # display message to user
-      cat(colourise("Predictions are ready!", fg = "green"))
-      cat("\n")
-      return(predicted_scores2)
-    }
+    # Wrapper function that prepares data for
+    # automatic implicit motive coding and returns
+    # a list with predictions, class residuals and probability residuals.
+ 
+    implicit_motives_results(
+      model_reference = model_info,
+      participant_id = participant_id,
+      story_id = story_id,
+      predicted_scores2 = predicted_scores2,
+      texts = texts,
+      dataset = dataset_to_merge_predictions,
+      lower_case_model = lower_case_model
+    )
+    #### End Implicit motives section #####
   } else {
     # display message to user
     cat(colourise("Predictions are ready!", fg = "green"))

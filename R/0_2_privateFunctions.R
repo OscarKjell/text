@@ -274,7 +274,6 @@ extract_comment <- function(comment,
   return(output)
 }
 
-
 #' Generates a simple hash for text imput, which is used in textPredict
 #' @param text (character) text.
 #' @return hash.
@@ -686,8 +685,7 @@ implicit_motives <- function(texts, participant_id, predicted_scores2) {
   summations <- data.frame(
     OUTCOME_USER_SUM_CLASS = numeric(num_persons),
     OUTCOME_USER_SUM_PROB = numeric(num_persons),
-    wc_person_per_1000 = numeric(num_persons),
-    participant_id = numeric(num_persons)
+    wc_person_per_1000 = numeric(num_persons)
   )
 
   # Summarize classes and probabilities (for the first row)
@@ -719,17 +717,18 @@ implicit_motives <- function(texts, participant_id, predicted_scores2) {
     summations[user_ids, "wc_person_per_1000"] <- sum(lengths(strsplit(texts[start_idx:end_idx], " ")), na.rm = TRUE) / 1000
   }
 
-  summations["user_ids"] <- user_id_column
-
+  summations["participant_id"] <- user_id_column
 
   return(summations)
 }
 
 #' implicit_motives_pred returns residuals from robust linear regression.
 #' @param sqrt_implicit_motives Tibble returned from function implicit_motives.
+#' @param participant_id list of participant id:s.
+#' @param story_id list of story id:s.
 #' @return implicit_motives_pred returns residuals from robust linear regression.
 #' @noRd
-implicit_motives_pred <- function(sqrt_implicit_motives) {
+implicit_motives_pred <- function(sqrt_implicit_motives, participant_id, story_id) {
   # square root transform
   sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
 
@@ -742,13 +741,19 @@ implicit_motives_pred <- function(sqrt_implicit_motives) {
   lm.OUTCOME_USER_SUM_CLASS <- stats::lm(OUTCOME_USER_SUM_CLASS ~ wc_person_per_1000, data = sqrt_implicit_motives)
   OUTCOME_USER_SUM_CLASS.residual1 <- resid(lm.OUTCOME_USER_SUM_CLASS)
   OUTCOME_USER_SUM_CLASS.residual1.z <- scale(OUTCOME_USER_SUM_CLASS.residual1)
-
+  
   # insert residuals into a tibble
-  implicit_motives_pred <- tibble::tibble(
-    participant_id = sqrt_implicit_motives$participant_id,
-    person_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
-    person_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)
-  )
+  if (identical(story_id, participant_id)){
+    implicit_motives_pred <- tibble::tibble(
+      story_id = sqrt_implicit_motives$participant_id,
+      story_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
+      story_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z))
+  } else {
+    implicit_motives_pred <- tibble::tibble(
+      participant_id = sqrt_implicit_motives$participant_id,
+      person_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
+      person_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z))
+  }
 
   return(implicit_motives_pred)
 }
@@ -867,19 +872,22 @@ bind_data <- function(original_data, prediction_list) {
 #' Wrapper function that prepares the data and returns a list with predictions, class residuals and probability residuals.
 #' @param model_reference Reference to implicit motive model, either github URL or file-path.
 #' @param participant_id A column with user ids.
+#' @param story_id list of story-ids. 
 #' @param predicted_scores2 Predictions from textPredict() function.
 #' @param texts Texts to predict from textPredict() function.
+#' @param dataset your dataset. 
+#' @param lower_case_model character name of your model. 
 #' @return Returns a tibble with values relevant for calculating implicit motives
 #' @noRd
 implicit_motives_results <- function(model_reference,
                                      participant_id,
+                                     story_id,
                                      predicted_scores2,
                                      texts,
-                                     dataset) {
+                                     dataset, 
+                                     lower_case_model) {
 
   #### Assign correct column name ####
-  lower_case_model <- tolower(model_reference)
-
   if (grepl("power", lower_case_model)) {
     column_name <- "power"
   } else if (grepl("affiliation", lower_case_model)) {
@@ -898,9 +906,11 @@ implicit_motives_results <- function(model_reference,
 
   # Retrieve Data
   implicit_motives <- implicit_motives(texts, participant_id, predicted_scores2)
-
+  
   # Predict
-  predicted <- implicit_motives_pred(implicit_motives)
+  predicted <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives, 
+                                     participant_id = participant_id, 
+                                     story_id = story_id)
 
   # Full column name
   class_col_name <- paste0(column_name, "_class")
@@ -913,19 +923,31 @@ implicit_motives_results <- function(model_reference,
 
   # Two different summary lists depending on if including the dataset with integrated predictions or not
   if (is.null(dataset)) {
-    # Summarize all predictions
-    summary_list <- list(sentence_predictions = predicted_scores2,
-                         person_predictions = predicted)
+    if (identical(story_id, participant_id)){
+      summary_list <- list(sentence_predictions = predicted_scores2,
+                           story_predictions = predicted)
+    } else {
+      summary_list <- list(sentence_predictions = predicted_scores2,
+                           person_predictions = predicted)
+    }
+    
   } else {
     # predicted_scores2 = sentence predictions, predicted = person predictions
     to_insert <- list(predicted_scores2, predicted)
     # integrate predictions into dataset
     integrated_dataset <- bind_data(dataset, to_insert)
 
-    # Summarize all predictions
-    summary_list <- list(sentence_predictions = predicted_scores2,
-                         person_predictions = predicted,
-                         dataset = integrated_dataset)
+    if (identical(story_id, participant_id)){
+      # story predictions
+      summary_list <- list(sentence_predictions = predicted_scores2,
+                           story_predictions = predicted,
+                           dataset = integrated_dataset)
+    } else {
+      # Summarize all predictions
+      summary_list <- list(sentence_predictions = predicted_scores2,
+                           person_predictions = predicted,
+                           dataset = integrated_dataset)
+    }
   }
 
   # Display message to user
@@ -936,10 +958,14 @@ implicit_motives_results <- function(model_reference,
 }
 
 #' Function that is called in the beginning of textPredict to create the conditions for implicit motives to work.
-#' @param model_infomodel_info (character or r-object) model_info has three options. 1: R model object (e.g, saved output from textTrain). 2:link to github-model
+#' @param model_info (character or r-object) model_info has three options. 1: R model object (e.g, saved output from textTrain). 2:link to github-model
 #' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"). 3: Path to a model stored locally (e.g, "path/to/your/model").
 #' @param participant_id A column with user ids.
 #' @param show_texts Show texts, TRUE / FALSE
+#' @param type list of story-ids. 
+#' @param texts Texts to predict from textPredict() function.
+#' @param story_id your dataset. 
+#' @param lower_case_model character name of your model. 
 #' @return Returns a list of conditions for implicit motive coding to work
 #' @noRd
 get_model_info <- function(model_info,
@@ -947,50 +973,55 @@ get_model_info <- function(model_info,
                            show_texts,
                            type,
                            texts, 
-                           story_id) {
+                           story_id, 
+                           lower_case_model
+                           ) {
   # show_prob is by default FALSE
   show_prob <- FALSE
   
-  if (is.character(model_info)) {
-    lower_case_model <- tolower(model_info)
-    if (
-      grepl("power", lower_case_model) ||
-        grepl("achievement", lower_case_model) ||
-        grepl("affiliation", lower_case_model) && !is.null(participant_id)
-    ) {
-      type <- "class" # type must be class for these conditions
-
-      # switch to the correct model URL
-      if (lower_case_model == "power") {
-        model_info <- "https://github.com/OscarKjell/text_models/raw/main/implicit_motive_models/schone_training_rob_la_l23_to_power_10k.rds"
-      } else if (lower_case_model == "achievement") {
-        model_info <- "https://github.com/OscarKjell/text_models/raw/main/implicit_motive_models/schone_training_rob_la_l23_to_achievement_10k.rds"
-      } else if (lower_case_model == "affiliation") {
-        model_info <- "https://github.com/OscarKjell/text_models/raw/main/implicit_motive_models/schone_training_rob_la_l23_to_affiliation_10k.rds"
+  if (
+    grepl("power", lower_case_model) ||
+    grepl("achievement", lower_case_model) ||
+    grepl("affiliation", lower_case_model) ||
+    (grepl("implicit_motives", lower_case_model) && 
+     (!is.null(participant_id) || !is.null(story_id)))
+  ) {
+    type <- "class" # type must be class for these conditions
+    # switch to the correct model URL
+    if (lower_case_model == "power") {
+      model_info <- "https://github.com/OscarKjell/text_models/raw/main/implicit_motive_models/schone_training_rob_la_l23_to_power_10k.rds"
+    } else if (lower_case_model == "achievement") {
+      model_info <- "https://github.com/OscarKjell/text_models/raw/main/implicit_motive_models/schone_training_rob_la_l23_to_achievement_10k.rds"
+    } else if (lower_case_model == "affiliation") {
+      model_info <- "https://github.com/OscarKjell/text_models/raw/main/implicit_motive_models/schone_training_rob_la_l23_to_affiliation_10k.rds"
+    } 
+    # specific configuration for implicit motive coding
+    if (!is.null(participant_id) || !is.null(story_id)) {
+      show_texts <- TRUE
+      show_prob <- TRUE
+      type <- "class"
+      
+      # Assign story_id to the participant_id variable (this might seem illogical, but this was a convenient
+      # solution to a new problem caught along the way.
+      if (is.null(participant_id)){
+          participant_id <- story_id 
       }
 
-      # specific configuration for implicit motive coding
-      if (!is.null(participant_id)) {
-        show_texts <- TRUE
-        show_prob <- TRUE
-        type <- "class"
-
-        # separate multiple sentences, and add corresponding user-id
-        if (!is.null(story_id)){
-          id_and_texts <- data.frame(participant_id = participant_id, texts = texts, story_id = story_id)
-        } else {
-          id_and_texts <- data.frame(participant_id = participant_id, texts = texts)
-        }
-        # correct for multiple sentences per row. # CORRECT
-        update_user_and_texts <- update_user_and_texts(id_and_texts)
-
-        # update participant_id
-        participant_id <- update_user_and_texts$participant_id
-        # update texts
-        texts <- update_user_and_texts$texts
-        # update story_id
-        story_id <- update_user_and_texts$story_id
+      # separate multiple sentences, and add corresponding user-id
+      if (!is.null(story_id)){
+        id_and_texts <- data.frame(participant_id = participant_id, texts = texts, story_id = story_id)
+      } else {
+        id_and_texts <- data.frame(participant_id = participant_id, texts = texts)
       }
+      # correct for multiple sentences per row. # CORRECT
+      update_user_and_texts <- update_user_and_texts(id_and_texts)
+
+      # update participant_id
+      participant_id <- update_user_and_texts$participant_id
+      # update texts
+      texts <- update_user_and_texts$texts
+      # update story_id
+      story_id <- update_user_and_texts$story_id
     }
   }
 
