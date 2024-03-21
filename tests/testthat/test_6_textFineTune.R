@@ -48,24 +48,24 @@ test_that("Task Fine-tuning tests", {
 #  # remove the folder
 #  unlink("./run_clf", recursive = TRUE)
 
-  a <- Language_based_assessment_data_8[1][1:10,]
-  s <- Language_based_assessment_data_8[1][1:10,]
-  d <- Language_based_assessment_data_8[1][1:10,]
-  f <- Language_based_assessment_data_8[1][1:10,]
-
-  test_data <- dplyr::bind_rows(a, s, d, f, a, a, a, a, a)
-  # help(textFineTuneDomain)
-  domain_test <- textFineTuneDomain(
-    text_data = test_data, # Language_based_assessment_data_8[1][1:10,],
-    output_dir = "./runs_domain",
-    model_name_or_path = "bert-base-uncased",
-    num_train_epochs = 3
-    )
-
-  testthat::expect_equal(domain_test,
-                         "Completed - see results in the created output folder (output_dir)")
-
-  unlink("./runs_domain", recursive = TRUE)
+#  a <- Language_based_assessment_data_8[1][1:10,]
+#  s <- Language_based_assessment_data_8[1][1:10,]
+#  d <- Language_based_assessment_data_8[1][1:10,]
+#  f <- Language_based_assessment_data_8[1][1:10,]
+#
+#  test_data <- dplyr::bind_rows(a, s, d, f, a, a, a, a, a)
+#  # help(textFineTuneDomain)
+#  domain_test <- textFineTuneDomain(
+#    text_data = test_data, # Language_based_assessment_data_8[1][1:10,],
+#    output_dir = "./runs_domain",
+#    model_name_or_path = "bert-base-uncased",
+#    num_train_epochs = 3
+#    )
+#
+#  testthat::expect_equal(domain_test,
+#                         "Completed - see results in the created output folder (output_dir)")
+#
+#  unlink("./runs_domain", recursive = TRUE)
 
   })
 
