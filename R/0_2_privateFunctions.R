@@ -911,7 +911,24 @@ implicit_motives_results <- function(model_reference,
   predicted <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives, 
                                      participant_id = participant_id, 
                                      story_id = story_id)
-
+  
+  # set default to NULL
+  predicted_story <- NULL 
+  
+  # if both story_id and participant_id are defined, then also create story-level predictions. 
+  if (!is.null(story_id) && !is.null(participant_id)){
+    # The algorithm treats participant_id and story_id the same, but was origionally created to only handle
+    # participant id:s. A solution is therefore to assign the story:ids to participant_id. 
+    participant_id_placeholder <- story_id
+    
+    implicit_motives_story <- implicit_motives(texts, participant_id_placeholder, predicted_scores2)
+    
+    predicted_story <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives_story, 
+                                       participant_id = participant_id_placeholder, 
+                                       story_id = story_id)
+    
+  }
+  
   # Full column name
   class_col_name <- paste0(column_name, "_class")
 
@@ -932,8 +949,17 @@ implicit_motives_results <- function(model_reference,
     }
     
   } else {
-    # predicted_scores2 = sentence predictions, predicted = person predictions
-    to_insert <- list(predicted_scores2, predicted)
+    
+    if(!identical(predicted, predicted_story) && !is.null(predicted_story)){
+      # include both story- and sentence-level predictions
+      to_insert <- list(predicted_scores2, predicted, predicted_story)
+    } else if (identical(predicted, predicted_story)){
+      # include just story-level predictions
+      to_insert <- list(predicted_scores2, predicted_story)
+    } else {
+      # predicted_scores2 = sentence predictions, predicted = person predictions
+      to_insert <- list(predicted_scores2, predicted)
+    }
     # integrate predictions into dataset
     integrated_dataset <- bind_data(dataset, to_insert)
 
@@ -941,6 +967,19 @@ implicit_motives_results <- function(model_reference,
       # story predictions
       summary_list <- list(sentence_predictions = predicted_scores2,
                            story_predictions = predicted,
+                           dataset = integrated_dataset)
+    }
+      
+    if (!identical(predicted, predicted_story) && !is.null(predicted_story)){
+      # story predictions
+      summary_list <- list(sentence_predictions = predicted_scores2,
+                           person_predictions = predicted,
+                           story_predictions = predicted_story,
+                           dataset = integrated_dataset)
+    } else if (identical(predicted, predicted_story) && !is.null(predicted_story)){
+      # just story-level predictions
+      summary_list <- list(sentence_predictions = predicted_scores2,
+                           story_predictions = predicted_story,
                            dataset = integrated_dataset)
     } else {
       # Summarize all predictions
