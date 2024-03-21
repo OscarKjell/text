@@ -217,9 +217,9 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
     elif "hart" in model:
         try:
             from transformers import AutoConfig, AutoTokenizer
-            from hart.model import HaRTBasePreTrainedModel
+            from hart.model import HaRTPreTrainedModel
         except:
-            print("WARNING: You must install transformers>4.21.0 to use BloomModel")
+            print("WARNING: HART")
             print("\tPlease try another model.")
             sys.exit()
 
@@ -227,7 +227,9 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
         
         if not config_only:
             tokenizer = AutoTokenizer.from_pretrained(model)
-            transformer_model = HaRTBasePreTrainedModel.from_pretrained(model, config=config)
+            transformer_model = HaRTPreTrainedModel.from_pretrained(model, config=config)
+            print("HART 1")
+            print(transformer_model)
     else:
         #print("I am in get_model function now!!!!")
         #print(f"!!!!hg_gated: {hg_gated} !!!")
