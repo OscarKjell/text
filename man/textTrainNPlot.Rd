@@ -22,7 +22,8 @@ textTrainNPlot(
   bar_size = rep(0.8, length(tibble_list)),
   line_size = rep(0.6, length(tibble_list)),
   line_type = rep("straight", length(tibble_list)),
-  point_size = rep(3, length(tibble_list))
+  point_size = rep(3, length(tibble_list)),
+  log_transform_x = FALSE
 )
 }
 \arguments{
@@ -66,6 +67,9 @@ across different sample sizes").}
 \item{line_type}{(character, either "straight" or "smooth") Determine line-type (default = "straight").}
 
 \item{point_size}{(numeric) Determine points size (default = 1).}
+
+\item{log_transform_x}{(boolean) Determine wether to log-transform x in case of displaying number of samples
+(default = FALSE).}
 }
 \value{
 A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis.
