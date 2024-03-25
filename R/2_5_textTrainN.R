@@ -334,6 +334,8 @@ textTrainN <- function(
 #' @param line_size (numeric) Determine line-size (default = 1).
 #' @param line_type (character, either "straight" or "smooth") Determine line-type (default = "straight").
 #' @param point_size (numeric) Determine points size (default = 1).
+#' @param log_transform_x (boolean) Determine wether to log-transform x in case of displaying number of samples
+#' (default = FALSE). 
 #' @return A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis.
 #' If number och cross-validations exceed 1, then error bars measuring standard deviations will be plotted.
 #' @section Plot Example: Example of a plot created by textTrainNPlot.
@@ -379,9 +381,17 @@ textTrainNPlot <- function(
     bar_size = rep(0.8, length(tibble_list)),
     line_size = rep(0.6, length(tibble_list)),
     line_type = rep("straight", length(tibble_list)),
-    point_size = rep(3, length(tibble_list))) {
+    point_size = rep(3, length(tibble_list)), 
+    log_transform_x = FALSE) {
   
   tibble_list <- train_data
+  
+  if(isTRUE(log_transform_x)){
+    tibble_list <- lapply(tibble_list, function(df) {
+      df$log_sample_size <- round(log(df$sample_size),2)
+      return(df)
+    })
+  }
   
   # replace empty strings with the default color
   default_color <- "grey"  
@@ -396,15 +406,28 @@ textTrainNPlot <- function(
 
     TrainNPlot <- TrainNPlot +
       ggplot2::geom_point(data = tibble,
-                          ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean),
+                          mapping = ggplot2::aes(x = if (x_unit == "quantity" && isFALSE(log_transform_x)) {
+                            sample_size
+                          } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
+                            log_sample_size 
+                          } else {
+                            percent
+                          }, 
+                          y = mean),
                           color = point_color[i], size = point_size[i])
     
     # add error bars if n_cross_val > 1 for the current tibble
     if (n_cross_val[i] > 1) {
       TrainNPlot <- TrainNPlot +
         ggplot2::geom_errorbar(data = tibble,
-                               ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent,
-                                            ymin = mean - std, ymax = mean + std),
+                               mapping = ggplot2::aes(x = if (x_unit == "quantity" && isFALSE(log_transform_x)) {
+                                 sample_size
+                               } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
+                                 log_sample_size
+                               } else {
+                                 percent
+                               },
+                               ymin = mean - std, ymax = mean + std),
                                width = bar_width[i], color = bar_color[i], size = bar_size[i])
     }
     
@@ -412,12 +435,26 @@ textTrainNPlot <- function(
     if (line_type[i] == "smooth") {
       TrainNPlot <- TrainNPlot + 
         ggplot2::geom_smooth(data = tibble,
-                             ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean),
+                             mapping = ggplot2::aes(x = if (x_unit == "quantity" && isFALSE(log_transform_x)) {
+                               sample_size
+                             } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
+                               log_sample_size
+                             } else {
+                               percent
+                             }, 
+                             y = mean),
                              size = line_size[i], color = line_color[i], method = "auto")
     } else {
       TrainNPlot <- TrainNPlot + 
         ggplot2::geom_line(data = tibble,
-                           ggplot2::aes(x = if (x_unit == "quantity") sample_size else percent, y = mean),
+                           mapping = ggplot2::aes(x = if (x_unit == "quantity" && isFALSE(log_transform_x)) {
+                             sample_size
+                           } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
+                             log_sample_size
+                           } else {
+                             percent
+                           }, 
+                           y = mean),
                            size = line_size[i], color = line_color[i])
     }
   }
@@ -435,8 +472,10 @@ textTrainNPlot <- function(
   if (!is.null(y_range)) {
     TrainNPlot <- TrainNPlot + ggplot2::ylim(y_range[1], y_range[2])
   }
-  if (x_unit == "quantity") {
+  if (x_unit == "quantity" && isFALSE(log_transform_x)) {
     TrainNPlot <- TrainNPlot + ggplot2::scale_x_continuous(breaks = unique(unlist(lapply(tibble_list, function(t) t$sample_size))))
+  } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
+    TrainNPlot <- TrainNPlot + ggplot2::scale_x_continuous(breaks = unique(unlist(lapply(tibble_list, function(t) t$log_sample_size))))
   } else {
     TrainNPlot <- TrainNPlot + ggplot2::scale_x_continuous(breaks = sample_percents)
   }
