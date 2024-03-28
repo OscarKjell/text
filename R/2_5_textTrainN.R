@@ -475,7 +475,9 @@ textTrainNPlot <- function(
   if (x_unit == "quantity" && isFALSE(log_transform_x)) {
     TrainNPlot <- TrainNPlot + ggplot2::scale_x_continuous(breaks = unique(unlist(lapply(tibble_list, function(t) t$sample_size))))
   } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
-    TrainNPlot <- TrainNPlot + ggplot2::scale_x_continuous(breaks = unique(unlist(lapply(tibble_list, function(t) t$log_sample_size))))
+    TrainNPlot <- TrainNPlot +
+      ggplot2::scale_x_continuous(breaks = unique(unlist(lapply(tibble_list, function(t) t$log_sample_size)))) +
+      theme(axis.text.x = element_text(angle = 60, hjust = 1))
   } else {
     TrainNPlot <- TrainNPlot + ggplot2::scale_x_continuous(breaks = sample_percents)
   }
