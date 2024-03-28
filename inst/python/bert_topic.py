@@ -140,3 +140,47 @@ def create_bertopic_model(data,
     
     return [topic_model, model_summary]
 
+#reduce topics to n
+def reduce_topics(data, 
+                  data_var, 
+                  n_topics, 
+                  load_path, 
+                  save_path, 
+                  embedding_model="default"):
+
+    data = data
+    data[data_var] = data[data_var].apply(lambda x: ''.join([c for c in str(x) if not c.isdigit()]))
+    # dropping the rows having NaN values
+    data = data.dropna()
+ 
+    # To reset the indices
+    data = data.reset_index(drop=True)
+
+    # Load the model
+    topic_model = BERTopic.load(load_path)
+
+    # Reduce the number of topics
+    topic_model.reduce_topics(data[data_var], nr_topics=n_topics)
+    topics, probs = topic_model.transform(data[data_var])
+    topic_distr, topic_token_distr = topic_model.approximate_distribution(data[data_var], calculate_tokens=True)
+    columns = ["t_" + str(i) for i in range(1,topic_distr.shape[1]+1)]
+    
+    # Create the directory if it doesn't exist
+    save_path = f"{save_path}/reduced_{n_topics}"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    data.to_csv(f"{save_path}/data.csv", index=False)
+
+    with open(f"{save_path}/topic_distr.csv", 'w', newline='') as csv_file:
+        # Create a CSV writer object
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(columns)
+        # Write the array to the CSV file
+        csv_writer.writerows(topic_distr)
+
+    topic_model.save(f"{save_path}/model", serialization="safetensors", save_ctfidf=True, save_embedding_model=embedding_model)
+    
+    top_terms = topic_model.topic_representations_
+    top_terms_filtered = {label: terms for label, terms in top_terms.items() if label != -1}
+    model_summary = pd.DataFrame([(f't_{i}', ', '.join([term for term, _ in terms])) for i, (_, terms) in enumerate(top_terms_filtered.items(), start=1)], columns=['topic', 'top_terms'])
