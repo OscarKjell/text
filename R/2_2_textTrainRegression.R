@@ -37,6 +37,7 @@ fit_model_rmse <- function(object,
                            preprocess_step_center = TRUE,
                            preprocess_step_scale = TRUE,
                            impute_missing = FALSE) {
+
   data_train <- rsample::analysis(object)
   data_train <- tibble::as_tibble(data_train)
 

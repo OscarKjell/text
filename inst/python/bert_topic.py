@@ -155,9 +155,10 @@ def reduce_topics(data,
  
     # To reset the indices
     data = data.reset_index(drop=True)
+    embedding_model_used = embedding_models[embedding_model]
 
     # Load the model
-    topic_model = BERTopic.load(load_path)
+    topic_model = BERTopic.load(load_path, embedding_model_used)
 
     # Reduce the number of topics
     topic_model.reduce_topics(data[data_var], nr_topics=n_topics)
@@ -179,7 +180,7 @@ def reduce_topics(data,
         # Write the array to the CSV file
         csv_writer.writerows(topic_distr)
 
-    topic_model.save(f"{save_path}/model", serialization="safetensors", save_ctfidf=True, save_embedding_model=embedding_model)
+    topic_model.save(f"{save_path}/model", serialization="safetensors", save_ctfidf=True, save_embedding_model=embedding_model_used)
     
     top_terms = topic_model.topic_representations_
     top_terms_filtered = {label: terms for label, terms in top_terms.items() if label != -1}

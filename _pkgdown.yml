@@ -97,6 +97,9 @@ reference:
 - title: BERTopic
   contents:
     - textTopics
+    - textTopicsTest
+    - textTopicsWordcloud
+    - textTopicsReduce
 - title: View or delete downloaded HuggingFace models in R
   contents:
   - textModels
@@ -115,11 +118,6 @@ reference:
     - DP_projections_HILS_SWLS_100
     - centrality_data_harmony
     - PC_projections_satisfactionwords_40
-- title: BERTopic
-  contents:
-    - textTopics
-    - textTopicsTest
-    - textTopicsWordcloud
 
 
 articles:
