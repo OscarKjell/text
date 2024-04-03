@@ -18,40 +18,19 @@ textTopicsReduce(
 numeric/categorical variables that you might want to use for later analyses testing the
 significance of topics in relation to these variables.}
 
+\item{data_var}{(string)  Name of the text-variable in the data tibble that you want
+to perform topic modeling on.}
+
+\item{n_topics}{(string) The dimension reduction algorithm, currently only "default"
+is supported.}
+
+\item{load_path}{(string) The clustering algorithm to use, currently only "default"
+is supported.}
+
 \item{save_dir}{(string) The directory for saving results.}
 
 \item{embedding_model}{(string) Name of the embedding model to use such as "miniLM", "mpnet",
 "multi-mpnet", "distilroberta".}
-
-\item{variable_name}{(string)  Name of the text-variable in the data tibble that you want
-to perform topic modeling on.}
-
-\item{umap_model}{(string) The dimension reduction algorithm, currently only "default"
-is supported.}
-
-\item{hdbscan_model}{(string) The clustering algorithm to use, currently only "default"
-is supported.}
-
-\item{vectorizer_model}{(string) Name of the vectorizer model, currently only "default"
-is supported.}
-
-\item{representation_model}{(string) Name of the representation model used for topics,
-including "keybert" or "mmr".}
-
-\item{n_gram_range}{(vector) Two-dimensional vector indicating the ngram range used for
-the vectorizer model.}
-
-\item{stopwords}{(string) Name of the stopword dictionary to use.}
-
-\item{min_df}{(integer) The minimum document frequency of terms.}
-
-\item{bm25_weighting}{(boolean) Determine whether bm25_weighting is used for ClassTfidfTransformer.}
-
-\item{reduce_frequent_words}{(boolean) Determine whether frequent words are reduced by ClassTfidfTransformer.}
-
-\item{num_top_words}{(integer) Determine the number of top words presented for each topic.}
-
-\item{set_seed}{(integer) The random seed for initialization of the umap model.}
 }
 \value{
 A folder containing the model, data, folder with terms and values for each topic,
