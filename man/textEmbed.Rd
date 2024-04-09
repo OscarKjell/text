@@ -52,11 +52,14 @@ see \code{\link{textDimName}} to change names back and forth.}
 contextualized layers (e.g., "mean", "min" or "max, which takes the minimum, maximum or mean, respectively,
 across each column; or "concatenate", which links  together each word embedding layer to one long row.}
 
-\item{aggregation_from_tokens_to_texts}{(string)  Aggregates to the individual text (i.e., the aggregation of
-all tokens/words given to the transformer).}
+\item{aggregation_from_tokens_to_texts}{(string) Method to carry out the aggregation among the word embeddings
+for the words/tokens, including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+or "concatenate", which links together each layer of the word embedding to one long row (default = "mean"). If set to NULL, embeddings are not 
+aggregated.}
 
 \item{aggregation_from_tokens_to_word_types}{(string) Aggregates to the word type (i.e., the individual words)
-rather than texts.}
+rather than texts. If set to "individually", then duplicate words are not aggregated, (i.e, the context of individual
+is preserved). (default = NULL).}
 
 \item{keep_token_embeddings}{(boolean) Whether to also keep token embeddings when using texts or word
 types aggregation.}

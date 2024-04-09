@@ -949,10 +949,13 @@ generate_placement_vector <- function(raw_layers, texts) {
 #' @param aggregation_from_layers_to_tokens (string) Aggregated layers of each token. Method to aggregate the
 #' contextualized layers (e.g., "mean", "min" or "max, which takes the minimum, maximum or mean, respectively,
 #' across each column; or "concatenate", which links  together each word embedding layer to one long row.
-#' @param aggregation_from_tokens_to_texts (string)  Aggregates to the individual text (i.e., the aggregation of
-#' all tokens/words given to the transformer).
+#' @param aggregation_from_tokens_to_texts (string) Method to carry out the aggregation among the word embeddings
+#' for the words/tokens, including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+#' or "concatenate", which links together each layer of the word embedding to one long row (default = "mean"). If set to NULL, embeddings are not 
+#' aggregated. 
 #' @param aggregation_from_tokens_to_word_types (string) Aggregates to the word type (i.e., the individual words)
-#'  rather than texts.
+#'  rather than texts. If set to "individually", then duplicate words are not aggregated, (i.e, the context of individual
+#'  is preserved). (default = NULL). 
 #' @param keep_token_embeddings (boolean) Whether to also keep token embeddings when using texts or word
 #' types aggregation.
 #' @param tokens_select Option to select word embeddings linked to specific tokens
@@ -1140,6 +1143,10 @@ textEmbed <- function(texts,
                                      sep = ""
         )
         cat(colourise(single_context_text, "purple"))
+        
+        ##############################################################################
+        # These are the word_type embeddings with duplicates #########################
+        ##############################################################################
 
         individual_word_embeddings_layers <- all_wanted_layers$context_word_type
         individual_words <- all_wanted_layers$tokens
@@ -1155,6 +1162,12 @@ textEmbed <- function(texts,
         individual_word_embeddings_layers <- all_wanted_layers$decontext$word_type
         individual_words <- all_wanted_layers$decontext$single_words
       }
+      
+      # Temporarily switch aggregation_from_tokens_to_word_types to NULL
+      if (aggregation_from_tokens_to_word_types == "individually"){
+        original_aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts
+        aggregation_from_tokens_to_texts = NULL
+      }
 
       individual_word_embeddings <- textEmbedLayerAggregation(
         word_embeddings_layers = individual_word_embeddings_layers,
@@ -1165,7 +1178,30 @@ textEmbed <- function(texts,
         tokens_select = tokens_select,
         tokens_deselect = tokens_deselect
       )
+      
+      # Switch back aggregation_from_tokens_to_word_types 
+      if (aggregation_from_tokens_to_word_types == "individually"){
+        aggregation_from_tokens_to_texts = original_aggregation_from_tokens_to_texts
+      }
+      
       individual_word_embeddings <- dplyr::bind_rows(individual_word_embeddings)
+      
+      # Combine the words for each decontextualized embedding
+      # Instead of aggregating word_type embeddings, keep them. 
+      # In order to do so, the size of "individual_words" must match that of "individual_word_embeddings"
+      if (aggregation_from_tokens_to_word_types == "individually"){
+        
+        individual_words <- tibble::tibble(individual_words)
+        
+        # num rows
+        row_indices <- rep(seq_along(individual_words$n), individual_words$n)
+        
+        # if a word occurs more than once, then, insert that word n times to match the size of "individual_word_embeddings"
+        individual_words <- individual_words[row_indices, ] %>%
+          mutate(id = seq_along(n), #id column
+                 n = 1)
+      }
+      
       # Combine the words for each decontextualized embedding
       individual_word_embeddings_words <- dplyr::bind_cols(
         individual_words, # all_wanted_layers$decontext$single_words,
