@@ -1179,7 +1179,7 @@ textEmbed <- function(texts,
         tokens_deselect = tokens_deselect
       )
       
-      # Switch back aggregation_from_tokens_to_word_types 
+      # Switch back aggregation_from_tokens_to_word_type 
       if (aggregation_from_tokens_to_word_types == "individually"){
         aggregation_from_tokens_to_texts = original_aggregation_from_tokens_to_texts
       }
