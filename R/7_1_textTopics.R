@@ -148,3 +148,17 @@ textTopicsReduce <- function(
 }
 
 
+#' textTopicsTest (experimental) to get the hierarchical topic tree
+#' @param topic_model (list) The output from textTopics.
+#' @param data (tibble/data.frame) A tibble with the data
+#' @param data_var (string) The name of the text variable that the topic model was trained on
+#' @return prints a hiearchical topic tree on the console
+#' @export
+textTopicsTree <- function(topic_model,
+                           data,
+                           data_var){
+  topic_model <- topic_model$topic_model
+  get_topic_tree(topic_model, data, data_var)
+}
+
+

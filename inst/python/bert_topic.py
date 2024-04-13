@@ -185,3 +185,8 @@ def reduce_topics(data,
     top_terms = topic_model.topic_representations_
     top_terms_filtered = {label: terms for label, terms in top_terms.items() if label != -1}
     model_summary = pd.DataFrame([(f't_{i}', ', '.join([term for term, _ in terms])) for i, (_, terms) in enumerate(top_terms_filtered.items(), start=1)], columns=['topic', 'top_terms'])
+
+def get_topic_tree(topic_model, data, data_var):
+    topic_model = topic_model[0]
+    hierarchical_topics = topic_model.hierarchical_topics(data[data_var])
+    print(topic_model.get_topic_tree(hierarchical_topics))
