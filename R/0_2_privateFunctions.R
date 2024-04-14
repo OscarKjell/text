@@ -772,7 +772,10 @@ update_user_and_texts <- function(df) {
   has_story_id <- "story_id" %in% names(df)
   
   for (i in seq_along(df$participant_id)) {
-    sentences <- stringi::stri_split(df$texts[i], regex = "[.!?]", simplify = TRUE)
+    sentences <- stringi::stri_split_regex(df$texts[i], 
+                                  pattern = "(?<!\\bMr|\\bMrs|\\bMiss)[.!?]", 
+                                  simplify = TRUE)
+    
     sentences <- sentences[sentences != ""]
     
     current_user_id <- rep(df$participant_id[i], length(sentences))
