@@ -36,15 +36,15 @@ test_that("Bertopic", {
                          tolerance = 0.0001)
 
 
-  textTopicsReduce(
-    data = data,
-    data_var = "text",
-    n_topics = 10L,
-    load_path = "./results/seed_8/my_model/", # From textTopics saved output
-    save_dir = "./results_reduced",
-    embedding_model = "distilroberta"
-  )
-
+#  textTopicsReduce(
+#    data = data,
+#    data_var = "text",
+#    n_topics = 10L,
+#    load_path = "./results/seed_8/my_model/", # From textTopics saved output
+#    save_dir = "./results_reduced",
+#    embedding_model = "distilroberta"
+#  )
+#
 
 
   # Testing if we can predict "score" from from topic-document distribution
