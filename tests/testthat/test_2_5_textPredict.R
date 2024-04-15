@@ -93,7 +93,7 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
   testthat::expect_equal(predictions$person_predictions$person_prob[40], 0.1658826, tolerance = 0.0001)
   
   # Observe; when converting to numeric, zeros are replaced by ones, and ones are replaced by twos.  
-  
+
   # sentence predictions
   testthat::expect_equal(as.numeric(predictions$sentence_predictions$power_class[24]), 1, tolerance = 0.0001)
   testthat::expect_equal(sum(as.numeric(predictions$sentence_predictions$power_class)), 190, tolerance = 0.0001)
