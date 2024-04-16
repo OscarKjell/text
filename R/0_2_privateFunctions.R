@@ -1031,11 +1031,11 @@ get_model_info <- function(model_info,
     type <- "class" # type must be class for these conditions
     # switch to the correct model URL
     if (lower_case_model == "power") {
-      model_info <- "https://github.com/OscarKjell/text_models/raw/main/implicit_motive_models/schone_training_rob_la_l23_to_power_10k.rds"
+      model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_power_open.rds"
     } else if (lower_case_model == "achievement") {
-      model_info <- "https://github.com/OscarKjell/text_models/raw/main/implicit_motive_models/schone_training_rob_la_l23_to_achievement_10k.rds"
+      model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_achievement_open.rds"
     } else if (lower_case_model == "affiliation") {
-      model_info <- "https://github.com/OscarKjell/text_models/raw/main/implicit_motive_models/schone_training_rob_la_l23_to_affiliation_10k.rds"
+      model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_affiliation_open.rds"
     } 
     # specific configuration for implicit motive coding
     if (!is.null(participant_id) || !is.null(story_id)) {
