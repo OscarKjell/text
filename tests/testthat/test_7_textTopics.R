@@ -23,7 +23,7 @@ test_that("Bertopic", {
 
   data <- dplyr::bind_rows(data1, data2, data3)
 
-  # Create BERTopic model trained on data["text"]
+  # Create BERTopic model trained on data["text"] help(textTopics)
   bert_model <- textTopics(data = data,
                            variable_name = "text",
                            embedding_model = "distilroberta",
