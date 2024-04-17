@@ -100,6 +100,7 @@ reference:
     - textTopicsTest
     - textTopicsWordcloud
     - textTopicsReduce
+    - textTopicsTree
 - title: View or delete downloaded HuggingFace models in R
   contents:
   - textModels
@@ -124,6 +125,7 @@ articles:
 - title: Set-up
   navbar: ~
   contents:
+  - text_assessment_models
   - huggingface_in_r_extended_installation_guide
   - singularity_transformers_container
   - huggingface_in_r_and_computer_capacity

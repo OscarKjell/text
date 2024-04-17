@@ -54,6 +54,7 @@ Suggests:
     xml2,
     ranger,
     utils,
-    ggwordcloud
+    ggwordcloud, 
+    reactable
 VignetteBuilder: knitr
 Depends: R (>= 4.00)

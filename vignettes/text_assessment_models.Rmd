@@ -1,0 +1,40 @@
+---
+title: "Text Assessment Models"
+vignette: >
+  %\VignetteIndexEntry{Text Assessment Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Search the table below for models that can be used with `textPredict()` by either using the name in the `Name` column or the URL in the `Path` column.
+
+If you want to add a model, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and contact us (email oscar [ d_o t] kjell [a _ t] psy [DOT] lu [d_o_t]se). 
+
+Note that you can adjust the width of the columns.
+
+```{r models_table, eval = TRUE, echo=FALSE}
+library("reactable")
+# see vignette: https://glin.github.io/reactable/articles/examples.html#custom-rendering
+
+model_data <- read.csv(system.file("extdata",
+                                   "text assessment - models.csv",
+                                   package = "text"),
+                       header = TRUE, 
+                       skip = 2)
+
+reactable::reactable(
+  data = model_data,
+  filterable = TRUE,
+  defaultPageSize = 50,
+  highlight = TRUE, 
+   resizable = TRUE
+)
+```
+

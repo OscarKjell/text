@@ -1,0 +1,21 @@
+Basic Info,,,,,,Model info,,,,,,Training Data Source,,,,
+Construct,Language,Language-type,Outcomes,"Level (msg,person, group)",Name,"Path (e.g., osf/github)","Model Type (ridge regression, L2 Logistic Regression)",Feature Description,validation accuracies,reference,License (usage restrictions),Description,No. training observations,"Label types (self-report, annotation, interview scores, etc...)",Other Notes,Example Command
+Construct,Language,Language-type,Outcomes,Level,Name,Path,Model Type,Feature,Validation accuracies,Reference,License,Description,N training observations,Label types,Other,Example command
+Depression,English,Probed (select words),PHQ-9,Person,,coming soon,ridge regression,roberta L23,r=.73,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Depression,English,Probed (write words),PHQ-9,Person,,coming soon,ridge regression,roberta L23,r=.68,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Depression,English,Probed (write phrases),PHQ-9,Person,dep_phrase_phq9_roberta_L23_2024,coming soon,ridge regression,roberta L23,r=.69,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Depression,English,Probed (write text),PHQ-9,Person,,coming soon,ridge regression,roberta L23,r=.69,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Depression,English,Probed (select words),CES-D,Person,,coming soon,ridge regression,roberta L23,r=.77,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Depression,English,Probed (write words),CES-D,Person,,coming soon,ridge regression,roberta L23,r=.73,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Depression,English,Probed (write phrases),CES-D,Person,,coming soon,ridge regression,roberta L23,r=.75,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Depression,English,Probed (write text),CES-D,Person,,coming soon,ridge regression,roberta L23,r=.74,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Anxiety,English,Probed (select words),GAD-7,Person,,coming soon,ridge regression,roberta L23,r=.67,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Anxiety,English,Probed (write words),GAD-7,Person,,coming soon,ridge regression,roberta L23,r=.67,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Anxiety,English,Probed (write phrases),GAD-7,Person,,coming soon,ridge regression,roberta L23,r=.62,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Anxiety,English,Probed (write text),GAD-7,Person,,coming soon,ridge regression,roberta L23,r=.59,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Anxiety,English,Probed (select words),PSWQ,Person,,coming soon,ridge regression,roberta L23,r=.66,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Anxiety,English,Probed (write words),PSWQ,Person,,coming soon,ridge regression,roberta L23,r=.66,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Anxiety,English,Probed (write phrases),PSWQ,Person,,coming soon,ridge regression,roberta L23,r=.61,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Anxiety,English,Probed (write text),PSWQ,Person,,coming soon,ridge regression,roberta L23,r=.59,"Gu et al., 2024",open,"UK, US normal",N=963,self-report,,
+Valence,English,Probed (write text),Valence score,Person,,https://github.com/OscarKjell/text_models/raw/main/valence_models/facebook_model.rds,linear regression,roberta-base L11,r=.76,?,,Valence,N=2442,rated by psychology professionals,set dim_names to FALSE,"textPredict(model_info =  ""https://github.com/OscarKjell/text_models/raw/main/valence_models/facebook_model.rds"", texts = ""your_texts"", dim_names = FALSE)"
+Valence,English,Probed (write text),Valence score,Person,,https://github.com/OscarKjell/text_models/raw/main/valence_models/facebook_model_reduced.rds,linear regression,roberta-base L11,r=.76,?,,Valence,N=2442,rated by psychology professionals,set dim_names to FALSE,"textPredict(model_info =  ""https://github.com/OscarKjell/text_models/raw/main/valence_models/facebook_model_reduced.rds"", texts = ""your_texts"", dim_names = FALSE)"
