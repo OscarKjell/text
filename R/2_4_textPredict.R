@@ -320,7 +320,7 @@ textReturnModelAndEmbedding <- function(
 #' # Code implicit motives.
 #' implicit_motives <- textPredict(
 #'   texts = implicit_motive_data$satisfactiontexts,
-#'   model_info = "power",
+#'   model_info = "implicit_power_roberta_large_L23_v1",
 #'   participant_id = implicit_motive_data$participant_id,
 #'   dataset_to_merge_predictions = implicit_motive_data
 #' )
@@ -616,9 +616,9 @@ textPredict <- function(model_info = NULL,
   # Check for implicit motives configuration
   
   if (
-    grepl("power", lower_case_model) ||
-    grepl("achievement", lower_case_model) ||
-    grepl("affiliation", lower_case_model) ||
+    grepl("implicit_power_roberta_large_l23_v1", lower_case_model) ||
+    grepl("implicit_affiliation_roberta_large_l23_v1", lower_case_model) ||
+    grepl("implicit_achievement_roberta_large_l23_v1", lower_case_model) ||
     (grepl("implicit_motives", lower_case_model) && 
      (!is.null(participant_id) || !is.null(story_id)))
   ){

@@ -891,15 +891,13 @@ implicit_motives_results <- function(model_reference,
                                      lower_case_model) {
 
   #### Assign correct column name ####
-  if (grepl("power", lower_case_model)) {
+  if (grepl("implicit_power_roberta_large_l23_v1", lower_case_model)) {
     column_name <- "power"
-  } else if (grepl("affiliation", lower_case_model)) {
+  } else if (grepl("implicit_affiliation_roberta_large_l23_v1", lower_case_model)) {
     column_name <- "affiliation"
-  } else if (grepl("achievement", lower_case_model)) {
+  } else if (grepl("implicit_achievement_roberta_large_l23_v1", lower_case_model)) {
     column_name <- "achievement"
-  } else if (model_reference == "achievment" ||
-             model_reference == "power" ||
-             model_reference == "affiliation") {
+  } else if (model_reference == "implicit_motives") {
     column_name <- model_reference
   }
 
@@ -1022,19 +1020,20 @@ get_model_info <- function(model_info,
   show_prob <- FALSE
   
   if (
-    grepl("power", lower_case_model) ||
-    grepl("achievement", lower_case_model) ||
-    grepl("affiliation", lower_case_model) ||
+    grepl("implicit_power_roberta_large_l23_v1", lower_case_model) ||
+    grepl("implicit_affiliation_roberta_large_l23_v1", lower_case_model) ||
+    grepl("implicit_achievement_roberta_large_l23_v1", lower_case_model) ||
     (grepl("implicit_motives", lower_case_model) && 
      (!is.null(participant_id) || !is.null(story_id)))
   ) {
+    
     type <- "class" # type must be class for these conditions
     # switch to the correct model URL
-    if (lower_case_model == "power") {
+    if (lower_case_model == "implicit_power_roberta_large_l23_v1") {
       model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_power_open.rds"
-    } else if (lower_case_model == "achievement") {
+    } else if (lower_case_model == "implicit_achievement_roberta_large_l23_v1") {
       model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_achievement_open.rds"
-    } else if (lower_case_model == "affiliation") {
+    } else if (lower_case_model == "implicit_affiliation_roberta_large_l23_v1") {
       model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_affiliation_open.rds"
     } 
     # specific configuration for implicit motive coding
