@@ -1,7 +1,7 @@
 ---
-title: "Text Assessment Models"
+title: "Pre-Trained Models"
 vignette: >
-  %\VignetteIndexEntry{Text Assessment Models}
+  %\VignetteIndexEntry{Pre-Trained Models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Search the table below for models that can be used with `textPredict()` by either using the name in the `Name` column or the URL in the `Path` column.
+Search the table below for pre-trained models that can be used with `textPredict()` by either using the name in the `Name` column or the URL in the `Path` column.
 
 If you want to add a model, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and contact us (email oscar [ d_o t] kjell [a _ t] psy [DOT] lu [d_o_t]se). 
 
@@ -24,7 +24,7 @@ library("reactable")
 # see vignette: https://glin.github.io/reactable/articles/examples.html#custom-rendering
 
 model_data <- read.csv(system.file("extdata",
-                                   "text assessment - models.csv",
+                                   "text_models_info.csv",
                                    package = "text"),
                        header = TRUE, 
                        skip = 2)
@@ -34,7 +34,7 @@ reactable::reactable(
   filterable = TRUE,
   defaultPageSize = 50,
   highlight = TRUE, 
-   resizable = TRUE
+  resizable = TRUE
 )
 ```
 

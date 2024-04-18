@@ -125,7 +125,7 @@ articles:
 - title: Set-up
   navbar: ~
   contents:
-  - text_assessment_models
+  - pre_trained_models
   - huggingface_in_r_extended_installation_guide
   - singularity_transformers_container
   - huggingface_in_r_and_computer_capacity
