@@ -2,7 +2,7 @@
 % Please edit documentation in R/7_1_textTopics.R
 \name{textTopicsReduce}
 \alias{textTopicsReduce}
-\title{textTopicsReduce (experimental)}
+\title{textTopicsReduce (EXPERIMENTAL)}
 \usage{
 textTopicsReduce(
   data,
@@ -38,13 +38,7 @@ and the document-topic matrix. Moreover the model itself is returned formatted a
 together with metdata.
 }
 \description{
-textTopicsReduce (experimental)
-}
-\examples{
-#
-\dontrun{
-
-}
+textTopicsReduce (EXPERIMENTAL)
 }
 \seealso{
 See \code{\link{textTopics}} \code{\link{textTopicsTest}} and \code{\link{textTopicsWordcloud}}.

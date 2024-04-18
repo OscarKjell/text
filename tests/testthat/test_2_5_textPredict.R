@@ -1,5 +1,3 @@
-
-
 library(testthat)
 library(text)
 library(tibble)
@@ -111,11 +109,4 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
   testthat::expect_equal(sum(as.numeric(predictions$dataset$person_prob_2[10])), -1.144509, tolerance = 0.0001)
   testthat::expect_equal(sum(as.numeric(predictions$dataset$story_prob_3[5])), 1.51721, tolerance = 0.0001)
 })
-
-
-
-
-
-
-
 
