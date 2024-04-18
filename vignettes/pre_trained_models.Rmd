@@ -13,11 +13,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-Search the table below for pre-trained models that can be used with `textPredict()` by either using the name in the `Name` column or the URL in the `Path` column.
+Search the table below for pre-trained models that can be used with the `textPredict()` function. The models have been trained using one of the `textTrain()` functions and can now be used with `textPredict()` by providing the `model_info` parameter with the URL from the `Path` column in the table below. In some cases you can also provide the `model_info` parameter with the name from the `Name` column (although, for this to work the name needs to be coupled with its URL within the code of the `textPredict()` function).
 
-If you want to add a model, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and contact us (email oscar [ d_o t] kjell [a _ t] psy [DOT] lu [d_o_t]se). 
+If you want to add a pre-trained model to the table, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and contact us (email oscar [ d_o t] kjell [a _ t] psy [DOT] lu [d_o_t]se) so that we can update the website. 
 
-Note that you can adjust the width of the columns.
+Note that you can adjust the width of the columns when scrolling the table.
 
 ```{r models_table, eval = TRUE, echo=FALSE}
 library("reactable")
