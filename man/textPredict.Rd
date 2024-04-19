@@ -126,7 +126,7 @@ participant_id = dplyr::row_number())
 # Code implicit motives.
 implicit_motives <- textPredict(
   texts = implicit_motive_data$satisfactiontexts,
-  model_info = "power",
+  model_info = "implicit_power_roberta_large_L23_v1",
   participant_id = implicit_motive_data$participant_id,
   dataset_to_merge_predictions = implicit_motive_data
 )

@@ -1,5 +1,3 @@
-
-
 library(testthat)
 library(text)
 library(tibble)
@@ -78,51 +76,37 @@ test_that("textPredictTest t-test and bootstrapped test", {
 
 test_that("1. textPredict generates embeddings from text and 2. automatically codes implicit motives", {
   skip_on_cran()
-
+  
   # Test data
   implicit_motive_data <- dplyr::mutate(.data = text::Language_based_assessment_data_8, participant_id = dplyr::row_number(), story_id = rep(1:5, each=8))
-
+  
   predictions <- textPredict(texts = implicit_motive_data$satisfactiontexts,
-                             model_info = "power",
+                             model_info = "implicit_power_roberta_large_L23_v1",
                              participant_id = implicit_motive_data$participant_id,
                              story_id = implicit_motive_data$story_id,
-                             dataset_to_merge_predictions = implicit_motive_data,
+                             dataset_to_merge_predictions = implicit_motive_data, 
                              previous_sentence = TRUE)
-
+  
   testthat::expect_is(predictions$sentence_predictions$texts[1], "character")
-  testthat::expect_equal(predictions$person_predictions$person_prob[40], 0.1658826, tolerance = 0.0001)
-
-  # Observe; when converting to numeric, zeros are replaced by ones, and ones are replaced by twos.
+  testthat::expect_equal(predictions$person_predictions$person_prob[40], 0.176565, tolerance = 0.0001)
+  
+  # Observe; when converting to numeric, zeros are replaced by ones, and ones are replaced by twos.  
 
   # sentence predictions
   testthat::expect_equal(as.numeric(predictions$sentence_predictions$power_class[24]), 1, tolerance = 0.0001)
   testthat::expect_equal(sum(as.numeric(predictions$sentence_predictions$power_class)), 190, tolerance = 0.0001)
-
-  # person-level predictions
+  
+  # person-level predictions 
   testthat::expect_equal(sum(as.numeric(predictions$person_predictions$participant_id[10])), 10, tolerance = 0.0001)
-  testthat::expect_equal(sum(as.numeric(predictions$person_predictions$person_prob[10])), -0.554337, tolerance = 0.0001)
-
+  testthat::expect_equal(sum(as.numeric(predictions$person_predictions$person_prob[10])), -1.144509, tolerance = 0.0001)
+  
   # story-level predictions
   testthat::expect_equal(sum(as.numeric(predictions$story_predictions$story_id[5])), 5, tolerance = 0.0001)
-  testthat::expect_equal(sum(as.numeric(predictions$story_predictions$story_prob[5])), 0.8764323, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$story_predictions$story_prob[5])), 1.51721, tolerance = 0.0001)
 
   # dataset merging
-  testthat::expect_equal(sum(as.numeric(predictions$dataset$.pred_0_1[40])), 0.9985102, tolerance = 0.0001)
-  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_prob_2[10])), -0.554337, tolerance = 0.0001)
-  testthat::expect_equal(sum(as.numeric(predictions$dataset$story_prob_3[5])), 0.8764323, tolerance = 0.0001)
-
-  unlink("./tests/testthat/schone_training_rob_la_l23_to_power_10k.rds")
-  unlink("./tests/testthat/textPredict_3510211107.RDS")
-
-  # Trying to add this to see whether the two above lines are executed properly.
-  x = 5
-
+  testthat::expect_equal(sum(as.numeric(predictions$dataset$.pred_0_1[40])), 0.9891365, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_prob_2[10])), -1.144509, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$dataset$story_prob_3[5])), 1.51721, tolerance = 0.0001)
 })
-
-
-
-
-
-
-
 
