@@ -6,7 +6,7 @@
 #' }
 #' @seealso see \code{\link{textModelsRemove}}
 #' @export
-textModels <- function() {
+textModels <- function(){
   reticulate::source_python(system.file("python",
     "textModelPy.py",
     package = "text",
@@ -38,7 +38,7 @@ textModels <- function() {
 textModelLayers <- function(target_model,
                             hg_gated = FALSE,
                             hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
-                                                  unset = "")) {
+                                                  unset = "")){
   reticulate::source_python(system.file("python",
     "huggingface_Interface3.py",
     package = "text",
@@ -64,7 +64,7 @@ textModelLayers <- function(target_model,
 #' }
 #' @seealso see \code{\link{textModels}}
 #' @export
-textModelsRemove <- function(target_model) {
+textModelsRemove <- function(target_model){
   reticulate::source_python(system.file("python",
     "textModelPy.py",
     package = "text",

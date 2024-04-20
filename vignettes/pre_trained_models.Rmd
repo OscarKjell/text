@@ -15,30 +15,28 @@ knitr::opts_chunk$set(
 
 
 
-The text-package allows you to create pre-trained models using the `textTrain()` functions. The models can be saved and used on new data using the `textPredict()` function. The table below shows pre-trained models that are openly available to download. The models can be called with `textPredict()` like this:
+The text-package allows you to create pre-trained models using the `textTrain()` functions. The models can be saved and used on new data using the `textPredict()` function. The table below shows pre-trained models that are available to download. The models can be called with `textPredict()` like this:
 
 ```{r textPredict_examples, eval = FALSE, echo=TRUE}
 library(text)
 
-# Example with model using the URL
-textPredict(
-  model_info = Valence2024,
-  texts = "what is the valence of this text"
-)
-
-
-# Example with a model having an abbreviation
+# Example calling a model using the URL
 textPredict(
   model_info = "https://github.com/OscarKjell/text_models/raw/main/valence_models/facebook_model.rds",
   texts = "what is the valence of this text"
 )
+
+
+# Example calling a model having an abbreviation
+textPredict(
+  model_info = Valence2024,
+  texts = "what is the valence of this text"
+)
 ```
 
-The `textPredict()` function can be given a model and a text, and automatically transform the text to word embeddings and produce estimated scores or probabilities. 
+The `textPredict()` function can be given a model and a text, and automatically transform the text to word embeddings and produce estimated scores or probabilities.
 
-The models can be downloaded by specifying an URL string to the `model_info` parameter in `textPredict()`. In some cases you can also jsut write the `Name` instead of the URL (although, for this to work the name needs to be coupled with its URL within the code of the `textPredict()` function).
-
-If you want to add a pre-trained model to the table, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and contact us (email *oscar [ d_o t] kjell [a _ t] psy [DOT] lu [d_o_t]se*) so that we can update the table. 
+If you want to add a pre-trained model to the table, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and email us (*oscar [ d_o t] kjell [a _ t] psy [DOT] lu [d_o_t]se*) so that we can update the table online.
 
 *Note that you can adjust the width of the columns when scrolling the table.*
 
@@ -55,7 +53,7 @@ model_data <- read.csv(system.file("extdata",
 reactable::reactable(
   data = model_data,
   filterable = TRUE,
-  defaultPageSize = 15,
+  defaultPageSize = 10,
   highlight = TRUE, 
   resizable = TRUE,
   theme = reactableTheme(
@@ -66,19 +64,22 @@ reactable::reactable(
     style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif")
   ),
   columns = list(
+    Outcome = colDef(minWidth = 200),
     Language.type = colDef(minWidth = 200),
-    Name = colDef(minWidth = 200),
-    Path = colDef(minWidth = 200),
+    Name = colDef(minWidth = 350),
+    Path = colDef(minWidth = 300),
     Model.type = colDef(minWidth = 200),
     CV.accuracy = colDef(minWidth = 150),
     Held.out.accuracy = colDef(minWidth = 150),
     SEMP.accuracy = colDef(minWidth = 150),
+    Reference = colDef(minWidth = 250),
     Description = colDef(minWidth = 200),
     N.training.observations = colDef(minWidth = 200),
     Label.types = colDef(minWidth = 200),
     Other = colDef(minWidth = 200),
     Example.command = colDef(minWidth = 800)
-  )
+  ), 
+  showPageSizeOptions = TRUE
 )
 ```
 

@@ -53,7 +53,8 @@ normalizeV <- function(x) {
 #' @importFrom tibble as_tibble_row
 #' @importFrom purrr map
 #' @noRd
-textEmbeddingAggregation <- function(x, aggregation = "min") {
+textEmbeddingAggregation <- function(x,
+                                     aggregation = "min") {
   if (aggregation == "min") {
     min_vector <- unlist(purrr::map(x, min, na.rm = TRUE))
     min_vector
@@ -100,7 +101,9 @@ textEmbeddingAggregation <- function(x, aggregation = "min") {
 # @importFrom stringr str_c str_split stri_split_boundaries
 # @importFrom tokenizers tokenize_words
 #' @noRd
-getUniqueWordsAndFreq <- function(x_characters, hg_tokenizer = NULL, ...) {
+getUniqueWordsAndFreq <- function(x_characters,
+                                  hg_tokenizer = NULL,
+                                  ...) {
   if (is.null(hg_tokenizer)) {
     # Unite all text variables into one
     x_characters2 <- tidyr::unite(x_characters, "x_characters2", seq_len(ncol(x_characters)), sep = " ")
@@ -257,7 +260,8 @@ layer_aggregation_helper <- function(x,
 #' @param pattern what to find; such as the "layers_number" column.
 #' @return elements in the column called pattern.
 #' @noRd
-grep_col_by_name_in_list <- function(l, pattern) {
+grep_col_by_name_in_list <- function(l,
+                                     pattern) {
   u <- unlist(l)
   u[grep(pattern, names(u))]
 }
@@ -840,7 +844,8 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 #' @param raw_layers Layers returned by the textEmbedRawLayers function with NA values.
 #' @return Layers returned by the textEmbedRawLayers with inserted NA-placeholder vectors.
 #' @noRd
-generate_placement_vector <- function(raw_layers, texts) {
+generate_placement_vector <- function(raw_layers,
+                                      texts) {
   # Extract column name, if there is one.
   column_name <- colnames(texts)
 
@@ -951,11 +956,11 @@ generate_placement_vector <- function(raw_layers, texts) {
 #' across each column; or "concatenate", which links  together each word embedding layer to one long row.
 #' @param aggregation_from_tokens_to_texts (string) Method to carry out the aggregation among the word embeddings
 #' for the words/tokens, including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
-#' or "concatenate", which links together each layer of the word embedding to one long row (default = "mean"). If set to NULL, embeddings are not 
-#' aggregated. 
+#' or "concatenate", which links together each layer of the word embedding to one long row (default = "mean"). If set to NULL, embeddings are not
+#' aggregated.
 #' @param aggregation_from_tokens_to_word_types (string) Aggregates to the word type (i.e., the individual words)
 #'  rather than texts. If set to "individually", then duplicate words are not aggregated, (i.e, the context of individual
-#'  is preserved). (default = NULL). 
+#'  is preserved). (default = NULL).
 #' @param keep_token_embeddings (boolean) Whether to also keep token embeddings when using texts or word
 #' types aggregation.
 #' @param tokens_select Option to select word embeddings linked to specific tokens
@@ -1143,7 +1148,7 @@ textEmbed <- function(texts,
                                      sep = ""
         )
         cat(colourise(single_context_text, "purple"))
-        
+
         ##############################################################################
         # These are the word_type embeddings with duplicates #########################
         ##############################################################################
@@ -1162,7 +1167,7 @@ textEmbed <- function(texts,
         individual_word_embeddings_layers <- all_wanted_layers$decontext$word_type
         individual_words <- all_wanted_layers$decontext$single_words
       }
-      
+
       # Temporarily switch aggregation_from_tokens_to_word_types to NULL
       if (aggregation_from_tokens_to_word_types == "individually"){
         original_aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts
@@ -1178,30 +1183,30 @@ textEmbed <- function(texts,
         tokens_select = tokens_select,
         tokens_deselect = tokens_deselect
       )
-      
-      # Switch back aggregation_from_tokens_to_word_type 
+
+      # Switch back aggregation_from_tokens_to_word_type
       if (aggregation_from_tokens_to_word_types == "individually"){
         aggregation_from_tokens_to_texts = original_aggregation_from_tokens_to_texts
       }
-      
+
       individual_word_embeddings <- dplyr::bind_rows(individual_word_embeddings)
-      
+
       # Combine the words for each decontextualized embedding
-      # Instead of aggregating word_type embeddings, keep them. 
+      # Instead of aggregating word_type embeddings, keep them.
       # In order to do so, the size of "individual_words" must match that of "individual_word_embeddings"
       if (aggregation_from_tokens_to_word_types == "individually"){
-        
+
         individual_words <- tibble::tibble(individual_words)
-        
+
         # num rows
         row_indices <- rep(seq_along(individual_words$n), individual_words$n)
-        
+
         # if a word occurs more than once, then, insert that word n times to match the size of "individual_word_embeddings"
         individual_words <- individual_words[row_indices, ] %>%
           mutate(id = seq_along(n), #id column
                  n = 1)
       }
-      
+
       # Combine the words for each decontextualized embedding
       individual_word_embeddings_words <- dplyr::bind_cols(
         individual_words, # all_wanted_layers$decontext$single_words,

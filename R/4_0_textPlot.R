@@ -272,8 +272,6 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
 
 
 
-
-
 #' Computes the dot product projection for added data.
 #' @return Word_data_all_yadjusted with added information for the added words.
 #' @noRd
@@ -586,7 +584,8 @@ textOwnWordPrediction <- function(word_data = word_data,
 #' Find out plot type to be plotted and adjust word_data columns accordingly.
 #' @return word_data with generically called columns that can run in textPlot.
 #' @noRd
-adjust_for_plot_type <- function(word_data, y_axes) {
+adjust_for_plot_type <- function(word_data,
+                                 y_axes) {
   type_text <- sub(".*type = ", "", comment(word_data))
   type_name <- sub(" .*", "", type_text)
 

@@ -54,7 +54,7 @@ across each column; or "concatenate", which links  together each word embedding 
 
 \item{aggregation_from_tokens_to_texts}{(string) Method to carry out the aggregation among the word embeddings
 for the words/tokens, including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
-or "concatenate", which links together each layer of the word embedding to one long row (default = "mean"). If set to NULL, embeddings are not 
+or "concatenate", which links together each layer of the word embedding to one long row (default = "mean"). If set to NULL, embeddings are not
 aggregated.}
 
 \item{aggregation_from_tokens_to_word_types}{(string) Aggregates to the word type (i.e., the individual words)

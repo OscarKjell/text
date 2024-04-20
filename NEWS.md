@@ -3,6 +3,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.2.1
+- Improving `textPredict()` functionality. 
+- Implementing experimental features related to `textTopics()`
+
 # text 1.2
 ## Functions
 - `textTopics()` trains a BERTopic model with different modules and returns the model, data, and topic_document distributions based on c-td-idf

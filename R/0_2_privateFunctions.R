@@ -137,7 +137,9 @@ add_variables_to_we <- function(word_embeddings,
 #' @return List with sorted tibble of variables, x_name, embedding_description,
 #' x_append_names, and variable_name_index_pca.
 #' @noRd
-sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
+sorting_xs_and_x_append <- function(x,
+                                    x_append,
+                                    append_first, ...) {
   variable_name_index_pca <- NA
 
   if (!is.null(x)) {
@@ -236,7 +238,8 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
 #' @return p_value
 #' @importFrom stats var
 #' @noRd
-cohens_d <- function(x, y) {
+cohens_d <- function(x,
+                     y) {
   lx <- length(x) - 1
   ly <- length(y) - 1
 
@@ -281,12 +284,12 @@ extract_comment <- function(comment,
 simple_hash <- function(texts) {
   # combine all elements of texts into a single character
   combined_text <- paste0(texts, collapse = "")
-  
-  # convert text to ASCII 
+
+  # convert text to ASCII
   ascii_vals <- as.integer(charToRaw(combined_text))
-  
+
   # create a hash like value
-  hash_val <- sum(ascii_vals * seq_along(ascii_vals)) %% 100000 
+  hash_val <- sum(ascii_vals * seq_along(ascii_vals)) %% 100000
   return(hash_val)
 }
 
@@ -458,7 +461,10 @@ add_variables_to_we <- function(word_embeddings,
 #' @return List with sorted tibble of variables, x_name, embedding_description,
 #' x_append_names, and variable_name_index_pca.
 #' @noRd
-sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
+sorting_xs_and_x_append <- function(x,
+                                    x_append,
+                                    append_first,
+                                    ...) {
   variable_name_index_pca <- NA
 
   if (!is.null(x)) {
@@ -557,7 +563,8 @@ sorting_xs_and_x_append <- function(x, x_append, append_first, ...) {
 #' @return p_value
 #' @importFrom stats var
 #' @noRd
-cohens_d <- function(x, y) {
+cohens_d <- function(x,
+                     y) {
   lx <- length(x) - 1
   ly <- length(y) - 1
 
@@ -664,7 +671,9 @@ path_exist_download_files <- function(wanted_file) {
 #' @param predicted_scores2 Predictions from textPredict.
 #' @return Returns a tibble with values relevant for calculating implicit motives
 #' @noRd
-implicit_motives <- function(texts, participant_id, predicted_scores2) {
+implicit_motives <- function(texts,
+                             participant_id,
+                             predicted_scores2) {
   # Create a table with the number of sentences per user
   table_uniques2 <- table(participant_id[1:length(participant_id)])
 
@@ -728,7 +737,9 @@ implicit_motives <- function(texts, participant_id, predicted_scores2) {
 #' @param story_id list of story id:s.
 #' @return implicit_motives_pred returns residuals from robust linear regression.
 #' @noRd
-implicit_motives_pred <- function(sqrt_implicit_motives, participant_id, story_id) {
+implicit_motives_pred <- function(sqrt_implicit_motives,
+                                  participant_id,
+                                  story_id) {
   # square root transform
   sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
 
@@ -741,7 +752,7 @@ implicit_motives_pred <- function(sqrt_implicit_motives, participant_id, story_i
   lm.OUTCOME_USER_SUM_CLASS <- stats::lm(OUTCOME_USER_SUM_CLASS ~ wc_person_per_1000, data = sqrt_implicit_motives)
   OUTCOME_USER_SUM_CLASS.residual1 <- resid(lm.OUTCOME_USER_SUM_CLASS)
   OUTCOME_USER_SUM_CLASS.residual1.z <- scale(OUTCOME_USER_SUM_CLASS.residual1)
-  
+
   # insert residuals into a tibble
   if (identical(story_id, participant_id)){
     implicit_motives_pred <- tibble::tibble(
@@ -767,31 +778,31 @@ update_user_and_texts <- function(df) {
   updated_texts <- character()
   updated_story_id <- integer()
   include_story_id <- "story_id" %in% names(df)
-  
+
   # check if story_id column exists
   has_story_id <- "story_id" %in% names(df)
-  
+
   for (i in seq_along(df$participant_id)) {
-    sentences <- stringi::stri_split_regex(df$texts[i], 
-                                  pattern = "(?<!\\bMr|\\bMrs|\\bMiss)[.!?]", 
+    sentences <- stringi::stri_split_regex(df$texts[i],
+                                  pattern = "(?<!\\bMr|\\bMrs|\\bMiss)[.!?]",
                                   simplify = TRUE)
-    
+
     sentences <- sentences[sentences != ""]
-    
+
     current_user_id <- rep(df$participant_id[i], length(sentences))
     current_texts <- sentences
-    
+
     if (has_story_id) {
       current_story_id <- rep(df$story_id[i], length(sentences))
     }
-    
+
     split_indices <- sapply(current_texts, function(sentence) {
       length(unlist(stringi::stri_split(sentence, regex = "\\s+"))) > 2
     })
-    
+
     updated_user_id <- c(updated_user_id, rep(df$participant_id[i], sum(split_indices)))
     updated_texts <- c(updated_texts, current_texts[split_indices])
-    
+
     if (has_story_id) {
       updated_story_id <- c(updated_story_id, rep(df$story_id[i], sum(split_indices)))
     }
@@ -801,7 +812,7 @@ update_user_and_texts <- function(df) {
   } else {
     updated_df <- data.frame(participant_id = updated_user_id, texts = updated_texts)
   }
-  
+
   # adjusted handling for missing rows
   missing_participant_rows <- setdiff(df$participant_id, updated_df$participant_id)
   if (length(missing_participant_rows) > 0) {
@@ -812,7 +823,7 @@ update_user_and_texts <- function(df) {
     }
     updated_df <- rbind(updated_df, extra_rows)
   }
-  
+
   return(updated_df)
 }
 
@@ -821,7 +832,8 @@ update_user_and_texts <- function(df) {
 #' @param predictions Predictions from textPredict as a vector
 #' @return Returns the original dataset with predictions included.
 #' @noRd
-bind_predictions <- function(data, predictions) {
+bind_predictions <- function(data,
+                             predictions) {
   predictions <- tibble::as_tibble(predictions)
 
   row_diff <- nrow(data) - nrow(predictions)
@@ -848,7 +860,8 @@ bind_predictions <- function(data, predictions) {
 #' @param prediction_list Predictions from textPredict as a list
 #' @return Returns the original dataset with predictions included.
 #' @noRd
-bind_data <- function(original_data, prediction_list) {
+bind_data <- function(original_data,
+                      prediction_list) {
   # copy of original_data
   result_data <- original_data
 
@@ -875,11 +888,11 @@ bind_data <- function(original_data, prediction_list) {
 #' Wrapper function that prepares the data and returns a list with predictions, class residuals and probability residuals.
 #' @param model_reference Reference to implicit motive model, either github URL or file-path.
 #' @param participant_id A column with user ids.
-#' @param story_id list of story-ids. 
+#' @param story_id list of story-ids.
 #' @param predicted_scores2 Predictions from textPredict() function.
 #' @param texts Texts to predict from textPredict() function.
-#' @param dataset your dataset. 
-#' @param lower_case_model character name of your model. 
+#' @param dataset your dataset.
+#' @param lower_case_model character name of your model.
 #' @return Returns a tibble with values relevant for calculating implicit motives
 #' @noRd
 implicit_motives_results <- function(model_reference,
@@ -887,7 +900,7 @@ implicit_motives_results <- function(model_reference,
                                      story_id,
                                      predicted_scores2,
                                      texts,
-                                     dataset, 
+                                     dataset,
                                      lower_case_model) {
 
   #### Assign correct column name ####
@@ -907,29 +920,29 @@ implicit_motives_results <- function(model_reference,
 
   # Retrieve Data
   implicit_motives <- implicit_motives(texts, participant_id, predicted_scores2)
-  
+
   # Predict
-  predicted <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives, 
-                                     participant_id = participant_id, 
+  predicted <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives,
+                                     participant_id = participant_id,
                                      story_id = story_id)
-  
+
   # set default to NULL
-  predicted_story <- NULL 
-  
-  # if both story_id and participant_id are defined, then also create story-level predictions. 
+  predicted_story <- NULL
+
+  # if both story_id and participant_id are defined, then also create story-level predictions.
   if (!is.null(story_id) && !is.null(participant_id)){
     # The algorithm treats participant_id and story_id the same, but was origionally created to only handle
-    # participant id:s. A solution is therefore to assign the story:ids to participant_id. 
+    # participant id:s. A solution is therefore to assign the story:ids to participant_id.
     participant_id_placeholder <- story_id
-    
+
     implicit_motives_story <- implicit_motives(texts, participant_id_placeholder, predicted_scores2)
-    
-    predicted_story <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives_story, 
-                                       participant_id = participant_id_placeholder, 
+
+    predicted_story <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives_story,
+                                       participant_id = participant_id_placeholder,
                                        story_id = story_id)
-    
+
   }
-  
+
   # Full column name
   class_col_name <- paste0(column_name, "_class")
 
@@ -948,9 +961,9 @@ implicit_motives_results <- function(model_reference,
       summary_list <- list(sentence_predictions = predicted_scores2,
                            person_predictions = predicted)
     }
-    
+
   } else {
-    
+
     if(!identical(predicted, predicted_story) && !is.null(predicted_story)){
       # include both story- and sentence-level predictions
       to_insert <- list(predicted_scores2, predicted, predicted_story)
@@ -970,7 +983,7 @@ implicit_motives_results <- function(model_reference,
                            story_predictions = predicted,
                            dataset = integrated_dataset)
     }
-      
+
     if (!identical(predicted, predicted_story) && !is.null(predicted_story)){
       # story predictions
       summary_list <- list(sentence_predictions = predicted_scores2,
@@ -1002,31 +1015,31 @@ implicit_motives_results <- function(model_reference,
 #' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"). 3: Path to a model stored locally (e.g, "path/to/your/model").
 #' @param participant_id A column with user ids.
 #' @param show_texts Show texts, TRUE / FALSE
-#' @param type list of story-ids. 
+#' @param type list of story-ids.
 #' @param texts Texts to predict from textPredict() function.
-#' @param story_id your dataset. 
-#' @param lower_case_model character name of your model. 
+#' @param story_id your dataset.
+#' @param lower_case_model character name of your model.
 #' @return Returns a list of conditions for implicit motive coding to work
 #' @noRd
 get_model_info <- function(model_info,
                            participant_id,
                            show_texts,
                            type,
-                           texts, 
-                           story_id, 
+                           texts,
+                           story_id,
                            lower_case_model
                            ) {
   # show_prob is by default FALSE
   show_prob <- FALSE
-  
+
   if (
     grepl("implicit_power_roberta_large_l23_v1", lower_case_model) ||
     grepl("implicit_affiliation_roberta_large_l23_v1", lower_case_model) ||
     grepl("implicit_achievement_roberta_large_l23_v1", lower_case_model) ||
-    (grepl("implicit_motives", lower_case_model) && 
+    (grepl("implicit_motives", lower_case_model) &&
      (!is.null(participant_id) || !is.null(story_id)))
   ) {
-    
+
     type <- "class" # type must be class for these conditions
     # switch to the correct model URL
     if (lower_case_model == "implicit_power_roberta_large_l23_v1") {
@@ -1035,17 +1048,17 @@ get_model_info <- function(model_info,
       model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_achievement_open.rds"
     } else if (lower_case_model == "implicit_affiliation_roberta_large_l23_v1") {
       model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_affiliation_open.rds"
-    } 
+    }
     # specific configuration for implicit motive coding
     if (!is.null(participant_id) || !is.null(story_id)) {
       show_texts <- TRUE
       show_prob <- TRUE
       type <- "class"
-      
+
       # Assign story_id to the participant_id variable (this might seem illogical, but this was a convenient
       # solution to a new problem caught along the way.
       if (is.null(participant_id)){
-          participant_id <- story_id 
+          participant_id <- story_id
       }
 
       # separate multiple sentences, and add corresponding user-id

@@ -70,7 +70,7 @@ textCentrality <- function(words,
   comment(cenrtal_sss_df) <- textCentrality_description
   return(cenrtal_sss_df)
 }
-# End Semantic Centrality Plot data
+
 
 #' Plot words according to semantic similarity to the aggregated word embedding.
 #' @param word_data Tibble from the textPlot function.
