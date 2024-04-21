@@ -30,7 +30,7 @@
                Please send us feedback based on your experience.",
       fg = "green", bg = NULL
     ),
-    colourise("\n\nPlease note that defaults has changed in the textEmbed-functions since last version; see help(textEmbed) or www.r-text.org for more details.",
+    colourise("\n\nFor more information about the package see www.r-text.org.",
       fg = "purple", bg = NULL
     )
   )
