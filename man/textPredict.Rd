@@ -19,9 +19,10 @@ textPredict(
   participant_id = NULL,
   save_embeddings = TRUE,
   save_dir = "wd",
-  save_name = "",
+  save_name = "textPredict",
   story_id = NULL,
   dataset_to_merge_predictions = NULL,
+  previous_sentence = FALSE,
   ...
 )
 }
@@ -29,9 +30,10 @@ textPredict(
 \item{model_info}{(character or r-object) model_info has three options. 1: R model object
 (e.g, saved output from textTrain). 2:link to github-model
 (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS").
-3: Path to a model stored locally (e.g, "path/to/your/model").}
+3: Path to a model stored locally (e.g, "path/to/your/model"). Information about accessble models
+can be found at: \href{https://r-text.org/articles/pre_trained_models.html}{r-text.org}.}
 
-\item{word_embeddings}{(tibble) Embeddings from e.g., textEmbed(). If you're using a pretrained model,
+\item{word_embeddings}{(tibble) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 then texts and embeddings cannot be submitted simultaneously (default = NULL).}
 
 \item{texts}{(character) Text to predict. If this argument is specified, then arguments "word_embeddings"
@@ -57,24 +59,27 @@ If the model already exists in your work-directory, it will automatically be loa
 \item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 specific device number such as 'mps:1'.}
 
-\item{participant_id}{(list) participant_id associates sentences with their writers. participant_id must be defined when
-calculating implicit motives. (default = NULL)  shown (default = FALSE).}
+\item{participant_id}{(list) Vector of participant-ids. Specify this for getting person level scores
+(i.e., summed sentence probabilities to the person level corrected for word count). (default = NULL)}
 
-\item{save_embeddings}{(boolean) If set to TRUE, embeddings will be saved with a unique identifier, and 
+\item{save_embeddings}{(boolean) If set to TRUE, embeddings will be saved with a unique identifier, and
 will be automatically opened next time textPredict is run with the same text. (default = TRUE)}
 
 \item{save_dir}{(character) Directory to save embeddings. (default = "wd" (i.e, work-directory))}
 
-\item{save_name}{(character) Name of the saved embeddings (will be combined with a unique identifier). 
+\item{save_name}{(character) Name of the saved embeddings (will be combined with a unique identifier).
 (default = ""). Obs: If no save_name is provided, and model_info is a character, then save_name will be set
 to model_info.}
 
-\item{story_id}{(list) story_id associates sentences with their stories. If story_id is defined,
-then the mean of the current and previous
-word-embedding per story-id will be calculated. (default = NULL)}
+\item{story_id}{(vector) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
+probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
+returns a list including both story level and person level prediction corrected for word count. (default = NULL)}
 
 \item{dataset_to_merge_predictions}{(R-object, tibble) Insert your data here to integrate predictions to your dataset,
 (default = NULL).}
+
+\item{previous_sentence}{If set to TRUE, word-embeddings will be averaged over the current and previous
+sentence per story-id. For this, both participant-id and story-id must be specified.}
 
 \item{...}{Setting from stats::predict can be called.}
 }
@@ -93,7 +98,7 @@ text_to_predict <- "I am not in harmony in my life as much as I would like to be
 
 # Example 1: (predict using pre-made embeddings and an R model-object)
 prediction1 <- textPredict(
-  trained_model,
+  model_info = trained_model,
   word_embeddings_4$texts$satisfactiontexts
 )
 
@@ -119,11 +124,10 @@ prediction4 <- textPredict(
 implicit_motive_data <- dplyr::mutate(.data = Language_based_assessment_data_8,
 participant_id = dplyr::row_number())
 
-# Code implicit motives. (In this example, person_class will be NaN due to the absence of
-# sentences classified as 'power')
+# Code implicit motives.
 implicit_motives <- textPredict(
   texts = implicit_motive_data$satisfactiontexts,
-  model_info = "power",
+  model_info = "implicit_power_roberta_large_L23_v1",
   participant_id = implicit_motive_data$participant_id,
   dataset_to_merge_predictions = implicit_motive_data
 )

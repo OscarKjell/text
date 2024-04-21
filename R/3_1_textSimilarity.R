@@ -295,7 +295,6 @@ textDistanceMatrix <- function(
 }
 
 
-
 #' Compute the semantic similarity between a text variable and a word norm
 #' (i.e., a text represented by one word embedding that represent a construct).
 #' @param y Word embedding from textEmbed (from only one text).
@@ -348,7 +347,6 @@ textSimilarityNorm <- function(x,
   )
   ss
 }
-
 
 
 #' Compute the semantic distance between a text variable and a word norm

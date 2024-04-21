@@ -66,7 +66,8 @@ the vectorizer model.}
 \value{
 A folder containing the model, data, folder with terms and values for each topic,
 and the document-topic matrix. Moreover the model itself is returned formatted as a data.frame
-together with metdata
+together with metdata.
+See \code{\link{textTopicsReduce}} \code{\link{textTopicsTest}} and \code{\link{textTopicsWordcloud}}.
 }
 \description{
 This function creates and trains a BERTopic model (based on bertopic python packaged) on a

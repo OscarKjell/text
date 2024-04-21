@@ -37,6 +37,7 @@ fit_model_rmse <- function(object,
                            preprocess_step_center = TRUE,
                            preprocess_step_scale = TRUE,
                            impute_missing = FALSE) {
+
   data_train <- rsample::analysis(object)
   data_train <- tibble::as_tibble(data_train)
 
@@ -328,7 +329,6 @@ fit_model_rmse <- function(object,
 }
 
 
-
 #' In some situations, we want to parameterize the function over the tuning parameter:
 #' Function to fit a model and compute RMSE.
 #'
@@ -503,7 +503,8 @@ tune_over_cost <- function(object,
 #' @param eval_measure the evaluation measure which decide if min or max value should be selected
 #' @return The row with the best evaluation measure.
 #' @noRd
-bestParameters <- function(data, eval_measure) {
+bestParameters <- function(data,
+                           eval_measure) {
   if (eval_measure %in% c(
     "accuracy", "bal_accuracy", "sens", "spec",
     "precision", "kappa", "f_measure", "roc_auc",

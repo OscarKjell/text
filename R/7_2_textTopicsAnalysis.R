@@ -557,7 +557,9 @@ create_plots <- function(df_list,
 #' @param num_topics (int) the number of topics
 #' @return list of data.frames
 #' @noRd
-create_df_list_bert_topics <- function(save_dir, seed, num_topics) {
+create_df_list_bert_topics <- function(save_dir,
+                                       seed,
+                                       num_topics) {
   df_list <- list()
   for (i in 1:num_topics) {
     df_list[[i]] <- read.csv(paste0(save_dir, "/seed_", seed, "/df_list_term_phi/", i, "_top_words.csv"))

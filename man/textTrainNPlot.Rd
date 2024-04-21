@@ -22,19 +22,20 @@ textTrainNPlot(
   bar_size = rep(0.8, length(tibble_list)),
   line_size = rep(0.6, length(tibble_list)),
   line_type = rep("straight", length(tibble_list)),
-  point_size = rep(3, length(tibble_list))
+  point_size = rep(3, length(tibble_list)),
+  log_transform_x = FALSE
 )
 }
 \arguments{
-\item{train_data}{(list) One or several objects returned by the function textTrainN as a list (e.g, list(object1, object2)). Also, 
-If several models are provided, then one can add a vector c() with settings (i.e the parameters below) for each model 
+\item{train_data}{(list) One or several objects returned by the function textTrainN as a list (e.g, list(object1, object2)). Also,
+If several models are provided, then one can add a vector c() with settings (i.e the parameters below) for each model
 (make sure to add the settings in the order as the models are ordered, if you look to keep the original settings then write "").}
 
 \item{sample_percents}{(numeric) Vector containing the percents of the total number of datapoints that is
 included in each sample (default = c(25,50,75,100)).}
 
 \item{n_cross_val}{(numeric) Value of the number of times cross-validation has been repeated (default = 1,
-i.e., cross-validation has only been applied once). If several models are provided, then one can add a vector c() 
+i.e., cross-validation has only been applied once). If several models are provided, then one can add a vector c()
 with settings for each model (make sure to add the settings in the order as the models are ordered).}
 
 \item{x_unit}{(character, "percent" or "quantity") Determines whether the x-axis-values should represent
@@ -66,6 +67,9 @@ across different sample sizes").}
 \item{line_type}{(character, either "straight" or "smooth") Determine line-type (default = "straight").}
 
 \item{point_size}{(numeric) Determine points size (default = 1).}
+
+\item{log_transform_x}{(boolean) Determine wether to log-transform x in case of displaying number of samples
+(default = FALSE).}
 }
 \value{
 A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis.
@@ -96,9 +100,9 @@ plot_object1 <- textTrainNPlot(
 # Visualize plot
 plot_object1
 
-# Plot the performance of several models across different sample sizes. 
-plot_object2 <- textTrainNPlot(train_data = list(object1, object2, object3), 
-                               n_cross_val = c(2,1,1), 
+# Plot the performance of several models across different sample sizes.
+plot_object2 <- textTrainNPlot(train_data = list(object1, object2, object3),
+                               n_cross_val = c(2,1,1),
                                line_color = c("","","#0000FF")) # "" gives the default settings.
 # Visualize plot
 plot_object2

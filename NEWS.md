@@ -3,11 +3,16 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.2.1
+- Improving `textPredict()` functionality. 
+- Implementing experimental features related to `textTopics()`
+
 # text 1.2
 ## Functions
 - `textTopics()` trains a BERTopic model with different modules and returns the model, data, and topic_document distributions based on c-td-idf
 - `textTopicsTest()` can perform multiple tests (correlation, t-test, regression) between a BERTopic model from `textTopics()` and data
 - `textTopicsWordcloud()` can plot word clouds of topics tested with `textTopicsTest()`
+- `textTopicsTree()` prints out a tree structure of the hierarchical topic structure
 
 # text 1.1
 ## Functions

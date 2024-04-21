@@ -92,16 +92,45 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
    testthat::expect_that(model_multinomial4, testthat::is_a("list"))
    testthat::expect_is(model_multinomial4$results_metrics$.estimate[[1]], "numeric")
    testthat::expect_equal(model_multinomial4$results_metrics$.estimate[[1]], 0.275)
-
+   
+   model_logistic2 <- text::textTrainRegression(
+     x = word_embeddings_4$texts["harmonywords"],
+     y = as.factor(Language_based_assessment_data_8$gender),
+     cv_method = "validation_split",
+     outside_folds = 10,
+     inside_folds = 3 / 4,
+     model = "logistic",
+     eval_measure = "bal_accuracy",
+     penalty = c(1),
+     mixture = c(0),
+     preprocess_PCA = "min_halving",
+     multi_cores = "multi_cores_sys_default"
+   )
+    
+   testthat::expect_that(model_logistic2, testthat::is_a("list"))
+   testthat::expect_is(model_logistic2$results_metrics$.estimate[[1]], "numeric")
+   testthat::expect_equal(model_logistic2$results_metrics$.estimate[[1]], 0.6)
+   
    model_multinomial4_preds <- text::textPredict(
      model_info = model_multinomial4,
-     word_embeddings = word_embeddings_4$texts["harmonywords"]
+     word_embeddings = word_embeddings_4$texts["harmonywords"],
    )
 
    testthat::expect_equal(as.character(model_multinomial4_preds[[1]][1]), "2")
    testthat::expect_equal(as.character(model_multinomial4_preds[[1]][2]), "3")
    testthat::expect_equal(as.character(model_multinomial4_preds[[1]][5]), "4")
-
+   
+   # test logistic model
+   model_logistic2_preds <- text::textPredict(
+     model_info = model_logistic2,
+     word_embeddings = word_embeddings_4$texts["harmonywords"],
+     type = "class_prob", 
+     show_texts = TRUE
+   )
+   
+   testthat::expect_equal(as.character(model_logistic2_preds[[1]][3]), "female")
+   testthat::expect_equal(model_logistic2_preds[[2]][5], 0.5404381, tolerance = 0.0001)
+   testthat::expect_equal(model_logistic2_preds[[3]][5], 0.4595619, tolerance = 0.0001)
 
    model_lists <- text::textTrainLists(
      x = word_embeddings_4$texts[1:2],
@@ -124,9 +153,6 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
    testthat::expect_equal(model_multinomial4_preds[[4]][1], 15.67582, tolerance = 0.0001)
 
 })
-
-
-
 
 test_that("textTrain Regression without saving models", {
   skip_on_cran()
@@ -408,10 +434,6 @@ test_that("textTrainRegression adding word_embedding together", {
   testthat::expect_is(multi_we_PCA_NA$results[[1]][[1]], "numeric")
   testthat::expect_equal(multi_we_PCA_NA$results[[1]][[1]], 1.58414, tolerance = 0.001)
 })
-
-
-
-
 
 
 test_that("training with only x_append (without word embeddings)", {

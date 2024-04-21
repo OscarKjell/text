@@ -26,23 +26,31 @@
 #' @param save_dir (string) The directory for saving results.
 #' @return A folder containing the model, data, folder with terms and values for each topic,
 #' and the document-topic matrix. Moreover the model itself is returned formatted as a data.frame
-#' together with metdata
+#' together with metdata.
+# @examples
+# #
+# \dontrun{
+#
+# }
+#' See \code{\link{textTopicsReduce}} \code{\link{textTopicsTest}} and \code{\link{textTopicsWordcloud}}.
 #' @export
-textTopics <- function(data,
-                       variable_name,
-                       embedding_model = "distilroberta",
-                       umap_model = "default",
-                       hdbscan_model = "default",
-                       vectorizer_model = "default",
-                       representation_model = "mmr",
-                       num_top_words = 10,
-                       n_gram_range = c(1, 3),
-                       stopwords = "english",
-                       min_df = 5,
-                       bm25_weighting = FALSE,
-                       reduce_frequent_words = TRUE,
-                       set_seed = 8,
-                       save_dir = "./results") {
+textTopics <- function(
+    data,
+    variable_name,
+    embedding_model = "distilroberta",
+    umap_model = "default",
+    hdbscan_model = "default",
+    vectorizer_model = "default",
+    representation_model = "mmr",
+    num_top_words = 10,
+    n_gram_range = c(1, 3),
+    stopwords = "english",
+    min_df = 5,
+    bm25_weighting = FALSE,
+    reduce_frequent_words = TRUE,
+    set_seed = 8,
+    save_dir = "./results"
+    ) {
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
     "bert_topic.py",
@@ -88,3 +96,77 @@ textTopics <- function(data,
     save_dir = save_dir
   ))
 }
+
+#' textTopicsReduce (EXPERIMENTAL)
+#' @param data (tibble/data.frame) A tibble with a text-variable to be analysed, and optional
+#' numeric/categorical variables that you might want to use for later analyses testing the
+#' significance of topics in relation to these variables.
+#' @param data_var (string)  Name of the text-variable in the data tibble that you want
+#' to perform topic modeling on.
+#' @param embedding_model (string) Name of the embedding model to use such as "miniLM", "mpnet",
+#' "multi-mpnet", "distilroberta".
+#' @param n_topics (string) The dimension reduction algorithm, currently only "default"
+#' is supported.
+#' @param load_path (string) The clustering algorithm to use, currently only "default"
+#'  is supported.
+#' @param save_dir (string) Name of the vectorizer model, currently only "default"
+#' is supported.
+#' @param save_dir (string) The directory for saving results.
+#' @return A folder containing the model, data, folder with terms and values for each topic,
+#' and the document-topic matrix. Moreover the model itself is returned formatted as a data.frame
+#' together with metdata.
+# @examples
+# #
+# \dontrun{
+#
+# }
+#' @seealso See \code{\link{textTopics}} \code{\link{textTopicsTest}} and \code{\link{textTopicsWordcloud}}.
+#' @export
+textTopicsReduce <- function(
+    data,
+    data_var,
+    n_topics = 10,
+    load_path = "./results", # From textTopics saved output
+    save_dir = "./results_reduced",
+    embedding_model = "default"
+    ){
+
+  # Run python file with HunggingFace interface to state-of-the-art transformers
+  reticulate::source_python(system.file("python",
+                                        "bert_topic.py",
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
+
+  reduce_topics(
+    data = data,
+    data_var = data_var,
+    n_topics = n_topics,
+    load_path = load_path,
+    save_path = save_dir,
+    embedding_model = embedding_model
+  )
+
+  print("Complete")
+}
+
+
+#' textTopicsTest (EXPERIMENTAL) to get the hierarchical topic tree
+#' @param topic_model (list) The output from textTopics.
+#' @param data (tibble/data.frame) A tibble with the data
+#' @param data_var (string) The name of the text variable that the topic model was trained on
+#' @return prints a hierarchical topic tree on the console
+#' @export
+textTopicsTree <- function(
+    topic_model,
+    data,
+    data_var
+    ){
+
+  topic_model <- topic_model$topic_model
+  get_topic_tree(topic_model, data, data_var)
+
+}
+
+
+

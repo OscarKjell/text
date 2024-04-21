@@ -586,8 +586,6 @@ textProjection <- function(words,
 
   return(word_data_tibble1)
 }
-#### End textProjection
-#############
 
 
 #' Plot words according to Supervised Dimension Projection.

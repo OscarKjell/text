@@ -119,7 +119,11 @@ textTrain <- function(x,
 #' @param descriptions description.
 #' @return A list with result output depending on save_output setting.
 #' @noRd
-sort_regression_output_list <- function(output, method_cor, save_output, descriptions, ...) {
+sort_regression_output_list <- function(output,
+                                        method_cor,
+                                        save_output,
+                                        descriptions,
+                                        ...) {
   # Sort out the summary results depending on type of correlation method used
   if (method_cor == "pearson") {
     output_t <- t(as.data.frame(lapply(output, function(output) unlist(output$results)[[1]][c(1)])))
@@ -179,7 +183,11 @@ sort_regression_output_list <- function(output, method_cor, save_output, descrip
 #' @importFrom purrr reduce
 #' @importFrom dplyr full_join
 #' @noRd
-sort_classification_output_list <- function(output, save_output, descriptions, train_method, ...) {
+sort_classification_output_list <- function(output,
+                                            save_output,
+                                            descriptions,
+                                            train_method,
+                                            ...) {
   output_chi <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[1]][[1]])))
   output_df <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[2]][[1]])))
   output_p <- t(as.data.frame(lapply(output, function(output) unlist(output$chisq)[[3]][[1]])))
@@ -229,7 +237,6 @@ sort_classification_output_list <- function(output, save_output, descriptions, t
   }
   results
 }
-
 
 #' Individually trains word embeddings from several text variables to several numeric or categorical variables.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation). It is possible to have word embeddings

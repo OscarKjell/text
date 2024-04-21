@@ -23,9 +23,10 @@ test_that("Bertopic", {
 
   data <- dplyr::bind_rows(data1, data2, data3)
 
-  # Create BERTopic model trained on data["text"]
+  # Create BERTopic model trained on data["text"] help(textTopics)
   bert_model <- textTopics(data = data,
                            variable_name = "text",
+                           embedding_model = "distilroberta",
                            min_df = 2,
                            set_seed = 8,
                            save_dir="./results")
@@ -33,6 +34,18 @@ test_that("Bertopic", {
   testthat::expect_equal(bert_model$preds$t_1[2],
                          .1115696,
                          tolerance = 0.0001)
+
+
+#  textTopicsReduce(
+#    data = data,
+#    data_var = "text",
+#    n_topics = 10L,
+#    load_path = "./results/seed_8/my_model/", # From textTopics saved output
+#    save_dir = "./results_reduced",
+#    embedding_model = "distilroberta"
+#  )
+#
+
 
   # Testing if we can predict "score" from from topic-document distribution
   test <- text::textTopicsTest(model = bert_model,
