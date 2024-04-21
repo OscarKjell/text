@@ -1,3 +1,4 @@
+
 # A helper function to textPredict giving it the capabilities of textPredictEntireProcedure.
 #' @param texts (character) Text to predict. If this argument is specified, then argument
 #' "premade_embeddings" must be set to NULL (default = NULL).
@@ -458,6 +459,7 @@ textPredict <- function(model_info = NULL,
     )
 
     word_embeddings_names <- "word_embeddings"
+
   }
 
   if (!is.null(x_append)) {
@@ -572,10 +574,10 @@ textPredict <- function(model_info = NULL,
     #      dplyr::select(-id_nr)
 
 
-    ## OK ###
+    ## OK ### target_variables_names = NULL
     predicted_scores2 <- new_data1 %>%
       dplyr::bind_cols(stats::predict(loaded_model$final_model, new_data = new_data1, type = type)) %>% # , ...
-      dplyr::select(-!!target_variables_names) %>%
+      dplyr::select(-!!colnames_to_b_removed) %>% #
       dplyr::full_join(new_data_id_nr_col, by = "id_nr") %>%
       dplyr::arrange(id_nr) %>%
       dplyr::select(-id_nr)
