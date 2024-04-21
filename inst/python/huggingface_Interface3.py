@@ -233,14 +233,14 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
         # Do not know how to fix this. Some decoder-only files do not have pad_token.
         if tokenizer.pad_token is None:
             print("The language model entered might has issues since the model does not provide the padding_token.")
-            print("Consider use BERT-like models instead if encountering errors.")
+            print("Consider use BERT-like models instead if meeting errors.")
         #    tokenizer.pad_token = tokenizer.eos_token
         #    tokenizer.pad_token_id = tokenizer.eos_token_id
         return tokenizer
     else:
         if tokenizer.pad_token is None:
             print("The language model entered might has issues since the model does not provide the padding_token.")
-            print("Consider use BERT-like models instead if encountering errors.")    
+            print("Consider use BERT-like models instead if meeting errors.")    
         #    tokenizer.pad_token = tokenizer.eos_token
         #    tokenizer.pad_token_id = tokenizer.eos_token_id        
         return config, tokenizer, transformer_model
