@@ -77,8 +77,8 @@ reactable::reactable(
     Reference = colDef(minWidth = 250),
     Description = colDef(minWidth = 200),
     N.training = colDef(minWidth = 200),
-   # Label.types = colDef(minWidth = 200),
-   # Other = colDef(minWidth = 200),
+    Label.types = colDef(minWidth = 200),
+    Other = colDef(minWidth = 200),
     Command.info = colDef(minWidth = 800)
   ), 
   showPageSizeOptions = TRUE,
