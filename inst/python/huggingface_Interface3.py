@@ -220,6 +220,8 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
         #print(f"!!!!hg_token: {hg_token} !!!")
         if hg_gated:
             set_hg_gated_access(access_token=hg_token)
+        else: 
+            pass
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
         if not config_only:
             tokenizer = AutoTokenizer.from_pretrained(model)
@@ -228,8 +230,19 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
     if config_only:
         return config
     elif tokenizer_only:
+        # Do not know how to fix this. Some decoder-only files do not have pad_token.
+        if tokenizer.pad_token is None:
+            print("The language model entered might has issues since the model does not provide the padding_token.")
+            print("Consider use BERT-like models instead if meeting errors.")
+        #    tokenizer.pad_token = tokenizer.eos_token
+        #    tokenizer.pad_token_id = tokenizer.eos_token_id
         return tokenizer
     else:
+        if tokenizer.pad_token is None:
+            print("The language model entered might has issues since the model does not provide the padding_token.")
+            print("Consider use BERT-like models instead if meeting errors.")    
+        #    tokenizer.pad_token = tokenizer.eos_token
+        #    tokenizer.pad_token_id = tokenizer.eos_token_id        
         return config, tokenizer, transformer_model
 
 def get_number_of_hidden_layers(model, logging_level = "error", hg_gated=False, hg_token=""):
@@ -690,7 +703,8 @@ def hgTransformerGetEmbedding(text_strings,
                 if return_tokens:
                     all_toks.append(tokens)
 
-    del_hg_gated_access()                              
+    if hg_gated:
+        del_hg_gated_access()                              
     if return_tokens:
         return all_embs, all_toks
     else:
