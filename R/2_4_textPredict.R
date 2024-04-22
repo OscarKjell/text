@@ -44,7 +44,7 @@ textReturnModelAndEmbedding <- function(
   options(timeout = 5 * 60)
 
   # diaplay message to user
-  cat(colourise("Loading model...", fg = "red"))
+  cat(colourise("Loading model...", fg = "black"))
   cat("\n")
 
   # extract model_name if its a url or filepath

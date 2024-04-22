@@ -23,14 +23,14 @@ library(text)
 # Example calling a model using the URL
 textPredict(
   model_info = "https://github.com/OscarKjell/text_models/raw/main/valence_models/facebook_model.rds",
-  texts = "what is the valence of this text"
+  texts = "what is the valence of this text?"
 )
 
 
 # Example calling a model having an abbreviation
 textPredict(
-  model_info = Valence2024,
-  texts = "what is the valence of this text"
+  model_info = implicit_power_roberta_large_L23_v1,
+  texts = "It looks like they have problems collaborating."
 )
 ```
 
@@ -64,22 +64,25 @@ reactable::reactable(
     style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif")
   ),
   columns = list(
+    Construct = colDef(minWidth = 280),
     Outcome = colDef(minWidth = 200),
     Language.type = colDef(minWidth = 200),
     Name = colDef(minWidth = 350),
     Path = colDef(minWidth = 300),
     Model.type = colDef(minWidth = 200),
+    Feature  = colDef(minWidth = 200),
     CV.accuracy = colDef(minWidth = 150),
     Held.out.accuracy = colDef(minWidth = 150),
     SEMP.accuracy = colDef(minWidth = 150),
     Reference = colDef(minWidth = 250),
     Description = colDef(minWidth = 200),
-    N.training.observations = colDef(minWidth = 200),
-    Label.types = colDef(minWidth = 200),
-    Other = colDef(minWidth = 200),
-    Example.command = colDef(minWidth = 800)
+    N.training = colDef(minWidth = 200),
+   # Label.types = colDef(minWidth = 200),
+   # Other = colDef(minWidth = 200),
+    Command.info = colDef(minWidth = 800)
   ), 
-  showPageSizeOptions = TRUE
+  showPageSizeOptions = TRUE,
+  groupBy = "Construct"
 )
 ```
 
@@ -87,5 +90,7 @@ reactable::reactable(
 ### References
 
 Gu, Kjell, Schwartz & Kjell. (2024). Natural Language Response Formats for Assessing Depression and Worry with Large Language Models: A Sequential Evaluation with Model Pre-registration.
+
+Kjell, O. N., Sikström, S., Kjell, K., & Schwartz, H. A. (2022). Natural language analyzed with AI-based transformers predict traditional subjective well-being measures approaching the theoretical upper limits in accuracy. Scientific reports, 12(1), 3918.
 
 Nilsson, Runge, Ganesan, Lövenstierne, Soni & Kjell (2024) Automatic Implicit Motives Codings are at Least as Accurate as Humans’ and 99% Faster
