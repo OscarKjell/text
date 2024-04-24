@@ -1,4 +1,3 @@
-
 # A helper function to textPredict giving it the capabilities of textPredictEntireProcedure.
 #' @param texts (character) Text to predict. If this argument is specified, then argument
 #' "premade_embeddings" must be set to NULL (default = NULL).
@@ -608,7 +607,7 @@ textPredict <- function(model_info = NULL,
     }
   }
 
-  # Include text in predictions
+  # Include text in redictions
   if (show_texts) {
     predicted_scores2 <- predicted_scores2 %>%
       dplyr::mutate(texts = texts)
@@ -619,9 +618,9 @@ textPredict <- function(model_info = NULL,
   # Check for implicit motives configuration
 
   if (
-    grepl("implicit_power_roberta_large_l23_v1", lower_case_model) ||
-    grepl("implicit_affiliation_roberta_large_l23_v1", lower_case_model) ||
-    grepl("implicit_achievement_roberta_large_l23_v1", lower_case_model) ||
+    (grepl("implicit", lower_case_model) & grepl("power", lower_case_model)) ||
+    (grepl("implicit", lower_case_model) & grepl("affiliation", lower_case_model)) ||
+    (grepl("implicit", lower_case_model) & grepl("achievement", lower_case_model)) ||
     (grepl("implicit_motives", lower_case_model) &&
      (!is.null(participant_id) || !is.null(story_id)))
   ){
