@@ -55,6 +55,7 @@ Suggests:
     ranger,
     utils,
     ggwordcloud, 
-    reactable
+    reactable, 
+    osfr
 VignetteBuilder: knitr
 Depends: R (>= 4.00)
