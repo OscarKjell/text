@@ -72,14 +72,14 @@ test_that("PM tutorial", {
 
 
   # Examine the relationship between satisfactiontext and the corresponding rating scale
-#  model_satisfactiontext_swls <- textTrain(
-#    x = word_embeddings$texts$satisfactiontexts, # the predictor variables (i.e., the word embeddings)
-#    y = Language_based_assessment_data_8$swlstotal, # the criterion variable (i.e.,the rating scale score.
-#    model_description = "author(s): Kjell, Giorgi, & Schwartz; data: N=40, population =  Online, Mechanical Turk; publication: title = Example for demo; description: swls = the satisfaction with life scale")
-#
-#  # Examine the correlation between predicted and observed Harmony in life scale scores
-#  model_satisfactiontext_swls$results
-#  expect_equal(model_satisfactiontext_swls$results[[4]][[1]], 0.5385082, tolerance = 0.00001)
+  model_satisfactiontext_swls <- text::textTrain(
+    x = word_embeddings$texts$satisfactiontexts, # the predictor variables (i.e., the word embeddings)
+    y = Language_based_assessment_data_8$swlstotal, # the criterion variable (i.e.,the rating scale score.
+    model_description = "author(s): Kjell, Giorgi, & Schwartz; data: N=40, population =  Online, Mechanical Turk; publication: title = Example for demo; description: swls = the satisfaction with life scale")
+
+  # Examine the correlation between predicted and observed Harmony in life scale scores
+  #model_satisfactiontext_swls$results
+  expect_equal(model_satisfactiontext_swls$results[[4]][[1]], 0.5385082, tolerance = 0.00001)
 
   # OUTPUT:
 

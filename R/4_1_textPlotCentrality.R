@@ -71,7 +71,6 @@ textCentrality <- function(words,
   return(cenrtal_sss_df)
 }
 
-
 #' Plot words according to semantic similarity to the aggregated word embedding.
 #' @param word_data Tibble from the textPlot function.
 #' @param min_freq_words_test Select words to significance test that have occurred
@@ -216,7 +215,7 @@ textCentralityPlot <- function(word_data,
 
   set.seed(seed)
   y_axes_label <- NULL
-  y_axes_values <- element_blank()
+  y_axes_values <- ggplot2::element_blank()
 
   # Selected min_freq_words_test
   word_data1 <- word_data[word_data$n >= min_freq_words_test, ]
@@ -278,13 +277,14 @@ textCentralityPlot <- function(word_data,
   }
 
   # This solution is because it is not possible to send "0" as a parameter
-  # only_x_dimension <- 0
-  y_axes <- "only_x_dimension"
+  only_x_dimension <- 0
+  #y_axes <- "only_x_dimension"
 
   # Plot
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
-    ggplot2::ggplot(data = word_data1_all, ggplot2::aes(!!rlang::sym(x_axes),
+    ggplot2::ggplot(data = word_data1_all,
+                    ggplot2::aes(!!rlang::sym(x_axes),
       !!rlang::sym(y_axes),
       label = words
     )) +
@@ -335,7 +335,7 @@ textCentralityPlot <- function(word_data,
     ggplot2::theme_minimal() +
     ggplot2::theme(
       legend.position = c("bottom"),
-      plot.title = element_text(hjust = 0.5),
+      plot.title = ggplot2::element_text(hjust = 0.5),
       legend.justification = c("right", "top"),
       panel.grid.major = ggplot2::element_blank(),
       panel.grid.minor = ggplot2::element_blank(),

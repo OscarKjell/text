@@ -164,8 +164,8 @@ test_that("textCentrality produces a tibble with character variable and numeric 
   skip_on_cran()
 
   df_for_plotting <- text::textCentrality(
-    Language_based_assessment_data_8$harmonywords[1:2],
-    word_embeddings_4$texts$harmonywords[1:2, ],
+    Language_based_assessment_data_8$harmonywords[1:20],
+    word_embeddings_4$texts$harmonywords[1:20, ],
     word_embeddings_4$word_types,
     method = "euclidean"
   )
@@ -173,9 +173,10 @@ test_that("textCentrality produces a tibble with character variable and numeric 
   expect_is(df_for_plotting$words[1], "character")
   expect_is(df_for_plotting$n[1], "integer")
   expect_true(tibble::is_tibble(df_for_plotting))
-  expect_equal(df_for_plotting$n[1], 1)
+  expect_equal(df_for_plotting$n[1], 2)
 
-  plot_c <- text::textCentralityPlot(df_for_plotting,
+  plot_c <- text::textCentralityPlot(
+    word_data = df_for_plotting,
     x_axes = "central_semantic_similarity"
   )
 
