@@ -46,6 +46,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: 3.9
+          miniconda-version: "latest"
 
       - name: Query dependencies
         run: |
