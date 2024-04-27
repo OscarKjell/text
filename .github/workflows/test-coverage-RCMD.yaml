@@ -42,11 +42,10 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2-branch
 
-      - uses: goanpeca/setup-miniconda@v1
+      - uses: goanpeca/setup-miniconda@v2
         with:
           auto-update-conda: true
           python-version: 3.9
-          miniconda-version: "latest"
 
       - name: Query dependencies
         run: |
