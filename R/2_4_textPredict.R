@@ -1,13 +1,14 @@
-
 # A helper function to textPredict giving it the capabilities of textPredictEntireProcedure.
 #' @param texts (character) Text to predict. If this argument is specified, then argument
 #' "premade_embeddings" must be set to NULL (default = NULL).
 #' @param word_embeddings (Embeddings from e.g., textEmbed) Embeddings to predict. If
 #' this argument is specified, then argument "texts" must be set to NULL (default = NULL).
-#' @param model_info (character or r-object) model_info has three options. 1: R model object
-#' (e.g, saved output from textTrain). 2:link to github-model
+#' @param model_info (character or r-object) model_info has four options. 1: R model object
+#' (e.g, saved output from textTrainRegression). 2: Link to a model stored in a github repo
 #' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS").
-#' 3: Path to a model stored locally (e.g, "path/to/your/model").
+#' 3: Link to a model stored in a osf project (e.g, https://osf.io/8fp7v).
+#' 4: Path to a model stored locally (e.g, "path/to/your/model"). Information about some accessible models
+#' can be found at: \href{https://r-text.org/articles/pre_trained_models.html}{r-text.org}.
 #' @param save_model (boolean) The model will by default be saved in work directory (deafult = TRUE).
 #' @param type (character) Choose either 'class' or 'prob'. If your model is a logistic or multinomial
 #'  model, specify whether you want to receive the
@@ -44,7 +45,7 @@ textReturnModelAndEmbedding <- function(
   options(timeout = 5 * 60)
 
   # diaplay message to user
-  cat(colourise("Loading model...", fg = "black"))
+  cat(colourise("Loading model...", fg = "red"))
   cat("\n")
 
   # extract model_name if its a url or filepath
@@ -80,6 +81,38 @@ textReturnModelAndEmbedding <- function(
       loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", getwd()), sep = "")
       cat(colourise(loaded_model_confirm, fg = "green"))
       cat("\n")
+    } else if (grepl("osf.io", model_info)){
+
+      # check if osfr is installed, otherwise, ask the user to install it.
+      if (!requireNamespace("osfr", quietly = TRUE)) {
+        stop("The osfr-package is required for loading files from osfr.
+         Please install it using install.packages('osfr').", call. = FALSE)
+      }
+
+      # retrive osfr tibble with file
+      osf_files <- osf_retrieve_file(model_info)
+
+      # check if model is already downloaded
+      if (isTRUE(file.exists(osf_files$name))){
+        # load model from local memory
+        loaded_model <- readRDS(osf_files$name)
+
+        # display message to user
+        loaded_model_confirm <- paste0(c("The model:", osf_files$name, "has been loaded from:", getwd()), sep = "")
+        cat(colourise(loaded_model_confirm, fg = "green"))
+        cat("\n")
+
+      } else{
+        # download model locally
+        downloaded_model <- osf_download(osf_files[1,])
+
+        loaded_model <- readRDS(downloaded_model$local_path)
+
+        # display message to user
+        loaded_model_confirm <- paste0(c("The model:", osf_files$name, "has been loaded and saved in:", getwd()), sep = "")
+        cat(colourise(loaded_model_confirm, fg = "green"))
+        cat("\n")
+      }
     } else {
       # load model from specific path (if it exists somewhere else than in the work directory)
       loaded_model <- readRDS(model_info)
@@ -246,10 +279,11 @@ textReturnModelAndEmbedding <- function(
 
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
-#' @param model_info (character or r-object) model_info has three options. 1: R model object
-#' (e.g, saved output from textTrain). 2:link to github-model
+#' @param model_info (character or r-object) model_info has four options. 1: R model object
+#' (e.g, saved output from textTrainRegression). 2: Link to a model stored in a github repo
 #' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS").
-#' 3: Path to a model stored locally (e.g, "path/to/your/model"). Information about accessble models
+#' 3: Link to a model stored in a osf project (e.g, https://osf.io/8fp7v).
+#' 4: Path to a model stored locally (e.g, "path/to/your/model"). Information about some accessible models
 #' can be found at: \href{https://r-text.org/articles/pre_trained_models.html}{r-text.org}.
 #' @param word_embeddings (tibble) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 #'  then texts and embeddings cannot be submitted simultaneously (default = NULL).
@@ -298,14 +332,14 @@ textReturnModelAndEmbedding <- function(
 #' )
 #'
 #' # Example 2: (predict using a pretrained github model)
-#' prediction3 <- textPredict(
+#' prediction2 <- textPredict(
 #'   texts = text_to_predict,
 #'   model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS"
 #' )
 #'
 #' # Example 3: (predict using a pretrained logistic github model and return
 #' # probabilities and classifications)
-#' prediction4 <- textPredict(
+#' prediction3 <- textPredict(
 #'   texts = text_to_predict,
 #'   model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/
 #'   trained_github_model_logistic.RDS",
@@ -313,6 +347,11 @@ textReturnModelAndEmbedding <- function(
 #'   threshold = 0.7
 #' )
 #'
+#' # Example 4: (predict from texts using a pretrained model stored in an osf project)
+#' prediction4 <- textPredict(
+#'   texts = text_to_predict,
+#'   model_info = "https://osf.io/8fp7v"
+#' )
 #' ##### Automatic implicit motive coding section ######
 #'
 #' # Create example dataset
@@ -608,7 +647,7 @@ textPredict <- function(model_info = NULL,
     }
   }
 
-  # Include text in predictions
+  # Include text in redictions
   if (show_texts) {
     predicted_scores2 <- predicted_scores2 %>%
       dplyr::mutate(texts = texts)
@@ -619,9 +658,9 @@ textPredict <- function(model_info = NULL,
   # Check for implicit motives configuration
 
   if (
-    grepl("implicit_power_roberta_large_l23_v1", lower_case_model) ||
-    grepl("implicit_affiliation_roberta_large_l23_v1", lower_case_model) ||
-    grepl("implicit_achievement_roberta_large_l23_v1", lower_case_model) ||
+    (grepl("implicit", lower_case_model) & grepl("power", lower_case_model)) ||
+    (grepl("implicit", lower_case_model) & grepl("affiliation", lower_case_model)) ||
+    (grepl("implicit", lower_case_model) & grepl("achievement", lower_case_model)) ||
     (grepl("implicit_motives", lower_case_model) &&
      (!is.null(participant_id) || !is.null(story_id)))
   ){

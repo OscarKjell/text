@@ -27,10 +27,11 @@ textPredict(
 )
 }
 \arguments{
-\item{model_info}{(character or r-object) model_info has three options. 1: R model object
-(e.g, saved output from textTrain). 2:link to github-model
+\item{model_info}{(character or r-object) model_info has four options. 1: R model object
+(e.g, saved output from textTrainRegression). 2: Link to a model stored in a github repo
 (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS").
-3: Path to a model stored locally (e.g, "path/to/your/model"). Information about accessble models
+3: Link to a model stored in a osf project (e.g, https://osf.io/8fp7v).
+4: Path to a model stored locally (e.g, "path/to/your/model"). Information about some accessible models
 can be found at: \href{https://r-text.org/articles/pre_trained_models.html}{r-text.org}.}
 
 \item{word_embeddings}{(tibble) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
@@ -103,14 +104,14 @@ prediction1 <- textPredict(
 )
 
 # Example 2: (predict using a pretrained github model)
-prediction3 <- textPredict(
+prediction2 <- textPredict(
   texts = text_to_predict,
   model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/trained_hils_model.RDS"
 )
 
 # Example 3: (predict using a pretrained logistic github model and return
 # probabilities and classifications)
-prediction4 <- textPredict(
+prediction3 <- textPredict(
   texts = text_to_predict,
   model_info = "https://github.com/CarlViggo/pretrained-models/raw/main/
   trained_github_model_logistic.RDS",
@@ -118,6 +119,11 @@ prediction4 <- textPredict(
   threshold = 0.7
 )
 
+# Example 4: (predict from texts using a pretrained model stored in an osf project)
+prediction4 <- textPredict(
+  texts = text_to_predict,
+  model_info = "https://osf.io/8fp7v"
+)
 ##### Automatic implicit motive coding section ######
 
 # Create example dataset
