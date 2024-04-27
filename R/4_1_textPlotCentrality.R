@@ -71,6 +71,37 @@ textCentrality <- function(words,
   return(cenrtal_sss_df)
 }
 
+
+min_freq_words_test = 1
+plot_n_word_extreme = 10
+plot_n_word_frequency = 10
+plot_n_words_middle = 10
+titles_color = "#61605e"
+x_axes = "central_semantic_similarity"
+title_top = "Semantic Centrality Plot"
+x_axes_label = "Semantic Centrality"
+scale_x_axes_lim = NULL
+scale_y_axes_lim = NULL
+word_font = NULL
+centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d")
+word_size_range = c(3, 8)
+position_jitter_hight = .0
+position_jitter_width = .03
+point_size = 0.5
+arrow_transparency = 0.1
+points_without_words_size = 0.5
+points_without_words_alpha = 0.5
+legend_title = "SC"
+legend_x_axes_label = "x"
+legend_x_position = 0.02
+legend_y_position = 0.02
+legend_h_size = 0.2
+legend_w_size = 0.2
+legend_title_size = 7
+legend_number_size = 2
+seed = 1007
+
+
 #' Plot words according to semantic similarity to the aggregated word embedding.
 #' @param word_data Tibble from the textPlot function.
 #' @param min_freq_words_test Select words to significance test that have occurred
@@ -278,7 +309,7 @@ textCentralityPlot <- function(word_data,
 
   # This solution is because it is not possible to send "0" as a parameter
   only_x_dimension <- 0
-  #y_axes <- "only_x_dimension"
+  y_axes <- "only_x_dimension"
 
   # Plot
   plot <-

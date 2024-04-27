@@ -179,7 +179,7 @@ test_that("textCentrality produces a tibble with character variable and numeric 
     word_data = df_for_plotting,
     x_axes = "central_semantic_similarity"
   )
-
+  plot_c
   expect_true(ggplot2::is.ggplot(plot_c$final_plot))
 })
 
