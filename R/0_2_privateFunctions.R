@@ -274,6 +274,26 @@ extract_comment <- function(comment,
     output <- sub(" ; word_type_embeddings:.*", "", layer_text)
   }
 
+  # penalty_in_final_model
+  if (part == "penalty_in_final_model") {
+    selected_element <- grep("^penalty in final model =",
+                             comment,
+                             value = TRUE)
+    pen <- sub(".*penalty in final model =  ", "",
+                      selected_element)
+    output <- as.numeric(pen)
+  }
+
+  # penalty_in_final_model
+  if (part == "mixture_in_final_model") {
+    selected_element <- grep("^mixture in final model =",
+                             comment,
+                             value = TRUE)
+    mix <- sub(".*mixture in final model =  ", "",
+               selected_element)
+    output <- as.numeric(mix)
+  }
+
   return(output)
 }
 
@@ -579,30 +599,6 @@ cohens_d <- function(x,
   # Cohen's d
   cd
 }
-
-
-#' Extract part of a comment
-#'
-#' @param comment (string) The comment
-#' @param part (string) The part to be extracted ("model" or "layers").
-#' @return string from the comment
-#' @noRd
-extract_comment <- function(comment,
-                            part) {
-  if (part == "model") {
-    model_text <- sub(".*textEmbedRawLayers: model: ", "", comment)
-    output <- sub(" ; layers.*", "", model_text)
-  }
-
-  if (part == "layers") {
-    layer_text <- sub(".*layers: ", "", comment)
-    output <- sub(" ; word_type_embeddings:.*", "", layer_text)
-  }
-
-  return(output)
-}
-
-
 
 # wanted_file <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
 #' Name to Path

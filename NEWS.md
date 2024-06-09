@@ -3,6 +3,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.2.2
+- Improving `textTrainN()` including `subsets` sampling (new: default change from `random` to `subsets`), `use_same_penalty_mixture` (new:default change from `FALSE` to `TRUE`) and `std_err` (new output).
+- Improving `textTrainPlot()`
+
 # text 1.2.1
 - Improving `textPredict()` functionality. 
 - Implementing experimental features related to `textTopics()`

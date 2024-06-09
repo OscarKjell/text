@@ -7,36 +7,32 @@ returned by the textTrainN function. If the number of cross-validations exceed o
 error-bars will be included in the plot.}
 \usage{
 textTrainNPlot(
-  train_data,
-  sample_percents = c(25, 50, 75, 100),
-  n_cross_val = rep(1, length(tibble_list)),
+  results_data,
+  breaks = NULL,
   x_unit = "percent",
   y_range = NULL,
-  title = "Cross-validated correlation coefficients across different sample sizes",
+  title = "Cross-validated correlation coefficients across sample sizes",
   x_axes_label = "Sample Size (percent)",
   y_axes_label = "Correlation Coefficient (r)",
-  point_color = rep("#5dc688", length(tibble_list)),
-  bar_color = rep("#60A1F7", length(tibble_list)),
-  line_color = rep("grey", length(tibble_list)),
-  bar_width = rep(1, length(tibble_list)),
-  bar_size = rep(0.8, length(tibble_list)),
-  line_size = rep(0.6, length(tibble_list)),
-  line_type = rep("straight", length(tibble_list)),
-  point_size = rep(3, length(tibble_list)),
+  point_color = "#5dc688",
+  error_bar = "std_err",
+  bar_color = "#60A1F7",
+  line_color = "grey",
+  bar_width = 1,
+  bar_size = 0.8,
+  line_size = 0.6,
+  line_type = "straight",
+  point_size = 3,
   log_transform_x = FALSE
 )
 }
 \arguments{
-\item{train_data}{(list) One or several objects returned by the function textTrainN as a list (e.g, list(object1, object2)). Also,
+\item{results_data}{(list) One or several objects returned by the function textTrainN as a list (e.g, list(object1, object2)). Also,
 If several models are provided, then one can add a vector c() with settings (i.e the parameters below) for each model
 (make sure to add the settings in the order as the models are ordered, if you look to keep the original settings then write "").}
 
-\item{sample_percents}{(numeric) Vector containing the percents of the total number of datapoints that is
+\item{breaks}{(numeric) Vector containing the percents of the total number of datapoints that is
 included in each sample (default = c(25,50,75,100)).}
-
-\item{n_cross_val}{(numeric) Value of the number of times cross-validation has been repeated (default = 1,
-i.e., cross-validation has only been applied once). If several models are provided, then one can add a vector c()
-with settings for each model (make sure to add the settings in the order as the models are ordered).}
 
 \item{x_unit}{(character, "percent" or "quantity") Determines whether the x-axis-values should represent
 the number of elements in each sample, or the number of percent of the total data they represent
@@ -53,6 +49,8 @@ across different sample sizes").}
 \item{y_axes_label}{(character) Determine y-axis-label (default = "Correlation Coefficient (r)").}
 
 \item{point_color}{(character, (Hex color codes)) Determine point color (default = "#5dc688").}
+
+\item{error_bar}{Default "std_err"; see also "std", NULL.}
 
 \item{bar_color}{(character, (Hex color codes)) Determine error-bar color (default = "#60A1F7").}
 

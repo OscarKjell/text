@@ -11,31 +11,13 @@ textTrainN(
   sample_percents = c(25, 50, 75, 100),
   handle_word_embeddings = "individually",
   n_cross_val = 1,
-  x_append = NULL,
-  append_first = FALSE,
-  cv_method = "validation_split",
-  outside_folds = 10,
-  inside_folds = 3/4,
-  strata = "y",
-  outside_strata = TRUE,
-  outside_breaks = 4,
-  inside_strata = TRUE,
-  inside_breaks = 4,
+  sampling_strategy = "subsets",
+  use_same_penalty_mixture = TRUE,
   model = "regression",
-  eval_measure = "default",
-  preprocess_step_center = TRUE,
-  preprocess_step_scale = TRUE,
-  preprocess_PCA = NA,
   penalty = 10^seq(-16, 16),
   mixture = c(0),
-  first_n_predictors = NA,
-  impute_missing = FALSE,
-  method_cor = "pearson",
-  model_description = "Consider writing a description of your model here",
-  multi_cores = "multi_cores_sys_default",
-  save_output = "all",
-  simulate.p.value = FALSE,
-  seed = 2024
+  seed = 2024,
+  ...
 )
 }
 \arguments{
@@ -53,61 +35,18 @@ each new sample.}
 word_embedding (default = "individually", also "concatenate"). If a list of word embeddings are
 provided, then they will be concatenated.}
 
-\item{n_cross_val}{(numeric) Value that determines the number of times to repeat the cross-validation.
+\item{n_cross_val}{(numeric) Value that determines the number of times to repeat the cross-validation (i.e., number of tests).
 (default = 1, i.e., cross-validation is only performed once). Warning: The training process gets
 proportionately slower to the number of cross-validations, resulting in a time complexity that increases
 with a factor of n (n cross-validations).}
 
-\item{x_append}{(optional) Variables to be appended after the word embeddings (x); if wanting to preappend
-them before the word embeddings use the option first = TRUE. If not wanting to train with word embeddings,
-set x = NULL (default = NULL).}
+\item{sampling_strategy}{Sample a "random" sample for each subset from all data or sample a "subset" from the
+larger subsets (i.e., each subset contain the same data).}
 
-\item{append_first}{(boolean) Option to add variables before or after all word embeddings (default = False).}
-
-\item{cv_method}{(character) Cross-validation method to use within a pipeline of nested outer and inner loops
-of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
-using rsample::validation_split in the inner loop to achieve a development and assessment set (note that
-for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds"
-uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.}
-
-\item{outside_folds}{(numeric) Number of folds for the outer folds (default = 10).}
-
-\item{inside_folds}{(numeric) The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
-For more information see validation_split in rsample.}
-
-\item{strata}{(string or tibble; default "y") Variable to stratify according; if a string the variable
-needs to be in the training set - if you want to stratify according to another variable you can include
-it as a tibble (please note you can only add 1 variable to stratify according). Can set it to NULL.}
-
-\item{outside_strata}{(boolean) Whether to stratify the outside folds.}
-
-\item{outside_breaks}{(numeric) The number of bins wanted to stratify a numeric stratification variable in the
-outer cross-validation loop (default = 4).}
-
-\item{inside_strata}{Whether to stratify the outside folds.}
-
-\item{inside_breaks}{The number of bins wanted to stratify a numeric stratification variable in the inner
-cross-validation loop (default = 4).}
+\item{use_same_penalty_mixture}{If TRUE it only searches the penalty and mixture search grid once, and then use the same
+thereafter; if FALSE, it searches the grid every time.}
 
 \item{model}{Type of model. Default is "regression"; see also "logistic" and "multinomial" for classification.}
-
-\item{eval_measure}{(character) Type of evaluative measure to select models from. Default = "rmse" for regression and
-"bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
- "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
- the yardstick package).}
-
-\item{preprocess_step_center}{(boolean) Normalizes dimensions to have a mean of zero; default is set to TRUE.
-For more info see (step_center in recipes).}
-
-\item{preprocess_step_scale}{(boolean) Normalize dimensions to have a standard deviation of one;
-default is set to TRUE. For more info see (step_scale in recipes).}
-
-\item{preprocess_PCA}{Pre-processing threshold for PCA (to skip this step set it to NA).
-Can select amount of variance to retain (e.g., .90 or as a grid c(0.80, 0.90)); or
-number of components to select (e.g., 10). Default is "min_halving", which is a function
-that selects the number of PCA components based on number  of participants and feature (word embedding dimensions)
-in the data. The formula is:
-preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).}
 
 \item{penalty}{(numeric) Hyper parameter that is tuned (default = 10^seq(-16,16)).}
 
@@ -116,34 +55,13 @@ preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(5
 When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
 used (specific engines only).}
 
-\item{first_n_predictors}{By default this setting is turned off (i.e., NA). To use this method,
-set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
-using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
-then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
-This option is currently only possible for one embedding at the time.}
-
-\item{impute_missing}{Default FALSE (can be set to TRUE if something else than word_embeddings are trained).}
-
-\item{method_cor}{Type of correlation used in evaluation (default "pearson";
-can set to "spearman" or "kendall").}
-
-\item{model_description}{(character) Text to describe your model (optional; good when sharing the model with others).}
-
-\item{multi_cores}{If TRUE it enables the use of multiple cores if the computer system allows for it
-(i.e., only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
-"multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.}
-
-\item{save_output}{(character) Option not to save all output; default = "all". see also "only_results"
-and "only_results_predictions".}
-
-\item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values
-by Monte Carlo simulation, in larger than 2 × 2 tables.}
-
 \item{seed}{(numeric) Set different seed (default = 2024).}
+
+\item{...}{Additional parameters from textTrainRegression.}
 }
 \value{
 A tibble containing correlations for each sample. If n_cross_val > 1, correlations for
- each new cross-validation, along with standard-deviation and mean correlation is included in the
+ each new cross-validation, along with standard-deviation, mean and standard error of correlation is included in the
  tibble. The information in the tibble is visualised via the textTrainNPlot function.
 }
 \description{
