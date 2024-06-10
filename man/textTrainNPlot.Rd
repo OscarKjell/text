@@ -2,9 +2,9 @@
 % Please edit documentation in R/2_5_textTrainN.R
 \name{textTrainNPlot}
 \alias{textTrainNPlot}
-\title{(experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
-returned by the textTrainN function. If the number of cross-validations exceed one, then
-error-bars will be included in the plot.}
+\title{(experimental) Plot cross-validated correlation coefficients across different
+ sample-sizes from the object returned by the textTrainN function. If the number
+ of cross-validations exceed one, then error-bars will be included in the plot.}
 \usage{
 textTrainNPlot(
   results_data,
@@ -27,12 +27,16 @@ textTrainNPlot(
 )
 }
 \arguments{
-\item{results_data}{(list) One or several objects returned by the function textTrainN as a list (e.g, list(object1, object2)). Also,
-If several models are provided, then one can add a vector c() with settings (i.e the parameters below) for each model
-(make sure to add the settings in the order as the models are ordered, if you look to keep the original settings then write "").}
+\item{results_data}{(list) One or several objects returned by the function textTrainN
+as a list (e.g, list(object1, object2)). Also, if several models are provided,
+then one can add a vector c() with settings (i.e the parameters below) for each model
+(make sure to add the settings in the order as the models are ordered,
+if you look to keep the original settings then write "").}
 
-\item{breaks}{(numeric) Vector containing the percents of the total number of datapoints that is
-included in each sample (default = c(25,50,75,100)).}
+\item{breaks}{(numeric) Vector containing the percents of the total number of data points that is
+included in each sample (default = NULL, which takes the breaks from the percentages).
+If several models are provided, then one can add a vector c() with settings for each model
+(make sure to add the settings in the order as the models are ordered).}
 
 \item{x_unit}{(character, "percent" or "quantity") Determines whether the x-axis-values should represent
 the number of elements in each sample, or the number of percent of the total data they represent
@@ -48,23 +52,31 @@ across different sample sizes").}
 
 \item{y_axes_label}{(character) Determine y-axis-label (default = "Correlation Coefficient (r)").}
 
-\item{point_color}{(character, (Hex color codes)) Determine point color (default = "#5dc688").}
+\item{point_color}{(character, (Hex color codes)) Determine point color (default = "#5dc688"). Can set a vector
+if several results_data are provided.}
 
-\item{error_bar}{Default "std_err"; see also "std", NULL.}
+\item{error_bar}{Default "std_err"; see also "std", NULL. Can set a vector
+if several results_data are provided.}
 
-\item{bar_color}{(character, (Hex color codes)) Determine error-bar color (default = "#60A1F7").}
+\item{bar_color}{(character, (Hex color codes)) Determine error-bar color (default = "#60A1F7"). Can set a vector
+if several results_data are provided.}
 
-\item{line_color}{(character, (Hex color codes)) Determine line color (default = "grey").}
+\item{line_color}{(character, (Hex color codes)) Determine line color (default = "grey"). Can set a vector
+if several results_data are provided.}
 
-\item{bar_width}{(numeric) Determine bar-width (default = 1).}
+\item{bar_width}{(numeric) Determine bar-width (default = 1). Can set a vector
+if several results_data are provided.}
 
-\item{bar_size}{(numeric) Determine bar-size (default = 1).}
+\item{bar_size}{(numeric) Determine bar-size (default = 1). Can set a vector
+if several results_data are provided.}
 
-\item{line_size}{(numeric) Determine line-size (default = 1).}
+\item{line_size}{(numeric) Determine line-size (default = 1). Can set a vector
+if several results_data are provided.}
 
-\item{line_type}{(character, either "straight" or "smooth") Determine line-type (default = "straight").}
+\item{line_type}{(character, either "straight" or "smooth") Determine line-type (default = "straight").
+Can set a vector if several results_data are provided.}
 
-\item{point_size}{(numeric) Determine points size (default = 1).}
+\item{point_size}{(numeric) Determine points size (default = 1). Can set a vector if several results_data are provided.}
 
 \item{log_transform_x}{(boolean) Determine wether to log-transform x in case of displaying number of samples
 (default = FALSE).}
@@ -74,9 +86,9 @@ A plot with correlation coefficient on y-axis and sample size in quantity or per
 If number och cross-validations exceed 1, then error bars measuring standard deviations will be plotted.
 }
 \description{
-(experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
-returned by the textTrainN function. If the number of cross-validations exceed one, then
-error-bars will be included in the plot.
+(experimental) Plot cross-validated correlation coefficients across different
+ sample-sizes from the object returned by the textTrainN function. If the number
+ of cross-validations exceed one, then error-bars will be included in the plot.
 }
 \section{Plot Example}{
  Example of a plot created by textTrainNPlot.

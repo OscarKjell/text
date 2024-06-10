@@ -7,7 +7,7 @@
 #' @param seed Set seed.
 #' @return Nested list of elements.
 #' @noRd
-indexing <- function(n_cross_val = 1,
+indexing_random <- function(n_cross_val = 1,
                      sample_percents,
                      len,
                      seed) {
@@ -43,23 +43,27 @@ indexing <- function(n_cross_val = 1,
   return(nested_list)
 }
 
-#' Creates a nested list of element indexes. These elements will be used in the training process of textTrainN.
+#' Creates a nested list of element indexes. These elements will be used in the
+#' training process of textTrainN. Here we use a subset of cases, so that each larger batch
+#' of indexes comprise the smaller ones.
 #' @param n_cross_val Number of cross-validations.
 #' @param sample_percents Numeric vector of sample percent sizes, e.g. (25,50,75,100).
 #' @param len Length of the dataset (i.e, number of datapoints).
 #' @param seed Set seed.
 #' @return Nested list of elements.
 #' @noRd
-indexing_no100 <- function(
+indexing_subsets_no100 <- function(
     n_cross_val = 1,
     sample_percents,
     len,
     seed) {
+
   nested_list <- list()
   set.seed(seed)
 
   # Remove 100% from sample_percents to determine the max base percentage
   sample_percents_no_100 <- sample_percents[sample_percents < 100]
+
   if(length(sample_percents_no_100) == 0){
     stop("No valid percentages less than 100 provided")
   }
@@ -71,7 +75,10 @@ indexing_no100 <- function(
     sub_list <- list()
 
     # Generate the max percentage sample and shuffle it
-    resample_max <- sample(1:len, size = max_sample_size, replace = FALSE)
+    resample_max <- sample(1:len,
+                           size = max_sample_size,
+                           replace = FALSE)
+
     shuffled_resample_max <- sample(resample_max)
 
     for (percent in sort(sample_percents_no_100, decreasing = FALSE)) {
@@ -226,7 +233,7 @@ textTrainN <- function(
   # dataframe
   results_df <- data.frame()
 
-  # vector that will contain the quantity of elements in each sample.
+  # vector that will contain the quantity of cases in each sample.
   sample_sizes <- c()
 
   # Add "percent" column to data frame
@@ -236,7 +243,7 @@ textTrainN <- function(
     sample_sizes <- c(sample_sizes, num_samples)
   }
 
-  # Add sample_size column to dataframe
+  # Add sample_size column to data frame
   results_df["sample_size"] <- sample_sizes
 
   # Set seed
@@ -244,7 +251,7 @@ textTrainN <- function(
 
   # Call the indexing function to generate indexes
   if(sampling_strategy == "random"){
-    indexes <- indexing(
+    indexes <- indexing_random(
       n_cross_val,
       sample_percents,
       len,
@@ -252,16 +259,16 @@ textTrainN <- function(
   }
 
   if(sampling_strategy == "subsets"){
-    indexes <- indexing_no100(
+    indexes <- indexing_subsets_no100(
       n_cross_val,
       sample_percents,
       len,
       seed
       )
+
     if(max(sample_percents) == 100){
       n_tests = n_tests-1
     }
-
   }
   # Vector containing column names for each cross-validation. E.g., if n_cross_val = 3,
   # columns_to_calculate will be "Test1", "Test2", "Test3"
@@ -271,9 +278,11 @@ textTrainN <- function(
   x_vectors <- list()
   y_vectors <- list()
   check_time_0 <- Sys.time()
-  # Number of cross-validation; check = 2 n_cross_val=2
+
+  # Number of cross-validation
   for (check in 1:n_cross_val) {
     check_time_1 <- Sys.time()
+
     # Initialize empty vectors for each cross-validation fold
     x_vectors[[check]] <- list()
     y_vectors[[check]] <- list()
@@ -398,21 +407,27 @@ textTrainN <- function(
     results_df[is.na(results_df)] <- as.numeric(value_to_insert)
 
     # Save the penalty and mixture for forthcoming rounds
-    penalty_change <- extract_comment(comment = trained$model_description,
-                                          part = "penalty_in_final_model")
+    penalty_change <- extract_comment(
+      comment = trained$model_description,
+      part = "penalty_in_final_model")
 
     results_df[nrow(results_df), "penalty"] <- penalty_change
 
-    mixture_change <- extract_comment(comment = trained$model_description,
-                                          part = "mixture_in_final_model")
+    mixture_change <- extract_comment(
+      comment = trained$model_description,
+      part = "mixture_in_final_model")
+
     results_df[nrow(results_df), "mixture"] <- mixture_change
     }
 
   # Calculate the mean and standard deviation for each row in results_df.
   #results_df1 <- tibble::as_tibble(results_df[1:3, columns_to_calculate])
 
-  results_df["mean"] <- apply(results_df[columns_to_calculate], 1, mean)
-  results_df["std"] <- apply(results_df[columns_to_calculate], 1, sd)
+  results_df["mean"] <- apply(
+    results_df[columns_to_calculate], 1, mean)
+
+  results_df["std"] <- apply(
+    results_df[columns_to_calculate], 1, sd)
 
   # std-err (std/sqrt(resamples))
   results_df["std_err"] <- results_df["std"]/sqrt(results_df["sample_size"])
@@ -436,17 +451,18 @@ textTrainN <- function(
 
 #### textTrainNPlot function ####
 
-#' (experimental) Plot cross-validated correlation coefficients across different sample-sizes from the object
-#' returned by the textTrainN function. If the number of cross-validations exceed one, then
-#' error-bars will be included in the plot.
-#' @param results_data (list) One or several objects returned by the function textTrainN as a list (e.g, list(object1, object2)). Also,
-#' If several models are provided, then one can add a vector c() with settings (i.e the parameters below) for each model
-#' (make sure to add the settings in the order as the models are ordered, if you look to keep the original settings then write "").
-#' @param breaks (numeric) Vector containing the percents of the total number of datapoints that is
-#' included in each sample (default = c(25,50,75,100)).
-# @param n_cross_val (numeric) Value of the number of times cross-validation has been repeated (default = 1,
-# i.e., cross-validation has only been applied once). If several models are provided, then one can add a vector c()
-# with settings for each model (make sure to add the settings in the order as the models are ordered).
+#' (experimental) Plot cross-validated correlation coefficients across different
+#'  sample-sizes from the object returned by the textTrainN function. If the number
+#'  of cross-validations exceed one, then error-bars will be included in the plot.
+#' @param results_data (list) One or several objects returned by the function textTrainN
+#' as a list (e.g, list(object1, object2)). Also, if several models are provided,
+#' then one can add a vector c() with settings (i.e the parameters below) for each model
+#' (make sure to add the settings in the order as the models are ordered,
+#' if you look to keep the original settings then write "").
+#' @param breaks (numeric) Vector containing the percents of the total number of data points that is
+#' included in each sample (default = NULL, which takes the breaks from the percentages).
+#' If several models are provided, then one can add a vector c() with settings for each model
+#' (make sure to add the settings in the order as the models are ordered).
 #' @param x_unit (character, "percent" or "quantity") Determines whether the x-axis-values should represent
 #'  the number of elements in each sample, or the number of percent of the total data they represent
 #'  (default = "percent").
@@ -456,15 +472,23 @@ textTrainN <- function(
 #'  across different sample sizes").
 #' @param x_axes_label (character) Determine x-axis-label (default = "Sample Size (percent)").
 #' @param y_axes_label (character) Determine y-axis-label (default = "Correlation Coefficient (r)").
-#' @param point_color (character, (Hex color codes)) Determine point color (default = "#5dc688").
-#' @param error_bar Default "std_err"; see also "std", NULL.
-#' @param bar_color (character, (Hex color codes)) Determine error-bar color (default = "#60A1F7").
-#' @param line_color (character, (Hex color codes)) Determine line color (default = "grey").
-#' @param bar_width (numeric) Determine bar-width (default = 1).
-#' @param bar_size (numeric) Determine bar-size (default = 1).
-#' @param line_size (numeric) Determine line-size (default = 1).
+#' @param point_color (character, (Hex color codes)) Determine point color (default = "#5dc688"). Can set a vector
+#' if several results_data are provided.
+#' @param error_bar Default "std_err"; see also "std", NULL. Can set a vector
+#' if several results_data are provided.
+#' @param bar_color (character, (Hex color codes)) Determine error-bar color (default = "#60A1F7"). Can set a vector
+#' if several results_data are provided.
+#' @param line_color (character, (Hex color codes)) Determine line color (default = "grey"). Can set a vector
+#' if several results_data are provided.
+#' @param bar_width (numeric) Determine bar-width (default = 1). Can set a vector
+#' if several results_data are provided.
+#' @param bar_size (numeric) Determine bar-size (default = 1). Can set a vector
+#' if several results_data are provided.
+#' @param line_size (numeric) Determine line-size (default = 1). Can set a vector
+#' if several results_data are provided.
 #' @param line_type (character, either "straight" or "smooth") Determine line-type (default = "straight").
-#' @param point_size (numeric) Determine points size (default = 1).
+#' Can set a vector if several results_data are provided.
+#' @param point_size (numeric) Determine points size (default = 1). Can set a vector if several results_data are provided.
 #' @param log_transform_x (boolean) Determine wether to log-transform x in case of displaying number of samples
 #' (default = FALSE).
 #' @return A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis.
@@ -521,7 +545,6 @@ textTrainNPlot <- function(
   if(tibble::is_tibble(results_data)){
     results_data <- list(results_data)
   }
-  tibble_list <- results_data
 
   if(is.null(breaks)){
     breaks <- results_data[[1]]$percent
@@ -529,33 +552,33 @@ textTrainNPlot <- function(
 
 
   if(length(point_color) == 1){
-    point_color = rep(point_color, length(tibble_list))
+    point_color = rep(point_color, length(results_data))
   }
   if(length(bar_color) == 1){
-    bar_color = rep(bar_color, length(tibble_list))
+    bar_color = rep(bar_color, length(results_data))
   }
   if(length(line_color) == 1){
-    line_color = rep(line_color, length(tibble_list))
+    line_color = rep(line_color, length(results_data))
   }
   if(length(bar_width) == 1){
-    bar_width = rep(bar_width, length(tibble_list))
+    bar_width = rep(bar_width, length(results_data))
   }
   if(length(bar_size) == 1){
-    bar_size = rep(bar_size, length(tibble_list))
+    bar_size = rep(bar_size, length(results_data))
   }
   if(length(line_size) == 1){
-    line_size = rep(line_size, length(tibble_list))
+    line_size = rep(line_size, length(results_data))
   }
   if(length(line_type) == 1){
-    line_type = rep(line_type, length(tibble_list))
+    line_type = rep(line_type, length(results_data))
   }
   if(length(point_size) == 1){
-    point_size = rep(point_size, length(tibble_list))
+    point_size = rep(point_size, length(results_data))
   }
 
 
   if(isTRUE(log_transform_x)){
-    tibble_list <- lapply(tibble_list, function(df) {
+    results_data <- lapply(results_data, function(df) {
       df$log_sample_size <- round(log(df$sample_size),2)
       return(df)
     })
@@ -610,16 +633,17 @@ textTrainNPlot <- function(
     results_data_i <- results_data[[i]]
 
     TrainNPlot <- TrainNPlot +
-      ggplot2::geom_point(data = results_data_i,
-                          mapping = ggplot2::aes(x = if (x_unit == "quantity" && isFALSE(log_transform_x)) {
-                            sample_size
-                          } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
-                            log_sample_size
-                          } else {
-                            percent
-                          },
-                          y = mean),
-                          color = point_color[i], size = point_size[i])
+      ggplot2::geom_point(
+        data = results_data_i,
+        mapping = ggplot2::aes(x = if (x_unit == "quantity" && isFALSE(log_transform_x)) {
+          sample_size
+        } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
+          log_sample_size
+        } else {
+          percent
+        },
+        y = mean),
+        color = point_color[i], size = point_size[i])
 
     # add error bars if n_cross_val > 1 for the current tibble
     if (error_bar == "std" | error_bar ==  "std_err") {
@@ -642,28 +666,32 @@ textTrainNPlot <- function(
 
     if (line_type[i] == "smooth") {
       TrainNPlot <- TrainNPlot +
-        ggplot2::geom_smooth(data = results_data_i,
-                             mapping = ggplot2::aes(x = if (x_unit == "quantity" && isFALSE(log_transform_x)) {
-                               sample_size
-                             } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
-                               log_sample_size
-                             } else {
-                               percent
-                             },
-                             y = mean),
-                             linewidth = line_size[i], color = line_color[i], method = "auto")
+        ggplot2::geom_smooth(
+          data = results_data_i,
+          mapping = ggplot2::aes(x = if (x_unit == "quantity" && isFALSE(log_transform_x)) {
+            sample_size
+          } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
+            log_sample_size
+          } else {
+            percent
+          },
+          y = mean),
+          linewidth = line_size[i],
+          color = line_color[i],
+          method = "auto")
     } else {
       TrainNPlot <- TrainNPlot +
-        ggplot2::geom_line(data = results_data_i,
-                           mapping = ggplot2::aes(x = if (x_unit == "quantity" && isFALSE(log_transform_x)) {
-                             sample_size
-                           } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
-                             log_sample_size
-                           } else {
-                             percent
-                           },
-                           y = mean),
-                           linewidth = line_size[i], color = line_color[i])
+        ggplot2::geom_line(
+          data = results_data_i,
+          mapping = ggplot2::aes(x = if (x_unit == "quantity" && isFALSE(log_transform_x)) {
+            sample_size
+          } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
+            log_sample_size
+          } else {
+            percent
+          },
+          y = mean),
+          linewidth = line_size[i], color = line_color[i])
     }
   }
 
@@ -684,12 +712,15 @@ textTrainNPlot <- function(
   }
   if (x_unit == "quantity" && isFALSE(log_transform_x)) {
     TrainNPlot <- TrainNPlot +
-      ggplot2::scale_x_continuous(breaks = unique(unlist(lapply(tibble_list,
-                                                                function(t) t$sample_size))))
+      ggplot2::scale_x_continuous(
+        breaks = unique(unlist(lapply(results_data,
+                                      function(t) t$sample_size))))
 
   } else if (x_unit == "quantity" && isTRUE(log_transform_x)) {
     TrainNPlot <- TrainNPlot +
-      ggplot2::scale_x_continuous(breaks = unique(unlist(lapply(tibble_list, function(t) t$log_sample_size)))) +
+      ggplot2::scale_x_continuous(
+        breaks = unique(unlist(lapply(results_data,
+                                      function(t) t$log_sample_size)))) +
       theme(axis.text.x = element_text(angle = 60, hjust = 1))
 
   } else {
