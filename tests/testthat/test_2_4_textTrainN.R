@@ -36,7 +36,7 @@ test_that("training with only x_append (without word embeddings)", {
     error_bar = "std_err"
   )
 
-  testthat::expect_equal(length(plot_object$layers), 2)
+  testthat::expect_equal(length(plot_object$layers), 3)
   testthat::expect_true(ggplot2::is.ggplot(plot_object))
 
   tibble_to_plot_b <- textTrainN(
@@ -62,7 +62,7 @@ test_that("training with only x_append (without word embeddings)", {
     error_bar = "std_err"
   )
 
-  testthat::expect_equal(length(plot_object_b$layers), 2)
+  testthat::expect_equal(length(plot_object_b$layers), 6)
   testthat::expect_true(ggplot2::is.ggplot(plot_object_b))
 
 
@@ -91,7 +91,7 @@ test_that("training with only x_append (without word embeddings)", {
     x_unit = "percent"
   )
 
-  testthat::expect_equal(length(plot_object_1$layers), 2)
+  testthat::expect_equal(length(plot_object_1$layers), 3)
   testthat::expect_true(ggplot2::is.ggplot(plot_object_1))
 
 
@@ -119,7 +119,7 @@ test_that("training with only x_append (without word embeddings)", {
     x_unit = "percent"
   )
 
-  testthat::expect_equal(length(plot_object_1$layers), 2)
+  testthat::expect_equal(length(plot_object_1$layers), 3)
   testthat::expect_true(ggplot2::is.ggplot(plot_object_1))
 
 })

@@ -628,7 +628,7 @@ textTrainNPlot <- function(
   # initialize the ggplot object
   TrainNPlot <- ggplot2::ggplot()
 
-  # iterate over each model i = 1
+  # iterate over each model i = 1 i = 2
   for (i in seq_along(results_data)) {
     results_data_i <- results_data[[i]]
 
@@ -649,7 +649,8 @@ textTrainNPlot <- function(
     if (error_bar == "std" | error_bar ==  "std_err") {
 
       # Add geom_errorbar to the plot using tidy evaluation
-      TrainNPlot <- ggplot() +
+      TrainNPlot <- TrainNPlot +
+      #  ggplot2::ggplot() +
         ggplot2::geom_errorbar(
           data = results_data_i,
           mapping = ggplot2::aes(
@@ -694,6 +695,8 @@ textTrainNPlot <- function(
           linewidth = line_size[i], color = line_color[i])
     }
   }
+
+
 
   # (title, axes labels, theme)
   TrainNPlot <- TrainNPlot +
