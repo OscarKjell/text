@@ -510,7 +510,8 @@ tune_over_cost_rf <- function(object,
                               preprocess_PCA,
                               variable_name_index_pca,
                               eval_measure,
-                              extremely_randomised_splitrule) {
+                              extremely_randomised_splitrule,
+                              parameter_selection_method) {
   T1 <- Sys.time()
 
 
@@ -575,7 +576,8 @@ tune_over_cost_rf <- function(object,
   # Progression output
   best_eval <- bestParameters(
     data = grid_inner_accuracy,
-    eval_measure = eval_measure
+    eval_measure = eval_measure,
+    parameter_selection_method = parameter_selection_method
   )
 
   T2 <- Sys.time()
@@ -619,7 +621,8 @@ summarize_tune_results_rf <- function(object,
                                       preprocess_PCA,
                                       variable_name_index_pca,
                                       eval_measure,
-                                      extremely_randomised_splitrule) {
+                                      extremely_randomised_splitrule,
+                                      parameter_selection_method) {
   # Return row-bound tibble containing the INNER results
   results <- purrr::map_df(
     .x = object$splits,
@@ -633,7 +636,8 @@ summarize_tune_results_rf <- function(object,
     preprocess_PCA = preprocess_PCA,
     variable_name_index_pca = variable_name_index_pca,
     eval_measure = eval_measure,
-    extremely_randomised_splitrule = extremely_randomised_splitrule
+    extremely_randomised_splitrule = extremely_randomised_splitrule,
+    parameter_selection_method = parameter_selection_method
   )
 
 
@@ -685,6 +689,8 @@ summarize_tune_results_rf <- function(object,
 #' @param mtry Hyper parameter that may be tuned; default: c(1, 20, 40),
 #' @param min_n Hyper parameter that may be tuned; default: c(1, 20, 40)
 #' @param trees Number of trees to use (default 1000).
+#' @param parameter_selection_method If several results are tied for different parameters (i.e., mtry or min_n),
+#' then select the "first" or the "median" order.
 #' @param eval_measure (character) Measure to evaluate the models in order to select the best
 #' hyperparameters default "roc_auc"; see also "accuracy", "bal_accuracy", "sens", "spec", "precision",
 #' "kappa", "f_measure".
@@ -757,6 +763,7 @@ textTrainRandomForest <- function(x,
                                   mtry = c(1, 10, 20, 40),
                                   min_n = c(1, 10, 20, 40),
                                   trees = c(1000),
+                                  parameter_selection_method = "first",
                                   eval_measure = "bal_accuracy",
                                   model_description = "Consider writing a description of your model here",
                                   multi_cores = "multi_cores_sys_default",
@@ -904,7 +911,8 @@ textTrainRandomForest <- function(x,
       preprocess_PCA = preprocess_PCA,
       variable_name_index_pca = variable_name_index_pca,
       eval_measure = eval_measure,
-      extremely_randomised_splitrule = extremely_randomised_splitrule
+      extremely_randomised_splitrule = extremely_randomised_splitrule,
+      parameter_selection_method = parameter_selection_method
     )
   } else if (multi_cores_use == TRUE) {
     # The multisession plan uses the local cores to process the inner resampling loop.
@@ -922,7 +930,8 @@ textTrainRandomForest <- function(x,
       preprocess_PCA = preprocess_PCA,
       variable_name_index_pca = variable_name_index_pca,
       eval_measure = eval_measure,
-      extremely_randomised_splitrule = extremely_randomised_splitrule
+      extremely_randomised_splitrule = extremely_randomised_splitrule,
+      parameter_selection_method = parameter_selection_method
     )
   }
 
@@ -932,7 +941,7 @@ textTrainRandomForest <- function(x,
   # for each of the outer resampling iterations:
   hyper_parameter_vals <-
     tuning_results %>%
-    purrr::map_df(bestParameters, eval_measure)
+    purrr::map_df(bestParameters, eval_measure, parameter_selection_method)
 
   # Bind best results
   results_split_parameter <-

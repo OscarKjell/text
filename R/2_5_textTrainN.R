@@ -102,7 +102,15 @@ indexing_subsets_no100 <- function(
   return(nested_list)
 }
 
-
+sample_percents = c(25, 50, 75, 100)
+handle_word_embeddings = "individually"
+n_cross_val = 1
+sampling_strategy = "subsets"
+use_same_penalty_mixture = TRUE
+model = "regression"
+penalty = 10^seq(1, -1)
+mixture = c(0)
+seed = 2024
 #### textTrainN function ####
 #' (experimental) Compute cross-validated correlations for different sample-sizes of a data set.
 #' The cross-validation process can be repeated several times to enhance the reliability of the evaluation.

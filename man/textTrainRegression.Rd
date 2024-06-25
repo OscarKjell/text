@@ -23,6 +23,7 @@ textTrainRegression(
   preprocess_step_scale = TRUE,
   preprocess_PCA = NA,
   penalty = 10^seq(-16, 16),
+  parameter_selection_method = "first",
   mixture = c(0),
   first_n_predictors = NA,
   impute_missing = FALSE,
@@ -94,6 +95,9 @@ in the data. The formula is:
 preprocess_PCA = round(max(min(number_features/2), number_participants/2), min(50, number_features))).}
 
 \item{penalty}{(numeric) Hyper parameter that is tuned (default = 10^seq(-16,16)).}
+
+\item{parameter_selection_method}{If several results are tied for different parameters (i.e., penalty or mixture),
+then select the "first" or the "median" order.}
 
 \item{mixture}{A number between 0 and 1 (inclusive) that reflects the proportion of L1 regularization
 (i.e. lasso) in the model (for more information see the linear_reg-function in the parsnip-package).

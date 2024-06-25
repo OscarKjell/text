@@ -25,6 +25,7 @@ textTrainRandomForest(
   mtry = c(1, 10, 20, 40),
   min_n = c(1, 10, 20, 40),
   trees = c(1000),
+  parameter_selection_method = "first",
   eval_measure = "bal_accuracy",
   model_description = "Consider writing a description of your model here",
   multi_cores = "multi_cores_sys_default",
@@ -96,6 +97,9 @@ for details on implementations).}
 \item{min_n}{Hyper parameter that may be tuned; default: c(1, 20, 40)}
 
 \item{trees}{Number of trees to use (default 1000).}
+
+\item{parameter_selection_method}{If several results are tied for different parameters (i.e., mtry or min_n),
+then select the "first" or the "median" order.}
 
 \item{eval_measure}{(character) Measure to evaluate the models in order to select the best
 hyperparameters default "roc_auc"; see also "accuracy", "bal_accuracy", "sens", "spec", "precision",

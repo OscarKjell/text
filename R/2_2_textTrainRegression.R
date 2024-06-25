@@ -388,7 +388,8 @@ tune_over_cost <- function(object,
                            first_n_predictors = first_n_predictors,
                            preprocess_step_center = preprocess_step_center,
                            preprocess_step_scale = preprocess_step_scale,
-                           impute_missing = impute_missing) {
+                           impute_missing = impute_missing,
+                           parameter_selection_method = parameter_selection_method) {
   T1 <- Sys.time()
 
   # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
@@ -472,7 +473,8 @@ tune_over_cost <- function(object,
   # Progression output
   best_eval <- bestParameters(
     data = grid_inner_eval_result,
-    eval_measure = eval_measure
+    eval_measure = eval_measure,
+    parameter_selection_method = parameter_selection_method
   )
 
   T2 <- Sys.time()
@@ -501,22 +503,60 @@ tune_over_cost <- function(object,
 #' Function to get the lowest eval_measure_val
 #' @param data the data with parameters
 #' @param eval_measure the evaluation measure which decide if min or max value should be selected
+#' @param parameter_selection_method If several results are tied for different parameters (i.e., penalty or mixture),
+#' then select the "first" or the "median" order.
 #' @return The row with the best evaluation measure.
 #' @noRd
 bestParameters <- function(data,
-                           eval_measure) {
+                           eval_measure,
+                           parameter_selection_method) {
+
   if (eval_measure %in% c(
     "accuracy", "bal_accuracy", "sens", "spec",
     "precision", "kappa", "f_measure", "roc_auc",
-    "rsq", "cor_test"
-  )) {
-    bestParametersFunction <- function(data) data[which.max(data$eval_result), ]
-  } else if (eval_measure == "rmse") {
-    bestParametersFunction <- function(data) data[which.min(data$eval_result), ]
+    "rsq", "cor_test")) {
+
+      if (parameter_selection_method == "first") {
+        bestParametersFunction <- function(data) data[which.max(data$eval_result), ]
+      }
+
+      if (parameter_selection_method == "median") {
+
+        bestParametersFunction <- function(data) {
+          max_value <- max(data$eval_result)
+          tied_rows <- data %>%
+            dplyr::filter(eval_result == max_value)
+
+          median_index <- base::floor(nrow(tied_rows) / 2)
+          return(tied_rows[median_index, ])
+        }
+      }
   }
+
+  if (eval_measure == "rmse") {
+
+    if (parameter_selection_method == "first") {
+      bestParametersFunction <- function(data) data[which.min(data$eval_result), ]
+    }
+
+    if (parameter_selection_method == "median") {
+
+      bestParametersFunction <- function(data){
+          min_value <- min(data$eval_result)
+          tied_rows <- data %>%
+            dplyr::filter(eval_result == min_value)
+
+          median_index <- base::floor(nrow(tied_rows) / 2)
+          return(tied_rows[median_index, ])
+      }
+    }
+  }
+  #data = tuning_results[[10]]; hyper_parameter_vals
   results <- bestParametersFunction(data)
   return(results)
 }
+
+
 
 #' # Since this will be called across the set of OUTER cross-validation splits, another wrapper is required:
 #'
@@ -539,7 +579,8 @@ summarize_tune_results <- function(object,
                                    first_n_predictors = first_n_predictors,
                                    preprocess_step_center = preprocess_step_center,
                                    preprocess_step_scale = preprocess_step_scale,
-                                   impute_missing = impute_missing) {
+                                   impute_missing = impute_missing,
+                                   parameter_selection_method = parameter_selection_method) {
   # Return row-bound tibble containing the INNER results
   results <- purrr::map_df(
     .x = object$splits,
@@ -553,11 +594,43 @@ summarize_tune_results <- function(object,
     first_n_predictors = first_n_predictors,
     preprocess_step_center = preprocess_step_center,
     preprocess_step_scale = preprocess_step_scale,
-    impute_missing = impute_missing
+    impute_missing = impute_missing,
+    parameter_selection_method = parameter_selection_method
   )
-
   return(results)
 }
+
+
+
+#x
+#y
+#x_append = NULL
+#append_first = FALSE
+#cv_method = "validation_split"
+#outside_folds = 10
+#inside_folds = 3 / 4
+#strata = "y"
+#outside_strata = TRUE
+#outside_breaks = 4
+#inside_strata = TRUE
+#inside_breaks = 4
+#model = "regression"
+#eval_measure = "default"
+#preprocess_step_center = TRUE
+#preprocess_step_scale = TRUE
+#preprocess_PCA = NA
+#penalty = 10^seq(-16, 16)
+#mixture = c(0)
+#parameter_selection_method = "first"
+#first_n_predictors = NA
+#impute_missing = FALSE
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#simulate.p.value = FALSE
+#seed = 2020
+
 
 
 #' Train word embeddings to a numeric variable.
@@ -606,6 +679,8 @@ summarize_tune_results <- function(object,
 #' (i.e. lasso) in the model (for more information see the linear_reg-function in the parsnip-package).
 #' When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
 #' used (specific engines only).
+#' @param parameter_selection_method If several results are tied for different parameters (i.e., penalty or mixture),
+#' then select the "first" or the "median" order.
 #' @param first_n_predictors By default this setting is turned off (i.e., NA). To use this method,
 #' set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
 #' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
@@ -683,6 +758,7 @@ textTrainRegression <- function(x,
                                 preprocess_step_scale = TRUE,
                                 preprocess_PCA = NA,
                                 penalty = 10^seq(-16, 16),
+                                parameter_selection_method = "first",
                                 mixture = c(0),
                                 first_n_predictors = NA,
                                 impute_missing = FALSE,
@@ -860,7 +936,8 @@ textTrainRegression <- function(x,
       first_n_predictors = first_n_predictors,
       preprocess_step_center = preprocess_step_center,
       preprocess_step_scale = preprocess_step_scale,
-      impute_missing = impute_missing
+      impute_missing = impute_missing,
+      parameter_selection_method = parameter_selection_method
     )
   } else if (multi_cores_use == TRUE) {
     # The multisession plan uses the local cores to process the inner resampling loop.
@@ -879,7 +956,8 @@ textTrainRegression <- function(x,
       first_n_predictors = first_n_predictors,
       preprocess_step_center = preprocess_step_center,
       preprocess_step_scale = preprocess_step_scale,
-      impute_missing = impute_missing
+      impute_missing = impute_missing,
+      parameter_selection_method = parameter_selection_method
     )
   }
 
@@ -888,7 +966,7 @@ textTrainRegression <- function(x,
   # for each of the outer resampling iterations:
   hyper_parameter_vals <-
     tuning_results %>%
-    purrr::map_df(bestParameters, eval_measure) %>%
+    purrr::map_df(bestParameters, eval_measure, parameter_selection_method) %>%
     dplyr::select(c(penalty, mixture, preprocess_PCA, first_n_predictors))
 
   # Bind best results
