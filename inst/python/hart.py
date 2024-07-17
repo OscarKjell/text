@@ -376,428 +376,194 @@ def hgTransformerGetPipeline(text_strings,
     return task_scores
 
 
-def hgTransformerGetTextGeneration(text_strings,
-                            model = '',
-                            device = 'cpu',
-                            tokenizer_parallelism = False,
-                            logging_level = 'warning',
-                            return_incorrect_results = False,
-                            set_seed = None,
-                            return_tensors = False,
-                            #return_text = True,
-                            return_full_text = True,
-                            clean_up_tokenization_spaces = False,
-                            prefix = '', 
-                            handle_long_generation = None):
-    if return_tensors:
-        if return_full_text:
-            print("Warning: you set return_tensors and return_text (or return_full_text)")
-            print("         Returning tensors only, as you cannot return both tensors and text.")
-            print("         Please set return_tensors = FALSE if you need the generated text.")
-        generated_texts = hgTransformerGetPipeline(text_strings = text_strings,
-                            task = 'text-generation',
-                            model = model,
-                            device = device,
-                            tokenizer_parallelism = tokenizer_parallelism,
-                            logging_level = logging_level,
-                            return_incorrect_results = return_incorrect_results,
-                            set_seed = set_seed,
-                            return_tensors = return_tensors, 
-                            clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
-                            prefix = prefix,
-                            handle_long_generation = handle_long_generation)
-    else:
-        generated_texts = hgTransformerGetPipeline(text_strings = text_strings,
-                            task = 'text-generation',
-                            model = model,
-                            device = device,
-                            tokenizer_parallelism = tokenizer_parallelism,
-                            logging_level = logging_level,
-                            return_incorrect_results = return_incorrect_results,
-                            set_seed = set_seed,
-                            #return_tensors = return_tensors, 
-                            #return_text = return_text, 
-                            return_full_text = return_full_text, 
-                            clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
-                            prefix = prefix,
-                            handle_long_generation = handle_long_generation)
-    return generated_texts
+ def get_hart_embeddings(
+        data,
+        text_column=None,
+        user_id_column=None,
+        text_id_column=None,
+        block_size=1024,
+        max_blocks=None,
+        order_by_column=None,
+        retain_original_order=True,
+        return_document_embeddings=True,
+        return_user_representations=True,
+        use_last_pred_token_as_user_representation=False,
+        last_pred_token_as_last_insep=False,
+        return_all_user_states=False,
+        return_output_with_data=False,
+        return_word_embeddings=False,
+        return_word_embeds_with_insep=False,
+        representative_layer='last'
+        ):
+    
+    if text_column is None:
+        raise ValueError("text_column is required")
 
-def hgTransformerGetNER(text_strings,
-                            model = '',
-                            device = 'cpu',
-                            tokenizer_parallelism = False,
-                            logging_level = 'warning',
-                            return_incorrect_results = False,
-                            set_seed = None):
-    ner_scores = hgTransformerGetPipeline(text_strings = text_strings,
-                            task = 'ner',
-                            model = model,
-                            device = device,
-                            tokenizer_parallelism = tokenizer_parallelism,
-                            logging_level = logging_level,
-                            return_incorrect_results = return_incorrect_results,
-                            set_seed = set_seed)
-    return ner_scores
+    config = AutoConfig.from_pretrained(model_path)
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    config.pad_token_id = tokenizer.eos_token_id
+    config.sep_token_id = tokenizer.sep_token_id
 
-def hgTransformerGetZeroShot(sequences,
-                            candidate_labels,
-                            model = '',
-                            device = 'cpu',
-                            tokenizer_parallelism = False,
-                            logging_level = 'warning',
-                            return_incorrect_results = False,
-                            set_seed = None,
-                            hypothesis_template = "This example is {}.",
-                            multi_label = False):
-    classifier_output = hgTransformerGetPipeline(text_strings = [],
-                            task = 'zero-shot-classification',
-                            model = model,
-                            device = device,
-                            tokenizer_parallelism = tokenizer_parallelism,
-                            logging_level = logging_level,
-                            return_incorrect_results = return_incorrect_results,
-                            set_seed = set_seed,
-                            sequences = sequences,
-                            candidate_labels = candidate_labels,
-                            hypothesis_template = hypothesis_template,
-                            multi_label = multi_label)
-    return classifier_output
+    model = HaRTModel(model_path, config=config)
 
-def hgTransformerGetSentiment(text_strings,
-                            model = '',
-                            device = 'cpu',
-                            tokenizer_parallelism = False,
-                            logging_level = 'warning',
-                            return_incorrect_results = False,
-                            set_seed = None,
-                            return_all_scores = False,
-                            function_to_apply = "none"):
-    sentiment_scores = hgTransformerGetPipeline(text_strings = text_strings,
-                            task = 'sentiment-analysis',
-                            model = model,
-                            device = device,
-                            tokenizer_parallelism = tokenizer_parallelism,
-                            logging_level = logging_level,
-                            return_incorrect_results = return_incorrect_results,
-                            set_seed = set_seed,
-                            return_all_scores = return_all_scores,
-                            function_to_apply = function_to_apply)
-    return sentiment_scores
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(device)
+    model.to(device)
+    model.eval()
 
-def hgTransformerGetSummarization(text_strings,
-                            model = '',
-                            device = 'cpu',
-                            tokenizer_parallelism = False,
-                            logging_level = 'warning',
-                            return_incorrect_results = False,
-                            set_seed = None,
-                            return_text = True,
-                            return_tensors = False,
-                            clean_up_tokenization_spaces = False, 
-                            min_length = 10,
-                            max_length = 200):
-    summarizations = hgTransformerGetPipeline(text_strings = text_strings,
-                            task = 'summarization',
-                            model = model,
-                            device = device,
-                            tokenizer_parallelism = tokenizer_parallelism,
-                            logging_level = logging_level,
-                            return_incorrect_results = return_incorrect_results,
-                            set_seed = set_seed,
-                            return_text = return_text, 
-                            return_tensors = return_tensors, 
-                            clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
-                            min_length = min_length,
-                            max_length = max_length)
-    return summarizations
+    x, original_data_order = load_dataset(
+        tokenizer=tokenizer,
+        data=data,
+        text_column=text_column,
+        user_id_column=user_id_column,
+        text_id_column=text_id_column,
+        block_size=block_size,
+        max_blocks=max_blocks,
+        order_by_column=order_by_column,
+        retain_original_order=retain_original_order
+    )
+    
+    # only for debugging
+    print("***************************")
+    print(len(x))
+    # x = x[:35]
+    
+    user_id_column = user_id_column if user_id_column else 'user_id'
+    text_id_column = text_id_column if text_id_column else 'text_id'
 
-def hgTransformerGetQA(question,
-                        context,
-                        model = '',
-                        device = 'cpu',
-                        tokenizer_parallelism = False,
-                        logging_level = 'warning',
-                        return_incorrect_results = False,
-                        set_seed = None,
-                        top_k = 1,
-                        doc_stride = 128,
-                        max_answer_len = 15,
-                        max_seq_len = 384,
-                        max_question_len = 64,
-                        handle_impossible_answer = False):
-    qas = hgTransformerGetPipeline(text_strings = [],
-                            task = 'question-answering',
-                            model = model,
-                            device = device,
-                            tokenizer_parallelism = tokenizer_parallelism,
-                            logging_level = logging_level,
-                            return_incorrect_results = return_incorrect_results,
-                            set_seed = set_seed,
-                            question = question, 
-                            context = context, 
-                            top_k = top_k, 
-                            doc_stride = doc_stride, 
-                            max_answer_len = max_answer_len, 
-                            max_seq_len = max_seq_len, 
-                            max_question_len = max_question_len, 
-                            handle_impossible_answer = handle_impossible_answer)
-    return qas
+    dataloader = DataLoader(
+        x,
+        sampler=SequentialSampler(x),
+        batch_size=5,
+        collate_fn=hart_default_data_collator(tokenizer),
+    )
 
-def hgTransformerGetTranslation(text_strings,
-                            model = '',
-                            device = 'cpu',
-                            tokenizer_parallelism = False,
-                            logging_level = 'warning',
-                            return_incorrect_results = False,
-                            set_seed = None,
-                            source_lang = '',
-                            target_lang = '',
-                            return_tensors = False,
-                            return_text = True,
-                            clean_up_tokenization_spaces = False, 
-                            max_length = ''):
-    task = 'translation'
-    if source_lang and target_lang:
-        task = "translation_{s}_to_{t}".format(s=source_lang, t=target_lang)
-    translations = hgTransformerGetPipeline(text_strings = text_strings,
-                            task = task,
-                            model = model,
-                            device = device,
-                            tokenizer_parallelism = tokenizer_parallelism,
-                            logging_level = logging_level,
-                            return_incorrect_results = return_incorrect_results,
-                            set_seed = set_seed,
-                            src_lang = source_lang,
-                            tgt_lang = target_lang,
-                            return_tensors = return_tensors,
-                            return_text = return_text,
-                            clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
-                            max_length = max_length)
-    return translations
+    outputs = []
 
-def hgTransformerGetEmbedding(text_strings,
-                              model = 'bert-large-uncased',
-                              layers = 'all',
-                              return_tokens = True,
-                              max_token_to_sentence = 4,
-                              device = 'cpu',
-                              tokenizer_parallelism = False,
-                              model_max_length = None,
-                              hg_gated = False,
-                              hg_token = "",
-                              logging_level = 'warning'):
-    """
-    Simple Python method for embedding text with pretained Hugging Face models
+    with torch.no_grad():
+        for steps, inputs in enumerate(tqdm(dataloader)):
+            inputs = {k: v.to(device) if k in (
+                "input_ids", "attention_mask", "labels", "history") else v for k, v in inputs.items()}
+            model_outputs = model(**inputs, 
+                                  return_all_user_states=return_all_user_states,
+                                  return_user_representation_as_mean_user_states=return_user_representations,
+                                  use_last_pred_token_as_user_representation=use_last_pred_token_as_user_representation,
+                                  return_all_doc_embeds=return_document_embeddings,
+                                  return_token_embeds=return_word_embeddings,
+                                  representative_layer=representative_layer,
+                                  return_token_embeds_with_insep=return_word_embeds_with_insep,
+                                  last_pred_token_as_last_insep=last_pred_token_as_last_insep,
+                                  )
+            outputs.append(model_outputs)
 
-    Parameters
-    ----------
-    text_strings : list
-        list of strings, each is embedded separately
-    model : str
-        shortcut name for Hugging Face pretained model
-        Full list https://huggingface.co/transformers/pretrained_models.html
-    layers : str or list
-        'all' or an integer list of layers to keep
-    return_tokens : boolean
-        return tokenized version of text_strings
-    max_token_to_sentence : int
-        maximum number of tokens in a string to handle before switching to embedding text
-        sentence by sentence
-    device : str
-        name of device: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
-    tokenizer_parallelism :  bool
-        something
-    model_max_length : int
-        maximum length of the tokenized text
-    hg_gated : bool
-        Whether the accessed model is gated
-    hg_token: str
-        The token generated in huggingface website
-    logging_level : str
-        set logging level, options: critical, error, warning, info, debug
+    return_dict = {}
+    
+    if return_document_embeddings:
+        # combine doc_embeds_with_text_ids into a single dictionary
+        doc_embeds_with_text_ids = {}
+        for d in outputs:
+            for k, v in d['doc_embeds_with_text_ids'].items():
+                if k not in doc_embeds_with_text_ids:
+                    doc_embeds_with_text_ids[k] = []
+                doc_embeds_with_text_ids[k].append(v)
 
-    Returns
-    -------
-    all_embs : list
-        embeddings for each item in text_strings
-    all_toks : list, optional
-        tokenized version of text_strings
-    """
-    #print("I am in hgTransformerGetEmbedding function now!!!!")
-    #print(f"!!!!hg_gated: {hg_gated} !!!")
-    #print(f"!!!!hg_token: {hg_token} !!!")
-                                  
-    set_logging_level(logging_level)
-    set_tokenizer_parallelism(tokenizer_parallelism)
-    device, device_num = get_device(device)
+        doc_embeds_with_text_ids_df = pd.DataFrame.from_dict(
+            doc_embeds_with_text_ids, orient='index').rename(columns={0: 'doc_embeds'})
 
-    config, tokenizer, transformer_model = get_model(model, hg_gated=hg_gated, hg_token=hg_token)
-
-    if device != 'cpu':
-        transformer_model.to(device)
-
-    max_tokens = tokenizer.max_len_sentences_pair
-
-    # check and adjust input types
-    if not isinstance(text_strings, list):
-        text_strings = [text_strings]
-
-    if layers != 'all':
-        if not isinstance(layers, list):
-            layers = [layers]
-        layers = [int(i) for i in layers]
-
-    all_embs = []
-    all_toks = []
-
-    for text_string in text_strings:
-        # if length of text_string is > max_token_to_sentence*4
-        # embedd each sentence separately
-        if len(text_string) > max_token_to_sentence*4:
-            sentence_batch = [s for s in sent_tokenize(text_string)]
-            if model_max_length is None:
-                batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True)
-            else:
-                batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True, max_length=model_max_length)
-            input_ids = torch.tensor(batch["input_ids"])
-            attention_mask = torch.tensor(batch['attention_mask'])
-            if device != 'cpu':
-                input_ids = input_ids.to(device)
-                attention_mask = attention_mask.to(device)
-
-            if return_tokens:
-                tokens = []
-                for ids in input_ids:
-                    tokens.extend([token for token in tokenizer.convert_ids_to_tokens(ids) if token != '[PAD]' and token != '<pad>'])
-                all_toks.append(tokens)
-
-            with torch.no_grad():
-                hidden_states = transformer_model(input_ids,attention_mask=attention_mask)[-1]
-                if layers != 'all':
-                    hidden_states = [hidden_states[l] for l in layers]
-                hidden_states = [h.tolist() for h in hidden_states]
-
-            sent_embedding = []
-
-            for l in range(len(hidden_states)): # iterate over layers
-                layer_embedding = []
-                for m in range(len(hidden_states[l])): # iterate over sentences
-                    layer_embedding.extend([tok for ii, tok in enumerate(hidden_states[l][m]) if attention_mask[m][ii]>0])
-                sent_embedding.append(layer_embedding)
-
-            all_embs.append([[l] for l in sent_embedding])
+        if retain_original_order:
+            doc_embeds_in_original_order = original_data_order.join(
+                doc_embeds_with_text_ids_df, on=text_id_column)['doc_embeds']
+            
+            return_dict['document embeddings'] = torch.stack(doc_embeds_in_original_order.tolist())
         else:
-            input_ids = tokenizer.encode(text_string, add_special_tokens=True)
-            if return_tokens:
-                tokens = tokenizer.convert_ids_to_tokens(input_ids)
+            return_dict['document embeddings'] = doc_embeds_with_text_ids_df
 
-            if device != 'cpu':
-                input_ids = torch.tensor([input_ids]).to(device)
-            else:
-                input_ids = torch.tensor([input_ids])
+    if return_user_representations:
+        # combine user representations into a single dictionary
+        user_reps_with_user_ids = {}
+        for d in outputs:
+            for k, v in d['user representations'].items():
+                if k not in user_reps_with_user_ids:
+                    user_reps_with_user_ids[k] = []
+                user_reps_with_user_ids[k].append(v)
 
-            with torch.no_grad():
-                hidden_states = transformer_model(input_ids)[-1]
-                if layers != 'all':
-                    hidden_states = [hidden_states[l] for l in layers]
-                hidden_states = [h.tolist() for h in hidden_states]
-                all_embs.append(hidden_states)
-                if return_tokens:
-                    all_toks.append(tokens)
+        user_reps_with_user_ids_df = pd.DataFrame.from_dict(
+            user_reps_with_user_ids, orient='index').rename(columns={0: 'user_reps'})
 
-    del_hg_gated_access()                              
-    if return_tokens:
-        return all_embs, all_toks
-    else:
-        return all_embs
-
-def hgTokenizerGetTokens(text_strings,
-                              model = 'bert-large-uncased',
-                              max_token_to_sentence = 4,
-                              device = 'cpu',
-                              tokenizer_parallelism = False,
-                              model_max_length = None,
-                              hg_gated = False,
-                              hg_token = "",
-                              logging_level = 'warning'):
-    """
-    Simple Python method for embedding text with pretained Hugging Face models
-
-    Parameters
-    ----------
-    text_strings : list
-        list of strings, each is embedded separately
-    model : str
-        shortcut name for Hugging Face pretained model
-        Full list https://huggingface.co/transformers/pretrained_models.html
-    max_token_to_sentence : int
-        maximum number of tokens in a string to handle before switching to embedding text
-        sentence by sentence
-    device : str
-        name of device: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
-    tokenizer_parallelism :  bool
-        something
-    model_max_length : int
-        maximum length of the tokenized text
-    hg_gated : bool
-        Set to True if the accessed model is gated
-    hg_token: str
-        The token to access the gated model gen in hg website
-    logging_level : str
-        set logging level, options: critical, error, warning, info, debug
-
-    Returns
-    -------
-    all_embs : list
-        embeddings for each item in text_strings
-    all_toks : list, optional
-        tokenized version of text_strings
-    """
-    try:
-        set_logging_level(logging_level)
-    except NameError:
-        pass
-    set_tokenizer_parallelism(tokenizer_parallelism)
-    device, device_num = get_device(device)
-
-    tokenizer = get_model(model, tokenizer_only=True, hg_gated=hg_gated, hg_token=hg_token)
-
-    if device != 'cpu':
-        tokenizer.to(device)
-
-    max_tokens = tokenizer.max_len_sentences_pair
-
-    # check and adjust input types
-    if not isinstance(text_strings, list):
-        text_strings = [text_strings]
-
-    all_toks = []
-
-    for text_string in text_strings:
-        # if length of text_string is > max_token_to_sentence*4
-        # embedd each sentence separately
-        if len(text_string) > max_token_to_sentence*4:
-            sentence_batch = [s for s in sent_tokenize(text_string)]
-            if model_max_length is None:
-                batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True)
-            else:
-                batch = tokenizer(sentence_batch, padding=True, truncation=True, add_special_tokens=True, max_length=model_max_length)
-            input_ids = torch.tensor(batch["input_ids"])
-
-            tokens = []
-            for ids in input_ids:
-                tokens.extend([token for token in tokenizer.convert_ids_to_tokens(ids) if token != '[PAD]' and token != '<pad>'])
-            all_toks.append(tokens)
-
+        if retain_original_order:
+            user_reps_in_original_order = original_data_order.join(
+                user_reps_with_user_ids_df, on=user_id_column)['user_reps']
+            
+            return_dict['user representations'] = torch.stack(user_reps_in_original_order.tolist())
         else:
-            input_ids = tokenizer.encode(text_string, add_special_tokens=True)
-            tokens = tokenizer.convert_ids_to_tokens(input_ids)
+            return_dict['user representations'] = user_reps_with_user_ids_df
 
-            all_toks.append(tokens)
+    if return_all_user_states:
+        # combine all_user_states into a single dictionary
+        all_user_states_with_user_ids = {}
+        for d in outputs:
+            for k, v in d['all_user_states'].items():
+                if k not in all_user_states_with_user_ids:
+                    all_user_states_with_user_ids[k] = []
+                all_user_states_with_user_ids[k].append(v)
 
-    return all_toks
+        all_user_states_with_user_ids_df = pd.DataFrame.from_dict(
+            all_user_states_with_user_ids, orient='index').rename(columns={0: 'all_user_states'})
 
+        if retain_original_order:
+            all_user_states_in_original_order = original_data_order.join(
+                all_user_states_with_user_ids_df, on=user_id_column)['all_user_states']
+            
+            return_dict['all user states'] = all_user_states_in_original_order
+        else:
+            return_dict['all user states'] = all_user_states_with_user_ids_df
+    
+    if return_word_embeddings:
+        # combine token_embeds_with_text_ids into a single dictionary
+        token_embeds_with_text_ids = {}
+        for d in outputs:
+            for k, v in d['word_embeds_with_text_ids'].items():
+                if k not in token_embeds_with_text_ids:
+                    token_embeds_with_text_ids[k] = []
+                token_embeds_with_text_ids[k].append(v)
+
+        token_embeds_with_text_ids_df = pd.DataFrame.from_dict(
+            token_embeds_with_text_ids, orient='index').rename(columns={0: 'token_ids_and_embeds'})
+
+        # split the token_ids_and_embeds into token_ids and token embeds
+        token_embeds_with_text_ids_df[['token_ids', 'token_embeds']] = pd.DataFrame(token_embeds_with_text_ids_df['token_ids_and_embeds'].tolist(), index=token_embeds_with_text_ids_df.index)
+        
+        if retain_original_order:
+            print(original_data_order)
+            token_ids_embeds_in_original_order = original_data_order.join(
+                token_embeds_with_text_ids_df, on=text_id_column)
+            token_embeds_in_original_order = token_ids_embeds_in_original_order['token_embeds']
+            token_ids_in_original_order = token_ids_embeds_in_original_order['token_ids']
+            
+            return_dict['word embeddings'] = token_embeds_in_original_order.tolist()
+            return_dict['token ids'] = token_ids_in_original_order.tolist()
+        else:
+            token_embeds_with_text_ids_df['text_id'] = token_embeds_with_text_ids_df.index
+            token_embeds_with_text_ids_df.reset_index(drop=True, inplace=True)
+            return_dict['word embeddings'] = token_embeds_with_text_ids_df[['text_id', 'token_ids', 'token_embeds']]
+                    
+    if return_output_with_data:
+        data_with_outputs = original_data_order
+        
+        if return_document_embeddings:
+            data_with_outputs = data_with_outputs.join(
+                doc_embeds_with_text_ids_df, on=text_id_column)
+        if return_user_representations:
+            data_with_outputs = data_with_outputs.join(
+                user_reps_with_user_ids_df, on=user_id_column)
+        if return_all_user_states:
+            data_with_outputs = data_with_outputs.join(
+                all_user_states_with_user_ids_df, on=user_id_column)
+        
+        return_dict['data with outputs'] = data_with_outputs
+        
+    return return_dict
+        
 
     
 ### EXAMPLE TEST CODE:
