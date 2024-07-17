@@ -401,10 +401,10 @@ def get_hart_embeddings(
     from transformers import AutoConfig, AutoTokenizer
     from torch.utils.data.dataloader import DataLoader
     from torch.utils.data.sampler import SequentialSampler
-
-    
     from tqdm import tqdm
-
+    
+    import pandas as pd
+    import torch
     
     if text_column is None:
         raise ValueError("text_column is required")
