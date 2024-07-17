@@ -376,10 +376,10 @@ def hgTransformerGetPipeline(text_strings,
     return task_scores
 
 
- def get_hart_embeddings(
-     data,
-     text_column=None,
-     user_id_column=None,
+def get_hart_embeddings(
+    data,
+    text_column=None,
+    user_id_column=None,
     text_id_column=None,
     block_size=1024,
     max_blocks=None,
@@ -395,20 +395,31 @@ def hgTransformerGetPipeline(text_strings,
     return_word_embeds_with_insep=False,
     representative_layer='last'
  ):
-     if text_column is None:
+    model_path= "hlab/hart-gpt2sml-twt-v1"
+    
+    from hart import HaRTModel, load_tokenized_dataset as load_dataset, hart_default_data_collator
+    from transformers import AutoConfig, AutoTokenizer
+    from torch.utils.data.dataloader import DataLoader
+    from torch.utils.data.sampler import SequentialSampler
+
+    
+    from tqdm import tqdm
+
+    
+    if text_column is None:
         raise ValueError("text_column is required")
     config = AutoConfig.from_pretrained(model_path)
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     config.pad_token_id = tokenizer.eos_token_id
     config.sep_token_id = tokenizer.sep_token_id
-    
+
     model = HaRTModel(model_path, config=config)
-    
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
     model.to(device)
     model.eval()
-    
+
     x, original_data_order = load_dataset(
         tokenizer=tokenizer,
         data=data,
@@ -420,42 +431,42 @@ def hgTransformerGetPipeline(text_strings,
         order_by_column=order_by_column,
         retain_original_order=retain_original_order
     )
-    
+
     # only for debugging
     print("***************************")
     print(len(x))
     # x = x[:35]
-    
+
     user_id_column = user_id_column if user_id_column else 'user_id'
     text_id_column = text_id_column if text_id_column else 'text_id'
-    
+
     dataloader = DataLoader(
         x,
         sampler=SequentialSampler(x),
         batch_size=5,
         collate_fn=hart_default_data_collator(tokenizer),
     )
-    
+
     outputs = []
-    
+
     with torch.no_grad():
         for steps, inputs in enumerate(tqdm(dataloader)):
             inputs = {k: v.to(device) if k in (
                 "input_ids", "attention_mask", "labels", "history") else v for k, v in inputs.items()}
             model_outputs = model(**inputs, 
-                                  return_all_user_states=return_all_user_states,
-                                  return_user_representation_as_mean_user_states=return_user_representations,
-                                  use_last_pred_token_as_user_representation=use_last_pred_token_as_user_representation,
-                                  return_all_doc_embeds=return_document_embeddings,
-                                  return_token_embeds=return_word_embeddings,
-                                  representative_layer=representative_layer,
-                                  return_token_embeds_with_insep=return_word_embeds_with_insep,
-                                  last_pred_token_as_last_insep=last_pred_token_as_last_insep,
-                                  )
+                                    return_all_user_states=return_all_user_states,
+                                    return_user_representation_as_mean_user_states=return_user_representations,
+                                    use_last_pred_token_as_user_representation=use_last_pred_token_as_user_representation,
+                                    return_all_doc_embeds=return_document_embeddings,
+                                    return_token_embeds=return_word_embeddings,
+                                    representative_layer=representative_layer,
+                                    return_token_embeds_with_insep=return_word_embeds_with_insep,
+                                    last_pred_token_as_last_insep=last_pred_token_as_last_insep,
+                                    )
             outputs.append(model_outputs)
-    
+
     return_dict = {}
-    
+
     if return_document_embeddings:
         # combine doc_embeds_with_text_ids into a single dictionary
         doc_embeds_with_text_ids = {}
@@ -464,10 +475,10 @@ def hgTransformerGetPipeline(text_strings,
                 if k not in doc_embeds_with_text_ids:
                     doc_embeds_with_text_ids[k] = []
                 doc_embeds_with_text_ids[k].append(v)
-    
+
         doc_embeds_with_text_ids_df = pd.DataFrame.from_dict(
             doc_embeds_with_text_ids, orient='index').rename(columns={0: 'doc_embeds'})
-    
+
         if retain_original_order:
             doc_embeds_in_original_order = original_data_order.join(
                 doc_embeds_with_text_ids_df, on=text_id_column)['doc_embeds']
@@ -475,7 +486,7 @@ def hgTransformerGetPipeline(text_strings,
             return_dict['document embeddings'] = torch.stack(doc_embeds_in_original_order.tolist())
         else:
             return_dict['document embeddings'] = doc_embeds_with_text_ids_df
-    
+
     if return_user_representations:
         # combine user representations into a single dictionary
         user_reps_with_user_ids = {}
@@ -484,10 +495,10 @@ def hgTransformerGetPipeline(text_strings,
                 if k not in user_reps_with_user_ids:
                     user_reps_with_user_ids[k] = []
                 user_reps_with_user_ids[k].append(v)
-    
+
         user_reps_with_user_ids_df = pd.DataFrame.from_dict(
             user_reps_with_user_ids, orient='index').rename(columns={0: 'user_reps'})
-    
+
         if retain_original_order:
             user_reps_in_original_order = original_data_order.join(
                 user_reps_with_user_ids_df, on=user_id_column)['user_reps']
@@ -495,7 +506,7 @@ def hgTransformerGetPipeline(text_strings,
             return_dict['user representations'] = torch.stack(user_reps_in_original_order.tolist())
         else:
             return_dict['user representations'] = user_reps_with_user_ids_df
-    
+
     if return_all_user_states:
         # combine all_user_states into a single dictionary
         all_user_states_with_user_ids = {}
@@ -504,10 +515,10 @@ def hgTransformerGetPipeline(text_strings,
                 if k not in all_user_states_with_user_ids:
                     all_user_states_with_user_ids[k] = []
                 all_user_states_with_user_ids[k].append(v)
-    
+
         all_user_states_with_user_ids_df = pd.DataFrame.from_dict(
             all_user_states_with_user_ids, orient='index').rename(columns={0: 'all_user_states'})
-    
+
         if retain_original_order:
             all_user_states_in_original_order = original_data_order.join(
                 all_user_states_with_user_ids_df, on=user_id_column)['all_user_states']
@@ -515,7 +526,7 @@ def hgTransformerGetPipeline(text_strings,
             return_dict['all user states'] = all_user_states_in_original_order
         else:
             return_dict['all user states'] = all_user_states_with_user_ids_df
-    
+
     if return_word_embeddings:
         # combine token_embeds_with_text_ids into a single dictionary
         token_embeds_with_text_ids = {}
@@ -524,10 +535,10 @@ def hgTransformerGetPipeline(text_strings,
                 if k not in token_embeds_with_text_ids:
                     token_embeds_with_text_ids[k] = []
                 token_embeds_with_text_ids[k].append(v)
-    
+
         token_embeds_with_text_ids_df = pd.DataFrame.from_dict(
             token_embeds_with_text_ids, orient='index').rename(columns={0: 'token_ids_and_embeds'})
-    
+
         # split the token_ids_and_embeds into token_ids and token embeds
         token_embeds_with_text_ids_df[['token_ids', 'token_embeds']] = pd.DataFrame(token_embeds_with_text_ids_df['token_ids_and_embeds'].tolist(), index=token_embeds_with_text_ids_df.index)
         
