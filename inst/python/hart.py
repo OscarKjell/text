@@ -217,17 +217,17 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
     elif "hart" in model:
         try:
             from transformers import AutoConfig, AutoTokenizer
-            from hart.model import HaRTPreTrainedModel
+            from hart import HaRTModel
         except:
             print("WARNING: HART")
             print("\tPlease try another model.")
             sys.exit()
-
+        model_path = "hlab/hart-gpt2sml-twt-v1"
         config = AutoConfig.from_pretrained(model)
         
         if not config_only:
             tokenizer = AutoTokenizer.from_pretrained(model)
-            transformer_model = HaRTPreTrainedModel.from_pretrained(model, config=config)
+            transformer_model = HaRTModel(model_path, config=config)
             print("HART 1")
             print(transformer_model)
     else:
