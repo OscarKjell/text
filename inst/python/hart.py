@@ -223,10 +223,10 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
             print("\tPlease try another model.")
             sys.exit()
         model_path = "hlab/hart-gpt2sml-twt-v1"
-        config = AutoConfig.from_pretrained(model)
+        config = AutoConfig.from_pretrained(model_path)
         
         if not config_only:
-            tokenizer = AutoTokenizer.from_pretrained(model)
+            tokenizer = AutoTokenizer.from_pretrained(model_path)
             transformer_model = HaRTModel(model_path, config=config)
             print("HART 1")
             print(transformer_model)
