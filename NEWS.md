@@ -3,6 +3,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.2.5
+- updating security issues with python packages. 
+- updating the default range of penalties in textTrain() functions. 
+- updating textPredict() functionality
+
 # text 1.2.2
 - Improving `textTrainN()` including `subsets` sampling (new: default change from `random` to `subsets`), `use_same_penalty_mixture` (new:default change from `FALSE` to `TRUE`) and `std_err` (new output).
 - Improving `textTrainPlot()`
