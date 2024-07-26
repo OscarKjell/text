@@ -22,7 +22,7 @@ textTrainRegression(
   preprocess_step_center = TRUE,
   preprocess_step_scale = TRUE,
   preprocess_PCA = NA,
-  penalty = 10^seq(-16, 16),
+  penalty = 10^seq(-6, 6),
   parameter_selection_method = "first",
   mixture = c(0),
   first_n_predictors = NA,
