@@ -483,7 +483,7 @@ def get_hart_embeddings(
             doc_embeds_in_original_order = original_data_order.join(
                 doc_embeds_with_text_ids_df, on=text_id_column)['doc_embeds']
             
-            return_dict['document embeddings'] = torch.stack(doc_embeds_in_original_order.tolist())
+            return_dict['document embeddings'] = torch.stack(doc_embeds_in_original_order.tolist()).tolist()
         else:
             return_dict['document embeddings'] = doc_embeds_with_text_ids_df
 
