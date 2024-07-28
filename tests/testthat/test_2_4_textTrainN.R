@@ -9,6 +9,7 @@ context("textTrainN")
 test_that("training with only x_append (without word embeddings)", {
   skip_on_cran()
 
+  print("training with only x_append (without word embeddings)")
   # n_cross_val = 2
   tibble_to_plot_a <- textTrainN(
     x = word_embeddings_4$texts$harmonytext,

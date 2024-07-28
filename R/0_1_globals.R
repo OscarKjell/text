@@ -33,6 +33,7 @@ utils::globalVariables(c(
   "textTrainCVpredictions", "textTrainCVpredictionsRF",
   "strata",
   "data_prepared_with_recipe",
+  "bestParametersFunction", "eval_result",
 
   # textTrainNPlot
   "sample_size", "percent", "std", "ymin", "ymax",

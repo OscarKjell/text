@@ -601,38 +601,6 @@ summarize_tune_results <- function(object,
 }
 
 
-
-#x
-#y
-#x_append = NULL
-#append_first = FALSE
-#cv_method = "validation_split"
-#outside_folds = 10
-#inside_folds = 3 / 4
-#strata = "y"
-#outside_strata = TRUE
-#outside_breaks = 4
-#inside_strata = TRUE
-#inside_breaks = 4
-#model = "regression"
-#eval_measure = "default"
-#preprocess_step_center = TRUE
-#preprocess_step_scale = TRUE
-#preprocess_PCA = NA
-#penalty = 10^seq(-16, 16)
-#mixture = c(0)
-#parameter_selection_method = "first"
-#first_n_predictors = NA
-#impute_missing = FALSE
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#simulate.p.value = FALSE
-#seed = 2020
-
-
-
 #' Train word embeddings to a numeric variable.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
 #' provided in a list they will be concatenated.
