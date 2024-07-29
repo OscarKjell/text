@@ -115,7 +115,7 @@ multilingual BERT comprises *104 different languages*.
 | ‘roberta-base’                 | [Liu et al. 2019](https://arxiv.org/abs/1907.11692)      | 12     | 768        | English                                                                              |
 | ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)    | 6      | 768        | English                                                                              |
 | ‘bert-base-multilingual-cased’ | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12     | 768        | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
-| ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692.pdf)        | 24     | 1024       | [100 language](https://huggingface.co/docs/transformers/multilingual)                |
+| ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692)            | 24     | 1024       | [100 language](https://huggingface.co/docs/transformers/multilingual)                |
 
 See [HuggingFace](https://huggingface.co/models/) for a more
 comprehensive list of models.

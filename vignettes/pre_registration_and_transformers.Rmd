@@ -47,6 +47,6 @@ This is not an exhaustive list; rather think through your analyses as carefully 
 
 ##### References
 Simmons, J. P., Nelson, L. D., & Simonsohn, U. (2011). False-positive psychology: Undisclosed flexibility in data collection and analysis allows presenting anything as significant.  Psychological science.
-Mosbach, M., Andriushchenko, M., & Klakow, D. (2020). [On the Stability of Fine-tuning BERT: Misconceptions, Explanations, and Strong Baselines.](https://arxiv.org/pdf/2006.04884.pdf)
+Mosbach, M., Andriushchenko, M., & Klakow, D. (2020). [On the Stability of Fine-tuning BERT: Misconceptions, Explanations, and Strong Baselines.](http://arxiv.org/pdf/2006.04884)
 
 

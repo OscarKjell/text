@@ -98,7 +98,7 @@ References <- c("[Devlin et al. 2019](https://aclanthology.org/N19-1423/)",
                 "[Liu et al. 2019](https://arxiv.org/abs/1907.11692)",
                 "[Sahn et al., 2019](https://arxiv.org/abs/1910.01108)",
                 "[Devlin et al. 2019](https://aclanthology.org/N19-1423/)",
-                "[Liu et al](https://arxiv.org/pdf/1907.11692.pdf)"
+                "[Liu et al](https://arxiv.org/pdf/1907.11692)"
                 )
 
 Layers <- c("12",
