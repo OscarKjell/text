@@ -736,6 +736,7 @@ implicit_motives <- function(texts,
 implicit_motives_pred <- function(sqrt_implicit_motives,
                                   participant_id,
                                   story_id) {
+
   # square root transform
   sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
 
@@ -754,13 +755,25 @@ implicit_motives_pred <- function(sqrt_implicit_motives,
     implicit_motives_pred <- tibble::tibble(
       story_id = sqrt_implicit_motives$participant_id,
       story_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
-      story_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z))
+      story_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)), 0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+      story_prob_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
+      story_class_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
+
+
   } else {
     implicit_motives_pred <- tibble::tibble(
       participant_id = sqrt_implicit_motives$participant_id,
       person_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
-      person_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z))
+      person_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)), 0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+      person_prob_no_wc_correction = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
+      person_class_no_wc_correction = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
   }
+
+  # Possible warning
+  #if (any(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)))) {
+  #  warning("The '' column contains NA values. They have been replaced with zeros.")
+  #}
+
 
   return(implicit_motives_pred)
 }
@@ -898,6 +911,7 @@ implicit_motives_results <- function(model_reference,
                                      texts,
                                      dataset,
                                      lower_case_model) {
+
 
   #### Assign correct column name ####
   if (grepl("implicit", lower_case_model) & grepl("power", lower_case_model)) {
