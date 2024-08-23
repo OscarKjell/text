@@ -1,0 +1,10 @@
+citHeader("To cite text in publications use:")
+
+bibentry(
+   bibtype = "Article",
+   title = "The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning",
+   author = as.person("Oscar Kjell [aut], Salvatore Giorgi [aut], H. Andrew Schwartz [aut]"),
+   journal = "Psychological Methods",
+   doi = "10.1037/met0000542",
+   year = 2023,
+   url = "https://osf.io/preprints/psyarxiv/293kt/")

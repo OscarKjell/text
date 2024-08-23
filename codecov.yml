@@ -1,0 +1,22 @@
+comment: false
+
+coverage:
+  range: 50...90
+  round: up
+  precision: 3
+
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+
+
+codecov:
+  token:

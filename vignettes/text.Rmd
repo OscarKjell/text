@@ -1,0 +1,192 @@
+---
+title: "Getting started"
+description: "Introduction to text: HuggingFace transformers in R."
+author: ""
+opengraph:
+  image: 
+    src: "http://r-text.org/articles/text_files/figure-html/unnamed-chunk-5-1.png"
+  twitter:
+    card: summary_large_image
+    creator: "@oscarkjell"
+output: github_document #rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{text}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+<a rel="me" href="https://mastodon.online/@oscarkjell">Oscar Kjell</a>
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+evaluate = FALSE
+```
+The *text*-package uses Hugging Face transformers language models, natural language processing and machine learning methods to examine text and numerical variables.
+
+Please reference our tutorial article when using the package: [The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://osf.io/preprints/psyarxiv/293kt/).
+
+To learn more about the textEmbed() functions see the tutorial called: [HuggingFace Transformers in R: Word Embeddings Defaults and Specifications](https://www.r-text.org/articles/huggingface_in_r.html).
+
+This Getting Started tutorial is going through some central *text* functions. The data comes from the [Kjell et al., 2019](https://pubmed.ncbi.nlm.nih.gov/29963879/) ([pre-print](https://osf.io/preprints/psyarxiv/er6t7/)), which show how individuals' open-ended text answers can be used to *measure*, *describe* and *differentiate* psychological constructs.  
+
+In short the workflow includes to first transform text variables into text-level and word type-level word embeddings. These word embeddings are then used to predict numerical variables, compute semantic similarity scores, and plot words in the word embedding space.  
+
+### textEmbed(): mapping text to numbers using HuggingFace language models
+The `textEmbed()` function automatically transforms character variables in a given tibble to word embeddings. The example data that will be used in this tutorial comes from participants that have described their harmony in life and satisfaction with life with a text response, 10 descriptive words or rating scales. For a more detailed description please see the [word embedding tutorial](https://www.r-text.org/articles/huggingface_in_r.html) 
+
+```{r setup, eval = evaluate, warning=FALSE, message=FALSE}
+
+library(text)
+
+# View example data including both text and numerical variables
+Language_based_assessment_data_8
+
+# Transform the text data to BERT word embeddings
+word_embeddings <- textEmbed(
+  texts = Language_based_assessment_data_8[3],
+  model = "bert-base-uncased",
+  layers = -2,
+  aggregation_from_tokens_to_texts = "mean",
+  aggregation_from_tokens_to_word_types = "mean",
+  keep_token_embeddings = FALSE)
+
+# See how word embeddings are structured
+word_embeddings
+
+# Save the word embeddings to avoid having to import the text every time. (i.e., remove the ##)
+## saveRDS(word_embeddings, "word_embeddings.rds")
+
+# Get the word embeddings again (i.e., remove the ##)
+## word_embeddings <- readRDS("_YOURPATH_/word_embeddings.rds")
+```
+
+
+### textTrain(): Examine the relationship between text and numeric variables
+The `textTrain()` is used to examine how well the word embeddings from a text can predict a numeric variable. This is done by training the word embeddings using ridge regression and 10-fold cross-validation. In the example below we examine how well the harmony text responses can predict the rating scale scores from the Harmony in life scale.
+
+```{r, eval = evaluate,  warning=FALSE, message=FALSE}
+library(text)
+
+# Examine the relationship between harmonytext word embeddings and the harmony in life rating scale
+model_htext_hils <- textTrain(word_embeddings$texts$harmonywords, 
+                              Language_based_assessment_data_8$hilstotal)
+
+# Examine the correlation between predicted and observed Harmony in life scale scores
+model_htext_hils$results
+
+```
+
+## Plot statistically significant words 
+The text-package has several ways to plot words; here we will use the Supervised Dimension Plot. The plotting is made in two steps: First the `textProjection` function is pre-processing the data, including computing statistics for each word type to be plotted. Second, `textProjectionPlot()` is visualizing the words, including many options to set color, font etc for the figure. Dividing this procedure into two steps makes the process more transparent (since the user naturally get to see the output that the words are plotted according to) and quicker since the more heavy computations are made in the first step, the last step goes quicker so that one can try different design settings.   
+
+### textProjection(): Pre-process data for plotting 
+```{r, eval = evaluate, warning=FALSE, message=FALSE}
+library(text)
+
+# Pre-process data
+projection_results <- textProjection(
+  words = Language_based_assessment_data_8$harmonywords,
+  word_embeddings = word_embeddings$texts,
+  word_types_embeddings = word_embeddings$word_types,
+  x = Language_based_assessment_data_8$hilstotal,
+  y = Language_based_assessment_data_8$age
+)
+projection_results$word_data
+
+```
+
+
+### textProjectionPlot(): A two-dimensional word plot
+```{r, eval = evaluate, warning=FALSE, message=FALSE, dpi=300}
+library(text)
+# Supervised Dimension Projection Plot
+# To avoid warnings -- and that words do not get plotted, first increase the max.overlaps for the entire session: 
+options(ggrepel.max.overlaps = 1000)
+
+# Supervised Dimension Projection Plot
+plot_projection_2D <- textProjectionPlot(
+  word_data = projection_results,
+ min_freq_words_plot = 1,
+ plot_n_word_extreme = 10,
+ plot_n_word_frequency = 5,
+ plot_n_words_middle = 5,
+ y_axes = TRUE,
+ p_alpha = 0.05,
+ p_adjust_method = "fdr",
+  title_top = "Harmony Words Responses (Supervised Dimension Projection)",
+  x_axes_label = "Low vs. High Harmony in Life Scale Score",
+  y_axes_label = "Low vs.High Age",
+  bivariate_color_codes = c("#E07f6a", "#60A1F7", "#85DB8E",
+                            "#FF0000", "#EAEAEA", "#5dc688",
+                            "#E07f6a", "#60A1F7", "#85DB8E"
+))
+# View plot
+plot_projection_2D$final_plot
+
+
+```
+
+
+### Articles using the text-package
+[Beyond rating scales: With targeted evaluation, large language models are poised for psychological assessment](https://www.sciencedirect.com/science/article/pii/S0165178123006170) *Kjell, Kjell and Schwartz. (2024). Psychiatry Research*
+
+[Natural language analyzed with AI‐based transformers predict traditional subjective well‐being measures approaching the theoretical upper limits in accuracy](https://www.nature.com/articles/s41598-022-07520-w) *Kjell et al., (2022). Scientific Reports*
+
+[Doing well-being: Self-reported activities are related to subjective well-being](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0270503).
+*Nilsson, et al., (2022). PLOSONE*
+
+[Computational Language Assessments of Harmony in Life — Not Satisfaction With Life or Rating Scales — Correlate With Cooperative Behaviors](https://www.frontiersin.org/articles/10.3389/fpsyg.2021.601679/). *Kjell et al., (2021). Frontiers*
+
+[Freely Generated Word Responses Analyzed With Artificial Intelligence Predict Self-Reported Symptoms of Depression, Anxiety, and Worry](https://www.frontiersin.org/articles/10.3389/fpsyg.2021.602581/). *Kjell K., et al. (2021). Frontiers*
+
+### Other relevant references
+The below list consists of papers analyzing human language in a similar fashion that is possible in *text*.
+
+***Methods Articles***
+
+[The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://osf.io/preprints/psyarxiv/293kt/)
+*Kjell, Salvatore, & Schwartz. (2024) Psychological Methods.*
+
+[Gaining insights from social media language: Methodologies and challenges](http://www.peggykern.org/uploads/5/6/6/7/56678211/kern_2016_-_gaining_insights_from_social_media_language-_methodologies_and_challenges.pdf).  
+*Kern et al., (2016). Psychological Methods.*
+
+[Semantic measures: Using natural language processing to measure, differentiate, and describe psychological constructs.](https://pubmed.ncbi.nlm.nih.gov/29963879/) [Pre-print](https://osf.io/preprints/psyarxiv/er6t7/)  
+*Kjell et al.,  (2019). Psychological Methods.*
+
+***Clinical Psychology***  
+
+Facebook language predicts depression in medical records  
+*Eichstaedt, J. C., ... & Schwartz, H. A. (2018). PNAS.*
+
+
+***Social and Personality Psychology***     
+
+[Personality, gender, and age in the language of social media: The open-vocabulary approach](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0073791)  
+*Schwartz, H. A., … & Seligman, M. E. (2013). PloSOne.*
+
+Automatic Personality Assessment Through Social Media Language  
+*Park, G., Schwartz, H. A., ... & Seligman, M. E. P. (2014). Journal of Personality and Social Psychology.*
+
+
+***Health Psychology***  
+
+Psychological language on Twitter predicts county-level heart disease mortality  
+*Eichstaedt, J. C., Schwartz, et al. (2015). Psychological Science.*
+
+
+***Positive Psychology***  
+
+[The Harmony in Life Scale Complements the Satisfaction with Life Scale: Expanding the Conceptualization of the Cognitive Component of Subjective Well-Being](https://link.springer.com/article/10.1007/s11205-015-0903-z)  
+*Kjell, et al., (2016). Social Indicators Research*
+
+***Computer Science: Python Software***  
+
+[DLATK: Differential language analysis toolkit](https://aclanthology.org/D17-2010/)
+*Schwartz, H. A., Giorgi, et al., (2017).  In Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing: System Demonstrations* 
+
+
+[DLATK](https://github.com/dlatk/dlatk)
+
+
+

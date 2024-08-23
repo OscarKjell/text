@@ -1,0 +1,228 @@
+---
+title: "Extended Installation Guide"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Extended Installation Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+*Text* enables users access to HuggingFace Transformers in R through the R-package [reticulate](https://rstudio.github.io/reticulate/) as an interface to [Python](https://www.python.org/), and the python packages [torch](https://pytorch.org/) and [transformers](https://huggingface.co/docs/transformers/index). So it's important to install both the text-package and a python environment with the text required python packages that the text-package can use. </br></br> The recommended way is to use `textrpp_install()` to install a conda environment with text required python packages, and `textrpp_initialize` to initialize it.
+
+## Conda environment
+
+```{r extended_installation_condaenv, eval = FALSE}
+library(text)
+library(reticulate)
+
+# Install text required python packages in a conda environment (with defaults).
+text::textrpp_install()
+
+# Show available conda environments.
+reticulate::conda_list()
+
+# Initialize the installed conda environment.
+# save_profile = TRUE saves the settings so that you don't have to run textrpp_initialize() after restarting R. 
+text::textrpp_initialize(save_profile = TRUE)
+
+# Test so that the text package work.
+textEmbed("hello")
+
+```
+
+## Solving Mac OS errors
+
+### Failed to build tokenizers
+
+if running: textrpp_install()
+
+results in this error:
+
+```         
+Failed to build tokenizers
+ERROR: Could not build wheels for tokenizers, which is required to install pyproject.toml-based projects
+```
+
+In the terminal run:
+
+```{r extended_installation_condaenvE1, eval = FALSE}
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+### Rust compiler
+
+Error:
+
+```         
+"Error: Error installing package(s): ..." 
+including: "error: can't find Rust compiler"
+```
+
+In the terminal run:
+
+```{r extended_installation_condaenvE2, eval = FALSE}
+brew install rust
+```
+
+## Recommended versions for conda
+
+The success of the installation is dependent on using conda, python and package versions that work together. The installation of the text-package with text required python packages is tested on Linux, Mac OS, and Windows using github actions. The installation procedure and details can be seen at [github actions](https://github.com/OscarKjell/text/actions) (look at workflow runs called System specific installation NoPy).
+
+The table below show various combination of python and package versions that have worked (it is not an exhaustive list).
+
+```{r conda_tabble_short, echo=FALSE, results='asis'}
+library(magrittr)
+
+os <- c("'Mac OS'", "'Linux'", "'Windows'",
+  "'Windows'", 
+        "'Mac OS'", "'Linux'", "'Windows'",
+        "'Mac OS'", "'Linux'",  "'Windows'",
+        "'Mac OS'", "'Linux'", "'Windows'")
+mini_conda <- c("'-'", "'-'", "'-'","'4.10.1'", 
+                "'4.10.3'", "'4.10.3'", "'4.10.3'",
+                "'4.10.3'", "'4.10.3'", "'4.10.3'",
+                "'4.10.3'", "'4.10.3'", "'4.10.3'")
+python <- c("'3.9.0'", "'3.9.0'", "'3.9.0'", "'3.9.0'",
+                   "'3.9.0'", "'3.9.0'", "'3.9.0'",
+                   "'3.8.10'", "'3.8.10'", "'3.8.10'",
+                   "'3.7.0'", "'3.7.0'", "'3.6.13'"
+                )
+
+torch <- c("'torch==1.11.0'", "'torch==1.11.0'", "'torch==1.11.0'","'torch==1.7.1'", 
+           "'torch==1.7.1'", "'torch==1.7.1'", "'torch==1.7.1'", 
+           "'torch==1.7.1'", "'torch==1.7.1'", "'torch==1.7.1'", 
+           "'torch==0.4.1'", "'torch==0.4.1'", "'torch==1.10'")
+
+transformers <- c("'transformers==4.19.2'", "'transformers==4.19.2'", "'transformers==4.19.2'", "'transformers==4.12.5'", 
+                  "'transformers==4.12.5'", "'transformers==4.12.5'", "'transformers==4.12.5'",
+                  "'transformers==4.12.5'", "'transformers==4.12.5'", "'transformers==4.12.5'", 
+                  "'transformers==3.3.1'", "'transformers==3.3.1'", "'transformers==3.3.1'")
+
+success <- c("Pass", "Pass","Pass", 
+             "FAIL", 
+             "Pass", "Pass","Pass",
+             "Pass","Pass","Pass",
+             "Pass","Pass","Pass")
+
+mini_conda_table <- tibble::tibble(os, mini_conda, python, torch, transformers, success)
+
+knitr::kable(mini_conda_table, caption="", bootstrap_options = c("hover"), full_width = T)
+```
+
+## Virtual environments
+
+It is also possible to use virtual environments (although it is currently only tested on MacOS).
+
+```{r extended_installation_venv, eval = FALSE}
+# Create a virtual environment with text required python packages.
+# Note that you have to provide a python path.
+text::textrpp_install_virtualenv(rpp_version = c("torch==1.7.1", "transformers==4.12.5", "numpy", "nltk"),
+                                 python_path = "/usr/local/bin/python3.9",
+                                 envname = "textrpp_virtualenv")
+
+# Initialize the virtual environment.
+text::textrpp_initialize(virtualenv = "textrpp_virtualenv",
+                         condaenv = NULL,
+                         save_profile = TRUE)
+
+```
+
+## Versions tested for virtual environment
+
+Virtual environments works for MacOS, whereas github actions does not currently work for Linux and Windows. At [gihub actions](https://github.com/OscarKjell/text/actions) look for a workflow run called: Virtual environment for more information.
+
+```{r venv_tabble_short, echo=FALSE, results='asis'}
+library(magrittr)
+
+OS <- c("'Mac OS'", "'Linux'", "'Mac OS'", "'Linux'", "'Windows'")
+
+Python_version <- c("'3.9.8'", "'3.9.8'", "'3.9.8'", "-", "-")
+
+torch <- c("'torch==1.11.0'", "'torch==1.11.0'", "'torch==1.7.1'", "-", "-")
+
+transformers <- c("'transformers==4.19.2'", "'transformers==4.19.2'", "'transformers==4.12.5'", "-", "-")
+
+Success <- c("Pass", "Pass", "Pass", "-", "-")
+
+venv_conda_table <- tibble::tibble(OS, Python_version, torch, transformers, Success)
+
+knitr::kable(venv_conda_table, caption="", bootstrap_options = c("hover"), full_width = T)
+```
+
+## Installation instructions for text 0.9.10
+
+Below is the instructions for installing earlier versions of text (0.9.10 and before); these should work for newer versions of text as long as a correct versions of python and required packages are used.
+
+```{r extended_installation_old, eval = FALSE}
+library(text)
+
+# To install the python packages torch, transformers, numpy and nltk through R, run: 
+library(reticulate)
+install_miniconda()
+
+conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'), pip = TRUE)
+
+# Windows 10
+conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'))
+
+```
+
+## Checking your versions
+
+If something isn't working right, it is a good start to examine what is installed and running on your system. For example to make sure that you have R and Python versions that are up to date.
+
+```{r extended_installation_checking_system, eval = FALSE}
+
+# First check R-version and which packages that are attached and loaded.  
+sessionInfo()
+
+# Second check out python version; and make sure you at least have version 3.6.10
+library(reticulate)
+py_config()
+```
+
+### Issue: RStudio craches during textEmbed
+
+After a new install/update of *text*, RStudio crashed (Abort session) when running functions that fetches word embeddings (i.e., `textEmbedLayersOutput` or `textEmbed`).
+
+### Solution: Reinstall reticulate and r-miniconda
+
+To solve the issue re-install reticulate (development version) and uninstall and install r-miniconda.
+
+Uninstall r-miniconda by removing its entire folder (which by default [in Mac] is at `Users/YOUR_USER_NAME/Library/r-miniconda`).
+
+(Note that [in Mac] the Library folder is hidden, so to make it visible go to Finder and the path Users/YOUR_USER_NAME/ and press the three keys: `COMMAND + SHIFT + .` . Then the Library-folder should appear, and you can find and remove r-miniconda.
+
+```{r extended_REinstallation, eval = FALSE}
+library(text)
+
+# To re-install packages start with a fresh session by restarting R and RStudio
+
+# Install development of reticulate (might not be necessary)
+devtools::install_github("rstudio/reticulate")
+
+# After having manually removed the r-miniconda folder, install it again: 
+library(reticulate)
+install_miniconda()
+
+# Subsequently re-install torch, transformers, numpy and nltk by running: 
+conda_install(envname = 'r-reticulate', c('torch==0.4.1', 'transformers==3.3.1', 'numpy', 'nltk'), pip = TRUE)
+
+```
+
+The exact way to install these packages may differ across systems. Please see:\
+[Python](https://www.python.org/)\
+[torch](https://pytorch.org/)\
+[transformers](https://huggingface.co/docs/transformers/index)
+
+## Share advise
+
+*If you find a good solution please feel free to email oscar [ d_o t] kjell [a_t] psy [DOT] lu [d_o_t]se so that we can update above instructions.*
+>>>>>>> e368e8b (documentation updates)

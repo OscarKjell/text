@@ -1,0 +1,61 @@
+Package: text
+Type: Package
+Title: Analyses of Text using Transformers Models from HuggingFace, Natural Language Processing and Machine Learning
+Version: 1.2.3
+Authors@R: c(
+    person("Oscar", "Kjell", , "oscar.kjell@psy.lu.se", role = c("aut", "cre"), 
+      comment = c(ORCID = "0000-0002-2728-6278"),
+    ),
+    person("Salvatore", "Giorgi", role = c("aut"), 
+      comment = c(ORCID = "0000-0001-7381-6295")
+    ),
+    person("Andrew", "Schwartz", role = c("aut"), 
+      comment = c(ORCID = "0000-0002-6383-3339"))
+    )
+Description: Link R with Transformers from Hugging Face to transform text variables to word embeddings; where the word embeddings are used to statistically test the mean difference between set of texts, compute semantic similarity scores between texts, predict numerical variables, and visual statistically significant words according to various dimensions etc. For more information see  <https://www.r-text.org>.
+License: GPL-3
+URL: https://r-text.org/, https://github.com/OscarKjell/text/
+BugReports: https://github.com/OscarKjell/text/issues/
+Encoding: UTF-8
+Archs: x64
+SystemRequirements: Python (>= 3.6.0)
+LazyData: true
+BuildVignettes: true
+Imports: 
+    dplyr,
+    tibble,
+    stringi,
+    tidyr,
+    ggplot2,
+    ggrepel,
+    cowplot,
+    rlang,
+    purrr,
+    magrittr,
+    parsnip,
+    recipes (>= 0.1.16),
+    rsample,
+    reticulate,
+    tune,
+    workflows,
+    yardstick,
+    future,
+    furrr,
+    overlapping
+RoxygenNote: 7.3.2
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat,
+    rio,
+    glmnet,
+    randomForest,
+    covr,
+    xml2,
+    ranger,
+    utils,
+    ggwordcloud, 
+    reactable, 
+    osfr
+VignetteBuilder: knitr
+Depends: R (>= 4.00)

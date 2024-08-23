@@ -1,0 +1,35 @@
+---
+title: "HuggingFace language models are downloaded in .cache"
+output: github_document #rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Removing_Cache_Files}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+*Transformers Models from HuggingFace*
+When specifying and running a language model for the first time in ```textEmbed()```, the python package transformers will automatically download it from HuggingFace. These models can be rather large (a few GB), so you might want to remove models that you have no use for anymore.
+
+```{r setup, eval = FALSE, warning=FALSE, message=FALSE}
+
+library(text)
+
+# Check downloaded, available models.
+textModels()
+
+# Delete a specified model and model associated files.
+textModelsRemove("name_of_model_to_be_removed")
+
+```
+
+*Advanced*
+By default the files necessary to run the model are downloaded to the .cache folder. To see the hidden .cache folder on a Mac go to ```/Users/USER_NAME/``` in Finder and press: ```CMD + SHIFT + .```
+This reveals the .cache folder and its enclosed folders and files. Go to: ```/Users/USER_NAME/.cache/torch/transformers/``` to find those files that have been downloaded by transformers.  
+Note that these files are awkwardly named (e.g., ```c146cc96724f27295a0c3ada1fbb3632074adf87…```); but you might want to remove the larger files and then just re-run the ```textEmbed()``` again to download the models you want to use again.
