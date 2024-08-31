@@ -736,7 +736,8 @@ implicit_motives <- function(texts,
 implicit_motives_pred <- function(sqrt_implicit_motives,
                                   participant_id,
                                   story_id) {
-  # square root transform
+
+  # square root transform 
   sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
 
   # for OUTCOME_USER_SUM_PROB
@@ -753,14 +754,24 @@ implicit_motives_pred <- function(sqrt_implicit_motives,
   if (identical(story_id, participant_id)){
     implicit_motives_pred <- tibble::tibble(
       story_id = sqrt_implicit_motives$participant_id,
-      story_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
-      story_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z))
+      story_prob = ifelse(length(participant_id) < 30, sqrt_implicit_motives$OUTCOME_USER_SUM_PROB / sqrt_implicit_motives$wc_person_per_1000, as.vector(OUTCOME_USER_SUM_PROB.residual1.z)),
+      story_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)), 0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+      story_prob_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
+      story_class_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
+
+
   } else {
     implicit_motives_pred <- tibble::tibble(
       participant_id = sqrt_implicit_motives$participant_id,
-      person_prob = as.vector(OUTCOME_USER_SUM_PROB.residual1.z),
-      person_class = as.vector(OUTCOME_USER_SUM_CLASS.residual1.z))
+      person_prob = ifelse(length(participant_id) < 30, sqrt_implicit_motives$OUTCOME_USER_SUM_PROB / sqrt_implicit_motives$wc_person_per_1000, as.vector(OUTCOME_USER_SUM_PROB.residual1.z)),
+      person_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)), 0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+      person_prob_no_wc_correction = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
+      person_class_no_wc_correction = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
   }
+
+  if (length(participant_id) < 30) {
+    warning("Warning: implicit motive scores were corrected for word count by 'score/(word count/1000)' and not residualised from a regression. This is because the number of datapoints was less than 30.")
+  } 
 
   return(implicit_motives_pred)
 }
@@ -898,6 +909,7 @@ implicit_motives_results <- function(model_reference,
                                      texts,
                                      dataset,
                                      lower_case_model) {
+
 
   #### Assign correct column name ####
   if (grepl("implicit", lower_case_model) & grepl("power", lower_case_model)) {

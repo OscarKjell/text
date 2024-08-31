@@ -88,7 +88,7 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
                              previous_sentence = TRUE)
   
   testthat::expect_is(predictions$sentence_predictions$texts[1], "character")
-  testthat::expect_equal(predictions$person_predictions$person_prob[40], 0.176565, tolerance = 0.0001)
+  testthat::expect_equal(predictions$person_predictions$person_prob[40], -0.957266, tolerance = 0.0001)
   
   # Observe; when converting to numeric, zeros are replaced by ones, and ones are replaced by twos.  
 
@@ -98,15 +98,14 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
   
   # person-level predictions 
   testthat::expect_equal(sum(as.numeric(predictions$person_predictions$participant_id[10])), 10, tolerance = 0.0001)
-  testthat::expect_equal(sum(as.numeric(predictions$person_predictions$person_prob[10])), -1.144509, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$person_predictions$person_prob[10])), -0.957266, tolerance = 0.0001)
   
   # story-level predictions
   testthat::expect_equal(sum(as.numeric(predictions$story_predictions$story_id[5])), 5, tolerance = 0.0001)
-  testthat::expect_equal(sum(as.numeric(predictions$story_predictions$story_prob[5])), 1.51721, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$story_predictions$story_prob[5])), -0.56957, tolerance = 0.0001)
 
   # dataset merging
   testthat::expect_equal(sum(as.numeric(predictions$dataset$.pred_0_1[40])), 0.9891365, tolerance = 0.0001)
-  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_prob_2[10])), -1.144509, tolerance = 0.0001)
-  testthat::expect_equal(sum(as.numeric(predictions$dataset$story_prob_3[5])), 1.51721, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_prob_2[10])), -0.957266, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$dataset$story_prob_3[5])), -0.56957, tolerance = 0.0001)
 })
-
