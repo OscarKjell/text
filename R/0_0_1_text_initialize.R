@@ -53,7 +53,7 @@ textrpp_initialize <- function(python_executable = NULL,
     }
   }
 
-  cat("\033[31m===============The code check 1111 is here!===============\033[0m\n")
+  cat("\033[31m===============R code check 1111 is here!===============\033[0m\n")
   # 20240903 R 4.4.1, using steps in the link to install (https://github.com/moomoofarm1/r-text_misc/blob/main/LocalSetupOfR_if_ANACONDA_incompatible.md)
   # Replicate the error
  # ===============The code check 1111 is here!===============
@@ -68,7 +68,7 @@ textrpp_initialize <- function(python_executable = NULL,
     mustWork = TRUE
   ))
 
-  cat("\033[31m===============The code check 222 is here!===============\033[0m\n")
+  cat("\033[31m===============R code check 222 is here!===============\033[0m\n")
 
   message(colourise(
     "\nSuccessfully initialized text required python packages.\n",
