@@ -53,7 +53,7 @@ textrpp_initialize <- function(python_executable = NULL,
     }
   }
 
-  cat("\033[31m===============The code check is here!===============\033[0m\n")
+  
   
   # Importing this here may start importing necessary packages
   reticulate::source_python(system.file("python",
@@ -61,6 +61,8 @@ textrpp_initialize <- function(python_executable = NULL,
     package = "text",
     mustWork = TRUE
   ))
+
+  cat("\033[31m===============The code check is here!===============\033[0m\n")
 
   message(colourise(
     "\nSuccessfully initialized text required python packages.\n",
