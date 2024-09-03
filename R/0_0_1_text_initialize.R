@@ -53,6 +53,8 @@ textrpp_initialize <- function(python_executable = NULL,
     }
   }
 
+  cat("\033[31m===============The code check is here!===============\033[0m\n")
+  
   # Importing this here may start importing necessary packages
   reticulate::source_python(system.file("python",
     "huggingface_Interface3.py",
@@ -74,7 +76,6 @@ textrpp_initialize <- function(python_executable = NULL,
   message(colourise(settings_text,
     fg = "blue", bg = NULL
   ))
-
 
   options("textrpp_initialized" = TRUE)
 
