@@ -57,7 +57,7 @@ textrpp_install <- function(conda = "auto",
   if (rpp_version[[1]] == "rpp_version_system_specific_defaults") {
     if (is_osx() || is_linux()) {
       rpp_version <- c(
-        "torch==2.2.0",
+        "torch==2.1.0",
         "transformers==4.38.0",
         "huggingface_hub==0.20.0",
         "numpy==1.26.0",
@@ -78,7 +78,7 @@ textrpp_install <- function(conda = "auto",
     }
     if (is_windows()) {
       rpp_version <- c(
-        "torch==2.2.0",
+        "torch==2.1.0",
         "transformers==4.38.0",
         "huggingface_hub==0.20.0",
         "numpy==1.26.0",
