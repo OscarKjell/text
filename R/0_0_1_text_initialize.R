@@ -60,8 +60,6 @@ textrpp_initialize <- function(python_executable = NULL,
     mustWork = TRUE
   ))
 
-  cat("\033[31m===============R code check 222 is here!===============\033[0m\n")
-
   message(colourise(
     "\nSuccessfully initialized text required python packages.\n",
     fg = "green", bg = NULL
