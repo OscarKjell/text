@@ -22,8 +22,6 @@ from nltk.tokenize import sent_tokenize
 
 import os, sys
 
-print("\033[31mPython check 1111 is here!\033[0m")
-
 ACCEPTED_TASKS = ["text-classification", "sentiment-analysis", "question-answering", "translation", 
     "summarization", "token-classification", "ner", "text-generation", "zero-shot-classification"]
 
