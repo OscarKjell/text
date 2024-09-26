@@ -167,7 +167,7 @@ def get_device(device):
 
     return device, device_num
 
-def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg_token=""):
+def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg_token="", trust_remote_code=False):
     """
     Get model and tokenizer from model string
 
@@ -215,9 +215,6 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
             tokenizer = BloomTokenizerFast.from_pretrained(model)
             transformer_model = BloomModel.from_pretrained(model, config=config)
     else:
-        #print("I am in get_model function now!!!!")
-        #print(f"!!!!hg_gated: {hg_gated} !!!")
-        #print(f"!!!!hg_token: {hg_token} !!!")
         if hg_gated:
             set_hg_gated_access(access_token=hg_token)
         else: 
@@ -225,7 +222,7 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
         config = AutoConfig.from_pretrained(model, output_hidden_states=True)
         if not config_only:
             tokenizer = AutoTokenizer.from_pretrained(model)
-            transformer_model = AutoModel.from_pretrained(model, config=config)
+            transformer_model = AutoModel.from_pretrained(model, config=config, trust_remote_code=trust_remote_code)
             
     if config_only:
         return config
@@ -245,13 +242,13 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
         #    tokenizer.pad_token_id = tokenizer.eos_token_id        
         return config, tokenizer, transformer_model
 
-def get_number_of_hidden_layers(model, logging_level = "error", hg_gated=False, hg_token=""):
+def get_number_of_hidden_layers(model, logging_level = "error", hg_gated = False, hg_token = "", trust_remote_code = False):
     """
     Return the number of hidden layers for a given model.
     Returns -1 if the model's config doesn't have the num_hidden_layers parameter
     """
     set_logging_level(logging_level)
-    config = get_model(model, config_only=True, hg_gated=hg_gated, hg_token=hg_token)
+    config = get_model(model, config_only=True, hg_gated=hg_gated, hg_token=hg_token, trust_remote_code=trust_remote_code)
     number_of_hidden_layers = -1
     try:
         number_of_hidden_layers = config.num_hidden_layers
@@ -270,6 +267,7 @@ def hgTransformerGetPipeline(text_strings,
                             force_return_results = False,
                             hg_gated = False,
                             hg_token = "",
+                            trust_remote_code = False,
                             set_seed = None,
                             **kwargs):
     """
@@ -298,6 +296,8 @@ def hgTransformerGetPipeline(text_strings,
         Set to True if the accessed model is gated
     hg_token: str
         The token needed to access the gated model, gen in huggingface website 
+    trust_remote_code : bool
+        use a model with custom code on the Huggingface Hub
     set_seed : int
         integer value for manually setting seed
     kwargs : dict
@@ -322,7 +322,7 @@ def hgTransformerGetPipeline(text_strings,
     if not isinstance(text_strings, list):
         text_strings = [text_strings]
     if model:
-        config, tokenizer, transformer_model = get_model(model,hg_gated=hg_gated, hg_token=hg_token)
+        config, tokenizer, transformer_model = get_model(model,hg_gated=hg_gated, hg_token=hg_token, trust_remote_code=trust_remote_code)
         if device_num >= 0:
             task_pipeline = pipeline(task, model=model, tokenizer=tokenizer, device=device_num)
         else:
@@ -588,6 +588,7 @@ def hgTransformerGetEmbedding(text_strings,
                               model_max_length = None,
                               hg_gated = False,
                               hg_token = "",
+                              trust_remote_code = False,
                               logging_level = 'warning',
                               sentence_tokenize = True):
     """
@@ -617,6 +618,8 @@ def hgTransformerGetEmbedding(text_strings,
         Whether the accessed model is gated
     hg_token: str
         The token generated in huggingface website
+    trust_remote_code : bool
+        use a model with custom code on the Huggingface Hub
     logging_level : str
         set logging level, options: critical, error, warning, info, debug
     sentence_tokenize : bool
@@ -637,7 +640,7 @@ def hgTransformerGetEmbedding(text_strings,
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
 
-    config, tokenizer, transformer_model = get_model(model, hg_gated=hg_gated, hg_token=hg_token)
+    config, tokenizer, transformer_model = get_model(model, hg_gated=hg_gated, hg_token=hg_token, trust_remote_code=trust_remote_code)
 
     if device != 'cpu':
         transformer_model.to(device)
@@ -726,6 +729,7 @@ def hgTokenizerGetTokens(text_strings,
                               model_max_length = None,
                               hg_gated = False,
                               hg_token = "",
+                              trust_remote_code = False,
                               logging_level = 'warning'):
     """
     Simple Python method for embedding text with pretained Hugging Face models
@@ -750,6 +754,8 @@ def hgTokenizerGetTokens(text_strings,
         Set to True if the accessed model is gated
     hg_token: str
         The token to access the gated model gen in hg website
+    trust_remote_code : bool
+        use a model with custom code on the Huggingface Hub
     logging_level : str
         set logging level, options: critical, error, warning, info, debug
 
@@ -767,7 +773,7 @@ def hgTokenizerGetTokens(text_strings,
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
 
-    tokenizer = get_model(model, tokenizer_only=True, hg_gated=hg_gated, hg_token=hg_token)
+    tokenizer = get_model(model, tokenizer_only=True, hg_gated=hg_gated, hg_token=hg_token, trust_remote_code=trust_remote_code)
 
     if device != 'cpu':
         tokenizer.to(device)
