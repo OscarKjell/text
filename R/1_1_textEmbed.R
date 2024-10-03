@@ -282,6 +282,12 @@ grep_col_by_name_in_list <- function(l,
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
 #' (default the value stored for the associated model).
+#' @param hg_gated Set to TRUE if the accessed model is gated.
+#' @param hg_token The token needed to access the gated model.
+#' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
+#' the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
+#' be set to avoid the need to enter the token each time.
+#' @param trust_remote_code use a model with custom code on the Huggingface Hub
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @return Returns tokens according to specified huggingface transformer.
@@ -299,6 +305,10 @@ textTokenize <- function(texts,
                          device = "cpu",
                          tokenizer_parallelism = FALSE,
                          model_max_length = NULL,
+                         hg_gated = FALSE,
+                         hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
+                                                  unset = ""),
+                         trust_remote_code = FALSE,
                          logging_level = "error") {
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
@@ -314,6 +324,9 @@ textTokenize <- function(texts,
     device = device,
     tokenizer_parallelism = tokenizer_parallelism,
     model_max_length = model_max_length,
+    hg_gated = reticulate::r_to_py(hg_gated),
+    hg_token = reticulate::r_to_py(hg_token),
+    trust_remote_code = trust_remote_code,
     logging_level = logging_level
   )
   tokens1 <- lapply(tokens, tibble::as_tibble_col, column_name = "tokens")
@@ -359,6 +372,7 @@ textTokenize <- function(texts,
 #' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
 #' the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
 #' be set to avoid the need to enter the token each time.
+#' @param trust_remote_code use a model with custom code on the Huggingface Hub
 #' @param logging_level (character) Set the logging level. (default ="error")
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param sort (boolean) If TRUE sort the output to tidy format. (default = TRUE)
@@ -396,6 +410,7 @@ textEmbedRawLayers <- function(texts,
                                hg_gated = FALSE,
                                hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
                                                      unset = ""),
+                               trust_remote_code = FALSE,
                                logging_level = "error",
                                sort = TRUE) {
   if (decontextualize == TRUE && word_type_embeddings == FALSE) {
@@ -459,6 +474,7 @@ textEmbedRawLayers <- function(texts,
         max_token_to_sentence = max_token_to_sentence,
         hg_gated = reticulate::r_to_py(hg_gated),
         hg_token = reticulate::r_to_py(hg_token),
+        trust_remote_code = trust_remote_code,
         logging_level = logging_level
       )
 

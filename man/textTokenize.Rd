@@ -11,6 +11,9 @@ textTokenize(
   device = "cpu",
   tokenizer_parallelism = FALSE,
   model_max_length = NULL,
+  hg_gated = FALSE,
+  hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
+  trust_remote_code = FALSE,
   logging_level = "error"
 )
 }
@@ -34,6 +37,15 @@ specific device number.}
 
 \item{model_max_length}{The maximum length (in number of tokens) for the inputs to the transformer model
 (default the value stored for the associated model).}
+
+\item{hg_gated}{Set to TRUE if the accessed model is gated.}
+
+\item{hg_token}{The token needed to access the gated model.
+Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
+the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
+be set to avoid the need to enter the token each time.}
+
+\item{trust_remote_code}{use a model with custom code on the Huggingface Hub}
 
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}

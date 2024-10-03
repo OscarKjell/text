@@ -10,7 +10,7 @@ textNER(
   device = "cpu",
   tokenizer_parallelism = FALSE,
   logging_level = "error",
-  return_incorrect_results = FALSE,
+  force_return_results = FALSE,
   set_seed = 202208L
 )
 }
@@ -28,7 +28,7 @@ Use for predicting the classes of tokens in a sequence: person, organisation, lo
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
+\item{force_return_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
 This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
 All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
 dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"

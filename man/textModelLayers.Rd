@@ -7,7 +7,8 @@
 textModelLayers(
   target_model,
   hg_gated = FALSE,
-  hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = "")
+  hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
+  trust_remote_code = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ textModelLayers(
 Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
 the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
 be set to avoid the need to enter the token each time.}
+
+\item{trust_remote_code}{use a model with custom code on the Huggingface Hub}
 }
 \value{
 Number of layers.

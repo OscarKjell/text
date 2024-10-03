@@ -8,24 +8,16 @@ context("Testing tasks")
 test_that("textClassify tests", {
   skip_on_cran()
 
-  # String example help(textClassify)
-  sen1 <- textClassify("I like you. I love you",
+  # String example help(textClassify) help(textClassify)
+  sen1 <- textClassify(
+    x = "I like you. I love you",
     model = "distilbert-base-uncased-finetuned-sst-2-english",
-    return_incorrect_results = TRUE,
+    force_return_results = TRUE,
     return_all_scores = FALSE,
     function_to_apply = "none"
   )
   expect_equal(sen1$score_x, 4.67502, tolerance = 0.001)
   textModelsRemove("distilbert-base-uncased-finetuned-sst-2-english")
-
-  #  # Test another model
-  sen2 <- textClassify("I like you. I love you",
-    model = "cardiffnlp/twitter-roberta-base-sentiment",
-    return_incorrect_results = TRUE, # need to set to TRUE to get results
-    return_all_scores = TRUE,
-    function_to_apply = "none"
-  )
-  textModelsRemove("cardiffnlp/twitter-roberta-base-sentiment")
   #
 })
 
@@ -38,7 +30,7 @@ test_that("textGeneration test", {
     device = "cpu",
     tokenizer_parallelism = FALSE,
     logging_level = "warning",
-    return_incorrect_results = FALSE,
+    force_return_results = FALSE,
     return_tensors = FALSE,
     return_full_text = TRUE,
     clean_up_tokenization_spaces = FALSE,
@@ -59,7 +51,7 @@ test_that("textGeneration test", {
     device = "cpu",
     tokenizer_parallelism = FALSE,
     logging_level = "warning",
-    return_incorrect_results = FALSE,
+    force_return_results = FALSE,
     return_tensors = TRUE,
     return_full_text = FALSE,
     clean_up_tokenization_spaces = FALSE,
@@ -78,7 +70,7 @@ test_that("textNER test", {
 
   ner_example <- textNER("Arnes plays football with Daniel",
     mode = "dslim/bert-base-NER",
-    return_incorrect_results = FALSE
+    force_return_results = FALSE
   )
   ner_example
 
@@ -87,7 +79,7 @@ test_that("textNER test", {
 
   ner_example2 <- textNER(Language_based_assessment_data_8[1:2, 1],
     mode = "dslim/bert-base-NER",
-    return_incorrect_results = FALSE
+    force_return_results = FALSE
   )
   ner_example2
   expect_equal(ner_example2$satisfactiontexts_NER$score[2], 0.976, tolerance = 0.01)

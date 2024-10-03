@@ -8,7 +8,7 @@
 #' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism.
 #' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results.
+#' @param force_return_results (boolean)  Stop returning some incorrectly formatted/structured results.
 #' This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
 #' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
 #' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"
@@ -41,9 +41,9 @@ textClassify <- function(x,
                          device = "cpu",
                          tokenizer_parallelism = FALSE,
                          logging_level = "error",
-                         return_incorrect_results = FALSE,
+                         force_return_results = FALSE,
                          return_all_scores = FALSE,
-                         function_to_apply = "none",
+                         function_to_apply = NULL,
                          set_seed = 202208) {
   T1_textSentiment <- Sys.time()
 
@@ -68,7 +68,7 @@ textClassify <- function(x,
       device = device,
       tokenizer_parallelism = tokenizer_parallelism,
       logging_level = logging_level,
-      return_incorrect_results = return_incorrect_results,
+      force_return_results = force_return_results,
       return_all_scores = return_all_scores,
       function_to_apply = function_to_apply,
       set_seed = set_seed
