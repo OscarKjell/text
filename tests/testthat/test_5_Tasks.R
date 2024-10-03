@@ -8,12 +8,13 @@ context("Testing tasks")
 test_that("textClassify tests", {
   skip_on_cran()
 
-  # String example help(textClassify)
-  sen1 <- textClassify("I like you. I love you",
+  # String example help(textClassify) help(textClassify)
+  sen1 <- textClassify(
+    x = "I like you. I love you",
     model = "distilbert-base-uncased-finetuned-sst-2-english",
     force_return_results = TRUE,
     return_all_scores = FALSE,
-    function_to_apply = NULL
+    function_to_apply = "none"
   )
   expect_equal(sen1$score_x, 4.67502, tolerance = 0.001)
   textModelsRemove("distilbert-base-uncased-finetuned-sst-2-english")
