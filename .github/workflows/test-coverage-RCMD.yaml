@@ -74,7 +74,7 @@ jobs:
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
           sudo apt install libharfbuzz-dev
           sudo apt install libfribidi-dev
-          sudo apt install libomp.dylib
+#          sudo apt install libomp.dylib
 
       - name: Install dependencies
         run: |
