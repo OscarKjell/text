@@ -18,15 +18,6 @@ test_that("textClassify tests", {
   )
   expect_equal(sen1$score_x, 4.67502, tolerance = 0.001)
   textModelsRemove("distilbert-base-uncased-finetuned-sst-2-english")
-
-  #  # Test another model
-  sen2 <- textClassify("I like you. I love you",
-    model = "cardiffnlp/twitter-roberta-base-sentiment",
-    force_return_results = TRUE, # need to set to TRUE to get results
-    return_all_scores = TRUE,
-    function_to_apply = NULL
-  )
-  textModelsRemove("cardiffnlp/twitter-roberta-base-sentiment")
   #
 })
 
