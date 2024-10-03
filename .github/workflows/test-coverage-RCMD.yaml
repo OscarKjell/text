@@ -65,9 +65,9 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Set environment variable # to address libomp.dylib issue
-        run: |
-          export KMP_DUPLICATE_LIB_OK=TRUE
+#      - name: Set environment variable # to address libomp.dylib issue
+#        run: |
+#          export KMP_DUPLICATE_LIB_OK=TRUE
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
@@ -79,6 +79,13 @@ jobs:
           sudo apt install libharfbuzz-dev
           sudo apt install libfribidi-dev
 #          sudo apt install libomp.dylib
+
+      - name: Libomp # to address libomp.dylib issue
+        run: |
+          brew update
+          brew upgrade libomp
+        shell: bash
+
 
       - name: Install dependencies
         run: |
