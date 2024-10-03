@@ -31,7 +31,7 @@ jobs:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      KMP_DUPLICATE_LIB_OK: true # to address libomp.dylib issue
+#      KMP_DUPLICATE_LIB_OK: true # to address libomp.dylib issue
 
     steps:
       - uses: actions/checkout@v2
@@ -64,6 +64,10 @@ jobs:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
+      - name: Set environment variable # to address libomp.dylib issue
+        run: |
+          export KMP_DUPLICATE_LIB_OK=TRUE
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
