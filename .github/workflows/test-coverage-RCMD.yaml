@@ -58,6 +58,11 @@ jobs:
           python-version: 3.9
           miniconda-version: "latest"
 
+      - name: Configure Conda (set default channel and solver)
+        run: |
+          conda config --add channels defaults
+          conda config --set solver classic
+
       - name: Install numpy via Conda
         run: conda install -c conda-forge numpy
 
