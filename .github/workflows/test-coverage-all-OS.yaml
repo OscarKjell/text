@@ -115,6 +115,14 @@ jobs:
         shell: Rscript {0}
 
       # Show testthat output in case of failure
-      - name: Show testthat output (in case of failure)
+      - name: Show testthat output (Linux/macOS)
         if: failure() || always()
+        if: runner.os != 'Windows'
         run: find . -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
+
+      - name: Show testthat output (Windows)
+        if: failure() || always()
+        if: runner.os == 'Windows'
+        run: Get-ChildItem -Recurse -Filter 'testthat.Rout*' | Get-Content
+        shell: pwsh
