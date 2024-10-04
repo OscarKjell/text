@@ -120,10 +120,11 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      - name: Check
+      # Set KMP_DUPLICATE_LIB_OK for macOS to avoid OpenMP conflict
+      - name: Check with OpenMP workaround
+        if: runner.os == 'macOS'
         env:
-          _R_CHECK_CRAN_INCOMING_: false
-          OMP_MAX_ACTIVE_LEVELS: 0
+          KMP_DUPLICATE_LIB_OK: TRUE  # Set this environment variable on macOS
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
