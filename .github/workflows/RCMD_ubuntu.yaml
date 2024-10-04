@@ -1,3 +1,13 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+name: R-CMD-check
+
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
