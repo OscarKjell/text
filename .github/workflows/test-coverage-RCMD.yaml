@@ -24,6 +24,7 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      OMP_NUM_THREADS: 1  # Limit OpenMP threads globally
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
@@ -50,6 +51,11 @@ jobs:
 
       - name: Install numpy via Conda
         run: conda install -c conda-forge numpy
+
+      - name: Uninstall libomp from Conda (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          conda remove libomp
 
       - name: Query dependencies
         run: |
@@ -91,7 +97,6 @@ jobs:
         if: runner.os == 'macOS'
         run: sudo chown -R $UID $CONDA
 
-      # Set KMP_DUPLICATE_LIB_OK only for macOS
       - name: Set KMP_DUPLICATE_LIB_OK on macOS
         if: runner.os == 'macOS'
         env:
