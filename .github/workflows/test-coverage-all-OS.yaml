@@ -114,10 +114,7 @@ jobs:
         run: covr::codecov()
         shell: Rscript {0}
 
-# Uncomment below if you want to upload check results
-#      - name: Upload check results
-#        if: failure()
-#        uses: actions/upload-artifact@main
-#        with:
-#          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-#          path: check
+      # Show testthat output in case of failure
+      - name: Show testthat output (in case of failure)
+        if: failure() || always()
+        run: find . -name 'testthat.Rout*' -exec cat '{}' \; || true
