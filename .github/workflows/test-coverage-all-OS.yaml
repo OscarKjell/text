@@ -25,7 +25,7 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
-      GITHUB_PAT: ${{ secrets.GITHUB_PAT }}  # Add your personal PAT here
+      GITHUB_PAT: ${{ secrets.GITHUB_PAT }}  # Make sure your GITHUB_PAT is here
 
     steps:
       - uses: actions/checkout@v2
@@ -95,7 +95,7 @@ jobs:
       - name: Installing text and testing it (Windows)
         if: runner.os == 'Windows'
         env:
-          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}  # Use your PAT explicitly here
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}  # Ensure the PAT is passed for Windows
         run: |
           install.packages("devtools")
           library(devtools)
