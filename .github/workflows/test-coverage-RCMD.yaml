@@ -30,18 +30,22 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Install libomp via Homebrew
+      # Install libomp via Homebrew for macOS only
       - name: Install libomp via Homebrew
+        if: runner.os == 'macOS'
         run: |
           brew install libomp
 
-      - name: Find and set DYLD_LIBRARY_PATH
+      # Set DYLD_LIBRARY_PATH on macOS
+      - name: Set DYLD_LIBRARY_PATH for macOS
+        if: runner.os == 'macOS'
         run: |
           export DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib
           echo "DYLD_LIBRARY_PATH is set to $DYLD_LIBRARY_PATH"
         shell: bash
 
-      - name: Set global environment variable for DYLD_LIBRARY_PATH
+      - name: Set global environment variable for DYLD_LIBRARY_PATH on macOS
+        if: runner.os == 'macOS'
         run: |
           echo "DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib" >> $GITHUB_ENV
         shell: bash
@@ -82,13 +86,12 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
+      # Install system dependencies on Ubuntu
+      - name: Install system dependencies on Ubuntu
+        if: runner.os == 'ubuntu-20.04'
         run: |
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
+          sudo apt-get update
+          sudo apt-get install -y libomp-dev  # Install libomp via apt on Ubuntu
           sudo apt install libharfbuzz-dev
           sudo apt install libfribidi-dev
 
