@@ -25,7 +25,7 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
-      GITHUB_PAT: ${{ secrets.GITHUB_PAT }}  # Ensure GITHUB_PAT is set in GitHub secrets
+      GITHUB_PAT: ${{ secrets.GITHUB_PAT }}  # Add your personal PAT here
 
     steps:
       - uses: actions/checkout@v2
@@ -91,11 +91,11 @@ jobs:
         if: runner.os == 'macOS'
         run: sudo chown -R $UID $CONDA
 
-      # Installing text package - handle Windows separately
+      # Installing text package - Windows with explicit PAT
       - name: Installing text and testing it (Windows)
         if: runner.os == 'Windows'
         env:
-          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}  # Ensure the PAT is passed for Windows
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}  # Use your PAT explicitly here
         run: |
           install.packages("devtools")
           library(devtools)
@@ -104,12 +104,15 @@ jobs:
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
+      # Installing text package - Linux/macOS
       - name: Installing text and testing it (Linux/macOS)
         if: runner.os != 'Windows'
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}  # Add this to be explicit
         run: |
           install.packages("devtools")
           library(devtools)
-          devtools::install_github("oscarkjell/text")
+          devtools::install_github("oscarkjell/text", auth_token = Sys.getenv("GITHUB_PAT"))
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
