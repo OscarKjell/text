@@ -24,12 +24,27 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      OMP_NUM_THREADS: 1  # Limit OpenMP threads globally
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v2
+
+      # Install libomp via Homebrew
+      - name: Install libomp via Homebrew
+        run: |
+          brew install libomp
+
+      - name: Find and set DYLD_LIBRARY_PATH
+        run: |
+          export DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib
+          echo "DYLD_LIBRARY_PATH is set to $DYLD_LIBRARY_PATH"
+        shell: bash
+
+      - name: Set global environment variable for DYLD_LIBRARY_PATH
+        run: |
+          echo "DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib" >> $GITHUB_ENV
+        shell: bash
 
       - uses: r-lib/actions/setup-r@v2-branch
         with:
@@ -52,11 +67,6 @@ jobs:
       - name: Install numpy via Conda
         run: conda install -c conda-forge numpy
 
-      - name: Uninstall libomp from Conda (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          conda remove libomp
-
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -72,20 +82,15 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      # Install system dependencies on Ubuntu
-      - name: Install system dependencies on Ubuntu
-        if: runner.os == 'ubuntu-20.04'
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libomp-dev  # Install libomp via apt on Ubuntu
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
           sudo apt install libharfbuzz-dev
           sudo apt install libfribidi-dev
-
-      # Explicitly Install devtools on Ubuntu and macOS
-      - name: Install devtools for Ubuntu/macOS
-        run: |
-          install.packages('devtools')
-        shell: Rscript {0}
 
       - name: Install dependencies
         run: |
@@ -97,15 +102,9 @@ jobs:
         if: runner.os == 'macOS'
         run: sudo chown -R $UID $CONDA
 
-      - name: Set KMP_DUPLICATE_LIB_OK on macOS
-        if: runner.os == 'macOS'
-        env:
-          KMP_DUPLICATE_LIB_OK: TRUE
-        run: |
-          echo "KMP_DUPLICATE_LIB_OK is set to TRUE"
-
       - name: Installing text and testing it
         run: |
+          install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
@@ -120,6 +119,9 @@ jobs:
         shell: Rscript {0}
 
       - name: Check
+        env:
+          _R_CHECK_CRAN_INCOMING_: false
+          OMP_MAX_ACTIVE_LEVELS: 0
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
