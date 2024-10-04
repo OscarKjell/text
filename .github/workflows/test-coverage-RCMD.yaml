@@ -26,6 +26,8 @@ jobs:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      # Add this line globally for macOS to fix the OpenMP issue
+      KMP_DUPLICATE_LIB_OK: ${{ runner.os == 'macOS-latest' && 'TRUE' }}
 
     steps:
       - uses: actions/checkout@v2
@@ -89,8 +91,8 @@ jobs:
           sudo apt install libharfbuzz-dev
           sudo apt install libfribidi-dev
 
-      # Install devtools on both Ubuntu and macOS
-      - name: Install devtools
+      # Explicitly Install devtools on Ubuntu and macOS
+      - name: Install devtools for Ubuntu/macOS
         run: |
           install.packages('devtools')
         shell: Rscript {0}
@@ -120,11 +122,7 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      # Set KMP_DUPLICATE_LIB_OK for macOS to avoid OpenMP conflict
-      - name: Check with OpenMP workaround
-        if: runner.os == 'macOS'
-        env:
-          KMP_DUPLICATE_LIB_OK: TRUE  # Set this environment variable on macOS
+      - name: Check
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
