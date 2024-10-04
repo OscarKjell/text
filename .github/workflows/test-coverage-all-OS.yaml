@@ -114,15 +114,14 @@ jobs:
         run: covr::codecov()
         shell: Rscript {0}
 
-      # Show testthat output in case of failure
+      # Show testthat output for Linux/macOS
       - name: Show testthat output (Linux/macOS)
-        if: failure() || always()
-        if: runner.os != 'Windows'
+        if: failure() || always() && runner.os != 'Windows'
         run: find . -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
 
+      # Show testthat output for Windows
       - name: Show testthat output (Windows)
-        if: failure() || always()
-        if: runner.os == 'Windows'
+        if: failure() || always() && runner.os == 'Windows'
         run: Get-ChildItem -Recurse -Filter 'testthat.Rout*' | Get-Content
         shell: pwsh
