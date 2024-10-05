@@ -45,3 +45,75 @@ jobs:
           auto-update-conda: true
           python-version: 3.9
           miniconda-version: "latest"
+
+
+      - name: Configure Conda (set default channel and solver)
+        run: |
+          conda config --add channels defaults
+          conda config --set solver classic
+
+      - name: Install numpy via Conda
+        run: conda install -c conda-forge numpy
+
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
+      - name: Cache R packages
+        if: runner.os != 'Windows'
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
+          sudo apt install libharfbuzz-dev
+          sudo apt install libfribidi-dev
+
+      - name: Install dependencies
+        run: |
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
+        shell: Rscript {0}
+
+      - name: Fix Conda permissions on macOS (SUDO)
+        if: runner.os == 'macOS'
+        run: sudo chown -R $UID $CONDA
+
+      - name: Installing text and testing it
+        run: |
+          install.packages("devtools")
+          library(devtools)
+          devtools::install_github("oscarkjell/text")
+          text::textrpp_install(prompt = FALSE)
+          text::textrpp_initialize(textEmbed_test = TRUE)
+        shell: Rscript {0}
+
+      - name: Session info
+        run: |
+          options(width = 100)
+          pkgs <- installed.packages()[, "Package"]
+          sessioninfo::session_info(pkgs, include_base = TRUE)
+        shell: Rscript {0}
+
+      - name: Check
+        env:
+          _R_CHECK_CRAN_INCOMING_: false
+          OMP_MAX_ACTIVE_LEVELS: 0
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+        shell: Rscript {0}
+
+      - name: Show testthat output
+        if: always()
+        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
