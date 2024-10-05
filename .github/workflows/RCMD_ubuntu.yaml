@@ -18,7 +18,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-20.04, r: 'release'}
+#          - {os: ubuntu-20.04, r: 'release'}
+          - {os: ubuntu-20.04, r: '4.2'}
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -94,7 +95,7 @@ jobs:
         run: |
           install.packages("devtools")
           library(devtools)
-          devtools::install_github("oscarkjell/text")
+          devtools::install_github("oscarkjell/text, clean = TRUE, dependencies = TRUE")
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}

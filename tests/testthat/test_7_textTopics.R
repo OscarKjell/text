@@ -24,6 +24,7 @@ test_that("Bertopic", {
   data <- dplyr::bind_rows(data1, data2, data3)
 
   # Create BERTopic model trained on data["text"] help(textTopics)
+  print("textTopics")
   bert_model <- textTopics(data = data,
                            variable_name = "text",
                            embedding_model = "distilroberta",
@@ -48,6 +49,7 @@ test_that("Bertopic", {
 
 
   # Testing if we can predict "score" from from topic-document distribution
+  print("textTopicsTest")
   test <- text::textTopicsTest(model = bert_model,
                               pred_var = "score",
                               test_method = "ridge_regression")
@@ -57,6 +59,7 @@ test_that("Bertopic", {
                          tolerance = 0.0001)
 
   # Testing which how individual topics are associated with "score"
+  print("textTopicsTest_2")
   test2 <- text::textTopicsTest(model = bert_model,
                                pred_var = "score",
                                test_method = "linear_regression")
@@ -66,6 +69,7 @@ test_that("Bertopic", {
                          tolerance = 0.0001)
 
   # Plot wordclouds for each significant topic
+  print("textTopicsWordcloud")
   plots <- textTopicsWordcloud(
     model = bert_model,
     test = test2,

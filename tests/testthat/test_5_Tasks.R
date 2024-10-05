@@ -9,6 +9,7 @@ test_that("textClassify tests", {
   skip_on_cran()
 
   # String example help(textClassify) help(textClassify)
+  print("textClassify")
   sen1 <- textClassify(
     x = "I like you. I love you",
     model = "distilbert-base-uncased-finetuned-sst-2-english",
@@ -24,6 +25,7 @@ test_that("textClassify tests", {
 test_that("textGeneration test", {
   skip_on_cran()
 
+  print("textGeneration")
   generated_text <- textGeneration(
     x = "The meaning of life is",
     model = "gpt2",
@@ -45,6 +47,7 @@ test_that("textGeneration test", {
   expect_that(generated_text$x_generated, is_a("character"))
 
   # Return token IDs
+  print("textGeneration_2")
   generated_text2 <- text::textGeneration(
     x = "The meaning of life is",
     model = "gpt2",
@@ -68,6 +71,7 @@ test_that("textGeneration test", {
 test_that("textNER test", {
   skip_on_cran()
 
+  print("textNER")
   ner_example <- textNER("Arnes plays football with Daniel",
     mode = "dslim/bert-base-NER",
     force_return_results = FALSE
@@ -76,7 +80,7 @@ test_that("textNER test", {
 
   expect_equal(ner_example$x_NER$score[1], 0.9987748, tolerance = 0.001)
 
-
+  print("textNER_2")
   ner_example2 <- textNER(Language_based_assessment_data_8[1:2, 1],
     mode = "dslim/bert-base-NER",
     force_return_results = FALSE
@@ -89,6 +93,7 @@ test_that("textNER test", {
 test_that("textSum test", {
   skip_on_cran()
 
+  print("textSum")
   sum_examples <- textSum(Language_based_assessment_data_8[1:2, 1:2],
     min_length = 2L,
     max_length = 4L
@@ -102,6 +107,7 @@ test_that("textSum test", {
 test_that("textQA test", {
   skip_on_cran()
 
+  print("textQA")
   qa_examples <- textQA(
     question = "Which colour have trees?",
     context = "Trees are mostly green and like water"
@@ -114,6 +120,7 @@ test_that("textQA test", {
 test_that("textZeroShot test", {
   skip_on_cran()
 
+  print("textZeroShot")
   ZeroShot_example <- text::textZeroShot(
     sequences = c("I play football", "The forrest is wonderful"),
     candidate_labels = c("sport", "nature", "research"),
@@ -128,6 +135,7 @@ test_that("textZeroShot test", {
 test_that("textTranslate test", {
   skip_on_cran()
 
+  print("textTranslate")
   textModels()
   translation_example <- text::textTranslate(
     Language_based_assessment_data_8[1, 1:2],
