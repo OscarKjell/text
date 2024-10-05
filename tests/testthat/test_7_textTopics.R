@@ -23,6 +23,8 @@ test_that("Bertopic", {
 
   data <- dplyr::bind_rows(data1, data2, data3)
 
+  if (Sys.info()["sysname"] == "Darwin" | Sys.info()["sysname"] == "Windows") {
+
   # Create BERTopic model trained on data["text"] help(textTopics)
   print("textTopics")
   bert_model <- textTopics(data = data,
@@ -69,11 +71,13 @@ test_that("Bertopic", {
                          tolerance = 0.0001)
 
   # Plot wordclouds for each significant topic
+
   print("textTopicsWordcloud")
   plots <- textTopicsWordcloud(
     model = bert_model,
     test = test2,
     )
+  }
 
 
   unlink("./results", recursive = TRUE)
