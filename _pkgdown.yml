@@ -89,7 +89,7 @@ reference:
     - textProjection
     - textPlot
     - textProjectionPlot
-    - textWordPrediction
+#    - textWordPrediction
     - textCentrality
     - textCentralityPlot
     - textPCA

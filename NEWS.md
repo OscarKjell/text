@@ -4,6 +4,13 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # text 1.2.5
+- updating python code, including adding parameters `hg_gated`, `hg_token`, and `trust_remote_code`. 
+- changed parameter name from `return_incorrect_results` to `force_return_results`
+- changed default of `function_to_apply` = NULL instead of "none"; this 
+is to mimic huggingface default.
+- `textWordPrediction` since it is under development and note tested.
+
+# text 1.2.5
 - updating security issues with python packages. 
 - updating the default range of penalties in textTrain() functions. 
 - updating textPredict() functionality
