@@ -2,8 +2,14 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.2.7
+- textClassify() is now called textClassifyPipe() 
+- textPredict() is now called textPredictR()
+- Making `textAssess()`, `textPredict()` and `textClassify()` works the same, now taking the parameter `method` with the string "text" to using textPredict(), and 
+"huggingface" to using textClassifyPipe(). 
 
-# text 1.2.5
+
+# text 1.2.6
 - updating python code, including adding parameters `hg_gated`, `hg_token`, and `trust_remote_code`. 
 - changed parameter name from `return_incorrect_results` to `force_return_results`
 - changed default of `function_to_apply` = NULL instead of "none"; this 

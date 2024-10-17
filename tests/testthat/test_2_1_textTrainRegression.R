@@ -65,9 +65,10 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
    testthat::expect_is(model_logistic_PCA1$results_metrics$.estimate[[1]], "numeric")
    testthat::expect_equal(model_logistic_PCA1$results_metrics$.estimate[[1]], 0.525)
 
-   model_logistic_PCA1_preds <- text::textPredict(model_logistic_PCA1,
-                                          word_embeddings_4$texts[1],
-                                          dim_names = TRUE
+   model_logistic_PCA1_preds <- text::textPredict(
+     model_info = model_logistic_PCA1,
+     word_embeddings = word_embeddings_4$texts[1],
+     dim_names = TRUE
    )
    testthat::expect_equal(as.character(model_logistic_PCA1_preds[[1]][[1]]), "male")
    testthat::expect_equal(as.character(model_logistic_PCA1_preds[[1]][[3]]), "female")
@@ -92,7 +93,7 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
    testthat::expect_that(model_multinomial4, testthat::is_a("list"))
    testthat::expect_is(model_multinomial4$results_metrics$.estimate[[1]], "numeric")
    testthat::expect_equal(model_multinomial4$results_metrics$.estimate[[1]], 0.275)
-   
+
    model_logistic2 <- text::textTrainRegression(
      x = word_embeddings_4$texts["harmonywords"],
      y = as.factor(Language_based_assessment_data_8$gender),
@@ -106,11 +107,11 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
      preprocess_PCA = "min_halving",
      multi_cores = "multi_cores_sys_default"
    )
-    
+
    testthat::expect_that(model_logistic2, testthat::is_a("list"))
    testthat::expect_is(model_logistic2$results_metrics$.estimate[[1]], "numeric")
    testthat::expect_equal(model_logistic2$results_metrics$.estimate[[1]], 0.6)
-   
+
    model_multinomial4_preds <- text::textPredict(
      model_info = model_multinomial4,
      word_embeddings = word_embeddings_4$texts["harmonywords"],
@@ -119,15 +120,15 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
    testthat::expect_equal(as.character(model_multinomial4_preds[[1]][1]), "2")
    testthat::expect_equal(as.character(model_multinomial4_preds[[1]][2]), "3")
    testthat::expect_equal(as.character(model_multinomial4_preds[[1]][5]), "4")
-   
-   # test logistic model
+
+   # test logistic model help(textPredict)
    model_logistic2_preds <- text::textPredict(
      model_info = model_logistic2,
      word_embeddings = word_embeddings_4$texts["harmonywords"],
-     type = "class_prob", 
+     type = "class_prob",
      show_texts = TRUE
    )
-   
+
    testthat::expect_equal(as.character(model_logistic2_preds[[1]][3]), "female")
    testthat::expect_equal(model_logistic2_preds[[2]][5], 0.5404381, tolerance = 0.0001)
    testthat::expect_equal(model_logistic2_preds[[3]][5], 0.4595619, tolerance = 0.0001)
@@ -396,7 +397,10 @@ test_that("textTrainRegression adding word_embedding together", {
 
 
   # Prediction based on multiple we
-  predictions_multi <- text::textPredict(multi_we_PCA_09, word_embeddings_4$texts[1:2], dim_names = TRUE)
+  predictions_multi <- text::textPredict(
+    model_info = multi_we_PCA_09,
+    word_embeddings = word_embeddings_4$texts[1:2],
+    dim_names = TRUE)
   testthat::expect_is(predictions_multi[[1]][[1]], "numeric")
   testthat::expect_equal(predictions_multi[[1]][[1]], 19.70077, tolerance = 0.0001)
 

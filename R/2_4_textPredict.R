@@ -388,7 +388,7 @@ textReturnModelAndEmbedding <- function(
 #' @importFrom dplyr bind_cols select full_join arrange everything
 #' @importFrom magrittr %>%
 #' @export
-textPredict <- function(model_info = NULL,
+textPredictR <- function(model_info = NULL,
                         word_embeddings = NULL,
                         texts = NULL,
                         x_append = NULL,
@@ -406,14 +406,25 @@ textPredict <- function(model_info = NULL,
                         dataset_to_merge_predictions = NULL,
                         previous_sentence = FALSE,
                         ...) {
+
   # Stop message if user defines both word_embeddings and texts
   if (!is.null(texts) && !is.null(word_embeddings)) {
     stop('Both arguments: "texts" and "word_embeddings" cannot be defined simultaneously.
          Choose one or the other.')
   }
 
+
+  # check whether models name exist in a predefined list
+  true_false <- registered_model_name(model_info)
+
+  # handle predefined models (see implicit motives)
+  if(true_false){
+
   #### Special treatment for implicit motives - see private functions ####
-  model_name <- gsub("^\"|\"$", "", deparse(substitute(model_info)))
+  model_name <- model_info
+  # Oscar removed this line, using above line instead:
+  #model_name <- gsub("^\"|\"$", "", deparse(substitute(model_info)))
+  # Above line was problemativ when creating a wrapper textPredict(); and i do not think it is needed.
   lower_case_model <- as.character(tolower(model_name))
 
   # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding
@@ -425,6 +436,7 @@ textPredict <- function(model_info = NULL,
                                    story_id = story_id,
                                    lower_case_model = lower_case_model)
 
+
   model_info <- get_model_info$model_info
   show_texts <- get_model_info$show_texts
   show_prob <- get_model_info$show_prob
@@ -432,6 +444,19 @@ textPredict <- function(model_info = NULL,
   texts <- get_model_info$texts
   participant_id <- get_model_info$participant_id
   story_id = get_model_info$story_id
+
+  } else {
+
+    # show_prob is by default FALSE -- Not sure if we should let the user set this. Now it is set
+    # automatiacally in the get_model_info function.
+    show_prob <- FALSE
+
+    # The stats package just takes "class" or "prob", therefore, allocate to "show_prob".
+    if (!is.null(type) && type == "class_prob") {
+      type <- "class"
+      show_prob <- TRUE
+    }
+  }
 
   #### End Special treatment for implicit motives ####
 
@@ -451,7 +476,6 @@ textPredict <- function(model_info = NULL,
       save_name = save_name,
       previous_sentence = previous_sentence
     )
-
     # retrieve model from emb_and_mod object
     loaded_model <- emb_and_mod$loaded_model
 
@@ -657,13 +681,15 @@ textPredict <- function(model_info = NULL,
 
   # Check for implicit motives configuration
 
-  if (
-    (grepl("implicit", lower_case_model) & grepl("power", lower_case_model)) ||
-    (grepl("implicit", lower_case_model) & grepl("affiliation", lower_case_model)) ||
-    (grepl("implicit", lower_case_model) & grepl("achievement", lower_case_model)) ||
-    (grepl("implicit_motives", lower_case_model) &&
-     (!is.null(participant_id) || !is.null(story_id)))
-  ){
+  if(true_false){
+
+#  if (
+#    (grepl("implicit", lower_case_model) & grepl("power", lower_case_model)) ||
+#    (grepl("implicit", lower_case_model) & grepl("affiliation", lower_case_model)) ||
+#    (grepl("implicit", lower_case_model) & grepl("achievement", lower_case_model)) ||
+#    (grepl("implicit_motives", lower_case_model) &&
+#     (!is.null(participant_id) || !is.null(story_id)))
+#  ){
 
     # Wrapper function that prepares data for
     # automatic implicit motive coding and returns

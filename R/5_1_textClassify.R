@@ -36,7 +36,7 @@
 #' @importFrom reticulate source_python
 #' @importFrom dplyr bind_cols bind_rows
 #' @export
-textClassify <- function(x,
+textClassifyPipe <- function(x,
                          model = "distilbert-base-uncased-finetuned-sst-2-english",
                          device = "cpu",
                          tokenizer_parallelism = FALSE,

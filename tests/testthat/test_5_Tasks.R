@@ -10,7 +10,7 @@ test_that("textClassify tests", {
 
   # String example help(textClassify) help(textClassify)
   print("textClassify")
-  sen1 <- textClassify(
+  sen1 <- textClassifyPipe(
     x = "I like you. I love you",
     model = "distilbert-base-uncased-finetuned-sst-2-english",
     force_return_results = TRUE,

@@ -737,7 +737,7 @@ implicit_motives_pred <- function(sqrt_implicit_motives,
                                   participant_id,
                                   story_id) {
 
-  # square root transform 
+  # square root transform
   sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
 
   # for OUTCOME_USER_SUM_PROB
@@ -771,7 +771,7 @@ implicit_motives_pred <- function(sqrt_implicit_motives,
 
   if (length(participant_id) < 30) {
     warning("Warning: implicit motive scores were corrected for word count by 'score/(word count/1000)' and not residualised from a regression. This is because the number of datapoints was less than 30.")
-  } 
+  }
 
   return(implicit_motives_pred)
 }
@@ -1018,6 +1018,33 @@ implicit_motives_results <- function(model_reference,
   return(summary_list)
 }
 
+
+# Function returning TRUE or FALSE depending on model name exist in preregistered list
+registered_model_name <- function(model_name_test){
+
+  if(is.character(model_name_test)){
+
+  if (model_name_test[[1]] %in% c(
+  "implicit_power_roberta_large_l23_v1",
+  "implicit_power_roberta_large_L23_v1",
+  "implicit_achievement_roberta_large_l23_v1",
+  "implicit_affiliation_roberta_large_l23_v1",
+  "implicit_ger_be_l11_to_power",
+  "implicit_ger_be_l11_to_achievement",
+  "implicit_ger_be_l11_to_affiliation")) {
+
+    true_false <- TRUE
+  } else{
+    true_false <- FALSE
+  }
+  } else{
+    true_false <- FALSE
+  }
+  return(true_false)
+}
+
+
+
 #' Function that is called in the beginning of textPredict to create the conditions for implicit motives to work.
 #' @param model_info (character or r-object) model_info has three options. 1: R model object (e.g, saved output from textTrain). 2:link to github-model
 #' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"). 3: Path to a model stored locally (e.g, "path/to/your/model").
@@ -1099,5 +1126,12 @@ get_model_info <- function(model_info,
     show_prob <- TRUE
   }
 
-  return(list(model_info = model_info, type = type, show_texts = show_texts, show_prob = show_prob, type = type, participant_id = participant_id, texts = texts, story_id = story_id))
+  return(list(model_info = model_info,
+              type = type,
+              show_texts = show_texts,
+              show_prob = show_prob,
+              type = type,
+              participant_id = participant_id,
+              texts = texts,
+              story_id = story_id))
 }

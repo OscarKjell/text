@@ -56,7 +56,7 @@ reference:
   - textFineTuneDomain
 - title: Language Analysis Tasks
   contents:
-  - textClassify
+  - textClassifyPipe
   - textGeneration
   - textNER
   - textSum
@@ -74,6 +74,9 @@ reference:
 - title: Predict from word embeddings or text
   contents:
     - textPredict
+    - textAssess
+    - textClassify
+    - textPredictR
     - textPredictTest
     - textPredictAll
 - title: Semantic similarities and distances
