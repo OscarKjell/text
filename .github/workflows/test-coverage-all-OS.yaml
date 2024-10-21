@@ -110,7 +110,7 @@ jobs:
       # Ensure OMP_MAX_ACTIVE_LEVELS is set to avoid OpenMP issues
       - name: Test coverage
         env:
-          OMP_MAX_ACTIVE_LEVELS: 0
+          OMP_MAX_ACTIVE_LEVELS: 2
         run: covr::codecov()
         shell: Rscript {0}
 
