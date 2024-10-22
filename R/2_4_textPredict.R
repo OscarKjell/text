@@ -277,6 +277,7 @@ textReturnModelAndEmbedding <- function(
 }
 
 
+
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
 #' @param model_info (character or r-object) model_info has four options. 1: R model object

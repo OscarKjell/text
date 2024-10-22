@@ -752,19 +752,34 @@ implicit_motives_pred <- function(sqrt_implicit_motives,
 
   # insert residuals into a tibble
   if (identical(story_id, participant_id)){
+
+    if (length(participant_id) < 30) {
+      story_prob <- sqrt_implicit_motives$OUTCOME_USER_SUM_PROB / sqrt_implicit_motives$wc_person_per_1000
+    } else {
+      story_prob <- as.vector(OUTCOME_USER_SUM_PROB.residual1.z)
+    }
+
     implicit_motives_pred <- tibble::tibble(
       story_id = sqrt_implicit_motives$participant_id,
-      story_prob = ifelse(length(participant_id) < 30, sqrt_implicit_motives$OUTCOME_USER_SUM_PROB / sqrt_implicit_motives$wc_person_per_1000, as.vector(OUTCOME_USER_SUM_PROB.residual1.z)),
+      story_prob = story_prob,
       story_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)), 0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
       story_prob_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
       story_class_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
 
 
   } else {
+    # Determine the person_prob vector before creating the tibble
+    if (length(sqrt_implicit_motives$participant_id) < 30) {
+      person_prob <- sqrt_implicit_motives$OUTCOME_USER_SUM_PROB / sqrt_implicit_motives$wc_person_per_1000
+    } else {
+      person_prob <- as.vector(OUTCOME_USER_SUM_PROB.residual1.z)
+    }
+
     implicit_motives_pred <- tibble::tibble(
       participant_id = sqrt_implicit_motives$participant_id,
-      person_prob = ifelse(length(participant_id) < 30, sqrt_implicit_motives$OUTCOME_USER_SUM_PROB / sqrt_implicit_motives$wc_person_per_1000, as.vector(OUTCOME_USER_SUM_PROB.residual1.z)),
-      person_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)), 0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+      person_prob = person_prob,
+      person_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+                            0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
       person_prob_no_wc_correction = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
       person_class_no_wc_correction = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
   }
