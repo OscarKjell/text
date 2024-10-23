@@ -707,7 +707,7 @@ textPredictR <- function(model_info = NULL,
 
   # Check for implicit motives configuration
 
-  if(true_false){
+  if(true_false && !is.null(participant_id) || !is.null(story_id)){
 
 #  if (
 #    (grepl("implicit", lower_case_model) & grepl("power", lower_case_model)) ||
