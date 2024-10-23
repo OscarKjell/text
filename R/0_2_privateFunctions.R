@@ -997,8 +997,25 @@ implicit_motives_results <- function(model_reference,
       # predicted_scores2 = sentence predictions, predicted = person predictions
       to_insert <- list(predicted_scores2, predicted)
     }
-    # integrate predictions into dataset
-    integrated_dataset <- bind_data(dataset, to_insert)
+
+    # old code: it was integrating ALL three datasets with the datset
+    #integrated_dataset <- bind_data(dataset, to_insert)
+
+    # new code to integrate predictions into dataset; only matching the rows
+    if(nrow(dataset) == nrow(to_insert[[1]])){
+      integrated_dataset <- dplyr::bind_cols(dataset, to_insert[[1]])
+    }
+    if(length(to_insert)>1){
+      if(nrow(dataset) == nrow(to_insert[[2]])){
+        integrated_dataset <- dplyr::bind_cols(dataset, to_insert[[2]])
+      }
+    }
+    if(length(to_insert)>2){
+      if(nrow(dataset) == nrow(to_insert[[3]])){
+      integrated_dataset <- dplyr::bind_cols(dataset, to_insert[[3]])
+      }
+    }
+
 
     if (identical(story_id, participant_id)){
       # story predictions

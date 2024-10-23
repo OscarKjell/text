@@ -80,7 +80,7 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
   # Test data
   implicit_motive_data <- dplyr::mutate(.data = text::Language_based_assessment_data_8, participant_id = dplyr::row_number(), story_id = rep(1:5, each=8))
 
-  help(textPredict)
+  #help(textPredict)
   predictions <- text::textPredict(
     texts = implicit_motive_data$satisfactiontexts,
     model_info = "implicit_power_roberta_large_L23_v1",
@@ -108,7 +108,13 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
   testthat::expect_equal(sum(as.numeric(predictions$story_predictions$story_prob[5])), 1.51721, tolerance = 0.0001)
 
   # dataset merging
-  testthat::expect_equal(sum(as.numeric(predictions$dataset$.pred_0_1[40])), 0.9891365, tolerance = 0.0001)
-  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_prob_2[10])), -1.144509, tolerance = 0.0001)
-  testthat::expect_equal(sum(as.numeric(predictions$dataset$story_prob_3[5])), 1.51721, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_prob[40])), 0.1765719, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_class[10])), 0, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_prob_no_wc_correction[5])), .4265997, tolerance = 0.0001)
+  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_class_no_wc_correction[5])), 0, tolerance = 0.0001)
+
+  # Tests for the old way of merging dataset.
+#  testthat::expect_equal(sum(as.numeric(predictions$dataset$.pred_0_1[40])), 0.9891365, tolerance = 0.0001)
+#  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_prob_2[10])), -1.144509, tolerance = 0.0001)
+#  testthat::expect_equal(sum(as.numeric(predictions$dataset$story_prob_3[5])), 1.51721, tolerance = 0.0001)
 })

@@ -277,6 +277,31 @@ textReturnModelAndEmbedding <- function(
 }
 
 
+#model_info = NULL
+#word_embeddings = NULL
+#texts = NULL
+#x_append = NULL
+#type = NULL
+#dim_names = TRUE
+#save_model = TRUE
+#threshold = NULL
+#show_texts = FALSE
+#device = "cpu"
+#participant_id = NULL
+#save_embeddings = TRUE
+#save_dir = "wd"
+#save_name = "textPredict"
+#story_id = NULL
+#dataset_to_merge_predictions = NULL
+#previous_sentence = FALSE
+#
+#texts = PSE_stories$Story_Text
+#model_info = "implicit_power_roberta_large_L23_v1"
+#participant_id = PSE_stories$Participant_ID
+#story_id = PSE_stories$story_id
+#dataset_to_merge_predictions = PSE_stories
+
+
 
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
