@@ -295,13 +295,24 @@ textReturnModelAndEmbedding <- function(
 #dataset_to_merge_predictions = NULL
 #previous_sentence = FALSE
 #
-#texts = PSE_stories$Story_Text
+#texts = PSE_stories_story_level$Story_Text
 #model_info = "implicit_power_roberta_large_L23_v1"
-#participant_id = PSE_stories$Participant_ID
-#story_id = PSE_stories$story_id
-#dataset_to_merge_predictions = PSE_stories
+#show_texts = TRUE
+#threshold = 0.99
 
-
+##model_info = text_train_results1
+##word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"]
+##dim_names = TRUE
+##type= NULL
+#
+#texts = PSE_stories_story_level$Story_Text
+#model_info = "implicit_power_roberta_large_L23_v1"
+#participant_id = PSE_stories_story_level$Participant_ID
+##story_id = PSE_stories_story_level$story_id
+##dataset_to_merge_predictions = PSE_stories_story_level
+#
+#show_texts = TRUE
+#show_prob = TRUE
 
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
@@ -314,9 +325,9 @@ textReturnModelAndEmbedding <- function(
 #' @param word_embeddings (tibble) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 #'  then texts and embeddings cannot be submitted simultaneously (default = NULL).
 #' @param x_append (tibble) Variables to be appended after the word embeddings (x).
-#' @param type (character) Defines what output to give after logistic regression prediction.
-#' Either probabilities, classifications or both are returned (default = "class".
-#' For probabilities use "prob". For both use "class_prob").
+# @param type (character) Defines what output to give after logistic regression prediction.
+# Either probabilities, classifications or both are returned (default = "class".
+# For probabilities use "prob". For both use "class_prob").
 #' @param dim_names (boolean) Account for specific dimension names from textEmbed()
 #' (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 #' word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.
@@ -418,7 +429,7 @@ textPredictR <- function(model_info = NULL,
                         word_embeddings = NULL,
                         texts = NULL,
                         x_append = NULL,
-                        type = NULL,
+                     #   type = NULL,
                         dim_names = TRUE,
                         save_model = TRUE,
                         threshold = NULL,
@@ -439,49 +450,34 @@ textPredictR <- function(model_info = NULL,
          Choose one or the other.')
   }
 
-
   # check whether models name exist in a predefined list
-  true_false <- registered_model_name(model_info)
+  registered_true_false <- registered_model_name(model_info)
 
   # handle predefined models (see implicit motives)
-  if(true_false){
+  if(registered_true_false){
 
-  #### Special treatment for implicit motives - see private functions ####
-  model_name <- model_info
-  # Oscar removed this line, using above line instead:
-  #model_name <- gsub("^\"|\"$", "", deparse(substitute(model_info)))
-  # Above line was problemativ when creating a wrapper textPredict(); and i do not think it is needed.
-  lower_case_model <- as.character(tolower(model_name))
+    #### Special treatment for implicit motives - see private functions ####
+    model_name <- model_info
 
-  # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding
-  get_model_info <- get_model_info(model_info = model_info,
-                                   participant_id = participant_id,
-                                   show_texts = show_texts,
-                                   type = type,
-                                   texts = texts,
-                                   story_id = story_id,
-                                   lower_case_model = lower_case_model)
+    lower_case_model <- as.character(tolower(model_name))
+
+    # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding
+    get_model_info_results <- get_model_info(model_info = model_info,
+                                     participant_id = participant_id,
+                                     show_texts = show_texts,
+                                     #type = type,
+                                     texts = texts,
+                                     story_id = story_id,
+                                     lower_case_model = lower_case_model)
 
 
-  model_info <- get_model_info$model_info
-  show_texts <- get_model_info$show_texts
-  show_prob <- get_model_info$show_prob
-  type <- get_model_info$type
-  texts <- get_model_info$texts
-  participant_id <- get_model_info$participant_id
-  story_id = get_model_info$story_id
+    model_info <- get_model_info_results$model_info
 
-  } else {
+   # type <- get_model_info_results$type
+    texts <- get_model_info_results$texts
+    participant_id <- get_model_info_results$participant_id
+    story_id = get_model_info_results$story_id
 
-    # show_prob is by default FALSE -- Not sure if we should let the user set this. Now it is set
-    # automatiacally in the get_model_info function.
-    show_prob <- FALSE
-
-    # The stats package just takes "class" or "prob", therefore, allocate to "show_prob".
-    if (!is.null(type) && type == "class_prob") {
-      type <- "class"
-      show_prob <- TRUE
-    }
   }
 
   #### End Special treatment for implicit motives ####
@@ -494,7 +490,7 @@ textPredictR <- function(model_info = NULL,
       word_embeddings = word_embeddings,
       model_info = model_info,
       save_model = save_model,
-      type = type,
+   #   type = type,
       device = device,
       story_id = story_id,
       save_embeddings = save_embeddings,
@@ -513,6 +509,15 @@ textPredictR <- function(model_info = NULL,
   } else {
     loaded_model <- model_info
   }
+
+  # "regression" or "classification"
+  mod_type <- loaded_model$final_model$fit$actions$model$spec[[3]]
+
+#  if(mod_type == "regression"){
+#    type = NULL
+#  } else{
+#    type = "class"
+#  }
 
   # check if model is defined
   if (is.null(loaded_model)) {
@@ -546,9 +551,7 @@ textPredictR <- function(model_info = NULL,
     word_embeddings <- textDimName(word_embeddings,
                                    dim_names = FALSE
     )
-
     word_embeddings_names <- "word_embeddings"
-
   }
 
   if (!is.null(x_append)) {
@@ -576,107 +579,67 @@ textPredictR <- function(model_info = NULL,
   new_data1 <- new_data1$x1
 
 
-  # Original structure:
-  # Dealing with NAs
-  # new_data1$id_nr <- c(seq_len(nrow(new_data1)))
-  # new_data1 <- new_data1[complete.cases(new_data1), ]
-  # new_data_id_nr_col <- tibble::as_tibble_col(seq_len(nrow(new_data1)), column_name = "id_nr")
-  # Dealing with NAs # Position of new_data_id_nr_col and new_data1 has now been switched.
-
   new_data1$id_nr <- c(seq_len(nrow(new_data1)))
   new_data_id_nr_col <- tibble::as_tibble_col(seq_len(nrow(new_data1)), column_name = "id_nr")
   new_data1 <- new_data1[complete.cases(new_data1), ]
 
 
   #### Load prepared_with_recipe
-  #ok#  data_prepared_with_recipe <- recipes::bake(loaded_model$final_recipe, new_data1)
-
-  # Get column names to be removed from output
-  #  colnames_to_b_removed <- colnames(data_prepared_with_recipe)
-  #  colnames_to_b_removed <- colnames_to_b_removed[!colnames_to_b_removed == "id_nr"]
 
   colnames_to_b_removed <- loaded_model$final_model$pre$actions$recipe$recipe$var_info$variable[
     loaded_model$final_model$pre$actions$recipe$recipe$var_info$role == "predictor"]
 
 
-  # If the user has defined a threshold, then implement the threshold algorithm.
+  # If the user has defined a threshold, then implement the threshold algorithm. threshold=0.99
   if (!is.null(threshold)) {
-    # Retrieves the two classes
-    #class1 <- classes[1]
-    #class2 <- classes[2]
-
-    # Create column names
-    #class1_col_name <- paste0(class1, "_prob")
-    #class2_col_name <- paste0(class2, "_prob")
 
     # Predict
     predicted_scores2 <- new_data1 %>%
-      dplyr::bind_cols(stats::predict(loaded_model$final_model, new_data = new_data1, type = "prob")) %>% # , ...
+      dplyr::bind_cols(stats::predict(loaded_model$final_model,
+                                      new_data = new_data1,
+                                      type = "prob")) %>% # , ...
       dplyr::select(-!!colnames_to_b_removed) %>%
       dplyr::full_join(new_data_id_nr_col, by = "id_nr") %>%
       dplyr::arrange(id_nr) %>%
       dplyr::select(-id_nr)
 
-    # Rename columns
-    #predicted_scores2 <- predicted_scores2 %>%
-    #  dplyr::rename(
-    #     !!class1_col_name := 1,
-    #    !!class2_col_name := 2
-    # )
+       # Show both class and probability.
+       if (mod_type == "classification") {
 
-    # If the user desires to only view class, then remove the probabilty columns.
-    if (type == "class" && show_prob == FALSE) {
-      predicted_scores2 <- predicted_scores2 %>%
-        dplyr::mutate(predicted_class = ifelse(.[[1]] >= threshold, 1, 0)) %>%
-        dplyr::select(predicted_class)
+         class <- predicted_scores2 %>%
+           dplyr::mutate(predicted_class = ifelse(.[[1]] >= threshold, 1, 0)) %>%
+           select(predicted_class)
+          # dplyr::select(predicted_class, dplyr::everything())
 
+         ################
+         we_names <- paste(word_embeddings_names, collapse = "_", sep = "")
+         v_names <- paste(variable_names, collapse = "_", sep = "")
 
-      ############## CHANGE!!!!! #############
-      we_names <- paste(word_embeddings_names, collapse = "_", sep = "")
-      v_names <- paste(variable_names, collapse = "_", sep = "")
+         y_name <- loaded_model$model_description[3]
+         y_name <- gsub("[[:space:]]", "", y_name)
+         y_name <- gsub("y=", "", y_name)
 
-      y_name <- loaded_model$model_description[3]
-      y_name <- gsub("[[:space:]]", "", y_name)
-      y_name <- gsub("y=", "", y_name)
-
-      colnames(predicted_scores2) <- paste(we_names, "_", v_names, "_", y_name, "pred", sep = "")
-
-      # If the user desires to view the classes and the probability columns.
-    } else if (type == "class" && show_prob == TRUE) {
-      predicted_scores2 <- predicted_scores2 %>%
-        dplyr::mutate(predicted_class = ifelse(.[[1]] >= threshold, 1, 0)) %>%
-        dplyr::select(predicted_class, dplyr::everything())
-
-
-    } else if (is.null(type)) {
-
-    }
+         colnames(class) <- paste(we_names, "_", v_names, "_", y_name, "pred", sep = "")
+         # Adding probabilities to predicted_scores2
+         predicted_scores2 <- dplyr::bind_cols(class, predicted_scores2)
+       }
   }
+
   # If no threshold is defined, then use the predefined threshold of 50%.
   if (is.null(threshold)) {
-    # Get Prediction scores help(arrange)
-    #    predicted_scores2 <- data_prepared_with_recipe %>%
-    #      dplyr::bind_cols(stats::predict(loaded_model$final_model, new_data = new_data1, type = type)) %>% # , ...
-    #      dplyr::select(-!!colnames_to_b_removed) %>%
-    #      dplyr::full_join(new_data_id_nr_col, by = "id_nr") %>%
-    #      dplyr::arrange(id_nr) %>%
-    #      dplyr::select(-id_nr)
+    # Get Prediction scores
 
-
-    ## OK ### target_variables_names = NULL
     predicted_scores2 <- new_data1 %>%
-      dplyr::bind_cols(stats::predict(loaded_model$final_model, new_data = new_data1, type = type)) %>% # , ...
+      dplyr::bind_cols(stats::predict(loaded_model$final_model,
+                                      new_data = new_data1, ...)) %>% # , ... or type = type
       dplyr::select(-!!colnames_to_b_removed) %>% #
       dplyr::full_join(new_data_id_nr_col, by = "id_nr") %>%
       dplyr::arrange(id_nr) %>%
       dplyr::select(-id_nr)
 
-    ## OK ###
-
-    #################### CHANGE
+    #### Setting the column name
     we_names <- paste(word_embeddings_names, collapse = "_", sep = "")
     v_names <- paste(variable_names, collapse = "_", sep = "")
-
     y_name <- loaded_model$model_description[3]
     y_name <- gsub("[[:space:]]", "", y_name)
     y_name <- gsub("y=", "", y_name)
@@ -684,7 +647,7 @@ textPredictR <- function(model_info = NULL,
     colnames(predicted_scores2) <- paste(we_names, "_", v_names, "_", y_name, "pred", sep = "")
 
     # If no threshold is defined, but both classification and prediction is to be viewed
-    if (show_prob == TRUE) {
+    if (mod_type == "classification") {
       prob_scores <- new_data1 %>%
         dplyr::bind_cols(stats::predict(loaded_model$final_model, new_data = new_data1, type = "prob")) %>%
         dplyr::select(-!!colnames_to_b_removed) %>%
@@ -697,31 +660,17 @@ textPredictR <- function(model_info = NULL,
     }
   }
 
-  # Include text in redictions
+  # Include text in predictions
   if (show_texts) {
     predicted_scores2 <- predicted_scores2 %>%
       dplyr::mutate(texts = texts)
   }
 
   #### Implicit motives section, see private_functions #####
-
-  # Check for implicit motives configuration
-
-  if(true_false && !is.null(participant_id) || !is.null(story_id)){
-
-#  if (
-#    (grepl("implicit", lower_case_model) & grepl("power", lower_case_model)) ||
-#    (grepl("implicit", lower_case_model) & grepl("affiliation", lower_case_model)) ||
-#    (grepl("implicit", lower_case_model) & grepl("achievement", lower_case_model)) ||
-#    (grepl("implicit_motives", lower_case_model) &&
-#     (!is.null(participant_id) || !is.null(story_id)))
-#  ){
-
-    # Wrapper function that prepares data for
-    # automatic implicit motive coding and returns
+  if(registered_true_false){
+    # Wrapper function that prepares data for automatic implicit motive coding and returns
     # a list with predictions, class residuals and probability residuals.
-
-    implicit_motives_results(
+    predicted_scores2 <- implicit_motives_results(
       model_reference = model_info,
       participant_id = participant_id,
       story_id = story_id,
@@ -730,14 +679,14 @@ textPredictR <- function(model_info = NULL,
       dataset = dataset_to_merge_predictions,
       lower_case_model = lower_case_model
     )
-    #### End Implicit motives section #####
-  } else {
-    # display message to user
-    cat(colourise("Predictions are ready!", fg = "green"))
-    cat("\n")
-    return(predicted_scores2)
   }
+
+  # display message to user
+  cat(colourise("Predictions are ready!", fg = "green"))
+  cat("\n")
+  return(predicted_scores2)
 }
+
 
 #' Predict from several models, selecting the correct input
 #' @param models Object containing several models.

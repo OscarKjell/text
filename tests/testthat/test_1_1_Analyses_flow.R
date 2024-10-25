@@ -60,7 +60,7 @@ test_that("Testing textEmbed as well as train", {
   expect_gt(text_train_results1$results$estimate[1], .3)
   expect_equal(text_train_results1$results$estimate[[1]], 0.3273128, tolerance = 0.00001)
 
-
+help(textPredict)
   hils_predicted_scores1 <- text::textPredict(
     model_info = text_train_results1,
     word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"],

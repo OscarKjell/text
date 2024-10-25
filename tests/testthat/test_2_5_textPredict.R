@@ -80,14 +80,15 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
   # Test data
   implicit_motive_data <- dplyr::mutate(.data = text::Language_based_assessment_data_8, participant_id = dplyr::row_number(), story_id = rep(1:5, each=8))
 
-  #help(textPredict)
+  # help(textPredict)
   predictions <- text::textPredict(
     texts = implicit_motive_data$satisfactiontexts,
     model_info = "implicit_power_roberta_large_L23_v1",
     participant_id = implicit_motive_data$participant_id,
     story_id = implicit_motive_data$story_id,
     dataset_to_merge_predictions = implicit_motive_data,
-    previous_sentence = TRUE
+    previous_sentence = TRUE,
+    show_texts = T
     )
 
   testthat::expect_is(predictions$sentence_predictions$texts[1], "character")
