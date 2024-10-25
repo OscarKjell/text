@@ -294,32 +294,10 @@ textReturnModelAndEmbedding <- function(
 #story_id = NULL
 #dataset_to_merge_predictions = NULL
 #previous_sentence = FALSE
-#
-#model_info = train_x_append
-#x_append = Language_based_assessment_data_8[1:20, 6:7]
-#append_first = TRUE
-#word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"]
-#dim_names = TRUE
-#
-#texts = PSE_stories_story_level$Story_Text
+##
+#texts = PSE_stories_participant_level$stories
 #model_info = "implicit_power_roberta_large_L23_v1"
-#show_texts = TRUE
-#threshold = 0.99
-
-##model_info = text_train_results1
-##word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"]
-##dim_names = TRUE
-##type= NULL
-#
-#texts = PSE_stories_story_level$Story_Text
-#model_info = "implicit_power_roberta_large_L23_v1"
-#participant_id = PSE_stories_story_level$Participant_ID
-##story_id = PSE_stories_story_level$story_id
-##dataset_to_merge_predictions = PSE_stories_story_level
-#
-#show_texts = TRUE
-#show_prob = TRUE
-
+#participant_id = PSE_stories_participant_level$Participant_ID
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
 #' @param model_info (character or r-object) model_info has four options. 1: R model object
@@ -468,6 +446,11 @@ textPredictR <- function(model_info = NULL,
     model_name <- model_info
 
     lower_case_model <- as.character(tolower(model_name))
+
+    # Creat participant id to enable creation of sentence level predictions (not sure why this is needed)
+    if (is.null(participant_id)){
+      participant_id <- seq_len(length(texts))
+    }
 
     # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding
     get_model_info_results <- get_model_info(model_info = model_info,
