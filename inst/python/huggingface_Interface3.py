@@ -5,13 +5,13 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import torch
 import huggingface_hub
 from transformers import AutoConfig, AutoModel, AutoTokenizer
+from transformers import pipeline
 try:
     from transformers.utils import logging
 except ImportError:
     print("Warning: Unable to importing transformers.utils logging")
-from transformers import pipeline
-import numpy as np
 
+import numpy as np
 import nltk
 try:
     nltk.data.find('tokenizers/punkt/PY3/english.pickle')
@@ -372,8 +372,8 @@ def hgTransformerGetPipeline(text_strings,
         task_scores = []
     elif print_warning and force_return_results:
         print("WARNING: Results may not match the defaults ({d}) for the task {task}. Proceed with caution.".format(
-            d=", ".join(PIPELINE_RESULTS_BY_TASK[task])),
-            task=task
+            d=", ".join(PIPELINE_RESULTS_BY_TASK[task]),
+            task=task)
             )
     return task_scores
 
