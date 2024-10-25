@@ -431,6 +431,7 @@ textPredictR <- function(model_info = NULL,
                         previous_sentence = FALSE,
                         ...) {
 
+  use_row_id_name = FALSE
   # Stop message if user defines both word_embeddings and texts
   if (!is.null(texts) && !is.null(word_embeddings)) {
     stop('Both arguments: "texts" and "word_embeddings" cannot be defined simultaneously.
