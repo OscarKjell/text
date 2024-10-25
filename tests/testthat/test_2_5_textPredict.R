@@ -118,4 +118,40 @@ test_that("1. textPredict generates embeddings from text and 2. automatically co
 #  testthat::expect_equal(sum(as.numeric(predictions$dataset$.pred_0_1[40])), 0.9891365, tolerance = 0.0001)
 #  testthat::expect_equal(sum(as.numeric(predictions$dataset$person_prob_2[10])), -1.144509, tolerance = 0.0001)
 #  testthat::expect_equal(sum(as.numeric(predictions$dataset$story_prob_3[5])), 1.51721, tolerance = 0.0001)
+
+
+
+#  text_to_assess = c(
+#    "I feel down and blue all the time.",
+#    "I feel great and have no worries that bothers me.")
+#  Language_based_assessment_data_8[1:10,1]
+#
+#  implicit_motive <- text::textPredict(
+#    model_info = "theharmonylab/implicit-motives-power-roberta-large",
+#    model_type = "finetuned",
+#    texts = Language_based_assessment_data_8[1:10,1])
+#  implicit_motive
+#
+#  help(textClassifyPipe)
+#  implicit_motive <- text::textClassifyPipe(
+#    x = Language_based_assessment_data_8[1:10,1],
+#    model = "theharmonylab/implicit-motives-power-roberta-large",
+#    force_return_results = T,
+#    return_all_scores = T
+#  )
+#  implicit_motive
+#
+#  implicit_motive <- text::textClassify(
+#    x = Language_based_assessment_data_8[1:10,1],
+#    model = "theharmonylab/implicit-motives-power-roberta-large",
+#    force_return_results = T,
+#    return_all_scores = T
+#  )
+#  implicit_motive
+#
+#  help("textAssess")
+
+
+
+
 })

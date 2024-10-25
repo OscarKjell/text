@@ -298,6 +298,7 @@ textReturnModelAndEmbedding <- function(
 #texts = PSE_stories_participant_level$stories
 #model_info = "implicit_power_roberta_large_L23_v1"
 #participant_id = PSE_stories_participant_level$Participant_ID
+
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
 #' @param model_info (character or r-object) model_info has four options. 1: R model object
@@ -447,8 +448,9 @@ textPredictR <- function(model_info = NULL,
 
     lower_case_model <- as.character(tolower(model_name))
 
-    # Creat participant id to enable creation of sentence level predictions (not sure why this is needed)
+    # Create participant id to enable creation of sentence level predictions (not sure why this is needed)
     if (is.null(participant_id)){
+      use_row_id_name <- TRUE
       participant_id <- seq_len(length(texts))
     }
 
@@ -671,6 +673,11 @@ textPredictR <- function(model_info = NULL,
       dataset = dataset_to_merge_predictions,
       lower_case_model = lower_case_model
     )
+
+    # change participant_id to row_id
+    if(use_row_id_name){
+      colnames(predicted_scores2[[2]])[colnames(predicted_scores2[[2]]) == "participant_id"] <- "row_id"
+    }
   }
 
   # display message to user

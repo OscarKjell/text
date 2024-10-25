@@ -14,39 +14,39 @@
 #' can be found at: \href{https://r-text.org/articles/pre_trained_models.html}{r-text.org}.
 #' @param texts (character) Text to predict. If this argument is specified, then arguments "word_embeddings"
 #' and "premade embeddings" cannot be defined (default = NULL).
-#' @param model_type (string) "text" or "huggingface". "text" indicates that the model is from the text-package
-#' (i.e., trained using one of the textTrain() functions; see function textPredictR()); "huggingface" indicates
-#' that the model comes from "huggingface" using pipe (see the textClassifyPipe function).
-#' @param word_embeddings (tibble; only for "text"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
+#' @param model_type (string) "texttrained" or "finetuned". "texttrained" indicates that the model is from the text-package
+#' (i.e., trained using one of the textTrain() functions; see function textPredictR()); "finetuned" indicates
+#' that the model comes from "finetuned" using pipe (see the textClassifyPipe function).
+#' @param word_embeddings (tibble; only for "texttrained"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 #'  then texts and embeddings cannot be submitted simultaneously (default = NULL).
-#' @param x_append (tibble; only for "text"-model_type) Variables to be appended after the word embeddings (x).
+#' @param x_append (tibble; only for "texttrained"-model_type) Variables to be appended after the word embeddings (x).
 #' @param append_first If TRUE, x_appened is added before word embeddings.
 #' @param type (character; only for "text"-model_type) Defines what output to give after logistic regression prediction.
 #' Either probabilities, classifications or both are returned (default = "class".
 #' For probabilities use "prob". For both use "class_prob").
-#' @param dim_names (boolean; only for "text"-model_type) Account for specific dimension names from textEmbed()
+#' @param dim_names (boolean; only for "texttrained"-model_type) Account for specific dimension names from textEmbed()
 #' (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 #' word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.
-#' @param save_model (boolean; only for "text"-model_type) The model will by default be saved in your work-directory (default = TRUE).
+#' @param save_model (boolean; only for "texttrained"-model_type) The model will by default be saved in your work-directory (default = TRUE).
 #' If the model already exists in your work-directory, it will automatically be loaded from there.
-#' @param threshold (numeric; only for "text"-model_type) Determine threshold if you are using a logistic model (default = 0.5).
-#' @param show_texts (boolean; only for "text"-model_type) Show texts together with predictions (default = FALSE).
+#' @param threshold (numeric; only for "texttrained"-model_type) Determine threshold if you are using a logistic model (default = 0.5).
+#' @param show_texts (boolean; only for "texttrained"-model_type) Show texts together with predictions (default = FALSE).
 #' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 #' specific device number such as 'mps:1'.
-#' @param participant_id (list; only for "text"-model_type) Vector of participant-ids. Specify this for getting person level scores
+#' @param participant_id (list; only for "texttrained"-model_type) Vector of participant-ids. Specify this for getting person level scores
 #' (i.e., summed sentence probabilities to the person level corrected for word count). (default = NULL)
-#' @param story_id (vector; only for "text"-model_type) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
+#' @param story_id (vector; only for "texttrained"-model_type) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
 #' probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
 #' returns a list including both story level and person level prediction corrected for word count. (default = NULL)
-#' @param dataset_to_merge_predictions (R-object, tibble; only for "text"-model_type) Insert your data here to integrate predictions to your dataset,
+#' @param dataset_to_merge_predictions (R-object, tibble; only for "texttrained"-model_type) Insert your data here to integrate predictions to your dataset,
 #'  (default = NULL).
-#' @param save_embeddings (boolean; only for "text"-model_type) If set to TRUE, embeddings will be saved with a unique identifier, and
+#' @param save_embeddings (boolean; only for "texttrained"-model_type) If set to TRUE, embeddings will be saved with a unique identifier, and
 #' will be automatically opened next time textPredict is run with the same text. (default = TRUE)
-#' @param save_dir (character; only for "text"-model_type) Directory to save embeddings. (default = "wd" (i.e, work-directory))
-#' @param save_name (character; only for "text"-model_type) Name of the saved embeddings (will be combined with a unique identifier).
+#' @param save_dir (character; only for "texttrained"-model_type) Directory to save embeddings. (default = "wd" (i.e, work-directory))
+#' @param save_name (character; only for "texttrained"-model_type) Name of the saved embeddings (will be combined with a unique identifier).
 #' (default = ""). Obs: If no save_name is provided, and model_info is a character, then save_name will be set
 #' to model_info.
-#' @param previous_sentence (boolean; only for "text"-model_type) If set to TRUE, word-embeddings will be averaged over the current and previous
+#' @param previous_sentence (boolean; only for "texttrained"-model_type) If set to TRUE, word-embeddings will be averaged over the current and previous
 #' sentence per story-id. For this, both participant-id and story-id must be specified.
 #' @param tokenizer_parallelism (boolean; only for "huggingface"-model_type)  If TRUE this will turn on tokenizer parallelism.
 #' @param logging_level (string; only for "huggingface"-model_type)  Set the logging level.
@@ -136,8 +136,8 @@ textPredict <- function(
     # Common parameter
     model_info = NULL,
     texts = NULL,
-    model_type = "text",
-    # text-model specific parameters
+    model_type = "texttrained",
+    # text-trained model specific parameters
     word_embeddings = NULL,
     x_append = NULL,
     append_first,
@@ -154,7 +154,7 @@ textPredict <- function(
     story_id = NULL,
     dataset_to_merge_predictions = NULL,
     previous_sentence = FALSE,
-    # pipe-model specific parameters
+    # fine-tuned model specific parameters
     tokenizer_parallelism = FALSE,
     logging_level = "error",
     force_return_results = FALSE,
@@ -163,13 +163,13 @@ textPredict <- function(
     set_seed = 202208,
     ...){
 
-  if (!(model_type %in% c("text", "huggingface"))) {
-    stop("Error: method must be either 'text' or 'huggingface'.")
+  if (!(model_type %in% c("texttrained", "finetuned"))) {
+    stop("Error: method must be either 'texttrained' or 'finetuned'.")
   }
 
-  if(model_type == "text"){
+  if(model_type == "texttrained"){
 
-    print("You are using a 'text-trained model' (i.e., model_type = 'text').")
+    print("You are using a 'text-trained model' (i.e., model_type = 'texttrained').")
 
     results <-  textPredictR(
      model_info = model_info,
@@ -193,8 +193,8 @@ textPredict <- function(
      ...)
   }
 
-  if(model_type == "huggingface"){
-    print("You are using a fine-tuned model (i.e., model_type = 'huggingface').")
+  if(model_type == "finetuned"){
+    print("You are using a fine-tuned model (i.e., model_type = 'finetuned').")
 
     results <-  textClassifyPipe(
       x = texts,
