@@ -1,4 +1,4 @@
-# Wraper functions for textPredictR and textClassity
+# Wraper functions for textPredictR and textClassifyPipe
 
 #' textPredict, textAssess and textClassify
 #'
@@ -167,7 +167,7 @@ textPredict <- function(
 
   if(model_type == "text"){
 
-    print("You are using a 'text-model' (i.e., model_type = 'text').")
+    print("You are using a 'text-trained model' (i.e., model_type = 'text').")
 
     results <-  textPredictR(
      model_info = model_info,
@@ -191,7 +191,7 @@ textPredict <- function(
   }
 
   if(model_type == "huggingface"){
-    print("You are using a 'huggingface-model' (i.e., model_type = 'huggingface').")
+    print("You are using a fine-tuned model (i.e., model_type = 'huggingface').")
 
     results <-  textClassifyPipe(
       x = texts,
