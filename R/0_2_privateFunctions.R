@@ -139,7 +139,7 @@ add_variables_to_we <- function(word_embeddings,
 #' @noRd
 sorting_xs_and_x_append <- function(x,
                                     x_append,
-                                    append_first, ...) {
+                                    append_first = TRUE, ...) {
   variable_name_index_pca <- NA
 
   if (!is.null(x)) {
@@ -445,7 +445,7 @@ p_value_comparing_with_Null <- function(Observedresult,
 #' @noRd
 add_variables_to_we <- function(word_embeddings,
                                 data,
-                                append_first = FALSE) {
+                                append_first) {
   # Add Names to new Variables
   colnames(data) <- paste("Dim0", "_", colnames(data), sep = "")
 

@@ -7,6 +7,9 @@ context("Big analyses flow")
 test_that("Testing textEmbed as well as train", {
   skip_on_cran()
 
+#  textrpp_initialize(refresh_settings = T,
+#                     save_profile = T)
+
   textrpp_initialize()
 
   descr1 <- textDescriptives(Language_based_assessment_data_8[[1]][[1]],
@@ -60,7 +63,7 @@ test_that("Testing textEmbed as well as train", {
   expect_gt(text_train_results1$results$estimate[1], .3)
   expect_equal(text_train_results1$results$estimate[[1]], 0.3273128, tolerance = 0.00001)
 
-help(textPredict)
+
   hils_predicted_scores1 <- text::textPredict(
     model_info = text_train_results1,
     word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"],
@@ -89,12 +92,12 @@ help(textPredict)
   )
 
   # Predict
-  hils_predicted_scores2 <- text::textPredict(
+  hils_predicted_scores2 <- text::textPredictR(
     model_info = train_x_append,
     x_append = Language_based_assessment_data_8[1:20, 6:7],
-    append_first = TRUE,
     word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"],
-    dim_names = TRUE
+    dim_names = TRUE,
+    append_first = FALSE
   )
 
   expect_that(hils_predicted_scores2[[1]], is_a("numeric"))

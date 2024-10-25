@@ -10,6 +10,7 @@ textPredictR(
   word_embeddings = NULL,
   texts = NULL,
   x_append = NULL,
+  append_first = TRUE,
   dim_names = TRUE,
   save_model = TRUE,
   threshold = NULL,
@@ -40,6 +41,8 @@ then texts and embeddings cannot be submitted simultaneously (default = NULL).}
 and "premade embeddings" cannot be defined (default = NULL).}
 
 \item{x_append}{(tibble) Variables to be appended after the word embeddings (x).}
+
+\item{append_first}{If TRUE, x_appened is added before word embeddings.}
 
 \item{dim_names}{(boolean) Account for specific dimension names from textEmbed()
 (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on

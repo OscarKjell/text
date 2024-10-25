@@ -12,6 +12,7 @@ textPredict(
   model_type = "text",
   word_embeddings = NULL,
   x_append = NULL,
+  append_first,
   type = NULL,
   dim_names = TRUE,
   save_model = TRUE,
@@ -54,6 +55,8 @@ that the model comes from "huggingface" using pipe (see the textClassifyPipe fun
 then texts and embeddings cannot be submitted simultaneously (default = NULL).}
 
 \item{x_append}{(tibble; only for "text"-model_type) Variables to be appended after the word embeddings (x).}
+
+\item{append_first}{If TRUE, x_appened is added before word embeddings.}
 
 \item{type}{(character; only for "text"-model_type) Defines what output to give after logistic regression prediction.
 Either probabilities, classifications or both are returned (default = "class".

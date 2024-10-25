@@ -20,6 +20,7 @@
 #' @param word_embeddings (tibble; only for "text"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 #'  then texts and embeddings cannot be submitted simultaneously (default = NULL).
 #' @param x_append (tibble; only for "text"-model_type) Variables to be appended after the word embeddings (x).
+#' @param append_first If TRUE, x_appened is added before word embeddings.
 #' @param type (character; only for "text"-model_type) Defines what output to give after logistic regression prediction.
 #' Either probabilities, classifications or both are returned (default = "class".
 #' For probabilities use "prob". For both use "class_prob").
@@ -139,6 +140,7 @@ textPredict <- function(
     # text-model specific parameters
     word_embeddings = NULL,
     x_append = NULL,
+    append_first,
     type = NULL,
     dim_names = TRUE,
     save_model = TRUE,
@@ -174,6 +176,7 @@ textPredict <- function(
      word_embeddings = word_embeddings,
      texts = texts,
      x_append = x_append,
+     append_first = append_first,
      type = type,
      dim_names = dim_names,
      save_model = save_model,
@@ -202,8 +205,7 @@ textPredict <- function(
       force_return_results = force_return_results,
       return_all_scores = return_all_scores,
       function_to_apply = function_to_apply,
-      set_seed = set_seed,
-      ...)
+      set_seed = set_seed)
 
   }
 

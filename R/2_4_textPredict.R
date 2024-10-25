@@ -295,6 +295,12 @@ textReturnModelAndEmbedding <- function(
 #dataset_to_merge_predictions = NULL
 #previous_sentence = FALSE
 #
+#model_info = train_x_append
+#x_append = Language_based_assessment_data_8[1:20, 6:7]
+#append_first = TRUE
+#word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"]
+#dim_names = TRUE
+#
 #texts = PSE_stories_story_level$Story_Text
 #model_info = "implicit_power_roberta_large_L23_v1"
 #show_texts = TRUE
@@ -325,6 +331,7 @@ textReturnModelAndEmbedding <- function(
 #' @param word_embeddings (tibble) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 #'  then texts and embeddings cannot be submitted simultaneously (default = NULL).
 #' @param x_append (tibble) Variables to be appended after the word embeddings (x).
+#' @param append_first If TRUE, x_appened is added before word embeddings.
 # @param type (character) Defines what output to give after logistic regression prediction.
 # Either probabilities, classifications or both are returned (default = "class".
 # For probabilities use "prob". For both use "class_prob").
@@ -429,6 +436,7 @@ textPredictR <- function(model_info = NULL,
                         word_embeddings = NULL,
                         texts = NULL,
                         x_append = NULL,
+                        append_first = TRUE,
                      #   type = NULL,
                         dim_names = TRUE,
                         save_model = TRUE,
@@ -513,11 +521,11 @@ textPredictR <- function(model_info = NULL,
   # "regression" or "classification"
   mod_type <- loaded_model$final_model$fit$actions$model$spec[[3]]
 
-#  if(mod_type == "regression"){
-#    type = NULL
-#  } else{
-#    type = "class"
-#  }
+  if(mod_type == "regression"){
+    type = NULL
+  } else{
+    type = "class"
+  }
 
   # check if model is defined
   if (is.null(loaded_model)) {
@@ -574,7 +582,8 @@ textPredictR <- function(model_info = NULL,
   # Adding embeddings and x_append (if any)
   new_data1 <- sorting_xs_and_x_append(
     x = word_embeddings,
-    x_append = x_append_target, ...
+    x_append = x_append_target,
+    append_first = append_first
   )
   new_data1 <- new_data1$x1
 
@@ -631,7 +640,7 @@ textPredictR <- function(model_info = NULL,
 
     predicted_scores2 <- new_data1 %>%
       dplyr::bind_cols(stats::predict(loaded_model$final_model,
-                                      new_data = new_data1, ...)) %>% # , ... or type = type
+                                      new_data = new_data1, type = type)) %>% # , ... or
       dplyr::select(-!!colnames_to_b_removed) %>% #
       dplyr::full_join(new_data_id_nr_col, by = "id_nr") %>%
       dplyr::arrange(id_nr) %>%
