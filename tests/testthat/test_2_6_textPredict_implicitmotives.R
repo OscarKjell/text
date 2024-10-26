@@ -12,7 +12,6 @@ test_that("textPredict Implicit motives", {
   # Test data
   implicit_motive_data <- dplyr::mutate(.data = text::Language_based_assessment_data_8, participant_id = dplyr::row_number(), story_id = rep(1:5, each=8))
 
-
   # Manually recreate the dataset for 20 participants and 80 stories
   PSE_stories <- tibble(data.frame(
     Unnamed_0 = 1:62,
@@ -88,7 +87,6 @@ test_that("textPredict Implicit motives", {
     story_id = 1:62
   ))
 
-
   # Create datasets for testing merging feature
   # Participant level data for testing data merge
   PSE_stories_participant_level <- PSE_stories %>%
@@ -106,8 +104,6 @@ test_that("textPredict Implicit motives", {
   PSE_stories_sentence_level <- PSE_stories %>%
     mutate(Story_Text = strsplit(Story_Text, "[\\.\\!\\?]\\s+")) %>%
     unnest(Story_Text)
-
-
 
   ### Merging Participant level
   #
@@ -127,7 +123,6 @@ test_that("textPredict Implicit motives", {
 
   testthat::expect_equal(predictions_participant_1$dataset$Participant_ID[[2]], "P02", tolerance = 0.0001)
 
-
   #
   predictions_participant_2 <- text::textPredict(
     texts = PSE_stories_participant_level$stories,
@@ -138,7 +133,6 @@ test_that("textPredict Implicit motives", {
   )
   testthat::expect_that(predictions_participant_2, testthat::is_a("list"))
   testthat::expect_equal(length(predictions_participant_2), 2)
-
 
   ### Merging Story level
   #as expected
@@ -153,7 +147,6 @@ test_that("textPredict Implicit motives", {
   testthat::expect_equal(length(predictions_story_1), 4)
   testthat::expect_equal(predictions_story_1$story_predictions$story_prob[[1]], -0.01077453, tolerance = 0.0001)
   testthat::expect_equal(predictions_story_1$story_predictions$story_prob_no_wc_correction[[2]], 0.1011361, tolerance = 0.0001)
-
 
   #as expected
   predictions_story_2 <- text::textPredict(
@@ -192,6 +185,5 @@ test_that("textPredict Implicit motives", {
   testthat::expect_equal(length(predictions_sentence_2), 3)
   testthat::expect_equal(predictions_sentence_2$sentence_predictions$.pred_0[[1]], 0.9089251, tolerance = 0.0001)
   testthat::expect_equal(predictions_sentence_2$sentence_predictions$.pred_1[[2]], 0.09193248, tolerance = 0.0001)
-
 
 })
