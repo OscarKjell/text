@@ -9,7 +9,7 @@
 textPredict(
   model_info = NULL,
   texts = NULL,
-  model_type = "text",
+  model_type = "texttrained",
   word_embeddings = NULL,
   x_append = NULL,
   append_first,
@@ -47,14 +47,14 @@ can be found at: \href{https://r-text.org/articles/pre_trained_models.html}{r-te
 \item{texts}{(character) Text to predict. If this argument is specified, then arguments "word_embeddings"
 and "premade embeddings" cannot be defined (default = NULL).}
 
-\item{model_type}{(string) "text" or "huggingface". "text" indicates that the model is from the text-package
-(i.e., trained using one of the textTrain() functions; see function textPredictR()); "huggingface" indicates
-that the model comes from "huggingface" using pipe (see the textClassifyPipe function).}
+\item{model_type}{(string) "texttrained" or "finetuned". "texttrained" indicates that the model is from the text-package
+(i.e., trained using one of the textTrain() functions; see function textPredictR()); "finetuned" indicates
+that the model comes from "finetuned" using pipe (see the textClassifyPipe function).}
 
-\item{word_embeddings}{(tibble; only for "text"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
+\item{word_embeddings}{(tibble; only for "texttrained"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 then texts and embeddings cannot be submitted simultaneously (default = NULL).}
 
-\item{x_append}{(tibble; only for "text"-model_type) Variables to be appended after the word embeddings (x).}
+\item{x_append}{(tibble; only for "texttrained"-model_type) Variables to be appended after the word embeddings (x).}
 
 \item{append_first}{If TRUE, x_appened is added before word embeddings.}
 
@@ -62,40 +62,40 @@ then texts and embeddings cannot be submitted simultaneously (default = NULL).}
 Either probabilities, classifications or both are returned (default = "class".
 For probabilities use "prob". For both use "class_prob").}
 
-\item{dim_names}{(boolean; only for "text"-model_type) Account for specific dimension names from textEmbed()
+\item{dim_names}{(boolean; only for "texttrained"-model_type) Account for specific dimension names from textEmbed()
 (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.}
 
-\item{save_model}{(boolean; only for "text"-model_type) The model will by default be saved in your work-directory (default = TRUE).
+\item{save_model}{(boolean; only for "texttrained"-model_type) The model will by default be saved in your work-directory (default = TRUE).
 If the model already exists in your work-directory, it will automatically be loaded from there.}
 
-\item{threshold}{(numeric; only for "text"-model_type) Determine threshold if you are using a logistic model (default = 0.5).}
+\item{threshold}{(numeric; only for "texttrained"-model_type) Determine threshold if you are using a logistic model (default = 0.5).}
 
-\item{show_texts}{(boolean; only for "text"-model_type) Show texts together with predictions (default = FALSE).}
+\item{show_texts}{(boolean; only for "texttrained"-model_type) Show texts together with predictions (default = FALSE).}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 specific device number such as 'mps:1'.}
 
-\item{participant_id}{(list; only for "text"-model_type) Vector of participant-ids. Specify this for getting person level scores
+\item{participant_id}{(list; only for "texttrained"-model_type) Vector of participant-ids. Specify this for getting person level scores
 (i.e., summed sentence probabilities to the person level corrected for word count). (default = NULL)}
 
-\item{save_embeddings}{(boolean; only for "text"-model_type) If set to TRUE, embeddings will be saved with a unique identifier, and
+\item{save_embeddings}{(boolean; only for "texttrained"-model_type) If set to TRUE, embeddings will be saved with a unique identifier, and
 will be automatically opened next time textPredict is run with the same text. (default = TRUE)}
 
-\item{save_dir}{(character; only for "text"-model_type) Directory to save embeddings. (default = "wd" (i.e, work-directory))}
+\item{save_dir}{(character; only for "texttrained"-model_type) Directory to save embeddings. (default = "wd" (i.e, work-directory))}
 
-\item{save_name}{(character; only for "text"-model_type) Name of the saved embeddings (will be combined with a unique identifier).
+\item{save_name}{(character; only for "texttrained"-model_type) Name of the saved embeddings (will be combined with a unique identifier).
 (default = ""). Obs: If no save_name is provided, and model_info is a character, then save_name will be set
 to model_info.}
 
-\item{story_id}{(vector; only for "text"-model_type) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
+\item{story_id}{(vector; only for "texttrained"-model_type) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
 probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
 returns a list including both story level and person level prediction corrected for word count. (default = NULL)}
 
-\item{dataset_to_merge_predictions}{(R-object, tibble; only for "text"-model_type) Insert your data here to integrate predictions to your dataset,
+\item{dataset_to_merge_predictions}{(R-object, tibble; only for "texttrained"-model_type) Insert your data here to integrate predictions to your dataset,
 (default = NULL).}
 
-\item{previous_sentence}{(boolean; only for "text"-model_type) If set to TRUE, word-embeddings will be averaged over the current and previous
+\item{previous_sentence}{(boolean; only for "texttrained"-model_type) If set to TRUE, word-embeddings will be averaged over the current and previous
 sentence per story-id. For this, both participant-id and story-id must be specified.}
 
 \item{tokenizer_parallelism}{(boolean; only for "huggingface"-model_type)  If TRUE this will turn on tokenizer parallelism.}

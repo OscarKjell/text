@@ -2,6 +2,12 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# text 1.2.8 - 1.2.13
+- fixing bugs related to text prediction functions
+- adding method_typ = "texttrained" and "finetuned"
+- streamlining code for implicit motives output
+
 # text 1.2.7
 - textClassify() is now called textClassifyPipe() 
 - textPredict() is now called textPredictR()
