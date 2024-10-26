@@ -574,7 +574,7 @@ textPredictR <- function(model_info = NULL,
   new_data1 <- sorting_xs_and_x_append(
     x = word_embeddings,
     x_append = x_append_target,
-    append_first = append_first
+    append_first = append_first # i don't think this is needed here; specifying the order is only needed in training.
   )
   new_data1 <- new_data1$x1
 
