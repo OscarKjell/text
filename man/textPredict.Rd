@@ -28,7 +28,7 @@ textPredict(
   previous_sentence = FALSE,
   tokenizer_parallelism = FALSE,
   logging_level = "error",
-  force_return_results = FALSE,
+  force_return_results = TRUE,
   return_all_scores = FALSE,
   function_to_apply = NULL,
   set_seed = 202208,
@@ -57,7 +57,7 @@ textAssess(
   previous_sentence = FALSE,
   tokenizer_parallelism = FALSE,
   logging_level = "error",
-  force_return_results = FALSE,
+  force_return_results = TRUE,
   return_all_scores = FALSE,
   function_to_apply = NULL,
   set_seed = 202208,
@@ -86,7 +86,7 @@ textClassify(
   previous_sentence = FALSE,
   tokenizer_parallelism = FALSE,
   logging_level = "error",
-  force_return_results = FALSE,
+  force_return_results = TRUE,
   return_all_scores = FALSE,
   function_to_apply = NULL,
   set_seed = 202208,
@@ -112,7 +112,7 @@ that the model comes from "finetuned" using pipe (see the textClassifyPipe funct
 \item{word_embeddings}{(tibble; only for "texttrained"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 then texts and embeddings cannot be submitted simultaneously (default = NULL).}
 
-\item{x_append}{(tibble; only for "texttrained"-model_type) Variables to be appended after the word embeddings (x).}
+\item{x_append}{(tibble; only for "texttrained"-model_type) Variables to be appended with the word embeddings (x).}
 
 \item{append_first}{If TRUE, x_appened is added before word embeddings.}
 
@@ -244,8 +244,6 @@ psych::corr.test(
   Language_based_assessment_data_8$swlstotal
 )
 }
-textAssess("hello")
-textClassify("hello")
 }
 \seealso{
 See \code{\link{textTrain}}, \code{\link{textTrainLists}} and

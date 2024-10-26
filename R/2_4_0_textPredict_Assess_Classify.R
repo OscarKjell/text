@@ -19,7 +19,7 @@
 #' that the model comes from "finetuned" using pipe (see the textClassifyPipe function).
 #' @param word_embeddings (tibble; only for "texttrained"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 #'  then texts and embeddings cannot be submitted simultaneously (default = NULL).
-#' @param x_append (tibble; only for "texttrained"-model_type) Variables to be appended after the word embeddings (x).
+#' @param x_append (tibble; only for "texttrained"-model_type) Variables to be appended with the word embeddings (x).
 #' @param append_first If TRUE, x_appened is added before word embeddings.
 #' @param type (character; only for "text"-model_type) Defines what output to give after logistic regression prediction.
 #' Either probabilities, classifications or both are returned (default = "class".
@@ -214,12 +214,12 @@ textPredict <- function(
 
 # Alias functions
 #' @rdname textPredict
-#' @examples textAssess("hello")
+# @examples textAssess("hello")
 #' @export
 textAssess <- textPredict
 
 #' @rdname textPredict
-#' @examples textClassify("hello")
+# @examples textClassify("hello")
 #' @export
 textClassify <- textPredict
 

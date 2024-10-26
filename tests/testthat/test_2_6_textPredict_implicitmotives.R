@@ -94,7 +94,7 @@ test_that("textPredict Implicit motives", {
     texts = Language_based_assessment_data_8[1:2,1],
     model_type = "finetuned"
   )
-  implicit_motive
+
   testthat::expect_equal(implicit_motive$label_satisfactiontexts[[1]], "LABEL_0")
   testthat::expect_equal(implicit_motive$score_satisfactiontexts[[1]], 0.9818341, tolerance = 0.0001)
 

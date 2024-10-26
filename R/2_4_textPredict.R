@@ -449,11 +449,16 @@ textPredictR <- function(model_info = NULL,
 
     lower_case_model <- as.character(tolower(model_name))
 
+    if (is.null(participant_id) & is.null(story_id)){
+      cat(colourise("Note: participant_id and story_id were not provided so treating row_id as participnat_id", "purple"))
+    }
     # Create participant id to enable creation of sentence level predictions (not sure why this is needed)
     if (is.null(participant_id)){
       use_row_id_name <- TRUE
       participant_id <- seq_len(length(texts))
+      cat(colourise("Note: participant_ID was not provided so treating rows as row_id", "purple"))
     }
+
 
     # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding
     get_model_info_results <- get_model_info(model_info = model_info,
