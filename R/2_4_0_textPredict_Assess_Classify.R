@@ -157,7 +157,7 @@ textPredict <- function(
     # fine-tuned model specific parameters
     tokenizer_parallelism = FALSE,
     logging_level = "error",
-    force_return_results = FALSE,
+    force_return_results = TRUE,
     return_all_scores = FALSE,
     function_to_apply = NULL,
     set_seed = 202208,
@@ -213,5 +213,14 @@ textPredict <- function(
 }
 
 # Alias functions
+#' @rdname textPredict
+#' @examples textAssess("hello")
+#' @export
 textAssess <- textPredict
+
+#' @rdname textPredict
+#' @examples textClassify("hello")
+#' @export
 textClassify <- textPredict
+
+

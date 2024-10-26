@@ -34,6 +34,64 @@ textPredict(
   set_seed = 202208,
   ...
 )
+
+textAssess(
+  model_info = NULL,
+  texts = NULL,
+  model_type = "texttrained",
+  word_embeddings = NULL,
+  x_append = NULL,
+  append_first,
+  type = NULL,
+  dim_names = TRUE,
+  save_model = TRUE,
+  threshold = NULL,
+  show_texts = FALSE,
+  device = "cpu",
+  participant_id = NULL,
+  save_embeddings = TRUE,
+  save_dir = "wd",
+  save_name = "textPredict",
+  story_id = NULL,
+  dataset_to_merge_predictions = NULL,
+  previous_sentence = FALSE,
+  tokenizer_parallelism = FALSE,
+  logging_level = "error",
+  force_return_results = FALSE,
+  return_all_scores = FALSE,
+  function_to_apply = NULL,
+  set_seed = 202208,
+  ...
+)
+
+textClassify(
+  model_info = NULL,
+  texts = NULL,
+  model_type = "texttrained",
+  word_embeddings = NULL,
+  x_append = NULL,
+  append_first,
+  type = NULL,
+  dim_names = TRUE,
+  save_model = TRUE,
+  threshold = NULL,
+  show_texts = FALSE,
+  device = "cpu",
+  participant_id = NULL,
+  save_embeddings = TRUE,
+  save_dir = "wd",
+  save_name = "textPredict",
+  story_id = NULL,
+  dataset_to_merge_predictions = NULL,
+  previous_sentence = FALSE,
+  tokenizer_parallelism = FALSE,
+  logging_level = "error",
+  force_return_results = FALSE,
+  return_all_scores = FALSE,
+  function_to_apply = NULL,
+  set_seed = 202208,
+  ...
+)
 }
 \arguments{
 \item{model_info}{(character or r-object) model_info has four options.
@@ -186,6 +244,8 @@ psych::corr.test(
   Language_based_assessment_data_8$swlstotal
 )
 }
+textAssess("hello")
+textClassify("hello")
 }
 \seealso{
 See \code{\link{textTrain}}, \code{\link{textTrainLists}} and

@@ -9,7 +9,7 @@
 #' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param force_return_results (boolean)  Stop returning some incorrectly formatted/structured results.
-#' This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
+#' This setting CANNOT evaluate the actual results (whether or not they make sense, exist, etc.).
 #' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
 #' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"
 #'  and "negative").
@@ -41,7 +41,7 @@ textClassifyPipe <- function(x,
                          device = "cpu",
                          tokenizer_parallelism = FALSE,
                          logging_level = "error",
-                         force_return_results = FALSE,
+                         force_return_results = TRUE,
                          return_all_scores = FALSE,
                          function_to_apply = NULL,
                          set_seed = 202208) {

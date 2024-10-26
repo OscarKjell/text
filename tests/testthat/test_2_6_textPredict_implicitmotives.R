@@ -87,6 +87,18 @@ test_that("textPredict Implicit motives", {
     story_id = 1:62
   ))
 
+
+  # help(textClassify)
+  implicit_motive <- text::textClassify(
+    model_info = "theharmonylab/implicit-motives-power-roberta-large",
+    texts = Language_based_assessment_data_8[1:2,1],
+    model_type = "finetuned"
+  )
+  implicit_motive
+  testthat::expect_equal(implicit_motive$label_satisfactiontexts[[1]], "LABEL_0")
+  testthat::expect_equal(implicit_motive$score_satisfactiontexts[[1]], 0.9818341, tolerance = 0.0001)
+
+
   # Create datasets for testing merging feature
   # Participant level data for testing data merge
   PSE_stories_participant_level <- PSE_stories %>%

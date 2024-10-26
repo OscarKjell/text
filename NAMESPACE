@@ -2,8 +2,10 @@
 
 export(find_textrpp)
 export(find_textrpp_env)
+export(textAssess)
 export(textCentrality)
 export(textCentralityPlot)
+export(textClassify)
 export(textClassifyPipe)
 export(textDescriptives)
 export(textDimName)
