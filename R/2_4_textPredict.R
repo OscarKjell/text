@@ -450,7 +450,8 @@ textPredictR <- function(model_info = NULL,
     lower_case_model <- as.character(tolower(model_name))
 
     if (is.null(participant_id) & is.null(story_id)){
-      cat(colourise("Note: participant_id and story_id were not provided so treating row_id as participnat_id", "purple"))
+      cat(colourise("Note: The 'texts' were not at the sentence level and dataset_to_merge_predictions was provided but not participant_id and story_id. The function treated each row_id as participnat_id for merging assessments into dataset_to_merge_predictions",
+                    "purple"))
     }
     # Create participant id to enable creation of sentence level predictions (not sure why this is needed)
     if (is.null(participant_id)){

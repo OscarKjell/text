@@ -13,6 +13,7 @@ test_that("Assess tutorial", {
 # textrpp_install()
 # textrpp_initialize()
 
+  help(textAssess)
   # Example text to access
   text_to_assess = c(
     "I feel down and blue all the time.",
@@ -24,6 +25,10 @@ test_that("Assess tutorial", {
       "https://github.com/theharmonylab/open_models/raw/main/response_format_2024/depressiontext_robertaL23_phq9_Gu2024.rds",
     texts = text_to_assess,
     dim_name = FALSE)
+  depression_scores
+
+  testthat::expect_that(depression_scores, testthat::is_a("tbl"))
+  testthat::expect_equal(depression_scores[[1]][[1]], 17.16903, tolerance = 0.0001)
 
   # Assess the harmony in life on the same text (using the previously made embeddings)
   harmony_in_life_scores <- textAssess(
@@ -31,13 +36,18 @@ test_that("Assess tutorial", {
     texts = text_to_assess,
     dim_name = FALSE)
 
+  testthat::expect_that(harmony_in_life_scores, testthat::is_a("tbl"))
+  testthat::expect_equal(harmony_in_life_scores[[1]][[1]], 12.35453, tolerance = 0.0001)
+
   # Assigness implicit motives labels using fine-tuned models
   implicit_motive <- textClassify(
     model_info = "theharmonylab/implicit-motives-power-roberta-large",
     model_type = "finetuned",
     texts = text_to_assess)
 
-
+  testthat::expect_that(implicit_motive, testthat::is_a("tbl"))
+  testthat::expect_equal(implicit_motive[[1]][[1]], "LABEL_0", tolerance = 0.0001)
+  testthat::expect_equal(implicit_motive[[2]][1], 0.9676572, tolerance = 0.0001)
 
 })
 

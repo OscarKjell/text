@@ -113,6 +113,7 @@ reference:
   contents:
     - textDescriptives
     - textTokenize
+    - textFindNonASCII
 - title: Example Data
   contents:
     - Language_based_assessment_data_8

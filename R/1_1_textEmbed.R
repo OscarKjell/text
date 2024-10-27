@@ -33,6 +33,78 @@ select_character_v_utf8 <- function(x) {
 }
 
 
+#' # Function to detect non-ASCII characters in a tibble with multiple columns
+#' @param data_tibble A character variable or a tibble including  character variables.
+#' @return a tibble containing variable names, row numbers and text including non-acii.
+#' @importFrom tibble tibble
+#' @export
+textFindNonASCII <- function(data_tibble) {
+
+  # Initialize an empty list to store results
+  results_list <- list()
+
+  # Iterate over each column in the tibble
+  for (col_name in colnames(data_tibble)) {
+
+    # Extract the actual vector from the tibble column, ensuring it's treated as a character vector
+    data_column <- as.character(data_tibble[[col_name]])
+
+    # Use sapply to identify any characters outside the ASCII range
+    matches <- base::sapply(seq_along(data_column), function(i) {
+      text <- data_column[i]
+      # Check if the element is a valid string, then convert to a character and check
+      if (length(text) == 1 && !base::is.na(text) && !base::is.null(text)) {
+        any(base::charToRaw(base::as.character(text)) > base::as.raw(0x7F))
+      } else {
+        FALSE
+      }
+    })
+
+    # Get the original row numbers
+    row_indices <- base::which(matches)
+
+    # Extract the text entries that have non-ASCII characters
+    matching_texts <- data_column[row_indices]
+
+    # If there are any matches, create a tibble and add to the results list
+    if (length(row_indices) > 0) {
+      results_list[[col_name]] <- tibble::tibble(
+        column_name = col_name,
+        row_number = base::as.integer(row_indices),
+        text = base::as.character(matching_texts)
+      )
+    }
+  }
+
+  # Combine all results into a single tibble
+  final_result <- dplyr::bind_rows(results_list)
+
+  return(final_result)
+}
+
+#' # Function to clean non-ASCII characters from a single text entry
+#' @param data_tibble A character variable.
+#' @return a tibble with removed ascii characters
+#' @noRd
+clean_text <- function(text) {
+  iconv(text, from = "UTF-8", to = "UTF-8", sub = "")
+}
+
+#' Function to clean all text entries in a tibble
+#' @param data_tibble A tibble with character variables.
+#' @return a tibble with removed ascii characters
+#' @importFrom dplyr mutate across everything
+#' @importFrom purrr map_chr
+#' @noRd
+clean_tibble <- function(data_tibble) {
+  # Apply `clean_text` to each element in the tibble
+  cleaned_tibble <- data_tibble %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ purrr::map_chr(., clean_text)))
+
+  return(cleaned_tibble)
+}
+
+
 #' Function to normalize the vector to one; to a unit vector.
 #'
 #' @param x a word embedding
@@ -979,6 +1051,7 @@ generate_placement_vector <- function(raw_layers,
 #'  is preserved). (default = NULL).
 #' @param keep_token_embeddings (boolean) Whether to also keep token embeddings when using texts or word
 #' types aggregation.
+#' @param remove_non_ascii (bolean) TRUE warns and removes non-ascii (using textFindNonASCII()).
 #' @param tokens_select Option to select word embeddings linked to specific tokens
 #' such as [CLS] and [SEP] for the context embeddings.
 #' @param tokens_deselect Option to deselect embeddings linked to specific tokens
@@ -1042,6 +1115,7 @@ textEmbed <- function(texts,
                       aggregation_from_tokens_to_texts = "mean",
                       aggregation_from_tokens_to_word_types = NULL,
                       keep_token_embeddings = TRUE,
+                      remove_non_ascii = TRUE,
                       tokens_select = NULL,
                       tokens_deselect = NULL,
                       decontextualize = FALSE,
@@ -1091,8 +1165,37 @@ textEmbed <- function(texts,
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(texts)
-  outcome_list <- list()
 
+  # Check fro ASCII characters
+  problematic_texts <- textFindNonASCII(data_character_variables)
+
+  # Clean
+  # Give information about ACII characters
+  if(nrow(problematic_texts)>0){
+
+    # Combine column_name and row_number for each row
+    combined_texts <- apply(problematic_texts[c("column_name", "row_number")], 1, function(x) {
+      paste(x, collapse = " ")
+    })
+
+    # Merge all combined texts into a single string, separated by ";"
+    final_string <- paste(combined_texts, collapse = "; ")
+
+    warning_ascii <- paste("Warning: non-ascii characters were found in:",
+                final_string, "Many large laguage models cannot handle them. \n")
+
+    cat(colourise(warning_ascii, "brown"))
+    cat(colourise("To examine thise text cases use the textNonASCII() function. \n", "green"))
+
+    # remove ASCII characters
+    if(remove_non_ascii){
+      data_character_variables <- clean_tibble(data_character_variables)
+      cat(colourise("Non-ASCII characters has been removed. \n", "green"))
+    }
+
+  }
+
+  outcome_list <- list()
   for (text_i in 1:ncol(data_character_variables)) {
     texts <- data_character_variables[text_i]
     # Get hidden states/layers for output 1 and/or output 2 or decontextualsied;

@@ -13,6 +13,7 @@ textEmbed(
   aggregation_from_tokens_to_texts = "mean",
   aggregation_from_tokens_to_word_types = NULL,
   keep_token_embeddings = TRUE,
+  remove_non_ascii = TRUE,
   tokens_select = NULL,
   tokens_deselect = NULL,
   decontextualize = FALSE,
@@ -63,6 +64,8 @@ is preserved). (default = NULL).}
 
 \item{keep_token_embeddings}{(boolean) Whether to also keep token embeddings when using texts or word
 types aggregation.}
+
+\item{remove_non_ascii}{(bolean) TRUE warns and removes non-ascii (using textFindNonASCII()).}
 
 \item{tokens_select}{Option to select word embeddings linked to specific tokens
 such as [CLS] and [SEP] for the context embeddings.}

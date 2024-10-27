@@ -7,10 +7,12 @@
 - fixing bugs related to text prediction functions
 - adding method_typ = "texttrained" and "finetuned"
 - streamlining code for implicit motives output
+- adding `textFindNonASCII()` function and feature in `textEmbed()` to 
+warn and clean non-ASCII characters
 
 # text 1.2.7
-- textClassify() is now called textClassifyPipe() 
-- textPredict() is now called textPredictR()
+- `textClassify()` is now called `textClassifyPipe() `
+- `textPredict()` is now called `textPredictR()`
 - Making `textAssess()`, `textPredict()` and `textClassify()` works the same, now taking the parameter `method` with the string "text" to using textPredict(), and 
 "huggingface" to using textClassifyPipe(). 
 
