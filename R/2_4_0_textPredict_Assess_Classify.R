@@ -1,3 +1,39 @@
+
+### Common parameter
+##model_info = NULL
+##texts = NULL
+##model_type = "texttrained"
+### text-trained model specific paeters
+##word_embeddings = NULL
+##x_append = NULL
+##append_first = TRUE
+##type = NULL
+##dim_names = TRUE
+##save_model = TRUE
+##threshold = NULL
+##show_texts = FALSE
+##device = "cpu"
+##participant_id = NULL
+##save_embeddings = TRUE
+##save_dir = "wd"
+##save_name = "textPredict"
+##story_id = NULL
+##dataset_to_merge_predictions = NULL
+##previous_sentence = FALSE
+### fine-tuned model specific parameters
+##tokenizer_parallelism = FALSE
+##logging_level = "error"
+##force_return_results = TRUE
+##return_all_scores = FALSE
+##function_to_apply = NULL
+##set_seed = 202208
+##
+##
+##texts = PSE_stories_participant_level$stories
+##model_info = "implicit_power_roberta_large_L23_v1"
+##participant_id = PSE_stories_participant_level$Participant_ID
+##dataset_to_merge_predictions = PSE_stories_participant_level
+
 # Wraper functions for textPredictR and textClassifyPipe
 
 #' textPredict, textAssess and textClassify
@@ -167,47 +203,81 @@ textPredict <- function(
     stop("Error: method must be either 'texttrained' or 'finetuned'.")
   }
 
-  if(model_type == "texttrained"){
+  # check whether models name exist in a predefined list (and require special treament)
+  registered_model <- registered_model_name(model_info)
 
-    print("You are using a 'text-trained model' (i.e., model_type = 'texttrained').")
+  if(registered_model == "default"){
 
-    results <-  textPredictR(
-     model_info = model_info,
-     word_embeddings = word_embeddings,
-     texts = texts,
-     x_append = x_append,
-     append_first = append_first,
-     type = type,
-     dim_names = dim_names,
-     save_model = save_model,
-     threshold = threshold,
-     show_texts = show_texts,
-     device = device,
-     participant_id = participant_id,
-     save_embeddings = save_embeddings,
-     save_dir = save_dir,
-     save_name = save_name,
-     story_id = story_id,
-     dataset_to_merge_predictions = dataset_to_merge_predictions,
-     previous_sentence = previous_sentence,
-     ...)
+    if(model_type == "texttrained"){
+
+      print("You are using a 'text-trained model' (i.e., model_type = 'texttrained').")
+
+      results <-  textPredictTextTrained(
+        model_info = model_info,
+        word_embeddings = word_embeddings,
+        texts = texts,
+        x_append = x_append,
+        append_first = append_first,
+        type = type,
+        dim_names = dim_names,
+        save_model = save_model,
+        threshold = threshold,
+        show_texts = show_texts,
+        device = device,
+        participant_id = participant_id,
+        save_embeddings = save_embeddings,
+        save_dir = save_dir,
+        save_name = save_name,
+        story_id = story_id,
+        dataset_to_merge_predictions = dataset_to_merge_predictions,
+        previous_sentence = previous_sentence,
+        ...)
+
+    }
+
+    if(model_type == "finetuned"){
+      print("You are using a fine-tuned model (i.e., model_type = 'finetuned').")
+
+      results <-  textClassifyPipe(
+        x = texts,
+        model = model_info,
+        device = device,
+        tokenizer_parallelism = tokenizer_parallelism,
+        logging_level = logging_level,
+        force_return_results = force_return_results,
+        return_all_scores = return_all_scores,
+        function_to_apply = function_to_apply,
+        set_seed = set_seed)
+
+    }
+
+
   }
 
-  if(model_type == "finetuned"){
-    print("You are using a fine-tuned model (i.e., model_type = 'finetuned').")
 
-    results <-  textClassifyPipe(
-      x = texts,
-      model = model_info,
-      device = device,
-      tokenizer_parallelism = tokenizer_parallelism,
-      logging_level = logging_level,
-      force_return_results = force_return_results,
-      return_all_scores = return_all_scores,
-      function_to_apply = function_to_apply,
-      set_seed = set_seed)
+  if(registered_model=="implicit_motives"){
 
+      results <- textPredictImplicitMotives(
+        model_info = model_info,
+        word_embeddings = word_embeddings,
+        texts = texts,
+        x_append = x_append,
+       # append_first = TRUE,
+        threshold = threshold,
+        dim_names = dim_names,
+        save_model = save_model,
+        save_embeddings = save_embeddings,
+        save_dir = save_dir,
+        save_name = save_name,
+        show_texts = show_texts,
+        participant_id = participant_id,
+        story_id = story_id,
+        dataset_to_merge_predictions = dataset_to_merge_predictions,
+        previous_sentence = previous_sentence,
+        device = device,
+      )
   }
+
 
   return(results)
 }

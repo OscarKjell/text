@@ -1,3 +1,4 @@
+
 #' Predict label and probability of a text using a pretrained classifier language model. (experimental)
 #' @param x (string)  A character variable or a tibble/dataframe with at least one character variable.
 #' @param model (string)  Specification of a pre-trained classifier language model.
@@ -15,7 +16,6 @@
 #'  and "negative").
 #' @param return_all_scores (boolean)  Whether to return all prediction scores or just the one of the predicted class.
 #' @param function_to_apply (string)  The function to apply to the model outputs to retrieve the scores.
-#' @param set_seed (Integer) Set seed.
 #' There are four different values:
 #' "default": if the model has a single label, will apply the sigmoid function on the output.
 #' If the model has several labels,
@@ -23,6 +23,16 @@
 #' "sigmoid": Applies the sigmoid function on the output.
 #' "softmax": Applies the softmax function on the output.
 #' "none": Does not apply any function on the output.
+#' @param participant_id (vector; only works for implicit motives models) Vector of participant-ids. Specify this for getting person level scores
+#' (i.e., summed sentence probabilities to the person level corrected for word count). (default = NULL)
+#' @param story_id (vector; only works for implicit motives models) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
+#' probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
+#' returns a list including both story level and person level prediction corrected for word count. (default = NULL)
+#' @param dataset_to_merge_predictions (tibble; only works for implicit motives models) Insert your data here to integrate predictions to your dataset,
+#'  (default = NULL).
+#' @param previous_sentence (Boolean; only works for implicit motives models) If set to TRUE, word-embeddings will be averaged over the current and previous
+#' sentence per story-id. For this, both participant-id and story-id must be specified.
+#' @param set_seed (Integer) Set seed.
 #' @return A tibble with predicted labels and scores for each text variable.
 #' The comment of the object show the model-name and computation time.
 #' @examples
@@ -36,15 +46,17 @@
 #' @importFrom reticulate source_python
 #' @importFrom dplyr bind_cols bind_rows
 #' @export
-textClassifyPipe <- function(x,
-                         model = "distilbert-base-uncased-finetuned-sst-2-english",
-                         device = "cpu",
-                         tokenizer_parallelism = FALSE,
-                         logging_level = "error",
-                         force_return_results = TRUE,
-                         return_all_scores = FALSE,
-                         function_to_apply = NULL,
-                         set_seed = 202208) {
+textClassifyPipe <- function(
+    x,
+    model = "distilbert-base-uncased-finetuned-sst-2-english",
+    device = "cpu",
+    tokenizer_parallelism = FALSE,
+    logging_level = "error",
+    force_return_results = TRUE,
+    return_all_scores = FALSE,
+    function_to_apply = NULL,
+    set_seed = 202208) {
+
   T1_textSentiment <- Sys.time()
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
@@ -56,6 +68,9 @@ textClassifyPipe <- function(x,
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(x)
+
+  # check whether models name exist in a predefined list
+  registered_true_false <- registered_model_name(model)
 
   ALL_sentiments <- list()
   # Loop over all character variables; i_variables = 1
