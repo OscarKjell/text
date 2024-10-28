@@ -2,10 +2,11 @@ library(testthat)
 library(text)
 library(tibble)
 library(dplyr)
+library(tidyr)
 #help(textrpp_initialize)
-#textrpp_initialize(refresh_settings = T,
-#                   save_profile = T)
+#textrpp_initialize(refresh_settings = T, save_profile = T)
 ##.rs.restartR()
+
 context("Prediction")
 
 test_that("textPredict Implicit motives", {
@@ -87,7 +88,7 @@ test_that("textPredict Implicit motives", {
     story_id = 1:62
   ))
 
-  # Create datasets for testing merging feature
+  # Create datasets for testing merging feature help(reframe)
   # Participant level data for testing data merge
   PSE_stories_participant_level <- PSE_stories %>%
     group_by(Participant_ID) %>%
@@ -100,10 +101,10 @@ test_that("textPredict Implicit motives", {
   PSE_stories_sentence_level <- PSE_stories %>%
     filter()
 
-  #split to sentences
+  #split to sentences help(unnest)
   PSE_stories_sentence_level <- PSE_stories %>%
     mutate(Story_Text = strsplit(Story_Text, "[\\.\\!\\?]\\s+")) %>%
-    unnest(Story_Text)
+    tidyr::unnest(Story_Text)
 
 
   ###### Testing fine-tuned models #################
@@ -115,10 +116,10 @@ test_that("textPredict Implicit motives", {
     model_type = "finetuned"
   )
 
-  testthat::expect_equal(implicit_motive$sentence_predictions$power_class[[1]], "LABEL_0")
+  testthat::expect_equal(implicit_motive$sentence_predictions$power_class[[1]], 0)
   testthat::expect_equal(implicit_motive$sentence_predictions$.pred_0[[1]], .9968877, tolerance = 0.0001)
   testthat::expect_equal(implicit_motive$sentence_predictions$.pred_1[[2]], .003793716, tolerance = 0.0001)
-  testthat::expect_equal(implicit_motive$person_predictions$person_prob[[1]], -0.7052091, tolerance = 0.0001)
+  testthat::expect_equal(implicit_motive$person_predictions$person_prob[[1]], -0.4909718, tolerance = 0.0001)
   testthat::expect_equal(implicit_motive$person_predictions$person_prob_no_wc_correction[[2]], 0.1579052, tolerance = 0.0001)
   #testthat::expect_equal(implicit_motive$label_satisfactiontexts[[1]], "LABEL_0")
   #testthat::expect_equal(implicit_motive$score_satisfactiontexts[[1]], 0.9818341, tolerance = 0.0001)
@@ -128,7 +129,7 @@ test_that("textPredict Implicit motives", {
   #
   predictions_participant_1 <- text::textPredict(
     texts = PSE_stories_participant_level$stories,
-    model_info = "implicit_power_roberta_large_L23_v1",
+    model_info = "implicit_power_roberta_large_l23_v1",
     participant_id = PSE_stories_participant_level$Participant_ID,
     dataset_to_merge_predictions = PSE_stories_participant_level
   )

@@ -250,17 +250,16 @@ textPredict <- function(
         set_seed = set_seed)
 
     }
-
-
   }
 
 
   if(registered_model=="implicit_motives"){
 
-      results <- textPredictImplicitMotives(
+    results <- textPredictImplicitMotives(
         model_info = model_info,
         word_embeddings = word_embeddings,
         texts = texts,
+        model_type = model_type,
         x_append = x_append,
        # append_first = TRUE,
         threshold = threshold,

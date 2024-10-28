@@ -389,7 +389,7 @@ textReturnModelAndEmbedding <- function(
 #' @importFrom dplyr bind_cols select full_join arrange everything
 #' @importFrom magrittr %>%
 #' @export
-textPredictR <- function(
+textPredictTextTrained <- function(
     model_info = NULL,
     word_embeddings = NULL,
     texts = NULL,
@@ -415,69 +415,6 @@ textPredictR <- function(
     stop('Both arguments: "texts" and "word_embeddings" cannot be defined simultaneously.
          Choose one or the other.')
   }
-
-#  # check whether models name exist in a predefined list
-#  registered_true_false <- registered_model_name(model_info)
-#
-#  # handle predefined models (see implicit motives)
-#  if(registered_true_false){
-#    outcome <- textPredictImplicitMotives(
-#      model_info = model_info,
-#      word_embeddings = word_embeddings,
-#      texts = texts,
-#      x_append = x_append,
-#      append_first = append_first,
-#      threshold = threshold,
-#      dim_names = dim_names,
-#      save_model = save_model,
-#      save_embeddings = save_embeddings,
-#      save_dir = save_dir,
-#      save_name = save_name,
-#      show_texts = show_texts,
-#      participant_id = participant_id,
-#      story_id = story_id,
-#      dataset_to_merge_predictions = dataset_to_merge_predictions,
-#      previous_sentence = previous_sentence,
-#      device = device,
-#    )
-#  }
-#    #### Special treatment for implicit motives - see private functions ####
-#    model_name <- model_info
-#
-#    # lower_case_model <- as.character(tolower(model_name))
-#
-#    if (is.null(participant_id) & is.null(story_id)){
-#      cat(colourise("Note: The 'texts' were not at the sentence level and dataset_to_merge_predictions was provided but not participant_id and story_id. The function treated each row_id as participnat_id for merging assessments into dataset_to_merge_predictions",
-#                    "purple"))
-#    }
-#    # Create participant id to enable creation of sentence level predictions (not sure why this is needed)
-#    if (is.null(participant_id)){
-#      use_row_id_name <- TRUE
-#      participant_id <- seq_len(length(texts))
-#      cat(colourise("Note: participant_ID was not provided so treating rows as row_id", "purple"))
-#    }
-#
-#
-#    # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding
-#    get_model_info_results <- get_model_info(model_info = model_info,
-#                                     participant_id = participant_id,
-#                                     show_texts = show_texts,
-#                                     #type = type,
-#                                     texts = texts,
-#                                     story_id = story_id,
-#                                     lower_case_model = lower_case_model)
-#
-#
-#    model_info <- get_model_info_results$model_info
-#
-#   # type <- get_model_info_results$type
-#    texts <- get_model_info_results$texts
-#    participant_id <- get_model_info_results$participant_id
-#    story_id = get_model_info_results$story_id
-#
-#  }
-
-  #### End Special treatment for implicit motives ####
 
   #### Automatically extract embeddings that are compatible with the model ####
   if (!is.null(texts)) {
@@ -664,25 +601,6 @@ textPredictR <- function(
       dplyr::mutate(texts = texts)
   }
 
-#  #### Implicit motives section, see private_functions #####
-#  if(registered_true_false){
-#    # Wrapper function that prepares data for automatic implicit motive coding and returns
-#    # a list with predictions, class residuals and probability residuals.
-#    predicted_scores2 <- implicit_motives_results(
-#      model_reference = model_info,
-#      participant_id = participant_id,
-#      story_id = story_id,
-#      predicted_scores2 = predicted_scores2,
-#      texts = texts,
-#      dataset = dataset_to_merge_predictions,
-#      lower_case_model = lower_case_model
-#    )
-#
-#    # change participant_id to row_id
-#    if(use_row_id_name){
-#      colnames(predicted_scores2[[2]])[colnames(predicted_scores2[[2]]) == "participant_id"] <- "row_id"
-#    }
-#  }
 
   # display message to user
   cat(colourise("Predictions are ready!", fg = "green"))

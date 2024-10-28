@@ -453,6 +453,19 @@ get_model_info <- function(model_info,
     } else if (lower_case_model == "implicit_ger_be_l11_to_affiliation") {
       model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_affiliation_open.rds"
     }
+
+
+    if(grepl("power", lower_case_model)){
+      implicit_type <- "power"
+    }
+    if(grepl("affiliation", lower_case_model)){
+      implicit_type <- "affiliation"
+    }
+    if(grepl("achievement", lower_case_model)){
+      implicit_type <- "achievement"
+    }
+
+
     # specific configuration for implicit motive coding
     if (!is.null(participant_id) || !is.null(story_id)) {
       show_texts <- TRUE
@@ -496,28 +509,33 @@ get_model_info <- function(model_info,
               type = type,
               participant_id = participant_id,
               texts = texts,
-              story_id = story_id))
+              story_id = story_id,
+              implicit_type = implicit_type))
 }
 
 
 
-#model_info = NULL
-#word_embeddings = NULL
-#texts = NULL
-#x_append = NULL
-#type = NULL
-#dim_names = TRUE
-#save_model = TRUE
-#threshold = NULL
-#show_texts = FALSE
-#device = "cpu"
-#participant_id = NULL
-#save_embeddings = TRUE
-#save_dir = "wd"
-#save_name = "textPredict"
-#story_id = NULL
-#dataset_to_merge_predictions = NULL
-#previous_sentence = FALSE
+##model_info = NULL
+##word_embeddings = NULL
+##texts = NULL
+##x_append = NULL
+##type = NULL
+##dim_names = TRUE
+##save_model = TRUE
+##threshold = NULL
+##show_texts = FALSE
+##device = "cpu"
+##participant_id = NULL
+##save_embeddings = TRUE
+##save_dir = "wd"
+##save_name = "textPredict"
+##story_id = NULL
+##dataset_to_merge_predictions = NULL
+##previous_sentence = FALSE
+##
+##model_info = "theharmonylab/implicit-motives-power-roberta-large"
+##texts = PSE_stories_participant_level$stories
+##model_type = "finetuned"
 ##
 #texts = PSE_stories_participant_level$stories
 #model_info = "implicit_power_roberta_large_L23_v1"
@@ -643,6 +661,7 @@ textPredictImplicitMotives <- function(
     model_info = NULL,
     word_embeddings = NULL,
     texts = NULL,
+    model_type = "texttrained",
     x_append = NULL,
     append_first = TRUE,
     threshold = NULL,
@@ -675,7 +694,7 @@ textPredictImplicitMotives <- function(
   if (is.null(participant_id)){
       use_row_id_name <- TRUE
       participant_id <- seq_len(length(texts))
-      cat(colourise("Note: participant_ID was not provided so treating rows as row_id", "purple"))
+      cat(colourise("Note: participant_ID was not provided so treating rows as row_id. \n", "purple"))
   }
 
 
@@ -733,9 +752,23 @@ textPredictImplicitMotives <- function(
       function_to_apply = NULL,
       set_seed = 202208
     )
+    # predicted_scores2 <- predicted_scores3
+
     # Label, .pred_0, pred_1
-    colnames(predicted_scores2) <- c("Label", ".pred_0")
-    predicted_scores2$.pred_1 <- 1-predicted_scores2$.pred_0
+    # colnames(predicted_scores2) <- c("Label", ".pred_0")
+    # predicted_scores2$.pred_1 <- 1-predicted_scores2$.pred_0
+
+    class_name <- get_model_info_results$implicit_type
+    classifications_rev <- ifelse(predicted_scores2$label_x == "LABEL_0",
+                                  1 - predicted_scores2$score_x,
+                                  predicted_scores2$score_x)
+
+    predicted_scores2 <- tibble(
+      !!class_name:=ifelse(classifications_rev > 0.5 , 1, 0),
+      .pred_0 = 1-classifications_rev,
+      .pred_1 = classifications_rev#,
+      #texts = PSE_stories_sentence_level$Story_Text[c(1, 79)]
+      )
   }
 
   # Include text in predictions

@@ -92,7 +92,7 @@ test_that("Testing textEmbed as well as train", {
   )
 
   # Predict
-  hils_predicted_scores2 <- text::textPredictR(
+  hils_predicted_scores2 <- text::textPredict(
     model_info = train_x_append,
     x_append = Language_based_assessment_data_8[1:20, 6:7],
     word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"],
