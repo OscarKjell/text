@@ -113,15 +113,20 @@ test_that("textPredict Implicit motives", {
   implicit_motive <- text::textClassify(
     model_info = "theharmonylab/implicit-motives-power-roberta-large",
     texts = PSE_stories_participant_level$stories,
-    model_type = "finetuned"
+    model_type = "finetuned",
+    show_texts = T
   )
 
-  testthat::expect_equal(implicit_motive$sentence_predictions$power_class[[1]], 0)
-  testthat::expect_equal(implicit_motive$sentence_predictions$.pred_0[[1]], .9968877, tolerance = 0.0001)
-  testthat::expect_equal(implicit_motive$sentence_predictions$.pred_1[[2]], .003793716, tolerance = 0.0001)
-  testthat::expect_equal(implicit_motive$person_predictions$person_prob[[1]], -0.4909718, tolerance = 0.0001)
-  testthat::expect_equal(implicit_motive$person_predictions$person_prob_no_wc_correction[[2]], 0.1579052, tolerance = 0.0001)
-  #testthat::expect_equal(implicit_motive$label_satisfactiontexts[[1]], "LABEL_0")
+  testthat::expect_equal(implicit_motive[[1]][[1]], 0)
+  testthat::expect_equal(implicit_motive$.pred_0[[1]], 0.9975997, tolerance = 0.0001)
+  testthat::expect_equal(implicit_motive$.pred_1[[2]], 0.006339252, tolerance = 0.0001)
+
+#  testthat::expect_equal(implicit_motive$sentence_predictions$power_class[[1]], 0)
+#  testthat::expect_equal(implicit_motive$sentence_predictions$.pred_0[[1]], .9968877, tolerance = 0.0001)
+#  testthat::expect_equal(implicit_motive$sentence_predictions$.pred_1[[2]], .003793716, tolerance = 0.0001)
+#  testthat::expect_equal(implicit_motive$person_predictions$person_prob[[1]], -0.4909718, tolerance = 0.0001)
+#  testthat::expect_equal(implicit_motive$person_predictions$person_prob_no_wc_correction[[2]], 0.1579052, tolerance = 0.0001)
+#  #testthat::expect_equal(implicit_motive$label_satisfactiontexts[[1]], "LABEL_0")
   #testthat::expect_equal(implicit_motive$score_satisfactiontexts[[1]], 0.9818341, tolerance = 0.0001)
 
 
@@ -151,8 +156,8 @@ test_that("textPredict Implicit motives", {
     # participant_id = PSE_stories_participant_level$Participant_ID,
     # dataset_to_merge_predictions = PSE_stories_participant_level
   )
-  testthat::expect_that(predictions_participant_2, testthat::is_a("list"))
-  testthat::expect_equal(length(predictions_participant_2), 2)
+  testthat::expect_that(predictions_participant_2, testthat::is_a("tbl_df"))
+  testthat::expect_equal(length(predictions_participant_2), 4)
 
   ### Merging Story level
   #as expected

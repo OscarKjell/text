@@ -23,15 +23,6 @@
 #' "sigmoid": Applies the sigmoid function on the output.
 #' "softmax": Applies the softmax function on the output.
 #' "none": Does not apply any function on the output.
-#' @param participant_id (vector; only works for implicit motives models) Vector of participant-ids. Specify this for getting person level scores
-#' (i.e., summed sentence probabilities to the person level corrected for word count). (default = NULL)
-#' @param story_id (vector; only works for implicit motives models) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
-#' probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
-#' returns a list including both story level and person level prediction corrected for word count. (default = NULL)
-#' @param dataset_to_merge_predictions (tibble; only works for implicit motives models) Insert your data here to integrate predictions to your dataset,
-#'  (default = NULL).
-#' @param previous_sentence (Boolean; only works for implicit motives models) If set to TRUE, word-embeddings will be averaged over the current and previous
-#' sentence per story-id. For this, both participant-id and story-id must be specified.
 #' @param set_seed (Integer) Set seed.
 #' @return A tibble with predicted labels and scores for each text variable.
 #' The comment of the object show the model-name and computation time.

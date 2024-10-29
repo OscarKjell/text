@@ -685,17 +685,24 @@ textPredictImplicitMotives <- function(
 
   lower_case_model <- as.character(tolower(model_name))
 
-  if (is.null(participant_id) & is.null(story_id)){
-      cat(colourise("Note: The 'texts' were not at the sentence level and dataset_to_merge_predictions was provided but not participant_id and story_id. The function treated each row_id as participnat_id for merging assessments into dataset_to_merge_predictions",
-                    "purple"))
+  if (is.null(participant_id) & is.null(story_id) & !is.null(dataset_to_merge_predictions)){
+      cat(colourise(paste("Note: The 'texts' were not at the sentence level, and while dataset_to_merge_predictions",
+      " was provided, participant_id and story_id were missing. ",
+      "The function treated each row_id as a participant_id when merging assessments into dataset_to_merge_predictions. \n", sep=""),
+       "purple"))
+
+    use_row_id_name <- TRUE
+    participant_id <- seq_len(length(texts))
+    cat(colourise("Note: participant_ID was not provided so treating rows as row_id. \n", "purple"))
+
   }
 
-  # Create participant id to enable creation of sentence level predictions (not sure why this is needed)
-  if (is.null(participant_id)){
-      use_row_id_name <- TRUE
-      participant_id <- seq_len(length(texts))
-      cat(colourise("Note: participant_ID was not provided so treating rows as row_id. \n", "purple"))
-  }
+#  # Create participant id to enable creation of sentence level predictions (not sure why this is needed)
+#  if (is.null(participant_id) & !is.null(dataset_to_merge_predictions)){
+#      use_row_id_name <- TRUE
+#      participant_id <- seq_len(length(texts))
+#      cat(colourise("Note: participant_ID was not provided so treating rows as row_id. \n", "purple"))
+#  }
 
 
   # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding

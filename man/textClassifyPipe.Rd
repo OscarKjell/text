@@ -49,19 +49,6 @@ the softmax function will be applied on the output.
 "none": Does not apply any function on the output.}
 
 \item{set_seed}{(Integer) Set seed.}
-
-\item{participant_id}{(vector; only works for implicit motives models) Vector of participant-ids. Specify this for getting person level scores
-(i.e., summed sentence probabilities to the person level corrected for word count). (default = NULL)}
-
-\item{story_id}{(vector; only works for implicit motives models) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
-probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
-returns a list including both story level and person level prediction corrected for word count. (default = NULL)}
-
-\item{dataset_to_merge_predictions}{(tibble; only works for implicit motives models) Insert your data here to integrate predictions to your dataset,
-(default = NULL).}
-
-\item{previous_sentence}{(Boolean; only works for implicit motives models) If set to TRUE, word-embeddings will be averaged over the current and previous
-sentence per story-id. For this, both participant-id and story-id must be specified.}
 }
 \value{
 A tibble with predicted labels and scores for each text variable.
