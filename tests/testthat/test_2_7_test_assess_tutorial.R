@@ -44,9 +44,9 @@ test_that("Assess tutorial", {
     model_type = "finetuned",
     texts = text_to_assess)
 
-  testthat::expect_that(implicit_motive, testthat::is_a("list"))
+  testthat::expect_that(implicit_motive, testthat::is_a("tbl_df"))
   testthat::expect_equal(implicit_motive[[1]][[1]][[1]], 0, tolerance = 0.0001)
-  testthat::expect_equal(implicit_motive$person_predictions$person_prob[[1]], 1.357409, tolerance = 0.0001)
+  testthat::expect_equal(implicit_motive$.pred_0[[1]], 0.9676571, tolerance = 0.0001)
 
 })
 
