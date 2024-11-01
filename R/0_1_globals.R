@@ -47,6 +47,9 @@ utils::globalVariables(c(
   # implicit motives
   "resid",
 
+  # textTokenizeAndCount and textDomainComapre
+  "n_assess", "n_train",
+
   # Similarity
   "dist",
 

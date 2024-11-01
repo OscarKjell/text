@@ -272,6 +272,9 @@ extract_comment <- function(comment,
   if (part == "layers") {
     layer_text <- sub(".*layers: ", "", comment)
     output <- sub(" ; word_type_embeddings:.*", "", layer_text)
+
+    # Convert to numeric vector
+    output <- as.numeric(unlist(strsplit(output, " ")))
   }
 
   # penalty_in_final_model
@@ -630,58 +633,60 @@ registered_model_name <- function(model_name_test){
 }
 
 
-# wanted_file <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
-#' Name to Path
-#' See if file exist in "inst/extdata/"
-#' if file does not exist download it.
-#' @param wanted_file (string) Name of or URL to file.
-#' @return string path to file.
-#' @importFrom utils download.file
-#' @noRd
-path_exist_download_files <- function(wanted_file) {
-  destfile <- list.files(
-    path = system.file("extdata/",
-      "", # file_name,
-      package = "text",
-      mustWork = TRUE
-    ),
-    pattern = ""
-  )
 
-  # Check if already downloaded; and if not, download
-  if (startsWith(wanted_file, "http:") ||
-      startsWith(wanted_file, "https:") ||
-      startsWith(wanted_file, "www.")) {
-    # Get file names to check if already downloaded
-    file_name <- basename(wanted_file)
-
-    # Download if not there
-    if (!file_name %in% destfile) {
-      utils::download.file(
-        url = wanted_file,
-        destfile = paste(system.file("extdata/",
-          "", # file_name,
-          # envir = NULL,
-          package = "text",
-          mustWork = TRUE
-        ), "/", file_name, sep = ""),
-        method = "auto"
-      )
-    }
-
-    path_to_file <- system.file("extdata/",
-      file_name,
-      # envir = NULL,
-      package = "text",
-      mustWork = TRUE
-    )
-  } else if (wanted_file %in% destfile) {
-    path_to_file <- system.file("extdata/",
-      wanted_file,
-      # envir = NULL,
-      package = "text",
-      mustWork = TRUE
-    )
-  }
-  return(path_to_file)
-}
+# This function also exist above!
+##wanted_file <- "https://raw.githubusercontent.com/adithya8/ContextualEmbeddingDR/master/models/fb20/scalar.csv"
+## Name to Path
+## See if file exist in "inst/extdata/"
+## if file does not exist download it.
+## @param wanted_file (string) Name of or URL to file.
+## @return string path to file.
+## @importFrom utils download.file
+## @noRd
+#path_exist_download_files <- function(wanted_file) {
+#  destfile <- list.files(
+#    path = system.file("extdata/",
+#      "", # file_name,
+#      package = "text",
+#      mustWork = TRUE
+#    ),
+#    pattern = ""
+#  )
+#
+#  # Check if already downloaded; and if not, download
+#  if (startsWith(wanted_file, "http:") ||
+#      startsWith(wanted_file, "https:") ||
+#      startsWith(wanted_file, "www.")) {
+#    # Get file names to check if already downloaded
+#    file_name <- basename(wanted_file)
+#
+#    # Download if not there
+#    if (!file_name %in% destfile) {
+#      utils::download.file(
+#        url = wanted_file,
+#        destfile = paste(system.file("extdata/",
+#          "", # file_name,
+#          # envir = NULL,
+#          package = "text",
+#          mustWork = TRUE
+#        ), "/", file_name, sep = ""),
+#        method = "auto"
+#      )
+#    }
+#
+#    path_to_file <- system.file("extdata/",
+#      file_name,
+#      # envir = NULL,
+#      package = "text",
+#      mustWork = TRUE
+#    )
+#  } else if (wanted_file %in% destfile) {
+#    path_to_file <- system.file("extdata/",
+#      wanted_file,
+#      # envir = NULL,
+#      package = "text",
+#      mustWork = TRUE
+#    )
+#  }
+#  return(path_to_file)
+#}

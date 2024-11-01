@@ -634,6 +634,13 @@ summarize_tune_results <- function(object,
 #' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
 #'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
 #'  the yardstick package).
+#' @param language_distribution (Character column) If you provide the raw language data used for making the embeddings,
+#' the language distribution (i.e., a word and frequency table) will be saved to the model object. This enables
+#' calculating similarity scores when the model is being applied to new language domains.
+#' Note that this saves the individual words, which, if you are analyzing sensitive data, can be problematic from a
+#' privacy perspective; to some extent this can be mitigated by increasing the number of words needed to be saved.
+#' @param language_distribution_min_words (numeric) Minimum number a words need to occur in the data set to be saved to the
+#' language distribution.
 #' @param preprocess_step_center (boolean) Normalizes dimensions to have a mean of zero; default is set to TRUE.
 #' For more info see (step_center in recipes).
 #' @param preprocess_step_scale (boolean) Normalize dimensions to have a standard deviation of one;
@@ -724,7 +731,8 @@ textTrainRegression <- function(x,
                                 inside_breaks = 4,
                                 model = "regression", # model = "multinomial"
                                 eval_measure = "default",
-                                language_distribution = FALSE,
+                                language_distribution = NULL,
+                                language_distribution_min_words = 3,
                                 preprocess_step_center = TRUE,
                                 preprocess_step_scale = TRUE,
                                 preprocess_PCA = NA,
@@ -1336,6 +1344,18 @@ textTrainRegression <- function(x,
   ###### Saving and arranging output ######
   ##########################################
 
+  if(!is.null(language_distribution)){
+
+    language_distribution_res <- textTokenizeAndCount(
+      data = language_distribution,
+      n_remove_threshold = language_distribution_min_words)
+  } else {
+    language_distribution_res = paste0("No language distribution have been saved; ",
+    "if you want to attach a language distribution use textTokenizeAndCount(). ",
+    "Add the distribution under the language_distribution name so that it can be found by the text ",
+    "prediction functions.")
+  }
+
   if (model == "regression") {
     if (save_output == "all") {
       final_results <- list(
@@ -1462,6 +1482,11 @@ textTrainRegression <- function(x,
   remove(variable_name_index_pca)
   remove(preprocessing_recipe_prep)
   remove(nr_predictors)
+  remove(language_distribution)
 
-  final_results
+  final_results <- c(
+    list(language_distribution = language_distribution_res),
+    final_results)
+
+  return(final_results)
 }

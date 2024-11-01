@@ -1,4 +1,4 @@
-# Wraper functions for textPredictR and textClassifyPipe
+# Wrapper functions for textPredictR and textClassifyPipe
 
 #' textPredict, textAssess and textClassify
 #'

@@ -111,6 +111,8 @@ reference:
   contents:
     - textDescriptives
     - textTokenize
+    - textTokenizeAndCount
+    - textDomainCompare
     - textFindNonASCII
     - textCleanNonASCII
 - title: Example Data
