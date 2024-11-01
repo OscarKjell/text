@@ -33,7 +33,9 @@ select_character_v_utf8 <- function(x) {
 }
 
 
-#' # Function to detect non-ASCII characters in a tibble with multiple columns
+#' Detect non-ASCII characters
+#'
+#' This function to detect non-ASCII characters in a tibble with multiple columns.
 #' @param data_tibble A character variable or a tibble including  character variables.
 #' @return a tibble containing variable names, row numbers and text including non-acii.
 #' @importFrom tibble tibble
@@ -90,13 +92,15 @@ clean_text <- function(text) {
   iconv(text, from = "UTF-8", to = "UTF-8", sub = "")
 }
 
-#' Function to clean all text entries in a tibble
+#' Clean non-ASCII characters
+#'
+#' textCleanNonASCII() cleans all text entries with a non-ASCII character in a tibble.
 #' @param data_tibble A tibble with character variables.
 #' @return a tibble with removed ascii characters
 #' @importFrom dplyr mutate across everything
 #' @importFrom purrr map_chr
-#' @noRd
-clean_tibble <- function(data_tibble) {
+#' @export
+textCleanNonASCII <- function(data_tibble) {
   # Apply `clean_text` to each element in the tibble
   cleaned_tibble <- data_tibble %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ purrr::map_chr(., clean_text)))
@@ -339,7 +343,9 @@ grep_col_by_name_in_list <- function(l,
 }
 
 
-#' Tokenize according to different huggingface transformers
+#' Tokenize text-variables
+#'
+#' textTokenize() tokenizes according to different huggingface transformers
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
 #'  For full list of options see pretrained models at
@@ -406,7 +412,9 @@ textTokenize <- function(texts,
   return(tokens1)
 }
 
-#' Extract layers of hidden states (word embeddings) for all character variables
+#' Extract layers of hidden states
+#'
+#' textEmbedRawLayers extracts layers of hidden states (word embeddings) for all character variables
 #' in a given dataframe.
 #' @param texts A character variable or a tibble with at least one character variable.
 #' @param model (character) Character string specifying pre-trained language model
@@ -732,7 +740,9 @@ textEmbedRawLayers <- function(texts,
 
 
 
-#' Select and aggregate layers of hidden states to form a word embedding.
+#' Aggregate layers
+#'
+#' textEmbedLayerAggregation selects and aggregates layers of hidden states to form a word embedding.
 #' @param word_embeddings_layers Layers returned by the textEmbedRawLayers function.
 #' @param layers (character or numeric) The numbers of the layers to be aggregated
 #' (e.g., c(11:12) to aggregate the eleventh and twelfth).
@@ -1021,7 +1031,9 @@ generate_placement_vector <- function(raw_layers,
 }
 
 
-#' Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
+#' Embed text
+#'
+#' textEmbed() extracts layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
 #'  For full list of options see pretrained models at
@@ -1187,9 +1199,9 @@ textEmbed <- function(texts,
     cat(colourise(warning_ascii, "brown"))
     cat(colourise("To examine thise text cases use the textNonASCII() function. \n", "green"))
 
-    # remove ASCII characters
+    # remove non-ASCII characters
     if(remove_non_ascii){
-      data_character_variables <- clean_tibble(data_character_variables)
+      data_character_variables <- textCleanNonASCII(data_character_variables)
       cat(colourise("Non-ASCII characters has been removed. \n", "green"))
     }
 
@@ -1429,7 +1441,9 @@ textEmbed <- function(texts,
 }
 
 
-#' Change the names of the dimensions in the word embeddings.
+#' Change dimension names
+#'
+#' textDimName() changes the names of the dimensions in the word embeddings.
 #' @param word_embeddings List of word embeddings
 #' @param dim_names (boolean) If TRUE the word embedding name will be attached to the name of each dimension;
 #' is FALSE, the attached part of the name will be removed.

@@ -32,11 +32,11 @@
 #' # classifications
 #' # comment(classifications)
 #' }
-#' @seealso see \code{\link{textGeneration}}, \code{\link{textNER}},
+#' @seealso see \code{\link{textClassify}}, \code{\link{textGeneration}}, \code{\link{textNER}},
 #'  \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
 #' @importFrom reticulate source_python
 #' @importFrom dplyr bind_cols bind_rows
-#' @export
+#' @noRd
 textClassifyPipe <- function(
     x,
     model = "distilbert-base-uncased-finetuned-sst-2-english",

@@ -2,8 +2,7 @@
 % Please edit documentation in R/1_2_textEmbedStatic.R
 \name{textEmbedStatic}
 \alias{textEmbedStatic}
-\title{Applies word embeddings from a given decontextualized static space (such as
-from Latent Semantic Analyses) to all character variables}
+\title{Apply static word embeddings}
 \usage{
 textEmbedStatic(
   df,
@@ -38,7 +37,7 @@ columns representing the semantic representations of the text.
 The tibbles are called the same as the original variable.
 }
 \description{
-Applies word embeddings from a given decontextualized static space (such as
+textEmbedStatic() applies word embeddings from a given decontextualized static space (such as
 from Latent Semantic Analyses) to all character variables
 }
 \seealso{

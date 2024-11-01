@@ -2,8 +2,7 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textEmbedRawLayers}
 \alias{textEmbedRawLayers}
-\title{Extract layers of hidden states (word embeddings) for all character variables
-in a given dataframe.}
+\title{Extract layers of hidden states}
 \usage{
 textEmbedRawLayers(
   texts,
@@ -87,7 +86,7 @@ each token of the text, including the [CLS] and the [SEP].
 Note that layer 0 is the input embedding to the transformer, and should normally not be used.
 }
 \description{
-Extract layers of hidden states (word embeddings) for all character variables
+textEmbedRawLayers extracts layers of hidden states (word embeddings) for all character variables
 in a given dataframe.
 }
 \examples{

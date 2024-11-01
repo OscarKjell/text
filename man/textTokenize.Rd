@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textTokenize}
 \alias{textTokenize}
-\title{Tokenize according to different huggingface transformers}
+\title{Tokenize text-variables}
 \usage{
 textTokenize(
   texts,
@@ -54,7 +54,7 @@ Options (ordered from less logging to more logging): critical, error, warning, i
 Returns tokens according to specified huggingface transformer.
 }
 \description{
-Tokenize according to different huggingface transformers
+textTokenize() tokenizes according to different huggingface transformers
 }
 \examples{
 \donttest{

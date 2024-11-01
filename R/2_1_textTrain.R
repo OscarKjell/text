@@ -1,5 +1,6 @@
-#' Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
+#' Trains word embeddings
 #'
+#' textTrain() trains word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation).
 #' Can analyze several variables at the same time; but if training to several
 #' outcomes at the same time use a tibble within the list as input rather than just a
@@ -238,7 +239,9 @@ sort_classification_output_list <- function(output,
   results
 }
 
-#' Individually trains word embeddings from several text variables to several numeric or categorical variables.
+#' Train lists of word embeddings
+#'
+#' textTrainLists() individually trains word embeddings from several text variables to several numeric or categorical variables.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggreation). It is possible to have word embeddings
 #' from one text variable and several numeric/categorical variables;
 #' or vice verse, word embeddings from several text variables to one numeric/categorical variable.

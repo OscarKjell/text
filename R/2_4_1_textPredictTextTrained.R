@@ -388,7 +388,7 @@ textReturnModelAndEmbedding <- function(
 #' @importFrom tibble is_tibble as_tibble_col
 #' @importFrom dplyr bind_cols select full_join arrange everything
 #' @importFrom magrittr %>%
-#' @export
+#' @noRd
 textPredictTextTrained <- function(
     model_info = NULL,
     word_embeddings = NULL,

@@ -1,4 +1,6 @@
-#' This function creates and trains a BERTopic model (based on bertopic python packaged) on a
+#' BERTopics
+#'
+#' textTopics creates and trains a BERTopic model (based on bertopic python packaged) on a
 #' text-variable in a tibble/data.frame. (EXPERIMENTAL)
 #' @param data (tibble/data.frame) A tibble with a text-variable to be analysed, and optional
 #' numeric/categorical variables that you might want to use for later analyses testing the

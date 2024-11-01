@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_1_textPlotCentrality.R
 \name{textCentralityPlot}
 \alias{textCentralityPlot}
-\title{Plot words according to semantic similarity to the aggregated word embedding.}
+\title{Plots words from textCentrality()}
 \usage{
 textCentralityPlot(
   word_data,
@@ -113,7 +113,7 @@ A 1-dimensional word plot based on similarity to the aggregated word embedding,
 as well as tibble with processed data used to plot.
 }
 \description{
-Plot words according to semantic similarity to the aggregated word embedding.
+textCentralityPlot() plots words according to semantic similarity to the aggregated word embedding.
 }
 \examples{
 # Plot a centrality plot from the dataframe df_for_plotting

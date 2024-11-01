@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_1_textTrain.R
 \name{textTrain}
 \alias{textTrain}
-\title{Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.}
+\title{Trains word embeddings}
 \usage{
 textTrain(x, y, force_train_method = "automatic", ...)
 }
@@ -29,7 +29,7 @@ A correlation between predicted and observed values; as well as a
  alternative-hypothesis, confidence interval, correlation coefficient).
 }
 \description{
-Train word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
+textTrain() trains word embeddings to a numeric (ridge regression) or categorical (random forest) variable.
 }
 \examples{
 # Examines how well the embeddings from "harmonytext" can

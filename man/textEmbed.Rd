@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textEmbed}
 \alias{textEmbed}
-\title{Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.}
+\title{Embed text}
 \usage{
 textEmbed(
   texts,
@@ -105,7 +105,7 @@ A tibble with tokens, a column for layer identifier and word embeddings.
 Note that layer 0 is the input embedding to the transformer.
 }
 \description{
-Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
+textEmbed() extracts layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 }
 \examples{
 # Automatically transforms the characters in the example dataset:

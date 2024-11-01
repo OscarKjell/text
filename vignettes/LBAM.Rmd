@@ -1,7 +1,7 @@
 ---
-title: "Pre-Trained Models"
+title: "The Language-Based Assessment Model (L-BAM) Library"
 vignette: >
-  %\VignetteIndexEntry{Pre-Trained Models}
+  %\VignetteIndexEntry{LBAM}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 
 
 
-The text-package allows you to create pre-trained models using the `textTrain()` functions. The models can be saved and used on new data using the `textPredict()` function. The table below shows pre-trained models that are available to download. The models can be called with `textPredict()` like this:
+The text-package allows you to create pre-trained models using the text-train functions (e.g., `textTrain()`) or the fine tune functions (e.g., `textFineTuneDomain`). The models can be saved and used on new data using the text prediction functions (e.g., `textPredict()`). The L-BAM library below shows pre-trained models that are available to download. The models can be called with `textPredict()`, `textAssess()` or `textClassify()` like this:
 
 ```{r textPredict_examples, eval = FALSE, echo=TRUE}
 library(text)
@@ -28,15 +28,15 @@ textPredict(
 
 
 # Example calling a model having an abbreviation
-textPredict(
-  model_info = implicit_power_roberta_large_L23_v1,
+textClassify(
+  model_info = "implicit_power_roberta_large_L23_v1",
   texts = "It looks like they have problems collaborating."
 )
 ```
 
-The `textPredict()` function can be given a model and a text, and automatically transform the text to word embeddings and produce estimated scores or probabilities.
+The text prediction functions can be given a model and a text, and automatically transform the text to word embeddings and produce estimated scores or probabilities.
 
-If you want to add a pre-trained model to the table, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and email us (*oscar [ d_o t] kjell [a _ t] psy [DOT] lu [d_o_t]se*) so that we can update the table online.
+If you want to add a pre-trained model to the L-BAM library, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and email us (*oscar [ d_o t] kjell [a _ t] psy [DOT] lu [d_o_t]se*) so that we can update the table online.
 
 *Note that you can adjust the width of the columns when scrolling the table.*
 

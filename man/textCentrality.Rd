@@ -2,8 +2,7 @@
 % Please edit documentation in R/4_1_textPlotCentrality.R
 \name{textCentrality}
 \alias{textCentrality}
-\title{Compute semantic similarity score between single words' word embeddings
-and the aggregated word embedding of all words.}
+\title{Semantic similarity score between single words' and an aggregated word embeddings}
 \usage{
 textCentrality(
   words,
@@ -39,7 +38,7 @@ A dataframe with variables (e.g., including semantic similarity, frequencies)
 for the individual words that are used as input for the plotting in the textCentralityPlot function.
 }
 \description{
-Compute semantic similarity score between single words' word embeddings
+textCentrality() computes semantic similarity score between single words' word embeddings
 and the aggregated word embedding of all words.
 }
 \examples{

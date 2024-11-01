@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_2_textPlotPCA.R
 \name{textPCAPlot}
 \alias{textPCAPlot}
-\title{Plot words according to 2-D plot from 2 PCA components.}
+\title{textPCAPlot}
 \usage{
 textPCAPlot(
   word_data,
@@ -114,7 +114,7 @@ ggplot2::scale_y_continuous(limits = scale_y_axes_lim); change e.g., by trying c
 A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot..
 }
 \description{
-Plot words according to 2-D plot from 2 PCA components.
+textPCAPlot() plots words according to 2-D plot from 2 PCA components.
 }
 \examples{
 # The test-data included in the package is called: DP_projections_HILS_SWLS_100

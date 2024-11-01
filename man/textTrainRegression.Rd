@@ -138,7 +138,7 @@ of predicted values (t-value, degree of freedom (df), p-value,
  the model (preprossing_recipe, final_model and model_description).
 }
 \description{
-Train word embeddings to a numeric variable.
+textTrainRegression() trains word embeddings to a numeric or a factor variable.
 }
 \details{
 By default, NAs are treated as follows:

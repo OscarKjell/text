@@ -102,17 +102,10 @@ indexing_subsets_no100 <- function(
   return(nested_list)
 }
 
-sample_percents = c(25, 50, 75, 100)
-handle_word_embeddings = "individually"
-n_cross_val = 1
-sampling_strategy = "subsets"
-use_same_penalty_mixture = TRUE
-model = "regression"
-penalty = 10^seq(1, -1)
-mixture = c(0)
-seed = 2024
 #### textTrainN function ####
-#' (experimental) Compute cross-validated correlations for different sample-sizes of a data set.
+#' Cross-validated accuracies across sample-sizes
+#'
+#' textTrainN() computes cross-validated correlations for different sample-sizes of a data set.
 #' The cross-validation process can be repeated several times to enhance the reliability of the evaluation.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation).
 #' If several word embedding are provided in a list they will be concatenated.
@@ -459,9 +452,11 @@ textTrainN <- function(
 
 #### textTrainNPlot function ####
 
-#' (experimental) Plot cross-validated correlation coefficients across different
-#'  sample-sizes from the object returned by the textTrainN function. If the number
-#'  of cross-validations exceed one, then error-bars will be included in the plot.
+#' Plot cross-validated accuracies across sample sizes
+#'
+#' textTrainNPlot() plots cross-validated correlation coefficients across different
+#' sample-sizes from the object returned by the textTrainN function. If the number
+#' of cross-validations exceed one, then error-bars will be included in the plot.
 #' @param results_data (list) One or several objects returned by the function textTrainN
 #' as a list (e.g, list(object1, object2)). Also, if several models are provided,
 #' then one can add a vector c() with settings (i.e the parameters below) for each model
@@ -742,7 +737,4 @@ textTrainNPlot <- function(
 
   return(TrainNPlot)
 }
-
-
-
 

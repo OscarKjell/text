@@ -1,6 +1,8 @@
 #### Supervised Dimension Projection ######
 
-#' Compute Supervised Dimension Projection and related variables for plotting words.
+#'  Supervised Dimension Projection
+#'
+#' textProjection() computes Supervised Dimension Projection and related variables for plotting words.
 #' @param words (character) Word or text variable to be plotted.
 #' @param word_embeddings Word embeddings from textEmbed for the words to be plotted
 #' (i.e., the aggregated word embeddings for the "words" parameter).
@@ -588,7 +590,9 @@ textProjection <- function(words,
 }
 
 
-#' Plot words according to Supervised Dimension Projection.
+#' Plot Supervised Dimension Projection
+#'
+#' textProjectionPlot() plots words according to Supervised Dimension Projection.
 #' @param word_data Dataframe from textProjection
 #' @param k_n_words_to_test Select the k most frequent words to significance
 #' test (k = sqrt(100*N); N = number of participant responses). Default = TRUE.

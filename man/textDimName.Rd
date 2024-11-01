@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textDimName}
 \alias{textDimName}
-\title{Change the names of the dimensions in the word embeddings.}
+\title{Change dimension names}
 \usage{
 textDimName(word_embeddings, dim_names = TRUE)
 }
@@ -16,7 +16,7 @@ is FALSE, the attached part of the name will be removed.}
 Word embeddings with changed names.
 }
 \description{
-Change the names of the dimensions in the word embeddings.
+textDimName() changes the names of the dimensions in the word embeddings.
 }
 \examples{
 \donttest{

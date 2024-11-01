@@ -9,10 +9,11 @@ cosines <- function(x, y) {
   rowSums(x * y, na.rm = TRUE) / (sqrt(rowSums(x * x, na.rm = TRUE)) * sqrt(rowSums(y * y, na.rm = TRUE)))
 }
 
-#' Compute the semantic similarity between two text variables.
+#' Semantic Similarity
 #'
-#' @param x Word embeddings from textEmbed.
-#' @param y Word embeddings from textEmbed.
+#' textSimilarity() Computes the semantic similarity between two text variables.
+#' @param x Word embeddings from textEmbed().
+#' @param y Word embeddings from textEmbed().
 #' @param method (character) Character string describing type of measure to be computed. Default is "cosine" (see also
 #' "spearmen", "pearson" as well as measures from textDistance() (which here is computed as 1 - textDistance)
 #' including "euclidean", "maximum", "manhattan", "canberra", "binary" and "minkowski").
@@ -89,10 +90,12 @@ textSimilarity <- function(x,
 }
 
 
-#' Compute the semantic distance between two text variables.
+#' Semantic distance
 #'
-#' @param x Word embeddings (from textEmbed).
-#' @param y Word embeddings (from textEmbed).
+#' textDistance() computes the semantic distance between two text variables.
+#'
+#' @param x Word embeddings (from textEmbed()).
+#' @param y Word embeddings (from textEmbed()).
 #' @param method (character) Character string describing type of measure to be computed; default is
 #' "euclidean" (see also measures from stats:dist() including "maximum", "manhattan", "canberra",
 #' "binary" and "minkowski". It is also possible to use "cosine", which computes the cosine distance
@@ -165,7 +168,9 @@ textDistance <- function(x,
 }
 
 
-#' Compute semantic similarity scores between all combinations in a word embedding
+#' Semantic similarity across multiple word embeddings
+#'
+#' textSimilarityMatrix computes semantic similarity scores between all combinations in a word embedding
 #' @inheritParams textSimilarity
 #' @return A matrix of semantic similarity scores
 #' @examples
@@ -232,7 +237,9 @@ textSimilarityMatrix <- function(
   return(S)
 }
 
-#' Compute semantic distance scores between all combinations in a word embedding
+#' Semantic distance across multiple word embeddings
+#'
+#' textDistanceMatrix() computes semantic distance scores between all combinations in a word embedding
 #' @inheritParams textDistance
 #' @return A matrix of semantic distance scores
 #' @examples
@@ -295,7 +302,9 @@ textDistanceMatrix <- function(
 }
 
 
-#' Compute the semantic similarity between a text variable and a word norm
+#'  Semantic similarity between a text variable and a word norm
+#'
+#' textSimilarityNorm() computes the semantic similarity between a text variable and a word norm
 #' (i.e., a text represented by one word embedding that represent a construct).
 #' @param y Word embedding from textEmbed (from only one text).
 #' @inheritParams textSimilarity
@@ -349,7 +358,9 @@ textSimilarityNorm <- function(x,
 }
 
 
-#' Compute the semantic distance between a text variable and a word norm
+#' Semantic distance between a text variable and a word norm
+#'
+#' textDistanceNorm() computes the semantic distance between a text variable and a word norm
 #' (i.e., a text represented by one word embedding that represent a construct/concept).
 #' @param y Word embedding from textEmbed (from only one text).
 #' @inheritParams textDistance

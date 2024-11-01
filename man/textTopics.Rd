@@ -2,8 +2,7 @@
 % Please edit documentation in R/7_1_textTopics.R
 \name{textTopics}
 \alias{textTopics}
-\title{This function creates and trains a BERTopic model (based on bertopic python packaged) on a
-text-variable in a tibble/data.frame. (EXPERIMENTAL)}
+\title{BERTopics}
 \usage{
 textTopics(
   data,
@@ -70,6 +69,6 @@ together with metdata.
 See \code{\link{textTopicsReduce}} \code{\link{textTopicsTest}} and \code{\link{textTopicsWordcloud}}.
 }
 \description{
-This function creates and trains a BERTopic model (based on bertopic python packaged) on a
+textTopics creates and trains a BERTopic model (based on bertopic python packaged) on a
 text-variable in a tibble/data.frame. (EXPERIMENTAL)
 }

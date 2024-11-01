@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textEmbedLayerAggregation}
 \alias{textEmbedLayerAggregation}
-\title{Select and aggregate layers of hidden states to form a word embedding.}
+\title{Aggregate layers}
 \usage{
 textEmbedLayerAggregation(
   word_embeddings_layers,
@@ -44,7 +44,7 @@ A tibble with word embeddings. Note that layer 0 is the input embedding to
 the transformer, which is normally not used.
 }
 \description{
-Select and aggregate layers of hidden states to form a word embedding.
+textEmbedLayerAggregation selects and aggregates layers of hidden states to form a word embedding.
 }
 \examples{
 # Aggregate the hidden states from textEmbedRawLayers

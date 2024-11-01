@@ -645,8 +645,9 @@ summarize_tune_results_rf <- function(object,
 }
 
 
-#' Train word embeddings to a categorical variable using random forest.
+#' Trains word embeddings usig random forest
 #'
+#' textTrainRandomForest() trains word embeddings to a categorical variable using random forest.
 #' @param x Word embeddings from textEmbed.
 #' @param y Categorical variable to predict.
 #' @param x_append (optional) Variables to be appended after the word embeddings (x);

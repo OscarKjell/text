@@ -602,6 +602,8 @@ summarize_tune_results <- function(object,
 
 
 #' Train word embeddings to a numeric variable.
+#'
+#' textTrainRegression() trains word embeddings to a numeric or a factor variable.
 #' @param x Word embeddings from textEmbed (or textEmbedLayerAggregation). If several word embedding are
 #' provided in a list they will be concatenated.
 #' @param y Numeric variable to predict.

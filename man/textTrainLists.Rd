@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_1_textTrain.R
 \name{textTrainLists}
 \alias{textTrainLists}
-\title{Individually trains word embeddings from several text variables to several numeric or categorical variables.}
+\title{Train lists of word embeddings}
 \usage{
 textTrainLists(
   x,
@@ -43,7 +43,7 @@ Correlations between predicted and observed values (t-value, degree of freedom (
 confidence interval, alternative hypothesis, correlation coefficient) stored in a dataframe.
 }
 \description{
-Individually trains word embeddings from several text variables to several numeric or categorical variables.
+textTrainLists() individually trains word embeddings from several text variables to several numeric or categorical variables.
 }
 \examples{
 # Examines how well the embeddings from Language_based_assessment_data_8 can

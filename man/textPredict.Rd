@@ -13,7 +13,6 @@ textPredict(
   word_embeddings = NULL,
   x_append = NULL,
   append_first,
-  type = NULL,
   dim_names = TRUE,
   save_model = TRUE,
   threshold = NULL,
@@ -42,7 +41,6 @@ textAssess(
   word_embeddings = NULL,
   x_append = NULL,
   append_first,
-  type = NULL,
   dim_names = TRUE,
   save_model = TRUE,
   threshold = NULL,
@@ -71,7 +69,6 @@ textClassify(
   word_embeddings = NULL,
   x_append = NULL,
   append_first,
-  type = NULL,
   dim_names = TRUE,
   save_model = TRUE,
   threshold = NULL,
@@ -115,10 +112,6 @@ then texts and embeddings cannot be submitted simultaneously (default = NULL).}
 \item{x_append}{(tibble; only for "texttrained"-model_type) Variables to be appended with the word embeddings (x).}
 
 \item{append_first}{If TRUE, x_appened is added before word embeddings.}
-
-\item{type}{(character; only for "text"-model_type) Defines what output to give after logistic regression prediction.
-Either probabilities, classifications or both are returned (default = "class".
-For probabilities use "prob". For both use "class_prob").}
 
 \item{dim_names}{(boolean; only for "texttrained"-model_type) Account for specific dimension names from textEmbed()
 (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on

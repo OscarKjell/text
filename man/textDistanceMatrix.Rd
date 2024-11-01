@@ -2,12 +2,12 @@
 % Please edit documentation in R/3_1_textSimilarity.R
 \name{textDistanceMatrix}
 \alias{textDistanceMatrix}
-\title{Compute semantic distance scores between all combinations in a word embedding}
+\title{Semantic distance across multiple word embeddings}
 \usage{
 textDistanceMatrix(x, method = "euclidean", center = FALSE, scale = FALSE)
 }
 \arguments{
-\item{x}{Word embeddings (from textEmbed).}
+\item{x}{Word embeddings (from textEmbed()).}
 
 \item{method}{(character) Character string describing type of measure to be computed; default is
 "euclidean" (see also measures from stats:dist() including "maximum", "manhattan", "canberra",
@@ -26,7 +26,7 @@ the embedding mean
 A matrix of semantic distance scores
 }
 \description{
-Compute semantic distance scores between all combinations in a word embedding
+textDistanceMatrix() computes semantic distance scores between all combinations in a word embedding
 }
 \examples{
 distance_scores <- textDistanceMatrix(word_embeddings_4$texts$harmonytext[1:3, ])

@@ -2,7 +2,7 @@
 % Please edit documentation in R/5_2_textGeneration.R
 \name{textGeneration}
 \alias{textGeneration}
-\title{Predicts the words that will follow a specified text prompt. (experimental)}
+\title{Text generation}
 \usage{
 textGeneration(
   x,
@@ -61,7 +61,7 @@ None: default way, where no particular strategy is applied.
 A tibble with generated text.
 }
 \description{
-Predicts the words that will follow a specified text prompt. (experimental)
+textGeneration() predicts the words that will follow a specified text prompt. (experimental)
 }
 \examples{
 \donttest{

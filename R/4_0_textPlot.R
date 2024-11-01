@@ -612,7 +612,9 @@ adjust_for_plot_type <- function(word_data,
 }
 
 
-#' Plot words from textProjection() or textWordPrediction().
+#' Plot words
+#'
+#' textPlot() plots words from textProjection() or textWordPrediction().
 #' @param word_data Dataframe from textProjection.
 #' @param k_n_words_to_test Select the k most frequent words to significance
 #' test (k = sqrt(100*N); N = number of participant responses) (default = TRUE).

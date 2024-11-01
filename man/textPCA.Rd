@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_2_textPlotPCA.R
 \name{textPCA}
 \alias{textPCA}
-\title{Compute 2 PCA dimensions of the word embeddings for individual words.}
+\title{textPCA()}
 \usage{
 textPCA(
   words,
@@ -26,7 +26,7 @@ A dataframe with words, their frquency and two PCA dimensions from the word_embe
 for the individual words that is used for the plotting in the textPCAPlot function.
 }
 \description{
-Compute 2 PCA dimensions of the word embeddings for individual words.
+textPCA() computes 2 PCA dimensions of the word embeddings for individual words.
 }
 \examples{
 \dontrun{

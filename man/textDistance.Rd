@@ -2,14 +2,14 @@
 % Please edit documentation in R/3_1_textSimilarity.R
 \name{textDistance}
 \alias{textDistance}
-\title{Compute the semantic distance between two text variables.}
+\title{Semantic distance}
 \usage{
 textDistance(x, y, method = "euclidean", center = FALSE, scale = FALSE)
 }
 \arguments{
-\item{x}{Word embeddings (from textEmbed).}
+\item{x}{Word embeddings (from textEmbed()).}
 
-\item{y}{Word embeddings (from textEmbed).}
+\item{y}{Word embeddings (from textEmbed()).}
 
 \item{method}{(character) Character string describing type of measure to be computed; default is
 "euclidean" (see also measures from stats:dist() including "maximum", "manhattan", "canberra",
@@ -28,7 +28,7 @@ the embedding mean
 A vector comprising semantic distance scores.
 }
 \description{
-Compute the semantic distance between two text variables.
+textDistance() computes the semantic distance between two text variables.
 }
 \examples{
 # Compute the semantic distance score between the embeddings

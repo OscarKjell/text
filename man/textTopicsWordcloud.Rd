@@ -2,8 +2,7 @@
 % Please edit documentation in R/7_2_textTopicsAnalysis.R
 \name{textTopicsWordcloud}
 \alias{textTopicsWordcloud}
-\title{This functions plots wordclouds of topics from a Topic Model based on their significance
-determined by a linear or binary regression}
+\title{Plots wordcloud (experimental)}
 \usage{
 textTopicsWordcloud(
   model,
@@ -34,6 +33,6 @@ prevalence of the topic}
 \item{p_threshold}{(float) set significance threshold which determines which topics are plotted}
 }
 \description{
-This functions plots wordclouds of topics from a Topic Model based on their significance
+textTopicsWordcloud() plots wordclouds of topics from a Topic Model based on their significance
 determined by a linear or binary regression
 }

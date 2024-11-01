@@ -1,4 +1,6 @@
-#' Predicts the words that will follow a specified text prompt. (experimental)
+#' Text generation
+#'
+#' textGeneration() predicts the words that will follow a specified text prompt. (experimental)
 #' @param x (string)  A variable or a tibble/dataframe with at least one character variable.
 #' @param model (string)  Specification of a pre-trained language model that have been trained with an
 #' autoregressive language modeling objective, which includes the uni-directional models (e.g., gpt2).

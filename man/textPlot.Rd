@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_0_textPlot.R
 \name{textPlot}
 \alias{textPlot}
-\title{Plot words from textProjection() or textWordPrediction().}
+\title{Plot words}
 \usage{
 textPlot(
   word_data,
@@ -216,7 +216,7 @@ A 1- or 2-dimensional word plot, as well as tibble with processed data used
 to plot.
 }
 \description{
-Plot words from textProjection() or textWordPrediction().
+textPlot() plots words from textProjection() or textWordPrediction().
 }
 \examples{
 # The test-data included in the package is called: DP_projections_HILS_SWLS_100

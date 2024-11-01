@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textFindNonASCII}
 \alias{textFindNonASCII}
-\title{# Function to detect non-ASCII characters in a tibble with multiple columns}
+\title{Detect non-ASCII characters}
 \usage{
 textFindNonASCII(data_tibble)
 }
@@ -13,5 +13,5 @@ textFindNonASCII(data_tibble)
 a tibble containing variable names, row numbers and text including non-acii.
 }
 \description{
-# Function to detect non-ASCII characters in a tibble with multiple columns
+This function to detect non-ASCII characters in a tibble with multiple columns.
 }

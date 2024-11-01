@@ -120,7 +120,9 @@ applysemrep_over_words <- function(word_col,
 }
 
 
-#' Applies word embeddings from a given decontextualized static space (such as
+#' Apply static word embeddings
+#'
+#' textEmbedStatic() applies word embeddings from a given decontextualized static space (such as
 #' from Latent Semantic Analyses) to all character variables
 #'
 #' @param df dataframe that at least contains one character column.

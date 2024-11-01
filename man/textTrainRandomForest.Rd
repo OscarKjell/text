@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_3_textTrainRandomForest.R
 \name{textTrainRandomForest}
 \alias{textTrainRandomForest}
-\title{Train word embeddings to a categorical variable using random forest.}
+\title{Trains word embeddings usig random forest}
 \usage{
 textTrainRandomForest(
   x,
@@ -128,7 +128,7 @@ final_model, model_description chisq and fishers test as well as evaluation meas
 f_meas and roc_auc (for details on these measures see the yardstick r-package documentation).
 }
 \description{
-Train word embeddings to a categorical variable using random forest.
+textTrainRandomForest() trains word embeddings to a categorical variable using random forest.
 }
 \examples{
 # Examines how well the embeddings from column "harmonywords" in

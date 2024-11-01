@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_3_textPlotProjection.R
 \name{textProjection}
 \alias{textProjection}
-\title{Compute Supervised Dimension Projection and related variables for plotting words.}
+\title{Supervised Dimension Projection}
 \usage{
 textProjection(
   words,
@@ -74,7 +74,7 @@ A dataframe with variables (e.g., including Supervised Dimension Projection, fre
 for the individual words that is used for the plotting in the textProjectionPlot function.
 }
 \description{
-Compute Supervised Dimension Projection and related variables for plotting words.
+textProjection() computes Supervised Dimension Projection and related variables for plotting words.
 }
 \examples{
 # Pre-processing data for plotting.

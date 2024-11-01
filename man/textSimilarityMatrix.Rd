@@ -2,12 +2,12 @@
 % Please edit documentation in R/3_1_textSimilarity.R
 \name{textSimilarityMatrix}
 \alias{textSimilarityMatrix}
-\title{Compute semantic similarity scores between all combinations in a word embedding}
+\title{Semantic similarity across multiple word embeddings}
 \usage{
 textSimilarityMatrix(x, method = "cosine", center = TRUE, scale = FALSE)
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed.}
+\item{x}{Word embeddings from textEmbed().}
 
 \item{method}{(character) Character string describing type of measure to be computed. Default is "cosine" (see also
 "spearmen", "pearson" as well as measures from textDistance() (which here is computed as 1 - textDistance)
@@ -23,7 +23,7 @@ columns of x by their standard deviations if center is TRUE, and the root mean s
 A matrix of semantic similarity scores
 }
 \description{
-Compute semantic similarity scores between all combinations in a word embedding
+textSimilarityMatrix computes semantic similarity scores between all combinations in a word embedding
 }
 \examples{
 similarity_scores <- textSimilarityMatrix(word_embeddings_4$texts$harmonytext[1:3, ])

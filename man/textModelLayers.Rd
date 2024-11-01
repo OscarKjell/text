@@ -2,7 +2,7 @@
 % Please edit documentation in R/0_3_textModels.R
 \name{textModelLayers}
 \alias{textModelLayers}
-\title{Get the number of layers in a given model.}
+\title{Number of layers}
 \usage{
 textModelLayers(
   target_model,
@@ -27,7 +27,7 @@ be set to avoid the need to enter the token each time.}
 Number of layers.
 }
 \description{
-Get the number of layers in a given model.
+This functions gets the number of layers in a given model.
 }
 \examples{
 \dontrun{

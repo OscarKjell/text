@@ -568,7 +568,9 @@ create_df_list_bert_topics <- function(save_dir,
 }
 
 
-#' This functions plots wordclouds of topics from a Topic Model based on their significance
+#' Plots wordcloud (experimental)
+#'
+#' textTopicsWordcloud() plots wordclouds of topics from a Topic Model based on their significance
 #' determined by a linear or binary regression
 #' @param model (data.frame) The model returned from textTopics().
 #' @param test (data.frame) the test returned from textTopicTest()

@@ -9,6 +9,7 @@
 - streamlining code for implicit motives output
 - adding `textFindNonASCII()` function and feature in `textEmbed()` to 
 warn and clean non-ASCII characters
+- removed `type` parameter in textPredict() and instead giving both probability and class.
 
 # text 1.2.7
 - `textClassify()` is now called `textClassifyPipe() `

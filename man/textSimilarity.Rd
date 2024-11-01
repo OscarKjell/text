@@ -2,14 +2,14 @@
 % Please edit documentation in R/3_1_textSimilarity.R
 \name{textSimilarity}
 \alias{textSimilarity}
-\title{Compute the semantic similarity between two text variables.}
+\title{Semantic Similarity}
 \usage{
 textSimilarity(x, y, method = "cosine", center = TRUE, scale = FALSE)
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed.}
+\item{x}{Word embeddings from textEmbed().}
 
-\item{y}{Word embeddings from textEmbed.}
+\item{y}{Word embeddings from textEmbed().}
 
 \item{method}{(character) Character string describing type of measure to be computed. Default is "cosine" (see also
 "spearmen", "pearson" as well as measures from textDistance() (which here is computed as 1 - textDistance)
@@ -26,7 +26,7 @@ A vector comprising semantic similarity scores. The closer the value is to 1 whe
  method, "cosine", the higher the semantic similarity.
 }
 \description{
-Compute the semantic similarity between two text variables.
+textSimilarity() Computes the semantic similarity between two text variables.
 }
 \examples{
 # Compute the semantic similarity between the embeddings from "harmonytext" and "satisfactiontext".

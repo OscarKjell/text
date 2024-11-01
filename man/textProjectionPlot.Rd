@@ -2,7 +2,7 @@
 % Please edit documentation in R/4_3_textPlotProjection.R
 \name{textProjectionPlot}
 \alias{textProjectionPlot}
-\title{Plot words according to Supervised Dimension Projection.}
+\title{Plot Supervised Dimension Projection}
 \usage{
 textProjectionPlot(
   word_data,
@@ -207,7 +207,7 @@ opposite side of its dot product projection (default = FALSE).}
 A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
 }
 \description{
-Plot words according to Supervised Dimension Projection.
+textProjectionPlot() plots words according to Supervised Dimension Projection.
 }
 \examples{
 # The test-data included in the package is called: DP_projections_HILS_SWLS_100.

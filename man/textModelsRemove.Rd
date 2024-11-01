@@ -2,7 +2,7 @@
 % Please edit documentation in R/0_3_textModels.R
 \name{textModelsRemove}
 \alias{textModelsRemove}
-\title{Delete a specified model and model associated files.}
+\title{Delete a specified model}
 \usage{
 textModelsRemove(target_model)
 }
@@ -13,7 +13,7 @@ textModelsRemove(target_model)
 Confirmation whether the model has been deleted.
 }
 \description{
-Delete a specified model and model associated files.
+This functions delete specified mode and associated files.
 }
 \examples{
 \dontrun{

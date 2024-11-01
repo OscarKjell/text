@@ -2,13 +2,12 @@
 % Please edit documentation in R/3_1_textSimilarity.R
 \name{textSimilarityNorm}
 \alias{textSimilarityNorm}
-\title{Compute the semantic similarity between a text variable and a word norm
-(i.e., a text represented by one word embedding that represent a construct).}
+\title{Semantic similarity between a text variable and a word norm}
 \usage{
 textSimilarityNorm(x, y, method = "cosine", center = TRUE, scale = FALSE)
 }
 \arguments{
-\item{x}{Word embeddings from textEmbed.}
+\item{x}{Word embeddings from textEmbed().}
 
 \item{y}{Word embedding from textEmbed (from only one text).}
 
@@ -26,7 +25,7 @@ columns of x by their standard deviations if center is TRUE, and the root mean s
 A vector comprising semantic similarity scores.
 }
 \description{
-Compute the semantic similarity between a text variable and a word norm
+textSimilarityNorm() computes the semantic similarity between a text variable and a word norm
 (i.e., a text represented by one word embedding that represent a construct).
 }
 \examples{

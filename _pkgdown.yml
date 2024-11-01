@@ -50,20 +50,19 @@ reference:
   - textEmbedLayerAggregation
   - textEmbedReduce
   - textEmbedStatic
-- title: Fine-tuning
+- title: Fine-tuning models
   contents:
   - textFineTuneTask
   - textFineTuneDomain
-- title: Language Analysis Tasks
+- title: Text language analysis tasks
   contents:
-  - textClassifyPipe
   - textGeneration
   - textNER
   - textSum
   - textQA
   - textTranslate
   - textZeroShot
-- title: Train word embeddings
+- title: The text-train functions
   contents:
     - textTrain
     - textTrainLists
@@ -71,15 +70,14 @@ reference:
     - textTrainRandomForest
     - textTrainN
     - textTrainNPlot
-- title: Predict from word embeddings or text
+- title: The text-predict functions
   contents:
     - textPredict
     - textAssess
     - textClassify
-    - textPredictR
     - textPredictTest
     - textPredictAll
-- title: Semantic similarities and distances
+- title: Semantic similarities and distances functions
   contents:
     - textSimilarity
     - textDistance
@@ -87,7 +85,7 @@ reference:
     - textDistanceMatrix
     - textSimilarityNorm
     - textDistanceNorm
-- title: Plot words in the word embedding space
+- title: Visualise words in the word embedding space
   contents:
     - textProjection
     - textPlot
@@ -97,14 +95,14 @@ reference:
     - textCentralityPlot
     - textPCA
     - textPCAPlot
-- title: BERTopic
+- title: BERTopics
   contents:
     - textTopics
     - textTopicsTest
     - textTopicsWordcloud
     - textTopicsReduce
     - textTopicsTree
-- title: View or delete downloaded HuggingFace models in R
+- title: View or delete downloaded HuggingFace models
   contents:
   - textModels
   - textModelLayers
@@ -114,6 +112,7 @@ reference:
     - textDescriptives
     - textTokenize
     - textFindNonASCII
+    - textCleanNonASCII
 - title: Example Data
   contents:
     - Language_based_assessment_data_8
@@ -129,7 +128,7 @@ articles:
 - title: Set-up
   navbar: ~
   contents:
-  - pre_trained_models
+  - LBAM
   - huggingface_in_r_extended_installation_guide
   - singularity_transformers_container
   - huggingface_in_r_and_computer_capacity

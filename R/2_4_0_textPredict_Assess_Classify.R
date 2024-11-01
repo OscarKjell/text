@@ -1,39 +1,3 @@
-
-### Common parameter
-##model_info = NULL
-##texts = NULL
-##model_type = "texttrained"
-### text-trained model specific paeters
-##word_embeddings = NULL
-##x_append = NULL
-##append_first = TRUE
-##type = NULL
-##dim_names = TRUE
-##save_model = TRUE
-##threshold = NULL
-##show_texts = FALSE
-##device = "cpu"
-##participant_id = NULL
-##save_embeddings = TRUE
-##save_dir = "wd"
-##save_name = "textPredict"
-##story_id = NULL
-##dataset_to_merge_predictions = NULL
-##previous_sentence = FALSE
-### fine-tuned model specific parameters
-##tokenizer_parallelism = FALSE
-##logging_level = "error"
-##force_return_results = TRUE
-##return_all_scores = FALSE
-##function_to_apply = NULL
-##set_seed = 202208
-##
-##
-##texts = PSE_stories_participant_level$stories
-##model_info = "implicit_power_roberta_large_L23_v1"
-##participant_id = PSE_stories_participant_level$Participant_ID
-##dataset_to_merge_predictions = PSE_stories_participant_level
-
 # Wraper functions for textPredictR and textClassifyPipe
 
 #' textPredict, textAssess and textClassify
@@ -57,9 +21,9 @@
 #'  then texts and embeddings cannot be submitted simultaneously (default = NULL).
 #' @param x_append (tibble; only for "texttrained"-model_type) Variables to be appended with the word embeddings (x).
 #' @param append_first If TRUE, x_appened is added before word embeddings.
-#' @param type (character; only for "text"-model_type) Defines what output to give after logistic regression prediction.
-#' Either probabilities, classifications or both are returned (default = "class".
-#' For probabilities use "prob". For both use "class_prob").
+# @param type (character; only for "text"-model_type) Defines what output to give after logistic regression prediction.
+# Either probabilities, classifications or both are returned (default = "class".
+# For probabilities use "prob". For both use "class_prob").
 #' @param dim_names (boolean; only for "texttrained"-model_type) Account for specific dimension names from textEmbed()
 #' (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 #' word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.
@@ -177,7 +141,6 @@ textPredict <- function(
     word_embeddings = NULL,
     x_append = NULL,
     append_first,
-    type = NULL,
     dim_names = TRUE,
     save_model = TRUE,
     threshold = NULL,
@@ -199,7 +162,7 @@ textPredict <- function(
     set_seed = 202208,
     ...){
 
-  if (!(model_type %in% c("texttrained", "finetuned"))) {
+  if (!(model_type %in% c("texttrained", "text-trained", "finetuned", "fine-tuned"))) {
     stop("Error: method must be either 'texttrained' or 'finetuned'.")
   }
 
@@ -208,7 +171,7 @@ textPredict <- function(
 
   if(registered_model == "default"){
 
-    if(model_type == "texttrained"){
+    if(model_type == "texttrained" | model_type == "text-trained"){
 
       print("You are using a 'text-trained model' (i.e., model_type = 'texttrained').")
 
@@ -218,7 +181,6 @@ textPredict <- function(
         texts = texts,
         x_append = x_append,
         append_first = append_first,
-        type = type,
         dim_names = dim_names,
         save_model = save_model,
         threshold = threshold,
@@ -235,7 +197,7 @@ textPredict <- function(
 
     }
 
-    if(model_type == "finetuned"){
+    if(model_type == "finetuned" | model_type == "fine-tuned"){
       print("You are using a fine-tuned model (i.e., model_type = 'finetuned').")
 
       results <-  textClassifyPipe(
@@ -261,7 +223,6 @@ textPredict <- function(
         texts = texts,
         model_type = model_type,
         x_append = x_append,
-       # append_first = TRUE,
         threshold = threshold,
         dim_names = dim_names,
         save_model = save_model,
@@ -276,7 +237,6 @@ textPredict <- function(
         device = device,
       )
   }
-
 
   return(results)
 }

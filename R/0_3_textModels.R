@@ -20,7 +20,9 @@ textModels <- function(){
   return(models)
 }
 
-#' Get the number of layers in a given model.
+#' Number of layers
+#'
+#' This functions gets the number of layers in a given model.
 #' @param target_model (string) The name of the model to know the number of layers of.
 #' @param hg_gated Set to TRUE if the accessed model is gated.
 #' @param hg_token The token needed to access the gated model.
@@ -58,7 +60,9 @@ textModelLayers <- function(target_model,
 }
 
 
-#' Delete a specified model and model associated files.
+#' Delete a specified model
+#'
+#' This functions delete specified mode and associated files.
 #' @param target_model (string) The name of the model to be deleted.
 #' @return Confirmation whether the model has been deleted.
 #' @examples

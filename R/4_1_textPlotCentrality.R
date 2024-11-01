@@ -1,6 +1,8 @@
 #### Semantic Centrality Plot SC ####
 
-#' Compute semantic similarity score between single words' word embeddings
+#' Semantic similarity score between single words' and an aggregated word embeddings
+#'
+#' textCentrality() computes semantic similarity score between single words' word embeddings
 #' and the aggregated word embedding of all words.
 #' @param words (character) Word or text variable to be plotted.
 #' @param word_embeddings Word embeddings from textEmbed for the words to be plotted
@@ -72,37 +74,9 @@ textCentrality <- function(words,
 }
 
 
-min_freq_words_test = 1
-plot_n_word_extreme = 10
-plot_n_word_frequency = 10
-plot_n_words_middle = 10
-titles_color = "#61605e"
-x_axes = "central_semantic_similarity"
-title_top = "Semantic Centrality Plot"
-x_axes_label = "Semantic Centrality"
-scale_x_axes_lim = NULL
-scale_y_axes_lim = NULL
-word_font = NULL
-centrality_color_codes = c("#EAEAEA", "#85DB8E", "#398CF9", "#9e9d9d")
-word_size_range = c(3, 8)
-position_jitter_hight = .0
-position_jitter_width = .03
-point_size = 0.5
-arrow_transparency = 0.1
-points_without_words_size = 0.5
-points_without_words_alpha = 0.5
-legend_title = "SC"
-legend_x_axes_label = "x"
-legend_x_position = 0.02
-legend_y_position = 0.02
-legend_h_size = 0.2
-legend_w_size = 0.2
-legend_title_size = 7
-legend_number_size = 2
-seed = 1007
-
-
-#' Plot words according to semantic similarity to the aggregated word embedding.
+#' Plots words from textCentrality()
+#'
+#' textCentralityPlot() plots words according to semantic similarity to the aggregated word embedding.
 #' @param word_data Tibble from the textPlot function.
 #' @param min_freq_words_test Select words to significance test that have occurred
 #' at least min_freq_words_test (default = 1).

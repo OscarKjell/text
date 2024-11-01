@@ -2,13 +2,12 @@
 % Please edit documentation in R/3_1_textSimilarity.R
 \name{textDistanceNorm}
 \alias{textDistanceNorm}
-\title{Compute the semantic distance between a text variable and a word norm
-(i.e., a text represented by one word embedding that represent a construct/concept).}
+\title{Semantic distance between a text variable and a word norm}
 \usage{
 textDistanceNorm(x, y, method = "euclidean", center = FALSE, scale = FALSE)
 }
 \arguments{
-\item{x}{Word embeddings (from textEmbed).}
+\item{x}{Word embeddings (from textEmbed()).}
 
 \item{y}{Word embedding from textEmbed (from only one text).}
 
@@ -29,7 +28,7 @@ the embedding mean
 A vector comprising semantic distance scores.
 }
 \description{
-Compute the semantic distance between a text variable and a word norm
+textDistanceNorm() computes the semantic distance between a text variable and a word norm
 (i.e., a text represented by one word embedding that represent a construct/concept).
 }
 \examples{

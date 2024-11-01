@@ -1,6 +1,8 @@
 ####  textPCA and textPCAPlot #####
 
-#' Compute 2 PCA dimensions of the word embeddings for individual words.
+#' textPCA()
+#'
+#' textPCA() computes 2 PCA dimensions of the word embeddings for individual words.
 #' @param words Word or text variable to be plotted.
 #' @param word_types_embeddings Word embeddings from textEmbed for individual words
 #' (i.e., decontextualized embeddings).
@@ -61,7 +63,9 @@ textPCA <- function(words,
   outputdata
 }
 
-#' Plot words according to 2-D plot from 2 PCA components.
+#' textPCAPlot
+#'
+#' textPCAPlot() plots words according to 2-D plot from 2 PCA components.
 #' @param word_data Dataframe from textPCA
 #' @param min_freq_words_test Select words to significance test that have occurred at least min_freq_words_test
 #' (default = 1).
