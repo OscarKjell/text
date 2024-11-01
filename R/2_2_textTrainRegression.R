@@ -724,6 +724,7 @@ textTrainRegression <- function(x,
                                 inside_breaks = 4,
                                 model = "regression", # model = "multinomial"
                                 eval_measure = "default",
+                                language_distribution = FALSE,
                                 preprocess_step_center = TRUE,
                                 preprocess_step_scale = TRUE,
                                 preprocess_PCA = NA,
