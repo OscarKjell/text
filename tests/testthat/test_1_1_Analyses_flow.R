@@ -70,16 +70,25 @@ test_that("Testing textEmbed as well as train", {
     dim_names = TRUE
   )
 
+#  hils_predicted_scores1 <- text::textPredict(
+#    model_info = "https://github.com/theharmonylab/open_models/raw/main/response_format_2024/depressionselect_robertaL23_phq9_Gu2024.rds",
+#    texts = Language_based_assessment_data_8[1, "satisfactiontexts"],
+# #   word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"],
+#    dim_names = FALSE
+#  )
+#
+
   expect_that(hils_predicted_scores1[[1]], is_a("numeric"))
   expect_equal(hils_predicted_scores1[[1]][1], 11.89219, tolerance = 0.0001)
   expect_equal(hils_predicted_scores1[[1]][2], 25.90329, tolerance = 0.0001)
 
-
+#### testing testing
   # Train with x_variable
   train_x_append <- text::textTrainRegression(
     x = harmony_word_embeddings$texts["satisfactiontexts"],
     x_append = Language_based_assessment_data_8[1:20, 6:7],
     y = Language_based_assessment_data_8["hilstotal"][1:20, ],
+    language_distribution = Language_based_assessment_data_8["satisfactiontexts"],
     cv_method = "cv_folds",
     outside_folds = 2,
     inside_folds = 2,
@@ -90,6 +99,7 @@ test_that("Testing textEmbed as well as train", {
     penalty = 1e-16,
     multi_cores = "multi_cores_sys_default"
   )
+  expect_that(train_x_append$language_distribution, is_a("tbl_df"))
 
   # Predict
   hils_predicted_scores2 <- text::textPredict(
@@ -103,6 +113,22 @@ test_that("Testing textEmbed as well as train", {
   expect_that(hils_predicted_scores2[[1]], is_a("numeric"))
   expect_equal(hils_predicted_scores2[[1]][1], 12.40038, tolerance = 0.1)
   expect_equal(hils_predicted_scores2[[1]][2], 25.89001, tolerance = 0.1)
+
+
+  # Trying with te
+  # Predict help(textPredict)
+  hils_predicted_scores3 <- text::textPredict(
+    model_info = train_x_append,
+    x_append = Language_based_assessment_data_8[1:20, 6:7],
+    texts = Language_based_assessment_data_8[1:20,"satisfactiontexts"],
+    dim_names = TRUE,
+    append_first = FALSE
+  )
+
+  expect_that(hils_predicted_scores3, is_a("list"))
+  expect_equal(hils_predicted_scores3$predictions[[1]][1], 12.40038, tolerance = 0.1)
+  expect_equal(hils_predicted_scores3$similarity_scores$overlap_percentage[[1]], 0.5915493, tolerance = 0.1)
+
 
   # Same as above with different input
   hils_predicted_scores1b <- textPredict(

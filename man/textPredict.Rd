@@ -14,6 +14,8 @@ textPredict(
   x_append = NULL,
   append_first,
   dim_names = TRUE,
+  language_distribution = NULL,
+  language_distribution_min_words = "trained_distribution_min_words",
   save_model = TRUE,
   threshold = NULL,
   show_texts = FALSE,
@@ -42,6 +44,8 @@ textAssess(
   x_append = NULL,
   append_first,
   dim_names = TRUE,
+  language_distribution = NULL,
+  language_distribution_min_words = "trained_distribution_min_words",
   save_model = TRUE,
   threshold = NULL,
   show_texts = FALSE,
@@ -70,6 +74,8 @@ textClassify(
   x_append = NULL,
   append_first,
   dim_names = TRUE,
+  language_distribution = NULL,
+  language_distribution_min_words = "trained_distribution_min_words",
   save_model = TRUE,
   threshold = NULL,
   show_texts = FALSE,
@@ -116,6 +122,13 @@ then texts and embeddings cannot be submitted simultaneously (default = NULL).}
 \item{dim_names}{(boolean; only for "texttrained"-model_type) Account for specific dimension names from textEmbed()
 (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.}
+
+\item{language_distribution}{(Character column) If you provide the raw language data used for making the embeddings used for assessment,
+the language distribution (i.e., a word and frequency table) will be compared with saved one in the model object (if one exists).
+This enables calculating similarity scores.}
+
+\item{language_distribution_min_words}{(string or numeric) Default is to use the removal threshold used when creating the distribution in the
+in the training set ("trained_distribution_min_words"). You can set it yourself with a numeric value.}
 
 \item{save_model}{(boolean; only for "texttrained"-model_type) The model will by default be saved in your work-directory (default = TRUE).
 If the model already exists in your work-directory, it will automatically be loaded from there.}

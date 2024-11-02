@@ -1,8 +1,5 @@
+
 # A helper function to textPredict giving it the capabilities of textPredictEntireProcedure.
-#' @param texts (character) Text to predict. If this argument is specified, then argument
-#' "premade_embeddings" must be set to NULL (default = NULL).
-#' @param word_embeddings (Embeddings from e.g., textEmbed) Embeddings to predict. If
-#' this argument is specified, then argument "texts" must be set to NULL (default = NULL).
 #' @param model_info (character or r-object) model_info has four options. 1: R model object
 #' (e.g, saved output from textTrainRegression). 2: Link to a model stored in a github repo
 #' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS").
@@ -10,42 +7,19 @@
 #' 4: Path to a model stored locally (e.g, "path/to/your/model"). Information about some accessible models
 #' can be found at: \href{https://r-text.org/articles/pre_trained_models.html}{r-text.org}.
 #' @param save_model (boolean) The model will by default be saved in work directory (deafult = TRUE).
-#' @param type (character) Choose either 'class' or 'prob'. If your model is a logistic or multinomial
-#'  model, specify whether you want to receive the
-#' model's classification "class" or the underlying probabilities "prob" (default = "class").
-#' @param max_token_to_sentence (numeric) This information will be automatically extracted from your
-#' model, so this argument is typically not used.
-#' However, if it's not defined in your model_description, you can assign a value here (default = 4).
-#' @param aggregation_from_layers_to_tokens (character) This information will be automatically extracted
-#' from your model, so this argument is typically not used.
-#' However, if it's not defined in your model_description, you can assign a value here (default = "concatenate").
-#' @param aggregation_from_tokens_to_texts (character) This information will be automatically
-#' extracted from your model, so this argument is typically not used.
-#' @param save_embeddings (boolean) If set to TRUE, embeddings will be saved with a unique identifier, and
-#' will be automatically opened next time textPredict is run with the same text. (default = TRUE)
 #' @param save_dir (character) Directory to save embeddings. (default = "wd" (i.e, work-directory))
-#' @param save_name (character) Name of the saved embeddings (will be combined with a unique identifier).
-#' (default = "textPredict").
-#' @param previous_sentence If set to TRUE, word-embeddings will be averaged over the current and previous
-#' sentence per story-id. For this, both participant-id and story-id must be specified.
 #' @noRd
-textReturnModelAndEmbedding <- function(
-    texts = NULL,
-    word_embeddings = NULL,
+textReturnModel<- function(
     model_info = NULL,
     save_model = TRUE,
-    type = "class",
-    device = "cpu",
-    story_id = NULL,
-    save_embeddings = TRUE,
-    save_dir = "wd",
-    save_name = "textPredict",
-    previous_sentence = FALSE) {
+    save_dir = "wd"
+    #save_name = "textPredict"
+    ) {
   # extend the timeout time for larger models.
   options(timeout = 5 * 60)
 
   # diaplay message to user
-  cat(colourise("Loading model...", fg = "red"))
+  cat(colourise("Loading model...", fg = "purple"))
   cat("\n")
 
   # extract model_name if its a url or filepath
@@ -131,6 +105,140 @@ textReturnModelAndEmbedding <- function(
     cat("\n")
   }
 
+  return(loaded_model)
+}
+
+
+
+# A helper function to textPredict giving it the capabilities of textPredictEntireProcedure.
+#' @param texts (character) Text to predict. If this argument is specified, then argument
+#' "premade_embeddings" must be set to NULL (default = NULL).
+#' @param word_embeddings (Embeddings from e.g., textEmbed) Embeddings to predict. If
+#' this argument is specified, then argument "texts" must be set to NULL (default = NULL).
+#' @param model_info (character or r-object) model_info has four options. 1: R model object
+#' (e.g, saved output from textTrainRegression). 2: Link to a model stored in a github repo
+#' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS").
+#' 3: Link to a model stored in a osf project (e.g, https://osf.io/8fp7v).
+#' 4: Path to a model stored locally (e.g, "path/to/your/model"). Information about some accessible models
+#' can be found at: \href{https://r-text.org/articles/pre_trained_models.html}{r-text.org}.
+#' @param save_model (boolean) The model will by default be saved in work directory (deafult = TRUE).
+#' @param type (character) Choose either 'class' or 'prob'. If your model is a logistic or multinomial
+#'  model, specify whether you want to receive the
+#' model's classification "class" or the underlying probabilities "prob" (default = "class").
+#' @param max_token_to_sentence (numeric) This information will be automatically extracted from your
+#' model, so this argument is typically not used.
+#' However, if it's not defined in your model_description, you can assign a value here (default = 4).
+#' @param aggregation_from_layers_to_tokens (character) This information will be automatically extracted
+#' from your model, so this argument is typically not used.
+#' However, if it's not defined in your model_description, you can assign a value here (default = "concatenate").
+#' @param aggregation_from_tokens_to_texts (character) This information will be automatically
+#' extracted from your model, so this argument is typically not used.
+#' @param save_embeddings (boolean) If set to TRUE, embeddings will be saved with a unique identifier, and
+#' will be automatically opened next time textPredict is run with the same text. (default = TRUE)
+#' @param save_dir (character) Directory to save embeddings. (default = "wd" (i.e, work-directory))
+#' @param save_name (character) Name of the saved embeddings (will be combined with a unique identifier).
+#' (default = "textPredict").
+#' @param previous_sentence If set to TRUE, word-embeddings will be averaged over the current and previous
+#' sentence per story-id. For this, both participant-id and story-id must be specified.
+#' @noRd
+textReturnEmbedding <- function(
+    texts = NULL,
+    word_embeddings = NULL,
+    loaded_model = NULL,
+    save_model = TRUE,
+    type = "class",
+    device = "cpu",
+    story_id = NULL,
+    save_embeddings = TRUE,
+    save_dir = "wd",
+    save_name = "textPredict",
+    previous_sentence = FALSE) {
+  # extend the timeout time for larger models.
+  options(timeout = 5 * 60)
+
+#  # extract model_name if its a url or filepath
+#  if (is.character(model_info)) {
+#    model_name <- basename(model_info)
+#    # find model in wd
+#    model_exists <- file.exists(model_name)
+#
+#    # determine how to load model
+#    if (grepl("github.com/", model_info) && isFALSE(model_exists) && isTRUE(save_model)) {
+#      # load from github
+#      loaded_model <- readRDS(url(model_info))
+#      # save model
+#      saveRDS(loaded_model, model_name)
+#
+#      # display message to user
+#      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded and saved in:", getwd()), sep = "")
+#      cat(colourise(loaded_model_confirm, fg = "green"))
+#      cat("\n")
+#    } else if (grepl("github.com/", model_info) && isFALSE(model_exists) && isFALSE(save_model)) {
+#      # load from github, don't save
+#      loaded_model <- readRDS(url(model_info))
+#
+#      # display message to user
+#      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
+#      cat(colourise(loaded_model_confirm, fg = "green"))
+#      cat("\n")
+#    } else if (grepl("github.com/", model_info) && isTRUE(model_exists)) {
+#      # retrive model from wd if it's already downloaded
+#      loaded_model <- readRDS(model_name)
+#
+#      # display message to user
+#      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", getwd()), sep = "")
+#      cat(colourise(loaded_model_confirm, fg = "green"))
+#      cat("\n")
+#    } else if (grepl("osf.io", model_info)){
+#
+#      # check if osfr is installed, otherwise, ask the user to install it.
+#      if (!requireNamespace("osfr", quietly = TRUE)) {
+#        stop("The osfr-package is required for loading files from osfr.
+#         Please install it using install.packages('osfr').", call. = FALSE)
+#      }
+#
+#      # retrive osfr tibble with file
+#      osf_files <- osf_retrieve_file(model_info)
+#
+#      # check if model is already downloaded
+#      if (isTRUE(file.exists(osf_files$name))){
+#        # load model from local memory
+#        loaded_model <- readRDS(osf_files$name)
+#
+#        # display message to user
+#        loaded_model_confirm <- paste0(c("The model:", osf_files$name, "has been loaded from:", getwd()), sep = "")
+#        cat(colourise(loaded_model_confirm, fg = "green"))
+#        cat("\n")
+#
+#      } else{
+#        # download model locally
+#        downloaded_model <- osf_download(osf_files[1,])
+#
+#        loaded_model <- readRDS(downloaded_model$local_path)
+#
+#        # display message to user
+#        loaded_model_confirm <- paste0(c("The model:", osf_files$name, "has been loaded and saved in:", getwd()), sep = "")
+#        cat(colourise(loaded_model_confirm, fg = "green"))
+#        cat("\n")
+#      }
+#    } else {
+#      # load model from specific path (if it exists somewhere else than in the work directory)
+#      loaded_model <- readRDS(model_info)
+#
+#      # display message to user
+#      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
+#      cat(colourise(loaded_model_confirm, fg = "green"))
+#      cat("\n")
+#    }
+#  } else {
+#    # model was an R object of a model
+#    loaded_model <- model_info
+#    # display message to user
+#    loaded_model_confirm <- paste0(c("The model has been loaded from your global environment."), sep = "")
+#    cat(colourise(loaded_model_confirm, fg = "green"))
+#    cat("\n")
+#  }
+
   # Check that both texts and word_embeddings aren't defined.
   if (!is.null(texts) && !is.null(word_embeddings)) {
     stop('Both arguments: "texts" and "word_embeddings" cannot be defined simultaneously. Choose one or the other.')
@@ -183,7 +291,9 @@ textReturnModelAndEmbedding <- function(
 
     # Extracts information about model type and layers.
     model_type <- extract_comment(loaded_model$model_description[new_line_number], "model")
-    model_layers <- as.numeric(extract_comment(loaded_model$model_description[new_line_number], "layers"))
+    model_layers <- as.numeric(extract_comment(
+      comment = loaded_model$model_description[new_line_number],
+      part = "layers"))
 
     # Extracts the max_token_to_sentence, aggregation_from_layers_to_tokens,
     # and aggregation_from_tokens_to_texts from the model.
@@ -276,6 +386,45 @@ textReturnModelAndEmbedding <- function(
   return(emb_and_model)
 }
 
+#model_info = NULL
+#word_embeddings = NULL
+#texts = NULL
+#x_append = NULL
+#append_first = TRUE
+#threshold = NULL
+#dim_names = TRUE
+#save_model = TRUE
+#save_embeddings = TRUE
+#save_dir = "wd"
+#save_name = "textPredict"
+#show_texts = FALSE
+#participant_id = NULL
+#story_id = NULL
+#dataset_to_merge_predictions = NULL
+#previous_sentence = FALSE
+#device = "cpu"
+#
+#model_info = train_x_append
+#x_append = Language_based_assessment_data_8[1:20, 6:7]
+#texts = Language_based_assessment_data_8[1:20,"satisfactiontexts"]
+#dim_names = TRUE
+#append_first = FALSE
+#
+#model_info = text_train_results1
+#word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"]
+#dim_names = TRUE
+#
+#model_info = train_x_append
+#x_append = Language_based_assessment_data_8[1:20, 6:7]
+#word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"]
+#dim_names = TRUE
+#append_first = FALSE
+#
+#model_info = train_x_append
+#x_append = Language_based_assessment_data_8[1:20, 6:7]
+#word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"]
+#dim_names = TRUE
+#append_first = FALSE
 
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
@@ -298,6 +447,11 @@ textReturnModelAndEmbedding <- function(
 #' @param dim_names (boolean) Specifies how to handle word embedding names. If TRUE, it uses specific
 #' word embedding names, and if FALSE word embeddings are changed to their generic names (Dim1, Dim2, etc).
 #' If set to FALSE, the model must have been trained on word embeddings created with dim_names FALSE.
+#' @param language_distribution (Character column) If you provide the raw language data used for making the embeddings used for assessment,
+#' the language distribution (i.e., a word and frequency table) will be compared with saved one in the model object (if one exists).
+#' This enables calculating similarity scores.
+#' @param language_distribution_min_words (string or numeric) Default is to use the removal threshold used when creating the distribution in the
+#' in the training set ("trained_distribution_min_words"). You can set it yourself with a numeric value.
 #' @param save_model (boolean) The model will by default be saved in your work-directory (default = TRUE).
 #' If the model already exists in your work-directory, it will automatically be loaded from there.
 #' @param save_embeddings (boolean) If set to TRUE, embeddings will be saved with a unique identifier, and
@@ -397,6 +551,8 @@ textPredictTextTrained <- function(
     append_first = TRUE,
     threshold = NULL,
     dim_names = TRUE,
+    language_distribution = NULL,
+    language_distribution_min_words = "trained_distribution_min_words",
     save_model = TRUE,
     save_embeddings = TRUE,
     save_dir = "wd",
@@ -416,14 +572,23 @@ textPredictTextTrained <- function(
          Choose one or the other.')
   }
 
+  if(is.character(model_info)){
+    loaded_model <- textReturnModel(
+      model_info = model_info,
+      save_model = save_model)
+  } else {
+    loaded_model <- model_info
+  }
+
+
   #### Automatically extract embeddings that are compatible with the model ####
   if (!is.null(texts)) {
     # Retrieve embeddings that are compatible with the model.
-      emb_and_mod <- textReturnModelAndEmbedding(
+      emb_and_mod <- textReturnEmbedding(
       texts = texts,
       word_embeddings = word_embeddings,
-      model_info = model_info,
-      save_model = save_model,
+      loaded_model = loaded_model,
+  #   save_model = save_model,
    #   type = type,
       device = device,
       story_id = story_id,
@@ -519,7 +684,7 @@ textPredictTextTrained <- function(
   new_data1 <- new_data1[complete.cases(new_data1), ]
 
 
-  #### Load prepared_with_recipe
+  #### Load prepared_with_recipe  ####
 
   colnames_to_b_removed <- loaded_model$final_model$pre$actions$recipe$recipe$var_info$variable[
     loaded_model$final_model$pre$actions$recipe$recipe$var_info$role == "predictor"]
@@ -595,10 +760,46 @@ textPredictTextTrained <- function(
     }
   }
 
-  # Include text in predictions
+  #### Include text in predictions ####
   if (show_texts) {
     predicted_scores2 <- predicted_scores2 %>%
       dplyr::mutate(texts = texts)
+  }
+
+
+  #### Comparing domain similarities #### help(textTokenizeAndCount)
+  if (tibble::is_tibble(loaded_model$language_distribution) &
+     !is.null(texts) | !is.null(language_distribution)){ # could add option to add language distribution | !is.null(language_distribution)
+
+    if(language_distribution_min_words == "trained_distribution_min_words"){
+
+    n_remove_threshold_comment <- comment(loaded_model$language_distribution)
+
+    language_distribution_min_words <- extract_comment(
+      comment = n_remove_threshold_comment,
+      part = "n_remove_threshold")
+    }
+
+    if (!is.null(texts) & is.null(language_distribution)){
+      assess_distribution <- textTokenizeAndCount(
+        data = texts,
+        n_remove_threshold = language_distribution_min_words)
+    }
+    if (!is.null(language_distribution)){
+      assess_distribution <- textTokenizeAndCount(
+        language_distribution,
+        n_remove_threshold = language_distribution_min_words)
+    }
+
+    similarity_scores <- textDomainCompare(
+      train_language = loaded_model$language_distribution,
+      assess_language = assess_distribution
+    )
+
+    predicted_scores2 <- c(list(
+      similarity_scores = similarity_scores),
+      predictions = list(predicted_scores2))
+
   }
 
 
