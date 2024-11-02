@@ -447,6 +447,11 @@ textReturnEmbedding <- function(
 #' @param dim_names (boolean) Specifies how to handle word embedding names. If TRUE, it uses specific
 #' word embedding names, and if FALSE word embeddings are changed to their generic names (Dim1, Dim2, etc).
 #' If set to FALSE, the model must have been trained on word embeddings created with dim_names FALSE.
+#' @param language_distribution (Character column) If you provide the raw language data used for making the embeddings used for assessment,
+#' the language distribution (i.e., a word and frequency table) will be compared with saved one in the model object (if one exists).
+#' This enables calculating similarity scores.
+#' @param language_distribution_min_words (string or numeric) Default is to use the removal threshold used when creating the distribution in the
+#' in the training set ("trained_distribution_min_words"). You can set it yourself with a numeric value.
 #' @param save_model (boolean) The model will by default be saved in your work-directory (default = TRUE).
 #' If the model already exists in your work-directory, it will automatically be loaded from there.
 #' @param save_embeddings (boolean) If set to TRUE, embeddings will be saved with a unique identifier, and
@@ -546,6 +551,8 @@ textPredictTextTrained <- function(
     append_first = TRUE,
     threshold = NULL,
     dim_names = TRUE,
+    language_distribution = NULL,
+    language_distribution_min_words = "trained_distribution_min_words",
     save_model = TRUE,
     save_embeddings = TRUE,
     save_dir = "wd",
@@ -677,7 +684,7 @@ textPredictTextTrained <- function(
   new_data1 <- new_data1[complete.cases(new_data1), ]
 
 
-  #### Load prepared_with_recipe
+  #### Load prepared_with_recipe  ####
 
   colnames_to_b_removed <- loaded_model$final_model$pre$actions$recipe$recipe$var_info$variable[
     loaded_model$final_model$pre$actions$recipe$recipe$var_info$role == "predictor"]
@@ -753,18 +760,36 @@ textPredictTextTrained <- function(
     }
   }
 
-  # Include text in predictions
+  #### Include text in predictions ####
   if (show_texts) {
     predicted_scores2 <- predicted_scores2 %>%
       dplyr::mutate(texts = texts)
   }
 
 
-  # Comparing domain similarities
-  if(tibble::is_tibble(loaded_model$language_distribution) &
-     !is.null(texts)){ # could add option to add language distribution | !is.null(language_distribution)
+  #### Comparing domain similarities #### help(textTokenizeAndCount)
+  if (tibble::is_tibble(loaded_model$language_distribution) &
+     !is.null(texts) | !is.null(language_distribution)){ # could add option to add language distribution | !is.null(language_distribution)
 
-    assess_distribution <- textTokenizeAndCount(texts)
+    if(language_distribution_min_words == "trained_distribution_min_words"){
+
+    n_remove_threshold_comment <- comment(loaded_model$language_distribution)
+
+    language_distribution_min_words <- extract_comment(
+      comment = n_remove_threshold_comment,
+      part = "n_remove_threshold")
+    }
+
+    if (!is.null(texts) & is.null(language_distribution)){
+      assess_distribution <- textTokenizeAndCount(
+        data = texts,
+        n_remove_threshold = language_distribution_min_words)
+    }
+    if (!is.null(language_distribution)){
+      assess_distribution <- textTokenizeAndCount(
+        language_distribution,
+        n_remove_threshold = language_distribution_min_words)
+    }
 
     similarity_scores <- textDomainCompare(
       train_language = loaded_model$language_distribution,

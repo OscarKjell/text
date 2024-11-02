@@ -19,7 +19,7 @@ test_that("Testing Domain Compare", {
   comparison <- textDomainCompare(training_language, assess_language)
 
   testthat::expect_that(comparison, testthat::is_a("list"))
-  testthat::expect_equal(comparison$overlapp_percentage[[1]], 0.4917127, tolerance = 0.0001)
+  testthat::expect_equal(comparison$overlap_percentage[[1]], 0.4917127, tolerance = 0.0001)
   testthat::expect_equal(comparison$test_recall_percentage[[1]], 0.6267606, tolerance = 0.0001)
   testthat::expect_equal(comparison$cosine_similarity[[1]], 0.9523402, tolerance = 0.0001)
   testthat::expect_equal(comparison$cosine_similarity_standardised[[1]], 0.9423569, tolerance = 0.0001)

@@ -262,8 +262,10 @@ cohens_d <- function(x,
 #' @param part (string) The part to be extracted ("model" or "layers").
 #' @return string from the comment
 #' @noRd
-extract_comment <- function(comment,
-                            part) {
+extract_comment <- function(
+    comment,
+    part) {
+
   if (part == "model") {
     model_text <- sub(".*textEmbedRawLayers: model: ", "", comment)
     output <- sub(" ; layers.*", "", model_text)
@@ -293,6 +295,17 @@ extract_comment <- function(comment,
                              comment,
                              value = TRUE)
     mix <- sub(".*mixture in final model =  ", "",
+               selected_element)
+    output <- as.numeric(mix)
+  }
+
+
+  # penalty_in_final_model
+  if (part == "n_remove_threshold") {
+    selected_element <- grep("^n_remove_threshold =",
+                             comment,
+                             value = TRUE)
+    mix <- sub(".*n_remove_threshold =", "",
                selected_element)
     output <- as.numeric(mix)
   }

@@ -127,7 +127,7 @@ test_that("Testing textEmbed as well as train", {
 
   expect_that(hils_predicted_scores3, is_a("list"))
   expect_equal(hils_predicted_scores3$predictions[[1]][1], 12.40038, tolerance = 0.1)
-  expect_equal(hils_predicted_scores3$similarity_scores$overlapp_percentage[[1]], 0.5915493, tolerance = 0.1)
+  expect_equal(hils_predicted_scores3$similarity_scores$overlap_percentage[[1]], 0.5915493, tolerance = 0.1)
 
 
   # Same as above with different input

@@ -30,6 +30,9 @@ textTokenizeAndCount <- function(
     dplyr::filter(n >= n_remove_threshold) %>%     # Filter based on threshold
     tibble::as_tibble()
 
+
+  comment(word_frequency) <-paste("n_remove_threshold = ", n_remove_threshold)
+
   return(word_frequency)
 }
 
@@ -90,7 +93,7 @@ textDomainCompare <- function(
     combined_words$present_in_assess == 1)
 
   # Calculate Jaccard distance
-  overlapp_percentage <- (intersection / union)
+  overlap_percentage <- (intersection / union)
 
   test_recall_percentage <- (intersection / assess)
 
@@ -119,7 +122,7 @@ textDomainCompare <- function(
     (sqrt(sum(standardized_train^2)) * sqrt(sum(standardized_assess^2)))
 
   # Return results as a list
-  return(list(overlapp_percentage = overlapp_percentage,
+  return(list(overlap_percentage = overlap_percentage,
               test_recall_percentage = test_recall_percentage,
               cosine_similarity = cosine_similarity,
               cosine_similarity_standardised = cosine_similarity_standardised))
