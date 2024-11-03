@@ -192,63 +192,6 @@ update_user_and_texts <- function(df) {
   return(updated_df)
 }
 
-#' Function that binds predictions to their original dataset
-#' @param data Dataset, ex csv file
-#' @param predictions Predictions from textPredict as a vector
-#' @return Returns the original dataset with predictions included.
-#' @noRd
-bind_predictions <- function(data,
-                             predictions) {
-  predictions <- tibble::as_tibble(predictions)
-
-  row_diff <- nrow(data) - nrow(predictions)
-
-  if (row_diff > 0) {
-    # if data has more rows, add NA rows to predictions
-    na_predictions <- tibble::as_tibble(matrix(NA, nrow = row_diff, ncol = ncol(predictions)))
-    colnames(na_predictions) <- colnames(predictions)
-    predictions <- rbind(predictions, na_predictions)
-  } else if (row_diff < 0) {
-    # if predictions have more rows, add NA rows to data
-    row_diff <- abs(row_diff)
-    na_data <- tibble::as_tibble(matrix(NA, nrow = row_diff, ncol = ncol(data)))
-    colnames(na_data) <- colnames(data)
-    data <- rbind(data, na_data)
-  }
-
-  # bind the columns
-  return(dplyr::bind_cols(data, predictions))
-}
-
-#' Function that binds predictions to their original dataset
-#' @param original_data Dataset, ex csv file
-#' @param prediction_list Predictions from textPredict as a list
-#' @return Returns the original dataset with predictions included.
-#' @noRd
-bind_data <- function(original_data,
-                      prediction_list) {
-  # copy of original_data
-  result_data <- original_data
-
-  # iterate through each "prediction"
-  for (i in seq_along(prediction_list)) {
-    predictions <- prediction_list[[i]]
-
-    # rename columns in predictions to ensure they are unique
-    col_names <- names(predictions)
-    unique_col_names <- paste0(col_names, "_", i)
-    names(predictions) <- unique_col_names
-
-    # add a separator column with NA values before binding the new predictions
-    separator_col_name <- paste0("separator_col_", i)
-    result_data[[separator_col_name]] <- NA
-
-    # bind the predictions with the result_data
-    result_data <- bind_predictions(result_data, predictions)
-  }
-
-  return(result_data)
-}
 
 #' Wrapper function that prepares the data and returns a list with predictions, class residuals and probability residuals.
 #' @param model_reference Reference to implicit motive model, either github URL or file-path.
@@ -279,10 +222,6 @@ implicit_motives_results <- function(model_reference,
   } else if (model_reference == "implicit_motives") {
     column_name <- model_reference
   }
-
-  ##  if (length(texts) != length(participant_id)) {
-  ##    stop("texts and participant_id must be of same length.")
-  ##  }
 
 
   if(!is.null(participant_id)){
@@ -347,9 +286,6 @@ implicit_motives_results <- function(model_reference,
         # predicted_scores2 = sentence predictions, predicted = person predictions
         to_insert <- list(predicted_scores2, predicted)
       }
-
-      # old code: it was integrating ALL three datasets with the datset
-      #integrated_dataset <- bind_data(dataset, to_insert)
 
       # new code to integrate predictions into dataset; only matching the rows
       if(nrow(dataset) == nrow(to_insert[[1]])){
@@ -513,38 +449,6 @@ get_model_info <- function(model_info,
               implicit_type = implicit_type))
 }
 
-
-
-##model_info = NULL
-##word_embeddings = NULL
-##texts = NULL
-##x_append = NULL
-##type = NULL
-##dim_names = TRUE
-##save_model = TRUE
-##threshold = NULL
-##show_texts = FALSE
-##device = "cpu"
-##participant_id = NULL
-##save_embeddings = TRUE
-##save_dir = "wd"
-##save_name = "textPredict"
-##story_id = NULL
-##dataset_to_merge_predictions = NULL
-##previous_sentence = FALSE
-##
-##model_info = "theharmonylab/implicit-motives-power-roberta-large"
-##texts = PSE_stories_participant_level$stories
-##model_type = "finetuned"
-##
-#texts = PSE_stories_participant_level$stories
-#model_info = "implicit_power_roberta_large_L23_v1"
-##participant_id = PSE_stories_participant_level$Participant_ID
-#
-#model_info = "theharmonylab/implicit-motives-power-roberta-large"
-##texts = Language_based_assessment_data_8[1:2,1]
-#model_type = "finetuned"
-
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
 #' @param model_info (character or r-object) model_info has four options. 1: R model object
@@ -699,13 +603,6 @@ textPredictImplicitMotives <- function(
 
   }
 
-#  # Create participant id to enable creation of sentence level predictions (not sure why this is needed)
-#  if (is.null(participant_id) & !is.null(dataset_to_merge_predictions)){
-#      use_row_id_name <- TRUE
-#      participant_id <- seq_len(length(texts))
-#      cat(colourise("Note: participant_ID was not provided so treating rows as row_id. \n", "purple"))
-#  }
-
 
   # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding
   get_model_info_results <- get_model_info(model_info = model_info,
@@ -763,11 +660,6 @@ textPredictImplicitMotives <- function(
       function_to_apply = NULL,
       set_seed = 202208
     )
-    # predicted_scores2 <- predicted_scores3
-
-    # Label, .pred_0, pred_1
-    # colnames(predicted_scores2) <- c("Label", ".pred_0")
-    # predicted_scores2$.pred_1 <- 1-predicted_scores2$.pred_0
 
     class_name <- get_model_info_results$implicit_type
     classifications_rev <- ifelse(predicted_scores2$label_x == "LABEL_0",

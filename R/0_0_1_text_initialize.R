@@ -87,72 +87,72 @@ textrpp_initialize <- function(python_executable = NULL,
   }
 }
 
-#' Find text required python packages
-#'
-#' Locate the user's version of Python for which text required python packages are installed.
-#' @return textrpp_python
-#' @export
-#' @param ask logical; if \code{FALSE}, use the first text required python packages installation found;
-#'   if \code{TRUE}, list available text required python packages installations and prompt the user
-#'   for which to use. If another (e.g. \code{python_executable}) is set, then
-#'   this value will always be treated as \code{FALSE}.
-#'
-#' @keywords internal
-find_textrpp <- function(ask) {
-  textrpp_found <- `:=` <- NA
-  textrpp_python <- NULL
-  options(warn = -1)
-  py_execs <- if (is_windows()) {
-    system2("where", "python", stdout = TRUE)
-  } else if (is_osx() && file.exists("~/.bash_profile")) {
-    c(
-      system2("source", "~/.bash_profile; which -a python", stdout = TRUE),
-      system2("source", "~/.bash_profile; which -a python3", stdout = TRUE)
-    )
-  } else {
-    c(
-      system2("which", "-a python", stdout = TRUE),
-      system2("which", "-a python3", stdout = TRUE)
-    )
-  }
-  py_execs <- unique(py_execs)
-  options(warn = 0)
-
-  if (length(py_execs) == 0 | grepl("not find", py_execs[1])[1]) {
-    return(NA)
-  }
-
-  df_python_check <- tibble::tibble(py_execs, textrpp_found = 0)
-  for (i in seq_len(nrow(df_python_check))) {
-    py_exec <- df_python_check[i, ]
-    sys_message <- check_textrpp_model(py_exec) #
-    if (sys_message == "OK") {
-      df_python_check[i, textrpp_found := 1]
-    }
-  }
-
-  if (df_python_check[, sum(textrpp_found)] == 0) {
-    return(NULL)
-  } else if (df_python_check[, sum(textrpp_found)] == 1) {
-    textrpp_python <- df_python_check[textrpp_found == 1, py_execs]
-    message("textrpp: ", ") is installed in ", textrpp_python)
-  } else if (ask == FALSE) {
-    textrpp_python <- df_python_check[textrpp_found == 1, py_execs][1]
-    message("textrpp: is installed in more than one python")
-    message("text will use ", textrpp_python, " (because ask = FALSE)")
-  } else {
-    textrpp_pythons <- df_python_check[textrpp_found == 1, py_execs]
-    message("textrpp is installed in more than one python")
-    number <- utils::menu(textrpp_pythons, title = "Please select python:")
-    if (number == 0) {
-      stop("Initialization was canceled by user", call. = FALSE)
-    }
-    textrpp_python <- textrpp_pythons[number]
-    message("text will use: ", textrpp_python)
-  }
-  return(textrpp_python)
-}
-
+# Find text required python packages
+#
+# Locate the user's version of Python for which text required python packages are installed.
+# @return textrpp_python
+# @export
+# @param ask logical; if \code{FALSE}, use the first text required python packages installation found;
+#   if \code{TRUE}, list available text required python packages installations and prompt the user
+#   for which to use. If another (e.g. \code{python_executable}) is set, then
+#   this value will always be treated as \code{FALSE}.
+#
+# @keywords internal
+#find_textrpp <- function(ask) {
+#  textrpp_found <- `:=` <- NA
+#  textrpp_python <- NULL
+#  options(warn = -1)
+#  py_execs <- if (is_windows()) {
+#    system2("where", "python", stdout = TRUE)
+#  } else if (is_osx() && file.exists("~/.bash_profile")) {
+#    c(
+#      system2("source", "~/.bash_profile; which -a python", stdout = TRUE),
+#      system2("source", "~/.bash_profile; which -a python3", stdout = TRUE)
+#    )
+#  } else {
+#    c(
+#      system2("which", "-a python", stdout = TRUE),
+#      system2("which", "-a python3", stdout = TRUE)
+#    )
+#  }
+#  py_execs <- unique(py_execs)
+#  options(warn = 0)
+#
+#  if (length(py_execs) == 0 | grepl("not find", py_execs[1])[1]) {
+#    return(NA)
+#  }
+#
+#  df_python_check <- tibble::tibble(py_execs, textrpp_found = 0)
+#  for (i in seq_len(nrow(df_python_check))) {
+#    py_exec <- df_python_check[i, ]
+#    sys_message <- check_textrpp_model(py_exec) #
+#    if (sys_message == "OK") {
+#      df_python_check[i, textrpp_found := 1]
+#    }
+#  }
+#
+#  if (df_python_check[, sum(textrpp_found)] == 0) {
+#    return(NULL)
+#  } else if (df_python_check[, sum(textrpp_found)] == 1) {
+#    textrpp_python <- df_python_check[textrpp_found == 1, py_execs]
+#    message("textrpp: ", ") is installed in ", textrpp_python)
+#  } else if (ask == FALSE) {
+#    textrpp_python <- df_python_check[textrpp_found == 1, py_execs][1]
+#    message("textrpp: is installed in more than one python")
+#    message("text will use ", textrpp_python, " (because ask = FALSE)")
+#  } else {
+#    textrpp_pythons <- df_python_check[textrpp_found == 1, py_execs]
+#    message("textrpp is installed in more than one python")
+#    number <- utils::menu(textrpp_pythons, title = "Please select python:")
+#    if (number == 0) {
+#      stop("Initialization was canceled by user", call. = FALSE)
+#    }
+#    textrpp_python <- textrpp_pythons[number]
+#    message("text will use: ", textrpp_python)
+#  }
+#  return(textrpp_python)
+#}
+#
 
 #' Find text required python pacakges env
 #'
