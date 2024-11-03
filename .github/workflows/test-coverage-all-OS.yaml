@@ -26,6 +26,7 @@ jobs:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      CODECOV_DEBUG: true
 
     steps:
       - uses: actions/checkout@v2
@@ -65,7 +66,7 @@ jobs:
 
       - name: Cache R packages
         if: runner.os != 'Windows'
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
@@ -114,4 +115,14 @@ jobs:
         run: covr::codecov()
         shell: Rscript {0}
 
-# Un
+      # Wait to ensure all coverage data is saved
+      - name: Wait for coverage files to be ready
+        run: sleep 5
+
+      # Upload coverage to Codecov using Codecov Action
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}  # Required for private repos
+          fail_ci_if_error: true  # Optional: Fail CI if Codecov upload fails
+          verbose: true  # Enable verbose logging for troubleshooting
