@@ -115,6 +115,10 @@ jobs:
         run: covr::codecov()
         shell: Rscript {0}
 
+      # Debugging step to confirm coverage files are generated
+      - name: List files for debugging
+        run: ls -R
+
       # Wait to ensure all coverage data is saved
       - name: Wait for coverage files to be ready
         run: sleep 5
@@ -127,6 +131,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: macos
           verbose: true
+          files: "path/to/coverage/file"  # Replace with the actual path to coverage files
 
       - name: Upload coverage to Codecov (Windows)
         if: runner.os == 'Windows'
@@ -135,6 +140,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: windows
           verbose: true
+          files: "path/to/coverage/file"  # Replace with the actual path to coverage files
 
       - name: Upload coverage to Codecov (Ubuntu)
         if: runner.os == 'Linux'
@@ -143,3 +149,4 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ubuntu
           verbose: true
+          files: "path/to/coverage/file"  # Replace with the actual path to coverage files

@@ -17,6 +17,15 @@ coverage:
         threshold: 1%
         informational: true
 
+fixes:
+  - "C:\\Users\\runneradmin\\project::"  # Adjusts paths on Windows
+  - "/home/ubuntu/::"                    # Adjusts paths on Ubuntu
+  - "/Users/runner/project::"             # Adjusts paths on macOS
+
+file_exclude:
+  - "*.yaml"
+  - "*.yml"
+
 codecov:
   require_ci_to_pass: yes
-  after_n_builds: 3  # Ensures Codecov waits for all three OSs
+  after_n_builds: 3
