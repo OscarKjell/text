@@ -1,7 +1,7 @@
 comment: false
 
 coverage:
-  range: 50...90
+  range: 50..90
   round: up
   precision: 3
 
@@ -16,7 +16,3 @@ coverage:
         target: auto
         threshold: 1%
         informational: true
-
-
-codecov:
-  token:
