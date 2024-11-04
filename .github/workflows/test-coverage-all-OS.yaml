@@ -112,8 +112,10 @@ jobs:
       - name: Test coverage
         env:
           OMP_MAX_ACTIVE_LEVELS: 2
-        run: covr::codecov()
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
         shell: Rscript {0}
+
 
       # Debugging step to confirm coverage files are generated
       - name: List files for debugging
