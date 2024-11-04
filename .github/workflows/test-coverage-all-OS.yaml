@@ -119,10 +119,27 @@ jobs:
       - name: Wait for coverage files to be ready
         run: sleep 5
 
-      # Upload coverage to Codecov using Codecov Action
-      - name: Upload coverage to Codecov
+      # Upload coverage to Codecov using Codecov Action for each OS with flags
+      - name: Upload coverage to Codecov (macOS)
+        if: runner.os == 'macOS'
         uses: codecov/codecov-action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}  # Required for private repos
-          fail_ci_if_error: true  # Optional: Fail CI if Codecov upload fails
-          verbose: true  # Enable verbose logging for troubleshooting
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: macos
+          verbose: true
+
+      - name: Upload coverage to Codecov (Windows)
+        if: runner.os == 'Windows'
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: windows
+          verbose: true
+
+      - name: Upload coverage to Codecov (Ubuntu)
+        if: runner.os == 'Linux'
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ubuntu
+          verbose: true

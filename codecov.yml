@@ -16,3 +16,7 @@ coverage:
         target: auto
         threshold: 1%
         informational: true
+
+codecov:
+  require_ci_to_pass: yes
+  after_n_builds: 3  # Ensures Codecov waits for all three OSs
