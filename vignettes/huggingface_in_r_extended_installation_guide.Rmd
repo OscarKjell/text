@@ -37,6 +37,36 @@ textEmbed("hello")
 
 ```
 
+
+## Solving OMP errors and R/Rstudio crashes
+Recently some text users (mainly on Mac), have experienced OMP errors - and that RStudio and R crashes. When this is happening we have found the following solutions for now:
+
+
+```         
+Sys.setenv(OMP_NUM_THREADS = "1") #Limit the number of threads to prevent conflicts.
+
+Sys.setenv(OMP_MAX_ACTIVE_LEVELS = "1") 
+
+# Also might have to restart R
+.rs.restartR()
+
+# If above does not work, you can also try this; although this solution might have some risks assocaited with it (for more information see https://github.com/dmlc/xgboost/issues/1715)
+Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE") #Temporarily allows execution despite duplicate OpenMP libraries.
+
+### This is how you can unset the settings
+Sys.unsetenv("OMP_NUM_THREADS")
+Sys.unsetenv("OMP_MAX_ACTIVE_LEVELS")
+Sys.unsetenv("KMP_DUPLICATE_LIB_OK")
+
+# This is how you can verify the settings
+print(Sys.getenv("DYLD_LIBRARY_PATH"))
+
+
+# Please let us know if you find any other solutions. 
+```
+
+
+
 ## Solving Mac OS errors
 
 ### Failed to build tokenizers

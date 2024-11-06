@@ -2,7 +2,7 @@
 % Please edit documentation in R/0_0_1_text_initialize.R
 \name{find_textrpp_env}
 \alias{find_textrpp_env}
-\title{Find text required python pacakges env}
+\title{Find text required python packages env}
 \usage{
 find_textrpp_env()
 }
