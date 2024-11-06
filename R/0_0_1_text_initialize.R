@@ -154,7 +154,7 @@ textrpp_initialize <- function(python_executable = NULL,
 #}
 #
 
-#' Find text required python pacakges env
+#' Find text required python packages env
 #'
 #' check whether conda/virtual environment for text required python pacakges exists
 #' @export
