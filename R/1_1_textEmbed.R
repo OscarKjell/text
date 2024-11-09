@@ -89,7 +89,8 @@ textFindNonASCII <- function(data_tibble) {
 #' @return a tibble with removed ascii characters
 #' @noRd
 clean_text <- function(text) {
-  iconv(text, from = "UTF-8", to = "UTF-8", sub = "")
+  #iconv(text, from = "UTF-8", to = "UTF-8", sub = "")
+  iconv(text, from = "UTF-8", to = "ASCII", sub = "")
 }
 
 #' Clean non-ASCII characters
