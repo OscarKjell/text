@@ -13,7 +13,6 @@ textReturnModel<- function(
     model_info = NULL,
     save_model = TRUE,
     save_dir = "wd"
-    #save_name = "textPredict"
     ) {
   # extend the timeout time for larger models.
   options(timeout = 5 * 60)
@@ -155,89 +154,6 @@ textReturnEmbedding <- function(
     previous_sentence = FALSE) {
   # extend the timeout time for larger models.
   options(timeout = 5 * 60)
-
-#  # extract model_name if its a url or filepath
-#  if (is.character(model_info)) {
-#    model_name <- basename(model_info)
-#    # find model in wd
-#    model_exists <- file.exists(model_name)
-#
-#    # determine how to load model
-#    if (grepl("github.com/", model_info) && isFALSE(model_exists) && isTRUE(save_model)) {
-#      # load from github
-#      loaded_model <- readRDS(url(model_info))
-#      # save model
-#      saveRDS(loaded_model, model_name)
-#
-#      # display message to user
-#      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded and saved in:", getwd()), sep = "")
-#      cat(colourise(loaded_model_confirm, fg = "green"))
-#      cat("\n")
-#    } else if (grepl("github.com/", model_info) && isFALSE(model_exists) && isFALSE(save_model)) {
-#      # load from github, don't save
-#      loaded_model <- readRDS(url(model_info))
-#
-#      # display message to user
-#      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
-#      cat(colourise(loaded_model_confirm, fg = "green"))
-#      cat("\n")
-#    } else if (grepl("github.com/", model_info) && isTRUE(model_exists)) {
-#      # retrive model from wd if it's already downloaded
-#      loaded_model <- readRDS(model_name)
-#
-#      # display message to user
-#      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", getwd()), sep = "")
-#      cat(colourise(loaded_model_confirm, fg = "green"))
-#      cat("\n")
-#    } else if (grepl("osf.io", model_info)){
-#
-#      # check if osfr is installed, otherwise, ask the user to install it.
-#      if (!requireNamespace("osfr", quietly = TRUE)) {
-#        stop("The osfr-package is required for loading files from osfr.
-#         Please install it using install.packages('osfr').", call. = FALSE)
-#      }
-#
-#      # retrive osfr tibble with file
-#      osf_files <- osf_retrieve_file(model_info)
-#
-#      # check if model is already downloaded
-#      if (isTRUE(file.exists(osf_files$name))){
-#        # load model from local memory
-#        loaded_model <- readRDS(osf_files$name)
-#
-#        # display message to user
-#        loaded_model_confirm <- paste0(c("The model:", osf_files$name, "has been loaded from:", getwd()), sep = "")
-#        cat(colourise(loaded_model_confirm, fg = "green"))
-#        cat("\n")
-#
-#      } else{
-#        # download model locally
-#        downloaded_model <- osf_download(osf_files[1,])
-#
-#        loaded_model <- readRDS(downloaded_model$local_path)
-#
-#        # display message to user
-#        loaded_model_confirm <- paste0(c("The model:", osf_files$name, "has been loaded and saved in:", getwd()), sep = "")
-#        cat(colourise(loaded_model_confirm, fg = "green"))
-#        cat("\n")
-#      }
-#    } else {
-#      # load model from specific path (if it exists somewhere else than in the work directory)
-#      loaded_model <- readRDS(model_info)
-#
-#      # display message to user
-#      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
-#      cat(colourise(loaded_model_confirm, fg = "green"))
-#      cat("\n")
-#    }
-#  } else {
-#    # model was an R object of a model
-#    loaded_model <- model_info
-#    # display message to user
-#    loaded_model_confirm <- paste0(c("The model has been loaded from your global environment."), sep = "")
-#    cat(colourise(loaded_model_confirm, fg = "green"))
-#    cat("\n")
-#  }
 
   # Check that both texts and word_embeddings aren't defined.
   if (!is.null(texts) && !is.null(word_embeddings)) {
@@ -386,45 +302,6 @@ textReturnEmbedding <- function(
   return(emb_and_model)
 }
 
-#model_info = NULL
-#word_embeddings = NULL
-#texts = NULL
-#x_append = NULL
-#append_first = TRUE
-#threshold = NULL
-#dim_names = TRUE
-#save_model = TRUE
-#save_embeddings = TRUE
-#save_dir = "wd"
-#save_name = "textPredict"
-#show_texts = FALSE
-#participant_id = NULL
-#story_id = NULL
-#dataset_to_merge_predictions = NULL
-#previous_sentence = FALSE
-#device = "cpu"
-#
-#model_info = train_x_append
-#x_append = Language_based_assessment_data_8[1:20, 6:7]
-#texts = Language_based_assessment_data_8[1:20,"satisfactiontexts"]
-#dim_names = TRUE
-#append_first = FALSE
-#
-#model_info = text_train_results1
-#word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"]
-#dim_names = TRUE
-#
-#model_info = train_x_append
-#x_append = Language_based_assessment_data_8[1:20, 6:7]
-#word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"]
-#dim_names = TRUE
-#append_first = FALSE
-#
-#model_info = train_x_append
-#x_append = Language_based_assessment_data_8[1:20, 6:7]
-#word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"]
-#dim_names = TRUE
-#append_first = FALSE
 
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
@@ -799,9 +676,7 @@ textPredictTextTrained <- function(
     predicted_scores2 <- c(list(
       similarity_scores = similarity_scores),
       predictions = list(predicted_scores2))
-
   }
-
 
   # display message to user
   cat(colourise("Predictions are ready!", fg = "green"))

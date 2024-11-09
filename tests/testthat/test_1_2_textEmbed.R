@@ -241,7 +241,7 @@ test_that("textEmbed", {
   )
 
   expect_that(long_text_embedding, is_a("list"))
-  expect_equal(long_text_embedding[[2]][[1]][[1]][[1]], -0.01866776, tolerance = 0.0001)
+  expect_equal(long_text_embedding[[2]][[1]][[1]][[1]], -0.02524024, tolerance = 0.0001)
 })
 
 

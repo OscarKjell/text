@@ -8,7 +8,7 @@
 - adding method_typ = "texttrained" and "finetuned"
 - streamlining code for implicit motives output
 - adding `textFindNonASCII()` function and feature in `textEmbed()` to 
-warn and clean non-ASCII characters
+warn and clean non-ASCII characters. This may change results slightly. 
 - removed `type` parameter in textPredict() and instead giving both probability and class.
 
 # text 1.2.7
