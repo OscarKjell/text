@@ -2,6 +2,11 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.2.16
+- `textPredict()` detects `model_type`.
+- Instead of having to specify the URL, one can now specify the model name from 
+the Language-Based Assessmet Model (L-BAM) library. 
+- Including default option to download an updated version of the L-BAM file
 
 # text 1.2.8 - 1.2.13
 - fixing bugs related to text prediction functions

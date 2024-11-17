@@ -19,6 +19,7 @@ textTrainRegression(
   inside_breaks = 4,
   model = "regression",
   eval_measure = "default",
+  save_aggregated_word_embedding = FALSE,
   language_distribution = NULL,
   language_distribution_min_words = 3,
   preprocess_step_center = TRUE,
@@ -82,6 +83,9 @@ cross-validation loop (default = 4).}
 "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
  the yardstick package).}
+
+\item{save_aggregated_word_embedding}{(boolean) If TRUE, the aggregated word embeddings (mean, min, and max) are saved
+for comparison with other language input when the model is applied to other types of data.}
 
 \item{language_distribution}{(Character column) If you provide the raw language data used for making the embeddings,
 the language distribution (i.e., a word and frequency table) will be saved to the model object. This enables

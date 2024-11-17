@@ -14,22 +14,21 @@ knitr::opts_chunk$set(
 ```
 
 
-
-The text-package allows you to create pre-trained models using the text-train functions (e.g., `textTrain()`) or the fine tune functions (e.g., `textFineTuneDomain`). The models can be saved and used on new data using the text prediction functions (e.g., `textPredict()`). The L-BAM library below shows pre-trained models that are available to download. The models can be called with `textPredict()`, `textAssess()` or `textClassify()` like this:
+The L-BAM library comprises information about pre-trained models. The models can be called with `textPredict()`, `textAssess()` or `textClassify()` like this:
 
 ```{r textPredict_examples, eval = FALSE, echo=TRUE}
 library(text)
 
 # Example calling a model using the URL
 textPredict(
-  model_info = "https://github.com/OscarKjell/text_models/raw/main/valence_models/facebook_model.rds",
+  model_info = "facebook_valence",
   texts = "what is the valence of this text?"
 )
 
 
 # Example calling a model having an abbreviation
 textClassify(
-  model_info = "implicit_power_roberta_large_L23_v1",
+  model_info = "implicit_power_fine_tuned_roberta",
   texts = "It looks like they have problems collaborating."
 )
 ```
@@ -45,10 +44,10 @@ library("reactable")
 # see vignette: https://glin.github.io/reactable/articles/examples.html#custom-rendering
 
 model_data <- read.csv(system.file("extdata",
-                                   "text_models_info.csv",
+                                   "The_L-BAM_Library.csv",
                                    package = "text"),
                        header = TRUE, 
-                       skip = 2)
+                       skip = 3)
 
 reactable::reactable(
   data = model_data,
@@ -64,25 +63,42 @@ reactable::reactable(
     style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif")
   ),
   columns = list(
-    Construct = colDef(minWidth = 280),
-    Outcome = colDef(minWidth = 200),
-    Language.type = colDef(minWidth = 200),
-    Name = colDef(minWidth = 350),
-    Path = colDef(minWidth = 300),
-    Model.type = colDef(minWidth = 200),
-    Feature  = colDef(minWidth = 200),
-    CV.accuracy = colDef(minWidth = 150),
-    Held.out.accuracy = colDef(minWidth = 150),
-    SEMP.accuracy = colDef(minWidth = 150),
-    Reference = colDef(minWidth = 250),
-    Description = colDef(minWidth = 200),
-    N.training = colDef(minWidth = 200),
-    Label.types = colDef(minWidth = 200),
-    Other = colDef(minWidth = 200),
-    Command.info = colDef(minWidth = 800)
+    Construct_Concept_Behaviours = colDef(minWidth = 280),
+    Outcome = colDef(minWidth = 280),
+    Language = colDef(minWidth = 280),
+    Language_type = colDef(minWidth = 280),
+    Level = colDef(minWidth = 280),
+    N_training = colDef(minWidth = 280),
+    Source = colDef(minWidth = 280),
+    Participants = colDef(minWidth = 280),
+    Label_types = colDef(minWidth = 280),
+    Language_domain_distribution = colDef(minWidth = 280),
+    Open_data = colDef(minWidth = 280),
+    Model_type = colDef(minWidth = 280),
+    Features = colDef(minWidth = 280),
+    Validation_metric1 = colDef(minWidth = 280),
+    N_fold_cv_accuracy.1 = colDef(minWidth = 280),
+    Held_out_accuracy.1 = colDef(minWidth = 280),
+    SEMP_accuracy.1 = colDef(minWidth = 280),
+    Other_metrics_n_fold_cv = colDef(minWidth = 280),
+    Other_metrics_held_out = colDef(minWidth = 280),
+    Other_metrics_SEMP = colDef(minWidth = 280),
+    Ethical_approval = colDef(minWidth = 280),
+    Ethical_statement = colDef(minWidth = 280),
+    Reference = colDef(minWidth = 280),
+    Date = colDef(minWidth = 280),
+    Contact_details = colDef(minWidth = 280),
+    License = colDef(minWidth = 280),
+    Study_type = colDef(minWidth = 280),
+    Original = colDef(minWidth = 280),
+    Miscellaneous = colDef(minWidth = 280),
+    Command_info = colDef(minWidth = 800),
+    Name = colDef(minWidth = 280),
+    Path = colDef(minWidth = 280),
+    Model_Type = colDef(minWidth = 280)
   ), 
   showPageSizeOptions = TRUE,
-  groupBy = "Construct"
+  groupBy = "Construct_Concept_Behaviours"
 )
 ```
 

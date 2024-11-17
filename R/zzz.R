@@ -111,3 +111,4 @@ colourise <- function(text, fg = "black", bg = NULL) {
 rcmd_running <- function() {
   nchar(Sys.getenv("R_TESTS")) != 0
 }
+

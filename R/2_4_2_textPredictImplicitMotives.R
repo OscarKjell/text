@@ -223,7 +223,6 @@ implicit_motives_results <- function(model_reference,
     column_name <- model_reference
   }
 
-
   if(!is.null(participant_id)){
     # Retrieve Data
     #participant_id <- 1:80
@@ -233,7 +232,6 @@ implicit_motives_results <- function(model_reference,
     predicted <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives,
                                        participant_id = participant_id,
                                        story_id = story_id)
-
   }
 
   # set default to NULL
@@ -250,7 +248,6 @@ implicit_motives_results <- function(model_reference,
     predicted_story <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives_story,
                                              participant_id = participant_id_placeholder,
                                              story_id = story_id)
-
   }
 
   # Full column name
@@ -355,87 +352,76 @@ implicit_motives_results <- function(model_reference,
 #' @param lower_case_model character name of your model.
 #' @return Returns a list of conditions for implicit motive coding to work
 #' @noRd
-get_model_info <- function(model_info,
-                           participant_id,
-                           show_texts,
-                           type,
-                           texts,
-                           story_id,
-                           lower_case_model
-) {
+get_implicit_model_info <- function(
+    model_info,
+    participant_id,
+    show_texts,
+    type,
+    texts,
+    story_id#,
+    #lower_case_model
+    ) {
   # show_prob is by default FALSE
   show_prob <- FALSE
 
-  if (
-    (grepl("implicit", lower_case_model) & grepl("power", lower_case_model)) ||
-    (grepl("implicit", lower_case_model) & grepl("affiliation", lower_case_model)) ||
-    (grepl("implicit", lower_case_model) & grepl("achievement", lower_case_model)) ||
-    (grepl("implicit_motives", lower_case_model) &&
-     (!is.null(participant_id) || !is.null(story_id)))
-  ) {
+  type <- "class" # type must be class for these conditions
 
-    type <- "class" # type must be class for these conditions
-    # switch to the correct model URL
-    if (lower_case_model == "implicit_power_roberta_large_l23_v1") {
-      model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_power_open.rds"
-    } else if (lower_case_model == "implicit_achievement_roberta_large_l23_v1") {
-      model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_achievement_open.rds"
-    } else if (lower_case_model == "implicit_affiliation_roberta_large_l23_v1") {
-      model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_affiliation_open.rds"
-    } else if (lower_case_model == "implicit_ger_be_l11_to_power") {
-      model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_power_open.rds"
-    } else if (lower_case_model == "implicit_ger_be_l11_to_achievement") {
-      model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_achievement_open.rds"
-    } else if (lower_case_model == "implicit_ger_be_l11_to_affiliation") {
-      model_info <- "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_affiliation_open.rds"
+  # Since model_type is set to implicit_motives we currently need to set text-trained vs. fine-tuned manually.
+  if (model_info == "implicit_power_roberta_large_l23_v1" |
+      model_info == "implicit_achievement_roberta_large_l23_v1"|
+      model_info == "implicit_affiliation_roberta_large_l23_v1" |
+      model_info == "implicit_ger_be_l11_to_power" |
+      model_info == "implicit_ger_be_l11_to_achievement"|
+      model_info == "implicit_ger_be_l11_to_affiliation" |
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_power_open.rds" |
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_achievement_open.rds"|
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_affiliation_open.rds" |
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_power_open.rds" |
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_achievement_open.rds"|
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_affiliation_open.rds") {
+
+    model_type <- "text-trained"
+    } else {
+      model_type <- "fine-tuned"
     }
 
-
-    if(grepl("power", lower_case_model)){
+  if(grepl("power", model_info)){
       implicit_type <- "power"
-    }
-    if(grepl("affiliation", lower_case_model)){
+  }
+  if(grepl("affiliation", model_info)){
       implicit_type <- "affiliation"
-    }
-    if(grepl("achievement", lower_case_model)){
+  }
+  if(grepl("achievement", model_info)){
       implicit_type <- "achievement"
-    }
-
+  }
 
     # specific configuration for implicit motive coding
-    if (!is.null(participant_id) || !is.null(story_id)) {
-      show_texts <- TRUE
-      show_prob <- TRUE
-      type <- "class"
+  if (!is.null(participant_id) || !is.null(story_id)) {
+     show_texts <- TRUE
+     show_prob <- TRUE
+     type <- "class"
 
       # Assign story_id to the participant_id variable (this might seem illogical, but this was a convenient
       # solution to a new problem caught along the way.
-      if (is.null(participant_id)){
+     if (is.null(participant_id)){
         participant_id <- story_id
       }
 
-      # separate multiple sentences, and add corresponding user-id
-      if (!is.null(story_id)){
+     # separate multiple sentences, and add corresponding user-id
+     if (!is.null(story_id)){
         id_and_texts <- data.frame(participant_id = participant_id, texts = texts, story_id = story_id)
       } else {
         id_and_texts <- data.frame(participant_id = participant_id, texts = texts)
       }
-      # correct for multiple sentences per row. # CORRECT
-      update_user_and_texts <- update_user_and_texts(id_and_texts)
+      # correct for multiple sentences per row.
+     update_user_and_texts <- update_user_and_texts(id_and_texts)
 
-      # update participant_id
-      participant_id <- update_user_and_texts$participant_id
-      # update texts
-      texts <- update_user_and_texts$texts
-      # update story_id
-      story_id <- update_user_and_texts$story_id
-    }
-  }
-
-  # The stats package just takes "class" or "prob", therefore, allocate to "show_prob".
-  if (!is.null(type) && type == "class_prob") {
-    type <- "class"
-    show_prob <- TRUE
+     # update participant_id
+     participant_id <- update_user_and_texts$participant_id
+     # update texts
+     texts <- update_user_and_texts$texts
+     # update story_id
+     story_id <- update_user_and_texts$story_id
   }
 
   return(list(model_info = model_info,
@@ -446,8 +432,10 @@ get_model_info <- function(model_info,
               participant_id = participant_id,
               texts = texts,
               story_id = story_id,
-              implicit_type = implicit_type))
+              implicit_type = implicit_type,
+              model_type = model_type))
 }
+
 
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
@@ -588,7 +576,6 @@ textPredictImplicitMotives <- function(
 
   #### Special treatment for implicit motives - see private functions ####
   model_name <- model_info
-
   lower_case_model <- as.character(tolower(model_name))
 
   if (is.null(participant_id) & is.null(story_id) & !is.null(dataset_to_merge_predictions)){
@@ -600,29 +587,32 @@ textPredictImplicitMotives <- function(
     use_row_id_name <- TRUE
     participant_id <- seq_len(length(texts))
     cat(colourise("Note: participant_ID was not provided so treating rows as row_id. \n", "purple"))
-
   }
 
 
-  # get_model_info retrieves the particular configurations that are needed for automatic implicit motive coding
-  get_model_info_results <- get_model_info(model_info = model_info,
-                                           participant_id = participant_id,
-                                           show_texts = show_texts,
-                                           #type = type,
-                                           texts = texts,
-                                           story_id = story_id,
-                                           lower_case_model = lower_case_model)
+  # get_implicit_model_info retrieves the particular configurations that are needed for automatic implicit motive coding
+  get_implicit_model_info_results <- get_implicit_model_info(
+    model_info = model_info,
+    participant_id = participant_id,
+    show_texts = show_texts,
+    texts = texts,
+    story_id = story_id
+    )
 
 
-  model_info <- get_model_info_results$model_info
+  model_info <- get_implicit_model_info_results$model_info
+  model_type <- get_implicit_model_info_results$model_type
+  # type <- get_implicit_model_info_results$type
+  texts <- get_implicit_model_info_results$texts
+  participant_id <- get_implicit_model_info_results$participant_id
+  story_id = get_implicit_model_info_results$story_id
 
-  # type <- get_model_info_results$type
-  texts <- get_model_info_results$texts
-  participant_id <- get_model_info_results$participant_id
-  story_id = get_model_info_results$story_id
 
+  if(model_type == "text-trained"){
 
-  if(model_type == "texttrained"){
+    cat(
+      colourise("You are using a text-trained implicit-motives model type.", "green")
+      )
 
       predicted_scores2 <- textPredictTextTrained(
         model_info = model_info,
@@ -647,7 +637,11 @@ textPredictImplicitMotives <- function(
       )
   }
 
-  if(model_type == "finetuned"){
+  if(model_type == "fine-tuned"){
+
+    cat(
+      colourise("You are using a fine-tuned implicit-motives model type.  \n", "green")
+    )
 
     predicted_scores2 <- textClassifyPipe(
       x = texts,
@@ -661,7 +655,7 @@ textPredictImplicitMotives <- function(
       set_seed = 202208
     )
 
-    class_name <- get_model_info_results$implicit_type
+    class_name <- get_implicit_model_info_results$implicit_type
     classifications_rev <- ifelse(predicted_scores2$label_x == "LABEL_0",
                                   1 - predicted_scores2$score_x,
                                   predicted_scores2$score_x)
@@ -702,3 +696,4 @@ textPredictImplicitMotives <- function(
   cat("\n")
   return(predicted_scores2)
 }
+

@@ -6,24 +6,24 @@
 #' can be used to predict  scores or classes from embeddings or text using one of these function
 #' aliases.
 #' @param model_info (character or r-object) model_info has four options.
-#' 1: R model object (e.g, saved output from one of the textTrain functions).
-#' 2: Link to a model stored in a github repo (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"
-#' or a pre-trained model from Huggingface, e.g., "distilbert-base-uncased-finetuned-sst-2-english").
-#' 3: Link to a model stored in a osf project (e.g, https://osf.io/8fp7v).
-#' 4: Path to a model stored locally (e.g, "path/to/your/model"). Information about some accessible models
-#' can be found at: \href{https://r-text.org/articles/pre_trained_models.html}{r-text.org}.
+#' 1: R model object (e.g, saved output from one of the textTrain() functions).
+#' 2: The name specified in the  \href{https://r-text.org/articles/LBAM.html}{L-BAM Documentation}.
+#' For the following settings, remember to also set the model_type parameter:
+#' 3: Link to a text-trained model online (either in a github repo
+#' (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"or
+#' OSF https://osf.io/8fp7v)
+#' 4: Name or link to a fine-tuned model from Huggingface (e.g., "distilbert-base-uncased-finetuned-sst-2-english").
+#' 5: Path to a model stored locally (e.g, "path/to/your/model/model_name.rds").
 #' @param texts (character) Text to predict. If this argument is specified, then arguments "word_embeddings"
 #' and "premade embeddings" cannot be defined (default = NULL).
-#' @param model_type (string) "texttrained" or "finetuned". "texttrained" indicates that the model is from the text-package
-#' (i.e., trained using one of the textTrain() functions; see function textPredictR()); "finetuned" indicates
-#' that the model comes from "finetuned" using pipe (see the textClassifyPipe function).
 #' @param word_embeddings (tibble; only for "texttrained"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 #'  then texts and embeddings cannot be submitted simultaneously (default = NULL).
 #' @param x_append (tibble; only for "texttrained"-model_type) Variables to be appended with the word embeddings (x).
 #' @param append_first If TRUE, x_appened is added before word embeddings.
-# @param type (character; only for "text"-model_type) Defines what output to give after logistic regression prediction.
-# Either probabilities, classifications or both are returned (default = "class".
-# For probabilities use "prob". For both use "class_prob").
+#' @param model_type (character) Specify how the function should handle the model argument. The default is "detect" where the fucntion ttried to detect it
+#' automatically. Setting it to "fine-tuned" or "text-trained" will apply their respective default behaviors, while setting it to "implicit motives" will
+#' trigger specific steps tailored to these models.
+#' @param lbam_update (boolean) Updating the L-BAM file by automaitcally downloading it from Google Sheet.
 #' @param dim_names (boolean; only for "texttrained"-model_type) Account for specific dimension names from textEmbed()
 #' (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 #' word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.
@@ -141,11 +141,12 @@ textPredict <- function(
     # Common parameter
     model_info = NULL,
     texts = NULL,
-    model_type = "texttrained",
-    # text-trained model specific parameters
+    model_type = "detect",
+    lbam_update = TRUE,
+    ## text-trained model specific parameters ##
     word_embeddings = NULL,
     x_append = NULL,
-    append_first,
+    append_first = NULL,
     dim_names = TRUE,
     language_distribution = NULL,
     language_distribution_min_words = "trained_distribution_min_words",
@@ -160,7 +161,7 @@ textPredict <- function(
     story_id = NULL,
     dataset_to_merge_predictions = NULL,
     previous_sentence = FALSE,
-    # fine-tuned model specific parameters
+    ## fine-tuned model specific parameters ##
     tokenizer_parallelism = FALSE,
     logging_level = "error",
     force_return_results = TRUE,
@@ -169,18 +170,80 @@ textPredict <- function(
     set_seed = 202208,
     ...){
 
-  if (!(model_type %in% c("texttrained", "text-trained", "finetuned", "fine-tuned"))) {
-    stop("Error: method must be either 'texttrained' or 'finetuned'.")
+  # set default behaviours
+  is_local_model = FALSE
+  is_online_path = FALSE
+
+  # Methods for retrieving the right models and settings include:
+  # 1: R model object (e.g, output from the text train functions).
+  # 2: The name and model_types (currently text-trained, fine-tuned or implicit-motives) specified in the L-BAM Documentation.
+  # For the following settings, remember to also set the model_type parameter:
+  # 3: Link to a text-trained model online (either in a github repo or OSF)
+  # 4: Name or link to a fine-tuned model from Huggingface.
+  # 5: Path to a model stored locally (e.g, "path/to/your/model/model_name.rds").
+
+  # if models is an R-object, set model_type to text-trained
+  if(is.list(model_info)){
+
+    model_type = "text-trained"
+
   }
 
-  # check whether models name exist in a predefined list (and require special treament)
-  registered_model <- registered_model_name(model_info)
+  # Check if it's a valid local path model_info = NULL
+  if(is.character(model_info) &
+     !is.null(model_info)){
 
-  if(registered_model == "default"){
+    is_local_model <- file.exists(model_info)
+    is_online_path <- is_internet_path(model_info)
+  }
 
-    if(model_type == "texttrained" | model_type == "text-trained"){
+  if(
+    # Locale path
+    is_local_model & is.null(model_type) |
+    is_online_path & is.null(model_type)){
 
-      print("You are using a 'text-trained model' (i.e., model_type = 'texttrained').")
+      stop(cat("Please set model_type when you are calling a model with a locale or online path."))
+
+  }
+  if (model_type == "implicit-motives" | model_type ==  "implicit motives" | model_type == "implicit_motives"){
+    model_type <- "implicit-motives"
+  }
+
+  # If model_type is set, check it is valid
+  if(!is.null(model_type)){
+
+    if (!(model_type %in% c("detect",
+                            "text-trained", "texttrained",
+                            "fine-tuned", "finetuned",
+                            "implicit-motives", "implicit motives", "implicit_motives"))) {
+      stop("Error: method must be either 'text-trained', 'fine-tuned' or 'implicit-motives'.")
+    }
+  }
+
+  # If model_info is a path that is NOT locale
+  if(is.character(model_info) & !is_local_model & !is_online_path &
+     model_type != "implicit-motives"){
+
+    model_type_and_url <- model_address_lookup(
+      model_info = model_info,
+      lbam_update
+    )
+
+    model_info <- model_type_and_url$path
+
+    model_type <- model_type_and_url$model_type
+  }
+
+  # If path, no model_type, and no internet path and no return from L-BAM try model_type = "finetuned"
+
+
+  # Applying the text-trained method #
+  if(model_type == "texttrained" |
+     model_type == "text-trained"){
+
+
+      cat(colourise("You are using a 'text-trained model' (i.e., model_type = 'texttrained'). \n",
+                "green"))
 
       results <-  textPredictTextTrained(
         model_info = model_info,
@@ -204,10 +267,13 @@ textPredict <- function(
         previous_sentence = previous_sentence,
         ...)
 
-    }
+  }
 
-    if(model_type == "finetuned" | model_type == "fine-tuned"){
-      print("You are using a fine-tuned model (i.e., model_type = 'finetuned').")
+  # Applying the finetuned method #
+  if(model_type == "finetuned" |
+     model_type == "fine-tuned"){
+
+    cat(colourise("You are using a fine-tuned model (i.e., model_type = 'finetuned'). \n", "green"))
 
       results <-  textClassifyPipe(
         x = texts,
@@ -221,10 +287,11 @@ textPredict <- function(
         set_seed = set_seed)
 
     }
-  }
 
-
-  if(registered_model=="implicit_motives"){
+  # Applying the implicit_motives method #
+  if(model_type == "implicit_motives" |
+     model_type == "implicit-motives" |
+     model_type == "implicit motives"){
 
     results <- textPredictImplicitMotives(
         model_info = model_info,
@@ -250,6 +317,7 @@ textPredict <- function(
   }
 
   return(results)
+
 }
 
 # Alias functions

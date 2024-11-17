@@ -43,9 +43,9 @@ textTokenizeAndCount <- function(
 #' @return List with similarity scores: overlapp_percentage, test_recall_percentage and cosine_similarity
 #' @examples
 #' \dontrun{
-#' training_language <- textTokenizeAndCount(Language_based_assessment_data_8["harmonytexts"])
+#' train_language <- textTokenizeAndCount(Language_based_assessment_data_8["harmonytexts"])
 #' assess_language <- textTokenizeAndCount(Language_based_assessment_data_8["satisfactiontexts"])
-#' textDomainCompare(training_language, assess_language)
+#' textDomainCompare(train_language, assess_language)
 #' }
 #' @seealso see \code{\link{textTokenizeAndCount}}
 #' @importFrom dplyr full_join mutate

@@ -23,7 +23,8 @@ test_that("Testing textEmbed as well as train", {
   expect_equal(descr2[[2]][[1]], 2482)
   expect_equal(descr2[[3]][[1]], 62.05)
 
-  harmony_word_embeddings <- text::textEmbed(Language_based_assessment_data_8[1:20, 1:2],
+  harmony_word_embeddings <- text::textEmbed(
+    Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",
     dim_name = TRUE,
     layers = c(11:12),
@@ -70,14 +71,6 @@ test_that("Testing textEmbed as well as train", {
     dim_names = TRUE
   )
 
-#  hils_predicted_scores1 <- text::textPredict(
-#    model_info = "https://github.com/theharmonylab/open_models/raw/main/response_format_2024/depressionselect_robertaL23_phq9_Gu2024.rds",
-#    texts = Language_based_assessment_data_8[1, "satisfactiontexts"],
-# #   word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"],
-#    dim_names = FALSE
-#  )
-#
-
   expect_that(hils_predicted_scores1[[1]], is_a("numeric"))
   expect_equal(hils_predicted_scores1[[1]][1], 11.89219, tolerance = 0.0001)
   expect_equal(hils_predicted_scores1[[1]][2], 25.90329, tolerance = 0.0001)
@@ -89,6 +82,7 @@ test_that("Testing textEmbed as well as train", {
     x_append = Language_based_assessment_data_8[1:20, 6:7],
     y = Language_based_assessment_data_8["hilstotal"][1:20, ],
     language_distribution = Language_based_assessment_data_8["satisfactiontexts"],
+    save_aggregated_word_embedding = TRUE,
     cv_method = "cv_folds",
     outside_folds = 2,
     inside_folds = 2,
@@ -106,16 +100,22 @@ test_that("Testing textEmbed as well as train", {
     model_info = train_x_append,
     x_append = Language_based_assessment_data_8[1:20, 6:7],
     word_embeddings = harmony_word_embeddings$texts["satisfactiontexts"],
+    language_distribution = Language_based_assessment_data_8[1:20, 1],
     dim_names = TRUE,
     append_first = FALSE
   )
 
-  expect_that(hils_predicted_scores2[[1]], is_a("numeric"))
-  expect_equal(hils_predicted_scores2[[1]][1], 12.40038, tolerance = 0.1)
-  expect_equal(hils_predicted_scores2[[1]][2], 25.89001, tolerance = 0.1)
+  expect_that(hils_predicted_scores2, is_a("list"))
+  expect_equal(hils_predicted_scores2[[1]]$ss_min[[1]], 0.9459751, tolerance = 0.1)
+  expect_equal(hils_predicted_scores2[[5]]$test_recall_percentage, 1, tolerance = 0.1)
+  expect_equal(hils_predicted_scores2[[5]]$cosine_similarity, 0.986325, tolerance = 0.1)
+  expect_equal(hils_predicted_scores2[[5]]$cosine_similarity_standardised, 0.9846371, tolerance = 0.1)
+
+  expect_equal(hils_predicted_scores2[[6]]$satisfactiontexts_swlstotal_age_hilstotalpred[[1]], 12.40038, tolerance = 0.1)
+  expect_equal(hils_predicted_scores2[[6]]$satisfactiontexts_swlstotal_age_hilstotalpred[[2]], 25.89001, tolerance = 0.1)
 
 
-  # Trying with te
+  # Trying with text
   # Predict help(textPredict)
   hils_predicted_scores3 <- text::textPredict(
     model_info = train_x_append,
@@ -209,8 +209,7 @@ test_that("Testing textEmbed as well as train", {
   #                        y_axes = FALSE)
   #
 
-
-  text_train_results <- textTrain(
+  text_train_results <- text::textTrain(
     x = harmony_word_embeddings$texts$satisfactiontexts,
     y = Language_based_assessment_data_8$hilstotal[1:20],
     cv_method = "cv_folds",

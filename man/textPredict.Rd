@@ -9,10 +9,11 @@
 textPredict(
   model_info = NULL,
   texts = NULL,
-  model_type = "texttrained",
+  model_type = "detect",
+  lbam_update = TRUE,
   word_embeddings = NULL,
   x_append = NULL,
-  append_first,
+  append_first = NULL,
   dim_names = TRUE,
   language_distribution = NULL,
   language_distribution_min_words = "trained_distribution_min_words",
@@ -39,10 +40,11 @@ textPredict(
 textAssess(
   model_info = NULL,
   texts = NULL,
-  model_type = "texttrained",
+  model_type = "detect",
+  lbam_update = TRUE,
   word_embeddings = NULL,
   x_append = NULL,
-  append_first,
+  append_first = NULL,
   dim_names = TRUE,
   language_distribution = NULL,
   language_distribution_min_words = "trained_distribution_min_words",
@@ -69,10 +71,11 @@ textAssess(
 textClassify(
   model_info = NULL,
   texts = NULL,
-  model_type = "texttrained",
+  model_type = "detect",
+  lbam_update = TRUE,
   word_embeddings = NULL,
   x_append = NULL,
-  append_first,
+  append_first = NULL,
   dim_names = TRUE,
   language_distribution = NULL,
   language_distribution_min_words = "trained_distribution_min_words",
@@ -98,19 +101,23 @@ textClassify(
 }
 \arguments{
 \item{model_info}{(character or r-object) model_info has four options.
-1: R model object (e.g, saved output from one of the textTrain functions).
-2: Link to a model stored in a github repo (e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"
-or a pre-trained model from Huggingface, e.g., "distilbert-base-uncased-finetuned-sst-2-english").
-3: Link to a model stored in a osf project (e.g, https://osf.io/8fp7v).
-4: Path to a model stored locally (e.g, "path/to/your/model"). Information about some accessible models
-can be found at: \href{https://r-text.org/articles/pre_trained_models.html}{r-text.org}.}
+1: R model object (e.g, saved output from one of the textTrain() functions).
+2: The name specified in the  \href{https://r-text.org/articles/LBAM.html}{L-BAM Documentation}.
+For the following settings, remember to also set the model_type parameter:
+3: Link to a text-trained model online (either in a github repo
+(e.g, "https://github.com/CarlViggo/pretrained_swls_model/raw/main/trained_github_model_logistic.RDS"or
+OSF https://osf.io/8fp7v)
+4: Name or link to a fine-tuned model from Huggingface (e.g., "distilbert-base-uncased-finetuned-sst-2-english").
+5: Path to a model stored locally (e.g, "path/to/your/model/model_name.rds").}
 
 \item{texts}{(character) Text to predict. If this argument is specified, then arguments "word_embeddings"
 and "premade embeddings" cannot be defined (default = NULL).}
 
-\item{model_type}{(string) "texttrained" or "finetuned". "texttrained" indicates that the model is from the text-package
-(i.e., trained using one of the textTrain() functions; see function textPredictR()); "finetuned" indicates
-that the model comes from "finetuned" using pipe (see the textClassifyPipe function).}
+\item{model_type}{(character) Specify how the function should handle the model argument. The default is "detect" where the fucntion ttried to detect it
+automatically. Setting it to "fine-tuned" or "text-trained" will apply their respective default behaviors, while setting it to "implicit motives" will
+trigger specific steps tailored to these models.}
+
+\item{lbam_update}{(boolean) Updating the L-BAM file by automaitcally downloading it from Google Sheet.}
 
 \item{word_embeddings}{(tibble; only for "texttrained"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 then texts and embeddings cannot be submitted simultaneously (default = NULL).}

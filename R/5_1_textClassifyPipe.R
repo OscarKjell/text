@@ -60,8 +60,8 @@ textClassifyPipe <- function(
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(x)
 
-  # check whether models name exist in a predefined list
-  registered_true_false <- registered_model_name(model)
+#  # check whether models name exist in a predefined list
+#  registered_true_false <- registered_model_name(model)
 
   ALL_sentiments <- list()
   # Loop over all character variables; i_variables = 1

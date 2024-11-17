@@ -302,7 +302,6 @@ textReturnEmbedding <- function(
   return(emb_and_model)
 }
 
-
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
 #' @param model_info (character or r-object) model_info has four options. 1: R model object
@@ -449,10 +448,21 @@ textPredictTextTrained <- function(
          Choose one or the other.')
   }
 
+  # Get the model
   if(is.character(model_info)){
+
+#    # Look up the model in the L-BAM library
+#    model_info_url <-  model_address_lookup(
+#      model_info = model_info)
+#
+#    if(length(model_info_url) > 0){
+#      model_info <- model_info_url
+#    }
+#
     loaded_model <- textReturnModel(
       model_info = model_info,
       save_model = save_model)
+
   } else {
     loaded_model <- model_info
   }
@@ -648,6 +658,8 @@ textPredictTextTrained <- function(
   if (tibble::is_tibble(loaded_model$language_distribution) &
      !is.null(texts) | !is.null(language_distribution)){ # could add option to add language distribution | !is.null(language_distribution)
 
+
+    # Get language_distribution_min_words parameter from training
     if(language_distribution_min_words == "trained_distribution_min_words"){
 
     n_remove_threshold_comment <- comment(loaded_model$language_distribution)
@@ -657,23 +669,109 @@ textPredictTextTrained <- function(
       part = "n_remove_threshold")
     }
 
+    #### Group level measures
     if (!is.null(texts) & is.null(language_distribution)){
-      assess_distribution <- textTokenizeAndCount(
-        data = texts,
-        n_remove_threshold = language_distribution_min_words)
+      data_language_distribution <-  texts
     }
     if (!is.null(language_distribution)){
-      assess_distribution <- textTokenizeAndCount(
-        language_distribution,
-        n_remove_threshold = language_distribution_min_words)
+      data_language_distribution <- language_distribution
     }
+
+    assess_distribution <- textTokenizeAndCount(
+      data = data_language_distribution,
+      n_remove_threshold = language_distribution_min_words)
 
     similarity_scores <- textDomainCompare(
       train_language = loaded_model$language_distribution,
       assess_language = assess_distribution
     )
 
+    #### Instance level token measures ####
+    instance_token_list <- list()
+    for (i in 1:nrow(data_language_distribution)){
+
+      # Token similarity comparisons
+      instance_assess_distribution <- textTokenizeAndCount(
+        data = data_language_distribution[1][i,],
+        n_remove_threshold = 0)
+
+      instance_similarity_scores <- textDomainCompare(
+        train_language = loaded_model$language_distribution,
+        assess_language = instance_assess_distribution
+      )
+
+      instance_tibble <- tibble::tibble(
+        overlap_percentage = instance_similarity_scores$overlap_percentage,
+        test_recall_percentage = instance_similarity_scores$test_recall_percentage,
+        cosine_similarity = instance_similarity_scores$cosine_similarity,
+        cosine_similarity_standardised = instance_similarity_scores$cosine_similarity_standardised
+      )
+      instance_token_list[[i]] <- instance_tibble
+    }
+    instance_tibble <- dplyr::bind_rows(instance_token_list)
+
+    instance_mean_overlap_percentage <- mean(instance_tibble$overlap_percentage)
+    instance_mean_test_recall_percentage <- mean(instance_tibble$test_recall_percentage)
+    instance_mean_cosine_similarity <- mean(instance_tibble$cosine_similarity)
+    instance_mean_cosine_similarity_standardised <- mean(instance_tibble$cosine_similarity_standardised)
+
+    instance_mean <- list(
+      instance_mean_overlap_percentage = instance_mean_overlap_percentage,
+      instance_mean_test_recall_percentage = instance_mean_test_recall_percentage,
+      instance_mean_cosine_similarity = instance_mean_cosine_similarity,
+      instance_mean_cosine_similarity_standardised = instance_mean_cosine_similarity_standardised)
+
+
+    #### Instance level embeddings measures ####
+    if(length(loaded_model$aggregated_word_embeddings)>1){
+
+      if(!tibble::is_tibble(word_embeddings)){
+        word_embeddings <- word_embeddings[[1]]
+      }
+
+        ss_min <- textSimilarityNorm(
+          word_embeddings,
+          loaded_model$aggregated_word_embeddings$aggregated_word_embedding_min,
+          method = "cosine", center = TRUE, scale = FALSE
+        )
+
+        ss_max <- textSimilarityNorm(
+          word_embeddings,
+          loaded_model$aggregated_word_embeddings$aggregated_word_embedding_max,
+          method = "cosine", center = TRUE, scale = FALSE
+        )
+
+        ss_mean <- textSimilarityNorm(
+          word_embeddings,
+          loaded_model$aggregated_word_embeddings$aggregated_word_embedding_mean,
+          method = "cosine", center = TRUE, scale = FALSE
+        )
+
+        instance_emb_tibble <- tibble::tibble(
+          ss_min = ss_min,
+          ss_max = ss_max,
+          ss_mean = ss_mean
+          )
+
+      mean_instance_embedding_min <- mean(instance_emb_tibble$ss_min)
+      mean_instance_embedding_max <- mean(instance_emb_tibble$ss_max)
+      mean_instance_embedding_mean <- mean(instance_emb_tibble$ss_mean)
+
+      mean_instance_emb_list <- list(
+        mean_instance_embedding_min = mean_instance_embedding_min,
+        mean_instance_embedding_max = mean_instance_embedding_max,
+        mean_instance_embedding_mean = mean_instance_embedding_mean
+      )
+    } else {
+      instance_emb_tibble <- c("Could not compute similarity scores because there were no aggregated word embeddings.")
+      mean_instance_emb_list <- c("Could not compute similarity scores because there were no aggregated word embeddings.")
+    }
+
     predicted_scores2 <- c(list(
+      instance_emb_similarities = instance_emb_tibble,
+      instance_emb_mean = mean_instance_emb_list,
+      instance_token_similarities = instance_tibble,
+      instance_token_similarity_mean = instance_mean,
       similarity_scores = similarity_scores),
       predictions = list(predicted_scores2))
   }

@@ -601,6 +601,48 @@ summarize_tune_results <- function(object,
 }
 
 
+#x_append = NULL
+#append_first = FALSE
+#cv_method = "validation_split"
+#outside_folds = 10
+#inside_folds = 3 / 4
+#strata = "y"
+#outside_strata = TRUE
+#outside_breaks = 4
+#inside_strata = TRUE
+#inside_breaks = 4
+#model = "regression" # model = "multinomial"
+#eval_measure = "default"
+#save_aggregated_word_embedding = FALSE
+#language_distribution = NULL
+#language_distribution_min_words = 3
+#preprocess_step_center = TRUE
+#preprocess_step_scale = TRUE
+#preprocess_PCA = NA
+#penalty = 10^seq(-6, 6)
+#parameter_selection_method = "first"
+#mixture = c(0)
+#first_n_predictors = NA
+#impute_missing = FALSE
+#method_cor = "pearson"
+#model_description = "Consider writing a description of your model here"
+#multi_cores = "multi_cores_sys_default"
+#save_output = "all"
+#simulate.p.value = FALSE
+#seed = 2020
+#
+#x = harmony_word_embeddings$texts$satisfactiontexts
+#y = Language_based_assessment_data_8$hilstotal[1:20]
+#cv_method = "cv_folds"
+#outside_folds = 2
+#inside_folds = 2
+#outside_strata_y = NULL
+#inside_strata_y = NULL
+## preprocess_PCA = c(0.20)
+#preprocess_PCA = NA
+#penalty = 1e-16
+#multi_cores = "multi_cores_sys_default"
+
 #' Train word embeddings to a numeric variable.
 #'
 #' textTrainRegression() trains word embeddings to a numeric or a factor variable.
@@ -634,6 +676,8 @@ summarize_tune_results <- function(object,
 #' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
 #'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
 #'  the yardstick package).
+#' @param save_aggregated_word_embedding (boolean) If TRUE, the aggregated word embeddings (mean, min, and max) are saved
+#' for comparison with other language input when the model is applied to other types of data.
 #' @param language_distribution (Character column) If you provide the raw language data used for making the embeddings,
 #' the language distribution (i.e., a word and frequency table) will be saved to the model object. This enables
 #' calculating similarity scores when the model is being applied to new language domains.
@@ -731,6 +775,7 @@ textTrainRegression <- function(x,
                                 inside_breaks = 4,
                                 model = "regression", # model = "multinomial"
                                 eval_measure = "default",
+                                save_aggregated_word_embedding = FALSE,
                                 language_distribution = NULL,
                                 language_distribution_min_words = 3,
                                 preprocess_step_center = TRUE,
@@ -751,6 +796,7 @@ textTrainRegression <- function(x,
   T1_textTrainRegression <- Sys.time()
   set.seed(seed)
 
+  all_we <- x
 
   # Select correct eval_measure depending on model when default
   if (model == "regression" && eval_measure == "default") {
@@ -1356,6 +1402,35 @@ textTrainRegression <- function(x,
     "prediction functions.")
   }
 
+  if(save_aggregated_word_embedding){
+
+    if(tibble::is_tibble(all_we)){
+      all_we <- list(all_we)
+    }
+    aggregated_word_embedding_mean <- lapply(all_we,
+                                            textEmbeddingAggregation,
+                                            aggregation = "mean"
+    ) %>% dplyr::bind_rows()
+
+    aggregated_word_embedding_min <- lapply(all_we,
+                                            textEmbeddingAggregation,
+                                            aggregation = "min"
+    ) %>% dplyr::bind_rows()
+
+    aggregated_word_embedding_max <- lapply(all_we,
+                                            textEmbeddingAggregation,
+                                            aggregation = "max"
+    ) %>% dplyr::bind_rows()
+
+    aggregated_word_embeddings <- list(
+      aggregated_word_embedding_mean = aggregated_word_embedding_mean,
+      aggregated_word_embedding_min = aggregated_word_embedding_min,
+      aggregated_word_embedding_max = aggregated_word_embedding_max
+    )
+  } else {
+    aggregated_word_embeddings = paste0("The aggregated word embeddings were not saved.")
+  }
+
   if (model == "regression") {
     if (save_output == "all") {
       final_results <- list(
@@ -1486,6 +1561,7 @@ textTrainRegression <- function(x,
 
   final_results <- c(
     list(language_distribution = language_distribution_res),
+    list(aggregated_word_embeddings = aggregated_word_embeddings),
     final_results)
 
   return(final_results)

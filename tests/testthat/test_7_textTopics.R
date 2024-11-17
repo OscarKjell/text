@@ -27,7 +27,7 @@ test_that("Bertopic", {
 
   # Create BERTopic model trained on data["text"] help(textTopics)
   print("textTopics")
-  bert_model <- textTopics(data = data,
+  bert_model <- text::textTopics(data = data,
                            variable_name = "text",
                            embedding_model = "distilroberta",
                            min_df = 2,
@@ -51,10 +51,18 @@ test_that("Bertopic", {
 
 
   # Testing if we can predict "score" from from topic-document distribution
-  print("textTopicsTest")
-  test <- text::textTopicsTest(model = bert_model,
-                              pred_var = "score",
-                              test_method = "ridge_regression")
+  # library(topics)
+#  help(topicsTest)
+#  test <- topics::topicsTest(
+#    data = data,
+#    model = bert_model,
+#    pred_var_x = "score"
+#  )
+#  print("textTopicsTest")
+  test <- text::textTopicsTest(
+    model = bert_model,
+    pred_var = "score",
+    test_method = "ridge_regression")
 
   testthat::expect_equal(test$test[3]$p.value,
                          .7673133,
@@ -62,9 +70,11 @@ test_that("Bertopic", {
 
   # Testing which how individual topics are associated with "score"
   print("textTopicsTest_2")
-  test2 <- text::textTopicsTest(model = bert_model,
-                               pred_var = "score",
-                               test_method = "linear_regression")
+  test2 <- text::textTopicsTest(
+    model = bert_model,
+    pred_var = "score",
+    test_method = "linear_regression"
+    )
 
   testthat::expect_equal(test2$test$score.estimate[1],
                          .1056764,

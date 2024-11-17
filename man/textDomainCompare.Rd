@@ -19,9 +19,9 @@ Compare two language domains
 }
 \examples{
 \dontrun{
-training_language <- textTokenizeAndCount(Language_based_assessment_data_8["harmonytexts"])
+train_language <- textTokenizeAndCount(Language_based_assessment_data_8["harmonytexts"])
 assess_language <- textTokenizeAndCount(Language_based_assessment_data_8["satisfactiontexts"])
-textDomainCompare(training_language, assess_language)
+textDomainCompare(train_language, assess_language)
 }
 }
 \seealso{

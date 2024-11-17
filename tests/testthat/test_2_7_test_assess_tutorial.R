@@ -20,9 +20,8 @@ test_that("Assess tutorial", {
     "I feel great and have no worries that bothers me.")
 
   # Predict depression severity scores by downloading the pre-trained model, creating word embeddings, and applying the model to the embeddings
-  depression_scores <- textPredict(
-    model_info =
-      "https://github.com/theharmonylab/open_models/raw/main/response_format_2024/depressiontext_robertaL23_phq9_Gu2024.rds",
+  depression_scores <- text::textPredict(
+    model_info = "depressiontext_robertaL23_phq9_Gu2024",
     texts = text_to_assess,
     dim_name = FALSE)
 
@@ -31,17 +30,16 @@ test_that("Assess tutorial", {
 
   # Assess the harmony in life on the same text (using the previously made embeddings)
   harmony_in_life_scores <- textAssess(
-    model_info = "https://github.com/theharmonylab/open_models/raw/main/hilsswls2022/harmony_text_roberta-large_23_HILS_Kjell2022.rds",
+    model_info = "harmony_text_roberta-large_23_HILS_Kjell2022",
     texts = text_to_assess,
     dim_name = FALSE)
 
   testthat::expect_that(harmony_in_life_scores, testthat::is_a("tbl"))
   testthat::expect_equal(harmony_in_life_scores[[1]][[1]], 12.35453, tolerance = 0.0001)
 
-  # Assigness implicit motives labels using fine-tuned models
-  implicit_motive <- textClassify(
-    model_info = "theharmonylab/implicit-motives-power-roberta-large",
-    model_type = "finetuned",
+  # Assigning implicit motives labels using fine-tuned models
+  implicit_motive <- text::textClassify(
+    model_info = "implicit_power_fine_tuned_roberta",
     texts = text_to_assess)
 
   testthat::expect_that(implicit_motive, testthat::is_a("tbl_df"))
