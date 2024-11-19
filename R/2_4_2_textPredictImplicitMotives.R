@@ -293,8 +293,8 @@ implicit_motives_results <- function(model_reference,
         if(nrow(dataset) == nrow(to_insert[[2]])){
           integrated_dataset <- dplyr::bind_cols(dataset, to_insert[[2]])
         } else {
-          cat(colourise(paste("Note that dataset_to_merge_predictions does not have the same number ",
-          "of rows as the predictions, so it cannot be merged. \n"),
+          cat(colourise(paste("Note that dataset_to_merge_predictions does not have the same number of rows ",
+          "as the summed predictions (to participant or story id, so it cannot be merged. \n"),
               "brown")
           )
         }
