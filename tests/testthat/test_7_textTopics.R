@@ -80,11 +80,11 @@ test_that("Bertopic", {
 #    pred_var = "score",
 #    test_method = "linear_regression"
 #    )
-
-  testthat::expect_equal(test2$test$score.estimate[1],
-                         .1056764,
-                         tolerance = 0.0001)
-
+#
+#  testthat::expect_equal(test2$test$score.estimate[1],
+#                         .1056764,
+#                         tolerance = 0.0001)
+#
   # Plot wordclouds for each significant topic
 
   print("textTopicsWordcloud")
