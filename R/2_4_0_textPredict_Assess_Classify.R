@@ -1,5 +1,37 @@
 # Wrapper functions for textPredictR and textClassifyPipe
 
+# Common parameter
+#model_info = NULL
+#texts = NULL
+#model_type = "detect"
+#lbam_update = TRUE
+### text-trained model specific parameters ##
+#word_embeddings = NULL
+#x_append = NULL
+#append_first = NULL
+#dim_names = TRUE
+#language_distribution = NULL
+#language_distribution_min_words = "trained_distribution_min_words"
+#save_model = TRUE
+#threshold = NULL
+#show_texts = FALSE
+#device = "cpu"
+#participant_id = NULL
+#save_embeddings = TRUE
+#save_dir = "wd"
+#save_name = "textPredict"
+#story_id = NULL
+#dataset_to_merge_predictions = NULL
+#previous_sentence = FALSE
+### fine-tuned model specific parameters ##
+#tokenizer_parallelism = FALSE
+#logging_level = "error"
+#force_return_results = TRUE
+#return_all_scores = FALSE
+#function_to_apply = NULL
+#set_seed = 202208
+
+
 #' textPredict, textAssess and textClassify
 #'
 #' Trained models created by e.g., textTrain() or stored on e.g., github of huggingface
@@ -174,7 +206,7 @@ textPredict <- function(
   is_local_model = FALSE
   is_online_path = FALSE
 
-  # Methods for retrieving the right models and settings include:
+  # Methods for retrieving the model and settings include:
   # 1: R model object (e.g, output from the text train functions).
   # 2: The name and model_types (currently text-trained, fine-tuned or implicit-motives) specified in the L-BAM Documentation.
   # For the following settings, remember to also set the model_type parameter:

@@ -211,6 +211,7 @@ implicit_motives_results <- function(model_reference,
                                      dataset,
                                      lower_case_model) {
 
+  integrated_dataset = NULL
 
   #### Assign correct column name ####
   if (grepl("implicit", lower_case_model) & grepl("power", lower_case_model)) {
@@ -291,6 +292,11 @@ implicit_motives_results <- function(model_reference,
       if(length(to_insert)>1){
         if(nrow(dataset) == nrow(to_insert[[2]])){
           integrated_dataset <- dplyr::bind_cols(dataset, to_insert[[2]])
+        } else {
+          cat(colourise(paste("Note that dataset_to_merge_predictions does not have the same number ",
+          "of rows as the predictions, so it cannot be merged. \n"),
+              "brown")
+          )
         }
       }
       if(length(to_insert)>2){
@@ -298,7 +304,6 @@ implicit_motives_results <- function(model_reference,
           integrated_dataset <- dplyr::bind_cols(dataset, to_insert[[3]])
         }
       }
-
 
       if (identical(story_id, participant_id)){
         # story predictions
@@ -318,11 +323,18 @@ implicit_motives_results <- function(model_reference,
         summary_list <- list(sentence_predictions = predicted_scores2,
                              story_predictions = predicted_story,
                              dataset = integrated_dataset)
-      } else {
+      } else if (!is.null(integrated_dataset)){
         # Summarize all predictions
         summary_list <- list(sentence_predictions = predicted_scores2,
                              person_predictions = predicted,
                              dataset = integrated_dataset)
+      } else {
+        # Summarize
+        summary_list <- list(sentence_predictions = predicted_scores2,
+                             person_predictions = predicted#,
+                            # dataset = integrated_dataset
+                             )
+
       }
     }
   } else {

@@ -4,7 +4,14 @@ library(text)
 library(testthat)
 library(ggplot2)
 
-#textrpp_initialize()
+#
+# .rs.restartR()
+#help(textrpp_initialize)
+#textrpp_initialize(
+#  condaenv = "berttopic2",
+#  refresh_settings = TRUE
+#)
+#textEmbed("hello")
 
 test_that("Bertopic", {
   skip_on_cran()
@@ -26,7 +33,6 @@ test_that("Bertopic", {
   if (Sys.info()["sysname"] == "Darwin" | Sys.info()["sysname"] == "Windows") {
 
   # Create BERTopic model trained on data["text"] help(textTopics)
-  print("textTopics")
   bert_model <- text::textTopics(data = data,
                            variable_name = "text",
                            embedding_model = "distilroberta",
@@ -53,11 +59,10 @@ test_that("Bertopic", {
   # Testing if we can predict "score" from from topic-document distribution
   # library(topics)
 #  help(topicsTest)
-#  test <- topics::topicsTest(
-#    data = data,
-#    model = bert_model,
-#    pred_var_x = "score"
-#  )
+  test1 <- textTopicsTest2(
+    model = bert_model,
+    pred_var_x = "score"
+  )
 #  print("textTopicsTest")
   test <- text::textTopicsTest(
     model = bert_model,
@@ -87,6 +92,12 @@ test_that("Bertopic", {
     model = bert_model,
     test = test2,
     )
+
+  plots <- textTopicsWordcloud2(
+    model = bert_model,
+    test = test1,
+  )
+
   }
 
 
