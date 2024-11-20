@@ -37,10 +37,10 @@ test_that("Assess tutorial", {
   testthat::expect_that(harmony_in_life_scores, testthat::is_a("tbl"))
   testthat::expect_equal(harmony_in_life_scores[[1]][[1]], 12.35453, tolerance = 0.0001)
 
-  # Assigning implicit motives labels using fine-tuned models
   implicit_motive <- text::textClassify(
     model_info = "implicit_power_fine_tuned_roberta",
-    texts = text_to_assess)
+    texts = text_to_assess,
+    logging_level = "debug")
 
   testthat::expect_that(implicit_motive, testthat::is_a("tbl_df"))
   testthat::expect_equal(implicit_motive[[1]][[1]][[1]], 0, tolerance = 0.0001)

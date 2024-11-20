@@ -64,27 +64,27 @@ test_that("Bertopic", {
 #    pred_var_x = "score"
 #  )
 ##  print("textTopicsTest")
-#  test <- text::textTopicsTest(
-#    model = bert_model,
-#    pred_var = "score",
-#    test_method = "ridge_regression")
+  test <- text::textTopicsTest(
+    model = bert_model,
+    pred_var = "score",
+    test_method = "ridge_regression")
 #
-#  testthat::expect_equal(test$test[3]$p.value,
-#                         .7673133,
-#                         tolerance = 0.0001)
+  testthat::expect_equal(test$test[3]$p.value,
+                         .7673133,
+                         tolerance = 0.0001)
 #
 #  # Testing which how individual topics are associated with "score"
 #  print("textTopicsTest_2")
-#  test2 <- text::textTopicsTest(
-#    model = bert_model,
-#    pred_var = "score",
-#    test_method = "linear_regression"
-#    )
-#
-#  testthat::expect_equal(test2$test$score.estimate[1],
-#                         .1056764,
-#                         tolerance = 0.0001)
-#
+  test2 <- text::textTopicsTest(
+    model = bert_model,
+    pred_var = "score",
+    test_method = "linear_regression"
+    )
+
+  testthat::expect_equal(test2$test$score.estimate[1],
+                         .1056764,
+                         tolerance = 0.0001)
+
   # Plot wordclouds for each significant topic
 
   print("textTopicsWordcloud")
@@ -93,7 +93,7 @@ test_that("Bertopic", {
     test = test2,
     )
 
-  # Requiring the topics-package so dont run yet.
+#  # Requiring the topics-package so dont run yet.
 #  plots <- textTopicsWordcloud2(
 #    model = bert_model,
 #    test = test1,
