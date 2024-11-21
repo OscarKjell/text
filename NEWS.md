@@ -2,6 +2,9 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.2.17
+- `textLBAM()` returns the library as a datafram
+
 # text 1.2.16
 - `textPredict()` detects `model_type`.
 - Instead of having to specify the URL, one can now specify the model name from 

@@ -355,26 +355,27 @@ model_address_lookup <- function(
     ){
 
 
-  if(lbam_update){
-    # download file
-    lbam_sheet_url <- "https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/export?format=csv&gid=0#gid=0/export?format=csv"
-    destfile <- system.file("extdata",
-                            "The_L-BAM_Library.csv",
-                            package = "text")
+#  if(lbam_update){
+#    # download file
+#    lbam_sheet_url <- "https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/export?format=csv&gid=0#gid=0/export?format=csv"
+#    destfile <- system.file("extdata",
+#                            "The_L-BAM_Library.csv",
+#                            package = "text")
+#
+#
+#    download.file(lbam_sheet_url,
+#                  destfile = destfile,
+#                  mode = "wb",
+#                  quiet = TRUE)
+#
+#    cat(colourise("Successfully updated the L-BAM library. \n ", "green"))
+#  }
+#
+#  lbam <- utils::read.csv(system.file("extdata",
+#                                      "The_L-BAM_Library.csv",
+#                                      package = "text"), skip = 3)
 
-
-    download.file(lbam_sheet_url,
-                  destfile = destfile,
-                  mode = "wb",
-                  quiet = TRUE)
-
-    cat(colourise("Successfully updated the L-BAM library. \n ", "green"))
-  }
-
-  lbam <- utils::read.csv(system.file("extdata",
-                                      "The_L-BAM_Library.csv",
-                                      package = "text"), skip = 3)
-
+  lbam <- textLBAM(lbam_update = TRUE)
 
   target_model <- lbam %>%
     dplyr::filter(Name == model_info) %>%

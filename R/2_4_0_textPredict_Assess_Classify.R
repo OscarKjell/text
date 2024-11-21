@@ -1,37 +1,5 @@
 # Wrapper functions for textPredictR and textClassifyPipe
 
-# Common parameter
-#model_info = NULL
-#texts = NULL
-#model_type = "detect"
-#lbam_update = TRUE
-### text-trained model specific parameters ##
-#word_embeddings = NULL
-#x_append = NULL
-#append_first = NULL
-#dim_names = TRUE
-#language_distribution = NULL
-#language_distribution_min_words = "trained_distribution_min_words"
-#save_model = TRUE
-#threshold = NULL
-#show_texts = FALSE
-#device = "cpu"
-#participant_id = NULL
-#save_embeddings = TRUE
-#save_dir = "wd"
-#save_name = "textPredict"
-#story_id = NULL
-#dataset_to_merge_predictions = NULL
-#previous_sentence = FALSE
-### fine-tuned model specific parameters ##
-#tokenizer_parallelism = FALSE
-#logging_level = "error"
-#force_return_results = TRUE
-#return_all_scores = FALSE
-#function_to_apply = NULL
-#set_seed = 202208
-
-
 #' textPredict, textAssess and textClassify
 #'
 #' Trained models created by e.g., textTrain() or stored on e.g., github of huggingface
@@ -362,5 +330,62 @@ textAssess <- textPredict
 # @examples textClassify("hello")
 #' @export
 textClassify <- textPredict
+
+#returns the lbam library
+#' The LBAM library
+#'
+#' Retrieve the Language-Based Assessment Models library (LBAM).
+#' @param columns (string) Select which columns to retrieve e.g., c("Name", "Path")
+#' @param lbam_update (boolean) TRUE downloads a new copy of the LBAM file
+#' @return Data frame containing information about the Language-based assessment models library (LBAM).
+#' @examples
+# \dontrun{
+#'
+#' test_lbam <- textLBAM(
+#'   lbam_update = TRUE
+#' )
+#'
+#' test_lbam %>%
+#'   filter(str_starts(Construct_Concept_Behaviours, "Dep")) %>%
+#'   select(Name)
+#'
+# }
+#' @importFrom  dplyr select
+#' @importFrom dplyr bind_cols select full_join arrange everything
+#' @importFrom utils read.csv
+#' @export
+textLBAM <- function(
+    columns = NULL,
+    lbam_update = FALSE
+    ) {
+
+  if(lbam_update){
+    # download file
+    lbam_sheet_url <- "https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/export?format=csv&gid=0#gid=0/export?format=csv"
+    destfile <- system.file("extdata",
+                            "The_L-BAM_Library.csv",
+                            package = "text")
+
+
+    download.file(lbam_sheet_url,
+                  destfile = destfile,
+                  mode = "wb",
+                  quiet = TRUE)
+
+    cat(colourise("Successfully updated the L-BAM library. \n ", "green"))
+  }
+
+  lbam <- utils::read.csv(
+    system.file("extdata",
+                "The_L-BAM_Library.csv",
+                package = "text"), skip = 3)
+
+  if (!is.null(columns)){
+    lbam <- lbam %>%
+      dplyr::select(columns)
+  }
+
+  return(lbam)
+}
 
 
