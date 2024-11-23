@@ -2,37 +2,142 @@
 % Please edit documentation in R/7_2_textTopicsAnalysis.R
 \name{textTopicsWordcloud}
 \alias{textTopicsWordcloud}
-\title{Plots wordcloud (experimental)}
+\title{Plot word clouds}
 \usage{
 textTopicsWordcloud(
-  model,
-  test,
-  color_negative_cor = ggplot2::scale_color_gradient(low = "darkred", high = "red"),
-  color_positive_cor = ggplot2::scale_color_gradient(low = "darkgreen", high = "green"),
+  model = NULL,
+  ngrams = NULL,
+  test = NULL,
+  p_threshold = 0.05,
+  color_scheme = "default",
   scale_size = FALSE,
   plot_topics_idx = NULL,
-  p_threshold = 0.05
+  save_dir,
+  figure_format = "svg",
+  width = 10,
+  height = 8,
+  max_size = 10,
+  seed = 42,
+  scatter_legend_dot_size = 15,
+  scatter_legend_bg_dot_size = 9,
+  scatter_legend_n = c(1, 1, 1, 1, 0, 1, 1, 1, 1),
+  scatter_legend_method = c("mean"),
+  scatter_legend_specified_topics = NULL,
+  scatter_legend_topic_n = FALSE,
+  grid_legend_title = "legend_title",
+  grid_legend_title_size = 5,
+  grid_legend_title_color = "black",
+  grid_legend_x_axes_label = "legend_x_axes_label",
+  grid_legend_y_axes_label = "legend_y_axes_label",
+  grid_legend_number_color = "black",
+  grid_legend_number_size = 5
 )
 }
 \arguments{
-\item{model}{(data.frame) The model returned from textTopics().}
+\item{model}{(list) A trained topics model. For examples from topicsModel(). Should be NULL if plotting ngrams.}
 
-\item{test}{(data.frame) the test returned from textTopicTest()}
+\item{ngrams}{(list) The output from the the topicsGram() function . Should be NULL if plotting topics.}
 
-\item{color_negative_cor}{(ggplot2::scale_color_gradient()) color gradient of topic cloud
-with negative correlation}
+\item{test}{(list) The test results; if plotting according to dimension(s) include the object from topicsTest() function.}
 
-\item{color_positive_cor}{(ggplot2::scale_color_gradient) color gradient of topic cloud
-with positive correlation}
+\item{p_threshold}{(integer) The p-value threshold to use for significance testing.}
 
-\item{scale_size}{(bool) if True, then the size of the topic cloud is scaled by the
-prevalence of the topic}
+\item{color_scheme}{(string 'default' or vector) The color scheme.
 
-\item{plot_topics_idx}{(list) if specified, then only the specified topics are plotted}
+For plots not including a test, the color_scheme should in clude 2 colours (1 gradient pair), such as:
 
-\item{p_threshold}{(float) set significance threshold which determines which topics are plotted}
+c("lightgray", "darkblue)
+
+For 1 dimensional plots of n-grams it should contain 4 colours (2 gradient pairs), such as:
+
+c(
+"#EAEAEA", "darkred", # negative ngrams colors
+
+"#EAEAEA", "darkgreen" # positve ngrams colors)
+
+
+
+For 1-dimension plots of topics, it should contain 6 colours (3 gradient pairs), such as
+
+ c(
+"#EAEAEA", "darkred",     # negative topics colors
+
+"#EAEAEA", "darkgray",     # colours of topics not significantly associated
+
+"#EAEAEA", "darkgreen"     # positve topics colors)
+
+
+
+ For 2-dimensional plots of topics, the color scheme should contain 18 colours (9 gradient pairs), such as:
+
+ c(
+  "lightgray", "#398CF9",     # quadrant 1 (upper left corner)
+
+  "lightgray", "#60A1F7",     # quadrant 2
+
+  "lightgray", "#5dc688",     # quadrant 3 (upper right corner)
+
+  "lightgray", "#e07f6a",     # quadrant 4
+
+  "lightgray", "darkgray",     # quadrant 5 (middle square)
+
+  "lightgray", "#40DD52",     # quadrant 6
+
+  "lightgray", "#FF0000",     # quadrant 7 (bottom left corner)
+
+  "lightgray", "#EA7467",     # quadrant 8
+
+  "lightgray", "#85DB8E")     # quadrant 9 (bottom right corner)}
+
+\item{scale_size}{(logical) Whether to scale the size of the words.}
+
+\item{plot_topics_idx}{(vector)  The index or indeces of the topics to plot
+(e.g., look in the model-object for the indices; can for example, be c(1, 3:5) to plot topic t_1, t_3, t_4 and t_5) (optional).}
+
+\item{save_dir}{(string) The directory to save the plots.}
+
+\item{figure_format}{(string) Set the figure format, e.g., ".svg", or ".png".}
+
+\item{width}{(integer) The width of the topic (units = "in").}
+
+\item{height}{(integer) The width of the topic (units = "in").}
+
+\item{max_size}{(integer) The max size of the words.}
+
+\item{seed}{(integer) The seed to set for reproducibility; need to be the same seed number as in in}
+
+\item{scatter_legend_dot_size}{(integer) The size of dots in the scatter legend.}
+
+\item{scatter_legend_bg_dot_size}{(integer) The size of background dots in the scatter legend.}
+
+\item{scatter_legend_n}{(numeric or vector) A vector determining the number of dots to emphasis in each quadrant of the scatter legend.
+For example: c(1,1,1,1,0,1,1,1,1) result in one dot in each quadrant except for the middle quadrant.}
+
+\item{scatter_legend_method}{(string) The method to filter topics to be emphasised in the scatter legend.
+Can be either "mean", "max_x", or "max_y"}
+
+\item{scatter_legend_specified_topics}{(vector) Specify which topic(s) to be emphasised in the scatter legend.
+For example c("t_1", "t_2"). If set, scatter_legend_method will have no effect.}
+
+\item{scatter_legend_topic_n}{(boolean) Allow showing the topic number or not in the scatter legend}
+
+\item{grid_legend_title}{The title of grid topic plot.}
+
+\item{grid_legend_title_size}{The size of the title of the plot.}
+
+\item{grid_legend_title_color}{The color of the legend title.}
+
+\item{grid_legend_x_axes_label}{The label of the x axes.}
+
+\item{grid_legend_y_axes_label}{The label of the y axes.}
+
+\item{grid_legend_number_color}{The color in the text in the legend.}
+
+\item{grid_legend_number_size}{The color in the text in the legend.}
+}
+\value{
+The function saves figures in the save_dir.
 }
 \description{
-textTopicsWordcloud() plots wordclouds of topics from a Topic Model based on their significance
-determined by a linear or binary regression
+This function create word clouds and topic fugures
 }

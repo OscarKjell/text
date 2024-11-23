@@ -111,7 +111,7 @@ test_that("textPredict Implicit motives", {
 
   # help(textClassify)
   implicit_motive <- text::textClassify(
-    model_info = "implicit_power_fine_tuned_roberta",
+    model_info = "implicit_power_roberta_ft_nilsson2024",
     texts = PSE_stories_participant_level$stories,
     show_texts = T
   )
@@ -124,7 +124,7 @@ test_that("textPredict Implicit motives", {
   ### Merging Participant level
   predictions_participant_1 <- text::textPredict(
     texts = PSE_stories_participant_level$stories,
-    model_info = "implicit_power_roberta_large_L23_v1",
+    model_info = "implicit_power_roberta_l23_nilsson2024",
     participant_id = PSE_stories_participant_level$Participant_ID,
     dataset_to_merge_predictions = PSE_stories_participant_level
   )
@@ -141,7 +141,7 @@ test_that("textPredict Implicit motives", {
   #
   predictions_participant_2 <- text::textPredict(
     texts = PSE_stories_participant_level$stories,
-    model_info = "implicit_power_roberta_large_L23_v1",
+    model_info = "implicit_power_roberta_l23_nilsson2024",
     show_texts = T
     # participant_id = PSE_stories_participant_level$Participant_ID,
     # dataset_to_merge_predictions = PSE_stories_participant_level
@@ -153,7 +153,7 @@ test_that("textPredict Implicit motives", {
   #as expected
   predictions_story_1 <- text::textPredict(
     texts = PSE_stories_story_level$Story_Text,
-    model_info = "implicit_achievement_roberta_large_L23_v1",
+    model_info = "implicit_achievement_roberta_l23_nilsson2024",
     participant_id = PSE_stories_story_level$Participant_ID,
     story_id = PSE_stories_story_level$story_id,
     dataset_to_merge_predictions = PSE_stories_story_level
@@ -166,7 +166,7 @@ test_that("textPredict Implicit motives", {
   #as expected
   predictions_story_2 <- text::textPredict(
     texts = PSE_stories_story_level$Story_Text,
-    model_info = "implicit_achievement_roberta_large_L23_v1",
+    model_info = "implicit_achievement_roberta_l23_nilsson2024",
     #participant_id = PSE_stories_story_level$Participant_ID,
     #story_id = PSE_stories_story_level$story_id,
     dataset_to_merge_predictions = PSE_stories_story_level
@@ -178,7 +178,7 @@ test_that("textPredict Implicit motives", {
   #this is working as expected
   predictions_sentence_1 <- text::textPredict(
     texts = PSE_stories_sentence_level$Story_Text,
-    model_info = "implicit_affiliation_roberta_large_L23_v1",
+    model_info = "implicit_affiliation_roberta_l23_nilsson2024",
     participant_id = PSE_stories_sentence_level$Participant_ID,
     story_id = PSE_stories_sentence_level$story_id,
     dataset_to_merge_predictions = PSE_stories_sentence_level
@@ -191,7 +191,7 @@ test_that("textPredict Implicit motives", {
   # This one is now 10/10. Awesome
   predictions_sentence_2 <- text::textPredict(
     texts = PSE_stories_sentence_level$Story_Text,
-    model_info = "implicit_affiliation_roberta_large_L23_v1",
+    model_info = "implicit_affiliation_roberta_l23_nilsson2024",
     #participant_id = PSE_stories_sentence_level$Participant_ID,
     #story_id = PSE_stories_sentence_level$story_id,
     dataset_to_merge_predictions = PSE_stories_sentence_level

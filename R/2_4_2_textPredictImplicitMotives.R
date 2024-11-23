@@ -623,7 +623,7 @@ textPredictImplicitMotives <- function(
   if(model_type == "text-trained"){
 
     cat(
-      colourise("You are using a text-trained implicit-motives model type.", "green")
+      colourise("You are using a text-trained implicit-motives model type.\n", "green")
       )
 
       predicted_scores2 <- textPredictTextTrained(

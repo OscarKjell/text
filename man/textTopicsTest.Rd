@@ -2,24 +2,22 @@
 % Please edit documentation in R/7_2_textTopicsAnalysis.R
 \name{textTopicsTest}
 \alias{textTopicsTest}
-\title{This function tests the relationship between a single topic or all topics and a
-variable of interest. Available tests include correlation, t-test, linear regression,
-binary regression, and ridge regression. (EXPERIMENTAL - under development)}
+\title{Wrapper for topicsTest function from the topics package}
 \usage{
 textTopicsTest(
   model,
-  pred_var,
+  pred_var_x = NULL,
+  pred_var_y = NULL,
   group_var = NULL,
   control_vars = c(),
   test_method = "linear_regression",
-  multiple_comparison = "fdr",
+  p_alpha = 0.05,
+  p_adjust_method = "fdr",
   load_dir = NULL
 )
 }
 \arguments{
 \item{model}{(data.frame) The model returned from textTopics().}
-
-\item{pred_var}{(string) Variable of interest for linear or binary regression}
 
 \item{group_var}{(string) Grouping variable for t-test}
 
@@ -28,11 +26,13 @@ textTopicsTest(
 \item{test_method}{(string) Choose between "correlation", "t-test", "binary_regression",
 "linear_regression" or "ridge_regression"}
 
-\item{multiple_comparison}{Method for correction of multiple tests
-(e.g., "fdr", "bonferroni").}
-
 \item{load_dir}{(string) if specified, the function returns the precomputed analysis
 from the directory, otherwise leave blank}
+
+\item{pred_var}{(string) Variable of interest for linear or binary regression}
+
+\item{multiple_comparison}{Method for correction of multiple tests
+(e.g., "fdr", "bonferroni").}
 }
 \value{
 Metadata and results of the test such as estimate, t-value, p-value,
@@ -40,6 +40,5 @@ and variable name.
 }
 \description{
 This function tests the relationship between a single topic or all topics and a
-variable of interest. Available tests include correlation, t-test, linear regression,
-binary regression, and ridge regression. (EXPERIMENTAL - under development)
+variable of interest using the 'topicsTest' function from the topics package.
 }

@@ -1,7 +1,7 @@
 Package: text
 Type: Package
 Title: Analyses of Text using Transformers Models from HuggingFace, Natural Language Processing and Machine Learning
-Version: 1.2.17
+Version: 1.2.19
 Authors@R: c(
     person("Oscar", "Kjell", , "oscar.kjell@psy.lu.se", role = c("aut", "cre"), 
       comment = c(ORCID = "0000-0002-2728-6278"),
@@ -21,7 +21,8 @@ Archs: x64
 SystemRequirements: Python (>= 3.6.0)
 LazyData: true
 BuildVignettes: true
-Imports: 
+Imports:
+    topics,
     dplyr,
     tibble,
     stringi,
@@ -40,8 +41,7 @@ Imports:
     workflows,
     yardstick,
     future,
-    furrr,
-    overlapping
+    furrr
 RoxygenNote: 7.3.2
 Suggests: 
     knitr,
@@ -50,6 +50,7 @@ Suggests:
     rio,
     glmnet,
     randomForest,
+    overlapping,
     covr,
     xml2,
     ranger,

@@ -879,6 +879,13 @@ textPredictTest <- function(y1,
                             bootstraps_times = 1000,
                             seed = 6134,
                             ...) {
+
+  if (!requireNamespace("overlapping", quietly = TRUE)) {
+    msg <- c("ggwordcloud is required for this test.\nPlease install it using install.packages('ggwordcloud').")
+
+    message(colourise(msg, "brown"))
+  }
+
   ## If comparing predictions from models that predict the SAME outcome
   if (method == "t-test") {
     yhat1_absolut_error <- abs(yhat1 - y1)

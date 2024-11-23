@@ -21,7 +21,7 @@ test_that("Assess tutorial", {
 
   # Predict depression severity scores by downloading the pre-trained model, creating word embeddings, and applying the model to the embeddings
   depression_scores <- text::textPredict(
-    model_info = "depressiontext_robertaL23_phq9_Gu2024",
+    model_info = "depression_text_phq9_roberta23_gu2024",
     texts = text_to_assess,
     dim_name = FALSE)
 
@@ -30,7 +30,7 @@ test_that("Assess tutorial", {
 
   # Assess the harmony in life on the same text (using the previously made embeddings)
   harmony_in_life_scores <- textAssess(
-    model_info = "harmony_text_roberta-large_23_HILS_Kjell2022",
+    model_info = "harmony_text_roberta23_kjell2022",
     texts = text_to_assess,
     dim_name = FALSE)
 
@@ -38,7 +38,7 @@ test_that("Assess tutorial", {
   testthat::expect_equal(harmony_in_life_scores[[1]][[1]], 12.35453, tolerance = 0.0001)
 
   implicit_motive <- text::textClassify(
-    model_info = "implicit_power_fine_tuned_roberta",
+    model_info = "implicit_power_roberta_ft_nilsson2024",
     texts = text_to_assess,
     logging_level = "debug")
 

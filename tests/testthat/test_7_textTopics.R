@@ -37,7 +37,7 @@ test_that("Bertopic", {
                            variable_name = "text",
                            embedding_model = "distilroberta",
                            min_df = 2,
-                           set_seed = 8,
+                           set_seed = 42,
                            save_dir="./results")
 
   testthat::expect_equal(bert_model$preds$t_1[2],
@@ -55,52 +55,30 @@ test_that("Bertopic", {
 #  )
 #
 
-
-#  # Testing if we can predict "score" from from topic-document distribution
-#  # library(topics)
-##  help(topicsTest)
-#  test1 <- textTopicsTest2(
-#    model = bert_model,
-#    pred_var_x = "score"
-#  )
-##  print("textTopicsTest")
-  test <- text::textTopicsTest(
-    model = bert_model,
-    pred_var = "score",
-    test_method = "ridge_regression")
-#
-  testthat::expect_equal(test$test[3]$p.value,
-                         .7673133,
-                         tolerance = 0.0001)
-#
-#  # Testing which how individual topics are associated with "score"
-#  print("textTopicsTest_2")
+#  Testing  how individual topics are associated with "score"
   test2 <- text::textTopicsTest(
     model = bert_model,
-    pred_var = "score",
+    pred_var_x = "score",
     test_method = "linear_regression"
     )
 
-  testthat::expect_equal(test2$test$score.estimate[1],
+  testthat::expect_equal(test2[[1]]$test$x.score.estimate[1],
                          .1056764,
                          tolerance = 0.0001)
 
-  # Plot wordclouds for each significant topic
-
-  print("textTopicsWordcloud")
-  plots <- textTopicsWordcloud(
+  plots <- text::textTopicsWordcloud(
     model = bert_model,
     test = test2,
-    )
+    save_dir = "./results"
+  )
 
-#  # Requiring the topics-package so dont run yet.
-#  plots <- textTopicsWordcloud2(
-#    model = bert_model,
-#    test = test1,
-#  )
-#
+  plots <- text::textTopicsWordcloud(
+    model = bert_model,
+    save_dir = "./results"
+  )
+
+
   }
-
 
   unlink("./results", recursive = TRUE)
 })
