@@ -25,7 +25,7 @@ jobs:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      R_LIBS_USER: /tmp/Library # Use /tmp for Linux/macOS or %TEMP% for Windows
+      R_LIBS_USER: /tmp/Library
 
     steps:
       - uses: actions/checkout@v2
@@ -35,13 +35,20 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
 
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev
+        shell: bash
+
       - name: Set up Pandoc
         uses: r-lib/actions/setup-pandoc@v2-branch
 
       - name: Install R dependencies
         run: |
           install.packages("remotes", repos = "https://cran.rstudio.com")
-          remotes::install_cran(c(
+          remotes::install_cran(c("topics",
             "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
             "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
             "reticulate", "tune", "workflows", "yardstick",
@@ -51,7 +58,7 @@ jobs:
 
       - name: Verify Installation
         run: |
-          required_packages <- c(
+          required_packages <- c("topics",
             "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
             "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
             "reticulate", "tune", "workflows", "yardstick",
