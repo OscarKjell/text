@@ -42,6 +42,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
+          sudo apt-get install -y default-jdk
+          sudo R CMD javareconf
           sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev
           sudo apt-get install -y libharfbuzz-dev libfribidi-dev
 
@@ -54,10 +56,10 @@ jobs:
       # Pre-install critical dependencies
       - name: Install critical R packages
         run: |
-          install.packages(c('curl', 'credentials', 'gert', 'gh', 'httr2', 'ragg', 'rcmdcheck', 'textshaping', 'usethis', 'pkgdown', 'urlchecker', 'rversions'), repos = "https://cloud.r-project.org")
+          install.packages(c('rJava', 'mallet', 'topics'), repos = "https://cloud.r-project.org")
         shell: Rscript {0}
 
-      # Install remaining dependencies
+      # Install all dependencies
       - name: Install all dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
