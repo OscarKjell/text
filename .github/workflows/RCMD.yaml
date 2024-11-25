@@ -35,31 +35,34 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
 
-      - name: Install system dependencies (Linux)
+      - name: Install system dependencies (Ubuntu)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -y
           sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev
+          sudo apt-get install -y libharfbuzz-dev libfribidi-dev
+          sudo apt-get install -y pandoc
         shell: bash
 
       - name: Set up Pandoc
         uses: r-lib/actions/setup-pandoc@v2-branch
 
-      - name: Install R dependencies
+      - name: Install required R packages
         run: |
-          install.packages("remotes", repos = "https://cran.rstudio.com")
-          remotes::install_cran(c("topics",
-            "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
+          options(repos = c(CRAN = "https://cran.rstudio.com"))
+          install.packages("remotes")
+          remotes::install_cran(c(
+            "topics", "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
             "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
             "reticulate", "tune", "workflows", "yardstick",
             "future", "furrr", "rmarkdown", "evaluate"
           ))
         shell: Rscript {0}
 
-      - name: Verify Installation
+      - name: Verify installed packages
         run: |
-          required_packages <- c("topics",
-            "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
+          required_packages <- c(
+            "topics", "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
             "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
             "reticulate", "tune", "workflows", "yardstick",
             "future", "furrr", "rmarkdown", "evaluate"
