@@ -25,7 +25,7 @@ jobs:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      R_LIBS_USER: /tmp/Library # Explicit path for Linux/macOS
+      R_LIBS_USER: /tmp/Library # Use /tmp for Linux/macOS or %TEMP% for Windows
 
     steps:
       - uses: actions/checkout@v2
@@ -37,14 +37,32 @@ jobs:
 
       - name: Install R dependencies
         run: |
-          install.packages("remotes")
-          install.packages("rcmdcheck")
-          install.packages("devtools")
+          install.packages("remotes", repos = "https://cran.rstudio.com")
+          remotes::install_cran(c("rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
+                                   "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
+                                   "reticulate", "tune", "workflows", "yardstick",
+                                   "future", "furrr"))
         shell: Rscript {0}
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev
+        shell: bash
+
+      - name: Install system dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install libxml2 curl openssl
+        shell: bash
 
       - name: Verify Installation
         run: |
-          required_packages <- c("rcmdcheck", "devtools")
+          required_packages <- c("rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
+                                 "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
+                                 "reticulate", "tune", "workflows", "yardstick",
+                                 "future", "furrr")
           not_installed <- setdiff(required_packages, rownames(installed.packages()))
           if (length(not_installed) > 0) {
             stop("Some required packages are not installed: ", paste(not_installed, collapse = ", "))
