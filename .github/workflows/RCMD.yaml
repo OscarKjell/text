@@ -38,7 +38,7 @@ jobs:
       - name: Install R dependencies
         run: |
           install.packages("remotes", repos = "https://cran.rstudio.com")
-          remotes::install_cran(c("rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
+          remotes::install_cran(c("topics", "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
                                    "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
                                    "reticulate", "tune", "workflows", "yardstick",
                                    "future", "furrr"))
@@ -59,7 +59,7 @@ jobs:
 
       - name: Verify Installation
         run: |
-          required_packages <- c("rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
+          required_packages <- c("topics", "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
                                  "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
                                  "reticulate", "tune", "workflows", "yardstick",
                                  "future", "furrr")

@@ -23,7 +23,7 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      RSPM: ${{ matrix.config.rspm }}
+      RSPM: https://packagemanager.rstudio.com/all/latest
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       CODECOV_DEBUG: true
 
@@ -37,11 +37,24 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2-branch
 
-      - name: Install dependencies
+      # Install system dependencies for Linux
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
         run: |
-          install.packages('remotes')
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev
+          sudo apt-get install -y libharfbuzz-dev libfribidi-dev
+
+      # Pre-install critical dependencies
+      - name: Install critical R packages
+        run: |
+          install.packages(c('curl', 'credentials', 'gert', 'gh', 'httr2', 'ragg', 'rcmdcheck', 'textshaping', 'usethis', 'pkgdown', 'urlchecker', 'rversions'), repos = "https://cloud.r-project.org")
+        shell: Rscript {0}
+
+      # Install remaining dependencies
+      - name: Install all dependencies
+        run: |
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
       - name: Installing text and testing it
@@ -53,46 +66,13 @@ jobs:
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
-      - name: Identify temporary directory
-        run: |
-          tempdir <- tempdir()
-          cat(sprintf("Temporary directory: %s\n", tempdir))
-        shell: Rscript {0}
-
-      - name: Debug testthat output
-        if: failure()
-        run: |
-          echo "Searching for testthat output..."
-          TEMP_DIR=$(Rscript -e "cat(tempdir())")
-          echo "Temporary directory is: $TEMP_DIR"
-          ls -al "$TEMP_DIR"
-          TESTTHAT_OUTPUT=$(find "$TEMP_DIR" -type f -name "testthat.Rout.fail" 2>/dev/null || echo "No testthat output found.")
-          if [[ "$TESTTHAT_OUTPUT" != "No testthat output found." ]]; then
-            cat "$TESTTHAT_OUTPUT"
-          else
-            echo "No testthat output file found."
-          fi
-        shell: bash
-
-      - name: Generate coverage report (Windows-specific)
-        if: runner.os == 'Windows'
-        run: |
-          covr::package_coverage()
-          saveRDS(package_coverage(), "coverage.rds")
-        shell: Rscript {0}
-
-      - name: Test coverage (non-Windows)
-        if: runner.os != 'Windows'
+      - name: Generate coverage report
         env:
           OMP_MAX_ACTIVE_LEVELS: 2
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
         shell: Rscript {0}
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: ${{ matrix.config.os }}
-          verbose: true
-          files: "coverage.rds"  # Adjust path if coverage is saved differently
+      - name: Debug and list files
+        run: ls -al
+        shell: bash
