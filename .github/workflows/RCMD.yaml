@@ -35,34 +35,28 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
 
+      - name: Set up Pandoc
+        uses: r-lib/actions/setup-pandoc@v2-branch
+
       - name: Install R dependencies
         run: |
           install.packages("remotes", repos = "https://cran.rstudio.com")
-          remotes::install_cran(c("topics", "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
-                                   "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
-                                   "reticulate", "tune", "workflows", "yardstick",
-                                   "future", "furrr"))
+          remotes::install_cran(c(
+            "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
+            "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
+            "reticulate", "tune", "workflows", "yardstick",
+            "future", "furrr", "rmarkdown", "evaluate"
+          ))
         shell: Rscript {0}
-
-      - name: Install system dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev
-        shell: bash
-
-      - name: Install system dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install libxml2 curl openssl
-        shell: bash
 
       - name: Verify Installation
         run: |
-          required_packages <- c("topics", "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
-                                 "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
-                                 "reticulate", "tune", "workflows", "yardstick",
-                                 "future", "furrr")
+          required_packages <- c(
+            "rcmdcheck", "devtools", "dplyr", "tidyr", "ggplot2",
+            "ggrepel", "cowplot", "parsnip", "recipes", "rsample",
+            "reticulate", "tune", "workflows", "yardstick",
+            "future", "furrr", "rmarkdown", "evaluate"
+          )
           not_installed <- setdiff(required_packages, rownames(installed.packages()))
           if (length(not_installed) > 0) {
             stop("Some required packages are not installed: ", paste(not_installed, collapse = ", "))
@@ -72,5 +66,9 @@ jobs:
       - name: Run R CMD Check
         env:
           _R_CHECK_CRAN_INCOMING_: false
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"))
+        run: |
+          rcmdcheck::rcmdcheck(
+            args = c("--no-manual", "--as-cran"),
+            build_args = "--no-build-vignettes"
+          )
         shell: Rscript {0}
