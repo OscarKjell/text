@@ -12,6 +12,12 @@ test_that("Assess tutorial", {
 # library(text)
 # textrpp_install()
 # textrpp_initialize()
+help(str_starts)
+  lbam <- text::textLBAM()
+
+  lbam %>%
+    filter(str_starts(Construct_Concept_Behaviours, "Dep")) %>%
+    dplyr::select(Construct_Concept_Behaviours, Name)
 
   #help(textAssess)
   # Example text to access
@@ -24,6 +30,9 @@ test_that("Assess tutorial", {
     model_info = "depression_text_phq9_roberta23_gu2024",
     texts = text_to_assess,
     dim_name = FALSE)
+
+  model_Gu2024 <- readRDS("depressiontext_robertaL23_phq9_Gu2024.rds")
+  model_Gu2024
 
   testthat::expect_that(depression_scores, testthat::is_a("tbl"))
   testthat::expect_equal(depression_scores[[1]][[1]], 17.16903, tolerance = 0.0001)

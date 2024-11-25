@@ -864,7 +864,6 @@ textPredictAll <- function(models,
 #' @importFrom tibble is_tibble as_tibble_col
 #' @importFrom tidyr unnest
 #' @importFrom dplyr select mutate
-#' @importFrom overlapping overlap
 #' @importFrom rsample analysis bootstraps
 #' @importFrom yardstick roc_auc_vec
 #' @export
@@ -978,8 +977,11 @@ textPredictTest <- function(y1,
     ### Examining the overlap
     x_list_dist <- list(boot_y1_distribution$corr_y1, boot_y2_distribution$corr_y2)
 
+    if (requireNamespace("text", quietly = TRUE)) {
     output <- overlapping::overlap(x_list_dist)
     output <- list(output$OV[[1]])
+    }
+
     names(output) <- "overlapp_p_value"
   }
   output

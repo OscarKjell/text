@@ -1,19 +1,16 @@
 #' Wrapper for topicsTest function from the topics package
-#'
-#' This function tests the relationship between a single topic or all topics and a
-#' variable of interest using the 'topicsTest' function from the topics package.
-#' @param model (data.frame) The model returned from textTopics().
-#' @param group_var (string) Grouping variable for t-test
-#' @param pred_var (string) Variable of interest for linear or binary regression
-#' @param control_vars (list) Control variables for linear or binary regression
-#' @param test_method (string) Choose between "correlation", "t-test", "binary_regression",
-#'  "linear_regression" or "ridge_regression"
-#' @param multiple_comparison Method for correction of multiple tests
-#' (e.g., "fdr", "bonferroni").
-#' @param load_dir (string) if specified, the function returns the precomputed analysis
-#' from the directory, otherwise leave blank
-#' @return Metadata and results of the test such as estimate, t-value, p-value,
-#' and variable name.
+#' @param model (list) The trained model
+#' @param pred_var_x (string) The x variable name to be predicted, and to be plotted (only needed for regression or correlation)
+#' @param pred_var_y (string) The y variable name to be predicted, and to be plotted (only needed for regression or correlation)
+#' @param group_var (string) The variable to group by (only needed for t-test)
+#' @param control_vars (vector) The control variables (not supported yet)
+#' @param test_method (string) The test method to use, either "correlation","t-test", "linear_regression","logistic_regression", or "ridge_regression"
+#' @param p_alpha (numeric) Threshold of p value set by the user for visualising significant topics
+#' @param p_adjust_method (character) Method to adjust/correct p-values for multiple comparisons
+#' (default = "none"; see also "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
+#' @param load_dir (string) The directory to load the test from, if NULL, the test will not be loaded
+# @param save_dir (string) The directory to save the test, if NULL, the test will not be saved
+#' @return A list of the test results, test method, and prediction variable
 #' @importFrom topics topicsTest
 #' @export
 textTopicsTest <- function(

@@ -9,9 +9,10 @@
 #' @param predicted_scores2 Predictions from textPredict.
 #' @return Returns a tibble with values relevant for calculating implicit motives
 #' @noRd
-implicit_motives <- function(texts,
-                             participant_id,
-                             predicted_scores2) {
+implicit_motives <- function(
+    texts,
+    participant_id,
+    predicted_scores2) {
 
   # Create a table with the number of sentences per user
   table_uniques2 <- table(participant_id[1:length(participant_id)])
@@ -76,9 +77,10 @@ implicit_motives <- function(texts,
 #' @param story_id list of story id:s.
 #' @return implicit_motives_pred returns residuals from robust linear regression.
 #' @noRd
-implicit_motives_pred <- function(sqrt_implicit_motives,
-                                  participant_id,
-                                  story_id) {
+implicit_motives_pred <- function(
+    sqrt_implicit_motives,
+    participant_id,
+    story_id) {
 
   # square root transform
   sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
@@ -108,7 +110,6 @@ implicit_motives_pred <- function(sqrt_implicit_motives,
       story_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)), 0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
       story_prob_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
       story_class_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
-
 
   } else {
     # Determine the person_prob vector before creating the tibble
@@ -203,13 +204,14 @@ update_user_and_texts <- function(df) {
 #' @param lower_case_model character name of your model.
 #' @return Returns a tibble with values relevant for calculating implicit motives
 #' @noRd
-implicit_motives_results <- function(model_reference,
-                                     participant_id,
-                                     story_id,
-                                     predicted_scores2,
-                                     texts,
-                                     dataset,
-                                     lower_case_model) {
+implicit_motives_results <- function(
+    model_reference,
+    participant_id,
+    story_id,
+    predicted_scores2,
+    texts,
+    dataset,
+    lower_case_model) {
 
   integrated_dataset = NULL
 
@@ -226,13 +228,16 @@ implicit_motives_results <- function(model_reference,
 
   if(!is.null(participant_id)){
     # Retrieve Data
-    #participant_id <- 1:80
-    implicit_motives <- implicit_motives(texts, participant_id, predicted_scores2)
+    implicit_motives_res <- implicit_motives(
+      texts,
+      participant_id,
+      predicted_scores2)
 
     # Predict
-    predicted <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives,
-                                       participant_id = participant_id,
-                                       story_id = story_id)
+    predicted_participant <- implicit_motives_pred(
+      sqrt_implicit_motives = implicit_motives_res,
+      participant_id = participant_id,
+      story_id = story_id)
   }
 
   # set default to NULL
@@ -244,11 +249,15 @@ implicit_motives_results <- function(model_reference,
     # participant id:s. A solution is therefore to assign the story:ids to participant_id.
     participant_id_placeholder <- story_id
 
-    implicit_motives_story <- implicit_motives(texts, participant_id_placeholder, predicted_scores2)
+    implicit_motives_story <- implicit_motives(
+      texts,
+      participant_id_placeholder,
+      predicted_scores2)
 
-    predicted_story <- implicit_motives_pred(sqrt_implicit_motives = implicit_motives_story,
-                                             participant_id = participant_id_placeholder,
-                                             story_id = story_id)
+    predicted_story <- implicit_motives_pred(
+      sqrt_implicit_motives = implicit_motives_story,
+      participant_id = participant_id_placeholder,
+      story_id = story_id)
   }
 
   # Full column name
@@ -260,95 +269,198 @@ implicit_motives_results <- function(model_reference,
   # Change from df to tibble
   predicted_scores2 <- tibble::as_tibble(predicted_scores2)
 
-  if (!is.null(participant_id)){
 
-    # Two different summary lists depending on if including the dataset with integrated predictions or not
-    if (is.null(dataset)) {
-      if (identical(story_id, participant_id)){
-        summary_list <- list(sentence_predictions = predicted_scores2,
-                             story_predictions = predicted)
+  # Sorting output
+  # Start by adding sentence predictions
+  summary_list <- list()
+  summary_list$sentence_predictions <- predicted_scores2
+
+  # Handle participant_id logic
+  if (!is.null(participant_id)) {
+
+    # Add person predictions by default
+    summary_list$person_predictions <- predicted_participant
+
+    # Check for story predictions
+    if (identical(story_id, participant_id)) {
+      summary_list$story_predictions <- predicted_participant
+    } else if (!identical(predicted_participant, predicted_story) && !is.null(predicted_story)) {
+      summary_list$story_predictions <- predicted_story
+    }
+
+    # Handle dataset integration logic
+    if (!is.null(dataset)) {
+      to_insert <- list(predicted_scores2)
+      if (!identical(predicted_participant, predicted_story) && !is.null(predicted_story)) {
+        to_insert <- append(to_insert, list(predicted_participant, predicted_story))
+      } else if (identical(predicted_participant, predicted_story)) {
+        to_insert <- append(to_insert, list(predicted_story))
       } else {
-        summary_list <- list(sentence_predictions = predicted_scores2,
-                             person_predictions = predicted)
+        to_insert <- append(to_insert, list(predicted_participant))
       }
 
-    } else {
+      # Integrate predictions into the data set
+      integrated_dataset <- dataset
+      merge_success <- FALSE  # Initialize a flag to track if any merge is successful
 
-      if(!identical(predicted, predicted_story) && !is.null(predicted_story)){
-        # include both story- and sentence-level predictions
-        to_insert <- list(predicted_scores2, predicted, predicted_story)
-      } else if (identical(predicted, predicted_story)){
-        # include just story-level predictions
-        to_insert <- list(predicted_scores2, predicted_story)
-      } else {
-        # predicted_scores2 = sentence predictions, predicted = person predictions
-        to_insert <- list(predicted_scores2, predicted)
-      }
+      for (prediction in to_insert) {
+        if (nrow(dataset) == nrow(prediction)) {
+          merge_success <- TRUE  # Mark that a successful merge occurred
 
-      # new code to integrate predictions into dataset; only matching the rows
-      if(nrow(dataset) == nrow(to_insert[[1]])){
-        integrated_dataset <- dplyr::bind_cols(dataset, to_insert[[1]])
-      }
-      if(length(to_insert)>1){
-        if(nrow(dataset) == nrow(to_insert[[2]])){
-          integrated_dataset <- dplyr::bind_cols(dataset, to_insert[[2]])
-        } else {
-          cat(colourise(paste("Note that dataset_to_merge_predictions does not have the same number of rows ",
-          "as the summed predictions (to participant or story id, so it cannot be merged. \n"),
-              "brown")
+          # Remove story_id column if there is one (so that we do not get two story_id columns)
+          if("story_id" %in% colnames(prediction)){
+            prediction <- prediction %>% dplyr::select(-story_id)  # Remove story_id column
+          }
+
+          integrated_dataset <- dplyr::bind_cols(
+            integrated_dataset,
+            prediction
           )
         }
       }
-      if(length(to_insert)>2){
-        if(nrow(dataset) == nrow(to_insert[[3]])){
-          integrated_dataset <- dplyr::bind_cols(dataset, to_insert[[3]])
-        }
-      }
 
-      if (identical(story_id, participant_id)){
-        # story predictions
-        summary_list <- list(sentence_predictions = predicted_scores2,
-                             story_predictions = predicted,
-                             dataset = integrated_dataset)
+      # If no merge was successful, show the message
+      if (!merge_success) {
+        cat(colourise(
+          "Note: dataset_to_merge_predictions does not have the same number of rows as the predictions and cannot be merged.\n",
+          "brown"
+        ))
       }
-
-      if (!identical(predicted, predicted_story) && !is.null(predicted_story)){
-        # story predictions
-        summary_list <- list(sentence_predictions = predicted_scores2,
-                             person_predictions = predicted,
-                             story_predictions = predicted_story,
-                             dataset = integrated_dataset)
-      } else if (identical(predicted, predicted_story) && !is.null(predicted_story)){
-        # just story-level predictions
-        summary_list <- list(sentence_predictions = predicted_scores2,
-                             story_predictions = predicted_story,
-                             dataset = integrated_dataset)
-      } else if (!is.null(integrated_dataset)){
-        # Summarize all predictions
-        summary_list <- list(sentence_predictions = predicted_scores2,
-                             person_predictions = predicted,
-                             dataset = integrated_dataset)
-      } else {
-        # Summarize
-        summary_list <- list(sentence_predictions = predicted_scores2,
-                             person_predictions = predicted#,
-                            # dataset = integrated_dataset
-                             )
-
-      }
+      summary_list$dataset <- integrated_dataset
     }
   } else {
-
-    if(!is.null(dataset)){
+    # Handle case when participant_id is NULL
+    if (!is.null(dataset)) {
       predicted_scores2 <- dplyr::bind_cols(dataset, predicted_scores2)
     }
-
-    summary_list <- predicted_scores2
+    return(predicted_scores2)
   }
 
+  # Return the final summary_list
+  return(summary_list)
+##  if (!is.null(participant_id)){
+##
+##    # Two different summary lists depending on if it is including the data set with integrated predictions or not
+##    if (is.null(dataset)) {
+##      if (identical(story_id, participant_id)){
+##
+##        summary_list <- list(
+##          sentence_predictions = predicted_scores2,
+##          story_predictions = predicted_participant)
+##
+##      } else {
+##
+##        summary_list <- list(
+##          sentence_predictions = predicted_scores2,
+##          person_predictions = predicted_participant)
+##      }
+##
+##    } else {
+##
+##      if(!identical(predicted_participant, predicted_story) && !is.null(predicted_story)){
+##        # include both story- and sentence-level predictions
+##        to_insert <- list(
+##          predicted_scores2,
+##          predicted_participant,
+##          predicted_story)
+##
+##      } else if (identical(predicted_participant, predicted_story)){
+##        # include just story-level predictions
+##
+##        to_insert <- list(
+##          predicted_scores2,
+##          predicted_story)
+##
+##      } else {
+##        # predicted_scores2 = sentence predictions, predicted_participant = person predictions
+##        to_insert <- list(
+##          predicted_scores2,
+##          predicted_participant)
+##
+##      }
+##
+##      # new code to integrate predictions into data set; only matching the rows
+##      if(nrow(dataset) == nrow(to_insert[[1]])){
+##
+##        integrated_dataset <- dplyr::bind_cols(
+##          dataset,
+##          to_insert[[1]])
+##      }
+##      if(length(to_insert) > 1){
+##        if(nrow(dataset) == nrow(to_insert[[2]])){
+##
+##          integrated_dataset <- dplyr::bind_cols(
+##            dataset,
+##            to_insert[[2]])
+##
+##        } else {
+##          cat(colourise(paste("Note that dataset_to_merge_predictions does not have the same number of rows ",
+##          "as the summed predictions (to participant or story id, so it cannot be merged. \n"),
+##              "brown")
+##          )
+##        }
+##      }
+##      if(length(to_insert)>2){
+##        if(nrow(dataset) == nrow(to_insert[[3]])){
+##          integrated_dataset <- dplyr::bind_cols(
+##            dataset,
+##            to_insert[[3]])
+##        }
+##      }
+##
+##      if (identical(story_id, participant_id)){
+##        # story predictions
+##        summary_list <- list(
+##          sentence_predictions = predicted_scores2,
+##          story_predictions = predicted_participant,
+##          dataset = integrated_dataset)
+##      }
+##
+##      if (!identical(predicted_participant, predicted_story) && !is.null(predicted_story)){
+##        # story predictions
+##        summary_list <- list(
+##          sentence_predictions = predicted_scores2,
+##          person_predictions = predicted_participant,
+##          story_predictions = predicted_story,
+##          dataset = integrated_dataset)
+##
+##      } else if (identical(predicted_participant, predicted_story) && !is.null(predicted_story)){
+##        # just story-level predictions
+##        summary_list <- list(
+##          sentence_predictions = predicted_scores2,
+##          story_predictions = predicted_story,
+##          dataset = integrated_dataset)
+##
+##      } else if (!is.null(integrated_dataset)){
+##        # Summarize all predictions
+##        summary_list <- list(
+##          sentence_predictions = predicted_scores2,
+##          person_predictions = predicted_participant,
+##          dataset = integrated_dataset)
+##      } else {
+##        # Summarize
+##        summary_list <- list(
+##          sentence_predictions = predicted_scores2,
+##          person_predictions = predicted_participant
+##                             )
+##
+##      }
+##    }
+##  } else {
+##
+##    if(!is.null(dataset)){
+##      predicted_scores2 <- dplyr::bind_cols(
+##        dataset,
+##        predicted_scores2)
+##    }
+##
+##    summary_list <- predicted_scores2
+##  }
+#########################
+
   # Display message to user
-  cat(colourise("Predictions of implicit motives are ready!", fg = "green"))
-  cat("\n")
+#  cat(colourise("Predictions of implicit motives are ready!", fg = "green"))
+#  cat("\n")
 
   return(summary_list)
 }

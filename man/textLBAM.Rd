@@ -18,13 +18,14 @@ Data frame containing information about the Language-based assessment models lib
 Retrieve the Language-Based Assessment Models library (LBAM).
 }
 \examples{
-
+\dontrun{
+library(dplyr)
 test_lbam <- textLBAM(
   lbam_update = TRUE
 )
 
 test_lbam \%>\%
-  filter(str_starts(Construct_Concept_Behaviours, "Dep")) \%>\%
-  select(Name)
-
+  filter(substr(Construct_Concept_Behaviours, 1, 3) == "Dep") \%>\%
+  dplyr::select(Name)
+}
 }

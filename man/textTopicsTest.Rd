@@ -17,28 +17,28 @@ textTopicsTest(
 )
 }
 \arguments{
-\item{model}{(data.frame) The model returned from textTopics().}
+\item{model}{(list) The trained model}
 
-\item{group_var}{(string) Grouping variable for t-test}
+\item{pred_var_x}{(string) The x variable name to be predicted, and to be plotted (only needed for regression or correlation)}
 
-\item{control_vars}{(list) Control variables for linear or binary regression}
+\item{pred_var_y}{(string) The y variable name to be predicted, and to be plotted (only needed for regression or correlation)}
 
-\item{test_method}{(string) Choose between "correlation", "t-test", "binary_regression",
-"linear_regression" or "ridge_regression"}
+\item{group_var}{(string) The variable to group by (only needed for t-test)}
 
-\item{load_dir}{(string) if specified, the function returns the precomputed analysis
-from the directory, otherwise leave blank}
+\item{control_vars}{(vector) The control variables (not supported yet)}
 
-\item{pred_var}{(string) Variable of interest for linear or binary regression}
+\item{test_method}{(string) The test method to use, either "correlation","t-test", "linear_regression","logistic_regression", or "ridge_regression"}
 
-\item{multiple_comparison}{Method for correction of multiple tests
-(e.g., "fdr", "bonferroni").}
+\item{p_alpha}{(numeric) Threshold of p value set by the user for visualising significant topics}
+
+\item{p_adjust_method}{(character) Method to adjust/correct p-values for multiple comparisons
+(default = "none"; see also "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").}
+
+\item{load_dir}{(string) The directory to load the test from, if NULL, the test will not be loaded}
 }
 \value{
-Metadata and results of the test such as estimate, t-value, p-value,
-and variable name.
+A list of the test results, test method, and prediction variable
 }
 \description{
-This function tests the relationship between a single topic or all topics and a
-variable of interest using the 'topicsTest' function from the topics package.
+Wrapper for topicsTest function from the topics package
 }

@@ -36,6 +36,7 @@
 #'  \code{\link{textSum}}, \code{\link{textQA}}, \code{\link{textTranslate}}
 #' @importFrom reticulate source_python
 #' @importFrom dplyr bind_cols bind_rows
+#' @importFrom purrr map
 #' @noRd
 textClassifyPipe <- function(
     x,
@@ -81,7 +82,7 @@ textClassifyPipe <- function(
     )
 
     # Sort output into tidy-format
-    output1 <- map(hg_sentiments, dplyr::bind_cols) %>%
+    output1 <- purrr::map(hg_sentiments, dplyr::bind_cols) %>%
       dplyr::bind_rows()
 
     # Add the text variable name to variable names
