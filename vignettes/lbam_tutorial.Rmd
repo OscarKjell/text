@@ -1,0 +1,74 @@
+---
+title: "L-BAM Tutorial"
+description: " "
+author: ""
+opengraph:
+  image: 
+    src: "http://r-text.org/articles/text_files/figure-html/unnamed-chunk-5-1.png"
+  twitter:
+    card: summary_large_image
+    creator: "@oscarkjell"
+output: github_document #rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{psychological_methods}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+evaluate = FALSE
+```
+
+
+
+```{r, eval = evaluate, warning=FALSE, message=FALSE, dpi=300}
+
+# Install the text package (only needed the first time)
+# install.packages("text")
+library(text)
+# textrpp_install()
+# textrpp_initialize()
+
+# Get the LBAM as a data frame and filter for models starting with “Dep”
+lbam <- text::textLBAM()
+
+subset(
+  lbam,
+  substr(Construct_Concept_Behaviours, 1, 3) == "Dep",
+  select = c(Construct_Concept_Behaviours, Name)
+)
+
+# Example text to access
+text_to_assess = c(
+  "I feel down and blue all the time.",
+  "I feel great and have no worries that bothers me.")
+
+# Produce depression severity scores using a text-trained model
+# This command downloads the model, creates word embeddings, and applies the model to the embeddings.
+depression_scores <- text::textPredict(
+  model_info = "depression_text_phq9_roberta23_gu2024",
+  texts = text_to_assess,
+  dim_name = FALSE)
+
+# You can find information about a text-trained model in R.
+model_Gu2024 <- readRDS("depressiontext_robertaL23_phq9_Gu2024.rds")
+model_Gu2024
+
+# Assess the harmony in life of the same text as above
+# The function now uses the same word embeddings as above (i.e., it does not produce new ones).
+harmony_in_life_scores <- textAssess(
+  model_info = "harmony_text_roberta23_kjell2022",
+  texts = text_to_assess,
+  dim_name = FALSE)
+
+# Assign implicit motives labels using fine-tuned models
+implicit_motive <- text::textClassify(
+  model_info = "implicit_power_roberta_ft_nilsson2024",
+  texts = text_to_assess)
+
+```
+

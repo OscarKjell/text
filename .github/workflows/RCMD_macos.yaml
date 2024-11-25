@@ -18,11 +18,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - {os: macOS-latest, r: 'release'}
           - {os: ubuntu-20.04,   r: 'release'}
           - {os: windows-latest, r: 'release'}
+          - {os: macOS-latest,   r: 'release'}
     env:
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -30,21 +29,25 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Install libomp via Homebrew
-      - name: Install libomp via Homebrew
+      - name: Install libomp or equivalent system dependency
+        if: runner.os == 'Linux'
         run: |
-          brew install libomp
-
-      - name: Find and set DYLD_LIBRARY_PATH
-        run: |
-          export DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib
-          echo "DYLD_LIBRARY_PATH is set to $DYLD_LIBRARY_PATH"
+          sudo apt-get update -y
+          sudo apt-get install -y libomp-dev
         shell: bash
 
-      - name: Set global environment variable for DYLD_LIBRARY_PATH
+      - name: Install libomp for macOS
+        if: runner.os == 'macOS'
         run: |
-          echo "DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib" >> $GITHUB_ENV
+          xcode-select --install || echo "Xcode Command Line Tools already installed"
+          brew install libomp || echo "libomp already installed"
         shell: bash
+
+      - name: Install libomp for Windows
+        if: runner.os == 'Windows'
+        run: |
+          choco install llvm --version=11.0.0 || echo "LLVM already installed"
+        shell: cmd
 
       - uses: r-lib/actions/setup-r@v2-branch
         with:
@@ -82,15 +85,14 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install system dependencies
+      - name: Install system dependencies for R packages (Linux)
         if: runner.os == 'Linux'
         run: |
           while read -r cmd
           do
             eval sudo $cmd
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
-          sudo apt install libharfbuzz-dev
-          sudo apt install libfribidi-dev
+          sudo apt-get install -y libharfbuzz-dev libfribidi-dev
 
       - name: Install dependencies
         run: |
@@ -127,5 +129,4 @@ jobs:
 
       - name: Show testthat output
         if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
+        run

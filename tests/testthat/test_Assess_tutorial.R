@@ -12,7 +12,7 @@ test_that("Assess tutorial", {
 # library(text)
 # textrpp_install()
 # textrpp_initialize()
-help(str_starts)
+
   lbam <- text::textLBAM()
 
   lbam %>%

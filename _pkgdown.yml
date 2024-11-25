@@ -142,6 +142,8 @@ articles:
   contents:
   - huggingface_in_r
   - psychological_methods
+  - lbam_tutorial
+  - implicit_motives_tutorial
 - title: Comments
   desc: >
     General comments about text-analyses.
