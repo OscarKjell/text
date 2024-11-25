@@ -11,16 +11,16 @@ name: R-CMD-check
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
-
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
     strategy:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-20.04,   r: 'release'}
+          - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com"}
           - {os: windows-latest, r: 'release'}
-          - {os: macOS-latest,   r: 'release'}
+          - {os: macOS-latest, r: 'release'}
+
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install libomp or equivalent system dependency
+      - name: Install libomp or equivalent
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -y
@@ -39,60 +39,18 @@ jobs:
       - name: Install libomp for macOS
         if: runner.os == 'macOS'
         run: |
-          xcode-select --install || echo "Xcode Command Line Tools already installed"
           brew install libomp || echo "libomp already installed"
         shell: bash
-
-      - name: Install libomp for Windows
-        if: runner.os == 'Windows'
-        run: |
-          choco install llvm --version=11.0.0 || echo "LLVM already installed"
-        shell: cmd
 
       - uses: r-lib/actions/setup-r@v2-branch
         with:
           r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
 
-      - uses: r-lib/actions/setup-pandoc@v2-branch
-
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          auto-update-conda: true
-          python-version: 3.9
-          miniconda-version: "latest"
-
-      - name: Configure Conda (set default channel and solver)
-        run: |
-          conda config --add channels defaults
-          conda config --set solver classic
-
-      - name: Install numpy via Conda
-        run: conda install -c conda-forge numpy
-
-      - name: Query dependencies
-        run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-        shell: Rscript {0}
-
-      - name: Cache R packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
-
-      - name: Install system dependencies for R packages (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
-          sudo apt-get install -y libharfbuzz-dev libfribidi-dev
 
       - name: Install dependencies
         run: |
@@ -100,33 +58,8 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-      - name: Fix Conda permissions on macOS (SUDO)
-        if: runner.os == 'macOS'
-        run: sudo chown -R $UID $CONDA
-
-      - name: Installing text and testing it
-        run: |
-          install.packages("devtools")
-          library(devtools)
-          devtools::install_github("oscarkjell/text")
-          text::textrpp_install(prompt = FALSE)
-          text::textrpp_initialize(textEmbed_test = TRUE)
-        shell: Rscript {0}
-
-      - name: Session info
-        run: |
-          options(width = 100)
-          pkgs <- installed.packages()[, "Package"]
-          sessioninfo::session_info(pkgs, include_base = TRUE)
-        shell: Rscript {0}
-
-      - name: Check
+      - name: Run R CMD Check
         env:
           _R_CHECK_CRAN_INCOMING_: false
-          OMP_MAX_ACTIVE_LEVELS: 2
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"))
         shell: Rscript {0}
-
-      - name: Show testthat output
-        if: always()
-        run

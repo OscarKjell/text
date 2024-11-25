@@ -1,0 +1,84 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+name: CODECOV
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-20.04,   r: 'release'}
+
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      RSPM: ${{ matrix.config.rspm }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      CODECOV_DEBUG: true
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@v2-branch
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+
+      - uses: r-lib/actions/setup-pandoc@v2-branch
+
+      - name: Install dependencies
+        run: |
+          install.packages('remotes')
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
+        shell: Rscript {0}
+
+      - name: Installing text and testing it
+        run: |
+          install.packages("devtools")
+          library(devtools)
+          devtools::install_github("oscarkjell/text")
+          text::textrpp_install(prompt = FALSE)
+          text::textrpp_initialize(textEmbed_test = TRUE)
+        shell: Rscript {0}
+
+      - name: Debug testthat output
+        if: failure()
+        run: |
+          ls -al C:/Users/runneradmin/AppData/Local/Temp/
+          cat "C:/Users/runneradmin/AppData/Local/Temp/Rtmp*/R_LIBS*/text/text-tests/testthat.Rout.fail" || echo "No testthat output found."
+        shell: bash
+
+      - name: Generate coverage report (Windows-specific)
+        if: runner.os == 'Windows'
+        run: |
+          covr::package_coverage()
+          saveRDS(package_coverage(), "coverage.rds")
+        shell: Rscript {0}
+
+      - name: Test coverage (non-Windows)
+        if: runner.os != 'Windows'
+        env:
+          OMP_MAX_ACTIVE_LEVELS: 2
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
+        shell: Rscript {0}
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.config.os }}
+          verbose: true
+          files: "coverage.rds"  # Adjust path if coverage is saved differently
