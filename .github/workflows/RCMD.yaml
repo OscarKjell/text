@@ -38,12 +38,17 @@ jobs:
       - name: Install R dependencies
         run: |
           install.packages("remotes")
+          install.packages("rcmdcheck")
+          install.packages("devtools")
         shell: Rscript {0}
 
-      - name: Install dependencies
+      - name: Verify Installation
         run: |
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("rcmdcheck")
+          required_packages <- c("rcmdcheck", "devtools")
+          not_installed <- setdiff(required_packages, rownames(installed.packages()))
+          if (length(not_installed) > 0) {
+            stop("Some required packages are not installed: ", paste(not_installed, collapse = ", "))
+          }
         shell: Rscript {0}
 
       - name: Run R CMD Check

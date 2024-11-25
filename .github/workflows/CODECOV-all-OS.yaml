@@ -53,11 +53,25 @@ jobs:
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
+      - name: Identify temporary directory
+        run: |
+          tempdir <- tempdir()
+          cat(sprintf("Temporary directory: %s\n", tempdir))
+        shell: Rscript {0}
+
       - name: Debug testthat output
         if: failure()
         run: |
-          ls -al C:/Users/runneradmin/AppData/Local/Temp/
-          cat "C:/Users/runneradmin/AppData/Local/Temp/Rtmp*/R_LIBS*/text/text-tests/testthat.Rout.fail" || echo "No testthat output found."
+          echo "Searching for testthat output..."
+          TEMP_DIR=$(Rscript -e "cat(tempdir())")
+          echo "Temporary directory is: $TEMP_DIR"
+          ls -al "$TEMP_DIR"
+          TESTTHAT_OUTPUT=$(find "$TEMP_DIR" -type f -name "testthat.Rout.fail" 2>/dev/null || echo "No testthat output found.")
+          if [[ "$TESTTHAT_OUTPUT" != "No testthat output found." ]]; then
+            cat "$TESTTHAT_OUTPUT"
+          else
+            echo "No testthat output file found."
+          fi
         shell: bash
 
       - name: Generate coverage report (Windows-specific)
