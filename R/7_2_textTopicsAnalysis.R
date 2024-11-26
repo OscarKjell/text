@@ -195,7 +195,7 @@ textTopicsWordcloud <- function(
   )
 
   completion_text <- paste0("The plots (p<", p_threshold, ") are saved in ", save_dir, "/seed_", seed, "/wordclouds")
-  cat(colourise(completion_text, "green"))
+  message(colourise(completion_text, "green"))
 
 }
 

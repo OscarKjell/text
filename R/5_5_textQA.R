@@ -95,7 +95,7 @@ textQA <- function(question,
       sep = " "
     )
 
-    cat(colourise(loop_text, "green"))
+    message(colourise(loop_text, "green"))
   }
 
   ALL_output <- dplyr::bind_rows(ALL_output)

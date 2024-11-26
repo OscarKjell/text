@@ -248,7 +248,7 @@ textPredict <- function(
     is_local_model & is.null(model_type) |
     is_online_path & is.null(model_type)){
 
-      stop(cat("Please set model_type when you are calling a model with a locale or online path."))
+      stop(message("Please set model_type when you are calling a model with a locale or online path."))
 
   }
   if (model_type == "implicit-motives" | model_type ==  "implicit motives" | model_type == "implicit_motives"){
@@ -288,7 +288,7 @@ textPredict <- function(
      model_type == "text-trained"){
 
 
-      cat(colourise("You are using a 'text-trained model' (i.e., model_type = 'texttrained'). \n",
+    message(colourise("You are using a 'text-trained model' (i.e., model_type = 'texttrained'). \n",
                 "green"))
 
       results <-  textPredictTextTrained(
@@ -319,7 +319,7 @@ textPredict <- function(
   if(model_type == "finetuned" |
      model_type == "fine-tuned"){
 
-    cat(colourise("You are using a fine-tuned model (i.e., model_type = 'finetuned'). \n", "green"))
+    message(colourise("You are using a fine-tuned model (i.e., model_type = 'finetuned'). \n", "green"))
 
       results <-  textClassifyPipe(
         x = texts,
@@ -419,7 +419,7 @@ textLBAM <- function(
                   mode = "wb",
                   quiet = TRUE)
 
-    cat(colourise("Successfully updated the L-BAM library. \n ", "green"))
+    message(colourise("Successfully updated the L-BAM library. \n ", "green"))
   }
 
   lbam <- utils::read.csv(

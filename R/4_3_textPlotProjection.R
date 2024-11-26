@@ -462,7 +462,7 @@ textProjection <- function(words,
         variable_time,
         sep = " "
       )
-      cat(colourise(description_text, "green"))
+      message(colourise(description_text, "green"))
 
       dot_null_distribution
     }

@@ -84,7 +84,7 @@ textFineTuneDomain <- function(
       n_after,
       "complete cases.", "\n"
     )
-    print(incomplete_info)
+    message(incomplete_info)
   }
 
   # Data set partitioning
@@ -125,15 +125,15 @@ textFineTuneDomain <- function(
   # Return all datasets
   T2 <- Sys.time()
 
-  print(T2 - T1)
+  message(T2 - T1)
 
   if (n_before > n_after) {
-    cat(colourise(incomplete_info,
+    message(colourise(incomplete_info,
       fg = "brown", bg = NULL
     ))
   }
 
-  cat(colourise("Completed - see results in the created output folder (output_dir)",
+  message(colourise("Completed - see results in the created output folder (output_dir)",
     fg = "green", bg = NULL
   ))
   return("Completed - see results in the created output folder (output_dir)")

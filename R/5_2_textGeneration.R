@@ -111,7 +111,7 @@ textGeneration <- function(x,
       sep = " "
     )
 
-    cat(colourise(loop_text, "green"))
+    message(colourise(loop_text, "green"))
   }
 
   ALL_output1 <- dplyr::bind_cols(ALL_output)

@@ -149,7 +149,7 @@ textTopicsReduce <- function(
     embedding_model = embedding_model
   )
 
-  print("Complete")
+  message("Complete")
 }
 
 

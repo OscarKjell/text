@@ -108,7 +108,7 @@ textClassifyPipe <- function(
       sep = " "
     )
 
-    cat(colourise(loop_text, "green"))
+    message(colourise(loop_text, "green"))
   }
 
   ALL_sentiments1 <- dplyr::bind_cols(ALL_sentiments)

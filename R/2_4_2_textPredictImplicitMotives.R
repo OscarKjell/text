@@ -340,7 +340,7 @@ implicit_motives_results <- function(
 
       # If no merge was successful, show the message
       if (!merge_success) {
-        cat(colourise(
+        message(colourise(
           "Note: dataset_to_merge_predictions does not have the same number of rows as the predictions and cannot be merged.\n",
           "brown"
         ))
@@ -413,7 +413,7 @@ implicit_motives_results <- function(
 ##            to_insert[[2]])
 ##
 ##        } else {
-##          cat(colourise(paste("Note that dataset_to_merge_predictions does not have the same number of rows ",
+##          message(colourise(paste("Note that dataset_to_merge_predictions does not have the same number of rows ",
 ##          "as the summed predictions (to participant or story id, so it cannot be merged. \n"),
 ##              "brown")
 ##          )
@@ -478,8 +478,8 @@ implicit_motives_results <- function(
 #########################
 
   # Display message to user
-#  cat(colourise("Predictions of implicit motives are ready!", fg = "green"))
-#  cat("\n")
+#  message(colourise("Predictions of implicit motives are ready!", fg = "green"))
+#  message("\n")
 
   return(summary_list)
 }
@@ -729,14 +729,14 @@ textPredictImplicitMotives <- function(
   lower_case_model <- as.character(tolower(model_name))
 
   if (is.null(participant_id) & is.null(story_id) & !is.null(dataset_to_merge_predictions)){
-      cat(colourise(paste("Note: The 'texts' were not at the sentence level, and while dataset_to_merge_predictions",
+      message(colourise(paste("Note: The 'texts' were not at the sentence level, and while dataset_to_merge_predictions",
       " was provided, participant_id and story_id were missing. ",
       "The function treated each row_id as a participant_id when merging assessments into dataset_to_merge_predictions. \n", sep=""),
        "purple"))
 
     use_row_id_name <- TRUE
     participant_id <- seq_len(length(texts))
-    cat(colourise("Note: participant_ID was not provided so treating rows as row_id. \n", "purple"))
+    message(colourise("Note: participant_ID was not provided so treating rows as row_id. \n", "purple"))
   }
 
 
@@ -760,7 +760,7 @@ textPredictImplicitMotives <- function(
 
   if(model_type == "text-trained"){
 
-    cat(
+    message(
       colourise("You are using a text-trained implicit-motives model type.\n", "green")
       )
 
@@ -789,7 +789,7 @@ textPredictImplicitMotives <- function(
 
   if(model_type == "fine-tuned"){
 
-    cat(
+    message(
       colourise("You are using a fine-tuned implicit-motives model type.  \n", "green")
     )
 
@@ -842,8 +842,8 @@ textPredictImplicitMotives <- function(
     }
 
   # display message to user
-  cat(colourise("Predictions are ready!", fg = "green"))
-  cat("\n")
+  message(colourise("Predictions are ready!", fg = "green"))
+  message("\n")
   return(predicted_scores2)
 }
 

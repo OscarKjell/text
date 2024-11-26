@@ -495,7 +495,7 @@ textEmbedRawLayers <- function(texts,
                                logging_level = "error",
                                sort = TRUE) {
   if (decontextualize == TRUE && word_type_embeddings == FALSE) {
-    stop(cat(
+    stop(message(
       colourise("decontextualize = TRUE & word_type_embeddings = FALSE has not been
                 implemented in textEmbedRawLayers() at this stage.",
                 fg = "red"
@@ -606,7 +606,7 @@ textEmbedRawLayers <- function(texts,
                          sep = ""
       )
 
-      cat(colourise(loop_text, "green"))
+      message(colourise(loop_text, "green"))
     }
   }
 
@@ -650,7 +650,7 @@ textEmbedRawLayers <- function(texts,
     individual_tokens$tokens <- single_words_n
 
     sing_text <- c("Completed layers aggregation for word_type_embeddings. \n")
-    cat(colourise(sing_text, "green"))
+    message(colourise(sing_text, "green"))
   }
 
   # Decontextualized embeddings for aggregated embeddings and word type embeddings
@@ -714,7 +714,7 @@ textEmbedRawLayers <- function(texts,
     ))
 
     de_text <- c("Completed layers aggregation for decontexts embeddings. \n")
-    cat(colourise(de_text, "green"))
+    message(colourise(de_text, "green"))
 
     individual_tokens
   }
@@ -789,7 +789,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
                                       tokens_select = NULL,
                                       tokens_deselect = NULL) {
   if (return_tokens == TRUE && !is.null(aggregation_from_tokens_to_texts)) {
-    stop(cat(
+    stop(message(
       colourise("return_tokens = TRUE does not work with aggregation_from_tokens_to_texts not being NULL ", fg = "red"),
       colourise("When aggregating tokens to text, it is not possible to have return_token = TRUE.
                 To get both token_embeddings and text_embeddings use textEmbed().", fg = "green")
@@ -825,7 +825,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
 
     # Check that the right number of levels are selected
     if ((length(setdiff(layers, number_of_layers)) > 0) == TRUE) {
-      stop(cat(
+      stop(message(
         colourise("You are trying to aggregate layers that were not extracted.", fg = "red"),
         colourise("For example, in textEmbed the layers option needs to include all the
                   layers used in context_layers.", fg = "green")
@@ -931,7 +931,7 @@ textEmbedLayerAggregation <- function(word_embeddings_layers,
                        sep = ""
     )
 
-    cat(colourise(loop_text, "blue"))
+    message(colourise(loop_text, "blue"))
   }
 
   names(selected_layers_aggregated_tibble) <- names(word_embeddings_layers)
@@ -1157,7 +1157,7 @@ textEmbed <- function(texts,
     (decontextualize == TRUE && is.null(aggregation_from_tokens_to_texts)) ||
     (decontextualize == TRUE && is.null(aggregation_from_tokens_to_word_types)) ||
     (decontextualize == TRUE && is.null(aggregation_from_layers_to_tokens))) {
-    stop(cat(
+    stop(message(
       colourise("When using decontextualize = TRUE, it is required to set aggregation_from_tokens_to_texts,
                 aggregation_from_tokens_to_word_types as well as aggregation_from_tokens_to_word_types",
                 fg = "red"
@@ -1197,13 +1197,13 @@ textEmbed <- function(texts,
     warning_ascii <- paste("Warning: non-ascii characters were found in:",
                 final_string, "Many large laguage models cannot handle them. \n")
 
-    cat(colourise(warning_ascii, "brown"))
-    cat(colourise("To examine thise text cases use the textNonASCII() function. \n", "green"))
+    message(colourise(warning_ascii, "brown"))
+    message(colourise("To examine thise text cases use the textNonASCII() function. \n", "green"))
 
     # remove non-ASCII characters
     if(remove_non_ascii){
       data_character_variables <- textCleanNonASCII(data_character_variables)
-      cat(colourise("Non-ASCII characters has been removed. \n", "green"))
+      message(colourise("Non-ASCII characters has been removed. \n", "green"))
     }
 
   }
@@ -1279,7 +1279,7 @@ textEmbed <- function(texts,
                                      "\n",
                                      sep = ""
         )
-        cat(colourise(single_context_text, "purple"))
+        message(colourise(single_context_text, "purple"))
 
         ##############################################################################
         # These are the word_type embeddings with duplicates #########################
@@ -1294,7 +1294,7 @@ textEmbed <- function(texts,
                                      "\n",
                                      sep = ""
         )
-        cat(colourise(single_context_text, "purple"))
+        message(colourise(single_context_text, "purple"))
 
         individual_word_embeddings_layers <- all_wanted_layers$decontext$word_type
         individual_words <- all_wanted_layers$decontext$single_words
@@ -1355,7 +1355,7 @@ textEmbed <- function(texts,
       individual_word_embeddings_words <- list(individual_word_embeddings_words)
       names(individual_word_embeddings_words) <- colnames(texts)
       output$word_types <- individual_word_embeddings_words
-      cat(colourise("Done! \n", "purple"))
+      message(colourise("Done! \n", "purple"))
     }
 
 

@@ -88,7 +88,7 @@ textNER <- function(x,
       sep = " "
     )
 
-    cat(colourise(loop_text, "green"))
+    message(colourise(loop_text, "green"))
   }
 
   names(ALL_output) <- paste0(names(data_character_variables), "_NER")

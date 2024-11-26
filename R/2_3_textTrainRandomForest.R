@@ -595,7 +595,7 @@ tune_over_cost_rf <- function(object,
     "\n"
   )
 
-  cat(colourise(description_text, "green"))
+  message(colourise(description_text, "green"))
 
   return(grid_inner_accuracy)
 }

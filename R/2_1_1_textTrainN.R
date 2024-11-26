@@ -331,8 +331,8 @@ textTrainN <- function(
       }
       saving_models[check][[idx]] <- trained
 
-      print(paste("check:", check))
-      print(paste("idx:", idx))
+      message(paste("check:", check))
+      message(paste("idx:", idx))
       # Extract the correlation-coefficient or AUC and assign it to results_df
       if (model == "logistic" || model == "multinomial") {
         value_to_insert <- trained$results[8, 3]
@@ -357,12 +357,12 @@ textTrainN <- function(
         check_time_start <- check_time_2 - check_time_0
         check_time <- check_time_2 - check_time_1
         # Print progress
-        print(results_df)
-        print(paste0("Computing time from the start: ",
+        message(results_df)
+        message(paste0("Computing time from the start: ",
                      round(check_time_start, 2),
                      units(check_time_start)))
 
-        print(paste0("Computing time since starting the current test column: ",
+        message(paste0("Computing time since starting the current test column: ",
                      round(check_time, 2),
                      units(check_time)))
       }
@@ -437,11 +437,11 @@ textTrainN <- function(
   results_df <- tibble::as_tibble(results_df)
 
   # Print progress
-  print(results_df)
+  message(results_df)
   check_time_3 <- Sys.time()
   check_time_full <- check_time_3 - check_time_0
 
-  print(paste0("The full computing time: ",
+  message(paste0("The full computing time: ",
                round(check_time_full, 2),
                units(check_time_full)))
 

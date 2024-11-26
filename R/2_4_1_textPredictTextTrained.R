@@ -18,8 +18,8 @@ textReturnModel<- function(
   options(timeout = 5 * 60)
 
   # diaplay message to user
-  cat(colourise("Loading model...", fg = "purple"))
-  cat("\n")
+  message(colourise("Loading model... \n", fg = "purple"))
+  message("\n")
 
   # extract model_name if its a url or filepath
   if (is.character(model_info)) {
@@ -36,24 +36,24 @@ textReturnModel<- function(
 
       # display message to user
       loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded and saved in:", getwd()), sep = "")
-      cat(colourise(loaded_model_confirm, fg = "green"))
-      cat("\n")
+      message(colourise(loaded_model_confirm, fg = "green"))
+      message("\n")
     } else if (grepl("github.com/", model_info) && isFALSE(model_exists) && isFALSE(save_model)) {
       # load from github, don't save
       loaded_model <- readRDS(url(model_info))
 
       # display message to user
       loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
-      cat(colourise(loaded_model_confirm, fg = "green"))
-      cat("\n")
+      message(colourise(loaded_model_confirm, fg = "green"))
+      message("\n")
     } else if (grepl("github.com/", model_info) && isTRUE(model_exists)) {
       # retrive model from wd if it's already downloaded
       loaded_model <- readRDS(model_name)
 
       # display message to user
       loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", getwd()), sep = "")
-      cat(colourise(loaded_model_confirm, fg = "green"))
-      cat("\n")
+      message(colourise(loaded_model_confirm, fg = "green"))
+      message("\n")
     } else if (grepl("osf.io", model_info)){
 
       # check if osfr is installed, otherwise, ask the user to install it.
@@ -72,8 +72,8 @@ textReturnModel<- function(
 
         # display message to user
         loaded_model_confirm <- paste0(c("The model:", osf_files$name, "has been loaded from:", getwd()), sep = "")
-        cat(colourise(loaded_model_confirm, fg = "green"))
-        cat("\n")
+        message(colourise(loaded_model_confirm, fg = "green"))
+        message("\n")
 
       } else{
         # download model locally
@@ -83,8 +83,8 @@ textReturnModel<- function(
 
         # display message to user
         loaded_model_confirm <- paste0(c("The model:", osf_files$name, "has been loaded and saved in:", getwd()), sep = "")
-        cat(colourise(loaded_model_confirm, fg = "green"))
-        cat("\n")
+        message(colourise(loaded_model_confirm, fg = "green"))
+        message("\n")
       }
     } else {
       # load model from specific path (if it exists somewhere else than in the work directory)
@@ -92,16 +92,16 @@ textReturnModel<- function(
 
       # display message to user
       loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
-      cat(colourise(loaded_model_confirm, fg = "green"))
-      cat("\n")
+      message(colourise(loaded_model_confirm, fg = "green"))
+      message("\n")
     }
   } else {
     # model was an R object of a model
     loaded_model <- model_info
     # display message to user
     loaded_model_confirm <- paste0(c("The model has been loaded from your global environment."), sep = "")
-    cat(colourise(loaded_model_confirm, fg = "green"))
-    cat("\n")
+    message(colourise(loaded_model_confirm, fg = "green"))
+    message("\n")
   }
 
   return(loaded_model)
@@ -188,8 +188,8 @@ textReturnEmbedding <- function(
       # get embeddings
       embeddings <- readRDS(full_path)
 
-      cat(colourise(paste0("Embeddings have been loaded from: ", full_path), fg = "green"))
-      cat("\n")
+      message(colourise(paste0("Embeddings have been loaded from: ", full_path), fg = "green"))
+      message("\n")
 
   } else if(!is.null(texts) &&
             is.null(word_embeddings) &&
@@ -248,12 +248,12 @@ textReturnEmbedding <- function(
     # save embeddings if save_embeddings is set to true
     if (isTRUE(save_embeddings) && save_dir == "wd"){
       saveRDS(embeddings, file_name)
-      cat(colourise(paste0("Embeddings have been saved: ", full_path), fg = "green"))
-      cat("\n")
+      message(colourise(paste0("Embeddings have been saved: ", full_path), fg = "green"))
+      message("\n")
     } else if (isTRUE(save_embeddings) && save_dir != "wd"){
       saveRDS(embeddings, full_path)
-      cat(colourise(paste0("Embeddings have been saved: ", full_path), fg = "green"))
-      cat("\n")
+      message(colourise(paste0("Embeddings have been saved: ", full_path), fg = "green"))
+      message("\n")
     }
 
   } else if (!is.null(word_embeddings) && is.null(texts)) {
@@ -288,8 +288,8 @@ textReturnEmbedding <- function(
     T2_story_id <- Sys.time()
     Time_story_id <- T2_story_id - T1_story_id
     Time_story_id <- sprintf("Completed word-embedding concatenation per story-id. Duration: %f %s", Time_story_id, units(Time_story_id))
-    cat(colourise(Time_story_id, fg = "green"))
-    cat("\n")
+    message(colourise(Time_story_id, fg = "green"))
+    message("\n")
   }
 
   ##### End special treatment for automatic implicit motive coding #####
@@ -777,8 +777,8 @@ textPredictTextTrained <- function(
   }
 
   # display message to user
-  cat(colourise("Predictions are ready!", fg = "green"))
-  cat("\n")
+  message(colourise("Predictions are ready!", fg = "green"))
+  message("\n")
   return(predicted_scores2)
 }
 

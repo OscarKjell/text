@@ -136,7 +136,7 @@ textrpp_install <- function(conda = "auto",
     # check for explicit conda method
     # validate that we have conda
     if (!have_conda) {
-      cat("No conda was found in the system. ")
+      message("No conda was found in the system. ")
       if (prompt) {
         ans <- utils::menu(c("No", "Yes"), title = "Do you want Text to download
                            miniconda using reticulate::install_miniconda()?")
@@ -230,24 +230,24 @@ process_textrpp_installation_conda <- function(conda,
   }
   conda_env <- subset(conda_envs, conda_envs$name == envname)
   if (nrow(conda_env) == 1) {
-    cat(
+    message(
       "Using existing conda environment ", envname, " for text installation\n.",
       "\ntext:",
       paste(rpp_version, collapse = ", "), "will be installed.  "
     )
   } else {
-    cat(
+    message(
       "A new conda environment", paste0('"', envname, '"'), "will be created and \npython required packages:",
       paste(rpp_version, collapse = ", "), "will be installed.  "
     )
-    cat("Creating", envname, "conda environment for text installation...\n")
+    message("Creating", envname, "conda environment for text installation...\n")
     python_packages <- ifelse(is.null(python_version), "python=3.9",
       sprintf("python=%s", python_version)
     )
     python <- reticulate::conda_create(envname, packages = python_packages, conda = conda)
   }
 
-  cat("Installing text required python packages...\n")
+  message("Installing text required python packages...\n")
   packages <- rpp_version
 
   reticulate::conda_install(envname, packages, pip = pip, conda = conda)
@@ -261,7 +261,7 @@ process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/pyt
                                                     envname = "textrpp_virtualenv",
                                                     prompt = TRUE) {
   libraries <- paste(rpp_version, collapse = ", ")
-  cat(sprintf(
+  message(sprintf(
     'A new virtual environment called "%s" will be created using "%s" \n and,
     the following text reuired python packages will be installed: \n "%s" \n \n',
     envname, python, libraries
@@ -376,12 +376,12 @@ textrpp_uninstall <- function(conda = "auto",
   if (nrow(conda_env) != 1) {
     stop("conda environment", envname, "is not found", call. = FALSE)
   }
-  cat("A conda environment", envname, "will be removed\n")
+  message("A conda environment", envname, "will be removed\n")
   ans <- ifelse(prompt, utils::menu(c("No", "Yes"), title = "Proceed?"), 2)
   if (ans == 1) stop("condaenv removal is cancelled by user", call. = FALSE)
   python <- reticulate::conda_remove(envname = envname)
 
-  cat("\nUninstallation complete.\n\n")
+  message("\nUninstallation complete.\n\n")
 
   invisible(NULL)
 }
