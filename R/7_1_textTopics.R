@@ -51,7 +51,7 @@ textTopics <- function(
     bm25_weighting = FALSE,
     reduce_frequent_words = TRUE,
     set_seed = 8,
-    save_dir = "./results"
+    save_dir
     ) {
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
@@ -129,7 +129,7 @@ textTopicsReduce <- function(
     data_var,
     n_topics = 10,
     load_path = "./results", # From textTopics saved output
-    save_dir = "./results_reduced",
+    save_dir,
     embedding_model = "default"
     ){
 
