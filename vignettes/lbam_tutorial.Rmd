@@ -10,7 +10,7 @@ opengraph:
     creator: "@oscarkjell"
 output: github_document #rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{psychological_methods}
+  %\VignetteIndexEntry{lbam_tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

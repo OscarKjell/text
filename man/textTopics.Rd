@@ -19,7 +19,7 @@ textTopics(
   bm25_weighting = FALSE,
   reduce_frequent_words = TRUE,
   set_seed = 8,
-  save_dir = "./results"
+  save_dir
 )
 }
 \arguments{

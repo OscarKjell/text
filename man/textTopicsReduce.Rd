@@ -9,7 +9,7 @@ textTopicsReduce(
   data_var,
   n_topics = 10,
   load_path = "./results",
-  save_dir = "./results_reduced",
+  save_dir,
   embedding_model = "default"
 )
 }
