@@ -68,7 +68,7 @@ For macOS and Linux-based systems, this will also install Python itself via a "m
 
   For Windows, automatic installation of miniconda installation is not currently
   available, so the user will need to install
-  \href{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda
+  \href{https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda
    (or Anaconda) manually}.
 
 If you wish to install Python in a "virtualenv", use the

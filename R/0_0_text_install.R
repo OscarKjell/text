@@ -14,7 +14,7 @@ conda_args <- reticulate:::conda_args
 #'
 #'   For Windows, automatic installation of miniconda installation is not currently
 #'   available, so the user will need to install
-#'   \href{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda
+#'   \href{https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda
 #'    (or Anaconda) manually}.
 #' @param conda character; path to conda executable. Default "auto" which
 #'   automatically find the path
