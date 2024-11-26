@@ -50,7 +50,7 @@ test_that("Assess tutorial", {
   testthat::expect_equal(harmony_in_life_scores[[1]][[1]], 12.35453, tolerance = 0.0001)
 
   implicit_motive <- text::textClassify(
-    model_info = "implicit_power_roberta_ft_nilsson2024",
+    model_info = "implicitpower_roberta_ft_nilsson2024",
     texts = text_to_assess,
     logging_level = "debug")
 

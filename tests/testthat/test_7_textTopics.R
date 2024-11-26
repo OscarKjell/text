@@ -75,7 +75,8 @@ test_that("Bertopic", {
 
   plots <- text::textTopicsWordcloud(
     model = bert_model,
-    save_dir = "./results"
+    save_dir = "./results",
+    figure_format = "png"
   )
 
 
