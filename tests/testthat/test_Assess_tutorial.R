@@ -13,11 +13,14 @@ test_that("Assess tutorial", {
 # textrpp_install()
 # textrpp_initialize()
 
-  lbam <- text::textLBAM()
+  lbam <- text::textLBAM(lbam_update = T)
 
-  lbam %>%
-    filter(str_starts(Construct_Concept_Behaviours, "Dep")) %>%
-    dplyr::select(Construct_Concept_Behaviours, Name)
+  subset(
+    lbam,
+    substr(Construct_Concept_Behaviours, 1, 3) == "dep",
+    select = c(Construct_Concept_Behaviours, Name)
+  )
+
 
   #help(textAssess)
   # Example text to access

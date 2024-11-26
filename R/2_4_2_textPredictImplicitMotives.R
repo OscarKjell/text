@@ -100,30 +100,48 @@ implicit_motives_pred <- function(
 
     if (length(participant_id) < 30) {
       story_prob <- sqrt_implicit_motives$OUTCOME_USER_SUM_PROB / sqrt_implicit_motives$wc_person_per_1000
+      # New line:
+      story_class <- sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS / sqrt_implicit_motives$wc_person_per_1000
     } else {
       story_prob <- as.vector(OUTCOME_USER_SUM_PROB.residual1.z)
+      # New line:
+      story_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+                           0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z))
     }
 
     implicit_motives_pred <- tibble::tibble(
       story_id = sqrt_implicit_motives$participant_id,
       story_prob = story_prob,
-      story_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)), 0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+      # REMOVE THIS <- ADDING BELOW LINE: story_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)), 0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+      story_class = story_class,
       story_prob_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
       story_class_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
 
   } else {
     # Determine the person_prob vector before creating the tibble
+    # if (nrow(sqrt_implicit_motives) < 30) {
     if (length(sqrt_implicit_motives$participant_id) < 30) {
+
       person_prob <- sqrt_implicit_motives$OUTCOME_USER_SUM_PROB / sqrt_implicit_motives$wc_person_per_1000
+
+      # NEW LINE
+      person_class <- sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS / sqrt_implicit_motives$wc_person_per_1000
     } else {
+
       person_prob <- as.vector(OUTCOME_USER_SUM_PROB.residual1.z)
+      # NEW LINE
+      person_class <- ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+                             0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z))
     }
 
     implicit_motives_pred <- tibble::tibble(
       participant_id = sqrt_implicit_motives$participant_id,
       person_prob = person_prob,
-      person_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
-                            0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+      # NEW LINE:
+      person_class = person_class,
+      # REMOVED:
+      #person_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
+      #                      0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
       person_prob_no_wc_correction = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
       person_class_no_wc_correction = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
   }
@@ -149,9 +167,10 @@ update_user_and_texts <- function(df) {
   has_story_id <- "story_id" %in% names(df)
 
   for (i in seq_along(df$participant_id)) {
-    sentences <- stringi::stri_split_regex(df$texts[i],
-                                           pattern = "(?<!\\bMr|\\bMrs|\\bMiss)[.!?]",
-                                           simplify = TRUE)
+    sentences <- stringi::stri_split_regex(
+      df$texts[i],
+      pattern = "(?<!\\bMr|\\bMrs|\\bMiss)[.!?]",
+      simplify = TRUE)
 
     sentences <- sentences[sentences != ""]
 
@@ -491,12 +510,12 @@ get_implicit_model_info <- function(
   type <- "class" # type must be class for these conditions
 
   # Since model_type is set to implicit_motives we currently need to set text-trained vs. fine-tuned manually.
-  if (model_info == "implicit_power_roberta_large_l23_v1" |
-      model_info == "implicit_achievement_roberta_large_l23_v1"|
-      model_info == "implicit_affiliation_roberta_large_l23_v1" |
-      model_info == "implicit_ger_be_l11_to_power" |
-      model_info == "implicit_ger_be_l11_to_achievement"|
-      model_info == "implicit_ger_be_l11_to_affiliation" |
+  if (model_info == "implicitpower_roberta_large23_nilsson2024" |
+      model_info == "implicitachievement_roberta23_nilsson2024"|
+      model_info == "implicitaffiliation_roberta23_nilsson2024" |
+      model_info == "implicitpower_gerbert11_nilsson2024" |
+      model_info == "implicitachievement_gerbert11_nilsson2024"|
+      model_info == "implicitaffiliation_gerbert11_nilsson2024" |
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_power_open.rds" |
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_achievement_open.rds"|
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_affiliation_open.rds" |
@@ -504,7 +523,7 @@ get_implicit_model_info <- function(
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_achievement_open.rds"|
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_affiliation_open.rds") {
 
-    model_type <- "text-trained"
+      model_type <- "text-trained"
     } else {
       model_type <- "fine-tuned"
     }
@@ -533,9 +552,16 @@ get_implicit_model_info <- function(
 
      # separate multiple sentences, and add corresponding user-id
      if (!is.null(story_id)){
-        id_and_texts <- data.frame(participant_id = participant_id, texts = texts, story_id = story_id)
+
+        id_and_texts <- data.frame(
+          participant_id = participant_id,
+          texts = texts,
+          story_id = story_id)
+
       } else {
-        id_and_texts <- data.frame(participant_id = participant_id, texts = texts)
+        id_and_texts <- data.frame(
+          participant_id = participant_id,
+          texts = texts)
       }
       # correct for multiple sentences per row.
      update_user_and_texts <- update_user_and_texts(id_and_texts)
