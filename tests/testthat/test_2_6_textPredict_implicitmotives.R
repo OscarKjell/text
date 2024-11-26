@@ -111,7 +111,7 @@ test_that("textPredict Implicit motives", {
 
   # help(textClassify)
   implicit_motive <- text::textClassify(
-    model_info = "implicit_power_roberta_ft_nilsson2024",
+    model_info = "implicitpower_roberta_ft_nilsson2024",
     texts = PSE_stories_participant_level$stories,
     show_texts = T
   )

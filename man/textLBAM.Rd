@@ -23,9 +23,11 @@ library(dplyr)
 test_lbam <- textLBAM(
   lbam_update = TRUE
 )
+subset(
+  lbam,
+  substr(Construct_Concept_Behaviours, 1, 3) == "Dep",
+  select = c(Construct_Concept_Behaviours, Name)
+)
 
-test_lbam \%>\%
-  filter(substr(Construct_Concept_Behaviours, 1, 3) == "Dep") \%>\%
-  dplyr::select(Name)
 }
 }
