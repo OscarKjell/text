@@ -38,7 +38,7 @@ lbam <- text::textLBAM()
 
 subset(
   lbam,
-  substr(Construct_Concept_Behaviours, 1, 3) == "Dep",
+  substr(Construct_Concept_Behaviours, 1, 3) == "dep",
   select = c(Construct_Concept_Behaviours, Name)
 )
 
@@ -67,7 +67,7 @@ harmony_in_life_scores <- textAssess(
 
 # Assign implicit motives labels using fine-tuned models
 implicit_motive <- text::textClassify(
-  model_info = "implicit_power_roberta_ft_nilsson2024",
+  model_info = "implicitpower_roberta_ft_nilsson2024",
   texts = text_to_assess)
 
 ```

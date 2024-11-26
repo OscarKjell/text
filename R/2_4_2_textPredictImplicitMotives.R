@@ -331,6 +331,10 @@ implicit_motives_results <- function(
             prediction <- prediction %>% dplyr::select(-story_id)  # Remove story_id column
           }
 
+          if("participant_id" %in% colnames(prediction)){
+            prediction <- prediction %>% dplyr::select(-participant_id)  # Remove story_id column
+          }
+
           integrated_dataset <- dplyr::bind_cols(
             integrated_dataset,
             prediction
@@ -722,6 +726,14 @@ textPredictImplicitMotives <- function(
     device = "cpu",
     ...) {
 
+  if(!is.null(story_id) & is.null(participant_id)){
+    msg <- "Because only a story_id and not a participant_id was provided, the story_id will be treated as a participant_id (including when correcting for word count).\n"
+    message(colourise(msg, fg = "brown"))
+
+    participant_id <- story_id
+    story_id <-  NULL
+  }
+
   use_row_id_name = FALSE
 
   #### Special treatment for implicit motives - see private functions ####
@@ -843,7 +855,7 @@ textPredictImplicitMotives <- function(
 
   # display message to user
   message(colourise("Predictions are ready!", fg = "green"))
-  message("\n")
+  #message("\n")
   return(predicted_scores2)
 }
 

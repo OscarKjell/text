@@ -1,51 +1,5 @@
 # Wrapper functions for textPredictR and textClassifyPipe
 
-
-
-#### Common parameter
-###model_info = NULL
-###texts = NULL
-###model_type = "detect"
-###lbam_update = TRUE
-##### text-trained model specific parameters ##
-###word_embeddings = NULL
-###x_append = NULL
-###append_first = NULL
-###dim_names = TRUE
-###language_distribution = NULL
-###language_distribution_min_words = "trained_distribution_min_words"
-###save_model = TRUE
-###threshold = NULL
-###show_texts = FALSE
-###device = "cpu"
-###participant_id = NULL
-###save_embeddings = TRUE
-###save_dir = "wd"
-###save_name = "textPredict"
-###story_id = NULL
-###dataset_to_merge_predictions = NULL
-###previous_sentence = FALSE
-##### fine-tuned model specific parameters ##
-###tokenizer_parallelism = FALSE
-###logging_level = "error"
-###force_return_results = TRUE
-###return_all_scores = FALSE
-###function_to_apply = NULL
-###set_seed = 202208
-###
-######texts = im_stories$Story.Text[1:29]
-######model_info = "implicitpower_roberta23_nilsson2024"
-####### or "implicit_achievement_roberta_l23_nilsson2024"
-####### or "implicit_affiliation_roberta_ft_nilsson2024"
-#######story_id = im_stories$story_id[1:10],
-######participant_id = im_stories$story_id[1:29]
-######show_texts = TRUE
-###
-###texts = im_stories$Story.Text[1:29]
-###model_info = "implicitpower_roberta23_nilsson2024"
-###story_id = im_stories$story_id[1:29]
-###show_texts = TRUE
-
 #' textPredict, textAssess and textClassify
 #'
 #' Trained models created by e.g., textTrain() or stored on e.g., github of huggingface
