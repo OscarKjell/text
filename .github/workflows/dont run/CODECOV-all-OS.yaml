@@ -1,0 +1,86 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+name: CODECOV
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-20.04,   r: 'release'}
+
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      RSPM: https://packagemanager.rstudio.com/all/latest
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      CODECOV_DEBUG: true
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@v2-branch
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+
+      - uses: r-lib/actions/setup-pandoc@v2-branch
+
+      # Install system dependencies for Linux
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-jdk
+          sudo R CMD javareconf
+          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev
+          sudo apt-get install -y libharfbuzz-dev libfribidi-dev
+
+      # Install remotes first
+      - name: Install remotes package
+        run: |
+          install.packages('remotes', repos = "https://cloud.r-project.org")
+        shell: Rscript {0}
+
+      # Pre-install critical dependencies
+      - name: Install critical R packages
+        run: |
+          install.packages(c('rJava', 'mallet', 'topics'), repos = "https://cloud.r-project.org")
+        shell: Rscript {0}
+
+      # Install all dependencies
+      - name: Install all dependencies
+        run: |
+          remotes::install_deps(dependencies = TRUE)
+        shell: Rscript {0}
+
+      - name: Installing text and testing it
+        run: |
+          install.packages("devtools")
+          library(devtools)
+          devtools::install_github("oscarkjell/text")
+          text::textrpp_install(prompt = FALSE)
+          text::textrpp_initialize(textEmbed_test = TRUE)
+        shell: Rscript {0}
+
+      - name: Generate coverage report
+        env:
+          OMP_MAX_ACTIVE_LEVELS: 2
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
+        shell: Rscript {0}
+
+      - name: Debug and list files
+        run: ls -al
+        shell: bash
