@@ -100,8 +100,8 @@ textClassify(
 )
 }
 \arguments{
-\item{model_info}{(character or r-object) model_info has four options.
-1: R model object (e.g, saved output from one of the textTrain() functions).
+\item{model_info}{(character or r-object) model_info has four options, including:
+1: An R model (e.g, saved output from one of the textTrain() functions).
 2: The name specified in the  \href{https://r-text.org/articles/LBAM.html}{L-BAM Documentation}.
 For the following settings, remember to also set the model_type parameter:
 3: Link to a text-trained model online (either in a github repo

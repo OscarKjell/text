@@ -365,7 +365,8 @@ model_address_lookup <- function(
   if (nrow(target_model) == 0){
     target_model <- tibble(
       model_info = model_info,
-      model_type = "fine-tuned"
+      model_type = "fine-tuned",
+      path = NA
     )
   }
 

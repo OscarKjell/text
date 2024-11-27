@@ -1,12 +1,13 @@
 # Wrapper functions for textPredictR and textClassifyPipe
 
+
 #' textPredict, textAssess and textClassify
 #'
 #' Trained models created by e.g., textTrain() or stored on e.g., github of huggingface
 #' can be used to predict  scores or classes from embeddings or text using one of these function
 #' aliases.
-#' @param model_info (character or r-object) model_info has four options.
-#' 1: R model object (e.g, saved output from one of the textTrain() functions).
+#' @param model_info (character or r-object) model_info has four options, including:
+#' 1: An R model (e.g, saved output from one of the textTrain() functions).
 #' 2: The name specified in the  \href{https://r-text.org/articles/LBAM.html}{L-BAM Documentation}.
 #' For the following settings, remember to also set the model_type parameter:
 #' 3: Link to a text-trained model online (either in a github repo
@@ -139,7 +140,7 @@
 #' @export
 textPredict <- function(
     # Common parameter
-    model_info = NULL,
+    model_info = "valence_facebook_mxbai23_eijsbroek2024",
     texts = NULL,
     model_type = "detect",
     lbam_update = TRUE,
@@ -197,15 +198,19 @@ textPredict <- function(
     is_online_path <- is_internet_path(model_info)
   }
 
-  if(
+
     # Locale path
-    is_local_model & is.null(model_type) |
+  if(is_local_model & is.null(model_type) |
     is_online_path & is.null(model_type)){
 
       stop(message("Please set model_type when you are calling a model with a locale or online path."))
 
   }
-  if (model_type == "implicit-motives" | model_type ==  "implicit motives" | model_type == "implicit_motives"){
+
+  if (model_type == "implicit-motives" |
+      model_type ==  "implicit motives" |
+      model_type == "implicit_motives"){
+
     model_type <- "implicit-motives"
   }
 
@@ -229,7 +234,10 @@ textPredict <- function(
       lbam_update
     )
 
-    model_info <- model_type_and_url$path
+    # Change model_info to the path specified in L-BAM
+    if(!is.na(model_type_and_url$path)){
+      model_info <- model_type_and_url$path
+    }
 
     model_type <- model_type_and_url$model_type
   }
