@@ -16,7 +16,6 @@ street_address   = re.compile('\d{1,4} [\w\s]{1,20}(?:street|st|avenue|ave|road|
 zip_code         = re.compile(r'\b\d{5}(?:[-\s]\d{4})?\b')
 po_box           = re.compile(r'P\.? ?O\.? Box \d+', re.IGNORECASE)
 ssn              = re.compile('(?!000|666|333)0*(?:[0-6][0-9][0-9]|[0-7][0-6][0-9]|[0-7][0-7][0-2])[- ]?(?!00)[0-9]{2}[- ]?(?!0000)[0-9]{4}')
-#Added by D. Bellew for NIH (2021-03-10)
 at_symbol_data   = re.compile("([a-z0-9!#$%&'*+\/=?^_`{|.}~-])*([@])+([a-z0-9!#$%&'*+\/=?^_`{|.}~-])*", re.IGNORECASE)
 # Removed "ME", "OR", and "OK" since they were used more as words than as state abbreviations.
 state_2char      = re.compile('([\W]|^)(?:AL|AK|AS|AZ|AR|CA|CO|CT|DE|DC|FM|FL|GA|GU|HI|ID|IL|IN|IA|KS|KY|LA|MH|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|MP|OH|PW|PA|PR|RI|SC|SD|TN|TX|UT|VT|VI|VA|WA|WV|WI|WY)(\.?)([\W]|^)')
