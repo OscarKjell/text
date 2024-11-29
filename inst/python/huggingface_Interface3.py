@@ -4,6 +4,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
 import huggingface_hub
+import transformers
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 from transformers import pipeline
 try:
@@ -321,6 +322,7 @@ def hgTransformerGetPipeline(text_strings,
     # check and adjust input types
     if not isinstance(text_strings, list):
         text_strings = [text_strings]
+    
     if model:
         config, tokenizer, transformer_model = get_model(model,hg_gated=hg_gated, hg_token=hg_token, trust_remote_code=trust_remote_code)
         if device_num >= 0:
@@ -332,6 +334,14 @@ def hgTransformerGetPipeline(text_strings,
             task_pipeline = pipeline(task, device=device_num)
         else:
             task_pipeline = pipeline(task)
+
+    if transformers.__version__ >= "4.20" and "return_all_scores" in kwargs:
+        return_all_scores = kwargs["return_all_scores"]
+        if return_all_scores == True:
+            kwargs["top_k"] = None
+        else:
+            kwargs["top_k"] = 1
+        del kwargs["return_all_scores"]
     
     task_scores = []
     if task in ['question-answering', 'zero-shot-classification']:
