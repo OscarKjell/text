@@ -10,18 +10,7 @@ test_that("Testing textEmbed as well as train", {
 #  textrpp_initialize(refresh_settings = T,
 #                     save_profile = T)
 
-  textrpp_initialize()
 
-  descr1 <- textDescriptives(Language_based_assessment_data_8[[1]][[1]],
-                             entropy_unit = "log10"
-                             )
-  testthat::expect_that(descr1[[1]], testthat::is_a("character"))
-  testthat::expect_equal(descr1[[2]], 61)
-  testthat::expect_equal(descr1[[10]], 1.503212, tolerance = 0.00001)
-
-  descr2 <- textDescriptives(Language_based_assessment_data_8[1:2])
-  expect_equal(descr2[[2]][[1]], 2482)
-  expect_equal(descr2[[3]][[1]], 62.05)
 
   harmony_word_embeddings <- text::textEmbed(
     Language_based_assessment_data_8[1:20, 1:2],

@@ -141,3 +141,74 @@ textDescriptives <- function(words,
   output <- dplyr::bind_cols(variable_name, output)
   output
 }
+
+
+#' Cleans text from standard personal information
+#'
+#' The text is being cleaned from information that may identify them; however, note that
+#' this is not a guarantee for anonymization.
+#' @param text (character) The text to be cleaned.
+#' @param replace (boolean)
+#' @param date (boolean)
+#' @param time (boolean)
+#' @param phone (boolean)
+#' @param email (boolean)
+#' @param ip (boolean)
+#' @param money (boolean)
+#' @param creditcard (boolean)
+#' @param bitcoin (boolean)
+#' @param location (boolean)
+#' @param ssn (boolean)
+#' @param at_symbol (boolean)
+#' @param url (boolean)
+#' @return Text cleaned from typical personal identifiable information
+#' @importFrom reticulate source_python
+#' @export
+textClean <- function(
+    text,
+    replace = TRUE,
+    date = TRUE,
+    time = TRUE,
+    phone = TRUE,
+    email = TRUE,
+    ip = TRUE,
+    money = TRUE,
+    creditcard = TRUE,
+    bitcoin = TRUE,
+    location = TRUE,
+    ssn = TRUE,
+    at_symbol = TRUE,
+    url = TRUE) {
+
+
+  # Run python file remove_pii interface
+  reticulate::source_python(
+    system.file("python",
+                "text_cleaner.py",
+                package = "text",
+                mustWork = TRUE
+  ))
+
+  cleaned_text <- remove_pii(
+    text = text,
+    replace = replace,
+    date = date,
+    time = time,
+    phone = phone,
+    email = email,
+    ip = ip,
+    money = money,
+    creditcard = creditcard,
+    bitcoin = bitcoin,
+    location = location,
+    ssn = ssn,
+    at_symbol = at_symbol,
+    url = url
+    )
+
+  return(cleaned_text)
+}
+
+
+
+

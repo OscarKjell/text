@@ -1,7 +1,14 @@
-# text (development version)
-
+# text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# text 1.3.0
+- Alias function: `textPredict()`, `textAssess()` and `textClassify()`.
+- LBAM integration with `textLBAM()`.
+- Full support of implicit motives models.
+- Text cleaning functionality with `textClean()` (removing common personal information).
+- Compatability with the topics-package, see [www.r-topics.org](https://r-topics.org/).
+
 # text 1.2.17
 - `textLBAM()` returns the library as a datafram
 
