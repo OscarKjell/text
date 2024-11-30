@@ -15,6 +15,7 @@ utils::globalVariables(c(
   "hgTransformerGetNER", "hgTransformerGetSummarization", "hgTransformerGetQA",
   "hgTransformerGetTranslation", "hgTokenizerGetTokens", "hgTransformerGetZeroShot",
   "textModelsPy", "textModelsRMPy", "get_number_of_hidden_layers", "hgTransformerFineTune",
+  "remove_pii",
 
 
   # EMBEDDINGS OBJECTS

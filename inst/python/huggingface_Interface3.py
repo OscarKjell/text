@@ -4,6 +4,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch
 import huggingface_hub
+import transformers
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 from transformers import pipeline
 try:
@@ -21,21 +22,6 @@ except:
 from nltk.tokenize import sent_tokenize
 
 import os, sys
-
-ACCEPTED_TASKS = ["text-classification", "sentiment-analysis", "question-answering", "translation", 
-    "summarization", "token-classification", "ner", "text-generation", "zero-shot-classification"]
-
-PIPELINE_RESULTS_BY_TASK = {
-    "text-classification": ["POSITIVE", "NEGATIVE"], 
-    "sentiment-analysis": ["POSITIVE", "NEGATIVE"], 
-    "question-answering": ["answer"], 
-    "translation": ["translation_text"], 
-    "summarization": ["summary_text"], 
-    "token-classification": ["entity"], 
-    "ner": ["entity"], 
-    "text-generation": ["generated_text", "generated_token_ids"], 
-    "zero-shot-classification": ["scores"], 
-}
 
 def set_hg_gated_access(access_token):
     """
@@ -309,9 +295,6 @@ def hgTransformerGetPipeline(text_strings,
         list of dictionaries with sentiment scores and labels
     """
 
-    if not (task in ACCEPTED_TASKS or task.startswith("translation")):
-        print("Task {t} is not recognized".format(t=task))
-        return []
     if isinstance(set_seed, int):
         torch.manual_seed(set_seed)
     set_logging_level(logging_level)
@@ -321,6 +304,7 @@ def hgTransformerGetPipeline(text_strings,
     # check and adjust input types
     if not isinstance(text_strings, list):
         text_strings = [text_strings]
+    
     if model:
         config, tokenizer, transformer_model = get_model(model,hg_gated=hg_gated, hg_token=hg_token, trust_remote_code=trust_remote_code)
         if device_num >= 0:
@@ -332,49 +316,21 @@ def hgTransformerGetPipeline(text_strings,
             task_pipeline = pipeline(task, device=device_num)
         else:
             task_pipeline = pipeline(task)
+
+    if transformers.__version__ >= "4.20" and "return_all_scores" in kwargs:
+        return_all_scores = kwargs["return_all_scores"]
+        if return_all_scores == True:
+            kwargs["top_k"] = None
+        else:
+            kwargs["top_k"] = 1
+        del kwargs["return_all_scores"]
     
     task_scores = []
     if task in ['question-answering', 'zero-shot-classification']:
         task_scores = task_pipeline(**kwargs)
     else:
         task_scores = task_pipeline(text_strings, **kwargs)
-
-    if len(task_scores) == 0 or (isinstance(task_scores, list) and len(task_scores[0]) == 0):
-        return task_scores
     
-    results_check = {}
-    if isinstance(task_scores, dict):
-        results_check = task_scores
-        task_scores = [task_scores]
-    elif isinstance(task_scores[0], dict):
-        results_check = task_scores[0]
-    elif isinstance(task_scores[0][0], dict):
-        results_check = task_scores[0][0]
-        task_scores = task_scores[0]
-   
-    if task.startswith("translation"):
-        default_result_keys = PIPELINE_RESULTS_BY_TASK["translation"]
-    else:
-        default_result_keys = PIPELINE_RESULTS_BY_TASK[task]
-    
-    print_warning = False
-    if task in ["text-classification", "sentiment-analysis"]:
-        if results_check['label'] not in default_result_keys:
-            print_warning = True
-    elif len(task_scores) > 0 and not any(k in default_result_keys for k in list(results_check.keys())):
-        print_warning = True
-    if print_warning and not force_return_results:
-        print("WARNING: Results do not match the defaults for the task {task}".format(task=task))
-        print("\tBy default, one of the following should be in the results for this task: {t}".format(t=", ".join(PIPELINE_RESULTS_BY_TASK[task])))
-        print("\tYou may want to try a different model or the default model for the task")
-        print("\tYou can force return results by setting force_return_results = TRUE")
-        # todo add list of defaults and print the task default in warning
-        task_scores = []
-    elif print_warning and force_return_results:
-        print("WARNING: Results may not match the defaults ({d}) for the task {task}. Proceed with caution.".format(
-            d=", ".join(PIPELINE_RESULTS_BY_TASK[task]),
-            task=task)
-            )
     return task_scores
 
 

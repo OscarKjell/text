@@ -111,6 +111,7 @@ reference:
 - title: Miscellaneous
   contents:
     - textDescriptives
+    - textClean
     - textTokenize
     - textTokenizeAndCount
     - textDomainCompare

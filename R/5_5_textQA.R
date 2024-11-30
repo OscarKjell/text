@@ -1,3 +1,5 @@
+
+
 #' Question Answering. (experimental)
 #' @param question (string)  A question
 #' @param context (string)  The context(s) where the model will look for the answer.
@@ -75,7 +77,7 @@ textQA <- function(question,
       max_question_len = max_question_len,
       handle_impossible_answer = handle_impossible_answer,
       set_seed = set_seed
-    )[[1]]
+    )#[[1]]
 
     output1 <- dplyr::bind_rows(hg_QA)
 

@@ -11,9 +11,7 @@ textTopicsTest(
   group_var = NULL,
   control_vars = c(),
   test_method = "linear_regression",
-  p_alpha = 0.05,
-  p_adjust_method = "fdr",
-  load_dir = NULL
+  ...
 )
 }
 \arguments{
@@ -29,12 +27,7 @@ textTopicsTest(
 
 \item{test_method}{(string) The test method to use, either "correlation","t-test", "linear_regression","logistic_regression", or "ridge_regression"}
 
-\item{p_alpha}{(numeric) Threshold of p value set by the user for visualising significant topics}
-
-\item{p_adjust_method}{(character) Method to adjust/correct p-values for multiple comparisons
-(default = "none"; see also "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").}
-
-\item{load_dir}{(string) The directory to load the test from, if NULL, the test will not be loaded}
+\item{...}{Parameter settings from topicsTest in the topics-package.}
 }
 \value{
 A list of the test results, test method, and prediction variable

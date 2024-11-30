@@ -768,9 +768,6 @@ textPredictTextTrained <- function(
       predictions = list(predicted_scores2))
   }
 
-  # display message to user
-  message(colourise("Predictions are ready!", fg = "green"))
-  #message("\n")
   return(predicted_scores2)
 }
 
