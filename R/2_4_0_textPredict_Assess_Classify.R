@@ -1,6 +1,5 @@
 # Wrapper functions for textPredictR and textClassifyPipe
 
-
 #' textPredict, textAssess and textClassify
 #'
 #' Trained models created by e.g., textTrain() or stored on e.g., github of huggingface
@@ -324,6 +323,9 @@ textPredict <- function(
       )
   }
 
+  # display message to user
+  message(colourise("Predictions are ready!", fg = "green"))
+  message("\n")
   return(results)
 
 }

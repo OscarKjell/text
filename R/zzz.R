@@ -25,9 +25,7 @@
       ),
       fg = "blue", bg = NULL
     ),
-    colourise("Text is new and still rapidly improving.
-               \nNewer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art.
-               Please send us feedback based on your experience.",
+    colourise("Newer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art.",
       fg = "green", bg = NULL
     ),
     colourise("\n\nFor more information about the package see www.r-text.org.",

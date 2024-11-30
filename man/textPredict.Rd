@@ -7,7 +7,7 @@
 \title{textPredict, textAssess and textClassify}
 \usage{
 textPredict(
-  model_info = NULL,
+  model_info = "valence_facebook_mxbai23_eijsbroek2024",
   texts = NULL,
   model_type = "detect",
   lbam_update = TRUE,
@@ -38,7 +38,7 @@ textPredict(
 )
 
 textAssess(
-  model_info = NULL,
+  model_info = "valence_facebook_mxbai23_eijsbroek2024",
   texts = NULL,
   model_type = "detect",
   lbam_update = TRUE,
@@ -69,7 +69,7 @@ textAssess(
 )
 
 textClassify(
-  model_info = NULL,
+  model_info = "valence_facebook_mxbai23_eijsbroek2024",
   texts = NULL,
   model_type = "detect",
   lbam_update = TRUE,

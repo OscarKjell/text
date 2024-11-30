@@ -112,6 +112,9 @@ test_that("textQA test", {
     question = "Which colour have trees?",
     context = "Trees are mostly green and like water"
   )
+  expect_equal(qa_examples$score, .9384409, tolerance = 0.0001)
+  expect_equal(qa_examples$start, 17)
+  expect_equal(qa_examples$end, 22)
   expect_equal(qa_examples$answer, "green")
 })
 

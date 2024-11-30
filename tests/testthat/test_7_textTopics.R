@@ -62,13 +62,14 @@ test_that("Bertopic", {
     test_method = "linear_regression"
     )
 
-  testthat::expect_equal(test2[[1]]$test$x.score.estimate[1],
+  testthat::expect_equal(test2$test$x.score.estimate[1],
                          .1056764,
                          tolerance = 0.0001)
 
   plots <- text::textTopicsWordcloud(
     model = bert_model,
     test = test2,
+    p_alpha = 0.05,
     figure_format = "png",
     save_dir = "./results"
   )

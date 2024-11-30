@@ -853,9 +853,6 @@ textPredictImplicitMotives <- function(
       colnames(predicted_scores2[[2]])[colnames(predicted_scores2[[2]]) == "participant_id"] <- "row_id"
     }
 
-  # display message to user
-  message(colourise("Predictions are ready!", fg = "green"))
-  #message("\n")
   return(predicted_scores2)
 }
 

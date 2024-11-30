@@ -1,3 +1,18 @@
+x = "The meaning of life is"
+model = "gpt2"
+device = "cpu"
+tokenizer_parallelism = FALSE
+logging_level = "warning"
+force_return_results = FALSE
+return_tensors = TRUE
+return_tensors = FALSE
+return_full_text = FALSE
+clean_up_tokenization_spaces = FALSE
+prefix = ""
+handle_long_generation = "hole"
+set_seed = 22L
+
+
 #' Text generation
 #'
 #' textGeneration() predicts the words that will follow a specified text prompt. (experimental)
@@ -84,7 +99,7 @@ textGeneration <- function(x,
 
     # Sort output into tidy-format
     if (return_tensors == FALSE) {
-      output1 <- dplyr::bind_rows(hg_generated)
+      output1 <- dplyr::bind_rows(hg_generated[[1]][[1]][[1]])
       output1
     }
 
