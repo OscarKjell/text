@@ -3,7 +3,7 @@ library(dplyr)
 library(text)
 library(testthat)
 library(ggplot2)
-
+#install.packages("topics")
 #
 # .rs.restartR()
 #help(textrpp_initialize)
@@ -16,6 +16,7 @@ library(ggplot2)
 test_that("Bertopic", {
   skip_on_cran()
 
+  save_dir_temp <- tempdir()
   #Langauge_based_assessment_data_8 <- load(Language_based_assessment_data_8.rda")
 
   # Load and prepare data
@@ -38,7 +39,7 @@ test_that("Bertopic", {
                            embedding_model = "distilroberta",
                            min_df = 2,
                            set_seed = 42,
-                           save_dir="./results")
+                           save_dir= save_dir_temp)
 
   testthat::expect_equal(bert_model$preds$t_1[2],
                          .1115696,
@@ -71,19 +72,18 @@ test_that("Bertopic", {
     test = test2,
    # p_alpha = 0.05,
     figure_format = "png",
-    save_dir = "./results"
+   seed = 42,
+    save_dir = save_dir_temp
   )
 
   plots <- text::textTopicsWordcloud(
     model = bert_model,
-    save_dir = "./results",
-    figure_format = "png"
+    save_dir = save_dir_temp,
+    figure_format = "png",
+    seed = 42,
   )
 
-
   }
-
-  unlink("./results", recursive = TRUE)
 })
 
 
