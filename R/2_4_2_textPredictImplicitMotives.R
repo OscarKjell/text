@@ -1,7 +1,5 @@
 
-######################################                          ######################################
-###################################### Implicit motives section ######################################
-######################################                          ######################################
+#### Implicit motives section
 
 #' Returns a tibble with values relevant for calculating implicit motives
 #' @param texts Texts to predict
@@ -361,131 +359,6 @@ implicit_motives_results <- function(
 
   # Return the final summary_list
   return(summary_list)
-##  if (!is.null(participant_id)){
-##
-##    # Two different summary lists depending on if it is including the data set with integrated predictions or not
-##    if (is.null(dataset)) {
-##      if (identical(story_id, participant_id)){
-##
-##        summary_list <- list(
-##          sentence_predictions = predicted_scores2,
-##          story_predictions = predicted_participant)
-##
-##      } else {
-##
-##        summary_list <- list(
-##          sentence_predictions = predicted_scores2,
-##          person_predictions = predicted_participant)
-##      }
-##
-##    } else {
-##
-##      if(!identical(predicted_participant, predicted_story) && !is.null(predicted_story)){
-##        # include both story- and sentence-level predictions
-##        to_insert <- list(
-##          predicted_scores2,
-##          predicted_participant,
-##          predicted_story)
-##
-##      } else if (identical(predicted_participant, predicted_story)){
-##        # include just story-level predictions
-##
-##        to_insert <- list(
-##          predicted_scores2,
-##          predicted_story)
-##
-##      } else {
-##        # predicted_scores2 = sentence predictions, predicted_participant = person predictions
-##        to_insert <- list(
-##          predicted_scores2,
-##          predicted_participant)
-##
-##      }
-##
-##      # new code to integrate predictions into data set; only matching the rows
-##      if(nrow(dataset) == nrow(to_insert[[1]])){
-##
-##        integrated_dataset <- dplyr::bind_cols(
-##          dataset,
-##          to_insert[[1]])
-##      }
-##      if(length(to_insert) > 1){
-##        if(nrow(dataset) == nrow(to_insert[[2]])){
-##
-##          integrated_dataset <- dplyr::bind_cols(
-##            dataset,
-##            to_insert[[2]])
-##
-##        } else {
-##          message(colourise(paste("Note that dataset_to_merge_predictions does not have the same number of rows ",
-##          "as the summed predictions (to participant or story id, so it cannot be merged. \n"),
-##              "brown")
-##          )
-##        }
-##      }
-##      if(length(to_insert)>2){
-##        if(nrow(dataset) == nrow(to_insert[[3]])){
-##          integrated_dataset <- dplyr::bind_cols(
-##            dataset,
-##            to_insert[[3]])
-##        }
-##      }
-##
-##      if (identical(story_id, participant_id)){
-##        # story predictions
-##        summary_list <- list(
-##          sentence_predictions = predicted_scores2,
-##          story_predictions = predicted_participant,
-##          dataset = integrated_dataset)
-##      }
-##
-##      if (!identical(predicted_participant, predicted_story) && !is.null(predicted_story)){
-##        # story predictions
-##        summary_list <- list(
-##          sentence_predictions = predicted_scores2,
-##          person_predictions = predicted_participant,
-##          story_predictions = predicted_story,
-##          dataset = integrated_dataset)
-##
-##      } else if (identical(predicted_participant, predicted_story) && !is.null(predicted_story)){
-##        # just story-level predictions
-##        summary_list <- list(
-##          sentence_predictions = predicted_scores2,
-##          story_predictions = predicted_story,
-##          dataset = integrated_dataset)
-##
-##      } else if (!is.null(integrated_dataset)){
-##        # Summarize all predictions
-##        summary_list <- list(
-##          sentence_predictions = predicted_scores2,
-##          person_predictions = predicted_participant,
-##          dataset = integrated_dataset)
-##      } else {
-##        # Summarize
-##        summary_list <- list(
-##          sentence_predictions = predicted_scores2,
-##          person_predictions = predicted_participant
-##                             )
-##
-##      }
-##    }
-##  } else {
-##
-##    if(!is.null(dataset)){
-##      predicted_scores2 <- dplyr::bind_cols(
-##        dataset,
-##        predicted_scores2)
-##    }
-##
-##    summary_list <- predicted_scores2
-##  }
-#########################
-
-  # Display message to user
-#  message(colourise("Predictions of implicit motives are ready!", fg = "green"))
-#  message("\n")
-
-  return(summary_list)
 }
 
 #' Function that is called in the beginning of textPredict to create the conditions for implicit motives to work.
@@ -520,12 +393,18 @@ get_implicit_model_info <- function(
       model_info == "implicitpower_gerbert11_nilsson2024" |
       model_info == "implicitachievement_gerbert11_nilsson2024"|
       model_info == "implicitaffiliation_gerbert11_nilsson2024" |
+      model_info == "implicitpower_roberta23_previoussentence_nilsson2024" |
+      model_info == "implicitachievement_roberta23_previoussentence_nilsson2024" |
+      model_info == "implicitaffiliation_roberta23_previoussentence_nilsson2024" |
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_power_open.rds" |
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_achievement_open.rds"|
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_affiliation_open.rds" |
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_power_open.rds" |
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_achievement_open.rds"|
-      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_affiliation_open.rds") {
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_affiliation_open.rds" |
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_power_open_previous_sentence.rds" |
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_achievement_open_previous_sentence.rds" |
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_affiliation_open_previous_sentence.rds") {
 
       model_type <- "text-trained"
     } else {
