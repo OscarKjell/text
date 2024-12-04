@@ -134,7 +134,7 @@ test_that("textPredict Implicit motives", {
   testthat::expect_equal(predictions_participant_1$sentence_predictions$.pred_1[[1]], 0.07667742, tolerance = 0.0001)
   testthat::expect_equal(predictions_participant_1$person_predictions$person_prob[[1]], -0.07572437, tolerance = 0.0001)
   testthat::expect_equal(predictions_participant_1$person_predictions$person_class[[2]], -0.1359569, tolerance = 0.0001)
-  testthat::expect_equal(predictions_participant_1$person_predictions$person_prob_no_wc_correction[[3]], 0.3745083, tolerance = 0.0001)
+  testthat::expect_equal(predictions_participant_1$person_predictions$person_prob_no_wc_correction[[3]], 0.1402563, tolerance = 0.0001)
 
   testthat::expect_equal(predictions_participant_1$dataset$Participant_ID[[2]], "P02", tolerance = 0.0001)
 
@@ -161,16 +161,8 @@ test_that("textPredict Implicit motives", {
   testthat::expect_that(predictions_story_1, testthat::is_a("list"))
   testthat::expect_equal(length(predictions_story_1), 4)
   testthat::expect_equal(predictions_story_1$story_predictions$story_prob[[1]], -0.01077453, tolerance = 0.0001)
-  testthat::expect_equal(predictions_story_1$story_predictions$story_prob_no_wc_correction[[2]], 0.1011361, tolerance = 0.0001)
+  testthat::expect_equal(predictions_story_1$story_predictions$story_prob_no_wc_correction[[2]], 0.01022855, tolerance = 0.0001)
 
-######### This one should also provide person and story outcomes #######
-  predictions_story_1 <- text::textPredict(
-    texts = PSE_stories_story_level$Story_Text,
-    model_info = "implicitachievement_roberta23_nilsson2024",
-    participant_id = PSE_stories_story_level$Participant_ID,
-    story_id = PSE_stories_story_level$story_id,
-    dataset_to_merge_predictions = NULL
-  )
 ####################################################################
   #as expected
   predictions_story_2 <- text::textPredict(
@@ -195,7 +187,7 @@ test_that("textPredict Implicit motives", {
   testthat::expect_that(predictions_sentence_1, testthat::is_a("list"))
   testthat::expect_equal(length(predictions_sentence_1), 4)
   testthat::expect_equal(predictions_sentence_1$story_predictions$story_prob[[1]], 0.2883911, tolerance = 0.0001)
-  testthat::expect_equal(predictions_sentence_1$story_predictions$story_prob_no_wc_correction[[2]], 0.9288444, tolerance = 0.0001)
+  testthat::expect_equal(predictions_sentence_1$story_predictions$story_prob_no_wc_correction[[2]], 0.8627519, tolerance = 0.0001)
 
   # This one is now 10/10. Awesome
   predictions_sentence_2 <- text::textPredict(

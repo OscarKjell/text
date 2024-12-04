@@ -81,6 +81,7 @@ implicit_motives_pred <- function(
     story_id) {
 
   # square root transform
+  non_sqrt <- sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB")]
   sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")] <- sqrt(sqrt_implicit_motives[c("OUTCOME_USER_SUM_CLASS", "OUTCOME_USER_SUM_PROB", "wc_person_per_1000")])
 
   # for OUTCOME_USER_SUM_PROB
@@ -112,8 +113,9 @@ implicit_motives_pred <- function(
       story_prob = story_prob,
       # REMOVE THIS <- ADDING BELOW LINE: story_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)), 0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
       story_class = story_class,
-      story_prob_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
-      story_class_no_wc_correction  = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
+      story_prob_no_wc_correction  = non_sqrt$OUTCOME_USER_SUM_PROB,
+      story_class_no_wc_correction  = non_sqrt$OUTCOME_USER_SUM_CLASS
+      )
 
   } else {
     # Determine the person_prob vector before creating the tibble
@@ -140,8 +142,8 @@ implicit_motives_pred <- function(
       # REMOVED:
       #person_class = ifelse(is.na(as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
       #                      0, as.vector(OUTCOME_USER_SUM_CLASS.residual1.z)),
-      person_prob_no_wc_correction = sqrt_implicit_motives$OUTCOME_USER_SUM_PROB,
-      person_class_no_wc_correction = sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS)
+      person_prob_no_wc_correction = non_sqrt$OUTCOME_USER_SUM_PROB,
+      person_class_no_wc_correction = non_sqrt$OUTCOME_USER_SUM_CLASS)
   }
 
   if (length(participant_id) < 30) {
@@ -262,7 +264,7 @@ implicit_motives_results <- function(
 
   # if both story_id and participant_id are defined, then also create story-level predictions.
   if (!is.null(story_id) && !is.null(participant_id)){
-    # The algorithm treats participant_id and story_id the same, but was origionally created to only handle
+    # The algorithm treats participant_id and story_id the same, but was originally created to only handle
     # participant id:s. A solution is therefore to assign the story:ids to participant_id.
     participant_id_placeholder <- story_id
 
