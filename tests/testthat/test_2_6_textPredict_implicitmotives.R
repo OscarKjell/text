@@ -130,11 +130,11 @@ test_that("textPredict Implicit motives", {
   )
   testthat::expect_that(predictions_participant_1, testthat::is_a("list"))
   testthat::expect_equal(length(predictions_participant_1), 3)
-  testthat::expect_equal(predictions_participant_1$sentence_predictions$.pred_0[[1]], 0.9233226, tolerance = 0.0001)
-  testthat::expect_equal(predictions_participant_1$sentence_predictions$.pred_1[[1]], 0.07667742, tolerance = 0.0001)
-  testthat::expect_equal(predictions_participant_1$person_predictions$person_prob[[1]], -0.07572437, tolerance = 0.0001)
-  testthat::expect_equal(predictions_participant_1$person_predictions$person_class[[2]], -0.1359569, tolerance = 0.0001)
-  testthat::expect_equal(predictions_participant_1$person_predictions$person_prob_no_wc_correction[[3]], 0.1402563, tolerance = 0.0001)
+  testthat::expect_equal(predictions_participant_1$sentence_assessments$.pred_0[[1]], 0.9233226, tolerance = 0.0001)
+  testthat::expect_equal(predictions_participant_1$sentence_assessments$.pred_1[[1]], 0.07667742, tolerance = 0.0001)
+  testthat::expect_equal(predictions_participant_1$person_assessments$person_prob[[1]], -0.07572437, tolerance = 0.0001)
+  testthat::expect_equal(predictions_participant_1$person_assessments$person_class[[2]], -0.1359569, tolerance = 0.0001)
+  testthat::expect_equal(predictions_participant_1$person_assessments$person_prob_no_wc_correction[[3]], 0.1402563, tolerance = 0.0001)
 
   testthat::expect_equal(predictions_participant_1$dataset$Participant_ID[[2]], "P02", tolerance = 0.0001)
 
@@ -199,7 +199,7 @@ test_that("textPredict Implicit motives", {
   )
   testthat::expect_that(predictions_sentence_2, testthat::is_a("list"))
   testthat::expect_equal(length(predictions_sentence_2), 3)
-  testthat::expect_equal(predictions_sentence_2$sentence_predictions$.pred_0[[1]], 0.9089251, tolerance = 0.0001)
-  testthat::expect_equal(predictions_sentence_2$sentence_predictions$.pred_1[[2]], 0.09193248, tolerance = 0.0001)
+  testthat::expect_equal(predictions_sentence_2$sentence_assessments$.pred_0[[1]], 0.9089251, tolerance = 0.0001)
+  testthat::expect_equal(predictions_sentence_2$sentence_assessments$.pred_1[[2]], 0.09193248, tolerance = 0.0001)
 
 })

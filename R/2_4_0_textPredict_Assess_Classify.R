@@ -324,7 +324,7 @@ textPredict <- function(
   }
 
   # display message to user
-  message(colourise("Predictions are ready!", fg = "green"))
+  message(colourise("Assessments are ready!", fg = "green"))
   message("\n")
   return(results)
 

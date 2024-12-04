@@ -383,8 +383,7 @@ get_implicit_model_info <- function(
     show_texts,
     type,
     texts,
-    story_id#,
-    #lower_case_model
+    story_id
     ) {
   # show_prob is by default FALSE
   show_prob <- FALSE
@@ -618,6 +617,11 @@ textPredictImplicitMotives <- function(
     story_id <-  NULL
   }
 
+  if ((previous_sentence == T & is.null(story_id)) ||
+      previous_sentence == T & is.null(participant_id)){
+    stop("error: there must be story_id and participant_id when previous_sentence = T")
+  }
+
   use_row_id_name = FALSE
 
   #### Special treatment for implicit motives - see private functions ####
@@ -709,8 +713,7 @@ textPredictImplicitMotives <- function(
     predicted_scores2 <- tibble(
       !!class_name:=ifelse(classifications_rev > 0.5 , 1, 0),
       .pred_0 = 1-classifications_rev,
-      .pred_1 = classifications_rev#,
-      #texts = PSE_stories_sentence_level$Story_Text[c(1, 79)]
+      .pred_1 = classifications_rev
       )
   }
 
@@ -735,7 +738,18 @@ textPredictImplicitMotives <- function(
   # change participant_id to row_id
   if(use_row_id_name){
       colnames(predicted_scores2[[2]])[colnames(predicted_scores2[[2]]) == "participant_id"] <- "row_id"
-    }
+  }
+
+
+
+  # Check and rename if necessary
+  if ("person_predictions" %in% names(predicted_scores2)) {
+    names(predicted_scores2)[names(predicted_scores2) == "person_predictions"] <- "person_assessments"
+  }
+
+  if ("sentence_predictions" %in% names(predicted_scores2)) {
+    names(predicted_scores2)[names(predicted_scores2) == "sentence_predictions"] <- "sentence_assessments"
+  }
 
   return(predicted_scores2)
 }
