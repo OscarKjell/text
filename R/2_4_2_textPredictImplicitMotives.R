@@ -97,7 +97,7 @@ implicit_motives_pred <- function(
   # insert residuals into a tibble
   if (identical(story_id, participant_id)){
 
-    if (length(participant_id) < 30) {
+    if (length(unique(participant_id)) < 30) {
       story_prob <- sqrt_implicit_motives$OUTCOME_USER_SUM_PROB / sqrt_implicit_motives$wc_person_per_1000
       # New line:
       story_class <- sqrt_implicit_motives$OUTCOME_USER_SUM_CLASS / sqrt_implicit_motives$wc_person_per_1000
@@ -120,7 +120,7 @@ implicit_motives_pred <- function(
   } else {
     # Determine the person_prob vector before creating the tibble
     # if (nrow(sqrt_implicit_motives) < 30) {
-    if (length(sqrt_implicit_motives$participant_id) < 30) {
+    if (length(unique(sqrt_implicit_motives$participant_id)) < 30) {
 
       person_prob <- sqrt_implicit_motives$OUTCOME_USER_SUM_PROB / sqrt_implicit_motives$wc_person_per_1000
 
@@ -146,8 +146,11 @@ implicit_motives_pred <- function(
       person_class_no_wc_correction = non_sqrt$OUTCOME_USER_SUM_CLASS)
   }
 
-  if (length(participant_id) < 30) {
-    warning("Warning: implicit motive scores were corrected for word count by 'score/(word count/1000)' and not residualised from a regression. This is because the number of datapoints was less than 30.")
+  if (length(unique(participant_id)) < 30) {
+    message(colourise(
+      paste0("Warning: implicit motive scores were corrected for word count by 'score/(word count/1000)'",
+             " and not residualised from a regression. This is because the number of unique datapoints was less than 30."),
+      "brown"))
   }
 
   return(implicit_motives_pred)
