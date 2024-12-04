@@ -26,7 +26,7 @@ textPredict(
   save_dir = "wd",
   save_name = "textPredict",
   story_id = NULL,
-  dataset_to_merge_predictions = NULL,
+  dataset_to_merge_assessments = NULL,
   previous_sentence = FALSE,
   tokenizer_parallelism = FALSE,
   logging_level = "error",
@@ -57,7 +57,7 @@ textAssess(
   save_dir = "wd",
   save_name = "textPredict",
   story_id = NULL,
-  dataset_to_merge_predictions = NULL,
+  dataset_to_merge_assessments = NULL,
   previous_sentence = FALSE,
   tokenizer_parallelism = FALSE,
   logging_level = "error",
@@ -88,7 +88,7 @@ textClassify(
   save_dir = "wd",
   save_name = "textPredict",
   story_id = NULL,
-  dataset_to_merge_predictions = NULL,
+  dataset_to_merge_assessments = NULL,
   previous_sentence = FALSE,
   tokenizer_parallelism = FALSE,
   logging_level = "error",
@@ -163,7 +163,7 @@ to model_info.}
 probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
 returns a list including both story level and person level prediction corrected for word count. (default = NULL)}
 
-\item{dataset_to_merge_predictions}{(R-object, tibble; only for "texttrained"-model_type) Insert your data here to integrate predictions to your dataset,
+\item{dataset_to_merge_assessments}{(R-object, tibble; only for "texttrained"-model_type) Insert your data here to integrate predictions to your dataset,
 (default = NULL).}
 
 \item{previous_sentence}{(boolean; only for "texttrained"-model_type) If set to TRUE, word-embeddings will be averaged over the current and previous
@@ -240,7 +240,7 @@ implicit_motives <- textPredict(
   texts = implicit_motive_data$satisfactiontexts,
   model_info = "implicit_power_roberta_large_L23_v1",
   participant_id = implicit_motive_data$participant_id,
-  dataset_to_merge_predictions = implicit_motive_data
+  dataset_to_merge_assessments = implicit_motive_data
 )
 
 # Examine results

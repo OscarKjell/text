@@ -348,7 +348,7 @@ implicit_motives_results <- function(
       # If no merge was successful, show the message
       if (!merge_success) {
         message(colourise(
-          "Note: dataset_to_merge_predictions does not have the same number of rows as the predictions and cannot be merged.\n",
+          "Note: dataset_to_merge_assessments does not have the same number of rows as the predictions and cannot be merged.\n",
           "brown"
         ))
       }
@@ -509,7 +509,7 @@ get_implicit_model_info <- function(
 #' @param story_id (vector; only works for implicit motives models) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
 #' probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
 #' returns a list including both story level and person level prediction corrected for word count. (default = NULL)
-#' @param dataset_to_merge_predictions (tibble; only works for implicit motives models) Insert your data here to integrate predictions to your dataset,
+#' @param dataset_to_merge_assessments (tibble; only works for implicit motives models) Insert your data here to integrate predictions to your dataset,
 #'  (default = NULL).
 #' @param previous_sentence (Boolean; only works for implicit motives models) If set to TRUE, word-embeddings will be averaged over the current and previous
 #' sentence per story-id. For this, both participant-id and story-id must be specified.
@@ -561,7 +561,7 @@ get_implicit_model_info <- function(
 #'   texts = implicit_motive_data$satisfactiontexts,
 #'   model_info = "implicit_power_roberta_large_L23_v1",
 #'   participant_id = implicit_motive_data$participant_id,
-#'   dataset_to_merge_predictions = implicit_motive_data
+#'   dataset_to_merge_assessments = implicit_motive_data
 #' )
 #'
 #' # Examine results
@@ -604,7 +604,7 @@ textPredictImplicitMotives <- function(
     show_texts = FALSE,
     participant_id = NULL,
     story_id = NULL,
-    dataset_to_merge_predictions = NULL,
+    dataset_to_merge_assessments = NULL,
     previous_sentence = FALSE,
     device = "cpu",
     ...) {
@@ -628,10 +628,10 @@ textPredictImplicitMotives <- function(
   model_name <- model_info
   lower_case_model <- as.character(tolower(model_name))
 
-  if (is.null(participant_id) & is.null(story_id) & !is.null(dataset_to_merge_predictions)){
-      message(colourise(paste("Note: The 'texts' were not at the sentence level, and while dataset_to_merge_predictions",
+  if (is.null(participant_id) & is.null(story_id) & !is.null(dataset_to_merge_assessments)){
+      message(colourise(paste("Note: The 'texts' were not at the sentence level, and while dataset_to_merge_assessments",
       " was provided, participant_id and story_id were missing. ",
-      "The function treated each row_id as a participant_id when merging assessments into dataset_to_merge_predictions. \n", sep=""),
+      "The function treated each row_id as a participant_id when merging assessments into dataset_to_merge_assessments. \n", sep=""),
        "purple"))
 
     use_row_id_name <- TRUE
@@ -681,7 +681,7 @@ textPredictImplicitMotives <- function(
         show_texts = show_texts,
         participant_id = participant_id,
         story_id = story_id,
-        dataset_to_merge_predictions = dataset_to_merge_predictions,
+        dataset_to_merge_assessments = dataset_to_merge_assessments,
         previous_sentence = previous_sentence,
         device = device
       )
@@ -731,7 +731,7 @@ textPredictImplicitMotives <- function(
       story_id = story_id,
       predicted_scores2 = predicted_scores2,
       texts = texts,
-      dataset = dataset_to_merge_predictions,
+      dataset = dataset_to_merge_assessments,
       lower_case_model = lower_case_model
     )
 

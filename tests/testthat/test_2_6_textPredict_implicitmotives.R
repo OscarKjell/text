@@ -126,7 +126,7 @@ test_that("textPredict Implicit motives", {
     texts = PSE_stories_participant_level$stories,
     model_info = "implicitpower_roberta23_nilsson2024",
     participant_id = PSE_stories_participant_level$Participant_ID,
-    dataset_to_merge_predictions = PSE_stories_participant_level
+    dataset_to_merge_assessments = PSE_stories_participant_level
   )
   testthat::expect_that(predictions_participant_1, testthat::is_a("list"))
   testthat::expect_equal(length(predictions_participant_1), 3)
@@ -144,7 +144,7 @@ test_that("textPredict Implicit motives", {
     model_info = "implicitpower_roberta23_nilsson2024",
     show_texts = T
     # participant_id = PSE_stories_participant_level$Participant_ID,
-    # dataset_to_merge_predictions = PSE_stories_participant_level
+    # dataset_to_merge_assessments = PSE_stories_participant_level
   )
   testthat::expect_that(predictions_participant_2, testthat::is_a("tbl_df"))
   testthat::expect_equal(length(predictions_participant_2), 4)
@@ -156,7 +156,7 @@ test_that("textPredict Implicit motives", {
     model_info = "implicitachievement_roberta23_nilsson2024",
     participant_id = PSE_stories_story_level$Participant_ID,
     story_id = PSE_stories_story_level$story_id,
-    dataset_to_merge_predictions = PSE_stories_story_level
+    dataset_to_merge_assessments = PSE_stories_story_level
   )
   testthat::expect_that(predictions_story_1, testthat::is_a("list"))
   testthat::expect_equal(length(predictions_story_1), 4)
@@ -170,7 +170,7 @@ test_that("textPredict Implicit motives", {
     model_info = "implicitachievement_roberta23_nilsson2024",
     #participant_id = PSE_stories_story_level$Participant_ID,
     #story_id = PSE_stories_story_level$story_id,
-    dataset_to_merge_predictions = PSE_stories_story_level
+    dataset_to_merge_assessments = PSE_stories_story_level
   )
   testthat::expect_that(predictions_story_2, testthat::is_a("list"))
   testthat::expect_equal(length(predictions_story_2), 3)
@@ -182,7 +182,7 @@ test_that("textPredict Implicit motives", {
     model_info = "implicitaffiliation_roberta23_nilsson2024",
     participant_id = PSE_stories_sentence_level$Participant_ID,
     story_id = PSE_stories_sentence_level$story_id,
-    dataset_to_merge_predictions = PSE_stories_sentence_level
+    dataset_to_merge_assessments = PSE_stories_sentence_level
   )
   testthat::expect_that(predictions_sentence_1, testthat::is_a("list"))
   testthat::expect_equal(length(predictions_sentence_1), 4)
@@ -195,7 +195,7 @@ test_that("textPredict Implicit motives", {
     model_info = "implicitaffiliation_roberta23_nilsson2024",
     #participant_id = PSE_stories_sentence_level$Participant_ID,
     #story_id = PSE_stories_sentence_level$story_id,
-    dataset_to_merge_predictions = PSE_stories_sentence_level
+    dataset_to_merge_assessments = PSE_stories_sentence_level
   )
   testthat::expect_that(predictions_sentence_2, testthat::is_a("list"))
   testthat::expect_equal(length(predictions_sentence_2), 3)

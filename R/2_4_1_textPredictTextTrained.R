@@ -342,7 +342,7 @@ textReturnEmbedding <- function(
 #' @param story_id (vector; only works for implicit motives models) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
 #' probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
 #' returns a list including both story level and person level prediction corrected for word count. (default = NULL)
-#' @param dataset_to_merge_predictions (tibble; only works for implicit motives models) Insert your data here to integrate predictions to your dataset,
+#' @param dataset_to_merge_assessments (tibble; only works for implicit motives models) Insert your data here to integrate predictions to your dataset,
 #'  (default = NULL).
 #' @param previous_sentence (Boolean; only works for implicit motives models) If set to TRUE, word-embeddings will be averaged over the current and previous
 #' sentence per story-id. For this, both participant-id and story-id must be specified.
@@ -394,7 +394,7 @@ textReturnEmbedding <- function(
 #'   texts = implicit_motive_data$satisfactiontexts,
 #'   model_info = "implicit_power_roberta_large_L23_v1",
 #'   participant_id = implicit_motive_data$participant_id,
-#'   dataset_to_merge_predictions = implicit_motive_data
+#'   dataset_to_merge_assessments = implicit_motive_data
 #' )
 #'
 #' # Examine results
@@ -436,7 +436,7 @@ textPredictTextTrained <- function(
     show_texts = FALSE,
     participant_id = NULL,
     story_id = NULL,
-    dataset_to_merge_predictions = NULL,
+    dataset_to_merge_assessments = NULL,
     previous_sentence = FALSE,
     device = "cpu",
     ...) {
