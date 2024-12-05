@@ -16,54 +16,54 @@
 #' 5: Path to a model stored locally (e.g, "path/to/your/model/model_name.rds").
 #' @param texts (character) Text to predict. If this argument is specified, then arguments "word_embeddings"
 #' and "premade embeddings" cannot be defined (default = NULL).
-#' @param word_embeddings (tibble; only for "texttrained"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
+#' @param word_embeddings (tibble; only for "text-trained"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 #'  then texts and embeddings cannot be submitted simultaneously (default = NULL).
-#' @param x_append (tibble; only for "texttrained"-model_type) Variables to be appended with the word embeddings (x).
-#' @param append_first If TRUE, x_appened is added before word embeddings.
+#' @param x_append (tibble; only for "text-trained"-model_type) Variables to be appended with the word embeddings (x).
+#' @param append_first (boolean; only for "text-trained" models) If TRUE, x_appened is added before word embeddings.
 #' @param model_type (character) Specify how the function should handle the model argument. The default is "detect" where the fucntion ttried to detect it
 #' automatically. Setting it to "fine-tuned" or "text-trained" will apply their respective default behaviors, while setting it to "implicit motives" will
 #' trigger specific steps tailored to these models.
-#' @param lbam_update (boolean) Updating the L-BAM file by automaitcally downloading it from Google Sheet.
-#' @param dim_names (boolean; only for "texttrained"-model_type) Account for specific dimension names from textEmbed()
+#' @param lbam_update (boolean) Updating the L-BAM file by automatically downloading it from Google Sheet.
+#' @param dim_names (boolean; only for "text-trained"-models) Account for specific dimension names from textEmbed()
 #' (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 #' word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.
-#' @param language_distribution (Character column) If you provide the raw language data used for making the embeddings used for assessment,
+#' @param language_distribution (character column; only for "text-trained" models) If you provide the raw language data used for making the embeddings used for assessment,
 #' the language distribution (i.e., a word and frequency table) will be compared with saved one in the model object (if one exists).
 #' This enables calculating similarity scores.
-#' @param language_distribution_min_words (string or numeric) Default is to use the removal threshold used when creating the distribution in the
+#' @param language_distribution_min_words (string or numeric; only for "text-trained" models) Default is to use the removal threshold used when creating the distribution in the
 #' in the training set ("trained_distribution_min_words"). You can set it yourself with a numeric value.
-#' @param save_model (boolean; only for "texttrained"-model_type) The model will by default be saved in your work-directory (default = TRUE).
+#' @param save_model (boolean; only for "text-trained"-models) The model will by default be saved in your work-directory (default = TRUE).
 #' If the model already exists in your work-directory, it will automatically be loaded from there.
-#' @param threshold (numeric; only for "texttrained"-model_type) Determine threshold if you are using a logistic model (default = 0.5).
-#' @param show_texts (boolean; only for "texttrained"-model_type) Show texts together with predictions (default = FALSE).
+#' @param threshold (numeric; only for "text-trained"-models) Determine threshold if you are using a logistic model (default = 0.5).
+#' @param show_texts (boolean; only for "implicit-motives"-models) Show texts together with predictions (default = FALSE).
 #' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 #' specific device number such as 'mps:1'.
-#' @param participant_id (list; only for "texttrained"-model_type) Vector of participant-ids. Specify this for getting person level scores
+#' @param participant_id (list; only for "implicit-motives"-models) Vector of participant-ids. Specify this for getting person level scores
 #' (i.e., summed sentence probabilities to the person level corrected for word count). (default = NULL)
-#' @param story_id (vector; only for "texttrained"-model_type) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
+#' @param story_id (vector; only for "implicit-motives"-models) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
 #' probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
 #' returns a list including both story level and person level prediction corrected for word count. (default = NULL)
-#' @param dataset_to_merge_assessments (R-object, tibble; only for "texttrained"-model_type) Insert your data here to integrate predictions to your dataset,
+#' @param dataset_to_merge_assessments (R-object, tibble; only for "implicit-motives"-models) Insert your data here to integrate predictions to your dataset,
 #'  (default = NULL).
-#' @param save_embeddings (boolean; only for "texttrained"-model_type) If set to TRUE, embeddings will be saved with a unique identifier, and
+#' @param save_embeddings (boolean; only for "text-trained"-models) If set to TRUE, embeddings will be saved with a unique identifier, and
 #' will be automatically opened next time textPredict is run with the same text. (default = TRUE)
-#' @param save_dir (character; only for "texttrained"-model_type) Directory to save embeddings. (default = "wd" (i.e, work-directory))
-#' @param save_name (character; only for "texttrained"-model_type) Name of the saved embeddings (will be combined with a unique identifier).
+#' @param save_dir (character; only for "text-trained"-models) Directory to save embeddings. (default = "wd" (i.e, work-directory))
+#' @param save_name (character; only for "text-trained"-models) Name of the saved embeddings (will be combined with a unique identifier).
 #' (default = ""). Obs: If no save_name is provided, and model_info is a character, then save_name will be set
 #' to model_info.
-#' @param previous_sentence (boolean; only for "texttrained"-model_type) If set to TRUE, word-embeddings will be averaged over the current and previous
+#' @param previous_sentence (boolean; only for "implicit-motives"-models) If set to TRUE, word-embeddings will be averaged over the current and previous
 #' sentence per story-id. For this, both participant-id and story-id must be specified.
-#' @param tokenizer_parallelism (boolean; only for "huggingface"-model_type)  If TRUE this will turn on tokenizer parallelism.
-#' @param logging_level (string; only for "huggingface"-model_type)  Set the logging level.
+#' @param tokenizer_parallelism (boolean; only for "fine-tuned"-models)  If TRUE this will turn on tokenizer parallelism.
+#' @param logging_level (string; only for "fine-tuned"-models)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param force_return_results (boolean; only for "huggingface"-model_type)  Stop returning some incorrectly formatted/structured results.
+#' @param force_return_results (boolean; only for "fine-tuned"-models)  Stop returning some incorrectly formatted/structured results.
 #' This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
 #' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
 #' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"
 #'  and "negative").
-#' @param return_all_scores (boolean; only for "huggingface"-model_type)  Whether to return all prediction scores or just the one of the predicted class.
-#' @param function_to_apply (string; only for "huggingface"-model_type)  The function to apply to the model outputs to retrieve the scores.
-#' @param set_seed (Integer; only for "huggingface"-model_type) Set seed.
+#' @param return_all_scores (boolean; only for "fine-tuned"-models)  Whether to return all prediction scores or just the one of the predicted class.
+#' @param function_to_apply (string; only for "fine-tuned"-models)  The function to apply to the model outputs to retrieve the scores.
+#' @param set_seed (Integer; only for "fine-tuned" models) Set seed.
 #' @param ...  Setting from stats::predict can be called.
 #' @return Predictions from word-embedding or text input.
 #' @examples

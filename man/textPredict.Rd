@@ -117,74 +117,74 @@ and "premade embeddings" cannot be defined (default = NULL).}
 automatically. Setting it to "fine-tuned" or "text-trained" will apply their respective default behaviors, while setting it to "implicit motives" will
 trigger specific steps tailored to these models.}
 
-\item{lbam_update}{(boolean) Updating the L-BAM file by automaitcally downloading it from Google Sheet.}
+\item{lbam_update}{(boolean) Updating the L-BAM file by automatically downloading it from Google Sheet.}
 
-\item{word_embeddings}{(tibble; only for "texttrained"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
+\item{word_embeddings}{(tibble; only for "text-trained"-model_type) Embeddings from e.g., textEmbed(). If you're using a pre-trained model,
 then texts and embeddings cannot be submitted simultaneously (default = NULL).}
 
-\item{x_append}{(tibble; only for "texttrained"-model_type) Variables to be appended with the word embeddings (x).}
+\item{x_append}{(tibble; only for "text-trained"-model_type) Variables to be appended with the word embeddings (x).}
 
-\item{append_first}{If TRUE, x_appened is added before word embeddings.}
+\item{append_first}{(boolean; only for "text-trained" models) If TRUE, x_appened is added before word embeddings.}
 
-\item{dim_names}{(boolean; only for "texttrained"-model_type) Account for specific dimension names from textEmbed()
+\item{dim_names}{(boolean; only for "text-trained"-models) Account for specific dimension names from textEmbed()
 (rather than generic names including Dim1, Dim2 etc.). If FALSE the models need to have been trained on
 word embeddings created with dim_names FALSE, so that embeddings were only called Dim1, Dim2 etc.}
 
-\item{language_distribution}{(Character column) If you provide the raw language data used for making the embeddings used for assessment,
+\item{language_distribution}{(character column; only for "text-trained" models) If you provide the raw language data used for making the embeddings used for assessment,
 the language distribution (i.e., a word and frequency table) will be compared with saved one in the model object (if one exists).
 This enables calculating similarity scores.}
 
-\item{language_distribution_min_words}{(string or numeric) Default is to use the removal threshold used when creating the distribution in the
+\item{language_distribution_min_words}{(string or numeric; only for "text-trained" models) Default is to use the removal threshold used when creating the distribution in the
 in the training set ("trained_distribution_min_words"). You can set it yourself with a numeric value.}
 
-\item{save_model}{(boolean; only for "texttrained"-model_type) The model will by default be saved in your work-directory (default = TRUE).
+\item{save_model}{(boolean; only for "text-trained"-models) The model will by default be saved in your work-directory (default = TRUE).
 If the model already exists in your work-directory, it will automatically be loaded from there.}
 
-\item{threshold}{(numeric; only for "texttrained"-model_type) Determine threshold if you are using a logistic model (default = 0.5).}
+\item{threshold}{(numeric; only for "text-trained"-models) Determine threshold if you are using a logistic model (default = 0.5).}
 
-\item{show_texts}{(boolean; only for "texttrained"-model_type) Show texts together with predictions (default = FALSE).}
+\item{show_texts}{(boolean; only for "implicit-motives"-models) Show texts together with predictions (default = FALSE).}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 specific device number such as 'mps:1'.}
 
-\item{participant_id}{(list; only for "texttrained"-model_type) Vector of participant-ids. Specify this for getting person level scores
+\item{participant_id}{(list; only for "implicit-motives"-models) Vector of participant-ids. Specify this for getting person level scores
 (i.e., summed sentence probabilities to the person level corrected for word count). (default = NULL)}
 
-\item{save_embeddings}{(boolean; only for "texttrained"-model_type) If set to TRUE, embeddings will be saved with a unique identifier, and
+\item{save_embeddings}{(boolean; only for "text-trained"-models) If set to TRUE, embeddings will be saved with a unique identifier, and
 will be automatically opened next time textPredict is run with the same text. (default = TRUE)}
 
-\item{save_dir}{(character; only for "texttrained"-model_type) Directory to save embeddings. (default = "wd" (i.e, work-directory))}
+\item{save_dir}{(character; only for "text-trained"-models) Directory to save embeddings. (default = "wd" (i.e, work-directory))}
 
-\item{save_name}{(character; only for "texttrained"-model_type) Name of the saved embeddings (will be combined with a unique identifier).
+\item{save_name}{(character; only for "text-trained"-models) Name of the saved embeddings (will be combined with a unique identifier).
 (default = ""). Obs: If no save_name is provided, and model_info is a character, then save_name will be set
 to model_info.}
 
-\item{story_id}{(vector; only for "texttrained"-model_type) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
+\item{story_id}{(vector; only for "implicit-motives"-models) Vector of story-ids. Specify this to get story level scores (i.e., summed sentence
 probabilities corrected for word count). When there is both story_id and participant_id indicated, the function
 returns a list including both story level and person level prediction corrected for word count. (default = NULL)}
 
-\item{dataset_to_merge_assessments}{(R-object, tibble; only for "texttrained"-model_type) Insert your data here to integrate predictions to your dataset,
+\item{dataset_to_merge_assessments}{(R-object, tibble; only for "implicit-motives"-models) Insert your data here to integrate predictions to your dataset,
 (default = NULL).}
 
-\item{previous_sentence}{(boolean; only for "texttrained"-model_type) If set to TRUE, word-embeddings will be averaged over the current and previous
+\item{previous_sentence}{(boolean; only for "implicit-motives"-models) If set to TRUE, word-embeddings will be averaged over the current and previous
 sentence per story-id. For this, both participant-id and story-id must be specified.}
 
-\item{tokenizer_parallelism}{(boolean; only for "huggingface"-model_type)  If TRUE this will turn on tokenizer parallelism.}
+\item{tokenizer_parallelism}{(boolean; only for "fine-tuned"-models)  If TRUE this will turn on tokenizer parallelism.}
 
-\item{logging_level}{(string; only for "huggingface"-model_type)  Set the logging level.
+\item{logging_level}{(string; only for "fine-tuned"-models)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{force_return_results}{(boolean; only for "huggingface"-model_type)  Stop returning some incorrectly formatted/structured results.
+\item{force_return_results}{(boolean; only for "fine-tuned"-models)  Stop returning some incorrectly formatted/structured results.
 This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
 All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
 dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"
  and "negative").}
 
-\item{return_all_scores}{(boolean; only for "huggingface"-model_type)  Whether to return all prediction scores or just the one of the predicted class.}
+\item{return_all_scores}{(boolean; only for "fine-tuned"-models)  Whether to return all prediction scores or just the one of the predicted class.}
 
-\item{function_to_apply}{(string; only for "huggingface"-model_type)  The function to apply to the model outputs to retrieve the scores.}
+\item{function_to_apply}{(string; only for "fine-tuned"-models)  The function to apply to the model outputs to retrieve the scores.}
 
-\item{set_seed}{(Integer; only for "huggingface"-model_type) Set seed.}
+\item{set_seed}{(Integer; only for "fine-tuned" models) Set seed.}
 
 \item{...}{Setting from stats::predict can be called.}
 }
