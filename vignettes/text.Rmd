@@ -129,7 +129,7 @@ plot_projection_2D$final_plot
 
 
 ### Articles using the text-package
-[Beyond rating scales: With targeted evaluation, large language models are poised for psychological assessment](https://www.sciencedirect.com/science/article/pii/S0165178123006170) *Kjell, Kjell and Schwartz. (2024). Psychiatry Research*
+[Beyond rating scales: With targeted evaluation, large language models are poised for psychological assessment](https://doi.org/10.1016/j.psychres.2023.115667) *Kjell, Kjell and Schwartz. (2024). Psychiatry Research*
 
 [Natural language analyzed with AI‐based transformers predict traditional subjective well‐being measures approaching the theoretical upper limits in accuracy](https://www.nature.com/articles/s41598-022-07520-w) *Kjell et al., (2022). Scientific Reports*
 
