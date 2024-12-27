@@ -17,7 +17,6 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lif
 [![CRAN
 Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-project.org/package=text)
 [![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://app.codecov.io/gh/oscarkjell/text)
-
 <!-- badges: end -->
 
 An R-package for analyzing natural language with transformers from
@@ -109,13 +108,13 @@ multilingual BERT comprises *104 different languages*.
 
 *Table 1. Some of the available language models*
 
-| Models                         | References                                               | Layers | Dimensions | Language                                                                             |
-|:-------------------------------|:---------------------------------------------------------|:-------|:-----------|:-------------------------------------------------------------------------------------|
-| ‘bert-base-uncased’            | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12     | 768        | English                                                                              |
-| ‘roberta-base’                 | [Liu et al. 2019](https://arxiv.org/abs/1907.11692)      | 12     | 768        | English                                                                              |
-| ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)    | 6      | 768        | English                                                                              |
-| ‘bert-base-multilingual-cased’ | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12     | 768        | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
-| ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692)            | 24     | 1024       | [100 language](https://huggingface.co/docs/transformers/multilingual)                |
+| Models | References | Layers | Dimensions | Language |
+|:---|:---|:---|:---|:---|
+| ‘bert-base-uncased’ | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12 | 768 | English |
+| ‘roberta-base’ | [Liu et al. 2019](https://arxiv.org/abs/1907.11692) | 12 | 768 | English |
+| ‘distilbert-base-cased’ | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108) | 6 | 768 | English |
+| ‘bert-base-multilingual-cased’ | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12 | 768 | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
+| ‘xlm-roberta-large’ | [Liu et al](https://arxiv.org/pdf/1907.11692) | 24 | 1024 | [100 language](https://huggingface.co/docs/transformers/multilingual) |
 
 See [HuggingFace](https://huggingface.co/models/) for a more
 comprehensive list of models.
@@ -183,7 +182,25 @@ plot_projection <- textProjectionPlot(
 plot_projection$final_plot
 ```
 
-<img src="man/figures/README-DPP_plot-1.png" width="100%" alt="Wordcloud example figure" />
+<img src="man/figures/README-DPP_plot-1.png" width="100%" />
 
-<a rel="me" href="https://mastodon.online/@oscarkjell">M</a>
-<link rel="me" href="https://mastodon.online/@oscarkjell" M />
+### Featured Bluesky Post
+
+<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:tiigom2z6lcqsibxsgjdfea4/app.bsky.feed.post/3lduzt3lob22q" data-bluesky-cid="bafyreifgniodm6xkwh6g5ha4xe2663ohau56fy7nxulnkkhsouxkgq7q3y">
+<p lang="en">
+
+Version 1.3 of the \#r-text package is now available from \#CRAN.
+
+This new version makes it easier to apply pre-trained language
+assessments from the \#LBAM-library (r-text.org/articles/LBA…).
+
+\#mlsky \#PsychSciSky \#Statistics \#PsychSciSky \#StatsSky
+\#NLP<br><br><a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4/post/3lduzt3lob22q?ref_src=embed">\[image
+or embed\]</a>
+</p>
+— Oscar Kjell
+(<a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4?ref_src=embed">@oscarkjell.bsky.social</a>)
+<a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4/post/3lduzt3lob22q?ref_src=embed">Dec
+22, 2024 at 9:48</a>
+</blockquote>
+<script async src="https://embed.bsky.app/static/embed.js" charset="utf-8"></script>

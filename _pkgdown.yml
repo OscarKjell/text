@@ -14,6 +14,7 @@ home:
     href: https://stackoverflow.com/
 
 template:
+  bootstrap: 5
   opengraph:
     image:
       src: man/figures/logo.png

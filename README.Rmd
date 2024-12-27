@@ -26,7 +26,6 @@ evaluate <- FALSE
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing-1)
 [![CRAN Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-project.org/package=text)
 [![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://app.codecov.io/gh/oscarkjell/text)
-
 <!-- badges: end -->
 
 An R-package for analyzing natural language with transformers from HuggingFace using Natural Language Processing and Machine Learning.
@@ -42,6 +41,7 @@ The *text*-package has two main objectives:
 *Text* is created through a collaboration between psychology and computer science to address research needs and ensure state-of-the-art techniques. It provides powerful functions tailored to test research hypotheses in social and behavior sciences for both relatively small and large datasets. *Text* is continuously tested on Ubuntu, Mac OS and Windows using the latest stable R version.
 
 Please reference our tutorial article when using the package: [The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://osf.io/preprints/psyarxiv/293kt/).
+
 
 ### Short installation guide
 Most users simply need to run below installation code. 
@@ -175,5 +175,20 @@ plot_projection$final_plot
 
 ```
 
-<a rel="me" href="https://mastodon.online/@oscarkjell">M</a>
-<link rel="me" href="https://mastodon.online/@oscarkjell" M />
+
+### Featured Bluesky Post
+
+```{r, echo = FALSE, results = 'asis'}
+cat('
+<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:tiigom2z6lcqsibxsgjdfea4/app.bsky.feed.post/3lduzt3lob22q" data-bluesky-cid="bafyreifgniodm6xkwh6g5ha4xe2663ohau56fy7nxulnkkhsouxkgq7q3y">
+<p lang="en">Version 1.3 of the #r-text package is now available from #CRAN. 
+
+This new version makes it easier to apply pre-trained language assessments from the #LBAM-library (r-text.org/articles/LBA...).
+
+#mlsky #PsychSciSky #Statistics #PsychSciSky #StatsSky #NLP<br><br><a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4/post/3lduzt3lob22q?ref_src=embed">[image or embed]</a></p>&mdash; Oscar Kjell (<a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4?ref_src=embed">@oscarkjell.bsky.social</a>) <a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4/post/3lduzt3lob22q?ref_src=embed">Dec 22, 2024 at 9:48</a>
+</blockquote>
+<script async src="https://embed.bsky.app/static/embed.js" charset="utf-8"></script>
+')
+
+```
+
