@@ -4,10 +4,17 @@ url: https://r-text.org
 template:
   package: tidytemplate
   bootstrap: 5
-
   includes:
     in_header: |
-      <script defer data-domain="r-text.org" src="https://plausible.io/js/plausible.js"></script>
+      <script defer data-domain="r-talk.org" src="https://plausible.io/js/plausible.js"></script>
+    after_body: |
+      <div style="text-align: center; margin-top: 1px;">
+        <p>
+          <a href="https://harmonyresearchgroup.com" target="_blank">
+            <img src="man/figures/harmony_logo_all.png" alt="GitHub" style="height:25px; vertical-align:middle;">
+          </a>
+        </p>
+      </div>
 
 development:
   mode: auto
