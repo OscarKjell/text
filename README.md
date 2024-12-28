@@ -1,7 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- -->
 
-# text <img src="man/figures/text_logo_animation.gif" align="right" alt="" width="330" />
+# text <a href="https://r-text.org"><img src="man/figures/logo.png" align="right" height="138" alt="text website" /></a>
 
 <!-- badges: start -->
 
@@ -19,39 +20,40 @@ Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-p
 [![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://app.codecov.io/gh/oscarkjell/text)
 <!-- badges: end -->
 
-An R-package for analyzing natural language with transformers from
-HuggingFace using Natural Language Processing and Machine Learning.
+<!--#![Modular and End-to-End #Solution](man/figures/modular_end_solution.png){width=85%}
+ -->
 
-The *text*-package has two main objectives:
+An R-package for analyzing natural language with transformers-based
+large language models. The `text` package is part of the *R Language
+Analysis Suite*, including `talk`, `text` and `topics`.
 
-- First, to serve R-users as a *point solution* for transforming text to
-  state-of-the-art word embeddings that are ready to be used for
-  downstream tasks. The package provides a user-friendly link to
-  language models based on transformers from [Hugging
-  Face](https://huggingface.co/).
+- [`talk`](https://www.r-talk.org/) transforms voice recordings into
+  text, audio features, or embeddings.<br> <br>
+- [`text`](https://www.r-text.org/) provides many language tasks such as
+  converting digital text into word embeddings.<br> <br> `talk` and
+  `text` offer access to Large Language Models from Hugging Face.<br>
+  <br>
+- [`topics`](https://www.r-topics.org/) visualizes language patterns
+  into topics to generate psychological insights.<br> <br>
 
-- Second, to serve as an *end-to-end solution* that provides
-  state-of-the-art AI techniques tailored for social and behavioral
-  scientists.
+<img src="man/figures/talk_text_topics.svg" style="width:50.0%" />
 
-<figure>
-<img src="man/figures/modular_end_solution.png" style="width:85.0%"
-alt="Modular and End-to-End Solution" />
-<figcaption aria-hidden="true">Modular and End-to-End
-Solution</figcaption>
-</figure>
+<br> The *R Language Analysis Suite* is created through a collaboration
+between psychology and computer science to address research needs and
+ensure state-of-the-art techniques. The suite is continuously tested on
+Ubuntu, Mac OS and Windows using the latest stable R version.
 
-*Text* is created through a collaboration between psychology and
-computer science to address research needs and ensure state-of-the-art
-techniques. It provides powerful functions tailored to test research
-hypotheses in social and behavior sciences for both relatively small and
-large datasets. *Text* is continuously tested on Ubuntu, Mac OS and
-Windows using the latest stable R version.
-
-Please reference our tutorial article when using the package: [The
-text-package: An R-package for Analyzing and Visualizing Human Language
-Using Natural Language Processing and Deep
-Learning](https://osf.io/preprints/psyarxiv/293kt/).
+The *text*-package has two main objectives: <br> \* First, to serve
+R-users as a *point solution* for transforming text to state-of-the-art
+word embeddings that are ready to be used for downstream tasks. The
+package provides a user-friendly link to language models based on
+transformers from [Hugging Face](https://huggingface.co/). <br> \*
+Second, to serve as an *end-to-end solution* that provides
+state-of-the-art AI techniques tailored for social and behavioral
+scientists. <br> Please reference our tutorial article when using the
+`text` package: [The text-package: An R-package for Analyzing and
+Visualizing Human Language Using Natural Language Processing and Deep
+Learning](https://osf.io/preprints/psyarxiv/293kt/). <br>
 
 ### Short installation guide
 
@@ -182,7 +184,7 @@ plot_projection <- textProjectionPlot(
 plot_projection$final_plot
 ```
 
-<img src="man/figures/README-DPP_plot-1.png" width="100%" />
+![](man/figures/README-DPP_plot-1.png)<!-- -->
 
 ### Featured Bluesky Post
 

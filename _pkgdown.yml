@@ -1,28 +1,23 @@
 
 url: https://r-text.org
 
+template:
+  package: tidytemplate
+  bootstrap: 5
+
+  includes:
+    in_header: |
+      <script defer data-domain="r-text.org" src="https://plausible.io/js/plausible.js"></script>
+
 development:
-#  mode: release
-#   mode: auto
-   mode: default
-#   mode: unreleased
+  mode: auto
+
 home:
   title: text
   description: Analyses of Text using Transformers from HuggingFace, Natural Language Processing and Machine Learning.
   links:
   - text: Ask a question about text using the r-text tag
     href: https://stackoverflow.com/
-
-template:
-  bootstrap: 5
-  opengraph:
-    image:
-      src: man/figures/logo.png
-      alt: "text analyzes using huggingface transformers"
-    twitter:
-      creator: "@oscarkjell"
-#      site: "@rstudio"
-      card: summary_large_image
 
 authors:
   Oscar Kjell:

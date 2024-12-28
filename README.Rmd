@@ -3,21 +3,18 @@ output: github_document #rmarkdown::html_vignette # #rmarkdown::html_vignette
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- -->
 
-```{r, include = FALSE}
+```{r}
+#| echo: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
+  fig.path = "man/figures/README-"
 )
-
-evaluate <- FALSE
-
 ```
 
-
-# text <img src="man/figures/text_logo_animation.gif" align="right" alt="" width="330" />
+# text <a href="https://r-text.org"><img src="man/figures/logo.png" align="right" height="138" alt="text website" /></a>
 
 <!-- badges: start -->
 [![CRAN Status](https://www.r-pkg.org/badges/version/text)](https://CRAN.R-project.org/package=text)
@@ -28,20 +25,33 @@ evaluate <- FALSE
 [![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://app.codecov.io/gh/oscarkjell/text)
 <!-- badges: end -->
 
-An R-package for analyzing natural language with transformers from HuggingFace using Natural Language Processing and Machine Learning.
+<!--#![Modular and End-to-End #Solution](man/figures/modular_end_solution.png){width=85%}
+ -->
+ 
+An R-package for analyzing natural language with transformers-based large language models. The `text` package is part of the *R Language Analysis Suite*, including `talk`, `text` and `topics`.
+
++ [`talk`](https://www.r-talk.org/) transforms voice recordings into text, audio features, or embeddings.<br>
+<br>
++ [`text`](https://www.r-text.org/) provides many language tasks such as converting digital text into word embeddings.<br>
+<br>
+`talk` and `text` offer access to Large Language Models from Hugging Face.<br>
+<br>
++ [`topics`](https://www.r-topics.org/) visualizes language patterns into topics to generate psychological insights.<br>
+ <br>
+ 
+![](man/figures/talk_text_topics.svg){width=50%}
+
+<br>
+The *R Language Analysis Suite* is created through a collaboration between psychology and computer science to address research needs and ensure state-of-the-art techniques. The suite is continuously tested on Ubuntu, Mac OS and Windows using the latest stable R version.
 
 The *text*-package has two main objectives:
-
+<br>
 * First, to serve R-users as a *point solution* for transforming text to state-of-the-art word embeddings that are ready to be used for downstream tasks. The package provides a user-friendly link to language models based on transformers from [Hugging Face](https://huggingface.co/).
-
-* Second, to serve as an *end-to-end solution* that provides state-of-the-art AI techniques tailored for social and behavioral scientists.  
-
-![Modular and End-to-End Solution](man/figures/modular_end_solution.png){width=85%}
-
-*Text* is created through a collaboration between psychology and computer science to address research needs and ensure state-of-the-art techniques. It provides powerful functions tailored to test research hypotheses in social and behavior sciences for both relatively small and large datasets. *Text* is continuously tested on Ubuntu, Mac OS and Windows using the latest stable R version.
-
-Please reference our tutorial article when using the package: [The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://osf.io/preprints/psyarxiv/293kt/).
-
+<br>
+* Second, to serve as an *end-to-end solution* that provides state-of-the-art AI techniques tailored for social and behavioral scientists.
+<br>
+Please reference our tutorial article when using the `text` package: [The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://osf.io/preprints/psyarxiv/293kt/).
+<br>
 
 ### Short installation guide
 Most users simply need to run below installation code. 
@@ -129,7 +139,7 @@ See [HuggingFace](https://huggingface.co/models/) for a more comprehensive list 
 
 The ```textEmbed()``` function is the main embedding function in text; and can output contextualized embeddings for tokens (i.e., the embeddings for each single word  instance of each text) and texts (i.e., single embeddings per text taken from aggregating all token embeddings of the text).
 
-```{r short_word_embedding_example, eval = evaluate, warning=FALSE, message=FALSE}
+```{r short_word_embedding_example, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 # Transform the text data to BERT word embeddings
 
@@ -145,7 +155,7 @@ See [Get Started](https://www.r-text.org/articles/text.html) for more informatio
 ### Language Analysis Tasks
 It is also possible to access many language analysis tasks such as textClassify(), textGeneration(), and textTranslate().
 
-```{r language_analysis_task_examples, eval = evaluate, warning=FALSE, message=FALSE}
+```{r language_analysis_task_examples, eval = FALSE, warning=FALSE, message=FALSE}
 library(text)
 
 # Generate text from the prompt "I am happy to"
