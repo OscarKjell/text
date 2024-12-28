@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 
 <!--#![Modular and End-to-End #Solution](man/figures/modular_end_solution.png){width=85%}
  -->
- 
+## Overview
 An R-package for analyzing natural language with transformers-based large language models. The `text` package is part of the *R Language Analysis Suite*, including `talk`, `text` and `topics`.
 
 + [`talk`](https://www.r-talk.org/) transforms voice recordings into text, audio features, or embeddings.<br>

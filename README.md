@@ -23,6 +23,8 @@ Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-p
 <!--#![Modular and End-to-End #Solution](man/figures/modular_end_solution.png){width=85%}
  -->
 
+## Overview
+
 An R-package for analyzing natural language with transformers-based
 large language models. The `text` package is part of the *R Language
 Analysis Suite*, including `talk`, `text` and `topics`.
