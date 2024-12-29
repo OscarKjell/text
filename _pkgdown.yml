@@ -17,7 +17,7 @@ template:
       </div>
 
 development:
-  mode: auto
+  mode: default
 
 home:
   title: text
