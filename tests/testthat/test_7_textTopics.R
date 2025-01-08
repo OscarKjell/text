@@ -7,6 +7,12 @@ library(ggplot2)
 #
 # .rs.restartR()
 #help(textrpp_initialize)
+#textrpp_install()
+#text::textrpp_initialize()
+#text::textrpp_initialize(
+#  save_profile = TRUE,
+#  condaenv = "textrpp_condaenv",
+#  refresh_settings = TRUE)
 #textrpp_initialize(
 #  condaenv = "berttopic2",
 #  refresh_settings = TRUE

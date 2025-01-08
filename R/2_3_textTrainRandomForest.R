@@ -690,8 +690,8 @@ summarize_tune_results_rf <- function(object,
 #' @param mtry Hyper parameter that may be tuned; default: c(1, 20, 40),
 #' @param min_n Hyper parameter that may be tuned; default: c(1, 20, 40)
 #' @param trees Number of trees to use (default 1000).
-#' @param parameter_selection_method If several results are tied for different parameters (i.e., mtry or min_n),
-#' then select the "first" or the "median" order.
+#' @param parameter_selection_method  If several results are tied for different parameters (i.e., penalty or mixture),
+#' then select the "lowest_parameter", the "highest_parameter" or the "median" order of all the tied penalties/mixtures.
 #' @param eval_measure (character) Measure to evaluate the models in order to select the best
 #' hyperparameters default "roc_auc"; see also "accuracy", "bal_accuracy", "sens", "spec", "precision",
 #' "kappa", "f_measure".
@@ -764,7 +764,7 @@ textTrainRandomForest <- function(x,
                                   mtry = c(1, 10, 20, 40),
                                   min_n = c(1, 10, 20, 40),
                                   trees = c(1000),
-                                  parameter_selection_method = "first",
+                                  parameter_selection_method = "lowest_parameter",
                                   eval_measure = "bal_accuracy",
                                   model_description = "Consider writing a description of your model here",
                                   multi_cores = "multi_cores_sys_default",
