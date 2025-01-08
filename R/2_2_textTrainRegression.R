@@ -499,7 +499,6 @@ tune_over_cost <- function(object,
 }
 
 
-
 #' Function to get the lowest eval_measure_val
 #' @param data the data with parameters
 #' @param eval_measure the evaluation measure which decide if min or max value should be selected
@@ -516,46 +515,107 @@ bestParameters <- function(data,
     "precision", "kappa", "f_measure", "roc_auc",
     "rsq", "cor_test")) {
 
-      if (parameter_selection_method == "first") {
-        bestParametersFunction <- function(data) data[which.max(data$eval_result), ]
-      }
-
-      if (parameter_selection_method == "median") {
-
-        bestParametersFunction <- function(data) {
-          max_value <- max(data$eval_result)
-          tied_rows <- data %>%
-            dplyr::filter(eval_result == max_value)
-
-          median_index <- base::floor(nrow(tied_rows) / 2)
-          return(tied_rows[median_index, ])
-        }
-      }
+    eval_result_preference = "max"
   }
 
   if (eval_measure == "rmse") {
 
-    if (parameter_selection_method == "first") {
-      bestParametersFunction <- function(data) data[which.min(data$eval_result), ]
-    }
+    eval_result_preference = "min"
 
-    if (parameter_selection_method == "median") {
-
-      bestParametersFunction <- function(data){
-          min_value <- min(data$eval_result)
-          tied_rows <- data %>%
-            dplyr::filter(eval_result == min_value)
-
-          median_index <- base::floor(nrow(tied_rows) / 2)
-          return(tied_rows[median_index, ])
-      }
-    }
   }
-  #data = tuning_results[[10]]; hyper_parameter_vals
-  results <- bestParametersFunction(data)
-  return(results)
+
+  target_value <- if (eval_result_preference == "min") {
+    min(data$eval_result)
+
+  } else if (eval_result_preference == "max") {
+    max(data$eval_result)
+  }
+
+  # Filter rows based on the target eval_result
+  tied_rows <- data %>%
+    dplyr::filter(eval_result == target_value)
+
+  # Selection method
+  if (parameter_selection_method == "lowest_parameter") {
+    # Select the row with the lowest penalty
+    results <- tied_rows[which.min(tied_rows$penalty), ]
+
+  } else if (parameter_selection_method == "highest_parameter") {
+    # Select the row with the highest penalty
+    results <- tied_rows[which.max(tied_rows$penalty), ]
+
+  } else if (parameter_selection_method == "median") {
+    # Select the median row
+    median_index <- base::floor(nrow(tied_rows) / 2)
+    results <- tied_rows[median_index, ]
+
+  } else {
+    stop("Invalid parameter_selection_method. Choose 'lowest_parameter', 'highest_parameter', or 'median'.")
+  }
+
+ return(results)
+
 }
 
+
+
+# OLD
+# #' Function to get the lowest eval_measure_val
+# #' @param data the data with parameters
+# #' @param eval_measure the evaluation measure which decide if min or max value should be selected
+# #' @param parameter_selection_method If several results are tied for different parameters (i.e., penalty or mixture),
+# #' then select the "first" or the "median" order.
+# #' @return The row with the best evaluation measure.
+# #' @noRd
+# bestParameters <- function(data,
+#                            eval_measure,
+#                            parameter_selection_method) {
+#
+#   if (eval_measure %in% c(
+#     "accuracy", "bal_accuracy", "sens", "spec",
+#     "precision", "kappa", "f_measure", "roc_auc",
+#     "rsq", "cor_test")) {
+#
+#       if (parameter_selection_method == "first") {
+#         bestParametersFunction <- function(data) data[which.max(data$eval_result), ]
+#       }
+#
+#       if (parameter_selection_method == "median") {
+#
+#         bestParametersFunction <- function(data) {
+#           max_value <- max(data$eval_result)
+#           tied_rows <- data %>%
+#             dplyr::filter(eval_result == max_value)
+#
+#           median_index <- base::floor(nrow(tied_rows) / 2)
+#           return(tied_rows[median_index, ])
+#         }
+#       }
+#   }
+#
+#   if (eval_measure == "rmse") {
+#
+#     if (parameter_selection_method == "first") {
+#       bestParametersFunction <- function(data) data[which.min(data$eval_result), ]
+#     }
+#
+#     if (parameter_selection_method == "median") {
+#
+#       bestParametersFunction <- function(data){
+#           min_value <- min(data$eval_result)
+#           tied_rows <- data %>%
+#             dplyr::filter(eval_result == min_value)
+#
+#           median_index <- base::floor(nrow(tied_rows) / 2)
+#           return(tied_rows[median_index, ])
+#       }
+#     }
+#   }
+#   #data = tuning_results[[10]]; hyper_parameter_vals
+#   results <- bestParametersFunction(data)
+#   return(results)
+# }
+#
 
 
 #' # Since this will be called across the set of OUTER cross-validation splits, another wrapper is required:
@@ -701,7 +761,7 @@ summarize_tune_results <- function(object,
 #' When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
 #' used (specific engines only).
 #' @param parameter_selection_method If several results are tied for different parameters (i.e., penalty or mixture),
-#' then select the "first" or the "median" order.
+#' then select the "lowest_parameter", the "highest_parameter" or the "median" order of all the tied penalties/mixtures.
 #' @param first_n_predictors By default this setting is turned off (i.e., NA). To use this method,
 #' set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
 #' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
@@ -761,38 +821,39 @@ summarize_tune_results <- function(object,
 #' @importFrom furrr future_map
 #' @importFrom workflows workflow add_model add_recipe
 #' @export
-textTrainRegression <- function(x,
-                                y,
-                                x_append = NULL,
-                                append_first = FALSE,
-                                cv_method = "validation_split",
-                                outside_folds = 10,
-                                inside_folds = 3 / 4,
-                                strata = "y",
-                                outside_strata = TRUE,
-                                outside_breaks = 4,
-                                inside_strata = TRUE,
-                                inside_breaks = 4,
-                                model = "regression", # model = "multinomial"
-                                eval_measure = "default",
-                                save_aggregated_word_embedding = FALSE,
-                                language_distribution = NULL,
-                                language_distribution_min_words = 3,
-                                preprocess_step_center = TRUE,
-                                preprocess_step_scale = TRUE,
-                                preprocess_PCA = NA,
-                                penalty = 10^seq(-6, 6),
-                                parameter_selection_method = "first",
-                                mixture = c(0),
-                                first_n_predictors = NA,
-                                impute_missing = FALSE,
-                                method_cor = "pearson",
-                                model_description = "Consider writing a description of your model here",
-                                multi_cores = "multi_cores_sys_default",
-                                save_output = "all",
-                                simulate.p.value = FALSE,
-                                seed = 2020,
-                                ...) {
+textTrainRegression <- function(
+    x,
+    y,
+    x_append = NULL,
+    append_first = FALSE,
+    cv_method = "validation_split",
+    outside_folds = 10,
+    inside_folds = 3 / 4,
+    strata = "y",
+    outside_strata = TRUE,
+    outside_breaks = 4,
+    inside_strata = TRUE,
+    inside_breaks = 4,
+    model = "regression", # model = "multinomial"
+    eval_measure = "default",
+    save_aggregated_word_embedding = FALSE,
+    language_distribution = NULL,
+    language_distribution_min_words = 3,
+    preprocess_step_center = TRUE,
+    preprocess_step_scale = TRUE,
+    preprocess_PCA = NA,
+    penalty = 10^seq(-6, 6),
+    parameter_selection_method = "lowest_parameter",
+    mixture = c(0),
+    first_n_predictors = NA,
+    impute_missing = FALSE,
+    method_cor = "pearson",
+    model_description = "Consider writing a description of your model here",
+    multi_cores = "multi_cores_sys_default",
+    save_output = "all",
+    simulate.p.value = FALSE,
+    seed = 2020,
+    ...) {
   T1_textTrainRegression <- Sys.time()
   set.seed(seed)
 

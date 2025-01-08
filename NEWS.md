@@ -2,6 +2,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.3.1
+- included parameter `highest_parameter` and `lowest_parameter` when parameters are tied. 
+
 # text 1.3.0
 - Alias function: `textPredict()`, `textAssess()` and `textClassify()`.
 - LBAM integration with `textLBAM()`.
