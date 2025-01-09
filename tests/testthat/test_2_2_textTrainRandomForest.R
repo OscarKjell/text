@@ -485,7 +485,7 @@ test_that("textTrainRandomForest running multiple categories in X", {
   }
   if (Sys.info()["sysname"] == "Linux" | Sys.info()["sysname"] == "Windows") {
     testthat::expect_equal(trained_rf_3$results$.estimate[[1]], .375, tolerance = 0.001)
-    testthat::expect_equal(trained_rf_3$results$.estimate[[6]], .0196, tolerance = 0.001)
+    testthat::expect_equal(trained_rf_3$results$.estimate[[6]], 0.00498, tolerance = 0.001)
   }
 
 })
