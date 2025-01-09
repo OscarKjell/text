@@ -535,22 +535,88 @@ bestParameters <- function(data,
   tied_rows <- data %>%
     dplyr::filter(eval_result == target_value)
 
-  # Selection method
-  if (parameter_selection_method == "lowest_parameter") {
-    # Select the row with the lowest penalty
-    results <- tied_rows[which.min(tied_rows$penalty), ]
 
-  } else if (parameter_selection_method == "highest_parameter") {
-    # Select the row with the highest penalty
-    results <- tied_rows[which.max(tied_rows$penalty), ]
+  #### Selection method for ridge regression ####
 
-  } else if (parameter_selection_method == "median") {
+  ### penalty
+  if (parameter_selection_method == "lowest_penalty") {
+      # Select the row with the lowest penalty
+      results <- tied_rows[which.min(tied_rows$penalty), ]
+  }
+
+  if (parameter_selection_method == "highest_penalty") {
+      # Select the row with the highest penalty
+      results <- tied_rows[which.max(tied_rows$penalty), ]
+  }
+
+  if (parameter_selection_method == "median_penalty") {
+      # Select the median row
+      median_index <- base::floor(nrow(tied_rows) / 2)
+      results <- tied_rows[median_index, ]
+  }
+
+  ### mixture
+  if (parameter_selection_method == "lowest_mixture") {
+    # Select the row with the lowest mixture
+    results <- tied_rows[which.min(tied_rows$mixture), ]
+  }
+
+  if (parameter_selection_method == "highest_mixture") {
+    # Select the row with the highest mixture
+    results <- tied_rows[which.max(tied_rows$mixture), ]
+  }
+
+  if (parameter_selection_method == "median_mixture") {
     # Select the median row
     median_index <- base::floor(nrow(tied_rows) / 2)
     results <- tied_rows[median_index, ]
+  }
 
-  } else {
-    stop("Invalid parameter_selection_method. Choose 'lowest_parameter', 'highest_parameter', or 'median'.")
+
+  #### Selection method for random forest ####
+
+  ### mtry
+  if (parameter_selection_method == "lowest_mtry") {
+    # Select the row with the lowest mtry
+    results <- tied_rows[which.min(tied_rows$mtry), ]
+  }
+
+  if (parameter_selection_method == "highest_mtry") {
+    # Select the row with the highest mtry
+    results <- tied_rows[which.max(tied_rows$mtry), ]
+  }
+
+  if (parameter_selection_method == "median_mtry") {
+    # Select the median row
+    median_index <- base::floor(nrow(tied_rows) / 2)
+    results <- tied_rows[median_index, ]
+  }
+
+  ### min_n
+  if (parameter_selection_method == "lowest_min_n") {
+    # Select the row with the lowest min_n
+    results <- tied_rows[which.min(tied_rows$min_n), ]
+  }
+
+  if (parameter_selection_method == "highest_min_n") {
+    # Select the row with the highest min_n
+    results <- tied_rows[which.max(tied_rows$min_n), ]
+  }
+
+  if (parameter_selection_method == "median_min_n") {
+    # Select the median row
+    median_index <- base::floor(nrow(tied_rows) / 2)
+    results <- tied_rows[median_index, ]
+  }
+
+  if(!parameter_selection_method %in%
+     c("lowest_penalty", "highest_penalty", "median_penalty",
+       "lowest_mixture", "highest_mixture", "median_mixture",
+       "lowest_mtry", "highest_mtry", "median_mtry",
+       "lowestmin_n", "highest_min_n", "median_min_n")){
+
+    message_text <- "Invalid parameter_selection_method; see the help documentatiton for valid methods."
+    message(colourise(message_text, "brown"))
   }
 
  return(results)
@@ -660,49 +726,6 @@ summarize_tune_results <- function(object,
   return(results)
 }
 
-
-#x_append = NULL
-#append_first = FALSE
-#cv_method = "validation_split"
-#outside_folds = 10
-#inside_folds = 3 / 4
-#strata = "y"
-#outside_strata = TRUE
-#outside_breaks = 4
-#inside_strata = TRUE
-#inside_breaks = 4
-#model = "regression" # model = "multinomial"
-#eval_measure = "default"
-#save_aggregated_word_embedding = FALSE
-#language_distribution = NULL
-#language_distribution_min_words = 3
-#preprocess_step_center = TRUE
-#preprocess_step_scale = TRUE
-#preprocess_PCA = NA
-#penalty = 10^seq(-6, 6)
-#parameter_selection_method = "first"
-#mixture = c(0)
-#first_n_predictors = NA
-#impute_missing = FALSE
-#method_cor = "pearson"
-#model_description = "Consider writing a description of your model here"
-#multi_cores = "multi_cores_sys_default"
-#save_output = "all"
-#simulate.p.value = FALSE
-#seed = 2020
-#
-#x = harmony_word_embeddings$texts$satisfactiontexts
-#y = Language_based_assessment_data_8$hilstotal[1:20]
-#cv_method = "cv_folds"
-#outside_folds = 2
-#inside_folds = 2
-#outside_strata_y = NULL
-#inside_strata_y = NULL
-## preprocess_PCA = c(0.20)
-#preprocess_PCA = NA
-#penalty = 1e-16
-#multi_cores = "multi_cores_sys_default"
-
 #' Train word embeddings to a numeric variable.
 #'
 #' textTrainRegression() trains word embeddings to a numeric or a factor variable.
@@ -761,7 +784,8 @@ summarize_tune_results <- function(object,
 #' When mixture = 1, it is a pure lasso model while mixture = 0 indicates that ridge regression is being
 #' used (specific engines only).
 #' @param parameter_selection_method If several results are tied for different parameters (i.e., penalty or mixture),
-#' then select the "lowest_parameter", the "highest_parameter" or the "median" order of all the tied penalties/mixtures.
+#' then select the "lowest_penalty", "highest_penalty", "median_penalty", or "lowest_mixture", the "highest_mixture" or
+#' the "median_mixture" order of all the tied penalties/mixtures.
 #' @param first_n_predictors By default this setting is turned off (i.e., NA). To use this method,
 #' set it to the highest number of predictors you want to test. Then the X first dimensions are used in training,
 #' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
@@ -843,7 +867,7 @@ textTrainRegression <- function(
     preprocess_step_scale = TRUE,
     preprocess_PCA = NA,
     penalty = 10^seq(-6, 6),
-    parameter_selection_method = "lowest_parameter",
+    parameter_selection_method = "lowest_penalty",
     mixture = c(0),
     first_n_predictors = NA,
     impute_missing = FALSE,

@@ -571,7 +571,7 @@ tune_over_cost_rf <- function(object,
   tune_accuracy <- (dplyr::bind_rows(tune_outputlist$eval_measure_val$eval_measure_val))$.estimate
   # Add accuracy to the grid
   grid_inner_accuracy <- grid_inner %>%
-    dplyr::mutate(eval_results = tune_accuracy)
+    dplyr::mutate(eval_result = tune_accuracy)
 
   # Progression output
   best_eval <- bestParameters(
@@ -690,8 +690,9 @@ summarize_tune_results_rf <- function(object,
 #' @param mtry Hyper parameter that may be tuned; default: c(1, 20, 40),
 #' @param min_n Hyper parameter that may be tuned; default: c(1, 20, 40)
 #' @param trees Number of trees to use (default 1000).
-#' @param parameter_selection_method  If several results are tied for different parameters (i.e., penalty or mixture),
-#' then select the "lowest_parameter", the "highest_parameter" or the "median" order of all the tied penalties/mixtures.
+#' @param parameter_selection_method If several results are tied for different parameters (i.e., mtry or min_n),
+#' then select the "lowest_mtry", "highest_mtry", "median_mtry", or "lowest_min_n", the "highest_min_n" or
+#' the "median_min_n" order of all the tied mtry/min_n
 #' @param eval_measure (character) Measure to evaluate the models in order to select the best
 #' hyperparameters default "roc_auc"; see also "accuracy", "bal_accuracy", "sens", "spec", "precision",
 #' "kappa", "f_measure".
@@ -744,34 +745,35 @@ summarize_tune_results_rf <- function(object,
 #' @importFrom furrr future_map
 #' @importFrom yardstick accuracy bal_accuracy sens spec precision kap f_meas
 #' @export
-textTrainRandomForest <- function(x,
-                                  y,
-                                  x_append = NULL,
-                                  append_first = FALSE,
-                                  cv_method = "validation_split",
-                                  outside_folds = 10,
-                                  inside_folds = 3 / 4,
-                                  strata = "y",
-                                  outside_strata = TRUE,
-                                  outside_breaks = 4,
-                                  inside_strata = TRUE,
-                                  inside_breaks = 4,
-                                  mode_rf = "classification",
-                                  preprocess_step_center = FALSE,
-                                  preprocess_scale_center = FALSE,
-                                  preprocess_PCA = NA,
-                                  extremely_randomised_splitrule = "extratrees",
-                                  mtry = c(1, 10, 20, 40),
-                                  min_n = c(1, 10, 20, 40),
-                                  trees = c(1000),
-                                  parameter_selection_method = "lowest_parameter",
-                                  eval_measure = "bal_accuracy",
-                                  model_description = "Consider writing a description of your model here",
-                                  multi_cores = "multi_cores_sys_default",
-                                  save_output = "all",
-                                  simulate.p.value = FALSE,
-                                  seed = 2020,
-                                  ...) {
+textTrainRandomForest <- function(
+    x,
+    y,
+    x_append = NULL,
+    append_first = FALSE,
+    cv_method = "validation_split",
+    outside_folds = 10,
+    inside_folds = 3 / 4,
+    strata = "y",
+    outside_strata = TRUE,
+    outside_breaks = 4,
+    inside_strata = TRUE,
+    inside_breaks = 4,
+    mode_rf = "classification",
+    preprocess_step_center = FALSE,
+    preprocess_scale_center = FALSE,
+    preprocess_PCA = NA,
+    extremely_randomised_splitrule = "extratrees",
+    mtry = c(1, 10, 20, 40),
+    min_n = c(1, 10, 20, 40),
+    trees = c(1000),
+    parameter_selection_method = "lowest_mtry",
+    eval_measure = "bal_accuracy",
+    model_description = "Consider writing a description of your model here",
+    multi_cores = "multi_cores_sys_default",
+    save_output = "all",
+    simulate.p.value = FALSE,
+    seed = 2020,
+    ...) {
   T1_textTrainRandomForest <- Sys.time()
   set.seed(seed)
 
