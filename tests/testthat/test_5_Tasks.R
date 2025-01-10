@@ -46,9 +46,129 @@ test_that("textGeneration test", {
   # the child of a dead person. It is a name, a life, and not as the son, daughter")
   expect_that(generated_text$x_generated, is_a("character"))
 
-  # Return token IDs
+  # Use `max_new_tokens` and convert set_seed to integer
   print("textGeneration_2")
   generated_text2 <- text::textGeneration(
+    x = "The meaning of life is",
+    model = "gpt2",
+    device = "cpu",
+    tokenizer_parallelism = FALSE,
+    max_new_tokens = 2,
+    logging_level = "warning",
+    force_return_results = FALSE,
+    return_tensors = FALSE,
+    return_full_text = TRUE,
+    clean_up_tokenization_spaces = FALSE,
+    prefix = "",
+    handle_long_generation = "hole",
+    set_seed = 22
+  )
+  expect_that(generated_text2$x_generated, is_a("character"))
+
+  # Use `max_length`
+  print("textGeneration_3")
+  generated_text3 <- text::textGeneration(
+    x = "The meaning of life is",
+    model = "gpt2",
+    device = "cpu",
+    tokenizer_parallelism = FALSE,
+    max_length = 20,
+    logging_level = "warning",
+    force_return_results = FALSE,
+    return_tensors = FALSE,
+    return_full_text = TRUE,
+    clean_up_tokenization_spaces = FALSE,
+    prefix = "",
+    handle_long_generation = "hole",
+    set_seed = 22L
+  )
+  expect_that(generated_text3$x_generated, is_a("character"))
+
+  # Use to small a `max_length` without setting `max_new_tokens`
+  print("textGeneration_4")
+  text::textGeneration(
+    x = "The meaning of life is",
+    model = "gpt2",
+    device = "cpu",
+    tokenizer_parallelism = FALSE,
+    max_length = 3L,
+    max_new_tokens = NULL,
+    logging_level = "warning",
+    force_return_results = FALSE,
+    return_tensors = FALSE,
+    return_full_text = TRUE,
+    clean_up_tokenization_spaces = FALSE,
+    prefix = "",
+    handle_long_generation = "hole",
+    set_seed = 22L
+  ) %>% expect_error(regexp = 'ValueError\\: Input length')
+
+  # Use `min_length`
+  print("textGeneration_5")
+  generated_text5 <- text::textGeneration(
+    x = "The meaning of life is",
+    model = "gpt2",
+    device = "cpu",
+    tokenizer_parallelism = FALSE,
+    max_length = NULL,
+    min_length = 20L,
+    max_new_tokens = NULL,
+    logging_level = "warning",
+    force_return_results = FALSE,
+    return_tensors = FALSE,
+    return_full_text = TRUE,
+    clean_up_tokenization_spaces = FALSE,
+    prefix = "",
+    handle_long_generation = "hole",
+    set_seed = 22L
+  )
+  expect_that(generated_text5$x_generated, is_a("character"))
+
+  # Use `min_new_tokens`
+  print("textGeneration_6")
+  generated_text6 <- text::textGeneration(
+    x = "The meaning of life is",
+    model = "gpt2",
+    device = "cpu",
+    tokenizer_parallelism = FALSE,
+    min_new_tokens = 10,
+    max_new_tokens = NULL,
+    logging_level = "warning",
+    force_return_results = FALSE,
+    return_tensors = FALSE,
+    return_full_text = TRUE,
+    clean_up_tokenization_spaces = FALSE,
+    prefix = "",
+    handle_long_generation = "hole",
+    set_seed = 22L
+  )
+  expect_that(generated_text6$x_generated, is_a("character"))
+
+  # All length parameters set to NULL
+  print("textGeneration_7")
+  generated_text7 <- text::textGeneration(
+    x = "The meaning of life is",
+    model = "gpt2",
+    device = "cpu",
+    tokenizer_parallelism = FALSE,
+    max_length = NULL,
+    min_length = NULL,
+    max_new_tokens = NULL,
+    min_new_tokens = NULL,
+    logging_level = "warning",
+    force_return_results = FALSE,
+    return_tensors = FALSE,
+    return_full_text = TRUE,
+    clean_up_tokenization_spaces = FALSE,
+    prefix = "",
+    handle_long_generation = "hole",
+    set_seed = 22L
+  )
+  expect_that(generated_text7$x_generated, is_a("character"))
+
+  # Return token IDs
+  print("textGeneration_8")
+  generated_text8 <- text::textGeneration(
     x = "The meaning of life is",
     model = "gpt2",
     device = "cpu",
@@ -63,8 +183,8 @@ test_that("textGeneration test", {
     set_seed = 22L
   )
   textModelsRemove("gpt2")
-  expect_equal(generated_text2$generated_token_ids[1], 464)
-  expect_that(generated_text2$generated_token_ids[1], is_a("integer"))
+  expect_equal(generated_text8$generated_token_ids[1], 464)
+  expect_that(generated_text8$generated_token_ids[1], is_a("integer"))
 })
 
 

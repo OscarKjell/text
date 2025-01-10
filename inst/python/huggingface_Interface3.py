@@ -17,7 +17,11 @@ import nltk
 try:
     nltk.data.find('tokenizers/punkt/PY3/english.pickle')
 except:
-    nltk.download("punkt")
+    nltk.download('punkt')
+try:
+    nltk.data.find('tokenizers/punkt_tab/english/')
+except:
+    nltk.download('punkt_tab')
 
 from nltk.tokenize import sent_tokenize
 
@@ -215,14 +219,14 @@ def get_model(model, tokenizer_only=False, config_only=False, hg_gated=False, hg
     elif tokenizer_only:
         # Do not know how to fix this. Some decoder-only files do not have pad_token.
         if tokenizer.pad_token is None:
-            print("The language model entered might has issues since the model does not provide the padding_token.")
+            print("The language model entered might have issues since the model does not provide the padding_token.")
             print("Consider use BERT-like models instead if meeting errors.")
         #    tokenizer.pad_token = tokenizer.eos_token
         #    tokenizer.pad_token_id = tokenizer.eos_token_id
         return tokenizer
     else:
         if tokenizer.pad_token is None:
-            print("The language model entered might has issues since the model does not provide the padding_token.")
+            print("The language model entered might have issues since the model does not provide the padding_token.")
             print("Consider use BERT-like models instead if meeting errors.")    
         #    tokenizer.pad_token = tokenizer.eos_token
         #    tokenizer.pad_token_id = tokenizer.eos_token_id        
@@ -334,10 +338,23 @@ def hgTransformerGetPipeline(text_strings,
     return task_scores
 
 
+# Convert floats to integers or propagate None
+def _as_integer(x):
+    if isinstance(x, int) or isinstance(x, np.integer):
+        return x
+    elif isinstance(x, float) or isinstance(x, np.floating):
+        return int(x)
+    else:
+        return None
+
 def hgTransformerGetTextGeneration(text_strings,
                             model = '',
                             device = 'cpu',
                             tokenizer_parallelism = False,
+                            max_length = None,
+                            max_new_tokens = 20,
+                            min_length = 0,
+                            min_new_tokens = None,
                             logging_level = 'warning',
                             force_return_results = False,
                             set_seed = None,
@@ -347,6 +364,21 @@ def hgTransformerGetTextGeneration(text_strings,
                             clean_up_tokenization_spaces = False,
                             prefix = '', 
                             handle_long_generation = None):
+    # Prepare kwargs
+    if max_new_tokens is not None and max_new_tokens <= 0:
+        print(f"Warning: `max_new_tokens` must be greater than 0, but is {max_new_tokens}")
+        print( "         Using default value…")
+        max_new_tokens = None
+    generation_kwargs = {
+        'max_length': _as_integer(max_length),
+        'min_length': _as_integer(min_length),
+        'min_new_tokens': _as_integer(min_new_tokens)
+    }
+    # `max_new_tokens` should not be explicitly None
+    max_new_tokens = _as_integer(max_new_tokens)
+    if max_new_tokens is not None:
+        generation_kwargs['max_new_tokens'] = max_new_tokens
+    
     if return_tensors:
         if return_full_text:
             print("Warning: you set return_tensors and return_text (or return_full_text)")
@@ -363,7 +395,8 @@ def hgTransformerGetTextGeneration(text_strings,
                             return_tensors = return_tensors, 
                             clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
                             prefix = prefix,
-                            handle_long_generation = handle_long_generation)
+                            handle_long_generation = handle_long_generation,
+                            **generation_kwargs)
     else:
         generated_texts = hgTransformerGetPipeline(text_strings = text_strings,
                             task = 'text-generation',
@@ -378,7 +411,8 @@ def hgTransformerGetTextGeneration(text_strings,
                             return_full_text = return_full_text, 
                             clean_up_tokenization_spaces = clean_up_tokenization_spaces, 
                             prefix = prefix,
-                            handle_long_generation = handle_long_generation)
+                            handle_long_generation = handle_long_generation,
+                            **generation_kwargs)
     return generated_texts
 
 def hgTransformerGetNER(text_strings,
