@@ -9,6 +9,10 @@ textGeneration(
   model = "gpt2",
   device = "cpu",
   tokenizer_parallelism = FALSE,
+  max_length = NULL,
+  max_new_tokens = 20,
+  min_length = 0,
+  min_new_tokens = NULL,
   logging_level = "warning",
   force_return_results = FALSE,
   return_tensors = FALSE,
@@ -28,6 +32,14 @@ autoregressive language modeling objective, which includes the uni-directional m
 \item{device}{(string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number}
 
 \item{tokenizer_parallelism}{(boolean)  If TRUE this will turn on tokenizer parallelism.}
+
+\item{max_length}{(Integer)  The maximum length the generated tokens can have. Corresponds to the length of the input prompt + `max_new_tokens`. Its effect is overridden by `max_new_tokens`, if also set. Defaults to NULL.}
+
+\item{max_new_tokens}{(Integer)  The maximum numbers of tokens to generate, ignoring the number of tokens in the prompt. The default value is 20.}
+
+\item{min_length}{(Integer)  The minimum length of the sequence to be generated. Corresponds to the length of the input prompt + `min_new_tokens`. Its effect is overridden by `min_new_tokens`, if also set. The default value is 0.}
+
+\item{min_new_tokens}{(Integer)  The minimum numbers of tokens to generate, ignoring the number of tokens in the prompt. Default is NULL.}
 
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}

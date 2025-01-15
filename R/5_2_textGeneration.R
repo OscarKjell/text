@@ -21,6 +21,10 @@ set_seed = 22L
 #' autoregressive language modeling objective, which includes the uni-directional models (e.g., gpt2).
 #' @param device (string)  Device to use: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
 #' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism.
+#' @param max_length (Integer)  The maximum length the generated tokens can have. Corresponds to the length of the input prompt + `max_new_tokens`. Its effect is overridden by `max_new_tokens`, if also set. Defaults to NULL.
+#' @param max_new_tokens (Integer)  The maximum numbers of tokens to generate, ignoring the number of tokens in the prompt. The default value is 20.
+#' @param min_length (Integer)  The minimum length of the sequence to be generated. Corresponds to the length of the input prompt + `min_new_tokens`. Its effect is overridden by `min_new_tokens`, if also set. The default value is 0.
+#' @param min_new_tokens (Integer)  The minimum numbers of tokens to generate, ignoring the number of tokens in the prompt. Default is NULL.
 #' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
 #' @param force_return_results (boolean)  Stop returning some incorrectly formatted/structured results.
@@ -56,6 +60,10 @@ textGeneration <- function(x,
                            model = "gpt2",
                            device = "cpu",
                            tokenizer_parallelism = FALSE,
+                           max_length = NULL,
+                           max_new_tokens = 20,
+                           min_length = 0,
+                           min_new_tokens = NULL,
                            logging_level = "warning",
                            force_return_results = FALSE,
                            return_tensors = FALSE,
@@ -72,6 +80,11 @@ textGeneration <- function(x,
     mustWork = TRUE
   ))
 
+  # Convert integer arguments explicitly for Python
+  ## `max_length` and `max_length` are converted inside the Python function
+  if (!is.null(set_seed)) set_seed <- as.integer(set_seed)
+
+
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(x)
 
@@ -87,6 +100,10 @@ textGeneration <- function(x,
       model = model,
       device = device,
       tokenizer_parallelism = tokenizer_parallelism,
+      max_length = max_length,
+      max_new_tokens = max_new_tokens,
+      min_length = min_length,
+      min_new_tokens = min_new_tokens,
       logging_level = logging_level,
       force_return_results = force_return_results,
       return_tensors = return_tensors,
