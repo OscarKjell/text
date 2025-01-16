@@ -176,7 +176,7 @@ test_that("Testing textEmbed as well as train", {
 
   # for decontexts = TRUE expect_equal(proj[[1]][[1]][[1]][[1]], -0.402433, tolerance = 0.0000001)
 
-  plot_proj <- textProjectionPlot(
+  plot_proj <- text::textProjectionPlot(
     word_data = proj,
     explore_words = c("happy"),
     y_axes = TRUE
@@ -229,7 +229,8 @@ test_that("Testing textEmbed as well as train", {
 
 test_that("Testing textEmbedReduce as well as train", {
   skip_on_cran()
-  embedding_roberta <- textEmbed(Language_based_assessment_data_3_100[1, 1],
+  embedding_roberta <- textEmbed(
+    Language_based_assessment_data_3_100[1, 1],
     model = "roberta-base",
     layer = 11,
     aggregation_from_tokens_to_word_types = "mean"

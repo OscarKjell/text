@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_1_textEmbed.R
 \name{textEmbed}
 \alias{textEmbed}
-\title{Embed text}
+\title{textEmbed() extracts layers and aggregate them to word embeddings, for all character variables in a given dataframe.}
 \usage{
 textEmbed(
   texts,
@@ -13,6 +13,7 @@ textEmbed(
   aggregation_from_tokens_to_texts = "mean",
   aggregation_from_tokens_to_word_types = NULL,
   keep_token_embeddings = TRUE,
+  batch_size = 100,
   remove_non_ascii = TRUE,
   tokens_select = NULL,
   tokens_deselect = NULL,
@@ -64,6 +65,8 @@ is preserved). (default = NULL).}
 
 \item{keep_token_embeddings}{(boolean) Whether to also keep token embeddings when using texts or word
 types aggregation.}
+
+\item{batch_size}{Number of rows in each batch}
 
 \item{remove_non_ascii}{(bolean) TRUE warns and removes non-ascii (using textFindNonASCII()).}
 

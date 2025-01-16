@@ -314,7 +314,8 @@ textOwnWordsProjection <- function(word_data = word_data,
       aggregation_word_text <- sub(".*aggregation_from_tokens_to_word_types =  ", "", text_plot_comment)
       aggregation_word_type <- sub("  ; decontextualize.*", "", aggregation_word_text)
 
-      explore_words_embeddings <- textEmbed(explore_words[i_add_w],
+      explore_words_embeddings <- text_embed(
+        explore_words[i_add_w],
         model = model_name,
         layers = as.numeric(layers_number_split[[1]]),
         aggregation_from_layers_to_tokens = aggregate_layers_type,
@@ -508,7 +509,8 @@ textOwnWordPrediction <- function(word_data = word_data,
       aggregation_word_text <- sub(".*aggregation_from_tokens_to_word_types =  ", "", text_plot_comment)
       aggregation_word_type <- sub("  ; decontextualize.*", "", aggregation_word_text)
 
-      explore_words_embeddings <- textEmbed(explore_words[i_add_w],
+      explore_words_embeddings <- text_embed(
+        explore_words[i_add_w],
         model = model_name,
         layers = as.numeric(layers_number_split[[1]]),
         aggregation_from_layers_to_tokens = aggregate_layers_type,
@@ -804,6 +806,7 @@ textPlot <- function(word_data,
                      n_contrast_group_remove = FALSE,
                      space = NULL,
                      scaling = FALSE) {
+
   ##### Comment to be saved ####
   text_plot_comment <- paste(
     "INFORMATION ABOUT THE PROJECTION",

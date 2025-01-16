@@ -7,6 +7,8 @@ test_that("installing text", {
   # On Linux get error at reticulate:::pip_install(...)
 
   if (Sys.info()["sysname"] == "Darwin" | Sys.info()["sysname"] == "Windows") {
+
+
     text::textrpp_install(prompt = FALSE,
                           envname = "test_ok"
                           )

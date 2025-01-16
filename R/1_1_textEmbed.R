@@ -126,45 +126,47 @@ normalizeV <- function(x) {
 #' @param aggregation method to carry out the aggregation, including "min", "max" and "mean" which takes the
 #' minimum, maximum or mean across each column; or "concatenate", which links together each word embedding layer
 #' to one long row.
+#' @param weights to be used when aggreating using mean (used when batching and aggregating word_types).
 #' @return aggregated word embeddings.
 #' @importFrom tibble as_tibble_row
 #' @importFrom purrr map
 #' @noRd
 textEmbeddingAggregation <- function(x,
-                                     aggregation = "min") {
-  if (aggregation == "min") {
+                                     aggregation = "min",
+                                     weights = NULL) {
+  if (!is.null(weights) && aggregation == "mean") {
+    # Weighted mean calculation
+    weighted_mean_vector <- colSums(x * weights, na.rm = TRUE) / sum(weights, na.rm = TRUE)
+    return(weighted_mean_vector)
+  } else if (aggregation == "min") {
     min_vector <- unlist(purrr::map(x, min, na.rm = TRUE))
-    min_vector
+    return(min_vector)
   } else if (aggregation == "max") {
     max_vector <- unlist(purrr::map(x, max, na.rm = TRUE))
-    max_vector
+    return(max_vector)
   } else if (aggregation == "mean") {
     mean_vector <- colMeans(x, na.rm = TRUE)
-    mean_vector
+    return(mean_vector)
   } else if (aggregation == "concatenate") {
     long_vector <- c(t(x)) %>% tibble::as_tibble_row(.name_repair = "minimal")
-    colnames(long_vector) <- paste0("Dim", sep = "", seq_len(length(long_vector)))
+    colnames(long_vector) <- paste0("Dim", seq_len(length(long_vector)))
 
     variable_name <- names(x)[1]
 
     # If original name is not just Dim1, then add back Dim1_variable.name
     if (!variable_name == "Dim1") {
       variable_name <- sub(".*Dim1_", "", variable_name)
-
-      colnames(long_vector) <- paste0(
-        names(long_vector),
-        "_",
-        variable_name
-      )
+      colnames(long_vector) <- paste0(names(long_vector), "_", variable_name)
     }
-    long_vector
+    return(long_vector)
   } else if (aggregation == "normalize") {
     sum_vector <- unlist(purrr::map(x, sum, na.rm = TRUE))
     normalized_vector <- normalizeV(sum_vector)
-    normalized_vector
+    return(normalized_vector)
+  } else {
+    stop("Invalid aggregation method provided.")
   }
 }
-
 
 #' getUniqueWordsAndFreq
 #' Function unites several text variables and rows to one,
@@ -1032,7 +1034,7 @@ generate_placement_vector <- function(raw_layers,
 }
 
 
-#' Embed text
+#' Helper function for textEmbed
 #'
 #' textEmbed() extracts layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
@@ -1119,28 +1121,30 @@ generate_placement_vector <- function(raw_layers,
 #' \code{\link{textDimName}}.
 #' @importFrom reticulate source_python
 #' @importFrom utils modifyList
-#' @export
-textEmbed <- function(texts,
-                      model = "bert-base-uncased",
-                      layers = -2,
-                      dim_name = TRUE,
-                      aggregation_from_layers_to_tokens = "concatenate",
-                      aggregation_from_tokens_to_texts = "mean",
-                      aggregation_from_tokens_to_word_types = NULL,
-                      keep_token_embeddings = TRUE,
-                      remove_non_ascii = TRUE,
-                      tokens_select = NULL,
-                      tokens_deselect = NULL,
-                      decontextualize = FALSE,
-                      model_max_length = NULL,
-                      max_token_to_sentence = 4,
-                      tokenizer_parallelism = FALSE,
-                      device = "cpu",
-                      hg_gated = FALSE,
-                      hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
-                                            unset = ""),
-                      logging_level = "error",
-                      ...) {
+#' @noRd
+text_embed <- function(
+    texts,
+    model = "bert-base-uncased",
+    layers = -2,
+    dim_name = TRUE,
+    aggregation_from_layers_to_tokens = "concatenate",
+    aggregation_from_tokens_to_texts = "mean",
+    aggregation_from_tokens_to_word_types = NULL,
+    keep_token_embeddings = TRUE,
+    remove_non_ascii = TRUE,
+    tokens_select = NULL,
+    tokens_deselect = NULL,
+    decontextualize = FALSE,
+    model_max_length = NULL,
+    max_token_to_sentence = 4,
+    tokenizer_parallelism = FALSE,
+    device = "cpu",
+    hg_gated = FALSE,
+    hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
+                          unset = ""),
+    logging_level = "error",
+    ...) {
+
   if (sum(is.na(texts) > 0)) {
     warning("texts contain NA-values.")
   }
@@ -1168,6 +1172,7 @@ textEmbed <- function(texts,
       )
     ))
   }
+
   output <- list()
 
   if (layers[1] < 0) {
@@ -1182,8 +1187,8 @@ textEmbed <- function(texts,
   # Check fro ASCII characters
   problematic_texts <- textFindNonASCII(data_character_variables)
 
-  # Clean
-  # Give information about ACII characters
+  #### Clean ASCII ####
+  # Give information about ACSII characters
   if(nrow(problematic_texts)>0){
 
     # Combine column_name and row_number for each row
@@ -1208,10 +1213,14 @@ textEmbed <- function(texts,
 
   }
 
+
+  #### Get Layers & Aggregate layers ####
   outcome_list <- list()
+  #text_i = 1
   for (text_i in 1:ncol(data_character_variables)) {
     texts <- data_character_variables[text_i]
-    # Get hidden states/layers for output 1 and/or output 2 or decontextualsied;
+
+    # Get hidden states/layers for output 1 and/or output 2 or decontextualized;
     if (!is.null(aggregation_from_layers_to_tokens) ||
         !is.null(aggregation_from_tokens_to_texts) ||
         decontextualize) {
@@ -1228,8 +1237,7 @@ textEmbed <- function(texts,
         max_token_to_sentence = max_token_to_sentence,
         hg_gated = hg_gated,
         hg_token = hg_token,
-        logging_level = logging_level,
-        ...
+        logging_level = logging_level, ...
       )
     }
 
@@ -1359,8 +1367,7 @@ textEmbed <- function(texts,
     }
 
 
-    #### Decontextualised tokens and text embeddings (using output from 3 above)
-
+    #### Decontextualised tokens and text embeddings (using output from 3 above) ####
     if (decontextualize) {
       decontext_space <- individual_word_embeddings_words
 
@@ -1440,6 +1447,352 @@ textEmbed <- function(texts,
 
   return(output1)
 }
+
+
+#' Combine results from batches, accounting for tokens, texts, and word_types.
+#' @param batch_results The results from each batch
+#' @param aggregation The aggregation method
+#' @return All character variables in UTF-8 format.
+#' @importFrom stringi stri_match stri_trim
+#' @importFrom purrr map2 map_chr
+#' @importFrom dplyr group_by summarize across
+#' @noRd
+combine_textEmbed_results <- function(
+    batch_results,
+    aggregation = "mean") {
+
+  # Initialize combined structure
+  combined_results <- list(tokens = list(), texts = list(), word_types = list())
+  total_duration <- 0
+  creation_dates <- c()
+  text_versions <- c()
+
+  # Combine results for each component
+  for (result in batch_results) {
+    # Combine tokens while preserving names and comments
+    if (!is.null(result$tokens)) {
+      for (name in names(result$tokens)) {
+        if (is.null(combined_results$tokens[[name]])) {
+          combined_results$tokens[[name]] <- result$tokens[[name]]
+          comment(combined_results$tokens[[name]]) <- comment(result$tokens[[name]])
+        } else {
+          combined_results$tokens[[name]] <- c(
+            combined_results$tokens[[name]],
+            result$tokens[[name]]
+          )
+          # Concatenate unique comments
+          current_comment <- comment(combined_results$tokens[[name]])
+          new_comment <- comment(result$tokens[[name]])
+          comment(combined_results$tokens[[name]]) <- unique(c(
+            current_comment,
+            new_comment
+          )) %>% paste(collapse = " | ")
+        }
+      }
+    }
+
+    # Combine texts while preserving names and comments
+    if (!is.null(result$texts)) {
+      for (name in names(result$texts)) {
+        if (is.null(combined_results$texts[[name]])) {
+          combined_results$texts[[name]] <- result$texts[[name]]
+          comment(combined_results$texts[[name]]) <- comment(result$texts[[name]])
+        } else {
+          combined_results$texts[[name]] <- dplyr::bind_rows(
+            combined_results$texts[[name]],
+            result$texts[[name]]
+          )
+          # Concatenate unique comments
+          current_comment <- comment(combined_results$texts[[name]])
+          new_comment <- comment(result$texts[[name]])
+          comment(combined_results$texts[[name]]) <- unique(c(
+            current_comment,
+            new_comment
+          )) %>% paste(collapse = " | ")
+        }
+      }
+    }
+
+    # Combine word_types while preserving names and comments
+    if (!is.null(result$word_types)) {
+      for (name in names(result$word_types)) {
+        if (is.null(combined_results$word_types[[name]])) {
+          combined_results$word_types[[name]] <- result$word_types[[name]]
+          comment(combined_results$word_types[[name]]) <- comment(result$word_types[[name]])
+        } else {
+          combined_results$word_types[[name]] <- dplyr::bind_rows(
+            combined_results$word_types[[name]],
+            result$word_types[[name]]
+          )
+          # Concatenate unique comments
+          current_comment <- comment(combined_results$word_types[[name]])
+          new_comment <- comment(result$word_types[[name]])
+          comment(combined_results$word_types[[name]]) <- unique(c(
+            current_comment,
+            new_comment
+          )) %>% paste(collapse = " | ")
+        }
+      }
+    }
+
+    # Collect top-level comment details
+    if (!is.null(comment(result))) {
+      parsed_comment <- stringi::stri_match(
+        comment(result),
+        regex = "Duration to embed text: ([0-9.]+) secs; Date created: ([^;]+); text_version: ([^;]+)\\."
+      )
+      if (!is.na(parsed_comment[2])) total_duration <- total_duration + as.numeric(parsed_comment[2])
+      if (!is.na(parsed_comment[3])) creation_dates <- c(creation_dates, parsed_comment[3])
+      if (!is.na(parsed_comment[4])) text_versions <- c(text_versions, parsed_comment[4])
+    }
+  }
+
+  # Aggregate word_types to remove duplicates and assign comments
+  combined_results$word_types <- purrr::map2(
+    combined_results$word_types,
+    names(combined_results$word_types),
+    function(word_type_tibble, word_type_name) {
+      aggregated_tibble <- word_type_tibble %>%
+        dplyr::group_by(words) %>%
+        dplyr::summarize(
+          n = sum(n, na.rm = TRUE),
+          dplyr::across(starts_with("Dim"), ~ {
+            weights <- word_type_tibble$n[dplyr::cur_group_rows()]
+            if (aggregation == "mean" && !is.null(weights)) {
+              sum(.x * weights, na.rm = TRUE) / sum(weights, na.rm = TRUE)
+            } else {
+              textEmbeddingAggregation(as.matrix(.x), aggregation = aggregation)
+            }
+          }, .names = "{.col}")
+        )
+      # Assign comment to the aggregated tibble
+      original_comments <- purrr::map_chr(batch_results, ~ comment(.x$word_types[[word_type_name]])) %>%
+        unique() %>%
+        stats::na.omit() %>%
+        paste(collapse = " | ")
+      comment(aggregated_tibble) <- original_comments
+      return(aggregated_tibble)
+    }
+  )
+
+  # Deduplicate and summarize top-level comments
+  unique_dates <- unique(creation_dates)
+  unique_versions <- unique(text_versions)
+  date_summary <- if (length(unique_dates) == 1) {
+    sprintf("Date created: %s", unique_dates)
+  } else if (length(unique_dates) > 1) {
+    sprintf("Date range: %s to %s", min(unique_dates), max(unique_dates))
+  } else {
+    ""
+  }
+
+  version_summary <- if (length(unique_versions) == 1) {
+    sprintf("text_version: %s", unique_versions)
+  } else {
+    ""
+  }
+
+  # Set the summarized top-level comment
+  comment(combined_results) <- paste(
+    sprintf("Total duration to embed text: %.2f secs", total_duration),
+    date_summary,
+    version_summary,
+    sep = "; "
+  ) %>% stringi::stri_trim()
+
+  return(combined_results)
+}
+
+
+
+#' textEmbed() extracts layers and aggregate them to word embeddings, for all character variables in a given dataframe.
+#' @param texts A character variable or a tibble/dataframe with at least one character variable.
+#' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
+#'  For full list of options see pretrained models at
+#'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
+#'  For example use "bert-base-multilingual-cased", "openai-gpt",
+#' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
+#' "roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
+#'  malicious model can execute arbitrary code on your computer).
+#' @param layers (string or numeric) Specify the layers that should be extracted
+#' (default -2 which give the second to last layer). It is more efficient to only extract the layers
+#' that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this parameter
+#' to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and
+#'  thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation
+#'  function.
+#' @param dim_name (boolean) If TRUE append the variable name after all variable-names in the output.
+#' (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name).
+#' see \code{\link{textDimName}} to change names back and forth.
+#' @param aggregation_from_layers_to_tokens (string) Aggregated layers of each token. Method to aggregate the
+#' contextualized layers (e.g., "mean", "min" or "max, which takes the minimum, maximum or mean, respectively,
+#' across each column; or "concatenate", which links  together each word embedding layer to one long row.
+#' @param aggregation_from_tokens_to_texts (string) Method to carry out the aggregation among the word embeddings
+#' for the words/tokens, including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+#' or "concatenate", which links together each layer of the word embedding to one long row (default = "mean"). If set to NULL, embeddings are not
+#' aggregated.
+#' @param aggregation_from_tokens_to_word_types (string) Aggregates to the word type (i.e., the individual words)
+#'  rather than texts. If set to "individually", then duplicate words are not aggregated, (i.e, the context of individual
+#'  is preserved). (default = NULL).
+#' @param keep_token_embeddings (boolean) Whether to also keep token embeddings when using texts or word
+#' types aggregation.
+#' @param batch_size Number of rows in each batch
+#' @param remove_non_ascii (bolean) TRUE warns and removes non-ascii (using textFindNonASCII()).
+#' @param tokens_select Option to select word embeddings linked to specific tokens
+#' such as [CLS] and [SEP] for the context embeddings.
+#' @param tokens_deselect Option to deselect embeddings linked to specific tokens
+#' such as [CLS] and [SEP] for the context embeddings.
+#' @param decontextualize (boolean) Provide word embeddings of single words as input to the model
+#' (these embeddings are, e.g., used for plotting; default is to use ). If using this, then set
+#' single_context_embeddings to FALSE.
+#' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
+#' (default the value stored for the associated model).
+#' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
+#' switching to embedding text sentence by sentence.
+#' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
+#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
+#' specific device number such as 'mps:1'.
+#' @param hg_gated Set to TRUE if the accessed model is gated.
+#' @param hg_token The token needed to access the gated model.
+#' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
+#' the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
+#' be set to avoid the need to enter the token each time.
+#' @param logging_level Set the logging level. Default: "warning".
+#' Options (ordered from less logging to more logging): critical, error, warning, info, debug
+#' @param ... settings from textEmbedRawLayers().
+#' @return A tibble with tokens, a column for layer identifier and word embeddings.
+#' Note that layer 0 is the input embedding to the transformer.
+#' @examples
+#' # Automatically transforms the characters in the example dataset:
+#' # Language_based_assessment_data_8 (included in text-package), to embeddings.
+#' \dontrun{
+#' word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
+#'   layers = 10:11,
+#'   aggregation_from_layers_to_tokens = "concatenate",
+#'   aggregation_from_tokens_to_texts = "mean",
+#'   aggregation_from_tokens_to_word_types = "mean"
+#' )
+#'
+#' # Show information about how the embeddings were constructed.
+#' comment(word_embeddings$texts$satisfactiontexts)
+#' comment(word_embeddings$word_types)
+#' comment(word_embeddings$tokens$satisfactiontexts)
+#'
+#' # See how the word embeddings are structured.
+#' word_embeddings
+#'
+#' # Save the word embeddings to avoid having to embed the text again.
+#' saveRDS(word_embeddings, "word_embeddings.rds")
+#'
+#' # Retrieve the saved word embeddings.
+#' word_embeddings <- readRDS("word_embeddings.rds")
+#' }
+#'
+#' @seealso See \code{\link{textEmbedLayerAggregation}}, \code{\link{textEmbedRawLayers}} and
+#' \code{\link{textDimName}}.
+#' @importFrom reticulate source_python
+#' @importFrom utils modifyList
+#' @export
+textEmbed <- function(
+    texts,
+    model = "bert-base-uncased",
+    layers = -2,
+    dim_name = TRUE,
+    aggregation_from_layers_to_tokens = "concatenate",
+    aggregation_from_tokens_to_texts = "mean",
+    aggregation_from_tokens_to_word_types = NULL,
+    keep_token_embeddings = TRUE,
+    batch_size = 100,
+    remove_non_ascii = TRUE,
+    tokens_select = NULL,
+    tokens_deselect = NULL,
+    decontextualize = FALSE,
+    model_max_length = NULL,
+    max_token_to_sentence = 4,
+    tokenizer_parallelism = FALSE,
+    device = "cpu",
+    hg_gated = FALSE,
+    hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
+                          unset = ""),
+    logging_level = "error",
+    ...) {
+
+  T1 <- Sys.time()
+
+  if(!is_tibble(texts)){
+    texts <- tibble::tibble(texts = texts)
+  }
+
+  # Split texts into batches
+  split_into_batches <- function(data, batch_size) {
+    split(data, ceiling(seq_along(1:nrow(data)) / batch_size))
+  }
+
+  batches <- split_into_batches(texts, batch_size)
+
+  # Process each batch and store results
+  batch_results <- list()
+  for (i in seq_along(batches)) {
+
+    batch_message <- sprintf("Processing batch %d/%d\n", i, length(batches))
+    message(colourise(batch_message, "blue"))
+
+
+    batch_texts <- batches[[i]]
+    #batch_texts <- batch[["satisfactionwords"]]
+
+    # Process batch with error handling
+    batch_result <- tryCatch(
+      text_embed(
+        texts = batch_texts,
+        model = model,
+        layers = layers,
+        dim_name = dim_name,
+        aggregation_from_layers_to_tokens = aggregation_from_layers_to_tokens,
+        aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts,
+        aggregation_from_tokens_to_word_types = aggregation_from_tokens_to_word_types,
+        keep_token_embeddings = keep_token_embeddings,
+        remove_non_ascii = remove_non_ascii,
+        tokens_select = tokens_select,
+        tokens_deselect = tokens_deselect,
+        decontextualize = decontextualize,
+        model_max_length = model_max_length,
+        max_token_to_sentence = max_token_to_sentence,
+        tokenizer_parallelism = tokenizer_parallelism,
+        device = device,
+        hg_gated = hg_gated,
+        hg_token = hg_token,
+        logging_level = logging_level,
+        ...), # ADD TODO , ... for testing:
+
+      error = function(e) {
+        message(sprintf("Error in batch %d: %s", i, e$message))
+        return(NULL)
+      }
+    )
+    batch_results[[i]] <- batch_result
+
+    T2 <- Sys.time()
+    time_from_starts <- round(as.numeric(difftime(T2, T1, units = "mins")), 3)
+    time_from_message <- paste("Minutes from start: ", time_from_starts)
+    message(colourise(time_from_message, "green"))
+
+    batches_left <- length(batches) - i
+    mean_time_per_batch <- time_from_starts/i
+    estimated_time_left <- mean_time_per_batch * batches_left
+    estimation_message <- paste0("Estimated embedding time left = ", estimated_time_left, " minutes")
+    message(colourise(estimation_message, "black"))
+  }
+  #### Combine results
+
+  final_result <- combine_textEmbed_results(
+    batch_results,
+    aggregation = aggregation_from_tokens_to_word_types)
+
+  final_result
+  names(final_result)
+  return(final_result)
+}
+
 
 
 #' Change dimension names
