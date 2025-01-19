@@ -38,6 +38,10 @@ utils::globalVariables(c(
   # textTrainNPlot
   "sample_size", "percent", "std", "ymin", "ymax",
 
+  # textTrainExamples
+  "category", "distance_to_mean", "error", "language", "topic",
+
+
   # textPredcitTest
   "stats_on_bootstrap",
 
