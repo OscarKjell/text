@@ -3,7 +3,7 @@
 #library(testthat)
 #library(tibble)
 #library(text)
-#
+#library(topics)
 #context("Testing tasks")
 #
 #
@@ -91,7 +91,15 @@
 #    target_color = "darkgreen",
 #    predictions_color = "darkblue",
 #    error_color = "darkred",
-#    distribution_color = c("darkgreen", "gray", "darkred")
+#    distribution_color = c("darkgreen", "gray", "darkred"),
+#    figure_format = "svg",
+#    scatter_legend_dot_size = 6,
+#    scatter_legend_bg_dot_size = 3,
+#    scatter_legend_n = c(3,3,3),
+#    scatter_show_axis_values = TRUE,
+#    grid_legend_x_axes_label = "x",
+#    grid_legend_y_axes_label = "y",
+#    seed = 42
 #  )
 #
 #  examples
@@ -112,5 +120,5 @@
 #
 #})
 #
-
+#
 

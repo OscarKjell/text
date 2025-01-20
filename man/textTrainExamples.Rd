@@ -17,7 +17,14 @@ textTrainExamples(
   predictions_color = "darkblue",
   error_color = "darkred",
   distribution_color = c("darkgreen", "gray", "darkred"),
-  figure_format = "svg"
+  figure_format = "svg",
+  scatter_legend_dot_size = 4,
+  scatter_legend_bg_dot_size = 2,
+  scatter_legend_n = c(3, 3, 3),
+  scatter_show_axis_values = TRUE,
+  grid_legend_x_axes_label = "x",
+  grid_legend_y_axes_label = "y",
+  seed = 42
 )
 
 textPredictExamples(
@@ -32,7 +39,14 @@ textPredictExamples(
   predictions_color = "darkblue",
   error_color = "darkred",
   distribution_color = c("darkgreen", "gray", "darkred"),
-  figure_format = "svg"
+  figure_format = "svg",
+  scatter_legend_dot_size = 4,
+  scatter_legend_bg_dot_size = 2,
+  scatter_legend_n = c(3, 3, 3),
+  scatter_show_axis_values = TRUE,
+  grid_legend_x_axes_label = "x",
+  grid_legend_y_axes_label = "y",
+  seed = 42
 )
 }
 \arguments{
@@ -59,6 +73,15 @@ textPredictExamples(
 \item{distribution_color}{(string) colors of the distribution plot}
 
 \item{figure_format}{(string) file format of the figures.}
+
+\item{scatter_legend_dot_size}{(integer) The size of dots in the scatter legend.}
+
+\item{scatter_legend_bg_dot_size}{(integer) The size of background dots in the scatter legend.}
+
+\item{scatter_legend_n}{(numeric or vector) A vector determining the number of dots to emphasize in each quadrant of the scatter legend.
+For example: c(1,0,1) result in one dot in each quadrant except for the middle quadrant.}
+
+\item{scatter_show_axis_values}{(boolean) If TRUE, the estimate values are shown on the distribution plot axes.}
 }
 \value{
 A tibble including examples with descriptive variables.
