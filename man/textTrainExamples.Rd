@@ -82,6 +82,12 @@ textPredictExamples(
 For example: c(1,0,1) result in one dot in each quadrant except for the middle quadrant.}
 
 \item{scatter_show_axis_values}{(boolean) If TRUE, the estimate values are shown on the distribution plot axes.}
+
+\item{grid_legend_x_axes_label}{x-axis label of the grid topic plot.}
+
+\item{grid_legend_y_axes_label}{y-axis label of the grid topic plot.}
+
+\item{seed}{(integer) The seed to set for reproducibility.}
 }
 \value{
 A tibble including examples with descriptive variables.

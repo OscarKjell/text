@@ -23,7 +23,9 @@
 # For example, c("t_1", "t_2"). If set, scatter_legend_method will have no effect.
 # @param scatter_legend_topic_n (boolean) If TRUE, the topic numbers are shown in the scatter legend.
 #' @param scatter_show_axis_values (boolean) If TRUE, the estimate values are shown on the distribution plot axes.
-
+#' @param grid_legend_x_axes_label x-axis label of the grid topic plot.
+#' @param seed (integer) The seed to set for reproducibility.
+#' @param grid_legend_y_axes_label y-axis label of the grid topic plot.
 #' @returns A tibble including examples with descriptive variables.
 #' @importFrom dplyr filter select arrange slice group_by summarize mutate rename
 #' @importFrom stringi stri_detect_fixed
