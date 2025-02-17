@@ -12,7 +12,7 @@ textTrainExamples(
   n_examples = 5,
   selection_method = "min_max",
   selection_variable = "predictions",
-  include_words = NULL,
+  filter_words = NULL,
   target_color = "darkgreen",
   predictions_color = "darkblue",
   error_color = "darkred",
@@ -34,7 +34,7 @@ textPredictExamples(
   n_examples = 5,
   selection_method = "min_max",
   selection_variable = "predictions",
-  include_words = NULL,
+  filter_words = NULL,
   target_color = "darkgreen",
   predictions_color = "darkblue",
   error_color = "darkred",
@@ -62,13 +62,13 @@ textPredictExamples(
 
 \item{selection_variable}{(string) selection method: "predictions", "error", or "targets".}
 
-\item{include_words}{(character vector) words required to be included in examples.}
+\item{filter_words}{(character vector) words required to be included in examples.}
 
 \item{target_color}{(string)}
 
-\item{predictions_color}{(string)= "darkblue",}
+\item{predictions_color}{(string) = "darkblue",}
 
-\item{error_color}{=  (string)"darkred",}
+\item{error_color}{=  (string) "darkred",}
 
 \item{distribution_color}{(string) colors of the distribution plot}
 

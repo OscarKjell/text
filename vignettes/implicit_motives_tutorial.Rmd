@@ -35,19 +35,21 @@ evaluate = FALSE
 library(text)
 
 #### 1: Load data. The following data serves as an example:  
-data <- dplyr::mutate(.data = Language_based_assessment_data_8, participant_id = dplyr::row_number()) 
+im_example <- dplyr::mutate(
+  .data = Language_based_assessment_data_8,
+  story = harmonytexts,
+  participant_id = dplyr::row_number()) 
 
 #### 2: Retrieve sentence- and person-level predictions. Choose between our three motives: power, achievement, or affiliation.
 predictions <- textPredict(
-  texts = data$satisfactiontexts,
+  texts = im_example$story,
   model_info = "implicitpower_roberta23_nilsson2024",
-  participant_id = data$participant_id,
-  dataset_to_merge_predictions = data)
+  participant_id = im_example$participant_id,
+  dataset_to_merge_predictions = im_example)
 
 #### 3: Examine sentence- and person-level predictions. 
-predictions$sentence_predictions
-predictions$person_predictions
-predictions$dataset 
+predictions$sentence_assessments
+predictions$person_assessments
 
 
 

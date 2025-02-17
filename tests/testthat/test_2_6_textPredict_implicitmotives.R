@@ -119,7 +119,7 @@ test_that("textPredict Implicit motives", {
   testthat::expect_equal(implicit_motive[[1]][[1]], 0)
   testthat::expect_equal(implicit_motive$.pred_0[[1]], 0.9975997, tolerance = 0.0001)
   testthat::expect_equal(implicit_motive$.pred_1[[2]], 0.006339252, tolerance = 0.0001)
-
+  testthat::expect_equal(implicit_motive$texts[1], "In the heart of the old forest, there was a place where magic still thrived. The trees whispered ancient secrets, and the ground pulsed with life. The sun was shining brightly as the family arrived at the park for a picnic. Laughter filled the air as the children ran to play.")
 
   ### Merging Participant level
   predictions_participant_1 <- text::textPredict(
@@ -188,6 +188,10 @@ test_that("textPredict Implicit motives", {
   testthat::expect_equal(length(predictions_sentence_1), 4)
   testthat::expect_equal(predictions_sentence_1$story_predictions$story_prob[[1]], 0.2883911, tolerance = 0.0001)
   testthat::expect_equal(predictions_sentence_1$story_predictions$story_prob_no_wc_correction[[2]], 0.8627519, tolerance = 0.0001)
+
+  testthat::expect_equal(names(predictions_sentence_1),
+                         c( "sentence_assessments", "person_assessments",   "story_predictions",    "dataset"))
+
 
   # This one is now 10/10. Awesome
   predictions_sentence_2 <- text::textPredict(

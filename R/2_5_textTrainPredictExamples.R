@@ -8,10 +8,10 @@
 #' @param n_examples (integer) the number of language examples to show.
 #' @param selection_variable (string) selection method: "predictions", "error", or "targets".
 #' @param selection_method (string) specification of which examples to select "min", "max", "min_max", "min_mean_max", "quintiles".
-#' @param include_words (character vector) words required to be included in examples.
+#' @param filter_words (character vector) words required to be included in examples.
 #' @param target_color (string)
-#' @param predictions_color  (string)= "darkblue",
-#' @param error_color =  (string)"darkred",
+#' @param predictions_color  (string) = "darkblue",
+#' @param error_color =  (string) "darkred",
 #' @param distribution_color  (string) colors of the distribution plot
 #' @param figure_format  (string) file format of the figures.
 #' @param scatter_legend_dot_size (integer) The size of dots in the scatter legend.
@@ -38,7 +38,7 @@ textTrainExamples <- function(
     n_examples = 5,
     selection_method = "min_max", # "min", "max", "min_max", "min_mean_max", "quintiles"
     selection_variable = "predictions", # "predictions", "error", or "targets"
-    include_words = NULL,
+    filter_words = NULL,
     target_color = "darkgreen",
     predictions_color = "darkblue",
     error_color = "darkred",
@@ -53,6 +53,8 @@ textTrainExamples <- function(
     seed = 42
     ){
 
+  # This is to specify that the scatter legend in 1 dimensional (which can be updated if we deceide to implement two dimensional plots)
+  y_axes_1 = 1
   # Combine responses with predictions and target scores
   df <- tibble::tibble(
     topic = 1:length(text),
@@ -64,10 +66,11 @@ textTrainExamples <- function(
   )
 
   # Filter rows to include only those with specified words in the language variable
-  if (!is.null(include_words)) {
+  if (!is.null(filter_words)) {
     df <- df %>%
       dplyr::filter(
-        purrr::map_lgl(language, ~ all(stringi::stri_detect_fixed(.x, include_words)))
+        purrr::map_lgl(language, ~ all(
+          stringi::stri_detect_fixed(.x, filter_words)))
       )
   }
 
@@ -224,7 +227,7 @@ textTrainExamples <- function(
 
   # The current way of selecting colours are off in topcsScatterLegend
   if(selection_method %in% c("min_mean_max", "min_max")){
-    distribution_color = distribution_color[c(3, 2, 1)]
+    distribution_color = distribution_color[c(3,2,1)]
   }
   if(selection_method %in% c("min", "max")){
     distribution_color = distribution_color[c(1, 2)]
@@ -248,7 +251,7 @@ textTrainExamples <- function(
     cor_var = "",
     label_x_name = grid_legend_x_axes_label,
     label_y_name = grid_legend_y_axes_label,
-    save_dir = save_dir,
+    save_dir = NULL,
     figure_format = figure_format,
     scatter_popout_dot_size = scatter_legend_dot_size,
     scatter_bg_dot_size = scatter_legend_bg_dot_size,
