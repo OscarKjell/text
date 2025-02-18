@@ -101,6 +101,7 @@ jobs:
         run:  |
           install.packages("devtools")
           library(devtools)
+          devtools::install_github("theharmonylab/topics")
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
