@@ -1,6 +1,10 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.3.4
+- harmonizing wordclouds with topics-package
+- implementing `textTrainExamples()`
+- updating legend plots.
 
 # text 1.3.1
 - included parameter `highest_parameter` and `lowest_parameter` when parameters are tied. 

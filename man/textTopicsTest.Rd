@@ -6,26 +6,27 @@
 \usage{
 textTopicsTest(
   model,
-  pred_var_x = NULL,
-  pred_var_y = NULL,
-  group_var = NULL,
-  control_vars = c(),
-  test_method = "linear_regression",
+  x_variable = NULL,
+  y_variable = NULL,
+  controls = c(),
+  test_method = "default",
+  p_adjust_method = "fdr",
   ...
 )
 }
 \arguments{
 \item{model}{(list) The trained model}
 
-\item{pred_var_x}{(string) The x variable name to be predicted, and to be plotted (only needed for regression or correlation)}
+\item{x_variable}{(string) The x variable name to be predicted, and to be plotted (only needed for regression or correlation)}
 
-\item{pred_var_y}{(string) The y variable name to be predicted, and to be plotted (only needed for regression or correlation)}
+\item{y_variable}{(string) The y variable name to be predicted, and to be plotted (only needed for regression or correlation)}
 
-\item{group_var}{(string) The variable to group by (only needed for t-test)}
-
-\item{control_vars}{(vector) The control variables (not supported yet)}
+\item{controls}{(vector) The control variables (not supported yet)}
 
 \item{test_method}{(string) The test method to use, either "correlation","t-test", "linear_regression","logistic_regression", or "ridge_regression"}
+
+\item{p_adjust_method}{(character) Method to adjust/correct p-values for multiple comparisons
+(default = "none"; see also "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").}
 
 \item{...}{Parameter settings from topicsTest in the topics-package.}
 }

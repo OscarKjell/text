@@ -1,4 +1,4 @@
-
+# install.packages("devtools")
 
 library(testthat)
 library(tibble)
@@ -39,7 +39,6 @@ test_that("textClassify tests", {
     aggregation_from_tokens_to_texts = "mean",      # text embeddings
     aggregation_from_tokens_to_word_types = "mean", # word type embeddings
     keep_token_embeddings = FALSE)                  # token embeddings
-  # Code box 5. - Highest predictive responses of the phrases
 
   # Train word embeddings to assess depression
   # Examine the relationship between the embeddings and the depression scores
@@ -47,18 +46,6 @@ test_that("textClassify tests", {
     x = embeddings$texts,      # text embeddings as predictor
     y = dep_wor_language$PHQ)  # depression scores as target
 
-
-  # 1 get ansewrs with specific words
-  # 2 show highest loewst absolut_error error_call
-
-
-  #text = dep_wor_language$Language
-  #target = dep_model$predictions$y
-  #selection = "min_max"
-  #selection_method = "predictions"
-  #predictions = dep_model$predictions$predictions
-  #n_examples = 5
-  #include_words = NULL
 
   examples <- text::textTrainExamples(
     text = dep_wor_language$Language,
@@ -87,7 +74,6 @@ test_that("textClassify tests", {
     n_examples = 3,
     selection_method = "min_mean_max", # "min", "max", "min_max", "min_mean_max", "quintiles"
     selection_variable = "predictions", # "predictions", "error", or "targets"
-    include_words = NULL,
     target_color = "darkgreen",
     predictions_color = "darkblue",
     error_color = "darkred",
