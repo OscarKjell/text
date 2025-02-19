@@ -97,11 +97,26 @@ jobs:
         if: runner.os == 'macOS'
         run: sudo chown -R $UID $CONDA
 
-      - name: Installing text and testing it
-        run:  |
+      - name: Remove Existing parsnip Version
+        run: |
+          if ("parsnip" %in% rownames(installed.packages())) remove.packages("parsnip")
+        shell: Rscript {0}
+
+      - name: Install Correct parsnip Version
+        run: Rscript -e 'remotes::install_version("parsnip", version = "1.2.1", repos = "http://cran.us.r-project.org")'
+
+      - name: Install R Dependencies Without Upgrading
+        run: |
+          remotes::install_deps(dependencies = TRUE, upgrade = "never")
+        shell: Rscript {0}
+
+      - name: Restart R Session
+        run: Rscript -e 'q("no")'
+
+      - name: Install and Test "text" Package
+        run: |
           install.packages("devtools")
           library(devtools)
-          remotes::install_version("parsnip", version = "1.2.1", repos = "http://cran.us.r-project.org")
           devtools::install_github("theharmonylab/topics")
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
