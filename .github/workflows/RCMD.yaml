@@ -29,25 +29,24 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # macOS-specific steps
-      - name: Fix and Debug Homebrew Issues
-        if: runner.os == 'macOS'
+      # Clear R package cache
+      - name: Clear R Package Cache
         run: |
-          cd /opt/homebrew/Library/Taps/homebrew/homebrew-core || exit 1
-          git stash -u || echo "No changes to stash"
-          git clean -d -f || echo "No files to clean"
-          sudo chown -R $(whoami) $(brew --prefix)/*
-          brew doctor || echo "brew doctor failed"
-          brew config || echo "brew config failed"
+          unlink("~/.R/renviron", recursive = TRUE, force = TRUE)
+          unlink("~/.Rprofile", recursive = TRUE, force = TRUE)
+          unlink("~/.cache/R", recursive = TRUE, force = TRUE)
+          unlink("~/.local/share/R", recursive = TRUE, force = TRUE)
+          if (dir.exists(Sys.getenv("R_LIBS_USER"))) {
+            unlink(Sys.getenv("R_LIBS_USER"), recursive = TRUE, force = TRUE)
+          }
+        shell: Rscript {0}
 
-      - name: Install macOS Utilities
-        if: runner.os == 'macOS'
+      # Set CRAN Mirror
+      - name: Set CRAN Mirror
         run: |
-          brew update || echo "Homebrew update failed"
-          brew install libomp || echo "libomp installation failed"
-          brew install qpdf || echo "qpdf installation failed but continuing"
-          export DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib
-          echo "DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib" >> $GITHUB_ENV
+          options(repos = c(CRAN = "https://cran.r-project.org"))
+          options(pkgType = "source")
+        shell: Rscript {0}
 
       # Set up R environment
       - uses: r-lib/actions/setup-r@v2-branch
@@ -63,38 +62,7 @@ jobs:
           python-version: 3.9
           miniconda-version: "latest"
 
-      - name: Install Conda Dependencies
-        run: |
-          conda config --add channels defaults
-          conda config --set solver classic
-          conda install -c conda-forge numpy
-
-      - name: Query R Dependencies
-        run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-        shell: Rscript {0}
-
-      # Cache R packages
-      - name: Cache R Packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v1
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
-
-      # Install system dependencies (Linux only)
-      - name: Install System Dependencies
-        if: runner.os == 'Linux'
-        run: |
-          while read -r cmd; do
-            eval sudo $cmd
-          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
-          sudo apt install libharfbuzz-dev libfribidi-dev
-
-      # Ensure parsnip 1.2.1 is installed correctly
+      # Force Remove Any Installed parsnip Version
       - name: Remove Existing parsnip Version
         run: |
           if ("parsnip" %in% rownames(installed.packages())) {
@@ -102,27 +70,32 @@ jobs:
           }
         shell: Rscript {0}
 
-      - name: Install Correct parsnip Version
+      # Install Correct parsnip Version
+      - name: Install parsnip 1.2.1
         run: |
           install.packages("remotes")
-          remotes::install_version("parsnip", version = "1.2.1", repos = "http://cran.us.r-project.org")
+          remotes::install_version("parsnip", version = "1.2.1", repos = "https://cran.r-project.org", type = "source")
+          if (packageVersion("parsnip") != "1.2.1") {
+            stop("Error: parsnip did not install correctly!")
+          }
         shell: Rscript {0}
 
       - name: Restart R Session
         run: Rscript -e 'q("no")'
 
-      # Install R dependencies
+      # Install R Dependencies Without Upgrading
       - name: Install R Dependencies Without Upgrading
         run: |
           remotes::install_deps(dependencies = TRUE, upgrade = "never")
-          if ("parsnip" %in% rownames(installed.packages()) && packageVersion("parsnip") != "1.2.1") {
-            stop("Incorrect parsnip version installed!")
+          if (packageVersion("parsnip") != "1.2.1") {
+            stop("Error: parsnip version changed after dependency installation!")
           }
         shell: Rscript {0}
 
       - name: Check Installed Package Dependencies
         run: Rscript -e 'print(tools::package_dependencies("parsnip", db = available.packages(), recursive = TRUE))'
 
+      # Install and Test "text" Package
       - name: Install and Test "text" Package
         run: |
           install.packages("devtools")
