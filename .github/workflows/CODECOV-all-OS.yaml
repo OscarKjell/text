@@ -101,6 +101,7 @@ jobs:
         run:  |
           install.packages("devtools")
           library(devtools)
+          remotes::install_version("parsnip", version = "1.2.1", repos = "http://cran.us.r-project.org")
           devtools::install_github("theharmonylab/topics")
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
