@@ -63,10 +63,10 @@ jobs:
           }
         shell: Rscript {0}
 
-      # Install Correct parsnip Version
       - name: Install parsnip 1.2.1
         run: |
-          install.packages("remotes")
+          install.packages("remotes", repos = "https://cran.r-project.org")
+          options(repos = c(CRAN = "https://cran.r-project.org"))
           remotes::install_version("parsnip", version = "1.2.1", repos = "https://cran.r-project.org", type = "source")
           if (packageVersion("parsnip") != "1.2.1") {
             stop("Error: parsnip did not install correctly!")
