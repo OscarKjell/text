@@ -36,6 +36,13 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2-branch
 
+      # Force Source Install and Set CRAN Mirror
+      - name: Force Source Install and Set CRAN Mirror
+        run: |
+          options(repos = c(CRAN = "https://cran.r-project.org"))
+          options(pkgType = "source")
+        shell: Rscript {0}
+
       # Clear R package cache (only after R is installed)
       - name: Clear R Package Cache
         run: |
@@ -48,13 +55,6 @@ jobs:
           }
         shell: Rscript {0}
 
-      # Set CRAN Mirror
-      - name: Set CRAN Mirror
-        run: |
-          options(repos = c(CRAN = "https://cran.r-project.org"))
-          options(pkgType = "source")
-        shell: Rscript {0}
-
       # Force Remove Any Installed parsnip Version
       - name: Remove Existing parsnip Version
         run: |
@@ -63,6 +63,7 @@ jobs:
           }
         shell: Rscript {0}
 
+      # Install Correct parsnip Version
       - name: Install parsnip 1.2.1
         run: |
           install.packages("remotes", repos = "https://cran.r-project.org")
@@ -79,6 +80,8 @@ jobs:
       # Install R Dependencies Without Upgrading
       - name: Install R Dependencies Without Upgrading
         run: |
+          options(repos = c(CRAN = "https://cran.r-project.org"))
+          options(pkgType = "source")
           remotes::install_deps(dependencies = TRUE, upgrade = "never")
           if (packageVersion("parsnip") != "1.2.1") {
             stop("Error: parsnip version changed after dependency installation!")
