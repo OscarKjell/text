@@ -57,6 +57,17 @@ jobs:
       - name: Restart R Session
         run: Rscript -e 'q("no")'
 
+      # Install topics from Source
+      - name: Install topics from Source
+        run: |
+          install.packages("remotes", repos = "https://cran.r-project.org")
+          options(repos = c(CRAN = "https://cran.r-project.org"))
+          remotes::install_github("theharmonylab/topics", force = TRUE)
+        shell: Rscript {0}
+
+      - name: Restart R Session After topics
+        run: Rscript -e 'q("no")'
+
       # Install R Dependencies Without Upgrading
       - name: Install R Dependencies Without Upgrading
         run: |
@@ -76,7 +87,6 @@ jobs:
         run: |
           install.packages("devtools")
           library(devtools)
-          devtools::install_github("theharmonylab/topics")
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
