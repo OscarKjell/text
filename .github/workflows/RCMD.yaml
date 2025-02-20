@@ -29,97 +29,43 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Set up R environment (ensure R is installed before running R commands)
+      # Set up R environment
       - uses: r-lib/actions/setup-r@v2-branch
         with:
           r-version: ${{ matrix.config.r }}
 
       - uses: r-lib/actions/setup-pandoc@v2-branch
 
-      # Force Source Install and Set CRAN Mirror
-      - name: Force Source Install and Set CRAN Mirror
+      # Install system dependencies (Linux only)
+      - name: Install System Dependencies (Linux)
+        if: runner.os == 'Linux'
         run: |
+          sudo apt update
+          sudo apt install -y libjpeg-dev libpng-dev libtiff-dev libcairo2-dev libxt-dev default-jdk
+          sudo apt install -y libharfbuzz-dev libfribidi-dev
+          sudo apt install -y libgomp1
+          sudo apt install -y libxml2-dev libssl-dev libcurl4-openssl-dev
+          sudo apt install -y openjdk-11-jdk
+
+      # Install system dependencies (macOS only)
+      - name: Install System Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install jpeg libpng libtiff cairo harfbuzz fribidi
+          brew install openjdk
+          sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+          export JAVA_HOME=$(/usr/libexec/java_home)
+          echo "JAVA_HOME=$(/usr/libexec/java_home)" >> $GITHUB_ENV
+
+      # Pin Conflicting Package Versions
+      - name: Pin Conflicting Package Versions
+        run: |
+          install.packages("remotes")
           options(repos = c(CRAN = "https://cran.r-project.org"))
-          options(pkgType = "source")
+          remotes::install_version("jpeg", version = "0.1-8.1", repos = "https://cran.r-project.org")
+          remotes::install_version("rJava", version = "0.9-14", repos = "https://cran.r-project.org")
+          remotes::install_version("gridtext", version = "0.1.4", repos = "https://cran.r-project.org")
+          remotes::install_version("mallet", version = "0.3.0", repos = "https://cran.r-project.org")
+          remotes::install_version("ggwordcloud", version = "0.5.0", repos = "https://cran.r-project.org")
+          remotes::install_version("topics", version = "1.0.0", repos = "https://cran.r-project.org")
         shell: Rscript {0}
-
-      # Clear R package cache (only after R is installed)
-      - name: Clear R Package Cache
-        run: |
-          unlink("~/.R/renviron", recursive = TRUE, force = TRUE)
-          unlink("~/.Rprofile", recursive = TRUE, force = TRUE)
-          unlink("~/.cache/R", recursive = TRUE, force = TRUE)
-          unlink("~/.local/share/R", recursive = TRUE, force = TRUE)
-          if (dir.exists(Sys.getenv("R_LIBS_USER"))) {
-            unlink(Sys.getenv("R_LIBS_USER"), recursive = TRUE, force = TRUE)
-          }
-        shell: Rscript {0}
-
-      # Force Remove Any Installed parsnip Version
-      - name: Remove Existing parsnip Version
-        run: |
-          if ("parsnip" %in% rownames(installed.packages())) {
-            remove.packages("parsnip")
-          }
-        shell: Rscript {0}
-
-      # Install Correct parsnip Version
-      - name: Install parsnip 1.2.1
-        run: |
-          install.packages("remotes", repos = "https://cran.r-project.org")
-          options(repos = c(CRAN = "https://cran.r-project.org"))
-          remotes::install_version("parsnip", version = "1.2.1", repos = "https://cran.r-project.org", type = "source")
-          if (packageVersion("parsnip") != "1.2.1") {
-            stop("Error: parsnip did not install correctly!")
-          }
-        shell: Rscript {0}
-
-      - name: Restart R Session
-        run: Rscript -e 'q("no")'
-
-      # Install R Dependencies Without Upgrading
-      - name: Install R Dependencies Without Upgrading
-        run: |
-          options(repos = c(CRAN = "https://cran.r-project.org"))
-          options(pkgType = "source")
-          remotes::install_deps(dependencies = TRUE, upgrade = "never")
-          if (packageVersion("parsnip") != "1.2.1") {
-            stop("Error: parsnip version changed after dependency installation!")
-          }
-        shell: Rscript {0}
-
-      - name: Check Installed Package Dependencies
-        run: Rscript -e 'print(tools::package_dependencies("parsnip", db = available.packages(), recursive = TRUE))'
-
-      # Install and Test "text" Package
-      - name: Install and Test "text" Package
-        run: |
-          install.packages("devtools")
-          library(devtools)
-          devtools::install_github("theharmonylab/topics")
-          devtools::install_github("oscarkjell/text")
-          text::textrpp_install(prompt = FALSE)
-          text::textrpp_initialize(textEmbed_test = TRUE)
-        shell: Rscript {0}
-
-      # Session Info
-      - name: Session Info
-        run: |
-          options(width = 100)
-          pkgs <- installed.packages()[, "Package"]
-          sessioninfo::session_info(pkgs, include_base = TRUE)
-        shell: Rscript {0}
-
-      # Run R CMD check
-      - name: R CMD Check
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-          OMP_MAX_ACTIVE_LEVELS: 0
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
-        shell: Rscript {0}
-
-      # Display testthat output
-      - name: Display Testthat Output
-        if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
