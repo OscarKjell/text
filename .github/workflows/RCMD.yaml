@@ -36,6 +36,21 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2-branch
 
+      # Force Source Install on macOS
+      - name: Set Install Type to Source on macOS
+        if: runner.os == 'macOS'
+        run: |
+          options(pkgType = "source")
+          Sys.setenv(R_INSTALL_STAGED = "false")
+        shell: Rscript {0}
+
+      # Set Binary Install on Windows and Linux
+      - name: Set Install Type to Binary on Windows and Linux
+        if: runner.os != 'macOS'
+        run: |
+          options(pkgType = "binary")
+        shell: Rscript {0}
+
       # Ensure parsnip 1.2.1 is installed and used
       - name: Force Remove Any Installed parsnip Version
         run: |
@@ -57,17 +72,6 @@ jobs:
       - name: Restart R Session
         run: Rscript -e 'q("no")'
 
-      # Install topics from Source
-      - name: Install topics from Source
-        run: |
-          install.packages("remotes", repos = "https://cran.r-project.org")
-          options(repos = c(CRAN = "https://cran.r-project.org"))
-          remotes::install_github("theharmonylab/topics", force = TRUE)
-        shell: Rscript {0}
-
-      - name: Restart R Session After topics
-        run: Rscript -e 'q("no")'
-
       # Install R Dependencies Without Upgrading
       - name: Install R Dependencies Without Upgrading
         run: |
@@ -87,6 +91,7 @@ jobs:
         run: |
           install.packages("devtools")
           library(devtools)
+          devtools::install_github("theharmonylab/topics")
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
