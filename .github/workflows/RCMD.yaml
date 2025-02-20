@@ -36,20 +36,20 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2-branch
 
-      # Force Source Install on macOS
-      - name: Set Install Type to Source on macOS
+      # Force Source Installation on macOS
+      - name: Force Source Installation on macOS
         if: runner.os == 'macOS'
         run: |
-          options(pkgType = "source")
-          Sys.setenv(R_INSTALL_STAGED = "false")
-        shell: Rscript {0}
+          echo "options(pkgType = 'source')" >> ~/.Rprofile
+          echo 'Sys.setenv(R_INSTALL_STAGED = "false")' >> ~/.Rprofile
+        shell: bash
 
-      # Set Binary Install on Windows and Linux
-      - name: Set Install Type to Binary on Windows and Linux
+      # Use Binary Packages on Windows and Linux
+      - name: Use Binary Packages on Windows and Linux
         if: runner.os != 'macOS'
         run: |
-          options(pkgType = "binary")
-        shell: Rscript {0}
+          echo "options(pkgType = 'binary')" >> ~/.Rprofile
+        shell: bash
 
       # Ensure parsnip 1.2.1 is installed and used
       - name: Force Remove Any Installed parsnip Version
