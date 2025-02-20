@@ -17,6 +17,7 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
           - {os: ubuntu-20.04, r: 'release'}
 
     env:
@@ -28,46 +29,22 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Set up R environment
+      # Set up R environment (ensure R is installed before running R commands)
       - uses: r-lib/actions/setup-r@v2-branch
         with:
           r-version: ${{ matrix.config.r }}
 
       - uses: r-lib/actions/setup-pandoc@v2-branch
 
-      # Install system dependencies (macOS only)
-      - name: Install System Dependencies (macOS)
-        if: runner.os == 'macOS'
+      # Ensure parsnip 1.2.1 is installed and used
+      - name: Force Remove Any Installed parsnip Version
         run: |
-          brew install jpeg
-          brew install openjdk
-          sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
-          export JAVA_HOME=$(/usr/libexec/java_home)
-          echo "JAVA_HOME=$(/usr/libexec/java_home)" >> $GITHUB_ENV
-          echo 'PATH="/opt/homebrew/opt/openjdk/bin:$PATH"' >> ~/.zshrc
-
-      # Install system dependencies (Linux only)
-      - name: Install System Dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt update
-          sudo apt install -y libjpeg-dev openjdk-11-jdk
-          sudo apt install -y libgomp1 libxml2-dev libssl-dev libcurl4-openssl-dev
-          export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
-          echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
-          echo 'PATH="/usr/lib/jvm/java-11-openjdk-amd64/bin:$PATH"' >> ~/.bashrc
-
-      # Install rJava
-      - name: Install rJava
-        run: |
-          install.packages("rJava", repos = "https://cran.r-project.org", type = "source")
-          library(rJava)
-          .jinit()
-          .jcall("java/lang/System", "S", "getProperty", "java.version")
+          if ("parsnip" %in% rownames(installed.packages())) {
+            remove.packages("parsnip")
+          }
         shell: Rscript {0}
 
-      # Install Correct parsnip Version
-      - name: Install parsnip 1.2.1
+      - name: Install Correct parsnip Version
         run: |
           install.packages("remotes", repos = "https://cran.r-project.org")
           options(repos = c(CRAN = "https://cran.r-project.org"))
@@ -83,8 +60,8 @@ jobs:
       # Install R Dependencies Without Upgrading
       - name: Install R Dependencies Without Upgrading
         run: |
+          install.packages("remotes", repos = "https://cran.r-project.org")
           options(repos = c(CRAN = "https://cran.r-project.org"))
-          options(pkgType = "source")
           remotes::install_deps(dependencies = TRUE, upgrade = "never")
           if (packageVersion("parsnip") != "1.2.1") {
             stop("Error: parsnip version changed after dependency installation!")
@@ -120,3 +97,9 @@ jobs:
           OMP_MAX_ACTIVE_LEVELS: 0
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
+
+      # Display testthat output
+      - name: Display Testthat Output
+        if: always()
+        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
