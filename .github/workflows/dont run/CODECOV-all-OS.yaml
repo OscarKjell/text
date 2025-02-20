@@ -17,18 +17,37 @@ jobs:
       fail-fast: false
       matrix:
         config:
+          - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-20.04,   r: 'release'}
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      RSPM: https://packagemanager.rstudio.com/all/latest
+      RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       CODECOV_DEBUG: true
 
     steps:
       - uses: actions/checkout@v2
+
+      # macOS-specific steps
+      - name: Fix Homebrew Issues
+        if: runner.os == 'macOS'
+        run: |
+          if [ -d "/opt/homebrew/Library/Taps/homebrew/homebrew-core" ]; then
+              cd /opt/homebrew/Library/Taps/homebrew/homebrew-core
+              git stash -u || echo "No changes to stash"
+              git clean -d -f || echo "No files to clean"
+          fi
+          brew uninstall openssl@1.1 ruby@3.0 || echo "Deprecated formulae not found"
+          brew install openssl@3 ruby || echo "Failed to install replacements"
+          brew doctor || echo "brew doctor warnings"
+          brew config || echo "brew config warnings"
+          brew update || echo "Failed to update Homebrew"
+          brew install libomp qpdf || echo "Failed to install utilities"
+          export DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib
+          echo "DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib" >> $GITHUB_ENV
 
       - uses: r-lib/actions/setup-r@v2-branch
         with:
@@ -37,50 +56,101 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2-branch
 
-      # Install system dependencies for Linux
-      - name: Install Linux system dependencies
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: 3.9
+          miniconda-version: "latest"
+
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
+      - name: Cache R packages
+        if: runner.os != 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
+      - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y default-jdk
-          sudo R CMD javareconf
-          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev
-          sudo apt-get install -y libharfbuzz-dev libfribidi-dev
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
+          sudo apt install libharfbuzz-dev
+          sudo apt install libfribidi-dev
 
-      # Install remotes first
-      - name: Install remotes package
-        run: |
-          install.packages('remotes', repos = "https://cloud.r-project.org")
-        shell: Rscript {0}
-
-      # Pre-install critical dependencies
-      - name: Install critical R packages
-        run: |
-          install.packages(c('rJava', 'mallet', 'topics'), repos = "https://cloud.r-project.org")
-        shell: Rscript {0}
-
-      # Install all dependencies
-      - name: Install all dependencies
+      - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-      - name: Installing text and testing it
+      - name: Fix Conda permissions on macOS
+        if: runner.os == 'macOS'
+        run: sudo chown -R $UID $CONDA
+
+      - name: Remove Existing parsnip Version
+        run: |
+          if ("parsnip" %in% rownames(installed.packages())) remove.packages("parsnip")
+        shell: Rscript {0}
+
+      - name: Install Correct parsnip Version
+        run: Rscript -e 'remotes::install_version("parsnip", version = "1.2.1", repos = "http://cran.us.r-project.org")'
+
+      - name: Install R Dependencies Without Upgrading
+        run: |
+          remotes::install_deps(dependencies = TRUE, upgrade = "never")
+        shell: Rscript {0}
+
+      - name: Restart R Session
+        run: Rscript -e 'q("no")'
+
+      - name: Install and Test "text" Package
         run: |
           install.packages("devtools")
           library(devtools)
+          devtools::install_github("theharmonylab/topics")
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
-      - name: Generate coverage report
+      - name: Session info
+        run: |
+          options(width = 100)
+          pkgs <- installed.packages()[, "Package"]
+          sessioninfo::session_info(pkgs, include_base = TRUE)
+        shell: Rscript {0}
+
+      # Test coverage
+      - name: Test coverage
         env:
           OMP_MAX_ACTIVE_LEVELS: 2
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
         shell: Rscript {0}
 
-      - name: Debug and list files
-        run: ls -al
-        shell: bash
+      # Debugging step to confirm coverage files are generated
+      - name: List files for debugging
+        run: ls -R
+
+      # Wait to ensure all coverage data is saved
+      - name: Wait for coverage files to be ready
+        run: sleep 5
+
+      # Upload coverage to Codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.config.os }}
+          verbose: true
+          files: "path/to/coverage/file"  # Replace with actual coverage file path
