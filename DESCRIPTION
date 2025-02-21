@@ -57,6 +57,8 @@ Suggests:
     utils,
     ggwordcloud, 
     reactable, 
-    osfr
+    osfr,
+    vdiffr,
+    svglite
 VignetteBuilder: knitr
 Depends: R (>= 4.00)
