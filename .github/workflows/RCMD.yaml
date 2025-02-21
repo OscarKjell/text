@@ -105,13 +105,13 @@ jobs:
         if: runner.os == 'macOS'
         run: sudo chown -R $UID $CONDA
 
-      # Install and test "text" package
+      # Install and test "text" package remotes::install_github("tidymodels/parsnip", ref = "v1.2.1")
       - name: Install and Test "text" Package
         run: |
           install.packages("devtools")
           library(devtools)
           devtools::install_github("theharmonylab/topics")
-          remotes::install_github("tidymodels/parsnip", ref = "v1.2.1")
+          remotes::install_github("tidymodels/parsnip@v1.2.1")
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
