@@ -110,8 +110,8 @@ jobs:
         run: |
           install.packages("devtools")
           library(devtools)
-          remotes::install_github("tidymodels/parsnip", ref = "v1.2.1")
           devtools::install_github("theharmonylab/topics")
+          remotes::install_github("tidymodels/parsnip", ref = "v1.2.1")
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
