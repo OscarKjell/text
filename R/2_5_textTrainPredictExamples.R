@@ -10,6 +10,7 @@
 #' @param y_col (string) name of the column that should get jitter.
 #' @param jitter_factor (numeric) Percentage of jitter to be added.
 #' @param seed (numeric)
+#' @noRd
 dynamic_jitter_data <- function(
     data,
     x_col,
@@ -53,6 +54,7 @@ dynamic_jitter_data <- function(
 #' @param df (dataframe) Dataframe including the varibles that should get jitter.
 #' @param target_col (string) name of the column that should have specified position.
 #' @param desired_position (numeric) Position of the specified column.
+#' @noRd
 reorder_columns <- function(
     df,
     target_col,
