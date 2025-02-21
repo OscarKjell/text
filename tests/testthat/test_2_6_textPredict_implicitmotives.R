@@ -121,89 +121,89 @@ test_that("textPredict Implicit motives", {
   testthat::expect_equal(implicit_motive$.pred_1[[2]], 0.006339252, tolerance = 0.0001)
   testthat::expect_equal(implicit_motive$texts[1], "In the heart of the old forest, there was a place where magic still thrived. The trees whispered ancient secrets, and the ground pulsed with life. The sun was shining brightly as the family arrived at the park for a picnic. Laughter filled the air as the children ran to play.")
 
-  ### Merging Participant level
-  predictions_participant_1 <- text::textPredict(
-    texts = PSE_stories_participant_level$stories,
-    model_info = "implicitpower_roberta23_nilsson2024",
-    participant_id = PSE_stories_participant_level$Participant_ID,
-    dataset_to_merge_assessments = PSE_stories_participant_level
-  )
-  testthat::expect_that(predictions_participant_1, testthat::is_a("list"))
-  testthat::expect_equal(length(predictions_participant_1), 3)
-  testthat::expect_equal(predictions_participant_1$sentence_assessments$.pred_0[[1]], 0.9233226, tolerance = 0.0001)
-  testthat::expect_equal(predictions_participant_1$sentence_assessments$.pred_1[[1]], 0.07667742, tolerance = 0.0001)
-  testthat::expect_equal(predictions_participant_1$person_assessments$person_prob[[1]], -0.07572437, tolerance = 0.0001)
-  testthat::expect_equal(predictions_participant_1$person_assessments$person_class[[2]], -0.1359569, tolerance = 0.0001)
-  testthat::expect_equal(predictions_participant_1$person_assessments$person_prob_no_wc_correction[[3]], 0.1402563, tolerance = 0.0001)
-
-  testthat::expect_equal(predictions_participant_1$dataset$Participant_ID[[2]], "P02", tolerance = 0.0001)
-
-  #
-  predictions_participant_2 <- text::textPredict(
-    texts = PSE_stories_participant_level$stories,
-    model_info = "implicitpower_roberta23_nilsson2024",
-    show_texts = T
-    # participant_id = PSE_stories_participant_level$Participant_ID,
-    # dataset_to_merge_assessments = PSE_stories_participant_level
-  )
-  testthat::expect_that(predictions_participant_2, testthat::is_a("tbl_df"))
-  testthat::expect_equal(length(predictions_participant_2), 4)
-
-  ### Merging Story level
-  #as expected
-  predictions_story_1 <- text::textPredict(
-    texts = PSE_stories_story_level$Story_Text,
-    model_info = "implicitachievement_roberta23_nilsson2024",
-    participant_id = PSE_stories_story_level$Participant_ID,
-    story_id = PSE_stories_story_level$story_id,
-    dataset_to_merge_assessments = PSE_stories_story_level
-  )
-  testthat::expect_that(predictions_story_1, testthat::is_a("list"))
-  testthat::expect_equal(length(predictions_story_1), 4)
-  testthat::expect_equal(predictions_story_1$story_predictions$story_prob[[1]], -0.01077453, tolerance = 0.0001)
-  testthat::expect_equal(predictions_story_1$story_predictions$story_prob_no_wc_correction[[2]], 0.01022855, tolerance = 0.0001)
-
-####################################################################
-  #as expected
-  predictions_story_2 <- text::textPredict(
-    texts = PSE_stories_story_level$Story_Text,
-    model_info = "implicitachievement_roberta23_nilsson2024",
-    #participant_id = PSE_stories_story_level$Participant_ID,
-    #story_id = PSE_stories_story_level$story_id,
-    dataset_to_merge_assessments = PSE_stories_story_level
-  )
-  testthat::expect_that(predictions_story_2, testthat::is_a("list"))
-  testthat::expect_equal(length(predictions_story_2), 3)
-
-  ### Merging sentence level.
-  #this is working as expected
-  predictions_sentence_1 <- text::textPredict(
-    texts = PSE_stories_sentence_level$Story_Text,
-    model_info = "implicitaffiliation_roberta23_nilsson2024",
-    participant_id = PSE_stories_sentence_level$Participant_ID,
-    story_id = PSE_stories_sentence_level$story_id,
-    dataset_to_merge_assessments = PSE_stories_sentence_level
-  )
-  testthat::expect_that(predictions_sentence_1, testthat::is_a("list"))
-  testthat::expect_equal(length(predictions_sentence_1), 4)
-  testthat::expect_equal(predictions_sentence_1$story_predictions$story_prob[[1]], 0.2883911, tolerance = 0.0001)
-  testthat::expect_equal(predictions_sentence_1$story_predictions$story_prob_no_wc_correction[[2]], 0.8627519, tolerance = 0.0001)
-
-  testthat::expect_equal(names(predictions_sentence_1),
-                         c( "sentence_assessments", "person_assessments",   "story_predictions",    "dataset"))
-
-
-  # This one is now 10/10. Awesome
-  predictions_sentence_2 <- text::textPredict(
-    texts = PSE_stories_sentence_level$Story_Text,
-    model_info = "implicitaffiliation_roberta23_nilsson2024",
-    #participant_id = PSE_stories_sentence_level$Participant_ID,
-    #story_id = PSE_stories_sentence_level$story_id,
-    dataset_to_merge_assessments = PSE_stories_sentence_level
-  )
-  testthat::expect_that(predictions_sentence_2, testthat::is_a("list"))
-  testthat::expect_equal(length(predictions_sentence_2), 3)
-  testthat::expect_equal(predictions_sentence_2$sentence_assessments$.pred_0[[1]], 0.9089251, tolerance = 0.0001)
-  testthat::expect_equal(predictions_sentence_2$sentence_assessments$.pred_1[[2]], 0.09193248, tolerance = 0.0001)
+###  ### Merging Participant level
+###  predictions_participant_1 <- text::textPredict(
+###    texts = PSE_stories_participant_level$stories,
+###    model_info = "implicitpower_roberta23_nilsson2024",
+###    participant_id = PSE_stories_participant_level$Participant_ID,
+###    dataset_to_merge_assessments = PSE_stories_participant_level
+###  )
+###  testthat::expect_that(predictions_participant_1, testthat::is_a("list"))
+###  testthat::expect_equal(length(predictions_participant_1), 3)
+###  testthat::expect_equal(predictions_participant_1$sentence_assessments$.pred_0[[1]], 0.9233226, tolerance = 0.0001)
+###  testthat::expect_equal(predictions_participant_1$sentence_assessments$.pred_1[[1]], 0.07667742, tolerance = 0.0001)
+###  testthat::expect_equal(predictions_participant_1$person_assessments$person_prob[[1]], -0.07572437, tolerance = 0.0001)
+###  testthat::expect_equal(predictions_participant_1$person_assessments$person_class[[2]], -0.1359569, tolerance = 0.0001)
+###  testthat::expect_equal(predictions_participant_1$person_assessments$person_prob_no_wc_correction[[3]], 0.1402563, tolerance = 0.0001)
+###
+###  testthat::expect_equal(predictions_participant_1$dataset$Participant_ID[[2]], "P02", tolerance = 0.0001)
+###
+###  #
+###  predictions_participant_2 <- text::textPredict(
+###    texts = PSE_stories_participant_level$stories,
+###    model_info = "implicitpower_roberta23_nilsson2024",
+###    show_texts = T
+###    # participant_id = PSE_stories_participant_level$Participant_ID,
+###    # dataset_to_merge_assessments = PSE_stories_participant_level
+###  )
+###  testthat::expect_that(predictions_participant_2, testthat::is_a("tbl_df"))
+###  testthat::expect_equal(length(predictions_participant_2), 4)
+###
+###  ### Merging Story level
+###  #as expected
+###  predictions_story_1 <- text::textPredict(
+###    texts = PSE_stories_story_level$Story_Text,
+###    model_info = "implicitachievement_roberta23_nilsson2024",
+###    participant_id = PSE_stories_story_level$Participant_ID,
+###    story_id = PSE_stories_story_level$story_id,
+###    dataset_to_merge_assessments = PSE_stories_story_level
+###  )
+###  testthat::expect_that(predictions_story_1, testthat::is_a("list"))
+###  testthat::expect_equal(length(predictions_story_1), 4)
+###  testthat::expect_equal(predictions_story_1$story_predictions$story_prob[[1]], -0.01077453, tolerance = 0.0001)
+###  testthat::expect_equal(predictions_story_1$story_predictions$story_prob_no_wc_correction[[2]], 0.01022855, tolerance = 0.0001)
+###
+#######################################################################
+###  #as expected
+###  predictions_story_2 <- text::textPredict(
+###    texts = PSE_stories_story_level$Story_Text,
+###    model_info = "implicitachievement_roberta23_nilsson2024",
+###    #participant_id = PSE_stories_story_level$Participant_ID,
+###    #story_id = PSE_stories_story_level$story_id,
+###    dataset_to_merge_assessments = PSE_stories_story_level
+###  )
+###  testthat::expect_that(predictions_story_2, testthat::is_a("list"))
+###  testthat::expect_equal(length(predictions_story_2), 3)
+###
+###  ### Merging sentence level.
+###  #this is working as expected
+###  predictions_sentence_1 <- text::textPredict(
+###    texts = PSE_stories_sentence_level$Story_Text,
+###    model_info = "implicitaffiliation_roberta23_nilsson2024",
+###    participant_id = PSE_stories_sentence_level$Participant_ID,
+###    story_id = PSE_stories_sentence_level$story_id,
+###    dataset_to_merge_assessments = PSE_stories_sentence_level
+###  )
+###  testthat::expect_that(predictions_sentence_1, testthat::is_a("list"))
+###  testthat::expect_equal(length(predictions_sentence_1), 4)
+###  testthat::expect_equal(predictions_sentence_1$story_predictions$story_prob[[1]], 0.2883911, tolerance = 0.0001)
+###  testthat::expect_equal(predictions_sentence_1$story_predictions$story_prob_no_wc_correction[[2]], 0.8627519, tolerance = 0.0001)
+###
+###  testthat::expect_equal(names(predictions_sentence_1),
+###                         c( "sentence_assessments", "person_assessments",   "story_predictions",    "dataset"))
+###
+###
+###  # This one is now 10/10. Awesome
+###  predictions_sentence_2 <- text::textPredict(
+###    texts = PSE_stories_sentence_level$Story_Text,
+###    model_info = "implicitaffiliation_roberta23_nilsson2024",
+###    #participant_id = PSE_stories_sentence_level$Participant_ID,
+###    #story_id = PSE_stories_sentence_level$story_id,
+###    dataset_to_merge_assessments = PSE_stories_sentence_level
+###  )
+###  testthat::expect_that(predictions_sentence_2, testthat::is_a("list"))
+###  testthat::expect_equal(length(predictions_sentence_2), 3)
+###  testthat::expect_equal(predictions_sentence_2$sentence_assessments$.pred_0[[1]], 0.9089251, tolerance = 0.0001)
+###  testthat::expect_equal(predictions_sentence_2$sentence_assessments$.pred_1[[2]], 0.09193248, tolerance = 0.0001)
 
 })

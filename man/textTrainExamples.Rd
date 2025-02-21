@@ -7,60 +7,68 @@
 \usage{
 textTrainExamples(
   text,
-  target,
-  predictions,
+  x_variable,
+  y_variable = NULL,
+  type = "default",
+  n_tile = 4,
   n_examples = 5,
-  selection_method = "min_max",
-  selection_variable = "predictions",
+  jitter = NULL,
   filter_words = NULL,
   target_color = "darkgreen",
   predictions_color = "darkblue",
   error_color = "darkred",
-  distribution_color = c("darkgreen", "gray", "darkred"),
+  distribution_color = c("#00508c", "#805259", "#a71200", "#0a6882", "#a4a4a4",
+    "#e04b39", "#19956e", "#22a567", "#5c8a59"),
   figure_format = "svg",
-  scatter_legend_dot_size = 4,
+  scatter_legend_dot_size = 3,
   scatter_legend_bg_dot_size = 2,
-  scatter_legend_n = c(3, 3, 3),
   scatter_show_axis_values = TRUE,
-  grid_legend_x_axes_label = "x",
-  grid_legend_y_axes_label = "y",
+  x_axis_range = NULL,
+  y_axis_range = NULL,
+  grid_legend_x_axes_label = NULL,
+  grid_legend_y_axes_label = NULL,
   seed = 42
 )
 
 textPredictExamples(
   text,
-  target,
-  predictions,
+  x_variable,
+  y_variable = NULL,
+  type = "default",
+  n_tile = 4,
   n_examples = 5,
-  selection_method = "min_max",
-  selection_variable = "predictions",
+  jitter = NULL,
   filter_words = NULL,
   target_color = "darkgreen",
   predictions_color = "darkblue",
   error_color = "darkred",
-  distribution_color = c("darkgreen", "gray", "darkred"),
+  distribution_color = c("#00508c", "#805259", "#a71200", "#0a6882", "#a4a4a4",
+    "#e04b39", "#19956e", "#22a567", "#5c8a59"),
   figure_format = "svg",
-  scatter_legend_dot_size = 4,
+  scatter_legend_dot_size = 3,
   scatter_legend_bg_dot_size = 2,
-  scatter_legend_n = c(3, 3, 3),
   scatter_show_axis_values = TRUE,
-  grid_legend_x_axes_label = "x",
-  grid_legend_y_axes_label = "y",
+  x_axis_range = NULL,
+  y_axis_range = NULL,
+  grid_legend_x_axes_label = NULL,
+  grid_legend_y_axes_label = NULL,
   seed = 42
 )
 }
 \arguments{
 \item{text}{(string) the language that was used for prediction/assessment/classification.}
 
-\item{target}{(numeric) the variable used for training (y).}
+\item{x_variable}{(numeric) the variable used for training (y).}
 
-\item{predictions}{(numeric) the outcome from the model (i.e., y_hat).}
+\item{y_variable}{(numeric) the outcome from the model (i.e., y_hat).}
+
+\item{type}{(string) if set to "prediction_errors", two extra plots is provided: distribution of scores and absolute error.}
+
+\item{n_tile}{(integer) the n tile to split the data in (to show the most extreme tiles in different colours).}
 
 \item{n_examples}{(integer) the number of language examples to show.}
 
-\item{selection_method}{(string) specification of which examples to select "min", "max", "min_max", "min_mean_max", "quintiles".}
-
-\item{selection_variable}{(string) selection method: "predictions", "error", or "targets".}
+\item{jitter}{(integer) the percentage of jitter to add to the data for the scatter plot.}
 
 \item{filter_words}{(character vector) words required to be included in examples.}
 
@@ -76,12 +84,14 @@ textPredictExamples(
 
 \item{scatter_legend_dot_size}{(integer) The size of dots in the scatter legend.}
 
-\item{scatter_legend_bg_dot_size}{(integer) The size of background dots in the scatter legend.}
-
-\item{scatter_legend_n}{(numeric or vector) A vector determining the number of dots to emphasize in each quadrant of the scatter legend.
+\item{scatter_legend_bg_dot_size}{(integer) The size of background dots in the scatter legend.
 For example: c(1,0,1) result in one dot in each quadrant except for the middle quadrant.}
 
 \item{scatter_show_axis_values}{(boolean) If TRUE, the estimate values are shown on the distribution plot axes.}
+
+\item{x_axis_range}{(numeric vector) range of x axis (e.g., c(1, 100)).}
+
+\item{y_axis_range}{(numeric vector) range of y axis (e.g., c(1, 100)).}
 
 \item{grid_legend_x_axes_label}{x-axis label of the grid topic plot.}
 

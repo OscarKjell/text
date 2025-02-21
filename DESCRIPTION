@@ -33,7 +33,7 @@ Imports:
     rlang,
     purrr,
     magrittr,
-    parsnip (< 1.3.0),
+    parsnip,
     recipes (>= 0.1.16),
     rsample,
     reticulate,
