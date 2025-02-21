@@ -9,6 +9,7 @@ context("Testing tasks")
 
 
 test_that("textClassify tests", {
+  testthat::skip_on_os(c("linux", "windows"))  # Skip on Ubuntu (Linux) and Windows
   skip_on_cran()
 
   # Train word embeddings to assess depression

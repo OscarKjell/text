@@ -6,6 +6,9 @@
 - implementing `textTrainExamples()`
 - updating legend plots.
 
+## Result change
+- # Result change: Updating the workflows package from version "1.1.4"  to "1.2.0" result in changes in the random forest function tests.
+
 # text 1.3.1
 - included parameter `highest_parameter` and `lowest_parameter` when parameters are tied. 
 
