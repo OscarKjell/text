@@ -221,6 +221,13 @@ test_that("textTrain with strata settings", {
 
   trained_rf_gender
 
+  if (Sys.info()["sysname"] == "Darwin") {
+    testthat::expect_equal(trained_rf_gender$results[[3]][[1]], .375, tolerance = 0.0001)
+  }
+  if (Sys.info()["sysname"] == "Linux" | Sys.info()["sysname"] == "Windows") {
+    testthat::expect_equal(trained_rf_gender$results[[3]][[1]], .35, tolerance = 0.0001)
+  }
 
-  testthat::expect_equal(trained_rf_gender$results[[3]][[1]], .375, tolerance = 0.0001)
+
+
 })

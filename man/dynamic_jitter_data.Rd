@@ -4,7 +4,13 @@
 \alias{dynamic_jitter_data}
 \title{Add random noise to variables}
 \usage{
-dynamic_jitter_data(data, x_col, y_col = NULL, jitter_factor = 0.05)
+dynamic_jitter_data(
+  data,
+  x_col,
+  y_col = NULL,
+  jitter_factor = 0.05,
+  seed = 2025
+)
 }
 \arguments{
 \item{data}{(dataframe) Dataframe including the varaibles that should get jitter.}
@@ -14,6 +20,8 @@ dynamic_jitter_data(data, x_col, y_col = NULL, jitter_factor = 0.05)
 \item{y_col}{(string) name of the column that should get jitter.}
 
 \item{jitter_factor}{(numeric) Percentage of jitter to be added.}
+
+\item{seed}{(numeric)}
 }
 \description{
 This function is needed because adding jitter des not work to the ggplot objective

@@ -9,11 +9,13 @@
 #' @param x_col (string) name of the column that should get jitter.
 #' @param y_col (string) name of the column that should get jitter.
 #' @param jitter_factor (numeric) Percentage of jitter to be added.
+#' @param seed (numeric)
 dynamic_jitter_data <- function(
     data,
     x_col,
     y_col = NULL,
-    jitter_factor = 0.05) {
+    jitter_factor = 0.05,
+    seed = 2025) {
 
   # Check if x_col exists in the data
   if (!x_col %in% colnames(data)) {
@@ -144,6 +146,7 @@ textTrainExamples <- function(
     seed = 42
     ){
 
+  set.seed(seed)
   hist_plot = NULL
   error_plot = NULL
   if(!is.null(y_variable)){
@@ -296,7 +299,6 @@ textTrainExamples <- function(
   }
 
 
-
   #### Make the Scatter plot ####
 
   # Add jitter
@@ -305,7 +307,8 @@ textTrainExamples <- function(
       data = df_for_distribution,
       x_col = "x_variable",
       if(!is.null(y_variable)) y_col = "y_variable",
-      jitter_factor = jitter)
+      jitter_factor = jitter,
+      seed = seed)
 
     df_for_distribution$x_variable <- df_for_distribution$x_jittered
     if(!is.null(y_variable)) df_for_distribution$y_variable <- df_for_distribution$y_jittered
