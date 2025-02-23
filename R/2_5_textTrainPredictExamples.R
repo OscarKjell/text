@@ -157,7 +157,6 @@ textTrainExamples <- function(
     y_axes_1 = 1
   }
 
-
   if(is.data.frame(x_variable)){
     grid_legend_x_axes_label <- colnames(x_variable)
     x_variable <- x_variable[[1]]
@@ -168,51 +167,78 @@ textTrainExamples <- function(
     y_variable <- y_variable[[1]]
   }
 
+  if(is.data.frame(text)){
+    n_cases <- nrow(text)
+  } else {
+    n_cases <- length(text)
+  }
 
   #### Create "color codes" for each square based on quantiles or quartiles ####
   df <- tibble::tibble(
-    topic = 1:length(text),
+    topic = 1:n_cases,
     text,
     x_variable,
     y_variable,
   )
 
-  # Compute grouping columns
+
+#######################################################
+##### Compute grouping columns and color categories####
+#######################################################
+
+  # Conditional grouping and categorization
   df <- df %>%
     mutate(
+      # Split into quantiles
       x_variable_grouped = ntile(x_variable, n_tile),
-      y_variable_grouped = if (!is.null(y_variable)) ntile(y_variable, n_tile) else NA_integer_
-    ) %>%
-    mutate(
+      y_variable_grouped = if (!is.null(y_variable)) ntile(y_variable, n_tile) else NA_integer_,
+
+      # Recategorize into 3 groups: Low (1), Medium (2), High (3)
       x_variable_grouped_three = case_when(
-        x_variable_grouped == 1 ~ 1,
-        x_variable_grouped == n_tile ~ 3,
-        TRUE ~ 2
+        x_variable_grouped == 1 ~ 1,  # Low
+        x_variable_grouped == n_tile ~ 3,  # High
+        TRUE ~ 2  # Medium
       ),
       y_variable_grouped_three = case_when(
-        !is.null(y_variable) & y_variable_grouped == 1 ~ 1,
-        !is.null(y_variable) & y_variable_grouped == n_tile ~ 3,
+        !is.null(y_variable) & y_variable_grouped == 1 ~ 1,  # Low
+        !is.null(y_variable) & y_variable_grouped == n_tile ~ 3,  # High
         !is.null(y_variable) ~ 2,
         TRUE ~ NA_integer_
-      )
-    ) %>%
-    mutate(
-      combined_category_three = if (!is.null(y_variable)) {
-        (x_variable_grouped_three - 1) * 3 + y_variable_grouped_three
+      ),
+
+      # Combine x and y groupings to form color categories
+      color_categories = if (!is.null(y_variable)) {
+        case_when(
+          x_variable_grouped_three == 1 & y_variable_grouped_three == 3 ~ 1,
+          x_variable_grouped_three == 2 & y_variable_grouped_three == 3 ~ 2,
+          x_variable_grouped_three == 3 & y_variable_grouped_three == 3 ~ 3,
+          x_variable_grouped_three == 1 & y_variable_grouped_three == 2 ~ 4,
+          x_variable_grouped_three == 2 & y_variable_grouped_three == 2 ~ 5,
+          x_variable_grouped_three == 3 & y_variable_grouped_three == 2 ~ 6,
+          x_variable_grouped_three == 1 & y_variable_grouped_three == 1 ~ 7,
+          x_variable_grouped_three == 2 & y_variable_grouped_three == 1 ~ 8,
+          x_variable_grouped_three == 3 & y_variable_grouped_three == 1 ~ 9,
+          TRUE ~ NA_real_
+        )
       } else {
-        x_variable_grouped_three  # One-dimensional case
+        # If y_variable is NULL, only categorize based on x_variable
+        x_variable_grouped_three
       }
+    ) %>%
+    # Convert to string first, then factor with explicit levels
+    mutate(color_categories = as.character(color_categories),
+           color_categories = factor(color_categories, levels = as.character(1:9))
     )
 
-  # Handle square ranking criteria separately for 1D and 2D cases #
+  # Handle square ranking criteria to get text examples separately for 1D and 2D cases #
   if (!is.null(y_variable)) {
     df <- df %>%
       mutate(
         ranking_criteria = case_when(
-          combined_category_three %in% c(1, 3, 7, 9) ~ abs((x_variable + y_variable) / 2 - mean((x_variable + y_variable) / 2, na.rm = TRUE)), # Extreme based on both
-          combined_category_three %in% c(2, 8) ~ abs(y_variable - mean(y_variable, na.rm = TRUE)),  # Extreme based on y_variable
-          combined_category_three %in% c(4, 6) ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme based on x_variable
-          combined_category_three == 5 ~ -abs((x_variable + y_variable) / 2 - mean((x_variable + y_variable) / 2, na.rm = TRUE)), # Closest to mean
+          color_categories %in% c(1, 3, 7, 9) ~ abs((x_variable + y_variable) / 2 - mean((x_variable + y_variable) / 2, na.rm = TRUE)), # Extreme based on both
+          color_categories %in% c(2, 8) ~ abs(y_variable - mean(y_variable, na.rm = TRUE)),  # Extreme based on y_variable
+          color_categories %in% c(4, 6) ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme based on x_variable
+          color_categories == 5 ~ -abs((x_variable + y_variable) / 2 - mean((x_variable + y_variable) / 2, na.rm = TRUE)), # Closest to mean
           TRUE ~ 0
         )
       )
@@ -220,9 +246,9 @@ textTrainExamples <- function(
     df <- df %>%
       mutate(
         ranking_criteria = case_when(
-          combined_category_three == 1 ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme low
-          combined_category_three == 3 ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme high
-          combined_category_three == 2 ~ -abs(x_variable - mean(x_variable, na.rm = TRUE)), # Closest to mean
+          color_categories == 1 ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme low
+          color_categories == 3 ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme high
+          color_categories == 2 ~ -abs(x_variable - mean(x_variable, na.rm = TRUE)), # Closest to mean
           TRUE ~ 0
         )
       )
@@ -243,7 +269,7 @@ textTrainExamples <- function(
 
   # Select N most extreme per category
   df_examples <- df %>%
-    group_by(combined_category_three) %>%
+    group_by(color_categories) %>%
     arrange(desc(ranking_criteria)) %>%
     slice_head(n = n_examples) %>%
     ungroup()
@@ -316,6 +342,10 @@ textTrainExamples <- function(
     if(!is.null(y_variable)) df_for_distribution$y_variable <- df_for_distribution$y_jittered
   }
 
+
+  # Reorder columns to be plotted in the scatter plot to satisfy topicsScatterLegend()
+  df_for_distribution <- reorder_columns(df_for_distribution, "color_categories", ncol(df_for_distribution))
+
   if(!is.null(y_variable)){
     df_for_distribution <- reorder_columns(df_for_distribution, "y_variable", 9)
   }
@@ -324,9 +354,19 @@ textTrainExamples <- function(
 
 
 
-
   # Ensure we have a column called color_categories for the topicsScatterLegend()
-  df_for_distribution$color_categories <- df_for_distribution$combined_category_three
+  # Define color codes with explicit naming
+    distribution_color <- c(
+      "1" = distribution_color[1],
+      "2" = distribution_color[2],
+      "3" = distribution_color[3],
+      "4" = distribution_color[4],
+      "5" = distribution_color[5],
+      "6" = distribution_color[6],
+      "7" = distribution_color[7],
+      "8" = distribution_color[8],
+      "9" = distribution_color[9]
+    )
 
   scatter_plot <- topics::topicsScatterLegend(
     bivariate_color_codes = distribution_color,
@@ -362,7 +402,6 @@ textTrainExamples <- function(
         max(df_for_distribution$y_variable))
     }
   }
-
 
   suppressMessages(
   scatter_plot$legend <- scatter_plot$legend +
@@ -402,52 +441,4 @@ textTrainExamples <- function(
 #' @rdname textTrainExamples
 #' @export
 textPredictExamples <- textTrainExamples
-
-
-
-
-###if(selection_method == "min_max" |
-###   selection_method == "min" |
-###   selection_method == "max"){
-###  df <- df %>%
-###    dplyr::left_join(df_short %>% dplyr::select(topic, category), by = "topic") %>%
-###    dplyr::mutate(
-###      color_categories = dplyr::case_when(
-###        category == "min" ~ 1,
-###        category == "max" ~ 3,
-###        TRUE ~ 2
-###      )
-###    ) %>%
-###    dplyr::select(-category)
-###
-###  num_popout = c(n_examples, 0, n_examples)
-###  user_spec_topics <- paste0(df_short$topic)
-###}
-###if(selection_method == "min_mean_max"){
-###
-###  df <- df %>%
-###    dplyr::left_join(df_short %>% dplyr::select(topic, category), by = "topic") %>%
-###    dplyr::mutate(
-###      color_categories = dplyr::case_when(
-###        category == "min" ~ 1,
-###        category == "mean" ~ 2,
-###        category == "max" ~ 3,
-###        TRUE ~ 2
-###      )
-###    ) %>%
-###    dplyr::select(-category) # Optionally remove the temporary `category` column
-###
-###  num_popout = c(n_examples, n_examples, n_examples)
-###  user_spec_topics <- paste0(df_short$topic)
-###}
-###
-###
-#### The current way of selecting colours are off in topcsScatterLegend
-###if(selection_method %in% c("min_mean_max", "min_max")){
-###  distribution_color = distribution_color[c(3,2,1)]
-###}
-###if(selection_method %in% c("min", "max")){
-###  distribution_color = distribution_color[c(1, 2)]
-###}
-####table(df$color_categories)
 
