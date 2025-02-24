@@ -110,9 +110,11 @@ reorder_columns <- function(
 #' @param grid_legend_y_axes_label y-axis label of the grid topic plot.
 #' @param seed (integer) The seed to set for reproducibility.
 #' @returns A tibble including examples with descriptive variables.
-#' @importFrom dplyr filter select arrange slice group_by summarize mutate rename
+#' @importFrom dplyr filter select arrange slice slice_head group_by summarize mutate rename ntile case_when
 #' @importFrom stringi stri_detect_fixed
 #' @importFrom purrr map_lgl
+#' @importFrom tidyr pivot_longer
+#' @importFrom ggplot2 geom_histogram aes labs theme_minimal scale_fill_manual
 #' @export
 textTrainExamples <- function(
     text,
@@ -188,18 +190,18 @@ textTrainExamples <- function(
 
   # Conditional grouping and categorization
   df <- df %>%
-    mutate(
+    dplyr::mutate(
       # Split into quantiles
-      x_variable_grouped = ntile(x_variable, n_tile),
-      y_variable_grouped = if (!is.null(y_variable)) ntile(y_variable, n_tile) else NA_integer_,
+      x_variable_grouped = dplyr::ntile(x_variable, n_tile),
+      y_variable_grouped = if (!is.null(y_variable)) dplyr::ntile(y_variable, n_tile) else NA_integer_,
 
       # Recategorize into 3 groups: Low (1), Medium (2), High (3)
-      x_variable_grouped_three = case_when(
+      x_variable_grouped_three = dplyr::case_when(
         x_variable_grouped == 1 ~ 1,  # Low
         x_variable_grouped == n_tile ~ 3,  # High
         TRUE ~ 2  # Medium
       ),
-      y_variable_grouped_three = case_when(
+      y_variable_grouped_three = dplyr::case_when(
         !is.null(y_variable) & y_variable_grouped == 1 ~ 1,  # Low
         !is.null(y_variable) & y_variable_grouped == n_tile ~ 3,  # High
         !is.null(y_variable) ~ 2,
@@ -208,7 +210,7 @@ textTrainExamples <- function(
 
       # Combine x and y groupings to form color categories
       color_categories = if (!is.null(y_variable)) {
-        case_when(
+        dplyr::case_when(
           x_variable_grouped_three == 1 & y_variable_grouped_three == 3 ~ 1,
           x_variable_grouped_three == 2 & y_variable_grouped_three == 3 ~ 2,
           x_variable_grouped_three == 3 & y_variable_grouped_three == 3 ~ 3,
@@ -226,15 +228,15 @@ textTrainExamples <- function(
       }
     ) %>%
     # Convert to string first, then factor with explicit levels
-    mutate(color_categories = as.character(color_categories),
+    dplyr::mutate(color_categories = as.character(color_categories),
            color_categories = factor(color_categories, levels = as.character(1:9))
     )
 
   # Handle square ranking criteria to get text examples separately for 1D and 2D cases #
   if (!is.null(y_variable)) {
     df <- df %>%
-      mutate(
-        ranking_criteria = case_when(
+      dplyr::mutate(
+        ranking_criteria = dplyr::case_when(
           color_categories %in% c(1, 3, 7, 9) ~ abs((x_variable + y_variable) / 2 - mean((x_variable + y_variable) / 2, na.rm = TRUE)), # Extreme based on both
           color_categories %in% c(2, 8) ~ abs(y_variable - mean(y_variable, na.rm = TRUE)),  # Extreme based on y_variable
           color_categories %in% c(4, 6) ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme based on x_variable
@@ -244,8 +246,8 @@ textTrainExamples <- function(
       )
   } else {
     df <- df %>%
-      mutate(
-        ranking_criteria = case_when(
+      dplyr::mutate(
+        ranking_criteria = dplyr::case_when(
           color_categories == 1 ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme low
           color_categories == 3 ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme high
           color_categories == 2 ~ -abs(x_variable - mean(x_variable, na.rm = TRUE)), # Closest to mean
@@ -269,10 +271,10 @@ textTrainExamples <- function(
 
   # Select N most extreme per category
   df_examples <- df %>%
-    group_by(color_categories) %>%
-    arrange(desc(ranking_criteria)) %>%
-    slice_head(n = n_examples) %>%
-    ungroup()
+    dplyr::group_by(color_categories) %>%
+    dplyr::arrange(desc(ranking_criteria)) %>%
+    dplyr::slice_head(n = n_examples) %>%
+    dplyr::ungroup()
 
 
   #### Histogram of predictions and targets using the entire dataset ####
@@ -351,7 +353,6 @@ textTrainExamples <- function(
   }
   # Reorder columns to be plotted in the scatter plot to satisfy topicsScatterLegend()
   df_for_distribution <- reorder_columns(df_for_distribution, "x_variable", 5)
-
 
 
   # Ensure we have a column called color_categories for the topicsScatterLegend()
