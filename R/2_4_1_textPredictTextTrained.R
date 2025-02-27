@@ -484,9 +484,9 @@ textPredictTextTrained <- function(
 
     # retrieve classes in case of logistic regression
     classes <- emb_and_mod$classes
-  } else {
-    loaded_model <- model_info
-  }
+  } #else {
+    #loaded_model <- model_info
+#  }
 
   # "regression" or "classification"
   mod_type <- loaded_model$final_model$fit$actions$model$spec[[3]]

@@ -271,8 +271,9 @@ textPredict <- function(
         save_name = save_name,
         story_id = story_id,
         dataset_to_merge_assessments = dataset_to_merge_assessments,
-        previous_sentence = previous_sentence,
-        ...)
+        previous_sentence = previous_sentence
+        , ...
+        )
 
   }
 
