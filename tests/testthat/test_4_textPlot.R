@@ -12,8 +12,8 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
   df_for_plotting1 <- text::textProjection(
     words = Language_based_assessment_data_8$harmonywords[1:10],
     word_embeddings = word_embeddings_4$texts$harmonywords[1:10, ],
-    word_embeddings_4$word_types,
-    Language_based_assessment_data_8$hilstotal[1:10],
+    word_types_embeddings = word_embeddings_4$word_types,
+    x = Language_based_assessment_data_8$hilstotal[1:10],
     split = "mean",
     Npermutations = 2,
     n_per_split = 1,

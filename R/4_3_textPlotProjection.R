@@ -350,7 +350,7 @@ textProjection <- function(
 
     # Position words in relation to Group 2 (High)
     all_unique_words_freq <- unique_freq_words(x2$words)
-    # Get word embeddings for each word (applysemrep function is created in 1_1_textEmbedd).
+    # Get word embeddings for each word.
     all_unique_words_we <- lapply(all_unique_words_freq$words, applysemrep, word_types_embeddings)
     all_unique_words_we_b <- dplyr::bind_rows(all_unique_words_we)
 
@@ -387,8 +387,12 @@ textProjection <- function(
     # Computing the dot product projection for the aggregated and projected embeddings
     all_aggregated <- dplyr::bind_rows(
       Aggregated_word_embedding_group1,
-      Aggregated_word_embedding_group2, projected_embedding
+      Aggregated_word_embedding_group2,
+      projected_embedding
     )
+
+    # 1 Mars 2025 -- Anchoring aggregated word embeddings
+    all_aggregated <- all_aggregated - embedding_to_anchour_with
 
     projected_embedding_a <- tibble::as_tibble_row(projected_embedding) %>%
       dplyr::slice(rep(1:dplyr::n(), each = nrow(all_aggregated)))
