@@ -392,7 +392,7 @@ textProjection <- function(
     )
 
     # 1 Mars 2025 -- Anchoring aggregated word embeddings
-    all_aggregated <- all_aggregated - embedding_to_anchour_with
+  #  all_aggregated <- all_aggregated - embedding_to_anchour_with
 
     projected_embedding_a <- tibble::as_tibble_row(projected_embedding) %>%
       dplyr::slice(rep(1:dplyr::n(), each = nrow(all_aggregated)))
