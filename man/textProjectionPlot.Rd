@@ -43,6 +43,7 @@ textProjectionPlot(
   legend_w_size = 0.2,
   legend_title_size = 7,
   legend_number_size = 2,
+  legend_number_colour = "white",
   group_embeddings1 = FALSE,
   group_embeddings2 = FALSE,
   projection_embedding = FALSE,
@@ -158,6 +159,8 @@ squares of the legend will then be aggregated (and show the same, incorrect  val
 \item{legend_title_size}{Font size (default: 7).}
 
 \item{legend_number_size}{Font size of the values in the legend (default: 2).}
+
+\item{legend_number_colour}{(string) Colour of the numbers in the box legend.}
 
 \item{group_embeddings1}{Shows a point representing the aggregated word embedding for group 1 (default = FALSE).}
 

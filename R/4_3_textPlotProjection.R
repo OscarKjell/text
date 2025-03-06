@@ -657,6 +657,7 @@ textProjection <- function(
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size (default: 7).
 #' @param legend_number_size Font size of the values in the legend (default: 2).
+#' @param legend_number_colour (string) Colour of the numbers in the box legend.
 #' @param group_embeddings1 Shows a point representing the aggregated word embedding for group 1 (default = FALSE).
 #' @param group_embeddings2 Shows a point representing the aggregated word embedding for group 2 (default = FALSE).
 #' @param projection_embedding Shows a point representing the aggregated direction embedding (default = FALSE).
@@ -764,6 +765,7 @@ textProjectionPlot <- function(
     legend_w_size = 0.2,
     legend_title_size = 7,
     legend_number_size = 2,
+    legend_number_colour = "white",
     group_embeddings1 = FALSE,
     group_embeddings2 = FALSE,
     projection_embedding = FALSE,
@@ -821,6 +823,7 @@ textProjectionPlot <- function(
     legend_w_size = legend_w_size,
     legend_title_size = legend_title_size,
     legend_number_size = legend_number_size,
+    legend_number_colour = legend_number_colour,
     group_embeddings1 = group_embeddings1,
     group_embeddings2 = group_embeddings2,
     projection_embedding = projection_embedding,

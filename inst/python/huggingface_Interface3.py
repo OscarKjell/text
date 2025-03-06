@@ -18,10 +18,10 @@ try:
     nltk.data.find('tokenizers/punkt/PY3/english.pickle')
 except:
     nltk.download('punkt')
-try:
-    nltk.data.find('tokenizers/punkt_tab/english/')
-except:
-    nltk.download('punkt_tab')
+#try:
+#    nltk.data.find('tokenizers/punkt_tab/english/')
+#except:
+#    nltk.download('punkt_tab')
 
 from nltk.tokenize import sent_tokenize
 

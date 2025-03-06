@@ -3,38 +3,39 @@
 #' Creates the plot object (except for the legend).
 #' @return A plot object.
 #' @noRd
-textPlotting <- function(word_data_all = word_data_all,
-                         word_data_all_yadjusted = word_data_all_yadjusted,
-                         only_x_dimension = only_x_dimension,
-                         x_axes_1 = x_axes_1,
-                         y_axes_1 = y_axes_1,
-                         group_embeddings1 = group_embeddings1,
-                         group_embeddings2 = group_embeddings2,
-                         projection_embedding = projection_embedding,
-                         label = words,
-                         points_without_words_size = points_without_words_size,
-                         points_without_words_alpha = points_without_words_alpha,
-                         colour_categories = colour_categories,
-                         arrow_transparency = arrow_transparency,
-                         scale_x_axes_lim = scale_x_axes_lim,
-                         scale_y_axes_lim = scale_y_axes_lim,
-                         position_jitter_hight = position_jitter_hight,
-                         position_jitter_width = position_jitter_width,
-                         word_font = word_font,
-                         point_size = point_size,
-                         aggregated_embeddings_data = aggregated_embeddings_data,
-                         aggregated_point_size = aggregated_point_size,
-                         aggregated_shape = aggregated_shape,
-                         aggregated_color_G1 = aggregated_color_G1,
-                         aggregated_color_G2 = aggregated_color_G2,
-                         projection_color = projection_color,
-                         word_size_range = word_size_range,
-                         # titles
-                         title_top = title_top,
-                         titles_color = titles_color,
-                         x_axes_label = x_axes_label,
-                         y_axes_label = y_axes_label,
-                         y_axes_values = y_axes_values) {
+textPlotting <- function(
+    word_data_all = word_data_all,
+    word_data_all_yadjusted = word_data_all_yadjusted,
+    only_x_dimension = only_x_dimension,
+    x_axes_1 = x_axes_1,
+    y_axes_1 = y_axes_1,
+    group_embeddings1 = group_embeddings1,
+    group_embeddings2 = group_embeddings2,
+    projection_embedding = projection_embedding,
+    label = words,
+    points_without_words_size = points_without_words_size,
+    points_without_words_alpha = points_without_words_alpha,
+    colour_categories = colour_categories,
+    arrow_transparency = arrow_transparency,
+    scale_x_axes_lim = scale_x_axes_lim,
+    scale_y_axes_lim = scale_y_axes_lim,
+    position_jitter_hight = position_jitter_hight,
+    position_jitter_width = position_jitter_width,
+    word_font = word_font,
+    point_size = point_size,
+    aggregated_embeddings_data = aggregated_embeddings_data,
+    aggregated_point_size = aggregated_point_size,
+    aggregated_shape = aggregated_shape,
+    aggregated_color_G1 = aggregated_color_G1,
+    aggregated_color_G2 = aggregated_color_G2,
+    projection_color = projection_color,
+    word_size_range = word_size_range,
+    # titles
+    title_top = title_top,
+    titles_color = titles_color,
+    x_axes_label = x_axes_label,
+    y_axes_label = y_axes_label,
+    y_axes_values = y_axes_values) {
   plot <-
     # construct ggplot; the !!sym( ) is to  turn the strings into symbols.
     ggplot2::ggplot(data = word_data_all, ggplot2::aes(!!rlang::sym(x_axes_1), !!rlang::sym(y_axes_1), label = words)) +
@@ -136,16 +137,19 @@ textPlotting <- function(word_data_all = word_data_all,
 #' Creates the legend for the plot.
 #' @return A legend object that can be combined with the plot object.
 #' @noRd
-textLegend <- function(bivariate_color_codes = bivariate_color_codes,
-                       y_axes_1 = y_axes_1,
-                       fill = fill,
-                       legend_title = legend_title,
-                       legend_title_size = legend_title_size,
-                       legend_x_axes_label = legend_x_axes_label,
-                       legend_y_axes_label = legend_y_axes_label,
-                       word_data_all = word_data_all,
-                       legend_number_size = legend_number_size,
-                       titles_color = titles_color) {
+textLegend <- function(
+    bivariate_color_codes = bivariate_color_codes,
+    y_axes_1 = y_axes_1,
+    fill = fill,
+    legend_title = legend_title,
+    legend_title_size = legend_title_size,
+    legend_x_axes_label = legend_x_axes_label,
+    legend_y_axes_label = legend_y_axes_label,
+    word_data_all = word_data_all,
+    legend_number_size = legend_number_size,
+    legend_number_colour = legend_number_colour,
+    titles_color = titles_color) {
+
   bivariate_color_data <- tibble::tibble(
     "1 - 3" = "#XXXXXX", "2 - 3" = "#XXXXXX", "3 - 3" = "#XXXXXX",
     "1 - 2" = "#XXXXXX", "2 - 2" = "#XXXXXX", "3 - 2" = "#XXXXXX",
@@ -187,7 +191,7 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
           geom = "text", x = 1, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[1],
             na.rm = TRUE
           ),
-          color = titles_color, size = legend_number_size
+          color = legend_number_colour, size = legend_number_size
         )
       }
     } +
@@ -197,7 +201,7 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
           geom = "text", x = 2, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[2],
             na.rm = TRUE
           ),
-          color = titles_color, size = legend_number_size
+          color = legend_number_colour, size = legend_number_size
         )
       }
     } +
@@ -207,7 +211,7 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
           geom = "text", x = 3, y = 3, label = sum(word_data_all$colour_categories == bivariate_color_codes[3],
             na.rm = TRUE
           ),
-          color = titles_color, size = legend_number_size
+          color = legend_number_colour, size = legend_number_size
         )
       }
     } +
@@ -215,19 +219,19 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
       geom = "text", x = 1, y = 2, label = sum(word_data_all$colour_categories == bivariate_color_codes[4],
         na.rm = TRUE
       ),
-      color = titles_color, size = legend_number_size
+      color = legend_number_colour, size = legend_number_size
     ) +
     ggplot2::annotate(
       geom = "text", x = 2, y = 2, label = sum(word_data_all$colour_categories == bivariate_color_codes[5],
         na.rm = TRUE
       ),
-      color = titles_color, size = legend_number_size
+      color = legend_number_colour, size = legend_number_size
     ) +
     ggplot2::annotate(
       geom = "text", x = 3, y = 2, label = sum(word_data_all$colour_categories == bivariate_color_codes[6],
         na.rm = TRUE
       ),
-      color = titles_color, size = legend_number_size
+      color = legend_number_colour, size = legend_number_size
     ) +
     {
       if (y_axes_1 != "only_x_dimension") {
@@ -235,7 +239,7 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
           geom = "text", x = 1, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[7],
             na.rm = TRUE
           ),
-          color = titles_color, size = legend_number_size
+          color = legend_number_colour, size = legend_number_size
         )
       }
     } +
@@ -245,7 +249,7 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
           geom = "text", x = 2, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[8],
             na.rm = TRUE
           ),
-          color = titles_color, size = legend_number_size
+          color = legend_number_colour, size = legend_number_size
         )
       }
     } +
@@ -255,7 +259,7 @@ textLegend <- function(bivariate_color_codes = bivariate_color_codes,
           geom = "text", x = 3, y = 1, label = sum(word_data_all$colour_categories == bivariate_color_codes[9],
             na.rm = TRUE
           ),
-          color = titles_color, size = legend_number_size
+          color = legend_number_colour, size = legend_number_size
         )
       }
     } +
@@ -680,6 +684,7 @@ adjust_for_plot_type <- function(word_data,
 #' @param legend_w_size Width of the color legend (default 0.15).
 #' @param legend_title_size Font size (default: 7).
 #' @param legend_number_size Font size of the values in the legend (default: 2).
+#' @param legend_number_colour (string) Colour of the numbers in the box legend.
 #' @param group_embeddings1 (boolean) Shows a point representing the aggregated word embedding
 #' for group 1 (default = FALSE).
 #' @param group_embeddings2 (boolean) Shows a point representing the aggregated word embedding
@@ -747,65 +752,67 @@ adjust_for_plot_type <- function(word_data,
 #' @importFrom purrr as_vector
 #' @importFrom stringi stri_split_boundaries
 #' @export
-textPlot <- function(word_data,
-                     k_n_words_to_test = FALSE,
-                     min_freq_words_test = 1,
-                     min_freq_words_plot = 1,
-                     plot_n_words_square = 3,
-                     plot_n_words_p = 5,
-                     plot_n_word_extreme = 5,
-                     plot_n_word_frequency = 5,
-                     plot_n_words_middle = 5,
-                     titles_color = "#61605e",
-                     y_axes = FALSE,
-                     p_alpha = 0.05,
-                     overlapping = TRUE,
-                     p_adjust_method = "none",
-                     title_top = "Supervised Dimension Projection",
-                     x_axes_label = "Supervised Dimension Projection (SDP)",
-                     y_axes_label = "Supervised Dimension Projection (SDP)",
-                     scale_x_axes_lim = NULL,
-                     scale_y_axes_lim = NULL,
-                     word_font = NULL,
-                     bivariate_color_codes = c(
-                       "#398CF9", "#60A1F7", "#5dc688",
-                       "#e07f6a", "#EAEAEA", "#40DD52",
-                       "#FF0000", "#EA7467", "#85DB8E"
-                     ),
-                     word_size_range = c(3, 8),
-                     position_jitter_hight = .0,
-                     position_jitter_width = .03,
-                     point_size = 0.5,
-                     arrow_transparency = 0.1,
-                     points_without_words_size = 0.2,
-                     points_without_words_alpha = 0.2,
-                     legend_title = "SDP",
-                     legend_x_axes_label = "x",
-                     legend_y_axes_label = "y",
-                     legend_x_position = 0.02,
-                     legend_y_position = 0.02,
-                     legend_h_size = 0.2,
-                     legend_w_size = 0.2,
-                     legend_title_size = 7,
-                     legend_number_size = 2,
-                     group_embeddings1 = FALSE,
-                     group_embeddings2 = FALSE,
-                     projection_embedding = FALSE,
-                     aggregated_point_size = 0.8,
-                     aggregated_shape = 8,
-                     aggregated_color_G1 = "black",
-                     aggregated_color_G2 = "black",
-                     projection_color = "blue",
-                     seed = 1005,
-                     explore_words = NULL,
-                     explore_words_color = "#ad42f5",
-                     explore_words_point = "ALL_1",
-                     explore_words_aggregation = "mean",
-                     remove_words = NULL,
-                     n_contrast_group_color = NULL,
-                     n_contrast_group_remove = FALSE,
-                     space = NULL,
-                     scaling = FALSE) {
+textPlot <- function(
+    word_data,
+    k_n_words_to_test = FALSE,
+    min_freq_words_test = 1,
+    min_freq_words_plot = 1,
+    plot_n_words_square = 3,
+    plot_n_words_p = 5,
+    plot_n_word_extreme = 5,
+    plot_n_word_frequency = 5,
+    plot_n_words_middle = 5,
+    titles_color = "#61605e",
+    y_axes = FALSE,
+    p_alpha = 0.05,
+    overlapping = TRUE,
+    p_adjust_method = "none",
+    title_top = "Supervised Dimension Projection",
+    x_axes_label = "Supervised Dimension Projection (SDP)",
+    y_axes_label = "Supervised Dimension Projection (SDP)",
+    scale_x_axes_lim = NULL,
+    scale_y_axes_lim = NULL,
+    word_font = NULL,
+    bivariate_color_codes = c(
+      "#398CF9", "#60A1F7", "#5dc688",
+      "#e07f6a", "#EAEAEA", "#40DD52",
+      "#FF0000", "#EA7467", "#85DB8E"
+    ),
+    word_size_range = c(3, 8),
+    position_jitter_hight = .0,
+    position_jitter_width = .03,
+    point_size = 0.5,
+    arrow_transparency = 0.1,
+    points_without_words_size = 0.2,
+    points_without_words_alpha = 0.2,
+    legend_title = "SDP",
+    legend_x_axes_label = "x",
+    legend_y_axes_label = "y",
+    legend_x_position = 0.02,
+    legend_y_position = 0.02,
+    legend_h_size = 0.2,
+    legend_w_size = 0.2,
+    legend_title_size = 7,
+    legend_number_size = 2,
+    legend_number_colour = "white",
+    group_embeddings1 = FALSE,
+    group_embeddings2 = FALSE,
+    projection_embedding = FALSE,
+    aggregated_point_size = 0.8,
+    aggregated_shape = 8,
+    aggregated_color_G1 = "black",
+    aggregated_color_G2 = "black",
+    projection_color = "blue",
+    seed = 1005,
+    explore_words = NULL,
+    explore_words_color = "#ad42f5",
+    explore_words_point = "ALL_1",
+    explore_words_aggregation = "mean",
+    remove_words = NULL,
+    n_contrast_group_color = NULL,
+    n_contrast_group_remove = FALSE,
+    space = NULL,
+    scaling = FALSE) {
 
   ##### Comment to be saved ####
   text_plot_comment <- paste(
@@ -838,7 +845,8 @@ textPlot <- function(word_data,
     "legend_h_size =", legend_h_size,
     "legend_w_size =", legend_w_size,
     "legend_title_size =", legend_title_size,
-    "legend_number_size =", legend_number_size
+    "legend_number_size =", legend_number_size,
+    "legend_number_colour =", legend_number_colour
   )
 
   set.seed(seed)
@@ -1261,6 +1269,7 @@ textPlot <- function(word_data,
     legend_y_axes_label = legend_y_axes_label,
     word_data_all = word_data_all,
     legend_number_size = legend_number_size,
+    legend_number_colour = legend_number_colour,
     titles_color = titles_color
   )
   # legend
