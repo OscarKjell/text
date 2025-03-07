@@ -14,6 +14,7 @@ textProjectionPlot(
   plot_n_word_extreme = 5,
   plot_n_word_frequency = 5,
   plot_n_words_middle = 5,
+  plot_n_word_random = 0,
   titles_color = "#61605e",
   y_axes = FALSE,
   p_alpha = 0.05,
@@ -91,6 +92,8 @@ plot_n_words_p = 1 yield 4 words.}
 
 \item{plot_n_words_middle}{Number of words plotted that are in the middle in Supervised
 Dimension Projection score (i.e., even if not significant;  per dimensions, where duplicates are removed).}
+
+\item{plot_n_word_random}{(numeric) select random words to plot.}
 
 \item{titles_color}{Color for all the titles (default: "#61605e")}
 

@@ -198,7 +198,7 @@ textPredict <- function(
   }
 
 
-    # Locale path
+  # Locale path
   if(is_local_model & is.null(model_type) |
     is_online_path & is.null(model_type)){
 

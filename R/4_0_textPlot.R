@@ -643,6 +643,7 @@ adjust_for_plot_type <- function(word_data,
 #' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised
 #' Dimension Projection score (default = 5). (i.e., even if not significant;  per dimensions,
 #' where duplicates are removed).
+#' @param plot_n_word_random (numeric) select random words to plot.
 #' @param title_top Title (default "  ").
 #' @param titles_color Color for all the titles (default: "#61605e").
 # @param x_axes If TRUE, plotting on the x_axes.
@@ -762,6 +763,7 @@ textPlot <- function(
     plot_n_word_extreme = 5,
     plot_n_word_frequency = 5,
     plot_n_words_middle = 5,
+    plot_n_word_random = 0,
     titles_color = "#61605e",
     y_axes = FALSE,
     p_alpha = 0.05,
@@ -1014,6 +1016,20 @@ textPlot <- function(
     dplyr::arrange(-n) %>%
     dplyr::slice(0:plot_n_word_frequency)
 
+  # 2025 7 Mars Add random set of words plot_n_word_random = 10
+  # Identify all selected words
+  selected_words_x <- dplyr::bind_rows(
+    data_p_x_neg, data_p_x_pos,
+    word_data1_extrem_max_x, word_data1_extrem_min_x,
+    word_data1_frequency_x
+  ) %>%
+    dplyr::distinct(words)
+
+  # Exclude selected words and sample random words from the remaining
+  word_data1_random_x <- word_data1 %>%
+    dplyr::anti_join(selected_words_x, by = "words") %>%  # Exclude words already selected
+    dplyr::sample_n(min(plot_n_word_random, n()))  # Ensure it does not exceed available words
+
   # Select the middle range, order according to frequency and then select the plot_n_words_middle = 5
   mean_m_sd_x <- mean(word_data1$x_plotted, na.rm = TRUE) - (sd(word_data1$x_plotted, na.rm = TRUE) / 10)
   mean_p_sd_x <- mean(word_data1$x_plotted, na.rm = TRUE) + (sd(word_data1$x_plotted, na.rm = TRUE) / 10)
@@ -1037,9 +1053,11 @@ textPlot <- function(
                        dplyr::transmute(words, check_extreme_frequency_x = 1), by = "words") %>%
     dplyr::left_join(word_data1_middle_x %>%
                        dplyr::transmute(words, check_middle_x = 1), by = "words") %>%
+    dplyr::left_join(word_data1_random_x %>%
+                       dplyr::transmute(words, check_random_x = 1), by = "words") %>%  # Adding the random selection
     dplyr::mutate(extremes_all_x = rowSums(cbind(
       check_p_square, check_p_x_neg, check_p_x_pos, check_extreme_max_x, check_extreme_min_x,
-      check_extreme_frequency_x, check_middle_x
+      check_extreme_frequency_x, check_middle_x, check_random_x
     ), na.rm = TRUE))
 
 
@@ -1070,6 +1088,21 @@ textPlot <- function(
       dplyr::arrange(-n) %>%
       dplyr::slice(0:plot_n_word_frequency)
 
+    # 2025 7 Mars Add random set of words plot_n_word_random = 10
+    # Identify all selected words
+    selected_words <- dplyr::bind_rows(
+      word_data1_x,
+      data_p_y_neg, data_p_y_pos,
+      word_data1_extrem_max_y, word_data1_extrem_min_y,
+      word_data1_frequency_y
+    ) %>%
+      dplyr::distinct(words)
+
+    # Exclude selected words and sample random words from the remaining
+    word_data1_random_y <- word_data1 %>%
+      dplyr::anti_join(selected_words, by = "words") %>%  # Exclude words already selected
+      dplyr::sample_n(min(plot_n_word_random, n()))  # Ensure it does not exceed available words
+
     # Select the middle range, order according to frequency and then select the plot_n_words_middle =5
     mean_m_sd_y <- mean(word_data1$y_plotted, na.rm = TRUE) - (sd(word_data1$y_plotted, na.rm = TRUE) / 10)
     mean_p_sd_y <- mean(word_data1$y_plotted, na.rm = TRUE) + (sd(word_data1$y_plotted, na.rm = TRUE) / 10)
@@ -1091,9 +1124,11 @@ textPlot <- function(
                          dplyr::transmute(words, check_extreme_frequency_y = 1), by = "words") %>%
       dplyr::left_join(word_data1_middle_y %>%
                          dplyr::transmute(words, check_middle_y = 1), by = "words") %>%
+      dplyr::left_join(word_data1_random_y %>%
+                         dplyr::transmute(words, check_random_y = 1), by = "words") %>%  # Adding the random selection
       dplyr::mutate(extremes_all_y = rowSums(cbind(
         check_p_y_neg, check_p_y_pos, check_extreme_max_y, check_extreme_min_y,
-        check_extreme_frequency_y, check_middle_y
+        check_extreme_frequency_y, check_middle_y, check_random_y
       ), na.rm = TRUE)) %>%
       dplyr::mutate(extremes_all = rowSums(cbind(extremes_all_x, extremes_all_y), na.rm = TRUE))
 

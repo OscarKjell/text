@@ -1,6 +1,12 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# text 1.3.6
+- fixing python dependency (aiohappyeyeballs)
+- adding parameter `plot_n_word_random` and `legend_number_colour` in textPlot. 
+- removed `nltk` warning when running the functions requiring pyhon. 
+
 # text 1.3.4
 - harmonizing wordclouds with topics-package
 - implementing `textTrainExamples()`

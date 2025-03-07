@@ -21,14 +21,14 @@ library(text)
 
 # Example calling a model using the URL
 textPredict(
-  model_info = "facebook_valence",
+  model_info = "valence_facebook_mxbai23_eijsbroek2024",
   texts = "what is the valence of this text?"
 )
 
 
 # Example calling a model having an abbreviation
 textClassify(
-  model_info = "implicit_power_fine_tuned_roberta",
+  model_info = "implicitpower_roberta23_nilsson2024",
   texts = "It looks like they have problems collaborating."
 )
 ```
@@ -52,7 +52,7 @@ model_data <- read.csv(system.file("extdata",
 reactable::reactable(
   data = model_data,
   filterable = TRUE,
-  defaultPageSize = 10,
+  defaultPageSize = 20,
   highlight = TRUE, 
   resizable = TRUE,
   theme = reactableTheme(

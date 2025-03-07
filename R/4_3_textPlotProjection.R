@@ -616,6 +616,7 @@ textProjection <- function(
 #' (i.e., even if not significant).
 #' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised
 #' Dimension Projection score (i.e., even if not significant;  per dimensions, where duplicates are removed).
+#' @param plot_n_word_random (numeric) select random words to plot.
 #' @param title_top Title (default "  ")
 #' @param titles_color Color for all the titles (default: "#61605e")
 # @param x_axes If TRUE, plotting on the x_axes.
@@ -733,6 +734,7 @@ textProjectionPlot <- function(
     plot_n_word_extreme = 5,
     plot_n_word_frequency = 5,
     plot_n_words_middle = 5,
+    plot_n_word_random = 0,
     titles_color = "#61605e",
     y_axes = FALSE,
     p_alpha = 0.05,
@@ -795,6 +797,7 @@ textProjectionPlot <- function(
     plot_n_word_extreme = plot_n_word_extreme,
     plot_n_word_frequency = plot_n_word_frequency,
     plot_n_words_middle = plot_n_words_middle,
+    plot_n_word_random = plot_n_word_random,
     titles_color = titles_color,
     y_axes = y_axes,
     p_alpha = p_alpha,
