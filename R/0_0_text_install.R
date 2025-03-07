@@ -73,7 +73,8 @@ textrpp_install <- function(conda = "auto",
         "flair==0.13.0",
         "umap-learn==0.5.6",
         "hdbscan==0.8.33",
-        "scipy==1.10.1"
+        "scipy==1.10.1",
+        "aiohappyeyeballs==2.4.4"
       )
     }
     if (is_windows()) {
@@ -94,7 +95,8 @@ textrpp_install <- function(conda = "auto",
         "flair==0.13.0",
         "umap-learn==0.5.6",
         "hdbscan==0.8.33",
-        "scipy==1.10.1"
+        "scipy==1.10.1",
+        "aiohappyeyeballs==2.4.4"
       )
     }
   }
