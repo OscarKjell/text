@@ -585,7 +585,17 @@ textProjection <- function(
   }
 
 
-  # }
+  ###### Adding Cohen's D #####
+  mean_null_x <- mean(aggregated_embeddings_dot_null_distribution[[1]]$dot_null_distribution.x$value, na.rm = T)
+  sd_null_x <- sd(aggregated_embeddings_dot_null_distribution[[1]]$dot_null_distribution.x$value, na.rm = T)
+  word_data_tibble$cohens_d.x <- (word_data_tibble$dot.x - mean_null_x)/sd_null_x
+
+  if(!is.null(y)){
+    mean_null_y <- mean(aggregated_embeddings_dot_null_distribution[[2]]$dot_null_distribution.y$value, na.rm = T)
+    sd_null_y <- sd(aggregated_embeddings_dot_null_distribution[[2]]$dot_null_distribution.y$value, na.rm = T)
+    word_data_tibble$cohens_d.y <- (word_data_tibble$dot.y - mean_null_y)/sd_null_y
+
+  }
 
   word_data_tibble1 <- list(aggregated_embeddings_dot_null_distribution, word_data_tibble)
   names(word_data_tibble1) <- c("background", "word_data")
@@ -594,6 +604,7 @@ textProjection <- function(
 
   return(word_data_tibble1)
 }
+
 
 
 #' Plot Supervised Dimension Projection
@@ -628,6 +639,7 @@ textProjection <- function(
 #' @param overlapping (boolean) Allow overlapping (TRUE) or disallow (FALSE) (default = TRUE).
 #' @param p_adjust_method Method to adjust/correct p-values for multiple comparisons
 #' (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
+#' @param projection_metric (character) Metric to plot according to; "dot_product" or "cohens_d".
 #' @param x_axes_label Label on the x-axes.
 #' @param y_axes_label Label on the y-axes.
 #' @param scale_x_axes_lim Manually set the length of the x-axes (default = NULL, which uses
@@ -741,6 +753,7 @@ textProjectionPlot <- function(
     p_alpha = 0.05,
     overlapping = TRUE,
     p_adjust_method = "none",
+    projection_metric = "dot_product",
     title_top = "Supervised Dimension Projection",
     x_axes_label = "Supervised Dimension Projection (SDP)",
     y_axes_label = "Supervised Dimension Projection (SDP)",
@@ -804,6 +817,7 @@ textProjectionPlot <- function(
     p_alpha = p_alpha,
     overlapping = overlapping,
     p_adjust_method = p_adjust_method,
+    projection_metric = projection_metric,
     title_top = title_top,
     x_axes_label = x_axes_label,
     y_axes_label = y_axes_label,

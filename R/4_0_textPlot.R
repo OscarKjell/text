@@ -590,8 +590,11 @@ textOwnWordPrediction <- function(word_data = word_data,
 #' Find out plot type to be plotted and adjust word_data columns accordingly.
 #' @return word_data with generically called columns that can run in textPlot.
 #' @noRd
-adjust_for_plot_type <- function(word_data,
-                                 y_axes) {
+adjust_for_plot_type <- function(
+    word_data,
+    y_axes,
+    projection_metric = NULL
+    ) {
   type_text <- sub(".*type = ", "", comment(word_data))
   type_name <- sub(" .*", "", type_text)
 
@@ -608,10 +611,22 @@ adjust_for_plot_type <- function(word_data,
 
   if (type_name == "textProjection") {
     colnames(word_data$word_data)[which(names(word_data$word_data) == "p_values_dot.x")] <- "p_values_x"
-    colnames(word_data$word_data)[which(names(word_data$word_data) == "dot.x")] <- "x_plotted"
+
+    if (projection_metric == "dot_product"){
+      colnames(word_data$word_data)[which(names(word_data$word_data) == "dot.x")] <- "x_plotted"
+    } else if (projection_metric == "cohens_d"){
+      colnames(word_data$word_data)[which(names(word_data$word_data) == "cohens_d.x")] <- "x_plotted"
+    }
+
     if (y_axes) {
       colnames(word_data$word_data)[which(names(word_data$word_data) == "p_values_dot.y")] <- "p_values_y"
-      colnames(word_data$word_data)[which(names(word_data$word_data) == "dot.y")] <- "y_plotted"
+
+      if (projection_metric == "dot_product"){
+        colnames(word_data$word_data)[which(names(word_data$word_data) == "dot.y")] <- "y_plotted"
+      } else if (projection_metric == "cohens_d"){
+        colnames(word_data$word_data)[which(names(word_data$word_data) == "cohens_d.y")] <- "y_plotted"
+      }
+
     }
   }
   return(word_data)
@@ -654,6 +669,7 @@ adjust_for_plot_type <- function(word_data,
 #' @param overlapping (boolean) Allow overlapping (TRUE) or disallow (FALSE) (default = TRUE).
 #' @param p_adjust_method (character) Method to adjust/correct p-values for multiple comparisons
 #' (default = "none"; see also "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").
+#' @param projection_metric (character) Metric to plot according to; "dot_product" or "cohens_d".
 #' @param x_axes_label (character) Label on the x-axes (default = "Supervised Dimension Projection (SDP)").
 #' @param y_axes_label (character) Label on the y-axes (default = "Supervised Dimension Projection (SDP)").
 #' @param scale_x_axes_lim Manually set the length of the x-axes (default = NULL, which uses
@@ -769,6 +785,7 @@ textPlot <- function(
     p_alpha = 0.05,
     overlapping = TRUE,
     p_adjust_method = "none",
+    projection_metric = "dot_product",
     title_top = "Supervised Dimension Projection",
     x_axes_label = "Supervised Dimension Projection (SDP)",
     y_axes_label = "Supervised Dimension Projection (SDP)",
@@ -833,7 +850,8 @@ textPlot <- function(
     "y_axes =", y_axes,
     "p_alpha =", p_alpha,
     "overlapping", overlapping,
-    "p_adjust_method =", p_adjust_method,
+    "p_adjust_method = ", p_adjust_method,
+    "projection_metric = ", projection_metric,
     "bivariate_color_codes =", paste(bivariate_color_codes, collapse = " "),
     "word_size_range =", paste(word_size_range, sep = "-", collapse = " - "),
     "position_jitter_hight =", position_jitter_hight,
@@ -859,15 +877,28 @@ textPlot <- function(
   # Renaming column names from different types of word_data
   word_data <- adjust_for_plot_type(
     word_data = word_data,
-    y_axes = y_axes
+    y_axes = y_axes,
+    projection_metric = projection_metric
   )
+
+  # Set Metric to use for plotting
   x_axes_1 <- "x_plotted"
+#  if(projection_metric == "cohens_d"){
+#    x_axes_1 <- "cohens_d.x"
+#  }
+
   p_values_x <- "p_values_x"
 
   if (y_axes == TRUE) {
+
     y_axes_1 <- "y_plotted"
+#    if(projection_metric == "cohens_d"){
+#      y_axes_1 <- "cohens_d.y"
+#    }
+
     p_values_y <- "p_values_y"
     y_axes_values_hide <- FALSE
+
   } else if (y_axes == FALSE) {
     y_axes_1 <- NULL
     p_values_y <- NULL

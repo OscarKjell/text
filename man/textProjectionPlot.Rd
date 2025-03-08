@@ -20,6 +20,7 @@ textProjectionPlot(
   p_alpha = 0.05,
   overlapping = TRUE,
   p_adjust_method = "none",
+  projection_metric = "dot_product",
   title_top = "Supervised Dimension Projection",
   x_axes_label = "Supervised Dimension Projection (SDP)",
   y_axes_label = "Supervised Dimension Projection (SDP)",
@@ -107,6 +108,8 @@ have had a variable on the y-axes.}
 
 \item{p_adjust_method}{Method to adjust/correct p-values for multiple comparisons
 (default = "holm"; see also "none", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr").}
+
+\item{projection_metric}{(character) Metric to plot according to; "dot_product" or "cohens_d".}
 
 \item{title_top}{Title (default "  ")}
 
