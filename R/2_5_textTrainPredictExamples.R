@@ -97,6 +97,8 @@ reorder_columns <- function(
 #' @param figure_format  (string) file format of the figures.
 #' @param scatter_legend_dot_size (integer) The size of dots in the scatter legend.
 #' @param scatter_legend_bg_dot_size (integer) The size of background dots in the scatter legend.
+#' @param scatter_legend_dots_alpha (numeric) The transparency alphe level of the dots.
+#' @param scatter_legend_bg_dots_alpha (numeric) The transparency alphe level of the background dots.
 # @param scatter_legend_n (numeric or vector) A vector determining the number of dots to emphasize in each quadrant of the scatter legend.
 #' For example: c(1,0,1) result in one dot in each quadrant except for the middle quadrant.
 # @param scatter_legend_method (string) The method to filter topics to be emphasized in the scatter legend; either "mean", "max_x", or "max_y".
@@ -141,6 +143,8 @@ textTrainExamples <- function(
     figure_format = "svg",
     scatter_legend_dot_size = 3,
     scatter_legend_bg_dot_size = 2,
+    scatter_legend_dots_alpha = .80,
+    scatter_legend_bg_dots_alpha = .20,
   #  scatter_legend_n = c(3, 3, 3),
     scatter_show_axis_values = TRUE,
     x_axis_range = NULL,
@@ -385,6 +389,8 @@ textTrainExamples <- function(
     figure_format = figure_format,
     scatter_popout_dot_size = scatter_legend_dot_size,
     scatter_bg_dot_size = scatter_legend_bg_dot_size,
+    scatter_legend_dots_alpha = scatter_legend_dots_alpha,
+    scatter_legend_bg_dots_alpha = scatter_legend_bg_dots_alpha,
     width = width,
     height = height,
     seed = seed

@@ -22,6 +22,8 @@ textTrainExamples(
   figure_format = "svg",
   scatter_legend_dot_size = 3,
   scatter_legend_bg_dot_size = 2,
+  scatter_legend_dots_alpha = 0.8,
+  scatter_legend_bg_dots_alpha = 0.2,
   scatter_show_axis_values = TRUE,
   x_axis_range = NULL,
   y_axis_range = NULL,
@@ -47,6 +49,8 @@ textPredictExamples(
   figure_format = "svg",
   scatter_legend_dot_size = 3,
   scatter_legend_bg_dot_size = 2,
+  scatter_legend_dots_alpha = 0.8,
+  scatter_legend_bg_dots_alpha = 0.2,
   scatter_show_axis_values = TRUE,
   x_axis_range = NULL,
   y_axis_range = NULL,
@@ -84,7 +88,11 @@ textPredictExamples(
 
 \item{scatter_legend_dot_size}{(integer) The size of dots in the scatter legend.}
 
-\item{scatter_legend_bg_dot_size}{(integer) The size of background dots in the scatter legend.
+\item{scatter_legend_bg_dot_size}{(integer) The size of background dots in the scatter legend.}
+
+\item{scatter_legend_dots_alpha}{(numeric) The transparency alphe level of the dots.}
+
+\item{scatter_legend_bg_dots_alpha}{(numeric) The transparency alphe level of the background dots.
 For example: c(1,0,1) result in one dot in each quadrant except for the middle quadrant.}
 
 \item{scatter_show_axis_values}{(boolean) If TRUE, the estimate values are shown on the distribution plot axes.}

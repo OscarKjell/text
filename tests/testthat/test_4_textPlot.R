@@ -165,8 +165,6 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
 
 
   # Cohens_d pipeline
-
-
   # Pre-processing data for plotting
   df_cohensD <- text::textProjection(
     words = Language_based_assessment_data_8$harmonywords,
@@ -188,15 +186,15 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
     plot_n_word_frequency = 1,
     plot_n_words_middle = 1,
     projection_metric = "cohens_d",
-    y_axes = TRUE,
-    p_alpha = 0.995,
+    y_axes = F,
+    p_alpha = 0.0005,
     title_top = "Cohen's D Dot Product Projection (DPP)",
     x_axes_label = "Low vs. High HILS score",
     y_axes_label = "Low vs. High SWLS score",
    # p_adjust_method = "fdr",
     scale_y_axes_lim = NULL
   )
-
+  p_cohensD
   expect_true(ggplot2::is.ggplot(p_cohensD$final_plot))
 
 })
