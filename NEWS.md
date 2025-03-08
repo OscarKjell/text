@@ -5,7 +5,8 @@
 # text 1.3.6
 - fixing python dependency (aiohappyeyeballs)
 - adding parameter `plot_n_word_random` and `legend_number_colour` in textPlot. 
-- removed `nltk` warning when running the functions requiring pyhon. 
+- removed `nltk` warning when running the functions requiring pyhon.
+- anchouring group word embeddings in the `textProjection()` function. 
 
 # text 1.3.4
 - harmonizing wordclouds with topics-package
