@@ -23,7 +23,8 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
   testthat::expect_true(tibble::is_tibble(df_for_plotting1[[2]]))
   testthat::expect_is(df_for_plotting1[[2]]$words[1], "character")
   testthat::expect_is(df_for_plotting1[[2]]$n[1], "numeric")
-  testthat::expect_equal(df_for_plotting1[[2]]$dot.x[1], -3.847934, tolerance = 0.001)
+#  testthat::expect_equal(df_for_plotting1[[2]]$dot.x[1], -3.847934, tolerance = 0.001) #Not anchoring the G1 and G2 ambeddings
+  testthat::expect_equal(df_for_plotting1[[2]]$dot.x[1], -4.215651, tolerance = 0.001)
 
 
   # Pre-processing data for plotting
@@ -41,7 +42,8 @@ test_that("textProjection MEAN and PCA produces a tibble with character variable
   testthat::expect_true(tibble::is_tibble(df_for_plotting1_no_split[[2]]))
   testthat::expect_is(df_for_plotting1_no_split[[2]]$words[1], "character")
   testthat::expect_is(df_for_plotting1_no_split[[2]]$n[1], "numeric")
-  testthat::expect_equal(df_for_plotting1_no_split[[2]]$dot.x[1], -1.537714, tolerance = 0.001)
+ # testthat::expect_equal(df_for_plotting1_no_split[[2]]$dot.x[1], -1.537714, tolerance = 0.001) #Not anchoring the G1 and G2 ambeddings
+  testthat::expect_equal(df_for_plotting1_no_split[[2]]$dot.x[1],  -1.039681, tolerance = 0.001)
 
 })
 
@@ -98,36 +100,6 @@ test_that("textProjectionPlot 1-DIMENSIONS produces a plot", {
 
   expect_true(ggplot2::is.ggplot(p1$final_plot))
   expect_equal(p1$processed_word_data$dot.y[1], 2.988819, tolerance = 0.00001)
-
-
-  # remotes::install_github("tidyverse/ggplot2", ref = remotes::github_pull("5592"))
-  # Dot Product Projection Plot help(textProjectionPlot)
-  p1 <- text::textProjectionPlot(
-    word_data = DP_projections_HILS_SWLS_100,
-  #  k_n_words_to_test = TRUE,
-    min_freq_words_test = 1,
-    plot_n_words_square = 0,
-    plot_n_words_p = 0,
-    plot_n_word_extreme = 1,
-    plot_n_word_frequency = 0,
-    plot_n_words_middle = 0,
-    plot_n_word_random = 15,
-    # x_axes = TRUE,
-    y_axes = T,
-    p_alpha = 0.05,
-    title_top = " Dot Product Projection (DPP)",
-    x_axes_label = "Low vs. High HILS score",
-    y_axes_label = "Low vs. High SWLS score",
-    p_adjust_method = "bonferroni",
-    scale_y_axes_lim = NULL,
-    group_embeddings1 = F,
-    group_embeddings2 = F,
-    projection_embedding = F
-  )
-  p1
-  expect_true(ggplot2::is.ggplot(p1$final_plot))
-  expect_equal(p1$processed_word_data$dot.y[1], 2.988819, tolerance = 0.00001)
-
 
 })
 

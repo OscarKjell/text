@@ -385,14 +385,15 @@ textProjection <- function(
 
 
     # Computing the dot product projection for the aggregated and projected embeddings
+    # 1 Mars 2025 -- Anchoring aggregated word embeddings
+    Aggregated_word_embedding_group1_anchoured <- Aggregated_word_embedding_group1 - embedding_to_anchour_with[1,]
+    Aggregated_word_embedding_group2_anchoured <- Aggregated_word_embedding_group2 - embedding_to_anchour_with[1,]
+
     all_aggregated <- dplyr::bind_rows(
-      Aggregated_word_embedding_group1,
-      Aggregated_word_embedding_group2,
+      Aggregated_word_embedding_group1_anchoured,
+      Aggregated_word_embedding_group2_anchoured,
       projected_embedding
     )
-
-    # 1 Mars 2025 -- Anchoring aggregated word embeddings
-  #  all_aggregated <- all_aggregated - embedding_to_anchour_with
 
     projected_embedding_a <- tibble::as_tibble_row(projected_embedding) %>%
       dplyr::slice(rep(1:dplyr::n(), each = nrow(all_aggregated)))

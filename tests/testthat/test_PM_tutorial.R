@@ -196,7 +196,7 @@ test_that("PM tutorial", {
 
   projection_results$word_data
   expect_equal(projection_results$word_data[[1]][[1]], "Group1*")
-  expect_equal(projection_results$word_data$dot.x[[1]], -14.87054, tolerance = 0.00001)
+  expect_equal(projection_results$word_data$dot.x[[1]], -15.11895, tolerance = 0.00001)
   # To avoid warnings -- and that words do not get plotted, first increase the max.overlaps for the entire session:
   #options(ggrepel.max.overlaps = 1000)
 
