@@ -154,6 +154,7 @@ textTrainExamples <- function(
     seed = 42
     ){
 
+
   set.seed(seed)
   hist_plot = NULL
   error_plot = NULL
@@ -349,6 +350,11 @@ textTrainExamples <- function(
   }
 
 
+     # This is because topicsScatterLegend expect a prevalence variable to scale the dots
+    # since we do not have any difference in prevalence we set it o one.
+    df_for_distribution$prevalence <- rep(1, nrow(df_for_distribution))
+
+
   # Reorder columns to be plotted in the scatter plot to satisfy topicsScatterLegend()
   df_for_distribution <- reorder_columns(df_for_distribution, "color_categories", ncol(df_for_distribution))
 
@@ -372,6 +378,11 @@ textTrainExamples <- function(
       "8" = distribution_color[8],
       "9" = distribution_color[9]
     )
+
+    scatter_legend_dot_size = c(scatter_legend_dot_size, scatter_legend_dot_size)
+    scatter_legend_bg_dot_size = c(scatter_legend_bg_dot_size, scatter_legend_bg_dot_size)
+
+    df_for_distribution$color_categories
 
   scatter_plot <- topics::topicsScatterLegend(
     bivariate_color_codes = distribution_color,

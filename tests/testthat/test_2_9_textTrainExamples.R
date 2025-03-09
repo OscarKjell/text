@@ -28,7 +28,8 @@ test_that("textTrainExamples tests", {
     n_examples = 5,
     jitter = 0.005,
     filter_words = NULL,
-  distribution_color = c("darkred", "gray", "darkgreen")
+    distribution_color = c("darkred", "gray", "darkgreen"),
+    x_axis_range = c(0,40)
   )
   examples_1d
   testthat::expect_equal(examples_1d$examples$x_variable[1:5],
