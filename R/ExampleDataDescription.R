@@ -14,7 +14,7 @@
 #'   \item{age}{respondents age in years}
 #'   \item{gender}{respondents gender 1=male, 2=female}
 #' }
-#' @source \url{https://osf.io/preprints/psyarxiv/er6t7/}
+#' @source \url{https://pubmed.ncbi.nlm.nih.gov/37126041/}
 "Language_based_assessment_data_8"
 
 
@@ -29,7 +29,7 @@
 #'   \item{hilstotal}{total score of the Harmony In Life Scale}
 #'   \item{swlstotal}{total score of the Satisfaction With Life Scale}
 #' }
-#' @source \url{https://osf.io/preprints/psyarxiv/er6t7/}
+# @source \url{https://osf.io/preprints/psyarxiv/er6t7/}
 "Language_based_assessment_data_3_100"
 
 
@@ -44,7 +44,7 @@
 #'   \item{layer_number }{layer of the transformer model}
 #'   \item{Dim1:Dim8}{Word embeddings dimensions}
 #' }
-#' @source \url{https://osf.io/preprints/psyarxiv/er6t7/}
+# @source \url{https://osf.io/preprints/psyarxiv/er6t7/}
 "raw_embeddings_1"
 
 
@@ -61,7 +61,7 @@
 #'   \item{n}{word frequency}
 #'   \item{Dim1:Dim768}{Word embeddings dimensions}
 #' }
-#' @source \url{https://osf.io/preprints/psyarxiv/er6t7/}
+# @source \url{https://osf.io/preprints/psyarxiv/er6t7/}
 "word_embeddings_4"
 
 
@@ -87,7 +87,7 @@
 #'   \item{N_participant_responses}{number of participants (as this is needed
 #'    in the analyses)}
 #' }
-#' @source \url{https://osf.io/preprints/psyarxiv/er6t7/}
+# @source \url{https://osf.io/preprints/psyarxiv/er6t7/}
 "DP_projections_HILS_SWLS_100"
 
 

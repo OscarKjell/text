@@ -10,6 +10,7 @@
 #' @param y_col (string) name of the column that should get jitter.
 #' @param jitter_factor (numeric) Percentage of jitter to be added.
 #' @param seed (numeric)
+#' @importFrom stats runif
 #' @noRd
 dynamic_jitter_data <- function(
     data,
@@ -27,7 +28,7 @@ dynamic_jitter_data <- function(
   jitter_width <- diff(range(data[[x_col]], na.rm = TRUE)) * jitter_factor
   data <- data %>%
     mutate(
-      x_jittered = .data[[x_col]] + runif(n(), -jitter_width, jitter_width)
+      x_jittered = .data[[x_col]] + stats::runif(n(), -jitter_width, jitter_width)
     )
 
   # If y_col is specified, calculate jitter for y
@@ -39,7 +40,7 @@ dynamic_jitter_data <- function(
     jitter_height <- diff(range(data[[y_col]], na.rm = TRUE)) * jitter_factor
     data <- data %>%
       mutate(
-        y_jittered = .data[[y_col]] + runif(n(), -jitter_height, jitter_height)
+        y_jittered = .data[[y_col]] + stats::runif(n(), -jitter_height, jitter_height)
       )
   }
 
@@ -117,6 +118,7 @@ reorder_columns <- function(
 #' @importFrom purrr map_lgl
 #' @importFrom tidyr pivot_longer
 #' @importFrom ggplot2 geom_histogram aes labs theme_minimal scale_fill_manual
+#' @importFrom topics topicsScatterLegend
 #' @export
 textTrainExamples <- function(
     text,

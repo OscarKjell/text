@@ -20,7 +20,7 @@ A word embedding comprises values that represent the latent meaning of a word. T
 To represent several words, sentences and paragraphs, word embeddings of single words may be combined or aggregated into one word embedding. This can be achieved by taking the mean, minimum or maximum value of each dimension of the embeddings.
 
 This tutorial focuses on how to *retrieve* layers and how to *aggregate* them to receive word embeddings in `text`. The focus will be on the actual functions.  
-For more detailed information about word embeddings and the language models in regard to `text` please see [text: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://osf.io/preprints/psyarxiv/293kt/); and for more comprehensive information about the inner workings of the language models, for example see [Illustrated BERT](https://jalammar.github.io/illustrated-bert/) or the references given in Table 1.
+For more detailed information about word embeddings and the language models in regard to `text` please see [text: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://pubmed.ncbi.nlm.nih.gov/37126041/); and for more comprehensive information about the inner workings of the language models, for example see [Illustrated BERT](https://jalammar.github.io/illustrated-bert/) or the references given in Table 1.
 
 Table 1 show some of the more common language models; for more detailed information see [HuggingFace](https://huggingface.co/)
 

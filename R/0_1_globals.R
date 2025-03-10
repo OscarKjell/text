@@ -41,6 +41,8 @@ utils::globalVariables(c(
   # textTrainExamples
   "category", "distance_to_mean", "error", "language", "topic",
   "height", "save_dir", "width", "y_axes_1",
+  "check_random_x", "check_random_y", "color_categories", "ranking_criteria",
+  "variable", "x_variable_grouped_three",
 
 
   # textPredcitTest

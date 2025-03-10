@@ -12,9 +12,6 @@ A list with token-level word embeddings for harmony words.
   \item{Dim1:Dim8}{Word embeddings dimensions}
 }
 }
-\source{
-\url{https://osf.io/preprints/psyarxiv/er6t7/}
-}
 \usage{
 raw_embeddings_1
 }
