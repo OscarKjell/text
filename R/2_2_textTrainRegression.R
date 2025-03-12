@@ -625,63 +625,7 @@ bestParameters <- function(data,
 
 
 
-# OLD
-# #' Function to get the lowest eval_measure_val
-# #' @param data the data with parameters
-# #' @param eval_measure the evaluation measure which decide if min or max value should be selected
-# #' @param parameter_selection_method If several results are tied for different parameters (i.e., penalty or mixture),
-# #' then select the "first" or the "median" order.
-# #' @return The row with the best evaluation measure.
-# #' @noRd
-# bestParameters <- function(data,
-#                            eval_measure,
-#                            parameter_selection_method) {
-#
-#   if (eval_measure %in% c(
-#     "accuracy", "bal_accuracy", "sens", "spec",
-#     "precision", "kappa", "f_measure", "roc_auc",
-#     "rsq", "cor_test")) {
-#
-#       if (parameter_selection_method == "first") {
-#         bestParametersFunction <- function(data) data[which.max(data$eval_result), ]
-#       }
-#
-#       if (parameter_selection_method == "median") {
-#
-#         bestParametersFunction <- function(data) {
-#           max_value <- max(data$eval_result)
-#           tied_rows <- data %>%
-#             dplyr::filter(eval_result == max_value)
-#
-#           median_index <- base::floor(nrow(tied_rows) / 2)
-#           return(tied_rows[median_index, ])
-#         }
-#       }
-#   }
-#
-#   if (eval_measure == "rmse") {
-#
-#     if (parameter_selection_method == "first") {
-#       bestParametersFunction <- function(data) data[which.min(data$eval_result), ]
-#     }
-#
-#     if (parameter_selection_method == "median") {
-#
-#       bestParametersFunction <- function(data){
-#           min_value <- min(data$eval_result)
-#           tied_rows <- data %>%
-#             dplyr::filter(eval_result == min_value)
-#
-#           median_index <- base::floor(nrow(tied_rows) / 2)
-#           return(tied_rows[median_index, ])
-#       }
-#     }
-#   }
-#   #data = tuning_results[[10]]; hyper_parameter_vals
-#   results <- bestParametersFunction(data)
-#   return(results)
-# }
-#
+
 
 
 #' # Since this will be called across the set of OUTER cross-validation splits, another wrapper is required:
@@ -726,6 +670,296 @@ summarize_tune_results <- function(object,
   return(results)
 }
 
+
+
+#######################################################
+
+
+#' Perform Nested Cross-Validation with Grouping and Stratification
+#'
+#' Uses `group_vfold_cv()` to ensure that all cases with the same ID remain in the same fold.
+#' If stratification is requested, it approximates stratification while preserving group integrity.
+#'
+#' @param xy The dataset containing predictors and outcome.
+#' @param id_variable Name of the column used for grouping (if `NULL`, creates an `id_nr` variable).
+#' @param outside_folds Number of folds for the outer cross-validation loop.
+#' @param inside_folds Number of folds for the inner loop (can be a fraction for validation split).
+#' @param strata Optional variable used for stratification.
+#' @return A tibble with nested resampling results.
+#' @noRd
+perform_nested_cv <- function(
+    xy,
+    id_variable = NULL,
+    outside_folds,
+    inside_folds,
+    strata = NULL) {
+
+  # Ensure inside_folds is not NULL
+  if (is.null(inside_folds)) {
+    message(colourise(
+      "Error: `inside_folds` is NULL. It must be specified as a numeric value.",
+      "red"))
+  }
+
+  # Ensure `inside_folds` is at least 2
+  if (inside_folds < 2) {
+    message(colourise(
+      "WARNING: Adjusting inside_folds to 2 (minimum required).",
+      "orange"))
+
+    inside_folds <- 2
+  }
+
+  # Ensure `outside_folds` and `inside_folds` are valid integers
+  if (!is.numeric(outside_folds) || outside_folds < 2 || length(outside_folds) != 1) {
+    message(colourise(
+      "Error: `outside_folds` must be a single integer greater than 1.",
+      "red"))
+  }
+  if (!is.numeric(inside_folds) || inside_folds < 2 || length(inside_folds) != 1) {
+    message(colourise(
+      "Error: `inside_folds` must be a single integer greater than 1.",
+      "red"))
+  }
+
+  # Convert `inside_folds` and `outside_folds` to integers
+  inside_folds <- as.integer(inside_folds)
+  outside_folds <- as.integer(outside_folds)
+
+  if (tibble::is_tibble(id_variable)){
+    id_variable <- id_variable[[1]]
+  }
+  # Ensure the ID variable is a factor (helps grouping)
+  xy$id_nr <- as.factor(id_variable)
+
+
+  if (!is.null(strata)) {
+    # Ensure `id_variable` is explicitly included
+    distinct_ids <- xy %>%
+      dplyr::select(all_of(c("id_nr", strata))) %>%  # Keep only necessary columns
+      dplyr::distinct()
+
+    stratified_folds <- rsample::vfold_cv(
+      data = distinct_ids,
+      v = outside_folds,
+      strata = all_of(strata)
+    )
+
+    # Extract fold assignments from `assessment()` (test set)
+    fold_assignments <- purrr::imap_dfr(stratified_folds$splits, ~ tibble::tibble(
+      !!rlang::sym("id_nr") := rsample::assessment(.x)[["id_nr"]],  # Extract test IDs
+      fold = .y  # Assign fold index
+    ))
+
+    # Ensure fold_assignments has unique IDs
+    fold_assignments <- fold_assignments %>%
+      dplyr::distinct(id_nr, .keep_all = TRUE)  # Keeps one row per unique `id_nr`
+
+    # Merge while preserving all rows in xy
+    xy <- dplyr::left_join(
+      xy,
+      fold_assignments,
+      by = "id_nr",
+      relationship = "many-to-one"  # Ensures all instances of `id_nr` get same fold
+    )
+    # Step 7: Perform `group_vfold_cv()` using the assigned folds
+    results_nested_resampling <- rsample::nested_cv(
+      xy,
+      outside = rsample::group_vfold_cv(
+        data = xy,
+        group = "id_nr",
+        v = outside_folds
+      ),
+      inside = rsample::group_vfold_cv(
+        data = xy,
+        group = "id_nr",
+        v = inside_folds
+      )
+    )
+  } else {
+    # No stratification, just use standard `group_vfold_cv()`
+    results_nested_resampling <- rsample::nested_cv(
+      xy,
+      outside = rsample::group_vfold_cv(
+        data = xy,
+        group = "id_nr",
+        v = outside_folds
+      ),
+      inside = rsample::group_vfold_cv(
+        data = xy,
+        group = "id_nr",
+        v = inside_folds
+      )
+    )
+  }
+
+  return(results_nested_resampling)
+}
+
+
+#' Check Nested Cross-Validation Setup
+#'
+#' Validates that each unique `id_variable` is assigned correctly to a fold,
+#' ensures no duplicates, checks for missing assignments, and verifies fold balance.
+#'
+#' @param results_nested_resampling The nested cross-validation object.
+#' @param id_variable The name of the grouping variable.
+#' @param strata Optional variable used for stratification.
+#' @return A summary report of the checks.
+#' @noRd
+#' Check Nested Cross-Validation Setup
+#'
+#' Validates that each unique `id_variable` is assigned correctly to a fold,
+#' ensures all duplicates of an `id_variable` are assigned to the same fold,
+#' checks for missing assignments, and verifies fold balance and stratification.
+#'
+#' @param results_nested_resampling The nested cross-validation object.
+#' @param id_variable The name of the grouping variable (e.g., participant ID).
+#' @param strata Optional variable used for stratification.
+#' @return A plot if `strata` is provided, otherwise messages indicating checks.
+#' @importFrom purrr map2_dfr
+#' @noRd
+check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_nr", strata = NULL) {
+
+  message("🔍 Checking nested cross-validation setup...")
+
+  # Extract fold assignments from `splits`, ensuring **each unique ID** is assigned once
+  id_assignments <- purrr::map2_dfr(
+    results_nested_resampling$splits,
+    results_nested_resampling$id,  # Extract corresponding fold ID
+    ~ rsample::assessment(.x) %>%
+      dplyr::mutate(!!id_variable := as.character(.data[[id_variable]])) %>%  # Convert ID to character
+      dplyr::select(all_of(id_variable)) %>%
+      dplyr::mutate(fold = .y) %>%
+      dplyr::distinct()  # Ensure one row per unique ID
+  )
+
+  # 🔹 Step 1: Check if **any ID appears in multiple folds**
+  id_fold_check <- id_assignments %>%
+    dplyr::count(!!rlang::sym(id_variable), fold) %>%
+    dplyr::count(!!rlang::sym(id_variable)) %>%
+    dplyr::filter(n > 1)  # Find IDs assigned to multiple folds
+
+  if (nrow(id_fold_check) > 0) {
+    message(colourise(
+      "⚠️ Warning: Some IDs are assigned to multiple folds!",
+      "orange"
+    ))
+    print(id_fold_check)
+  } else {
+    message(colourise(
+      "✅ All duplicates of each ID are correctly assigned to a single fold.",
+      "green"
+    ))
+  }
+
+  # 🔹 Step 2: Check for missing fold assignments
+  missing_ids <- id_assignments %>%
+    dplyr::filter(is.na(fold))
+
+  if (nrow(missing_ids) > 0) {
+
+      message(colourise(
+        "⚠️ Warning: {nrow(missing_ids)} IDs are missing fold assignments",
+        "orange"))
+
+      message(colourise(
+        missing_ids,
+          "orange"))
+
+  } else {
+    message(colourise(
+      "✅ No missing fold assignments.",
+      "green"
+    ))
+  }
+
+  # 🔹 Step 3: Check fold balance
+  fold_distribution <- id_assignments %>%
+    dplyr::count(fold) %>%
+    dplyr::arrange(desc(n))
+
+
+  message(colourise(
+    "✅ Fold balance checked.",
+    "green"
+  ))
+  message(colourise(
+    fold_distribution,
+    "blue"))
+
+  # 🔹 Step 4: Check if stratification is preserved
+  if (!is.null(strata)) {
+    strata_check <- purrr::map2_dfr(
+      results_nested_resampling$splits,
+      results_nested_resampling$id,
+      ~ rsample::assessment(.x) %>%
+        dplyr::select(all_of(id_variable), all_of(strata)) %>%
+        dplyr::mutate(fold = .y) %>%
+        dplyr::distinct()  # Keep unique rows to match IDs
+    ) %>%
+      dplyr::count(fold, !!rlang::sym(strata))
+
+    # Calculate overall distribution of `strata`
+    overall_distribution <- strata_check %>%
+      dplyr::group_by(!!rlang::sym(strata)) %>%
+      dplyr::summarise(overall_n = sum(n), .groups = "drop") %>%
+      dplyr::mutate(overall_prop = overall_n / sum(overall_n))
+
+    # Merge with per-fold distribution and compute per-fold proportions
+    strata_check <- strata_check %>%
+      dplyr::group_by(fold) %>%
+      dplyr::mutate(fold_prop = n / sum(n)) %>%
+      dplyr::ungroup() %>%
+      dplyr::left_join(overall_distribution, by = as.character(strata)) %>%
+      dplyr::mutate(abs_deviation = abs(fold_prop - overall_prop))
+
+    # Compute mean absolute error (MAE) for stratification balance
+ #   mae_stratification <- mean(strata_check$abs_deviation, na.rm = TRUE)
+
+#    # Perform chi-square test for stratification consistency across folds
+#    strata_matrix <- tidyr::pivot_wider(
+#      strata_check,
+#      names_from = fold,
+#      values_from = n,
+#      values_fill = 0
+#    ) %>%
+#      dplyr::select(-!!rlang::sym(strata)) %>%
+#      as.matrix()
+#
+#    chi_sq_test <- chisq.test(strata_matrix)
+
+    # Print stratification summary
+#    print(strata_check)
+#    message(glue::glue("✅ Stratification checked. Mean absolute deviation from overall distribution: {round(mae_stratification, 4)}"))
+#    message(glue::glue("Chi-square test p-value: {round(chi_sq_test$p.value, 4)}"))
+
+    # Plot stratification distribution
+    p <- ggplot2::ggplot(strata_check, ggplot2::aes(x = fold, y = fold_prop, fill = as.factor(!!rlang::sym(strata)))) +
+      ggplot2::geom_bar(stat = "identity", position = "dodge") +
+      ggplot2::labs(
+        title = "Stratification Balance Across Folds",
+        x = "Fold",
+        y = "Proportion of Strata",
+        fill = "Strata"
+      ) +
+      ggplot2::theme_minimal()
+
+    message(colourise(
+      "✅ Cross-validation setup verification complete.",
+      "green"
+    ))
+
+    return(p)
+  } else {
+    message(colourise(
+      "✅ Cross-validation setup verification complete.",
+      "green"
+    ))
+  }
+}
+
+
 #' Train word embeddings to a numeric variable.
 #'
 #' textTrainRegression() trains word embeddings to a numeric or a factor variable.
@@ -737,10 +971,14 @@ summarize_tune_results <- function(object,
 #' If not wanting to train with word embeddings, set x = NULL (default = NULL).
 #' @param append_first (boolean) Option to add variables before or after all word embeddings (default = False).
 #' @param cv_method (character) Cross-validation method to use within a pipeline of nested outer and inner loops
-#' of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
+#' of folds (see nested_cv in rsample). Default is using "cv_folds" in the outside folds and "validation_split"
 #' using rsample::validation_split in the inner loop to achieve a development and assessment set (note that
-#' for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds"
-#' uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.
+#' for "validation_split" the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds"
+#' uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops. Use "group_cv" to ensure that all cases
+#' with the same ID remain in the same fold. (it uses rsample::group_vfold_cv uses  to ensure that all cases with the same
+#' ID remain in the same fold. group_vfold_cv cannot handle stratification, so if that is requested,
+#' it tries to approximate stratification while preserving group integrity.
+#' @param id_variable (variable) If specifying cv_method = "group_cv", you need to submit an id variable here.
 #' @param outside_folds (numeric) Number of folds for the outer folds (default = 10).
 #' @param inside_folds (numeric) The proportion of data to be used for modeling/analysis; (default proportion = 3/4).
 #' For more information see validation_split in rsample.
@@ -851,6 +1089,7 @@ textTrainRegression <- function(
     x_append = NULL,
     append_first = FALSE,
     cv_method = "validation_split",
+    id_variable = NULL,
     outside_folds = 10,
     inside_folds = 3 / 4,
     strata = "y",
@@ -878,6 +1117,7 @@ textTrainRegression <- function(
     simulate.p.value = FALSE,
     seed = 2020,
     ...) {
+
   T1_textTrainRegression <- Sys.time()
   set.seed(seed)
 
@@ -938,7 +1178,8 @@ textTrainRegression <- function(
   variables_and_names <- sorting_xs_and_x_append(
     x = x,
     x_append = x_append,
-    append_first = append_first, ...
+    append_first = append_first
+    , ...
   )
   x2 <- variables_and_names$x1
   x_name <- variables_and_names$x_name
@@ -982,7 +1223,28 @@ textTrainRegression <- function(
   }
 
   # complete.cases is not neccassary
-  # Cross-Validation inside_folds = 3/4; results_nested_resampling[[1]][[1]][[1]]
+  # Cross-Validation inside_folds = 3/4; results_nested_resampling[[1]][[1]][[1]]'
+  if(cv_method == "group_cv"){
+
+    if(is.null(id_variable)){
+      message("You have to add an id_variable when using cv_method == 'group_cv'")
+    }
+    # Example usage inside `textTrainRegression()`
+    results_nested_resampling <- perform_nested_cv(
+      xy = xy,
+      id_variable = id_variable,  # Auto-create ID if missing
+      outside_folds = outside_folds,
+      inside_folds = inside_folds,
+      strata = outside_strata_y  # Optional stratification
+     # cv_method = "validation_split"  # or "cv_folds"
+    )
+
+    cv_group_plot <- check_nested_cv_setup(
+      results_nested_resampling = results_nested_resampling,
+      strata = outside_strata_y)
+  }
+
+  #########################################################################
   if (cv_method == "cv_folds") {
     results_nested_resampling <- rlang::expr(rsample::nested_cv(
       xy,
@@ -1645,9 +1907,11 @@ textTrainRegression <- function(
   remove(language_distribution)
 
   final_results <- c(
+    if(cv_method == "group_cv") list(cv_group_plot = cv_group_plot),
     list(language_distribution = language_distribution_res),
     list(aggregated_word_embeddings = aggregated_word_embeddings),
-    final_results)
+    final_results
+  )
 
   return(final_results)
 }

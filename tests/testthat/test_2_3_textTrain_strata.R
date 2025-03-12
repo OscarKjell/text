@@ -8,6 +8,7 @@ context("Training Functions")
 test_that("textTrain with strata settings", {
   skip_on_cran()
 
+  id_nr <- tibble(id_nr = rep(1:40, 4))
   df1 <- Language_based_assessment_data_8[c(1, 5:8)]
   colnames(df1) <- c("text", "hilstotal", "swlstotal", "age", "gender")
   df2 <- Language_based_assessment_data_8[c(2, 5:8)]
@@ -23,7 +24,50 @@ test_that("textTrain with strata settings", {
     keep_token_embeddings = FALSE
   )
 
+  #### cv_group WITHOUT strat
 
+  group_strata1 <- text::textTrainRegression(
+    x = df1_4_emb$texts[c("text")],
+    y = df1_4[2],
+    cv_method = "group_cv",
+    id_variable = id_nr,
+    strata = "y",
+    outside_folds = 5,
+    inside_folds = 5,
+    penalty = c(1, 10),
+    mixture = c(0)
+    )
+
+  testthat::expect_equal(group_strata1$results[[4]][[1]], .6277968, tolerance = 0.0001)
+
+  #### cv_group WITH strat
+  group_strata2 <- text::textTrainRegression(
+    x = df1_4_emb$texts[c("text")],
+    y = df1_4[2],
+    cv_method = "group_cv",
+    id_variable = id_nr,
+    strata = NULL,
+    outside_folds = 5,
+    inside_folds = 5,
+    penalty = c(1, 10),
+    mixture = c(0)
+  )
+  testthat::expect_equal(group_strata2$results[[4]][[1]], .6647223, tolerance = 0.0001)
+
+  group_strata3 <- text::textTrainRegression(
+    x = df1_4_emb$texts[c("text")],
+    y = df1_4[2],
+    cv_method = "cv_folds",
+  #  id_variable = id_nr,
+    strata = "y",
+    outside_folds = 5,
+    inside_folds = 5,
+    penalty = c(1, 10),
+    mixture = c(0)
+  )
+  testthat::expect_equal(group_strata3$results[[4]][[1]], .6967453, tolerance = 0.0001)
+
+  #######
 
   strata_y <- text::textTrainRegression(
     x = df1_4_emb$texts[c("text")],

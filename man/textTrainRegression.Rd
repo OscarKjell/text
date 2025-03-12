@@ -10,6 +10,7 @@ textTrainRegression(
   x_append = NULL,
   append_first = FALSE,
   cv_method = "validation_split",
+  id_variable = NULL,
   outside_folds = 10,
   inside_folds = 3/4,
   strata = "y",
@@ -52,10 +53,15 @@ If not wanting to train with word embeddings, set x = NULL (default = NULL).}
 \item{append_first}{(boolean) Option to add variables before or after all word embeddings (default = False).}
 
 \item{cv_method}{(character) Cross-validation method to use within a pipeline of nested outer and inner loops
-of folds (see nested_cv in rsample). Default is using cv_folds in the outside folds and "validation_split"
+of folds (see nested_cv in rsample). Default is using "cv_folds" in the outside folds and "validation_split"
 using rsample::validation_split in the inner loop to achieve a development and assessment set (note that
-for validation_split the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds"
-uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops.}
+for "validation_split" the inside_folds should be a proportion, e.g., inside_folds = 3/4); whereas "cv_folds"
+uses rsample::vfold_cv to achieve n-folds in both the outer and inner loops. Use "group_cv" to ensure that all cases
+with the same ID remain in the same fold. (it uses rsample::group_vfold_cv uses  to ensure that all cases with the same
+ID remain in the same fold. group_vfold_cv cannot handle stratification, so if that is requested,
+it tries to approximate stratification while preserving group integrity.}
+
+\item{id_variable}{(variable) If specifying cv_method = "group_cv", you need to submit an id variable here.}
 
 \item{outside_folds}{(numeric) Number of folds for the outer folds (default = 10).}
 
