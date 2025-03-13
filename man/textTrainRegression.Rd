@@ -147,7 +147,7 @@ can set to "spearman" or "kendall").}
 and "only_results_predictions".}
 
 \item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values by
-Monte Carlo simulation, in larger than 2 × 2 tables.}
+Monte Carlo simulation, in larger than 2 * 2 tables.}
 
 \item{seed}{(numeric) Set different seed (default = 2020).}
 
