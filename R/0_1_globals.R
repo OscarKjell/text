@@ -34,6 +34,7 @@ utils::globalVariables(c(
   "strata",
   "data_prepared_with_recipe",
   "bestParametersFunction", "eval_result",
+  "fold", "fold_prop", "overall_n", "overall_prop",
 
   # textTrainNPlot
   "sample_size", "percent", "std", "ymin", "ymax",
@@ -86,11 +87,10 @@ utils::globalVariables(c(
   "word_data_extrem_min_PC1", "word_data_extrem_min_PC2", "word_data_frequency", "n_g1.x", "n_g2.x",
   "centrality", "projection", "superviced",
   "x_plotted", "y_plotted", "mixture_mode", "penalty_mode",
-  "tokens",
+  "tokens", "check_extreme_xy", "extremity_score", "square_categories",
 
   # Finetuning
   "hgTransformerMLM",
-
 
   ### BertTopic
   # create_plots:

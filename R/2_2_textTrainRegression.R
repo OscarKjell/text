@@ -834,7 +834,7 @@ check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_n
       dplyr::distinct()  # Ensure one row per unique ID
   )
 
-  # 🔹 Step 1: Check if **any ID appears in multiple folds**
+  # Check if **any ID appears in multiple folds**
   id_fold_check <- id_assignments %>%
     dplyr::count(!!rlang::sym(id_variable), fold) %>%
     dplyr::count(!!rlang::sym(id_variable)) %>%
@@ -842,25 +842,25 @@ check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_n
 
   if (nrow(id_fold_check) > 0) {
     message(colourise(
-      "⚠️ Warning: Some IDs are assigned to multiple folds!",
+      "Warning: Some IDs are assigned to multiple folds!",
       "orange"
     ))
     print(id_fold_check)
   } else {
     message(colourise(
-      "✅ All duplicates of each ID are correctly assigned to a single fold.",
+      "All duplicates of each ID are correctly assigned to a single fold.",
       "green"
     ))
   }
 
-  # 🔹 Step 2: Check for missing fold assignments
+  # Check for missing fold assignments
   missing_ids <- id_assignments %>%
     dplyr::filter(is.na(fold))
 
   if (nrow(missing_ids) > 0) {
 
       message(colourise(
-        "⚠️ Warning: {nrow(missing_ids)} IDs are missing fold assignments",
+        "Warning: {nrow(missing_ids)} IDs are missing fold assignments",
         "orange"))
 
       message(colourise(
@@ -869,26 +869,26 @@ check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_n
 
   } else {
     message(colourise(
-      "✅ No missing fold assignments.",
+      "No missing fold assignments.",
       "green"
     ))
   }
 
-  # 🔹 Step 3: Check fold balance
+  # Check fold balance
   fold_distribution <- id_assignments %>%
     dplyr::count(fold) %>%
     dplyr::arrange(desc(n))
 
 
   message(colourise(
-    "✅ Fold balance checked.",
+    "Fold balance checked.",
     "green"
   ))
   message(colourise(
     fold_distribution,
     "blue"))
 
-  # 🔹 Step 4: Check if stratification is preserved
+  # Check if stratification is preserved
   if (!is.null(strata)) {
     strata_check <- purrr::map2_dfr(
       results_nested_resampling$splits,
@@ -931,7 +931,7 @@ check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_n
 
     # Print stratification summary
 #    print(strata_check)
-#    message(glue::glue("✅ Stratification checked. Mean absolute deviation from overall distribution: {round(mae_stratification, 4)}"))
+#    message(glue::glue("Stratification checked. Mean absolute deviation from overall distribution: {round(mae_stratification, 4)}"))
 #    message(glue::glue("Chi-square test p-value: {round(chi_sq_test$p.value, 4)}"))
 
     # Plot stratification distribution
@@ -946,14 +946,14 @@ check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_n
       ggplot2::theme_minimal()
 
     message(colourise(
-      "✅ Cross-validation setup verification complete.",
+      "Cross-validation setup verification complete.",
       "green"
     ))
 
     return(p)
   } else {
     message(colourise(
-      "✅ Cross-validation setup verification complete.",
+      "Cross-validation setup verification complete.",
       "green"
     ))
   }
