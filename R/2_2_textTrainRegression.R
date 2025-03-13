@@ -415,7 +415,6 @@ tune_over_cost <- function(object,
   ## Sequence to select dimensions from the semreps. SM-article state:
   # "Adding 1, then multiplying by 1.3 and finally rounding to the nearest
   # integer (e.g., 1, 3, 5, 8, where the next number of dimensions to be tested are the first 12;
-  # in other words ([8 +􏰄 1*] 􏱡 1.3)
   if (!is.na(first_n_predictors)) {
     stop <- first_n_predictors
     new_num <- 1
@@ -821,7 +820,6 @@ perform_nested_cv <- function(
 #' @noRd
 check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_nr", strata = NULL) {
 
-  message("🔍 Checking nested cross-validation setup...")
 
   # Extract fold assignments from `splits`, ensuring **each unique ID** is assigned once
   id_assignments <- purrr::map2_dfr(
@@ -1039,7 +1037,7 @@ check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_n
 #' @param save_output (character) Option not to save all output; default = "all". see also "only_results"
 #'  and "only_results_predictions".
 #' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by
-#' Monte Carlo simulation, in larger than 2 × 2 tables.
+#' Monte Carlo simulation, in larger than 2 * 2 tables.
 #' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @details
