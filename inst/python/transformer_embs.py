@@ -190,30 +190,38 @@ class transformer_embeddings:
     """
     #modelName, tokenizerName, modelClass=None, batchSize=dlac.GPU_BATCH_SIZE, aggregations = ['mean'], layersToKeep = [8,9,10,11], maxTokensPerSeg=255, noContext=True, layerAggregations = ['concatenate'], wordAggregations = ['mean'], keepMsgFeats = False, customTableName = None, valueFunc = lambda d: d
     
-    def __init__(self, modelName:str, tokenizerName:str=None, layersToKeep:List=[-1, -2, -3, -4], aggregations:List=['mean'], layerAggregations:List=['mean'], wordAggregations:List=['mean'], maxTokensPerSeg=None, batchSize:int=None, noContext=True, customTableName:str=None, savePath:str=None):
+    def __init__(self, modelObj=None, modelName:str=None, tokenizerObj=None, tokenizerName:str=None, layersToKeep:List=[-1, -2, -3, -4], aggregations:List=['mean'], 
+                 layerAggregations:List=['mean'], wordAggregations:List=['mean'], maxTokensPerSeg=None, batchSize:int=None, 
+                 noContext=True, customTableName:str=None, savePath:str=None):
         
         self.groups_processed = 0
         self.groups = [] #run get_groups()
         self.batchSize = batchSize
-        self.config = AutoConfig.from_pretrained(modelName, output_hidden_states=True)
-        if tokenizerName is not None:
+        if modelObj is not None:
+            self.transformerModel = modelObj
+            self.cuda = self.transformerModel.device.type == 'cuda'
+            self.config = self.transformerModel.config
+        elif modelName is not None:
+            self.config = AutoConfig.from_pretrained(modelName, output_hidden_states=True)
+            self.transformerModel = AutoModel.from_pretrained(modelName, config=self.config)
+            self.cuda = True
+            #TODO: Turn this into dataparallel to leverage multiple GPUs
+            try:
+                self.transformerModel.to('cuda')
+            except:
+                print (" unable to use CUDA (GPU) for BERT")
+                self.cuda = False
+        self.transformerModel.eval()
+        
+        if tokenizerObj is not None:
+            self.transformerTokenizer = tokenizerObj
+        elif tokenizerName is not None:
             self.transformerTokenizer = AutoTokenizer.from_pretrained(tokenizerName)
         else:
             self.transformerTokenizer = AutoTokenizer.from_pretrained(modelName)
-        #TODO: Add default cache file dir
-        self.transformerModel = AutoModel.from_pretrained(modelName, config=self.config)
 
         #Fix for gpt2
         self.pad_token_id = self.transformerTokenizer.pad_token_id if self.transformerTokenizer.pad_token_id else 0
-        self.transformerModel.eval()
-
-        self.cuda = True
-        #TODO: Turn this into dataparallel to leverage multiple GPUs
-        try:
-            self.transformerModel.to('cuda')
-        except:
-            print (" unable to use CUDA (GPU) for BERT")
-            self.cuda = False
         
         layersToKeep = self.parse_layers(layersToKeep)
         self.layersToKeep = np.array(layersToKeep, dtype='int')
