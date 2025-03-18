@@ -55,7 +55,7 @@ state-of-the-art AI techniques tailored for social and behavioral
 scientists. <br> Please reference our tutorial article when using the
 `text` package: [The text-package: An R-package for Analyzing and
 Visualizing Human Language Using Natural Language Processing and Deep
-Learning](https://osf.io/preprints/psyarxiv/293kt/). <br>
+Learning](https://pubmed.ncbi.nlm.nih.gov/37126041/). <br>
 
 ### Short installation guide
 

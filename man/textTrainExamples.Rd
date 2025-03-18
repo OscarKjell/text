@@ -25,6 +25,7 @@ textTrainExamples(
   scatter_legend_dots_alpha = 0.8,
   scatter_legend_bg_dots_alpha = 0.2,
   scatter_show_axis_values = TRUE,
+  scatter_legend_regression_line_colour = NULL,
   x_axis_range = NULL,
   y_axis_range = NULL,
   grid_legend_x_axes_label = NULL,
@@ -52,6 +53,7 @@ textPredictExamples(
   scatter_legend_dots_alpha = 0.8,
   scatter_legend_bg_dots_alpha = 0.2,
   scatter_show_axis_values = TRUE,
+  scatter_legend_regression_line_colour = NULL,
   x_axis_range = NULL,
   y_axis_range = NULL,
   grid_legend_x_axes_label = NULL,
@@ -66,7 +68,8 @@ textPredictExamples(
 
 \item{y_variable}{(numeric) the outcome from the model (i.e., y_hat).}
 
-\item{type}{(string) if set to "prediction_errors", two extra plots is provided: distribution of scores and absolute error.}
+\item{type}{(string) If you are plotting errors between predicted and targeted scores, you can set the type to "prediction_errors",
+to produce two extra plots: distribution of scores and absolute error.}
 
 \item{n_tile}{(integer) the n tile to split the data in (to show the most extreme tiles in different colours).}
 
@@ -96,6 +99,8 @@ textPredictExamples(
 For example: c(1,0,1) result in one dot in each quadrant except for the middle quadrant.}
 
 \item{scatter_show_axis_values}{(boolean) If TRUE, the estimate values are shown on the distribution plot axes.}
+
+\item{scatter_legend_regression_line_colour}{(string) If a colour string is added, a regression line will be plotted.}
 
 \item{x_axis_range}{(numeric vector) range of x axis (e.g., c(1, 100)).}
 

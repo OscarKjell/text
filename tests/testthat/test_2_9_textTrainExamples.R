@@ -50,7 +50,8 @@ test_that("textTrainExamples tests", {
     filter_words = NULL,
     target_color = "darkgreen",
     predictions_color = "darkblue",
-    error_color = "darkred"
+    error_color = "darkred",
+    scatter_legend_regression_line_colour = "black"
   )
 
   examples_2d$scatter_plot

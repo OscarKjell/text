@@ -651,8 +651,13 @@ adjust_for_plot_type <- function(
 #' selects first according to lowest p-value and then according to frequency (default = 5). Hence, on a two
 #' dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.
 #' @param plot_n_word_extreme Number of words that are extreme on Supervised Dimension
-#' Projection per dimension (default = 5). (i.e., even if not significant; per dimensions,
+#' Projection per dimension. (i.e., even if not significant; per dimension,
 #' where duplicates are removed).
+#' @param plot_n_word_extreme_xy Number of words that are extreme in both x and y dimensions,
+#' considering overall distance from the origin in the Supervised Dimension Projection space.
+#' This selects words based on their combined extremity score, calculated as
+#' the Euclidean distance from (0,0). Ensures balance across all nine squares by selecting
+#' at least one extreme word per square if available.
 #' @param plot_n_word_frequency Number of words based on being most frequent (default = 5).
 #' (i.e., even if not significant).
 #' @param plot_n_words_middle Number of words plotted that are in the middle in Supervised
@@ -777,6 +782,7 @@ textPlot <- function(
     plot_n_words_square = 3,
     plot_n_words_p = 5,
     plot_n_word_extreme = 5,
+    plot_n_word_extreme_xy = 0,
     plot_n_word_frequency = 5,
     plot_n_words_middle = 5,
     plot_n_word_random = 0,
@@ -1115,6 +1121,28 @@ textPlot <- function(
       dplyr::arrange(y_plotted) %>%
       dplyr::slice(0:plot_n_word_extreme)
 
+
+
+    ##### Extreme x and y #######
+#    if (plot_n_word_extreme_xy > 0) {
+      # Compute combined extremity score
+      word_data1 <- word_data1 %>%
+        dplyr::mutate(extremity_score = sqrt(x_plotted^2 + y_plotted^2))
+
+
+    # Ensure selection from all nine squares (if available)
+    word_data1_extreme_xy <- word_data1 %>%
+      dplyr::group_by(square_categories) %>%
+      dplyr::arrange(dplyr::if_else(square_categories == 5, extremity_score, -extremity_score)) %>%  # Flip sorting for category 5
+      dplyr::slice_head(n = plot_n_word_extreme_xy) %>%  # Ensure spread across squares
+      dplyr::ungroup()
+
+      # Combine extreme selections
+      word_data1_extreme_xy <- dplyr::bind_rows(word_data1_extreme_xy) %>%
+        dplyr::distinct(words, .keep_all = TRUE)  # Remove duplicates
+#    }
+
+    ################
     word_data1_frequency_y <- word_data1 %>%
       dplyr::arrange(-n) %>%
       dplyr::slice(0:plot_n_word_frequency)
@@ -1151,6 +1179,8 @@ textPlot <- function(
                          dplyr::transmute(words, check_extreme_max_y = 1), by = "words") %>%
       dplyr::left_join(word_data1_extrem_min_y %>%
                          dplyr::transmute(words, check_extreme_min_y = 1), by = "words") %>%
+      dplyr::left_join(word_data1_extreme_xy %>%
+                         dplyr::transmute(words, check_extreme_xy = 1), by = "words") %>%
       dplyr::left_join(word_data1_frequency_y %>%
                          dplyr::transmute(words, check_extreme_frequency_y = 1), by = "words") %>%
       dplyr::left_join(word_data1_middle_y %>%
@@ -1158,10 +1188,11 @@ textPlot <- function(
       dplyr::left_join(word_data1_random_y %>%
                          dplyr::transmute(words, check_random_y = 1), by = "words") %>%  # Adding the random selection
       dplyr::mutate(extremes_all_y = rowSums(cbind(
-        check_p_y_neg, check_p_y_pos, check_extreme_max_y, check_extreme_min_y,
+        check_p_y_neg, check_p_y_pos, check_extreme_max_y, check_extreme_min_y, check_extreme_xy,
         check_extreme_frequency_y, check_middle_y, check_random_y
       ), na.rm = TRUE)) %>%
       dplyr::mutate(extremes_all = rowSums(cbind(extremes_all_x, extremes_all_y), na.rm = TRUE))
+
 
 
     # Categorize words to apply specific color

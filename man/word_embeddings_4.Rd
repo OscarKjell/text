@@ -14,9 +14,6 @@ mean aggregation of layer 11 and 12.
   \item{Dim1:Dim768}{Word embeddings dimensions}
 }
 }
-\source{
-\url{https://osf.io/preprints/psyarxiv/er6t7/}
-}
 \usage{
 word_embeddings_4
 }

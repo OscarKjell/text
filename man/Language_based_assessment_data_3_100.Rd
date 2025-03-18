@@ -12,9 +12,6 @@ A data frame with 100 rows and 4 variables:
   \item{swlstotal}{total score of the Satisfaction With Life Scale}
 }
 }
-\source{
-\url{https://osf.io/preprints/psyarxiv/er6t7/}
-}
 \usage{
 Language_based_assessment_data_3_100
 }

@@ -161,7 +161,30 @@ test_that("textProjectionPlot 2-DIMENSIONS produces a plot", {
   expect_true(ggplot2::is.ggplot(p3$final_plot))
   expect_equal(p3$processed_word_data$x_plotted[2], 0.7323493, tolerance = 0.0001)
 
-
+  # Dot Product Projection Plot
+  p3 <- text::textPlot(
+    word_data = DP_projections_HILS_SWLS_100,
+    k_n_words_to_test = FALSE,
+    min_freq_words_test = 1,
+    plot_n_words_square = 0,
+    plot_n_words_p = 0,
+    plot_n_word_extreme = 0,
+    plot_n_word_extreme_xy = 5,
+    plot_n_word_frequency = 0,
+    plot_n_words_middle = 0,
+    plot_n_word_random = 0,
+    # x_axes = TRUE,
+    y_axes = TRUE,
+    p_alpha = 0.05,
+    title_top = " Dot Product Projection (DPP)",
+    x_axes_label = "Low vs. High HILS score",
+    y_axes_label = "Low vs. High SWLS score",
+    p_adjust_method = "fdr",
+    scale_y_axes_lim = NULL
+  )
+  p3
+  expect_true(ggplot2::is.ggplot(p3$final_plot))
+  expect_equal(p3$processed_word_data$x_plotted[2], 0.7323493, tolerance = 0.0001)
 
 
   # Cohens_d pipeline
