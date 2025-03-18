@@ -796,16 +796,7 @@ perform_nested_cv <- function(
 }
 
 
-#' Check Nested Cross-Validation Setup
-#'
-#' Validates that each unique `id_variable` is assigned correctly to a fold,
-#' ensures no duplicates, checks for missing assignments, and verifies fold balance.
-#'
-#' @param results_nested_resampling The nested cross-validation object.
-#' @param id_variable The name of the grouping variable.
-#' @param strata Optional variable used for stratification.
-#' @return A summary report of the checks.
-#' @noRd
+
 #' Check Nested Cross-Validation Setup
 #'
 #' Validates that each unique `id_variable` is assigned correctly to a fold,

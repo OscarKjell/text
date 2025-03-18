@@ -27,7 +27,7 @@ dynamic_jitter_data <- function(
   # Calculate jitter for x
   jitter_width <- diff(range(data[[x_col]], na.rm = TRUE)) * jitter_factor
   data <- data %>%
-    mutate(
+    dplyr::mutate(
       x_jittered = .data[[x_col]] + stats::runif(n(), -jitter_width, jitter_width)
     )
 
@@ -39,7 +39,7 @@ dynamic_jitter_data <- function(
 
     jitter_height <- diff(range(data[[y_col]], na.rm = TRUE)) * jitter_factor
     data <- data %>%
-      mutate(
+      dplyr::mutate(
         y_jittered = .data[[y_col]] + stats::runif(n(), -jitter_height, jitter_height)
       )
   }
@@ -84,7 +84,8 @@ reorder_columns <- function(
 #' @param text (string) the language that was used for prediction/assessment/classification.
 #' @param x_variable (numeric) the variable used for training (y).
 #' @param y_variable (numeric) the outcome from the model (i.e., y_hat).
-#' @param type (string) if set to "prediction_errors", two extra plots is provided: distribution of scores and absolute error.
+#' @param type (string) If you are plotting errors between predicted and targeted scores, you can set the type to "prediction_errors",
+#' to produce two extra plots: distribution of scores and absolute error.
 #' @param n_tile (integer) the n tile to split the data in (to show the most extreme tiles in different colours).
 #' @param n_examples (integer) the number of language examples to show.
 #' @param jitter (integer) the percentage of jitter to add to the data for the scatter plot.
@@ -107,6 +108,7 @@ reorder_columns <- function(
 # For example, c("t_1", "t_2"). If set, scatter_legend_method will have no effect.
 # @param scatter_legend_topic_n (boolean) If TRUE, the topic numbers are shown in the scatter legend.
 #' @param scatter_show_axis_values (boolean) If TRUE, the estimate values are shown on the distribution plot axes.
+#' @param scatter_legend_regression_line_colour (string) If a colour string is added, a regression line will be plotted.
 #' @param x_axis_range (numeric vector) range of x axis (e.g., c(1, 100)).
 #' @param y_axis_range (numeric vector) range of y axis (e.g., c(1, 100)).
 #' @param grid_legend_x_axes_label x-axis label of the grid topic plot.
@@ -117,7 +119,7 @@ reorder_columns <- function(
 #' @importFrom stringi stri_detect_fixed
 #' @importFrom purrr map_lgl
 #' @importFrom tidyr pivot_longer
-#' @importFrom ggplot2 geom_histogram aes labs theme_minimal scale_fill_manual
+#' @importFrom ggplot2 geom_histogram aes labs theme_minimal scale_fill_manual geom_smooth
 #' @importFrom topics topicsScatterLegend
 #' @export
 textTrainExamples <- function(
@@ -149,6 +151,7 @@ textTrainExamples <- function(
     scatter_legend_bg_dots_alpha = .20,
   #  scatter_legend_n = c(3, 3, 3),
     scatter_show_axis_values = TRUE,
+  scatter_legend_regression_line_colour = NULL,
     x_axis_range = NULL,
     y_axis_range = NULL,
     grid_legend_x_axes_label = NULL,
@@ -352,9 +355,10 @@ textTrainExamples <- function(
   }
 
 
-     # This is because topicsScatterLegend expect a prevalence variable to scale the dots
-    # since we do not have any difference in prevalence we set it o one.
-    df_for_distribution$prevalence <- rep(1, nrow(df_for_distribution))
+
+  # This is because topicsScatterLegend expect a prevalence variable to scale the dots
+  # since we do not have any difference in prevalence we set it o one.
+  df_for_distribution$prevalence <- rep(1, nrow(df_for_distribution))
 
 
   # Reorder columns to be plotted in the scatter plot to satisfy topicsScatterLegend()
@@ -369,7 +373,7 @@ textTrainExamples <- function(
 
   # Ensure we have a column called color_categories for the topicsScatterLegend()
   # Define color codes with explicit naming
-    distribution_color <- c(
+  distribution_color <- c(
       "1" = distribution_color[1],
       "2" = distribution_color[2],
       "3" = distribution_color[3],
@@ -381,10 +385,10 @@ textTrainExamples <- function(
       "9" = distribution_color[9]
     )
 
-    scatter_legend_dot_size = c(scatter_legend_dot_size, scatter_legend_dot_size)
-    scatter_legend_bg_dot_size = c(scatter_legend_bg_dot_size, scatter_legend_bg_dot_size)
+  scatter_legend_dot_size = c(scatter_legend_dot_size, scatter_legend_dot_size)
+  scatter_legend_bg_dot_size = c(scatter_legend_bg_dot_size, scatter_legend_bg_dot_size)
 
-    df_for_distribution$color_categories
+  df_for_distribution$color_categories
 
   scatter_plot <- topics::topicsScatterLegend(
     bivariate_color_codes = distribution_color,
@@ -432,6 +436,17 @@ textTrainExamples <- function(
       NULL
     }
   )
+
+  # Add regression/correlation line
+  if(!is.null(scatter_legend_regression_line_colour)) {
+    scatter_plot$legend <- scatter_plot$legend +
+      ggplot2::geom_smooth(aes(x = df_for_distribution$x_variable,
+                      y = df_for_distribution$y_variable),
+                  method = "lm",
+                  se = FALSE,
+                  color = scatter_legend_regression_line_colour,
+                  size = 0.5)
+  }
 
   #### Sorting output ####
   # Renaming variable
