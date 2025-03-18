@@ -18,7 +18,7 @@ A data frame with 40 participants and 8 variables:
 }
 }
 \source{
-\url{https://osf.io/preprints/psyarxiv/er6t7/}
+\url{https://pubmed.ncbi.nlm.nih.gov/37126041/}
 }
 \usage{
 Language_based_assessment_data_8

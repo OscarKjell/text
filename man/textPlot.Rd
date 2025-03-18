@@ -12,6 +12,7 @@ textPlot(
   plot_n_words_square = 3,
   plot_n_words_p = 5,
   plot_n_word_extreme = 5,
+  plot_n_word_extreme_xy = 0,
   plot_n_word_frequency = 5,
   plot_n_words_middle = 5,
   plot_n_word_random = 0,
@@ -88,8 +89,14 @@ selects first according to lowest p-value and then according to frequency (defau
 dimensional plot it is possible that plot_n_words_p = 1 yield 4 words.}
 
 \item{plot_n_word_extreme}{Number of words that are extreme on Supervised Dimension
-Projection per dimension (default = 5). (i.e., even if not significant; per dimensions,
+Projection per dimension. (i.e., even if not significant; per dimension,
 where duplicates are removed).}
+
+\item{plot_n_word_extreme_xy}{Number of words that are extreme in both x and y dimensions,
+considering overall distance from the origin in the Supervised Dimension Projection space.
+This selects words based on their combined extremity score, calculated as
+the Euclidean distance from (0,0). Ensures balance across all nine squares by selecting
+at least one extreme word per square if available.}
 
 \item{plot_n_word_frequency}{Number of words based on being most frequent (default = 5).
 (i.e., even if not significant).}

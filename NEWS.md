@@ -2,6 +2,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.4
+- adding `cv_method` = "group_cv" in the `textTrainRegression()``` function. 
+
 # text 1.3.6
 - fixing python dependency (aiohappyeyeballs)
 - adding parameter `plot_n_word_random` and `legend_number_colour` in textPlot. 
