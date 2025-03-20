@@ -715,7 +715,7 @@ def hgTransformerGetEmbedding(text_strings,
     else:
         return all_embs
 
-def hgDLATKTransformerGetEmbedding(text_strings,
+def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
                                    text_ids = [],
                                    group_ids = [],
                                    model = 'bert-large-uncased',
