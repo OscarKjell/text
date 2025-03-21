@@ -399,9 +399,9 @@ class transformer_embeddings:
                 msgIds.append(current_msgId)
                 current_msgId = msgId_seq_new[idx]
                 current_firstIdx = idx
-                if idx == len(msgId_seq_new)-1:
-                    msg_reps.append(self.submsg_aggregate(msg_rep[current_firstIdx:]))
-                    msgIds.append(current_msgId)
+            if idx == len(msgId_seq_new)-1:
+                msg_reps.append(self.submsg_aggregate(msg_rep[current_firstIdx:]))
+                msgIds.append(current_msgId)
 
         return (msg_reps, msgIds, cfId_seq_new)
 
