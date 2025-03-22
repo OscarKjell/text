@@ -22,7 +22,7 @@ test_that("textEmbed handling NAs", {
   skip_on_cran()
 
   # testing NA and empty strings
-  embeddings_with_NA <- textEmbed(c("hej",
+  embeddings_with_NA <- text::textEmbed(texts = c("hej",
                                     NA,
                                     "hej jag heter na",
                                     "",

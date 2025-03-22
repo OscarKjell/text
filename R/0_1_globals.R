@@ -11,11 +11,11 @@ utils::globalVariables(c(
   "addEqualNrNArows", "applysemrep",
 
   # PYTHON FUNCTIONS
-  "hgTransformerGetEmbedding", "hgTransformerGetSentiment", "hgTransformerGetTextGeneration",
+  "hgTransformerGetEmbedding", "hgDLATKTransformerGetEmbedding", "hgTransformerGetSentiment", "hgTransformerGetTextGeneration",
   "hgTransformerGetNER", "hgTransformerGetSummarization", "hgTransformerGetQA",
   "hgTransformerGetTranslation", "hgTokenizerGetTokens", "hgTransformerGetZeroShot",
   "textModelsPy", "textModelsRMPy", "get_number_of_hidden_layers", "hgTransformerFineTune",
-  "remove_pii",
+  "remove_pii", "values",
 
 
   # EMBEDDINGS OBJECTS

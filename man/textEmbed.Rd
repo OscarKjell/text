@@ -25,6 +25,8 @@ textEmbed(
   hg_gated = FALSE,
   hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
   logging_level = "error",
+  dlatk_method = FALSE,
+  trust_remote_code = FALSE,
   ...
 )
 }
@@ -100,6 +102,11 @@ be set to avoid the need to enter the token each time.}
 
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
+
+\item{dlatk_method}{(boolean; experiments) If TRUE the text is split using the DLATK-method; this method appears better for longer texts (but it does not
+return token level word embeddings, nor word_types embeddings at this stage).}
+
+\item{trust_remote_code}{(boolean) use a model with custom code on the Huggingface Hub}
 
 \item{...}{settings from textEmbedRawLayers().}
 }

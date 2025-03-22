@@ -27,6 +27,10 @@ from nltk.tokenize import sent_tokenize
 
 import os, sys
 
+from collections import Counter
+from tqdm import tqdm
+from transformer_embs import transformer_embeddings
+
 def set_hg_gated_access(access_token):
     """
     Local save of the access token for gated models on hg.
@@ -710,6 +714,165 @@ def hgTransformerGetEmbedding(text_strings,
         return all_embs, all_toks
     else:
         return all_embs
+
+def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
+                                   text_ids = [],
+                                   group_ids = [],
+                                   model = 'bert-large-uncased',
+                                   layers = 'all',
+                                #    return_tokens = True,
+                                #    max_token_to_sentence = 4,
+                                   device = 'cpu',
+                                   tokenizer_parallelism = False,
+                                   model_max_length = None,
+                                   hg_gated = False,
+                                   hg_token = "",
+                                   trust_remote_code = False,
+                                   logging_level = 'warning',
+                                #    sentence_tokenize = True
+                                    batch_size = 1,
+                                    aggregations= ['mean']
+                                   ):
+    """
+    Simple Python method for embedding text with pretained Hugging Face models using DLATK's hypercontextualized embeddings.
+
+    Parameters
+    ----------
+    text_strings : list
+        list of strings, each is embedded separately
+    text_ids : list
+        list of unique identifiers for each text_string
+    group_ids : list
+        list of unique identifiers for each group of text_strings
+    model : str
+        shortcut name for Hugging Face pretained model
+        Full list https://huggingface.co/transformers/pretrained_models.html
+    layers : str or list
+        'all' or an integer list of layers to keep
+    device : str
+        name of device: 'cpu', 'gpu', or 'gpu:k' where k is a specific device number
+    tokenizer_parallelism :  bool
+        enable parallelism for tokenizer
+    model_max_length : int
+        maximum length of the tokenized text
+    hg_gated : bool
+        Whether the accessed model is gated
+    hg_token: str
+        The token generated in huggingface website
+    trust_remote_code : bool
+        use a model with custom code on the Huggingface Hub
+    logging_level : str
+        set logging level, options: critical, error, warning, info, debug
+    batch_size : int
+        batch size for generating embeddings
+    aggregations : list
+        list of aggregation methods to use for aggregating embeddings from message to group level
+
+    Returns
+    -------
+    msg_embeddings : list
+        embeddings for each item in text_strings
+    cf_embeddings : list, optional
+        embeddings for each group of text_strings
+    """
+    def getMessagesForCorrelFieldGroups(cfGrp, text_strings, group_ids, text_ids):
+        """ Return a list of list containing [cfId, msgId, msg] for the given cfGrp """
+        filtered_rows = [(group_id, text_ids[i], text_strings[i]) for i, group_id in enumerate(group_ids) if group_id in cfGrp]
+        return filtered_rows
+
+    set_logging_level(logging_level)
+    set_tokenizer_parallelism(tokenizer_parallelism)
+    device, device_num = get_device(device)
+
+    config, tokenizer, transformer_model = get_model(model, hg_gated=hg_gated, hg_token=hg_token, trust_remote_code=trust_remote_code)
+
+    if device != 'cpu': transformer_model.to(device)
+        
+    # check and adjust input types
+    if isinstance(text_strings, str):
+        text_strings = [text_strings]
+    
+    if layers == 'all':
+        layers = list(range(transformer_model.config.num_hidden_layers))
+    elif isinstance(layers, int):
+        layers = [layers]
+    layers = [int(i) for i in layers]
+    
+    embedding_generator = transformer_embeddings(modelObj=transformer_model, tokenizerObj=tokenizer, layersToKeep=layers, 
+                                                aggregations=aggregations, layerAggregations=['concatenate'], 
+                                                wordAggregations=['mean'], maxTokensPerSeg=255, batchSize=batch_size, 
+                                                noContext=False)
+    
+    msgs = 0 #keeps track of the number of messages read
+    if text_ids == []: text_ids = range(len(text_strings))
+    assert len(text_ids) == len(text_strings), "Length of text_ids must be equal to length of text_strings"
+    assert len(set(text_ids)) == len(text_ids), "text_ids must be unique"
+        
+    if group_ids == []:  group_ids = range(len(text_strings))
+    assert len(group_ids) == len(text_strings), "Length of group_ids must be equal to length of text_strings"
+    
+    num_rows_per_group = Counter(group_ids)
+    
+    msgsInBatch = 0
+    cfGroups = [[]] #holds the list of cfIds that needs to batched together 1
+    #Handle None here to maximise performance. 
+    for row in num_rows_per_group.items():
+        cfId = row[0] #correl field id
+        cfNumMsgs = row[1] #Number of messages
+        if msgsInBatch + cfNumMsgs > batch_size and len(cfGroups[-1])>=1:
+            cfGroups.append([])
+            msgsInBatch = 0
+        cfGroups[-1].append(cfId)
+        msgsInBatch += cfNumMsgs
+
+    num_cfs = 0
+    cfGroups = [cfGrp for cfGrp in cfGroups if cfGrp]    
+    
+    msg_embeddings = []
+    cf_embeddings = []
+    for cfGrp in tqdm(cfGroups):
+        # mIdSeen = set() #currently seen message ids
+        # mIdList = [] #only for keepMsgFeats
+
+        # msgEmb, cfEmb  = {}, {}
+        cfId_msgId_map = {}
+        groupedMessageRows = {} # To be turned into List[CF IDs, List[messages]]
+        messageRows = getMessagesForCorrelFieldGroups(cfGrp=cfGrp, text_strings=text_strings, group_ids=group_ids, text_ids=text_ids)
+        
+        for cfId, msgId, msg in messageRows:
+            if cfId not in cfId_msgId_map: 
+                cfId_msgId_map[cfId] = set()
+                groupedMessageRows[cfId] = []
+            if msgId not in cfId_msgId_map[cfId]:
+                cfId_msgId_map[cfId].add(msgId)
+                groupedMessageRows[cfId].append([msgId, msg])
+        groupedMessageRows = [[cfId, groupedMessageRows[cfId]] for cfId in cfId_msgId_map]
+            
+        tokenIdsDict, (cfId_seq, msgId_seq) = embedding_generator.prepare_messages(groupedMessageRows, sent_tok_onthefly=True)
+        if len(tokenIdsDict["input_ids"]) == 0:
+            continue
+        
+        encSelectedLayers = embedding_generator.generate_transformer_embeddings(tokenIdsDict)
+
+        if encSelectedLayers is None:
+            continue
+        
+        msg_reps, msgIds_new, cfIds_new = embedding_generator.message_aggregate(encSelectedLayers, msgId_seq, cfId_seq)
+        
+        if all([len(cfId_msgId_map[cfId]) == 1 for cfId in cfId_msgId_map]):
+            cf_reps = msg_reps
+        else:
+            msg_reps_dict = dict(zip([i for i in msgIds_new], [msg_reps[i] for i in range(len(msgIds_new))]))
+            cf_reps, cfIds_new = embedding_generator.correl_field_aggregate(msg_reps_dict, cfId_msgId_map)
+            cf_reps = [[cf_reps[i][j].rep for j in range(len(aggregations))] for i in range(len(cf_reps))]    
+
+        msg_embeddings.extend(msg_reps)
+        cf_embeddings.extend(cf_reps)
+    
+    msg_embeddings = [msg_embeddings[i].tolist() for i in range(len(msg_embeddings))]
+    cf_embeddings = [cf_embeddings[i].tolist() if isinstance(cf_embeddings[i], np.ndarray) else cf_embeddings[i] for i in range(len(cf_embeddings))] 
+#    return msg_embeddings, cf_embeddings
+    return cf_embeddings
 
 def hgTokenizerGetTokens(text_strings,
                               model = 'bert-large-uncased',

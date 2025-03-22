@@ -2,8 +2,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.4.1
+- adding the `dlatk_method` to the `textEmbed()` function.  
+
 # text 1.4
-- adding `cv_method` = "group_cv" in the `textTrainRegression()``` function. 
+- adding `cv_method` = "group_cv" in the `textTrainRegression()` function. 
 
 # text 1.3.6
 - fixing python dependency (aiohappyeyeballs)
