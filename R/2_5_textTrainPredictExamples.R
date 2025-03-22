@@ -242,6 +242,10 @@ textTrainExamples <- function(
            color_categories = factor(color_categories, levels = as.character(1:9))
     )
 
+  table(df$x_variable_grouped)
+
+
+
   # Handle square ranking criteria to get text examples separately for 1D and 2D cases #
   if (!is.null(y_variable)) {
     df <- df %>%
@@ -388,7 +392,12 @@ textTrainExamples <- function(
   scatter_legend_dot_size = c(scatter_legend_dot_size, scatter_legend_dot_size)
   scatter_legend_bg_dot_size = c(scatter_legend_bg_dot_size, scatter_legend_bg_dot_size)
 
+  #### TESTING
   df_for_distribution$color_categories
+
+  table(df_for_distribution$color_categories)
+
+  #####
 
   scatter_plot <- topics::topicsScatterLegend(
     bivariate_color_codes = distribution_color,

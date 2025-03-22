@@ -779,11 +779,7 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
         """ Return a list of list containing [cfId, msgId, msg] for the given cfGrp """
         filtered_rows = [(group_id, text_ids[i], text_strings[i]) for i, group_id in enumerate(group_ids) if group_id in cfGrp]
         return filtered_rows
-    print(text_strings)    
-    print("I am in hgDLATKTransformerGetEmbedding function now!!!!")
-    print(f"!!!!hg_gated: {hg_gated} !!!")
-    print(f"!!!!hg_token: {hg_token} !!!")
-                                      
+
     set_logging_level(logging_level)
     set_tokenizer_parallelism(tokenizer_parallelism)
     device, device_num = get_device(device)
@@ -875,10 +871,8 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
     
     msg_embeddings = [msg_embeddings[i].tolist() for i in range(len(msg_embeddings))]
     cf_embeddings = [cf_embeddings[i].tolist() if isinstance(cf_embeddings[i], np.ndarray) else cf_embeddings[i] for i in range(len(cf_embeddings))] 
-    print("Oscar")
-    print(msg_embeddings, cf_embeddings)
-    return msg_embeddings, cf_embeddings
-
+#    return msg_embeddings, cf_embeddings
+    return cf_embeddings
 
 def hgTokenizerGetTokens(text_strings,
                               model = 'bert-large-uncased',
