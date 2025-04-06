@@ -1269,7 +1269,8 @@ text_embed_dlatk <- function(
 
     comment(dlatk_emb_message) <- paste(Time_textEmbed,
                              "; Date created: ", Date_textEmbed,
-                             "; text_version: ", packageVersion("text"), ".",
+                             "; text_version: ", packageVersion("text"),
+                             " ; dlatk_method = TRUE", ".",
                              sep = "",
                              collapse = " ")
 
@@ -1588,7 +1589,8 @@ text_embed <- function(
         comment(all_wanted_layers$context_tokens),
         comment(individual_word_embeddings),
         " ; aggregation_from_tokens_to_word_types = ", aggregation_from_tokens_to_word_types,
-        " ; decontextualize = ", decontextualize
+        " ; decontextualize = ", decontextualize,
+        " ; dlatk_method = FALSE"
       )
 
       individual_word_embeddings_words <- list(individual_word_embeddings_words)
