@@ -526,7 +526,7 @@ textTokenize <- function(texts,
 #' @importFrom magrittr set_colnames
 #' @export
 textEmbedRawLayers <- function(texts,
-                               model = "bert-base-uncased",
+                               model = NULL,
                                layers = -2,
                                return_tokens = TRUE,
                                word_type_embeddings = FALSE,
@@ -572,7 +572,7 @@ textEmbedRawLayers <- function(texts,
   }
 
   if (layers[1] < 0) {
-    n <- textModelLayers("bert-base-uncased")
+    n <- textModelLayers(model)
     layers <- 1 + n + layers
     layers
   }
@@ -1269,7 +1269,8 @@ text_embed_dlatk <- function(
 
     comment(dlatk_emb_message) <- paste(Time_textEmbed,
                              "; Date created: ", Date_textEmbed,
-                             "; text_version: ", packageVersion("text"), ".",
+                             "; text_version: ", packageVersion("text"),
+                             " ; dlatk_method = TRUE", ".",
                              sep = "",
                              collapse = " ")
 
@@ -1374,25 +1375,25 @@ text_embed_dlatk <- function(
 #' @noRd
 text_embed <- function(
     texts,
-    model = "bert-base-uncased",
-    layers = -2,
-    dim_name = TRUE,
-    aggregation_from_layers_to_tokens = "concatenate",
-    aggregation_from_tokens_to_texts = "mean",
-    aggregation_from_tokens_to_word_types = NULL,
-    keep_token_embeddings = TRUE,
-    remove_non_ascii = TRUE,
-    tokens_select = NULL,
-    tokens_deselect = NULL,
-    decontextualize = FALSE,
-    model_max_length = NULL,
-    max_token_to_sentence = 4,
-    tokenizer_parallelism = FALSE,
-    device = "cpu",
-    hg_gated = FALSE,
+    model,
+    layers,
+    dim_name,
+    aggregation_from_layers_to_tokens,
+    aggregation_from_tokens_to_texts,
+    aggregation_from_tokens_to_word_types,
+    keep_token_embeddings,
+    remove_non_ascii,
+    tokens_select,
+    tokens_deselect,
+    decontextualize,
+    model_max_length,
+    max_token_to_sentence,
+    tokenizer_parallelism,
+    device,
+    hg_gated,
     hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
                           unset = ""),
-    logging_level = "error",
+    logging_level,
     ...) {
 
   if (sum(is.na(texts) > 0)) {
@@ -1588,7 +1589,8 @@ text_embed <- function(
         comment(all_wanted_layers$context_tokens),
         comment(individual_word_embeddings),
         " ; aggregation_from_tokens_to_word_types = ", aggregation_from_tokens_to_word_types,
-        " ; decontextualize = ", decontextualize
+        " ; decontextualize = ", decontextualize,
+        " ; dlatk_method = FALSE"
       )
 
       individual_word_embeddings_words <- list(individual_word_embeddings_words)
@@ -1954,7 +1956,7 @@ textEmbed <- function(
 
   T1 <- Sys.time()
 
-  if(!is_tibble(texts)){
+  if(!tibble::is_tibble(texts)){
     texts <- tibble::tibble(texts = texts)
   }
 

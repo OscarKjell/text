@@ -15,8 +15,8 @@ test_that("Testing textEmbed as well as train", {
   harmony_word_embeddings1 <- text::textEmbed(
     texts = Language_based_assessment_data_8[1:2, 1:2],
      model = "bert-base-uncased",
+    layers = c(11:12),
   #    dim_name = TRUE,
-     layers = c(11:12),
   #  aggregation_from_layers_to_tokens = "concatenate",
   #  aggregation_from_tokens_to_texts = "mean",
   #  aggregation_from_tokens_to_word_types = "mean",

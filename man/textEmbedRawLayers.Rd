@@ -6,7 +6,7 @@
 \usage{
 textEmbedRawLayers(
   texts,
-  model = "bert-base-uncased",
+  model = NULL,
   layers = -2,
   return_tokens = TRUE,
   word_type_embeddings = FALSE,

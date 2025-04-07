@@ -2,6 +2,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.4.2
+- fixing bug in layer selection in `textEmbedRawLayers()` (when using default -2, layer 11 was selected even for large models). This was never a problem in `textEmbed()`.
+
 # text 1.4.1
 - adding the `dlatk_method` to the `textEmbed()` function.  
 
