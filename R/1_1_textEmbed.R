@@ -1092,15 +1092,10 @@ find_layer_number <- function(
   if (layers[1] < 0) {
     n <- textModelLayers(model, reticulate::r_to_py(hg_gated), reticulate::r_to_py(hg_token))
     layers <- 1 + n + layers
-
   }
+
   return(layers)
 }
-
-
-
-
-
 
 
 
@@ -2067,8 +2062,6 @@ textEmbed <- function(
 
   return(final_result)
 }
-
-
 
 #' Change dimension names
 #'
