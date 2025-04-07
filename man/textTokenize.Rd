@@ -6,7 +6,7 @@
 \usage{
 textTokenize(
   texts,
-  model = "bert-base-uncased",
+  model,
   max_token_to_sentence = 4,
   device = "cpu",
   tokenizer_parallelism = FALSE,

@@ -427,7 +427,7 @@ grep_col_by_name_in_list <- function(l,
 #' @importFrom tibble tibble as_tibble
 #' @export
 textTokenize <- function(texts,
-                         model = "bert-base-uncased",
+                         model,
                          max_token_to_sentence = 4,
                          device = "cpu",
                          tokenizer_parallelism = FALSE,
@@ -1085,6 +1085,7 @@ generate_placement_vector <- function(raw_layers,
 #' @return The number of layers to us (if -2; i.e., the second to last layer)
 #' @noRd
 find_layer_number <- function(
+    model,
     layers,
     hg_gated,
     hg_token){
@@ -1197,7 +1198,7 @@ text_embed_dlatk <- function(
 
 
   # Number of layers to retrieve (if -2 is given; i.e., getting the second to last layer)
-  layers <- find_layer_number(layers, hg_gated, hg_token)
+  layers <- find_layer_number(model, layers, hg_gated, hg_token)
   layers <- reticulate::r_to_py(as.integer(layers))
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
@@ -1422,7 +1423,7 @@ text_embed <- function(
   output <- list()
 
   # Number of layers to retrieve (if -2 is given; i.e., getting the second to last layer)
-  layers <- find_layer_number(layers, hg_gated, hg_token)
+  layers <- find_layer_number(model, layers, hg_gated, hg_token)
 
   # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
   data_character_variables <- select_character_v_utf8(texts)
@@ -2062,6 +2063,8 @@ textEmbed <- function(
 
   return(final_result)
 }
+
+# comment(final_result$texts$texts)
 
 #' Change dimension names
 #'
