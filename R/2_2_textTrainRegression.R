@@ -1758,6 +1758,8 @@ textTrainRegression <- function(
                                             aggregation = "max"
     ) %>% dplyr::bind_rows()
 
+
+
     aggregated_word_embeddings <- list(
       aggregated_word_embedding_mean = aggregated_word_embedding_mean,
       aggregated_word_embedding_min = aggregated_word_embedding_min,
@@ -1766,6 +1768,8 @@ textTrainRegression <- function(
   } else {
     aggregated_word_embeddings = paste0("The aggregated word embeddings were not saved.")
   }
+
+  rm(all_we)
 
   if (model == "regression") {
     if (save_output == "all") {

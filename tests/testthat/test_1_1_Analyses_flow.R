@@ -54,7 +54,27 @@ test_that("Testing textEmbed as well as train", {
   dim1for1 <- harmony_word_embeddings$word_types$harmonytexts[[3]][harmony_word_embeddings$word_types$harmonytexts$words == "-"]
   expect_equal(dim1for1, 0.5637481, tolerance = 0.00001)
 
-  text_train_results1 <- textTrainRegression(
+
+  text_train_results_size <- text::textTrainRegression(
+    x = harmony_word_embeddings$texts$satisfactiontexts,
+    y = Language_based_assessment_data_8$hilstotal[1:20],
+    penalty = 1e-16,
+  )
+
+  # Function to examine the size of an object when saved.
+  saveSize <- function(object) {
+    tf <- tempfile(fileext = ".rds")
+    on.exit(unlink(tf))
+    saveRDS(object, tf)
+    file.info(tf)$size
+  }
+  saved_size <- saveSize(text_train_results_size)
+  saved_size
+  testthat::expect_equal(saved_size[[1]], 2640057, tolerance = 0)
+
+
+
+  text_train_results1 <- text::textTrainRegression(
     x = harmony_word_embeddings$texts["satisfactiontexts"],
     y = Language_based_assessment_data_8["hilstotal"][1:20, ],
     cv_method = "cv_folds",
