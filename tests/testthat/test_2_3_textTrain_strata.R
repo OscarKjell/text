@@ -38,6 +38,15 @@ test_that("textTrain with strata settings", {
     mixture = c(0)
     )
 
+  saveSize <- function(object) {
+    tf <- tempfile(fileext = ".rds")
+    on.exit(unlink(tf))
+    saveRDS(object, tf)
+    file.info(tf)$size
+  }
+
+  testthat::expect_equal(saveSize(group_strata1$final_model), 1397393, tolerance = 10000)
+
   testthat::expect_equal(group_strata1$results[[4]][[1]], .6277968, tolerance = 0.0001)
 
   #### cv_group WITH strat

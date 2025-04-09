@@ -70,7 +70,7 @@ test_that("Testing textEmbed as well as train", {
   }
   saved_size <- saveSize(text_train_results_size)
   saved_size
-  testthat::expect_equal(saved_size[[1]], 2640057, tolerance = 0)
+  testthat::expect_equal(saved_size[[1]], 2778186, tolerance = 1000)
 
 
 

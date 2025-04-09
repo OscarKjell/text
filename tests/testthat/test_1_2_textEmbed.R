@@ -259,6 +259,6 @@ test_that("textDimName", {
 test_that("textTokenize", {
   skip_on_cran()
 
-  tokens <- textTokenize("hello are you?")
+  tokens <- textTokenize("hello are you?", model = "bert-base-uncased")
   expect_equal(tokens[[1]]$tokens[2], "hello")
 })

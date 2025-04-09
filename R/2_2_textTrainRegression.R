@@ -743,6 +743,7 @@ perform_nested_cv <- function(
       v = outside_folds,
       strata = all_of(strata)
     )
+    rm(distinct_ids)
 
     # Extract fold assignments from `assessment()` (test set)
     fold_assignments <- purrr::imap_dfr(stratified_folds$splits, ~ tibble::tibble(
@@ -750,6 +751,7 @@ perform_nested_cv <- function(
       fold = .y  # Assign fold index
     ))
 
+    rm(stratified_folds)
     # Ensure fold_assignments has unique IDs
     fold_assignments <- fold_assignments %>%
       dplyr::distinct(id_nr, .keep_all = TRUE)  # Keeps one row per unique `id_nr`
@@ -775,6 +777,7 @@ perform_nested_cv <- function(
         v = inside_folds
       )
     )
+    rm(fold_assignments)
   } else {
     # No stratification, just use standard `group_vfold_cv()`
     results_nested_resampling <- rsample::nested_cv(
@@ -791,7 +794,7 @@ perform_nested_cv <- function(
       )
     )
   }
-
+  rm(xy)
   return(results_nested_resampling)
 }
 
@@ -809,7 +812,10 @@ perform_nested_cv <- function(
 #' @return A plot if `strata` is provided, otherwise messages indicating checks.
 #' @importFrom purrr map2_dfr
 #' @noRd
-check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_nr", strata = NULL) {
+check_nested_cv_setup <- function(
+    results_nested_resampling,
+    id_variable = "id_nr",
+    strata = NULL) {
 
 
   # Extract fold assignments from `splits`, ensuring **each unique ID** is assigned once
@@ -862,11 +868,14 @@ check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_n
       "green"
     ))
   }
+  rm(missing_ids)
 
   # Check fold balance
   fold_distribution <- id_assignments %>%
     dplyr::count(fold) %>%
     dplyr::arrange(desc(n))
+
+  rm(id_assignments)
 
 
   message(colourise(
@@ -876,6 +885,7 @@ check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_n
   message(colourise(
     fold_distribution,
     "blue"))
+  rm(fold_distribution)
 
   # Check if stratification is preserved
   if (!is.null(strata)) {
@@ -903,26 +913,6 @@ check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_n
       dplyr::left_join(overall_distribution, by = as.character(strata)) %>%
       dplyr::mutate(abs_deviation = abs(fold_prop - overall_prop))
 
-    # Compute mean absolute error (MAE) for stratification balance
- #   mae_stratification <- mean(strata_check$abs_deviation, na.rm = TRUE)
-
-#    # Perform chi-square test for stratification consistency across folds
-#    strata_matrix <- tidyr::pivot_wider(
-#      strata_check,
-#      names_from = fold,
-#      values_from = n,
-#      values_fill = 0
-#    ) %>%
-#      dplyr::select(-!!rlang::sym(strata)) %>%
-#      as.matrix()
-#
-#    chi_sq_test <- chisq.test(strata_matrix)
-
-    # Print stratification summary
-#    print(strata_check)
-#    message(glue::glue("Stratification checked. Mean absolute deviation from overall distribution: {round(mae_stratification, 4)}"))
-#    message(glue::glue("Chi-square test p-value: {round(chi_sq_test$p.value, 4)}"))
-
     # Plot stratification distribution
     p <- ggplot2::ggplot(strata_check, ggplot2::aes(x = fold, y = fold_prop, fill = as.factor(!!rlang::sym(strata)))) +
       ggplot2::geom_bar(stat = "identity", position = "dodge") +
@@ -938,6 +928,10 @@ check_nested_cv_setup <- function(results_nested_resampling, id_variable = "id_n
       "Cross-validation setup verification complete.",
       "green"
     ))
+
+    rm(results_nested_resampling)
+    rm(strata_check)
+    rm(overall_distribution)
 
     return(p)
   } else {

@@ -526,7 +526,7 @@ textTokenize <- function(texts,
 #' @importFrom magrittr set_colnames
 #' @export
 textEmbedRawLayers <- function(texts,
-                               model = NULL,
+                               model = 'bert-base-uncased',
                                layers = -2,
                                return_tokens = TRUE,
                                word_type_embeddings = FALSE,
@@ -1381,7 +1381,7 @@ text_embed <- function(
     remove_non_ascii,
     tokens_select,
     tokens_deselect,
-    decontextualize,
+    decontextualize = FALSE,
     model_max_length,
     max_token_to_sentence,
     tokenizer_parallelism,
