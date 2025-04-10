@@ -324,7 +324,8 @@ textOwnWordsProjection <- function(word_data = word_data,
         layers = as.numeric(layers_number_split[[1]]),
         aggregation_from_layers_to_tokens = aggregate_layers_type,
         aggregation_from_tokens_to_texts = aggregation_tokens_type,
-        aggregation_from_tokens_to_word_types = aggregation_word_type
+        aggregation_from_tokens_to_word_types = aggregation_word_type,
+        ...
       )
     }
     # If using a static/decontextualized language model
