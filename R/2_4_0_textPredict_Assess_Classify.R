@@ -146,7 +146,7 @@ textPredict <- function(
     ## text-trained model specific parameters ##
     word_embeddings = NULL,
     x_append = NULL,
-    append_first = NULL,
+    append_first = TRUE,
     dim_names = TRUE,
     language_distribution = NULL,
     language_distribution_min_words = "trained_distribution_min_words",
