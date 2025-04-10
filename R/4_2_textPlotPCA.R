@@ -8,7 +8,7 @@
 #' (i.e., decontextualized embeddings).
 #' @param to_lower_case Lower case words
 #' @param seed Set different seed.
-#' @return A dataframe with words, their frquency and two PCA dimensions from the word_embeddings
+#' @return A dataframe with words, their frequency and two PCA dimensions from the word_embeddings
 #' for the individual words that is used for the plotting in the textPCAPlot function.
 #' @examples
 #' \dontrun{
