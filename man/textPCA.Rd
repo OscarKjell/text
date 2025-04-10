@@ -22,7 +22,7 @@ textPCA(
 \item{seed}{Set different seed.}
 }
 \value{
-A dataframe with words, their frquency and two PCA dimensions from the word_embeddings
+A dataframe with words, their frequency and two PCA dimensions from the word_embeddings
 for the individual words that is used for the plotting in the textPCAPlot function.
 }
 \description{
