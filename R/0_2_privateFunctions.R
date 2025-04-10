@@ -293,6 +293,11 @@ extract_comment <- function(
     output <- as.numeric(unlist(strsplit(output, " ")))
   }
 
+  if (part == "implementation_method") {
+    method_text <- sub(".*implementation: ", "", comment)
+    output <- sub(" ;.*", "", method_text)
+  }
+
   # penalty_in_final_model
   if (part == "penalty_in_final_model") {
     selected_element <- grep("^penalty in final model =",

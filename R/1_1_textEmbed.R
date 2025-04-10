@@ -525,23 +525,24 @@ textTokenize <- function(texts,
 #' @importFrom tibble tibble as_tibble
 #' @importFrom magrittr set_colnames
 #' @export
-textEmbedRawLayers <- function(texts,
-                               model = 'bert-base-uncased',
-                               layers = -2,
-                               return_tokens = TRUE,
-                               word_type_embeddings = FALSE,
-                               decontextualize = FALSE,
-                               keep_token_embeddings = TRUE,
-                               device = "cpu",
-                               tokenizer_parallelism = FALSE,
-                               model_max_length = NULL,
-                               max_token_to_sentence = 4,
-                               hg_gated = FALSE,
-                               hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
-                                                     unset = ""),
-                               trust_remote_code = FALSE,
-                               logging_level = "error",
-                               sort = TRUE) {
+textEmbedRawLayers <- function(
+    texts,
+    model = 'bert-base-uncased',
+    layers = -2,
+    return_tokens = TRUE,
+    word_type_embeddings = FALSE,
+    decontextualize = FALSE,
+    keep_token_embeddings = TRUE,
+    device = "cpu",
+    tokenizer_parallelism = FALSE,
+    model_max_length = NULL,
+    max_token_to_sentence = 4,
+    hg_gated = FALSE,
+    hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
+                          unset = ""),
+    trust_remote_code = FALSE,
+    logging_level = "error",
+    sort = TRUE) {
   if (decontextualize == TRUE && word_type_embeddings == FALSE) {
     stop(message(
       colourise("decontextualize = TRUE & word_type_embeddings = FALSE has not been
@@ -830,13 +831,14 @@ textEmbedRawLayers <- function(texts,
 #' @seealso See \code{\link{textEmbedRawLayers}} and \code{\link{textEmbed}}.
 #' @importFrom dplyr %>% bind_rows
 #' @export
-textEmbedLayerAggregation <- function(word_embeddings_layers,
-                                      layers = "all",
-                                      aggregation_from_layers_to_tokens = "concatenate",
-                                      aggregation_from_tokens_to_texts = "mean",
-                                      return_tokens = FALSE,
-                                      tokens_select = NULL,
-                                      tokens_deselect = NULL) {
+textEmbedLayerAggregation <- function(
+    word_embeddings_layers,
+    layers = "all",
+    aggregation_from_layers_to_tokens = "concatenate",
+    aggregation_from_tokens_to_texts = "mean",
+    return_tokens = FALSE,
+    tokens_select = NULL,
+    tokens_deselect = NULL) {
   if (return_tokens == TRUE && !is.null(aggregation_from_tokens_to_texts)) {
     stop(message(
       colourise("return_tokens = TRUE does not work with aggregation_from_tokens_to_texts not being NULL ", fg = "red"),
@@ -1184,6 +1186,38 @@ text_embed_dlatk <- function(
     batch_size = batch_size
     ){
 
+  # Keeping comment consistent with original method based on textEmbedRawLayers and textEmbedLayerAggregation (to enable textPredict with text input).
+  layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
+  word_type_embeddings = FALSE
+  max_token_to_sentence = NULL
+
+  original_comment <- paste("Information about the embeddings. implementation: dlatk ; textEmbedRawLayers: ",
+          "model: ", model, " ; ",
+          "layers: ", layers_string, " ; ",
+          "word_type_embeddings: ", word_type_embeddings, " ; ",
+          "max_token_to_sentence: ", max_token_to_sentence, " ; ",
+          "text_version: ", packageVersion("text"), ".",
+          sep = "",
+          collapse = "\n")
+
+  aggregation_from_layers_to_tokens = NULL
+  tokens_select = NULL
+  tokens_deselect = NULL
+
+  comment_to_save <- paste(
+    original_comment,
+    "textEmbedLayerAggregation: layers = ",
+    layers_string,
+    "aggregation_from_layers_to_tokens = ",
+    aggregation_from_layers_to_tokens,
+    "aggregation_from_tokens_to_texts = ",
+    aggregation_from_tokens_to_texts,
+    "tokens_select = ",
+    tokens_select,
+    "tokens_deselect = ",
+    tokens_deselect,
+    collapse = " ; ")
+
   if (sum(is.na(texts) > 0)) {
     warning("texts contain NA-values.")
   }
@@ -1263,12 +1297,7 @@ text_embed_dlatk <- function(
     Time_textEmbed <- sprintf("Duration to embed text: %f %s", Time_textEmbed, units(Time_textEmbed))
     Date_textEmbed <- Sys.time()
 
-    comment(dlatk_emb_message) <- paste(Time_textEmbed,
-                             "; Date created: ", Date_textEmbed,
-                             "; text_version: ", packageVersion("text"),
-                             " ; dlatk_method = TRUE", ".",
-                             sep = "",
-                             collapse = " ")
+    comment(dlatk_emb_message) <- comment_to_save
 
     outcome_list$texts[[text_i]] <- dlatk_emb_message
 
@@ -1278,6 +1307,14 @@ text_embed_dlatk <- function(
       outcome_list$texts[text_i] <- textDimName(outcome_list$texts[text_i])
     }
   }
+
+  comment(outcome_list) <- paste(
+    Time_textEmbed,
+    "; Date created: ", Date_textEmbed,
+    "; text_version: ", packageVersion("text"),
+    " ; implementation = TRUE", ".",
+    sep = "",
+    collapse = " ")
   return(outcome_list)
 }
 
@@ -1377,7 +1414,7 @@ text_embed <- function(
     aggregation_from_layers_to_tokens,
     aggregation_from_tokens_to_texts,
     aggregation_from_tokens_to_word_types,
-    keep_token_embeddings,
+    keep_token_embeddings = T,
     remove_non_ascii = TRUE,
     tokens_select = NULL,
     tokens_deselect = NULL,
@@ -1389,7 +1426,9 @@ text_embed <- function(
     hg_gated = FALSE,
     hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
                           unset = ""),
-    logging_level,
+    trust_remote_code = F,
+    sort = T,
+    logging_level = "error",
     ...) {
 
   if (sum(is.na(texts) > 0)) {
@@ -1451,6 +1490,7 @@ text_embed <- function(
     if (!is.null(aggregation_from_layers_to_tokens) ||
         !is.null(aggregation_from_tokens_to_texts) ||
         decontextualize) {
+
       all_wanted_layers <- textEmbedRawLayers(
         texts = texts,
         model = model,
@@ -1458,14 +1498,16 @@ text_embed <- function(
         return_tokens = TRUE,
         word_type_embeddings = TRUE,
         decontextualize = decontextualize,
+        keep_token_embeddings = keep_token_embeddings, ######
         device = device,
         tokenizer_parallelism = tokenizer_parallelism,
         model_max_length = model_max_length,
         max_token_to_sentence = max_token_to_sentence,
         hg_gated = hg_gated,
         hg_token = hg_token,
-        logging_level = logging_level
-        , ...
+        logging_level = logging_level,
+        trust_remote_code = trust_remote_code,
+        sort = sort
       )
     }
 
@@ -1586,7 +1628,7 @@ text_embed <- function(
         comment(individual_word_embeddings),
         " ; aggregation_from_tokens_to_word_types = ", aggregation_from_tokens_to_word_types,
         " ; decontextualize = ", decontextualize,
-        " ; dlatk_method = FALSE"
+        " ; implementation = FALSE"
       )
 
       individual_word_embeddings_words <- list(individual_word_embeddings_words)
@@ -1642,8 +1684,8 @@ text_embed <- function(
 
         text_embeddings <- textEmbedLayerAggregation(token_embeddings1,
                                                      aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts,
-                                                     return_tokens = FALSE,
-                                                     ...
+                                                     return_tokens = FALSE
+                                                     , ...
         )
 
         output$texts <- text_embeddings
@@ -1887,7 +1929,7 @@ combine_textEmbed_results <- function(
 #' be set to avoid the need to enter the token each time.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param dlatk_method (boolean; experiments) If TRUE the text is split using the DLATK-method; this method appears better for longer texts (but it does not
+#' @param implementation (boolean; experiments) If TRUE the text is split using the DLATK-method; this method appears better for longer texts (but it does not
 #' return token level word embeddings, nor word_types embeddings at this stage).
 #' @param trust_remote_code (boolean) use a model with custom code on the Huggingface Hub
 #' @param ... settings from textEmbedRawLayers().
@@ -1946,7 +1988,7 @@ textEmbed <- function(
     hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
                           unset = ""),
     logging_level = "error",
-    dlatk_method = FALSE,
+    implementation = NULL,
     trust_remote_code = FALSE,
     ...) {
 
@@ -1975,7 +2017,7 @@ textEmbed <- function(
     #batch_texts <- batch[["satisfactionwords"]]
 
     # Process batch with error handling
-    if(dlatk_method == FALSE){
+    if(is.null(implementation)){
        batch_result <- tryCatch(
          text_embed(
            texts = batch_texts,
@@ -2007,7 +2049,7 @@ textEmbed <- function(
        )
     }
 
-    if(dlatk_method == TRUE){
+    if(implementation == "dlatk"){
 
       # Process batch with error handling
       batch_result <- tryCatch(

@@ -64,7 +64,8 @@ textPlot(
   n_contrast_group_color = NULL,
   n_contrast_group_remove = FALSE,
   space = NULL,
-  scaling = FALSE
+  scaling = FALSE,
+  ...
 )
 }
 \arguments{

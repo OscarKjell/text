@@ -139,6 +139,7 @@ textReturnModel<- function(
 #' (default = "textPredict").
 #' @param previous_sentence If set to TRUE, word-embeddings will be averaged over the current and previous
 #' sentence per story-id. For this, both participant-id and story-id must be specified.
+#' @param implementation NULL or "dlatk".
 #' @noRd
 textReturnEmbedding <- function(
     texts = NULL,
@@ -151,7 +152,9 @@ textReturnEmbedding <- function(
     save_embeddings = TRUE,
     save_dir = "wd",
     save_name = "textPredict",
-    previous_sentence = FALSE) {
+    previous_sentence = FALSE,
+    implementation = NULL
+    ) {
   # extend the timeout time for larger models.
   options(timeout = 5 * 60)
 
@@ -215,17 +218,12 @@ textReturnEmbedding <- function(
     # and aggregation_from_tokens_to_texts from the model.
     input_string <- loaded_model$model_description[new_line_number]
 
-    max_token_to_sentence <- as.numeric(sub(".*max_token_to_sentence: (\\d+).*", "\\1", input_string))
-
     aggregation_from_layers_to_tokens <- sub(".*aggregation_from_layers_to_tokens = (\\S+).*", "\\1", input_string)
 
     aggregation_from_tokens_to_texts <- sub(".*aggregation_from_tokens_to_texts = (\\S+).*", "\\1", input_string)
 
-    # Check if the variables match input_string and assign the default values
-    if (max_token_to_sentence == input_string) {
-      max_token_to_sentence <- default_max_token_to_sentence
-    }
 
+    # Check if the variables match input_string (i.e., nothing was retrieved above); so we have to assign the default values
     if (aggregation_from_layers_to_tokens == input_string) {
       aggregation_from_layers_to_tokens <- default_aggregation_from_layers_to_tokens
     }
@@ -233,6 +231,19 @@ textReturnEmbedding <- function(
     if (aggregation_from_tokens_to_texts == input_string) {
       aggregation_from_tokens_to_texts <- default_aggregation_from_tokens_to_texts
     }
+
+    if (is.null(implementation)){
+      implementation_comment <- extract_comment(input_string, part = "implementation_method")
+    }
+
+
+    if (grepl("max_token_to_sentence: \\d+", input_string)) {
+      max_token_to_sentence <- as.numeric(sub(".*max_token_to_sentence: (\\d+).*", "\\1", input_string))
+    } else {
+      max_token_to_sentence <- default_max_token_to_sentence
+    }
+
+
     # Create embeddings based on the extracted information from the model.
     embeddings <- textEmbed(
       texts = texts,
@@ -242,7 +253,8 @@ textReturnEmbedding <- function(
       aggregation_from_layers_to_tokens = aggregation_from_layers_to_tokens,
       aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts,
       device = device,
-      keep_token_embeddings = FALSE
+      keep_token_embeddings = FALSE,
+      implementation = implementation_comment
     )
 
     # save embeddings if save_embeddings is set to true
@@ -439,6 +451,7 @@ textPredictTextTrained <- function(
     dataset_to_merge_assessments = NULL,
     previous_sentence = FALSE,
     device = "cpu",
+    implementation = NULL,
     ...) {
 
   use_row_id_name = FALSE
@@ -474,7 +487,8 @@ textPredictTextTrained <- function(
       save_embeddings = save_embeddings,
       save_dir = save_dir,
       save_name = save_name,
-      previous_sentence = previous_sentence
+      previous_sentence = previous_sentence,
+      implementation = implementation
     )
     # retrieve model from emb_and_mod object
     loaded_model <- emb_and_mod$loaded_model

@@ -279,17 +279,20 @@ textLegend <- function(
 #' Computes the dot product projection for added data.
 #' @return Word_data_all_yadjusted with added information for the added words.
 #' @noRd
-textOwnWordsProjection <- function(word_data = word_data,
-                                   word_data_all = word_data_all,
-                                   word_data_all_yadjusted = word_data_all_yadjusted,
-                                   y_axes = y_axes,
-                                   explore_words = explore_words,
-                                   explore_words_color = explore_words_color,
-                                   explore_words_point = explore_words_point,
-                                   explore_words_aggregation = explore_words_aggregation,
-                                   space = space,
-                                   text_plot_comment = text_plot_comment,
-                                   scaling = scaling) {
+textOwnWordsProjection <- function(
+    word_data = word_data,
+    word_data_all = word_data_all,
+    word_data_all_yadjusted = word_data_all_yadjusted,
+    y_axes = y_axes,
+    explore_words = explore_words,
+    explore_words_color = explore_words_color,
+    explore_words_point = explore_words_point,
+    explore_words_aggregation = explore_words_aggregation,
+    space = space,
+    text_plot_comment = text_plot_comment,
+    scaling = scaling,
+    ...
+    ) {
   # For loop for different batches of added words; i_add_w=1 explore_words = "happy harmony love"
   forloops_add_w <- length(explore_words)
   added_words_information <- list()
@@ -322,10 +325,11 @@ textOwnWordsProjection <- function(word_data = word_data,
         explore_words[i_add_w],
         model = model_name,
         layers = as.numeric(layers_number_split[[1]]),
+        dim_name = F,
         aggregation_from_layers_to_tokens = aggregate_layers_type,
         aggregation_from_tokens_to_texts = aggregation_tokens_type,
-        aggregation_from_tokens_to_word_types = aggregation_word_type,
-        ...
+        aggregation_from_tokens_to_word_types = aggregation_word_type
+        #, ...
       )
     }
     # If using a static/decontextualized language model
@@ -520,7 +524,8 @@ textOwnWordPrediction <- function(word_data = word_data,
         layers = as.numeric(layers_number_split[[1]]),
         aggregation_from_layers_to_tokens = aggregate_layers_type,
         aggregation_from_tokens_to_texts = aggregation_tokens_type,
-        aggregation_from_tokens_to_word_types = aggregation_word_type
+        aggregation_from_tokens_to_word_types = aggregation_word_type,
+        dim_name = F
       )
     }
     # If using a static/decontextualized language model
@@ -838,7 +843,8 @@ textPlot <- function(
     n_contrast_group_color = NULL,
     n_contrast_group_remove = FALSE,
     space = NULL,
-    scaling = FALSE) {
+    scaling = FALSE,
+    ...) {
 
   ##### Comment to be saved ####
   text_plot_comment <- paste(
@@ -1293,7 +1299,8 @@ textPlot <- function(
         explore_words_aggregation = explore_words_aggregation,
         space = space,
         text_plot_comment = text_plot_comment,
-        scaling = scaling
+        scaling = scaling,
+        ...
       )
     }
 
