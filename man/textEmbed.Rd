@@ -25,7 +25,7 @@ textEmbed(
   hg_gated = FALSE,
   hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
   logging_level = "error",
-  implementation = NULL,
+  implementation = "original",
   trust_remote_code = FALSE,
   ...
 )

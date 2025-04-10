@@ -1498,7 +1498,7 @@ text_embed <- function(
         return_tokens = TRUE,
         word_type_embeddings = TRUE,
         decontextualize = decontextualize,
-        keep_token_embeddings = keep_token_embeddings, ######
+        keep_token_embeddings = T, ######
         device = device,
         tokenizer_parallelism = tokenizer_parallelism,
         model_max_length = model_max_length,
@@ -1988,7 +1988,7 @@ textEmbed <- function(
     hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
                           unset = ""),
     logging_level = "error",
-    implementation = NULL,
+    implementation = "original",
     trust_remote_code = FALSE,
     ...) {
 
@@ -2017,7 +2017,7 @@ textEmbed <- function(
     #batch_texts <- batch[["satisfactionwords"]]
 
     # Process batch with error handling
-    if(is.null(implementation)){
+    if(implementation == "original"){
        batch_result <- tryCatch(
          text_embed(
            texts = batch_texts,
@@ -2040,7 +2040,7 @@ textEmbed <- function(
            hg_token = hg_token,
            logging_level = logging_level
            , ...
-           ), # ADD TODO , ... for testing:
+           ),
 
          error = function(e) {
            message(sprintf("Error in batch %d: %s", i, e$message))
