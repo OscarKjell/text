@@ -2,9 +2,9 @@ library(testthat)
 library(tibble)
 library(text)
 
-context("Big analyses flow")
+context("Big analyses flow (with dlatk embedding method")
 
-test_that("Testing textEmbed as well as train", {
+test_that("Testing DLATK textEmbed as well as train", {
   skip_on_cran()
 
 #  textrpp_initialize(refresh_settings = T,
@@ -45,9 +45,9 @@ test_that("Testing textEmbed as well as train", {
 
 
   text_train_results_size <- text::textTrainRegression(
-    x = harmony_word_embeddings1$texts$satisfactiontexts,
-    y = Language_based_assessment_data_8$hilstotal[1:20],
-    penalty = 1e-16,
+    x = harmony_word_embeddings1$texts["satisfactiontexts"],
+    y = Language_based_assessment_data_8["hilstotal"][1:20,],
+    penalty = 1e-16
   )
 
   # Function to examine the size of an object when saved.
@@ -61,6 +61,8 @@ test_that("Testing textEmbed as well as train", {
   saved_size
   testthat::expect_equal(saved_size[[1]], 2778186, tolerance = 1000)
 
+  testthat::expect_equal(text_train_results_size$results$estimate[[1]], .4527607, tolerance = 0.001)
+  testthat::expect_equal(text_train_results_size$results$p.value[[1]], 0.02250343, tolerance = 0.001)
 
   text_train_results1 <- text::textTrainRegression(
     x = harmony_word_embeddings1$texts["satisfactiontexts"],
@@ -140,7 +142,7 @@ test_that("Testing textEmbed as well as train", {
     dim_names = TRUE,
     append_first = FALSE
   )
-
+  hist(hils_predicted_scores3$predictions$satisfactiontexts_swlstotal_age_hilstotalpred)
   expect_that(hils_predicted_scores3, is_a("list"))
   expect_equal(hils_predicted_scores3$predictions[[1]][1], 12.19023, tolerance = 0.1)
   expect_equal(hils_predicted_scores3$similarity_scores$overlap_percentage[[1]], 0.5915493, tolerance = 0.1)

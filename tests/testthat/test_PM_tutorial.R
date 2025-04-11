@@ -80,7 +80,10 @@ test_that("PM tutorial", {
 
   # Examine the correlation between predicted and observed Harmony in life scale scores
   #model_satisfactiontext_swls$results
-  expect_equal(model_satisfactiontext_swls$results[[4]][[1]], 0.5385082, tolerance = 0.00001)
+
+  #original
+  #expect_equal(model_satisfactiontext_swls$results[[4]][[1]], 0.5385082, tolerance = 0.00001)
+  expect_equal(model_satisfactiontext_swls$results[[4]][[1]], 0.5845689, tolerance = 0.00001)
 
   # OUTPUT:
 

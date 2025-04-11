@@ -233,13 +233,17 @@ textReturnEmbedding <- function(
     }
 
     if (is.null(implementation)){
-      if(grepl("implementation method:", input_string)){
+      if(grepl("implementation:", input_string)){
         implementation_comment <- extract_comment(
           input_string,
           part = "implementation_method")
       } else {
         implementation_comment <- "original"
       }
+    }
+
+    if(!is.null(implementation)){
+      implementation_comment <- implementation
     }
 
 

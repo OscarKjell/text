@@ -331,8 +331,13 @@ textTrainN <- function(
       }
       saving_models[check][[idx]] <- trained
 
-      message(paste("check:", check))
-      message(paste("idx:", idx))
+
+      message_check <- paste("check:", check)
+      message_idx <- paste("idx:", idx)
+
+      message(colourise(message_check, "blue"))
+      message(colourise(message_idx, "blue"))
+
       # Extract the correlation-coefficient or AUC and assign it to results_df
       if (model == "logistic" || model == "multinomial") {
         value_to_insert <- trained$results[8, 3]
@@ -357,14 +362,17 @@ textTrainN <- function(
         check_time_start <- check_time_2 - check_time_0
         check_time <- check_time_2 - check_time_1
         # Print progress
-        message(results_df)
-        message(paste0("Computing time from the start: ",
-                     round(check_time_start, 2),
-                     units(check_time_start)))
 
-        message(paste0("Computing time since starting the current test column: ",
+        message(colourise(results_df, "blue"))
+        mes2 <- paste0("Computing time from the start: ",
+                     round(check_time_start, 2),
+                     units(check_time_start))
+
+        message(colourise(mes2, "blue"))
+        mes3 <- paste0("Computing time since starting the current test column: ",
                      round(check_time, 2),
-                     units(check_time)))
+                     units(check_time))
+        message(colourise(mes3, "blue"))
       }
 
     }
@@ -437,13 +445,15 @@ textTrainN <- function(
   results_df <- tibble::as_tibble(results_df)
 
   # Print progress
-  message(results_df)
+  message(colourise(results_df, "blue"))
+
   check_time_3 <- Sys.time()
   check_time_full <- check_time_3 - check_time_0
 
-  message(paste0("The full computing time: ",
+  mes4 <- message("The full computing time: ",
                round(check_time_full, 2),
-               units(check_time_full)))
+               units(check_time_full))
+  message(colourise(mes4, "blue"))
 
   return(list(models = saving_models,
               results = results_df))

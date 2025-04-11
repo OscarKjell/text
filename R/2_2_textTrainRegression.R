@@ -942,6 +942,75 @@ check_nested_cv_setup <- function(
   }
 }
 
+#' Create a manual nested cross-validation object using initial validation splits
+#'
+#' This function mimics `rsample::nested_cv()` but allows for the use of
+#' `initial_validation_split()` as the inner resampling method, which is not natively
+#' supported in `nested_cv()`. It performs stratified outer v-fold cross-validation,
+#' and within each outer fold it applies a training/validation split using
+#' `initial_validation_split()`, wrapped in `validation_set()` to ensure compatibility with tuning functions.
+#'
+#' @param data A data frame or tibble to be split.
+#' @param outside_folds Integer specifying the number of outer folds (default = 5).
+#' @param inside_prop A numeric scalar (e.g., 0.75) or a two-element vector (e.g., c(0.6, 0.2))
+#'        specifying the proportion of data to allocate to training and validation within each outer fold.
+#'        The sum must be < 1 (remaining is used for an optional test set).
+#' @param outside_strata Optional variable name (unquoted) used for stratification in the outer folds.
+#' @param inside_strata Optional variable name (unquoted) used for stratification within the inner validation splits.
+#' @param outside_breaks Optional number of quantile bins to discretize `outside_strata` if it is continuous.
+#' @param inside_breaks Optional number of quantile bins to discretize `inside_strata` if it is continuous.
+#' @param seed Optional integer for reproducibility.
+#'
+#' @return A tibble of class `nested_cv` with outer resampling splits and corresponding
+#'         inner validation resamples (as `v_splt` objects inside `inner_resamples` column).
+#'
+#' @importFrom rsample vfold_cv initial_validation_split validation_set
+#' @importFrom purrr map
+#' @noRd
+create_manual_nested_cv <- function(
+    data,
+    outside_folds = 5,
+    inside_prop = c(0.75, 0.25),
+    outside_strata = NULL,
+    inside_strata = NULL,
+    outside_breaks = NULL,
+    inside_breaks = NULL,
+    seed = NULL) {
+
+  if (!is.null(seed)) set.seed(seed)
+
+  # Automatically adjust inside_prop if sum == 1
+  if (length(inside_prop) == 2 && sum(inside_prop) >= 1) {
+  #  message_sf_1 <- c("Sum of inside_prop equals 1 — reducing second value slightly to avoid error.")
+  #  message(colourise(message_sf_1, "blue"))
+    inside_prop[2] <- inside_prop[2] - 1e-8
+  }
+
+  # Outer folds using vfold_cv()
+  outer_folds <- rsample::vfold_cv(
+    data,
+    v = outside_folds,
+    strata = outside_strata,
+    breaks = outside_breaks
+  )
+
+  # Manually assign inner validation resamples in the correct v_splt format
+  outer_folds$inner_resamples <- purrr::map(outer_folds$splits, function(split) {
+    training_data <- rsample::analysis(split)
+
+    three_way_split <- rsample::initial_validation_split(
+      training_data,
+      prop = inside_prop,
+      strata = inside_strata,
+      breaks = inside_breaks
+    )
+
+    rsample::validation_set(three_way_split)  # convert to expected v_splt format
+  })
+
+  outer_folds
+}
+
 
 #' Train word embeddings to a numeric variable.
 #'
@@ -1058,7 +1127,7 @@ check_nested_cv_setup <- function(
 #' @importFrom stats cor.test na.omit lm
 #' @importFrom dplyr bind_cols select starts_with filter all_of add_row
 #' @importFrom recipes recipe step_naomit step_center step_scale step_pca all_predictors
-#' @importFrom rsample vfold_cv
+#' @importFrom rsample vfold_cv initial_validation_split
 #' @importFrom parsnip linear_reg set_engine multinom_reg
 #' @importFrom tune tune control_grid tune_grid select_best collect_predictions
 #' @importFrom magrittr %>%
@@ -1244,25 +1313,47 @@ textTrainRegression <- function(
         breaks = !!inside_breaks
       )
     ))
-  }
-  if (cv_method == "validation_split") {
-    results_nested_resampling <- rlang::expr(rsample::nested_cv(
-      xy,
-      outside = rsample::vfold_cv(
-        v = !!outside_folds,
-        repeats = 1,
-        strata = !!outside_strata_y,
-        breaks = !!outside_breaks
-      ),
-      inside = rsample::validation_split(
-        prop = !!inside_folds,
-        strata = !!inside_strata_y,
-        breaks = !!inside_breaks
-      )
-    ))
+    results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
   }
 
-  results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
+  # Removed because rsample has deprecated validation_split
+#  if (cv_method == "validation_split") {
+#    print("old")
+#    results_nested_resampling <- rlang::expr(rsample::nested_cv(
+#      xy,
+#      outside = rsample::vfold_cv(
+#        v = !!outside_folds,
+#        repeats = 1,
+#        strata = !!outside_strata_y,
+#        breaks = !!outside_breaks
+#      ),
+#      inside = rsample::validation_split(
+#        prop = !!inside_folds,
+#        strata = !!inside_strata_y,
+#        breaks = !!inside_breaks
+#      )
+#    ))
+#    results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
+#  }
+
+
+  if (cv_method == "validation_split") {
+
+    # inside_prop requires two digits (but we want to keep so only one is requried)
+    inside_folds <- c(inside_folds, (1-inside_folds))
+
+    results_nested_resampling <- create_manual_nested_cv(
+      data = xy,
+      outside_folds = outside_folds,
+      inside_prop = inside_folds,
+      outside_strata = outside_strata_y,
+      inside_strata = inside_strata_y,
+      outside_breaks = outside_breaks,
+      inside_breaks = inside_breaks,
+      seed = seed
+    )
+  }
+
 
   # Deciding whether to use multicores depending on system and settings.
   if (multi_cores == "multi_cores_sys_default") {

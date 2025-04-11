@@ -2,8 +2,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.4.6
+- updating from the depracated `rsample::function validation_split()` to `initial_validation_split()`. However, 
+this changes some results in `textTrainRegression()` and `textTrainRandomForrest()`.
 # text 1.4.5
-- removing objects in the environment of textTrainRegression to reduce saved model sizes.
+- removing objects in the environment of `textTrainRegression()` to reduce saved model sizes.
 
 # text 1.4.2
 - fixing bug in layer selection in `textEmbedRawLayers()` (when using default -2, layer 11 was selected even for large models). This was never a problem in `textEmbed()`.

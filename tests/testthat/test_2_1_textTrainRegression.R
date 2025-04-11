@@ -454,7 +454,7 @@ test_that("training with only x_append (without word embeddings)", {
     multi_cores = FALSE
   )
   testthat::expect_that(emb_append, testthat::is_a("list"))
-  testthat::expect_equal(emb_append$results[[1]][[1]], 8.184946)
+  testthat::expect_equal(emb_append$results[[1]][[1]], 8.180356, tolerance = 0.00001)
 
   model_emb_append <- textPredict(
     model_info = emb_append,
