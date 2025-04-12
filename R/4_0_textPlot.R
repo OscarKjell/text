@@ -743,6 +743,7 @@ adjust_for_plot_type <- function(
 #' @param n_contrast_group_remove Remove words that have higher frequency (N) on the other
 #' opposite side of its dot product projection (default = FALSE).
 #' @param scaling Scaling word embeddings before aggregation (default = FALSE).
+#' @param ... Settings for textOwnWordsProjection().
 #' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used
 #' to plot.
 #' @examples

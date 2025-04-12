@@ -227,6 +227,8 @@ opposite side of its dot product projection (default = FALSE).}
 \item{space}{Provide a semantic space if using static embeddings and wanting to explore words (default = NULL).}
 
 \item{scaling}{Scaling word embeddings before aggregation (default = FALSE).}
+
+\item{...}{Settings for textOwnWordsProjection().}
 }
 \value{
 A 1- or 2-dimensional word plot, as well as tibble with processed data used
