@@ -117,7 +117,7 @@ only on unix, not windows). Hence it makes the analyses considerably faster to r
 "only_results_predictions".}
 
 \item{simulate.p.value}{(Boolean) From fisher.test: a logical indicating whether to compute p-values
-by Monte Carlo simulation, in larger than 2 × 2 tables.}
+by Monte Carlo simulation, in larger than 2 × 2 tables.  The test can be turned off if set to "turn_off".}
 
 \item{seed}{(numeric) Set different seed (default = 2020).}
 

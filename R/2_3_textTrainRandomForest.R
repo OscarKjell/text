@@ -164,11 +164,14 @@ classification_results_multi <- function(outputlist_results_outer,
 
   chisq <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
 
-  fisher <- stats::fisher.test(predy_y$truth,
-    predy_y$estimate,
-    simulate.p.value = simulate.p.value
-  )
-
+  if(is.logical(simulate.p.value)){
+    fisher <- stats::fisher.test(predy_y$truth,
+                                 predy_y$estimate,
+                                 simulate.p.value = simulate.p.value
+    )
+  } else if (simulate.p.value == "turn_off"){
+    fisher <- "The fisher test was turned off."
+  }
 
   accuracy <- yardstick::accuracy(predy_y, truth, estimate, ...
                                   )
@@ -779,7 +782,7 @@ create_manual_nested_cv_rf <- function(
 #' @param save_output (character) Option not to save all output; default "all". See also "only_results" and
 #' "only_results_predictions".
 #' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values
-#' by Monte Carlo simulation, in larger than 2 × 2 tables.
+#' by Monte Carlo simulation, in larger than 2 × 2 tables.  The test can be turned off if set to "turn_off".
 #' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @return A list with roc_curve_data, roc_curve_plot, truth and predictions, preprocessing_recipe,

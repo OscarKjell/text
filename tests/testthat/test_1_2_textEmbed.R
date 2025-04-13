@@ -22,15 +22,16 @@ test_that("textEmbed handling NAs", {
   skip_on_cran()
 
   # testing NA and empty strings
-  embeddings_with_NA <- text::textEmbed(texts = c("hej",
-                                    NA,
-                                    "hej jag heter na",
-                                    "",
-                                    " ",
-                                    "    ",
-                                    "NA",
-                                    "Im NA"
-                                    ))
+  embeddings_with_NA <- text::textEmbed(texts = c(
+    "hej",
+    NA,
+    "hej jag heter na",
+    "",
+    " ",
+    "    ",
+    "NA",
+    "Im NA"
+    ))
 
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][1], -0.04640419, tolerance = 0.0001)
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][2], NaN)
@@ -40,6 +41,19 @@ test_that("textEmbed handling NAs", {
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][6], NaN)
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][7], NaN)
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][8], -0.4003294, tolerance = 0.0001)
+
+
+  dlatk_embeddings_with_NA <- text::textEmbed(texts = c("hej",
+                                                  NA,
+                                                  "hej jag heter na",
+                                                  "",
+                                                  " ",
+                                                  "    ",
+                                                  "NA",
+                                                  "Im NA"
+  ),
+  implementation = "dlatk")
+
 
   })
 

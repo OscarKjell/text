@@ -1090,8 +1090,8 @@ create_manual_nested_cv <- function(
 #'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
 #' @param save_output (character) Option not to save all output; default = "all". see also "only_results"
 #'  and "only_results_predictions".
-#' @param simulate.p.value (Boolean) From fisher.test: a logical indicating whether to compute p-values by
-#' Monte Carlo simulation, in larger than 2 * 2 tables.
+#' @param simulate.p.value (Boolean or string) From fisher.test: a logical indicating whether to compute p-values by
+#' Monte Carlo simulation, in larger than 2 * 2 tables. The test can be turned off if set to "turn_off".
 #' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @details
