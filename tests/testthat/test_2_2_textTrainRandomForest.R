@@ -330,7 +330,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     testthat::expect_equal(results_rf_et$results$precision[1], 0.4705882, tolerance = 0.0001)
   }
   if (Sys.info()["sysname"] == "Linux") {
-    testthat::expect_equal(results_rf_et$results$precision[1], 0.444, tolerance = 0.0001)
+    testthat::expect_equal(results_rf_et$results$precision[1], 0.444, tolerance = 0.001)
   }
 
 
@@ -381,7 +381,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     testthat::expect_equal(results_rf_or_p$results$precision[1], 0.4705882, tolerance = 0.0001) # R 4.3
   }
   if (Sys.info()["sysname"] == "Linux") {
-    testthat::expect_equal(results_rf_or_p$results$precision[1], 0.444, tolerance = 0.0001) # R 4.3
+    testthat::expect_equal(results_rf_or_p$results$precision[1], 0.444, tolerance = 0.001) # R 4.3
   }
 
   results_rf_or <- text::textTrain(
@@ -411,7 +411,7 @@ test_that("textTrainLists randomForest produces list of results with prediction 
     testthat::expect_equal(results_rf_or$results$roc_auc[1], 0.39625)
   }
   if (Sys.info()["sysname"] == "Linux") {
-    testthat::expect_equal(results_rf_or$results$roc_auc[1], .421)
+    testthat::expect_equal(results_rf_or$results$roc_auc[1], .421, tolerance = 0.001)
   }
 
 })

@@ -85,10 +85,20 @@ classification_results <- function(outputlist_results_outer,
   # Correlate predictions and observed help(all_of)
   chisq <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
 
-  fisher <- stats::fisher.test(predy_y$truth,
-    predy_y$estimate,
-    simulate.p.value = simulate.p.value
-  )
+#  fisher <- stats::fisher.test(predy_y$truth,
+#    predy_y$estimate,
+#    simulate.p.value = simulate.p.value
+#  )
+
+  if(is.logical(simulate.p.value)){
+    fisher <- stats::fisher.test(
+      predy_y$truth,
+      predy_y$estimate,
+      simulate.p.value = simulate.p.value
+    )
+  } else if (simulate.p.value == "turn_off"){
+    fisher <- "The fisher test was turned off."
+  }
 
 
   accuracy <- yardstick::accuracy(predy_y, truth, estimate, ...
