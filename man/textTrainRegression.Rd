@@ -37,6 +37,7 @@ textTrainRegression(
   save_output = "all",
   simulate.p.value = FALSE,
   seed = 2020,
+  weights = NULL,
   ...
 )
 }
@@ -151,6 +152,8 @@ Monte Carlo simulation, in larger than 2 * 2 tables. The test can be turned off 
 
 \item{seed}{(numeric) Set different seed (default = 2020).}
 
+\item{weights}{Optional name of column containing weights (default = NULL).}
+
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
 \value{
@@ -158,6 +161,8 @@ A (one-sided) correlation test between predicted and observed values; tibble
 of predicted values (t-value, degree of freedom (df), p-value,
  alternative-hypothesis, confidence interval, correlation coefficient), as well as information about
  the model (preprossing_recipe, final_model and model_description).
+
+List of trained model, predictions, evaluation results, and model metadata
 }
 \description{
 textTrainRegression() trains word embeddings to a numeric or a factor variable.

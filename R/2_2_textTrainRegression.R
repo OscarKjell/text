@@ -8,23 +8,23 @@ statisticalMode <- function(x) {
 }
 
 
+# Updated fit_model_rmse
 #' Function to fit a model and compute RMSE.
 #'
 #' @param object An rsplit object (from results_nested_resampling tibble)
-#' object = results_nested_resampling$splits[[1]] OR results_nested_resampling$splits[[1]][[1]]
-#' object = results_nested_resampling$inner_resamples[[5]][[1]][[1]]
-#' @param penalty hyperparameter for ridge regression.
-#' @param mixture hyperparameter for ridge regression.
-#' @param preprocess_PCA threshold for pca; preprocess_PCA = NA
-#' @param variable_name_index_pca variable with names to know how to keep variables
-#' from same word embedding together in separate pca:s
-#' @return  RMSE.
-#' @importFrom rsample analysis assessment
-#' @importFrom recipes recipe update_role step_naomit step_impute_knn step_center
-#' step_scale step_pca prep juice
-#' @importFrom dplyr matches select
-#' @importFrom parsnip linear_reg logistic_reg multinom_reg set_engine fit
-#' @importFrom workflows workflow add_model add_recipe
+#' @param model Type of model: "regression", "logistic", or "multinomial"
+#' @param eval_measure Evaluation metric (e.g., "rmse")
+#' @param penalty L2 penalty
+#' @param mixture L1/L2 mixture
+#' @param preprocess_PCA PCA threshold or component count
+#' @param variable_name_index_pca Variable prefixes for grouped PCA
+#' @param first_n_predictors If using only the first N predictors
+#' @param preprocess_step_center Whether to center predictors
+#' @param preprocess_step_scale Whether to scale predictors
+#' @param impute_missing Whether to impute missing values
+#' @param weights Optional column of observation weights (default = NULL)
+#'
+#' @return List with RMSE and predictions
 #' @noRd
 fit_model_rmse <- function(object,
                            model = "regression",
@@ -36,11 +36,13 @@ fit_model_rmse <- function(object,
                            first_n_predictors = NA,
                            preprocess_step_center = TRUE,
                            preprocess_step_scale = TRUE,
-                           impute_missing = FALSE) {
+                           impute_missing = FALSE,
+                           weights = NULL) {
 
   data_train <- rsample::analysis(object)
   data_train <- tibble::as_tibble(data_train)
 
+  weight_vector <- if (!is.null(weights)) data_train[[weights]] else NULL
   # If testing N first predictors help(step_scale) first_n_predictors = 3
   if (!is.na(first_n_predictors)) {
     # Select y and id
@@ -64,7 +66,18 @@ fit_model_rmse <- function(object,
       recipes::recipe(y ~ .) %>%
       recipes::update_role(dplyr::all_of(variable_names), new_role = "Not_predictors") %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(y, new_role = "outcome") # %>%
+      recipes::update_role(y, new_role = "outcome")
+
+    if (!is.null(weights)) {
+      xy_recipe <- xy_recipe %>%
+        recipes::update_role(all_of(weights), new_role = "case_weights")
+    } else {
+      xy_recipe <- data_train %>%
+        recipes::recipe(y ~ .) %>%
+        recipes::update_role(all_of(variable_names), new_role = "Not_predictors") %>%
+        recipes::update_role(id_nr, new_role = "id variable") %>%
+        recipes::update_role(y, new_role = "outcome")
+    }
 
     if (!impute_missing) {
       xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
@@ -101,11 +114,19 @@ fit_model_rmse <- function(object,
   } else {
     xy_recipe <- data_train %>%
       recipes::recipe(y ~ .) %>%
-      # recipes::step_BoxCox(all_predictors()) %>%  preprocess_PCA = NULL, preprocess_PCA = 0.9 preprocess_PCA = 2
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      #  recipes::update_role(-id_nr, new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome")
 
+    if (!is.null(weights)) {
+      xy_recipe <- xy_recipe %>%
+        recipes::update_role(all_of(weights), new_role = "case_weights")
+    } else {
+      xy_recipe <- data_train %>%
+        recipes::recipe(y ~ .) %>%
+        recipes::update_role(all_of(variable_names), new_role = "Not_predictors") %>%
+        recipes::update_role(id_nr, new_role = "id variable") %>%
+        recipes::update_role(y, new_role = "outcome")
+    }
 
     if ("strata" %in% colnames(data_train)) {
       xy_recipe <- xy_recipe %>%
@@ -167,33 +188,35 @@ fit_model_rmse <- function(object,
   # Ridge and/or Lasso
   if (nr_predictors > 1) {
     # Create and fit model help(linear_reg)
-    mod_spec <-
-      {
-        if (model == "regression") {
-          parsnip::linear_reg(penalty = penalty, mixture = mixture)
-        } else if (model == "logistic") {
-          parsnip::logistic_reg(
-            mode = "classification",
-            penalty = penalty,
-            mixture = mixture
-          )
-        } else if (model == "multinomial") {
-          parsnip::multinom_reg(
-            mode = "classification",
-            penalty = penalty,
-            mixture = mixture
-          )
-        }
-      } %>%
-      parsnip::set_engine("glmnet")
+    mod_spec <- {
+      if (model == "regression") {
+        parsnip::linear_reg(penalty = penalty, mixture = mixture) %>%
+          parsnip::set_engine("glmnet", standardize = TRUE) %>%
+          parsnip::set_mode("regression")
+      } else if (model == "logistic") {
+        parsnip::logistic_reg(penalty = penalty, mixture = mixture) %>%
+          parsnip::set_engine("glmnet") %>%
+          parsnip::set_mode("classification")
+
+      } else if (model == "multinomial") {
+        parsnip::multinom_reg(penalty = penalty, mixture = mixture) %>%
+          parsnip::set_engine("glmnet") %>%
+          parsnip::set_mode("classification")
+      }
+    }
 
     # Create Workflow (to know variable roles from recipes) help(workflow)
     wf <- workflows::workflow() %>%
       workflows::add_model(mod_spec) %>%
       workflows::add_recipe(xy_recipe)
 
+
+    mod <- workflows::fit(wf, data = data_train,
+                          case_weights = hardhat::frequency_weights(data_train[[weights]]))
     # Fit model
-    mod <- parsnip::fit(wf, data = data_train)
+#    mod <- parsnip::fit(wf, data = data_train)
+    # Fit model#####
+
 
     # Standard regression
   } else if (nr_predictors == 1) {
@@ -326,6 +349,7 @@ fit_model_rmse <- function(object,
     )
   }
   output
+
 }
 
 
@@ -338,6 +362,7 @@ fit_model_rmse <- function(object,
 #' @param mixture hyperparameter for ridge regression.
 #' @param preprocess_PCA threshold for pca
 #' @param variable_name_index_pca variable with names to know how to keep variables
+#' @param weights Optional name of the weights column
 #' from same word embedding together in separate pca:s.
 #' @return RMSE.
 #' @noRd
@@ -351,7 +376,8 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
                                    first_n_predictors = first_n_predictors,
                                    preprocess_step_center = preprocess_step_center,
                                    preprocess_step_scale = preprocess_step_scale,
-                                   impute_missing = impute_missing) {
+                                   impute_missing = impute_missing,
+                                   weights = weights) {
   fit_model_rmse(object,
                  model,
                  eval_measure,
@@ -362,7 +388,8 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
                  first_n_predictors = first_n_predictors,
                  preprocess_step_center = preprocess_step_center,
                  preprocess_step_scale = preprocess_step_scale,
-                 impute_missing = impute_missing
+                 impute_missing = impute_missing,
+                 weights = weights
   )
 }
 
@@ -375,6 +402,7 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
 #' @param mixture hyperparameter for ridge regression.
 #' @param preprocess_PCA threshold for pca
 #' @param variable_name_index_pca variable with names to know how to keep variables
+#' @param weights Optional name of column containing weights
 #' from same word embedding together in separate pcas
 #' @return RMSE.
 #' @noRd
@@ -389,7 +417,8 @@ tune_over_cost <- function(object,
                            preprocess_step_center = preprocess_step_center,
                            preprocess_step_scale = preprocess_step_scale,
                            impute_missing = impute_missing,
-                           parameter_selection_method = parameter_selection_method) {
+                           parameter_selection_method = parameter_selection_method,
+                           weights = weights) {
   T1 <- Sys.time()
 
   # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
@@ -430,6 +459,14 @@ tune_over_cost <- function(object,
   }
 
 
+#  grid_inner <- base::expand.grid(
+#    penalty = penalty,
+#    mixture = mixture,
+#    preprocess_PCA = preprocess_PCA_value,
+#    first_n_predictors = first_n_predictors
+#  )
+
+
   grid_inner <- base::expand.grid(
     penalty = penalty,
     mixture = mixture,
@@ -437,7 +474,6 @@ tune_over_cost <- function(object,
     first_n_predictors = first_n_predictors
   )
 
-  #  Test models with the different hyperparameters for the inner samples
   tune_results <- purrr::pmap(
     list(
       grid_inner$penalty,
@@ -452,9 +488,28 @@ tune_over_cost <- function(object,
     variable_name_index_pca = variable_name_index_pca,
     preprocess_step_center = preprocess_step_center,
     preprocess_step_scale = preprocess_step_scale,
-    impute_missing = impute_missing
+    impute_missing = impute_missing,
+    weights = weights
   )
 
+#  #  Test models with the different hyperparameters for the inner samples
+#  tune_results <- purrr::pmap(
+#    list(
+#      grid_inner$penalty,
+#      grid_inner$mixture,
+#      grid_inner$preprocess_PCA,
+#      grid_inner$first_n_predictors
+#    ),
+#    fit_model_rmse_wrapper,
+#    object = object,
+#    model = model,
+#    eval_measure = eval_measure,
+#    variable_name_index_pca = variable_name_index_pca,
+#    preprocess_step_center = preprocess_step_center,
+#    preprocess_step_scale = preprocess_step_scale,
+#    impute_missing = impute_missing
+#  )
+#
   # Sort the output to separate the rmse, predictions and truth
   tune_outputlist <- tune_results %>%
     dplyr::bind_rows() %>%
@@ -636,6 +691,7 @@ bestParameters <- function(data,
 #' @param preprocess_PCA threshold for pca
 #' @param variable_name_index_pca variable with names to know how to keep variables
 #' from same word embedding together in separate pcas
+#' @param weights Optional column name with weights
 #' @return RMSE with corresponding penalty, mixture and preprocess_PCA.
 #' @noRd
 summarize_tune_results <- function(object,
@@ -649,8 +705,8 @@ summarize_tune_results <- function(object,
                                    preprocess_step_center = preprocess_step_center,
                                    preprocess_step_scale = preprocess_step_scale,
                                    impute_missing = impute_missing,
-                                   parameter_selection_method = parameter_selection_method) {
-  # Return row-bound tibble containing the INNER results
+                                   parameter_selection_method = parameter_selection_method,
+                                   weights = weights) {
   results <- purrr::map_df(
     .x = object$splits,
     .f = tune_over_cost,
@@ -664,7 +720,8 @@ summarize_tune_results <- function(object,
     preprocess_step_center = preprocess_step_center,
     preprocess_step_scale = preprocess_step_scale,
     impute_missing = impute_missing,
-    parameter_selection_method = parameter_selection_method
+    parameter_selection_method = parameter_selection_method,
+    weights = weights
   )
   return(results)
 }
@@ -1093,6 +1150,7 @@ create_manual_nested_cv <- function(
 #' @param simulate.p.value (Boolean or string) From fisher.test: a logical indicating whether to compute p-values by
 #' Monte Carlo simulation, in larger than 2 * 2 tables. The test can be turned off if set to "turn_off".
 #' @param seed (numeric) Set different seed (default = 2020).
+#' @param weights Optional name of column containing weights (default = NULL).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @details
 #' By default, NAs are treated as follows:
@@ -1134,6 +1192,7 @@ create_manual_nested_cv <- function(
 #' @importFrom future plan multisession
 #' @importFrom furrr future_map
 #' @importFrom workflows workflow add_model add_recipe
+#' @return List of trained model, predictions, evaluation results, and model metadata
 #' @export
 textTrainRegression <- function(
     x,
@@ -1149,7 +1208,7 @@ textTrainRegression <- function(
     outside_breaks = 4,
     inside_strata = TRUE,
     inside_breaks = 4,
-    model = "regression", # model = "multinomial"
+    model = "regression",
     eval_measure = "default",
     save_aggregated_word_embedding = FALSE,
     language_distribution = NULL,
@@ -1168,6 +1227,7 @@ textTrainRegression <- function(
     save_output = "all",
     simulate.p.value = FALSE,
     seed = 2020,
+    weights = NULL,
     ...) {
 
   T1_textTrainRegression <- Sys.time()
@@ -1241,7 +1301,14 @@ textTrainRegression <- function(
   rm(variables_and_names)
 
   xy <- dplyr::bind_cols(x2, y)
-
+  # Add weights as column if provided
+  if (!is.null(weights)) {
+    if (length(weights) != nrow(xy)) {
+      stop("Length of weights must match number of rows in data")
+    }
+    xy$weight <- weights  # Bind weights into xy
+    weights <- "weight"   # Update weights arg to pass as a column name
+  }
   xy$id_nr <- c(seq_len(nrow(xy)))
 
   # Adding strata variable to the data set -- and then calling it "outside_strata"
@@ -1273,6 +1340,7 @@ textTrainRegression <- function(
       }
     }
   }
+
 
   # complete.cases is not neccassary
   # Cross-Validation inside_folds = 3/4; results_nested_resampling[[1]][[1]][[1]]'
@@ -1339,8 +1407,7 @@ textTrainRegression <- function(
 
   if (cv_method == "validation_split") {
 
-    # inside_prop requires two digits (but we want to keep so only one is requried)
-    inside_folds <- c(inside_folds, (1-inside_folds))
+    inside_folds <- c(inside_folds, (1 - inside_folds))
 
     results_nested_resampling <- create_manual_nested_cv(
       data = xy,
@@ -1383,16 +1450,15 @@ textTrainRegression <- function(
       preprocess_step_center = preprocess_step_center,
       preprocess_step_scale = preprocess_step_scale,
       impute_missing = impute_missing,
-      parameter_selection_method = parameter_selection_method
+      parameter_selection_method = parameter_selection_method,
+      weights = weights
     )
-  } else if (multi_cores_use == TRUE) {
-    # The multisession plan uses the local cores to process the inner resampling loop.
+  } else {
     future::plan(future::multisession)
-    # The object tuning_results is a list of data frames for each of the OUTER resamples.
     tuning_results <- furrr::future_map(
-      .options = furrr::furrr_options(seed = seed),
       .x = results_nested_resampling$inner_resamples,
       .f = summarize_tune_results,
+      .options = furrr::furrr_options(seed = seed),
       model = model,
       eval_measure = eval_measure,
       penalty = penalty,
@@ -1403,24 +1469,22 @@ textTrainRegression <- function(
       preprocess_step_center = preprocess_step_center,
       preprocess_step_scale = preprocess_step_scale,
       impute_missing = impute_missing,
-      parameter_selection_method = parameter_selection_method
+      parameter_selection_method = parameter_selection_method,
+      weights = weights
     )
   }
 
   # Function to get the lowest eval_measure_val
   # Determine the best parameter estimate from each INNER sample to be used
   # for each of the outer resampling iterations:
-  hyper_parameter_vals <-
-    tuning_results %>%
+  # Get best parameters per fold
+  hyper_parameter_vals <- tuning_results %>%
     purrr::map_df(bestParameters, eval_measure, parameter_selection_method) %>%
     dplyr::select(c(penalty, mixture, preprocess_PCA, first_n_predictors))
 
-  # Bind best results
-  results_split_parameter <-
-    dplyr::bind_cols(results_nested_resampling, hyper_parameter_vals)
+  results_split_parameter <- dplyr::bind_cols(results_nested_resampling, hyper_parameter_vals)
 
-  # Compute the outer re-sampling results for each of the comment(model)
-  # splits using the corresponding tuning parameter value from results_split_parameter.
+  # Fit final outer models
   results_outer <- purrr::pmap(
     list(
       object = results_nested_resampling$splits,
@@ -1433,9 +1497,9 @@ textTrainRegression <- function(
       eval_measure = list(eval_measure),
       preprocess_step_center = preprocess_step_center,
       preprocess_step_scale = preprocess_step_scale,
-      impute_missing = impute_missing
+      impute_missing = impute_missing,
+      weights = list(weights)
     ),
-    # this is THE function for the regression models
     fit_model_rmse
   )
 
