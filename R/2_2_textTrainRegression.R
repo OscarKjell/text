@@ -1461,7 +1461,11 @@ textTrainRegression <- function(
 
     collected_results <- list(predy_y, collected_results)
   } else if (model == "logistic") {
-    collected_results <- classification_results(outputlist_results_outer = outputlist_results_outer, ...)
+    collected_results <- classification_results(
+      outputlist_results_outer = outputlist_results_outer,
+      simulate.p.value = simulate.p.value
+      , ...
+      )
 
     #  Save predictions outside list to make similar structure as model == regression output.
     predy_y <- collected_results$predy_y
@@ -1470,7 +1474,8 @@ textTrainRegression <- function(
   } else if (model == "multinomial") {
     collected_results <- classification_results_multi(
       outputlist_results_outer = outputlist_results_outer,
-      simulate.p.value = simulate.p.value, ...
+      simulate.p.value = simulate.p.value
+      , ...
     )
 
     #  Save predictions outside list to make similar structure as model == regression output.

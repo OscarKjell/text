@@ -64,10 +64,11 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
 #' @importFrom  yardstick accuracy bal_accuracy sens spec precision kap f_meas roc_auc rmse rsq
 #' @importFrom  ggplot2 autoplot
 #' @noRd
-classification_results <- function(outputlist_results_outer,
-                                   id_nr = NA,
-                                   simulate.p.value = simulate.p.value,
-                                   ...) {
+classification_results <- function(
+    outputlist_results_outer,
+    id_nr = NA,
+    simulate.p.value,
+    ...) {
   # Unnest predictions and y
   predy_y <- tibble::tibble(
     tidyr::unnest(outputlist_results_outer$truth, cols = c(truth)),
@@ -101,19 +102,26 @@ classification_results <- function(outputlist_results_outer,
   }
 
 
-  accuracy <- yardstick::accuracy(predy_y, truth, estimate, ...
+  accuracy <- yardstick::accuracy(predy_y, truth, estimate
+                                  , ...
                                   )
-  bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate, ...
+  bal_accuracy <- yardstick::bal_accuracy(predy_y, truth, estimate
+                                          , ...
                                           )
-  sens <- yardstick::sens(predy_y, truth, estimate, ...
+  sens <- yardstick::sens(predy_y, truth, estimate
+                          , ...
                           )
-  spec <- yardstick::spec(predy_y, truth, estimate, ...
+  spec <- yardstick::spec(predy_y, truth, estimate
+                          , ...
                           )
-  precision <- yardstick::precision(predy_y, truth, estimate, ...
+  precision <- yardstick::precision(predy_y, truth, estimate
+                                    , ...
                                     )
-  kappa <- yardstick::kap(predy_y, truth, estimate, ...
+  kappa <- yardstick::kap(predy_y, truth, estimate
+                          , ...
                           )
-  f_measure <- yardstick::f_meas(predy_y, truth, estimate, ...
+  f_measure <- yardstick::f_meas(predy_y, truth, estimate
+                                 , ...
                                  )
 
   roc_auc <- yardstick::roc_auc(predy_y, truth, colnames(predy_y[3]))
