@@ -42,134 +42,101 @@ fit_model_rmse <- function(object,
   data_train <- rsample::analysis(object)
   data_train <- tibble::as_tibble(data_train)
 
-  weight_vector <- if (!is.null(weights)) data_train[[weights]] else NULL
-  # If testing N first predictors help(step_scale) first_n_predictors = 3
-  if (!is.na(first_n_predictors)) {
-    # Select y and id
-    Nvariable_totals <- length(data_train)
-    variable_names <- colnames(data_train[(first_n_predictors + 1):(Nvariable_totals - 2)])
+weight_vector <- if (!is.null(weights)) data_train[[weights]] else NULL
+
+if (!is.na(first_n_predictors)) {
+  Nvariable_totals <- length(data_train)
+  variable_names <- colnames(data_train[(first_n_predictors + 1):(Nvariable_totals - 2)])
+} else {
+  if ("strata" %in% colnames(data_train)) {
+    variable_names <- c("id_nr", "strata")
   } else {
-    if ("strata" %in% colnames(data_train)) {
-      variable_names <- c("id_nr", "strata")
-    } else {
-      variable_names <- c("id_nr")
+    variable_names <- c("id_nr")
+  }
+}
+
+n_embeddings <- as.numeric(comment(eval_measure))
+
+# ----------------------------------------
+# Recipe when using one embedding
+# ----------------------------------------
+if (n_embeddings == 1) {
+  xy_recipe <- data_train %>%
+    recipes::recipe(y ~ .) %>%
+    recipes::update_role(dplyr::all_of(variable_names), new_role = "Not_predictors") %>%
+    recipes::update_role(id_nr, new_role = "id variable") %>%
+    recipes::update_role(y, new_role = "outcome")
+
+  if (!impute_missing) {
+    xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
+  } else if (impute_missing) {
+    xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10)
+  }
+
+  if (preprocess_step_center) {
+    xy_recipe <- recipes::step_center(xy_recipe, recipes::all_predictors())
+  }
+  if (preprocess_step_scale) {
+    xy_recipe <- recipes::step_scale(xy_recipe, recipes::all_predictors())
+  }
+
+  if (!is.na(preprocess_PCA)) {
+    if (preprocess_PCA >= 1) {
+      xy_recipe <- recipes::step_pca(xy_recipe, recipes::all_predictors(), num_comp = preprocess_PCA)
+    } else if (preprocess_PCA < 1) {
+      xy_recipe <- recipes::step_pca(xy_recipe, recipes::all_predictors(), threshold = preprocess_PCA)
     }
   }
 
-  # Get number of embeddings provided
-  n_embeddings <- as.numeric(comment(eval_measure))
+  xy_recipe_prep <- recipes::prep(xy_recipe)
 
+  # ----------------------------------------
+  # Recipe when using multiple embeddings
+  # ----------------------------------------
+} else {
+  xy_recipe <- data_train %>%
+    recipes::recipe(y ~ .) %>%
+    recipes::update_role(id_nr, new_role = "id variable") %>%
+    recipes::update_role(y, new_role = "outcome")
 
-  # Recipe for one embedding input summary(xy_recipe) help(all_of) library(tidyverse) help(step_naomit)
-  if (n_embeddings == 1) {
-    xy_recipe <- data_train %>%
-      recipes::recipe(y ~ .) %>%
-      recipes::update_role(dplyr::all_of(variable_names), new_role = "Not_predictors") %>%
-      recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(y, new_role = "outcome")
-
-    if (!is.null(weights)) {
-      xy_recipe <- xy_recipe %>%
-        recipes::update_role(all_of(weights), new_role = "case_weights")
-    } else {
-      xy_recipe <- data_train %>%
-        recipes::recipe(y ~ .) %>%
-        recipes::update_role(all_of(variable_names), new_role = "Not_predictors") %>%
-        recipes::update_role(id_nr, new_role = "id variable") %>%
-        recipes::update_role(y, new_role = "outcome")
-    }
-
-    if (!impute_missing) {
-      xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
-    } else if (impute_missing) {
-      xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10)
-    }
-
-    if (preprocess_step_center) {
-      xy_recipe <- recipes::step_center(xy_recipe, recipes::all_predictors())
-    }
-    if (preprocess_step_scale) {
-      xy_recipe <- recipes::step_scale(xy_recipe, recipes::all_predictors())
-    }
-
-    # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
+  if ("strata" %in% colnames(data_train)) {
     xy_recipe <- xy_recipe %>%
-      {
-        if (!is.na(preprocess_PCA)) {
-          if (preprocess_PCA >= 1) {
-            recipes::step_pca(., recipes::all_predictors(), num_comp = preprocess_PCA)
-          } else if (preprocess_PCA < 1) {
-            recipes::step_pca(., recipes::all_predictors(), threshold = preprocess_PCA)
-          } else {
-            .
-          }
-        } else {
-          .
-        }
-      }
-    xy_recipe_prep <- recipes::prep(xy_recipe)
-
-
-    # Recipe for multiple word embedding input (with possibility of separate PCAs)
-  } else {
-    xy_recipe <- data_train %>%
-      recipes::recipe(y ~ .) %>%
-      recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(y, new_role = "outcome")
-
-    if (!is.null(weights)) {
-      xy_recipe <- xy_recipe %>%
-        recipes::update_role(all_of(weights), new_role = "case_weights")
-    } else {
-      xy_recipe <- data_train %>%
-        recipes::recipe(y ~ .) %>%
-        recipes::update_role(all_of(variable_names), new_role = "Not_predictors") %>%
-        recipes::update_role(id_nr, new_role = "id variable") %>%
-        recipes::update_role(y, new_role = "outcome")
-    }
-
-    if ("strata" %in% colnames(data_train)) {
-      xy_recipe <- xy_recipe %>%
-        recipes::update_role(strata, new_role = "strata")
-    }
-
-    if (!impute_missing) {
-      xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
-    } else if (impute_missing) {
-      xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10)
-    }
-
-    if (preprocess_step_center) {
-      xy_recipe <- recipes::step_center(xy_recipe, recipes::all_predictors())
-    }
-    if (preprocess_step_scale) {
-      xy_recipe <- recipes::step_scale(xy_recipe, recipes::all_predictors())
-    }
-
-    # If preprocess_PCA is not NULL add PCA step with number of component of % of variance to retain specification
-    # Adding a PCA in each loop; first selecting all variables starting with i="Dim_we1"; and then "Dim_we2" etc
-    if (!is.na(preprocess_PCA)) {
-      if (preprocess_PCA >= 1) {
-        for (i in variable_name_index_pca) {
-          xy_recipe <-
-            xy_recipe %>%
-            # !! slices the current name into the `matches()` function.
-            # We use a custom prefix so there are no name collisions for the
-            # results of each PCA step.
-            recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste("PCA_", i, "_"))
-        }
-      } else if (preprocess_PCA < 1) {
-        for (i in variable_name_index_pca) {
-          xy_recipe <-
-            xy_recipe %>%
-            recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste("PCA_", i, "_"))
-        }
-      }
-    }
-    xy_recipe_prep <- recipes::prep(xy_recipe)
+      recipes::update_role(strata, new_role = "strata")
   }
 
-  # Figure out how many predictors to know whether to use simple or multiple regression, which
+  if (!impute_missing) {
+    xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
+  } else if (impute_missing) {
+    xy_recipe <- recipes::step_impute_knn(xy_recipe, recipes::all_predictors(), neighbors = 10)
+  }
+
+  if (preprocess_step_center) {
+    xy_recipe <- recipes::step_center(xy_recipe, recipes::all_predictors())
+  }
+  if (preprocess_step_scale) {
+    xy_recipe <- recipes::step_scale(xy_recipe, recipes::all_predictors())
+  }
+
+  if (!is.na(preprocess_PCA)) {
+    if (preprocess_PCA >= 1) {
+      for (i in variable_name_index_pca) {
+        xy_recipe <- xy_recipe %>%
+          recipes::step_pca(dplyr::matches(!!i), num_comp = preprocess_PCA, prefix = paste0("PCA_", i, "_"))
+      }
+    } else if (preprocess_PCA < 1) {
+      for (i in variable_name_index_pca) {
+        xy_recipe <- xy_recipe %>%
+          recipes::step_pca(dplyr::matches(!!i), threshold = preprocess_PCA, prefix = paste0("PCA_", i, "_"))
+      }
+    }
+  }
+
+  xy_recipe_prep <- recipes::prep(xy_recipe)
+
+  }
+
+
+# Figure out how many predictors to know whether to use simple or multiple regression, which
   # depend on number of of PCA components that are retrived and/or whether first_n_predictors is used
   if (!is.na(first_n_predictors) && is.na(preprocess_PCA)) {
     # Get number of predictors from receipe
@@ -191,8 +158,9 @@ fit_model_rmse <- function(object,
     mod_spec <- {
       if (model == "regression") {
         parsnip::linear_reg(penalty = penalty, mixture = mixture) %>%
-          parsnip::set_engine("glmnet", standardize = TRUE) %>%
-          parsnip::set_mode("regression")
+          parsnip::set_engine("glmnet") %>%
+          parsnip::set_mode("regression") %>%
+          parsnip::set_args(case_weights = TRUE)
       } else if (model == "logistic") {
         parsnip::logistic_reg(penalty = penalty, mixture = mixture) %>%
           parsnip::set_engine("glmnet") %>%
@@ -211,8 +179,13 @@ fit_model_rmse <- function(object,
       workflows::add_recipe(xy_recipe)
 
 
-    mod <- workflows::fit(wf, data = data_train,
-                          case_weights = hardhat::frequency_weights(data_train[[weights]]))
+    if (!is.null(weights)) {
+      data_train <- data_train %>%
+        dplyr::mutate(.weights = hardhat::frequency_weights(.data[[weights]]))
+    }
+
+    mod <- workflows::fit(wf, data = data_train)
+
     # Fit model
 #    mod <- parsnip::fit(wf, data = data_train)
     # Fit model#####
