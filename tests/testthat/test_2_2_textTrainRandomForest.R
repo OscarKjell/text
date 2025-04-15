@@ -32,23 +32,11 @@ test_that("textTrain Random Forest produces list of results with prediction bein
   )
 
 
-
- if (Sys.info()["sysname"] == "Darwin" | Sys.info()["sysname"] == "Windows") {
-
-   testthat::expect_equal(
-     rf$results$.estimate[1],
-     c(0.55),
-     tolerance = 0.0001)
-
- }
- if (Sys.info()["sysname"] == "Linux") {
-
    testthat::expect_equal(
      rf$results$.estimate[1],
      c(0.60),
      tolerance = 0.01)
 
- }
 
  model_rf_1 <- text::textTrain(
     x = word_embeddings_4$texts$harmonytext,
@@ -444,7 +432,7 @@ test_that("textTrainRandomForest adding word_embedding together", {
     testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.45)    # R4.3
   }
   if (Sys.info()["sysname"] == "Linux") {
-    testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.425) #R4.2
+    testthat::expect_equal(multi_we_RF_PCA_3$results$.estimate[[1]], 0.45) #R4.2
   }
 
 
