@@ -275,4 +275,6 @@ test_that("textTokenize", {
 
   tokens <- textTokenize("hello are you?", model = "bert-base-uncased")
   expect_equal(tokens[[1]]$tokens[2], "hello")
+
+  textModelsRemove("bert-base-uncased")
 })

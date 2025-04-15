@@ -216,7 +216,8 @@ test_that("textSum test", {
   print("textSum")
   sum_examples <- textSum(Language_based_assessment_data_8[1:2, 1:2],
     min_length = 2L,
-    max_length = 4L
+    max_length = 4L,
+    model = "t5-small"
   )
   sum_examples
   expect_that(sum_examples$sum_satisfactiontexts, is_a("character"))
@@ -230,12 +231,15 @@ test_that("textQA test", {
   print("textQA")
   qa_examples <- textQA(
     question = "Which colour have trees?",
-    context = "Trees are mostly green and like water"
+    context = "Trees are mostly green and like water",
+    model = "distilbert/distilbert-base-cased-distilled-squad"
   )
   expect_equal(qa_examples$score, .9384409, tolerance = 0.0001)
   expect_equal(qa_examples$start, 17)
   expect_equal(qa_examples$end, 22)
   expect_equal(qa_examples$answer, "green")
+  textModelsRemove("distilbert/distilbert-base-cased-distilled-squad")
+
 })
 
 

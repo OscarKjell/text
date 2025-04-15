@@ -262,6 +262,7 @@ test_that("Testing textEmbed as well as train", {
 
   expect_that(hils_predicted_scores1[[1]][1], is_a("numeric"))
   expect_equal(hils_predicted_scores1[[1]][1], 11.89219, tolerance = 0.000001)
+  rm(harmony_word_embeddings)
 })
 
 test_that("Testing textEmbedReduce as well as train", {
@@ -286,6 +287,7 @@ test_that("Testing textEmbedReduce as well as train", {
   unlink("./inst/extdata/rpca_roberta_768_D_20.csv")
   unlink("./inst/extdata/scalar.csv")
 
+  rm(embedding_roberta)
   # Trying to add this to see whether the two above lines are executed properly.
   x = 5
 

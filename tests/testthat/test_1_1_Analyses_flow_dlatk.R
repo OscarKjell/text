@@ -254,7 +254,9 @@ test_that("Testing DLATK textEmbed as well as train", {
 
   expect_that(hils_predicted_scores1[[1]][1], is_a("numeric"))
   expect_equal(hils_predicted_scores1[[1]][1], 11.88353, tolerance = 0.000001)
-})
+
+  rm(harmony_word_embeddings1)
+  })
 
 ##test_that("Testing textEmbedReduce as well as train", {
 ##  skip_on_cran()
