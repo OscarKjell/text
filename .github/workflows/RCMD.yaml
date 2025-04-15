@@ -95,6 +95,12 @@ jobs:
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "24.04"), sep = "\n")')
           sudo apt-get update
 
+      - name: Reinstall stringi from source on Ubuntu 24.04
+        if: matrix.config.os == 'ubuntu-24.04'
+        run: |
+          install.packages("stringi", type = "source")
+        shell: Rscript {0}
+
       # Install R dependencies
       - name: Install R Dependencies
         run: |
