@@ -17,9 +17,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - {os: macOS-latest,   r: 'release'}
-#          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-22.04, r: 'release'}
+          - {os: macOS-latest,   r: 'release'}
+          - {os: windows-latest, r: 'release'}
           - {os: ubuntu-24.04, r: 'release'}
 
     env:
@@ -90,6 +89,7 @@ jobs:
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
+          install.packages("stringi", type = "source")
         shell: Rscript {0}
 
       - name: Fix Conda permissions on macOS

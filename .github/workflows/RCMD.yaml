@@ -18,7 +18,6 @@ jobs:
         config:
           - {os: macOS-latest, r: 'release'}
           - {os: windows-latest, r: 'release'}
-  #        - {os: ubuntu-22.04, r: 'release'}
           - {os: ubuntu-24.04, r: 'release'}
 
     env:
