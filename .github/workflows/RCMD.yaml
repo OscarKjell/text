@@ -16,9 +16,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - {os: macOS-latest, r: 'release'}
-#          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-22.04, r: 'release'}
+          - {os: macOS-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
+  #        - {os: ubuntu-22.04, r: 'release'}
           - {os: ubuntu-24.04, r: 'release'}
 
     env:
@@ -92,8 +92,11 @@ jobs:
         run: |
           while read -r cmd; do
             eval sudo $cmd
-          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
+          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "24.04"), sep = "\n")')
           sudo apt install libharfbuzz-dev libfribidi-dev
+          sudo apt-get update
+          sudo apt-get install -y libicu66
+
       # Install R dependencies
       - name: Install R Dependencies
         run: |
