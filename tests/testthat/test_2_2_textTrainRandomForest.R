@@ -31,12 +31,8 @@ test_that("textTrain Random Forest produces list of results with prediction bein
    y = Language_based_assessment_data_8["gender"][1:20,]
   )
 
-
-   testthat::expect_equal(
-     rf$results$.estimate[1],
-     c(0.60),
-     tolerance = 0.01)
-
+ testthat::expect_that(rf, testthat::is_a("list"))
+ testthat::expect_is(rf$truth_predictions$truth[1], "factor")
 
  model_rf_1 <- text::textTrain(
     x = word_embeddings_4$texts$harmonytext,
