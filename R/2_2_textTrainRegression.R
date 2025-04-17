@@ -25,6 +25,7 @@ statisticalMode <- function(x) {
 #' @param weights Optional column of observation weights (default = NULL)
 #'
 #' @return List with RMSE and predictions
+#' @importFrom hardhat importance_weights
 #' @noRd
 fit_model_rmse <- function(object,
                            model = "regression",
@@ -181,7 +182,7 @@ if (n_embeddings == 1) {
 
     if (!is.null(weights)) {
       data_train <- data_train %>%
-        dplyr::mutate(.weights = hardhat::frequency_weights(.data[[weights]]))
+        dplyr::mutate(.weights = hardhat::importance_weights(.data[[weights]]))
     }
 
     mod <- workflows::fit(wf, data = data_train)
