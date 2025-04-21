@@ -893,7 +893,7 @@ textPredictTest <- function(y1,
                             ...) {
 
   if (!requireNamespace("overlapping", quietly = TRUE)) {
-    msg <- c("ggwordcloud is required for this test.\nPlease install it using install.packages('ggwordcloud').")
+    msg <- c("overlapping is required for this test.\nPlease install it using install.packages('overlapping').")
 
     message(colourise(msg, "brown"))
   }
