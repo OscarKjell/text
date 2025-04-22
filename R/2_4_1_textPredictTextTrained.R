@@ -140,6 +140,7 @@ textReturnModel<- function(
 #' @param previous_sentence If set to TRUE, word-embeddings will be averaged over the current and previous
 #' sentence per story-id. For this, both participant-id and story-id must be specified.
 #' @param implementation NULL or "dlatk".
+#' @param ... Parameters in textEmbed.
 #' @noRd
 textReturnEmbedding <- function(
     texts = NULL,
@@ -153,7 +154,8 @@ textReturnEmbedding <- function(
     save_dir = "wd",
     save_name = "textPredict",
     previous_sentence = FALSE,
-    implementation = NULL
+    implementation = NULL,
+    ...
     ) {
   # extend the timeout time for larger models.
   options(timeout = 5 * 60)
@@ -264,7 +266,8 @@ textReturnEmbedding <- function(
       aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts,
       device = device,
       keep_token_embeddings = FALSE,
-      implementation = implementation_comment
+      implementation = implementation_comment,
+      ...
     )
 
     # save embeddings if save_embeddings is set to true
@@ -370,7 +373,7 @@ textReturnEmbedding <- function(
 #' sentence per story-id. For this, both participant-id and story-id must be specified.
 #' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
 #' specific device number such as 'mps:1'.
-#' @param ...  Setting from stats::predict can be called.
+#' @param ...  Setting from textEmbed() (and stats::predict) can be called.
 #' @return Predictions from word-embedding or text input.
 #' @examples
 #' \dontrun{
@@ -498,7 +501,8 @@ textPredictTextTrained <- function(
       save_dir = save_dir,
       save_name = save_name,
       previous_sentence = previous_sentence,
-      implementation = implementation
+      implementation = implementation,
+      ...
     )
     # retrieve model from emb_and_mod object
     loaded_model <- emb_and_mod$loaded_model
