@@ -5,6 +5,7 @@
 # text 1.4.6
 - updating from the depracated `rsample::function validation_split()` to `initial_validation_split()`. However, 
 this changes some results in `textTrainRegression()` and `textTrainRandomForrest()`.
+- updating textLBAM() to take `construct_start` parameter.
 
 # text 1.4.5
 - removing objects in the environment of `textTrainRegression()` to reduce saved model sizes.

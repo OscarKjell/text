@@ -342,11 +342,12 @@ textAssess <- textPredict
 #' @export
 textClassify <- textPredict
 
-#returns the lbam library
+# returns the lbam library
 #' The LBAM library
 #'
 #' Retrieve the Language-Based Assessment Models library (LBAM).
 #' @param columns (string) Select which columns to retrieve e.g., c("Name", "Path")
+#' @param construct_start (string) Select which constructs concepts and/or behaviors to retrieve.
 #' @param lbam_update (boolean) TRUE downloads a new copy of the LBAM file
 #' @return Data frame containing information about the Language-based assessment models library (LBAM).
 #' @examples
@@ -368,8 +369,9 @@ textClassify <- textPredict
 #' @export
 textLBAM <- function(
     columns = NULL,
+    construct_start = NULL,
     lbam_update = FALSE
-    ) {
+) {
 
   if(lbam_update){
     # download file
@@ -393,10 +395,13 @@ textLBAM <- function(
                 package = "text"), skip = 3)
 
   if (!is.null(columns)){
+    lbam <- lbam[,columns]
+  }
+
+  if (!is.null(construct_start)){
     lbam <- lbam %>%
-      dplyr::select(columns)
+      filter(startsWith(Construct_Concept_Behaviours, construct_start))
   }
 
   return(lbam)
 }
-

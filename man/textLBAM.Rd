@@ -4,10 +4,12 @@
 \alias{textLBAM}
 \title{The LBAM library}
 \usage{
-textLBAM(columns = NULL, lbam_update = FALSE)
+textLBAM(columns = NULL, construct_start = NULL, lbam_update = FALSE)
 }
 \arguments{
 \item{columns}{(string) Select which columns to retrieve e.g., c("Name", "Path")}
+
+\item{construct_start}{(string) Select which constructs concepts and/or behaviors to retrieve.}
 
 \item{lbam_update}{(boolean) TRUE downloads a new copy of the LBAM file}
 }
