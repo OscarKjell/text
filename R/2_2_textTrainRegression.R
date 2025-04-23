@@ -1124,7 +1124,7 @@ create_manual_nested_cv <- function(
 #' @param simulate.p.value (Boolean or string) From fisher.test: a logical indicating whether to compute p-values by
 #' Monte Carlo simulation, in larger than 2 * 2 tables. The test can be turned off if set to "turn_off".
 #' @param seed (numeric) Set different seed (default = 2020).
-#' @param weights Optional name of column containing weights (default = NULL).
+#' @param weights Optional vector containing weights (default = NULL); for details see importance_weights {hardhat}.
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @details
 #' By default, NAs are treated as follows:
