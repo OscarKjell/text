@@ -35,6 +35,10 @@ textClassify(
 
 The text prediction functions can be given a model and a text, and automatically transform the text to word embeddings and produce estimated scores or probabilities.
 
+Important: Language-based assessments can be developed in one context—such as social media—and applied in another—like clinical interviews. However, models don’t always generalize across settings. A model’s performance depends on several factors, including the context in which it was trained, the population, the distribution of the psychological outcome, and the language domain (i.e., how similar the language in the training data is to the new data).
+
+Because of this, users are responsible for evaluating whether a model is appropriate for their specific use case. This means checking whether the training and evaluation conditions align with their own data—and, if needed, validating the model’s performance on a subset of their own data before making any conclusions. That’s why each model in the L-BAM Library comes with detailed documentation on its training data, performance metrics, and development process. Transparent documentation helps users make informed decisions and supports reproducible, trustworthy research (for more information see Nilsson et al., in progress).
+
 If you want to add a pre-trained model to the L-BAM library, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and email us (*oscar [ d_o t] kjell [a _ t] psy [DOT] lu [d_o_t]se*) so that we can update the table online.
 
 *Note that you can adjust the width of the columns when scrolling the table.*
