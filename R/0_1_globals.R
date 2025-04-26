@@ -51,6 +51,7 @@ utils::globalVariables(c(
 
   # textPredict
   ":=", "predicted_class", "osf_download", "osf_retrieve_file",
+  "Construct_Concept_Behaviours",
 
   # implicit motives
   "resid",

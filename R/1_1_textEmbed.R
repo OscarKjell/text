@@ -102,7 +102,7 @@ clean_text <- function(text) {
 #' @return a tibble with removed ascii characters
 #' @importFrom dplyr mutate across everything
 #' @importFrom purrr map_chr
-#' @export
+#' @noRd
 textCleanNonASCIIinfo <- function(
     data_tibble,
     problematic_texts = NULL,

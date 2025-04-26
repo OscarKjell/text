@@ -325,7 +325,8 @@ textPredict <- function(
   }
 
   # display message to user
-  message_ready <- paste0("Assessments are ready -— note that models may not ",
+  results
+  message_ready <- paste0("Assessments are ready!\nNote that models may not ",
                           "generalize across contexts, so please review model details and ",
                           "recommendations at r-text.org/articles/LBAM.html.")
   message(colourise(message_ready, fg = "green"))
