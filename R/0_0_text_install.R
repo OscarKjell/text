@@ -3,6 +3,49 @@
 
 conda_args <- reticulate:::conda_args
 
+install_rust_if_needed <- function(prompt = TRUE) {
+  # Check if rustc (Rust compiler) is already installed
+  rust_installed <- !is.null(Sys.which("rustc")) && Sys.which("rustc") != ""
+
+  if (rust_installed) {
+    message(colourise("Rust is already installed. Skipping Rust installation.\n", fg = "blue"))
+    return(invisible(NULL))
+  }
+
+  message("Rust is not installed on this system.")
+
+  # Check if curl is available
+  curl_installed <- !is.null(Sys.which("curl")) && Sys.which("curl") != ""
+
+  if (!curl_installed) {
+    warning("Rust installation aborted: 'curl' command not found on your system.\n",
+            "Please manually install Rust following instructions at https://www.rust-lang.org/")
+    return(invisible(NULL))
+  }
+
+  # Ask user if they want to proceed with installing Rust
+  ans <- if (prompt) {
+    utils::menu(c("No", "Yes"), title = "Do you want to install Rust?")
+  } else {
+    2 # default to Yes if no prompt
+  }
+
+  if (ans == 1) {
+    message("Rust installation cancelled by user.")
+    return(invisible(NULL))
+  }
+
+  # Try installing Rust
+  tryCatch({
+    message("Downloading and installing Rust...")
+    system("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y", intern = TRUE)
+    message(colourise("Rust installation completed (or already installed).\n", fg = "green"))
+  }, error = function(e) {
+    warning("Rust installation failed: ", e$message)
+  })
+
+  invisible(NULL)
+}
 #' Install text required python packages in conda or virtualenv environment
 #'
 #' @description Install text required python packages (rpp) in a self-contained environment.
@@ -127,7 +170,8 @@ textrpp_install <- function(conda = "auto",
   # install rust for singularity machine -- but it gives error in github action
   # reticulate::py_run_string("import os\nos.system(\"curl --proto '=https' --tlsv1.2 -sSf
   # https://sh.rustup.rs | sh -s -- -y\")")
-  system("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y")
+  #system("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y")
+  install_rust_if_needed(prompt = prompt)
 
   # resolve and look for conda help(conda_binary)
   conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
