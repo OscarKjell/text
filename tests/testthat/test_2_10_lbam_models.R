@@ -151,8 +151,8 @@ test_that("Testing L-BAM models", {
   res <- textAssess(model_info =  "autonomy_text_bert23_mesquiti2025", texts = tibble(`Autonomy-Text` = "hello you"), dim_names = T)
   testthat::expect_equal(res[[1]], 4.704528, tolerance = 0.001)
 
-  res <- textAssess(model_info =  "satisfaction_text_bert23_mesquiti2026", texts = tibble(`SWLS-Text` = "hello"), dim_names = T)
-  testthat::expect_equal(res[[1]], 6.592014, tolerance = 0.001)
+  res <- textAssess(model_info =  "satisfaction_text_bert23_mesquiti2026", texts = tibble(`SWLS-Text` = "hello everyone"), dim_names = T)
+  testthat::expect_equal(res[[1]], 7.404376, tolerance = 0.001)
 
 
   # list.files()
@@ -179,6 +179,7 @@ test_that("Testing L-BAM models", {
                "satisfaction_words_roberta-large_23_SWLS_Kjell2022.rds",
                "selfharmrisk_selfharmtext_mixedbread23_gu2025.rds",
                "suicidalityrisk_suicidalitytext_mixedbread23_gu2025.rds",
+               "swls_swls.rds",
                "textPredict_381541617.RDS",
                "textPredict_381544597.RDS",
                "textPredict_435931617.RDS",
@@ -186,6 +187,7 @@ test_that("Testing L-BAM models", {
                "textPredict_694261617.RDS",
                "textPredict_828971617.RDS",
                "textPredict_941251617.RDS",
+               "textPredict_3815411016.RDS",
                "workengagement_words_mxbai23_nilsson2024.rds",
                "worryphrase_robertaL23_gad7_Gu2024.rds",
                "worryphrase_robertaL23_pswq_Gu2024_corrected.rds",
