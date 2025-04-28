@@ -327,6 +327,33 @@ textReturnEmbedding <- function(
   return(emb_and_model)
 }
 
+
+
+#' Extract the string after the first underscore in required predictor names
+#'
+#' @param model A trained workflow
+#' @return A character vector with the extracted parts after the first underscore.
+#' @noRd
+extract_required_suffix <- function(model) {
+  if (!inherits(model, "workflow")) {
+    stop("The provided object is not a workflow.")
+  }
+
+  # Extract predictor names
+  predictor_names <- names(model$pre$mold$blueprint$ptypes$predictors)
+
+  # Check if any predictor has an underscore
+  if (!any(grepl("_", predictor_names))) {
+    return(NULL)
+  }
+
+  # Extract the part after the first underscore
+  suffixes <- sub("^[^_]+_", "", predictor_names)
+
+  suffix <- unique(suffixes)
+  return(suffix)
+}
+
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
 #' @param model_info (character or r-object) model_info has four options. 1: R model object
@@ -501,8 +528,8 @@ textPredictTextTrained <- function(
       save_dir = save_dir,
       save_name = save_name,
       previous_sentence = previous_sentence,
-      implementation = implementation,
-      ...
+      implementation = implementation
+      ,  ...
     )
     # retrieve model from emb_and_mod object
     loaded_model <- emb_and_mod$loaded_model
@@ -512,9 +539,9 @@ textPredictTextTrained <- function(
 
     # retrieve classes in case of logistic regression
     classes <- emb_and_mod$classes
-  } #else {
-    #loaded_model <- model_info
-#  }
+  }
+
+
 
   # "regression" or "classification"
   mod_type <- loaded_model$final_model$fit$actions$model$spec[[3]]
@@ -552,12 +579,31 @@ textPredictTextTrained <- function(
 
     # Select the word embeddings
     word_embeddings <- word_embeddings[word_embeddings_names]
-  } else {
+
+    if(is.null(word_embeddings[[1]])){
+      message_emb <- c("Could not find the required dimensions. You may set dim_names = FALSE, but please ensure that this is appropriate for your data and intended use.")
+      message(colourise(message_emb, "brown"))
+    }
+  }
+
+  if (dim_names == FALSE) {
+
+    #emb_for_now_test <- word_embeddings
     # Remove specific names in the word embeddings
     word_embeddings <- textDimName(word_embeddings,
                                    dim_names = FALSE
     )
     word_embeddings_names <- "word_embeddings"
+
+    #model_4_now <- loaded_model$final_model
+    new_name <- extract_required_suffix(model = loaded_model$final_model)
+
+    if(!is.null(new_name)){
+
+      word_embeddings <- textDimName(word_embeddings,
+                                       dim_names = TRUE,
+                                       name = new_name)
+    }
   }
 
   if (!is.null(x_append)) {

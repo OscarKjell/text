@@ -38,6 +38,12 @@ textEmbed("hello")
 ```
 
 
+## System-level set up and Github actions
+Because the text package requires some system-level setup, installation is automatically verified on Windows, macOS, and Ubuntu through our [GitHub Actions](https://github.com/OscarKjell/text/actions).
+If you encounter any issues, please review the tests and check the workflow file for details on system-specific installations.
+
+To view the workflow file, select the three-dot menu on the right side of any GitHub Action run and choose <b>View workflow file</b>. This file specifies the operating systems, R versions, and additional libraries being tested.
+
 ## Solving OMP errors and R/Rstudio crashes
 Recently some text users (mainly on Mac), have experienced OMP errors - and that RStudio and R crashes. When this is happening we have found the following solutions for now:
 
@@ -255,4 +261,3 @@ The exact way to install these packages may differ across systems. Please see:\
 ## Share advise
 
 *If you find a good solution please feel free to email oscar [ d_o t] kjell [a_t] psy [DOT] lu [d_o_t]se so that we can update above instructions.*
->>>>>>> e368e8b (documentation updates)

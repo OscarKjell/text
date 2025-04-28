@@ -267,6 +267,10 @@ test_that("textDimName", {
 
   w_e_F <- textDimName(w_e_T, dim_names = TRUE)
   expect_equal(colnames(w_e_F$harmonywords)[1], "Dim1_harmonywords")
+
+  w_e_T_names <- textDimName(w_e_T, dim_names = TRUE, name = "test")
+  expect_equal(colnames(w_e_T_names$harmonywords)[1], "Dim1_test")
+
 })
 
 

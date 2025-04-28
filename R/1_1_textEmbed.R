@@ -2111,32 +2111,40 @@ textEmbed <- function(
 #' Change dimension names
 #'
 #' textDimName() changes the names of the dimensions in the word embeddings.
-#' @param word_embeddings List of word embeddings
-#' @param dim_names (boolean) If TRUE the word embedding name will be attached to the name of each dimension;
-#' is FALSE, the attached part of the name will be removed.
+#'
+#' @param word_embeddings List of word embeddings or a single tibble
+#' @param dim_names Logical. If TRUE, the word embedding name or a custom name will be attached to the name of each dimension.
+#' If FALSE, the attached part of the name will be removed.
+#' @param name Optional character. If provided and dim_names = TRUE, this custom name will be attached instead of using the original list names.
 #' @return Word embeddings with changed names.
 #' @examples
 #' \donttest{
 #' # Note that dimensions are called Dim1_harmonytexts etc.
 #' word_embeddings_4$texts$harmonytexts
-#' # Here they are changed to just Dim
+#'
+#' # Change to just Dim
 #' w_e_T <- textDimName(word_embeddings_4$texts["harmonytexts"],
 #'   dim_names = FALSE
 #' )
-#' # Here they are changed back
+#'
+#' # Change back to include the original name
 #' w_e_F <- textDimName(w_e_T, dim_names = TRUE)
+#'
+#' # Change and add a custom name
+#' w_e_custom <- textDimName(w_e_T, dim_names = TRUE, name = "CustomName")
 #' }
-#' @seealso see \code{\link{textEmbed}}
+#' @seealso \code{\link{textEmbed}}
 #' @export
 textDimName <- function(word_embeddings,
-                        dim_names = TRUE) {
+                        dim_names = TRUE,
+                        name = NULL) {
   tokens <- NULL
   word_type <- NULL
 
   x_is_tibble <- tibble::is_tibble(word_embeddings)
   if (x_is_tibble) word_embeddings <- list(word_embeddings)
 
-  # Remove singlewords_we if it exist
+  # Remove singlewords_we if it exists
   if (!is.null(word_embeddings$word_type)) {
     word_type <- word_embeddings$word_type
     word_embeddings$word_type <- NULL
@@ -2147,24 +2155,21 @@ textDimName <- function(word_embeddings,
     word_embeddings$tokens <- NULL
   }
 
-  # i_row = 1 dim_name=TRUE
   if (dim_names) {
     for (i_row in seq_len(length(word_embeddings))) {
+      base_names <- names(word_embeddings[[i_row]])
+      suffix <- if (!is.null(name)) name else names(word_embeddings)[[i_row]]
       colnames(word_embeddings[[i_row]]) <- paste0(
-        names(word_embeddings[[i_row]]),
+        base_names,
         "_",
-        names(word_embeddings)[[i_row]]
+        suffix
       )
     }
-  }
-
-  if (!dim_names) {
+  } else {
     for (i_row in seq_len(length(word_embeddings))) {
       target_variables_names <- colnames(word_embeddings[[i_row]])
-
       # Select everything BEFORE the first _ (i.e., the Dim1, etc.)
       variable_names <- sub("\\_.*", "", target_variables_names)
-
       colnames(word_embeddings[[i_row]]) <- variable_names
     }
   }
@@ -2173,12 +2178,11 @@ textDimName <- function(word_embeddings,
   if (!is.null(word_type)) {
     word_embeddings$word_type <- word_type
   }
-  # Attach word embeddings again
   if (!is.null(tokens)) {
     word_embeddings$tokens <- tokens
   }
 
-  # Return tibble if x is a tibble (and not a list)
+  # Return tibble if input was a tibble (not a list)
   if (x_is_tibble) word_embeddings <- word_embeddings[[1]]
 
   return(word_embeddings)

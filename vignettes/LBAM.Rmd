@@ -109,6 +109,21 @@ reactable::reactable(
 ```
 
 
+
+### Overview of L-BAM pipelines
+Training and using models from the L-BAM library involves three key steps.
+First, written language is turned into numerical formats known as word embeddings using a large language model (Figure 1A).
+Next, these embeddings are used to build a predictive model linked to a specific outcome or assessment target (Figure 1B).
+Finally, the trained model can be applied to new texts for evaluation or classification purposes (Figure 1C).
+
+You can find a detailed guide on how to transform language into embeddings and train L-BAMs using the text package in Kjell et al. (2023).
+Below, we briefly introduce the embedding and training process before showing how to apply models from the L-BAM library.
+![](l_bam_overview.png){width=500px}
+
+<br>
+Figure from Nilsson et al. (in progress). 
+
+
 ### References
 
 Gu, Kjell, Schwartz & Kjell. (2024). Natural Language Response Formats for Assessing Depression and Worry with Large Language Models: A Sequential Evaluation with Model Pre-registration.
