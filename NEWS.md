@@ -3,11 +3,11 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # text 1.4.7
-- adding checks for matching `word_embeddings` and `model` requirements in `textPredict()` function (see 
-`check_matching_word_embeddings`.
-- Added `name` parameter in `textDimName()` function, so that user can appened names to word embeddings. 
-- improve the `dim_names = FALSE` functionality so that if it is `FALSE` it also ignores the name of the dimensions 
-required by the model. 
+- Added checks for matching `word_embeddings` and `model` requirements in the `textPredict()` function. 
+This is controlled via the new `check_matching_word_embeddings` parameter, which validates compatibility of model type, layers, and aggregation settings.
+-	Added a name parameter to the `textDimName()` function, allowing users to specify or change the name suffix for word embedding dimensions.
+- Improved the `dim_names` = `FALSE` behavior in the `textDimName()` function to also ignore model-required dimension suffixes. 
+Now includes clearer and more informative warnings when dimension mismatches occur.
 
 # text 1.4.6
 - updating from the depracated `rsample::function validation_split()` to `initial_validation_split()`. However, 

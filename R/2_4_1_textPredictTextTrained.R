@@ -373,48 +373,7 @@ extract_emb_type <- function(word_embeddings) {
 }
 
 
-#' Check so that word embedding descripstions and model descriptions match
-#'
-#' @param word_embeddings A word_embedding with comment.
-#' @param loaded_model The loaded model with word embedding descriptions.
-#' @return A character vector with the extracted parts after the first underscore.
-#' @noRd
-word_embedding_check_old <- function(word_embeddings, loaded_model){
 
-  embedding_comment <- extract_emb_type(word_embeddings)
-  ##### Check that layers and embeddings are the same
-  emb_type <- extract_comment(
-    comment = embedding_comment,
-    part = "model"
-  )
-  emb_layers <- extract_comment(
-    comment = embedding_comment,
-    part = "layers"
-  )
-
-  mod_emb_type <- extract_comment(
-    comment = loaded_model$model_description[[28]],
-    part = "model"
-  )
-  mod_emb_layers <- extract_comment(
-    comment = loaded_model$model_description[[28]],
-    part = "layers"
-  )
-
-  if(!emb_type == mod_emb_type){
-    message_emb <- c("Embedding model types do not match! Model require ", mod_emb_type,
-                     " but gets ", emb_type, ". To ignore this you can set ignore_type_of_word_embeddigs = TRUE.")
-
-    stop(colourise(message_emb, "brown"))
-
-  }
-
-  if (!all(emb_layers == mod_emb_layers)) {
-    message_layers <- c("Embedding-layers do not match! Model require ", mod_emb_layers,
-                        " but gets ", emb_layers, ". To ignore this you can set ignore_type_of_word_embeddigs = TRUE.")
-    stop(colourise(message_layers, "brown"))
-  }
-}
 
 #' Check that word embedding descriptions match the model's embedding setup
 #'
@@ -427,11 +386,13 @@ word_embedding_check <- function(word_embeddings, loaded_model) {
 
   parts_to_check <- c("model", "layers", "aggregation_from_layers_to_tokens", "aggregation_from_tokens_to_texts")
 
-  differences <- list()
+  model_comment <- paste(loaded_model$model_description, collapse = " ")
 
+  differences <- list()
+  #part = 1
   for (part in parts_to_check) {
     emb_val <- extract_comment(comment = embedding_comment, part = part)
-    mod_val <- extract_comment(comment = loaded_model$model_description[[28]], part = part)
+    mod_val <- extract_comment(comment = model_comment, part = part)
 
     if (is.numeric(emb_val) && is.numeric(mod_val)) {
       match <- all(emb_val == mod_val)
