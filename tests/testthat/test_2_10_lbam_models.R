@@ -11,6 +11,19 @@ test_that("Testing L-BAM models", {
   res <- text::textAssess(model_info =  "depression_select_phq9_roberta23_gu2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[1]], 8.961579, tolerance = 0.001)
 
+  # Checking stop warning
+  res <- text::textAssess(model_info =  "depression_select_phq9_roberta23_gu2024",
+                          word_embeddings = word_embeddings_4$texts["harmonywords"], dim_names = FALSE)
+
+  testthat::expect_error(
+    text::textAssess(
+      model_info = "depression_select_phq9_roberta23_gu2024",
+      word_embeddings = word_embeddings_4$texts["harmonywords"],
+      dim_names = FALSE
+    ),
+    regexp = "[Ww]ord embedding settings do not match"
+  )
+
   res <- text::textAssess(model_info =  "depression_words_phq9_roberta23_gu2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
 

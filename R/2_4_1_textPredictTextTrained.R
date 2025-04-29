@@ -35,7 +35,7 @@ textReturnModel<- function(
       saveRDS(loaded_model, model_name)
 
       # display message to user
-      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded and saved in:", getwd()), sep = "")
+      loaded_model_confirm <- paste0(c("The model: ", model_name, " has been loaded and saved in:", getwd()), sep = "")
       message(colourise(loaded_model_confirm, fg = "green"))
       #message("\n")
     } else if (grepl("github.com/", model_info) && isFALSE(model_exists) && isFALSE(save_model)) {
@@ -43,7 +43,7 @@ textReturnModel<- function(
       loaded_model <- readRDS(url(model_info))
 
       # display message to user
-      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", model_info), sep = "")
+      loaded_model_confirm <- paste0(c("The model: ", model_name, " has been loaded from: ", model_info), sep = "")
       message(colourise(loaded_model_confirm, fg = "green"))
       #message("\n")
     } else if (grepl("github.com/", model_info) && isTRUE(model_exists)) {
@@ -51,7 +51,7 @@ textReturnModel<- function(
       loaded_model <- readRDS(model_name)
 
       # display message to user
-      loaded_model_confirm <- paste0(c("The model:", model_name, "has been loaded from:", getwd()), sep = "")
+      loaded_model_confirm <- paste0(c("The model: ", model_name, " has been loaded from: ", getwd()), sep = "")
       message(colourise(loaded_model_confirm, fg = "green"))
       #message("\n")
     } else if (grepl("osf.io", model_info)){
@@ -354,6 +354,114 @@ extract_required_suffix <- function(model) {
   return(suffix)
 }
 
+
+#' Extract embedding model type flexibly
+#'
+#' @param word_embeddings A list or a tibble containing word embeddings
+#' @return The extracted model type, or NULL if no comment found
+#' @noRd
+extract_emb_type <- function(word_embeddings) {
+  # Try extracting the comment from the first element
+  emb_comment <- comment(word_embeddings[[1]])
+
+  # If no comment found, try from the list/tibble itself
+  if (is.null(emb_comment) || identical(emb_comment, "")) {
+    emb_comment <- comment(word_embeddings)
+  }
+
+  return(emb_comment)
+}
+
+
+#' Check so that word embedding descripstions and model descriptions match
+#'
+#' @param word_embeddings A word_embedding with comment.
+#' @param loaded_model The loaded model with word embedding descriptions.
+#' @return A character vector with the extracted parts after the first underscore.
+#' @noRd
+word_embedding_check_old <- function(word_embeddings, loaded_model){
+
+  embedding_comment <- extract_emb_type(word_embeddings)
+  ##### Check that layers and embeddings are the same
+  emb_type <- extract_comment(
+    comment = embedding_comment,
+    part = "model"
+  )
+  emb_layers <- extract_comment(
+    comment = embedding_comment,
+    part = "layers"
+  )
+
+  mod_emb_type <- extract_comment(
+    comment = loaded_model$model_description[[28]],
+    part = "model"
+  )
+  mod_emb_layers <- extract_comment(
+    comment = loaded_model$model_description[[28]],
+    part = "layers"
+  )
+
+  if(!emb_type == mod_emb_type){
+    message_emb <- c("Embedding model types do not match! Model require ", mod_emb_type,
+                     " but gets ", emb_type, ". To ignore this you can set ignore_type_of_word_embeddigs = TRUE.")
+
+    stop(colourise(message_emb, "brown"))
+
+  }
+
+  if (!all(emb_layers == mod_emb_layers)) {
+    message_layers <- c("Embedding-layers do not match! Model require ", mod_emb_layers,
+                        " but gets ", emb_layers, ". To ignore this you can set ignore_type_of_word_embeddigs = TRUE.")
+    stop(colourise(message_layers, "brown"))
+  }
+}
+
+#' Check that word embedding descriptions match the model's embedding setup
+#'
+#' @param word_embeddings A word_embeddings object with comment.
+#' @param loaded_model A model object with `model_description` attribute including a comment.
+#' @return NULL (stops with informative message if mismatch is found)
+#' @noRd
+word_embedding_check <- function(word_embeddings, loaded_model) {
+  embedding_comment <- extract_emb_type(word_embeddings)
+
+  parts_to_check <- c("model", "layers", "aggregation_from_layers_to_tokens", "aggregation_from_tokens_to_texts")
+
+  differences <- list()
+
+  for (part in parts_to_check) {
+    emb_val <- extract_comment(comment = embedding_comment, part = part)
+    mod_val <- extract_comment(comment = loaded_model$model_description[[28]], part = part)
+
+    if (is.numeric(emb_val) && is.numeric(mod_val)) {
+      match <- all(emb_val == mod_val)
+    } else {
+      match <- identical(emb_val, mod_val)
+    }
+
+    if (!match) {
+      differences[[part]] <- list(model = mod_val, embedding = emb_val)
+    }
+  }
+
+  if (length(differences) > 0) {
+    msg_lines <- c("Word embedding settings do not match the model:")
+    for (part in names(differences)) {
+      model_val <- paste(differences[[part]]$model, collapse = " ")
+      embed_val <- paste(differences[[part]]$embedding, collapse = " ")
+      msg_lines <- c(
+        msg_lines,
+        paste0("- ", part, ": model = ", model_val, "; embedding = ", embed_val)
+      )
+    }
+
+    msg_lines <- c(msg_lines, "To ignore this, set `ignore_type_of_word_embeddings = TRUE`.")
+    stop(colourise(paste(msg_lines, collapse = "\n"), "brown"))
+  }
+
+  return(invisible(NULL))
+}
+
 #' Trained models created by e.g., textTrain() or stored on e.g., github can be used to predict
 #' new scores or classes from embeddings or text using textPredict.
 #' @param model_info (character or r-object) model_info has four options. 1: R model object
@@ -375,6 +483,8 @@ extract_required_suffix <- function(model) {
 #' @param dim_names (boolean) Specifies how to handle word embedding names. If TRUE, it uses specific
 #' word embedding names, and if FALSE word embeddings are changed to their generic names (Dim1, Dim2, etc).
 #' If set to FALSE, the model must have been trained on word embeddings created with dim_names FALSE.
+#' @param check_matching_word_embeddings (boolean) If `TRUE`, the function will check whether the word embeddings (model type and layer) match
+#' the requirement of the trained model - if a mis-match is found the function till stop. If `FALSE`, the function will not verify.
 #' @param language_distribution (Character column) If you provide the raw language data used for making the embeddings used for assessment,
 #' the language distribution (i.e., a word and frequency table) will be compared with saved one in the model object (if one exists).
 #' This enables calculating similarity scores.
@@ -479,6 +589,7 @@ textPredictTextTrained <- function(
     append_first = TRUE,
     threshold = NULL,
     dim_names = TRUE,
+    check_matching_word_embeddings = TRUE,
     language_distribution = NULL,
     language_distribution_min_words = "trained_distribution_min_words",
     save_model = TRUE,
@@ -541,8 +652,6 @@ textPredictTextTrained <- function(
     classes <- emb_and_mod$classes
   }
 
-
-
   # "regression" or "classification"
   mod_type <- loaded_model$final_model$fit$actions$model$spec[[3]]
 
@@ -581,7 +690,7 @@ textPredictTextTrained <- function(
     word_embeddings <- word_embeddings[word_embeddings_names]
 
     if(is.null(word_embeddings[[1]])){
-      message_emb <- c("Could not find the required dimensions. You may set dim_names = FALSE, but please ensure that this is appropriate for your data and intended use.")
+      message_emb <- c("Could not find the required dimensions. You may set dim_names = FALSE, but ensure that this is appropriate for your data and intended use.")
       message(colourise(message_emb, "brown"))
     }
   }
@@ -605,6 +714,13 @@ textPredictTextTrained <- function(
                                        name = new_name)
     }
   }
+
+
+  #### Checking word_embedding and model specifications
+  if(check_matching_word_embeddings){
+    word_embedding_check(word_embeddings, loaded_model)
+  }
+
 
   if (!is.null(x_append)) {
     ### Sort a_append: select all Dim0 (i.e., x_append variables)

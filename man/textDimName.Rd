@@ -4,13 +4,15 @@
 \alias{textDimName}
 \title{Change dimension names}
 \usage{
-textDimName(word_embeddings, dim_names = TRUE)
+textDimName(word_embeddings, dim_names = TRUE, name = NULL)
 }
 \arguments{
-\item{word_embeddings}{List of word embeddings}
+\item{word_embeddings}{List of word embeddings or a single tibble}
 
-\item{dim_names}{(boolean) If TRUE the word embedding name will be attached to the name of each dimension;
-is FALSE, the attached part of the name will be removed.}
+\item{dim_names}{Logical. If TRUE, the word embedding name or a custom name will be attached to the name of each dimension.
+If FALSE, the attached part of the name will be removed.}
+
+\item{name}{Optional character. If provided and dim_names = TRUE, this custom name will be attached after each column (e.g., dim1_name).}
 }
 \value{
 Word embeddings with changed names.
@@ -22,14 +24,19 @@ textDimName() changes the names of the dimensions in the word embeddings.
 \donttest{
 # Note that dimensions are called Dim1_harmonytexts etc.
 word_embeddings_4$texts$harmonytexts
-# Here they are changed to just Dim
+
+# Change to just Dim
 w_e_T <- textDimName(word_embeddings_4$texts["harmonytexts"],
   dim_names = FALSE
 )
-# Here they are changed back
+
+# Change back to include the original name
 w_e_F <- textDimName(w_e_T, dim_names = TRUE)
+
+# Change and add a custom name
+w_e_custom <- textDimName(w_e_T, dim_names = TRUE, name = "CustomName")
 }
 }
 \seealso{
-see \code{\link{textEmbed}}
+\code{\link{textEmbed}}
 }

@@ -2,10 +2,17 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# text 1.4.7
+- adding checks for matching `word_embeddings` and `model` requirements in `textPredict()` function (see 
+`check_matching_word_embeddings`.
+- Added `name` parameter in `textDimName()` function, so that user can appened names to word embeddings. 
+- improve the `dim_names = FALSE` functionality so that if it is `FALSE` it also ignores the name of the dimensions 
+required by the model. 
+
 # text 1.4.6
 - updating from the depracated `rsample::function validation_split()` to `initial_validation_split()`. However, 
 this changes some results in `textTrainRegression()` and `textTrainRandomForrest()`.
-- updating textLBAM() to take `construct_start` parameter.
+- updating `textLBAM()` to take `construct_start` parameter.
 
 # text 1.4.5
 - removing objects in the environment of `textTrainRegression()` to reduce saved model sizes.

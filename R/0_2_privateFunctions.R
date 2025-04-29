@@ -271,14 +271,14 @@ cohens_d <- function(
 
 #' Extract part of a comment
 #'
-#' @param comment (string) The comment
-#' @param part (string) The part to be extracted ("model" or "layers").
-#' @return string from the comment
+#' @param comment (string or character vector) The comment
+#' @param part (string) The part to be extracted ("model", "layers", "implementation_method",
+#' "aggregation_from_layers_to_tokens", "aggregation_from_tokens_to_texts",
+#' "tokens_select", "tokens_deselect", "penalty_in_final_model", "mixture_in_final_model", "n_remove_threshold").
+#' @return A trimmed string or numeric vector extracted from the comment
 #' @noRd
-extract_comment <- function(
-    comment,
-    part
-    ) {
+extract_comment <- function(comment, part) {
+  output <- NULL
 
   if (part == "model") {
     model_text <- sub(".*textEmbedRawLayers: model: ", "", comment)
@@ -287,10 +287,8 @@ extract_comment <- function(
 
   if (part == "layers") {
     layer_text <- sub(".*layers: ", "", comment)
-    output <- sub(" ; word_type_embeddings:.*", "", layer_text)
-
-    # Convert to numeric vector
-    output <- as.numeric(unlist(strsplit(output, " ")))
+    layer_text <- sub(" ; word_type_embeddings:.*", "", layer_text)
+    output <- as.numeric(unlist(strsplit(trimws(layer_text), " ")))
   }
 
   if (part == "implementation_method") {
@@ -298,35 +296,46 @@ extract_comment <- function(
     output <- sub(" ;.*", "", method_text)
   }
 
-  # penalty_in_final_model
+  if (part == "aggregation_from_layers_to_tokens") {
+    output <- sub(".*aggregation_from_layers_to_tokens = ", "", comment)
+    output <- sub(" aggregation_from_tokens_to_texts.*", "", output)
+  }
+
+  if (part == "aggregation_from_tokens_to_texts") {
+    output <- sub(".*aggregation_from_tokens_to_texts = ", "", comment)
+    output <- sub("tokens_select.*", "", output)
+  }
+
+  if (part == "tokens_select") {
+    output <- sub(".*tokens_select = ", "", comment)
+    output <- sub("tokens_deselect.*", "", output)
+  }
+
+  if (part == "tokens_deselect") {
+    output <- sub(".*tokens_deselect = ", "", comment)
+    output <- sub(" .*", "", output)
+  }
+
   if (part == "penalty_in_final_model") {
-    selected_element <- grep("^penalty in final model =",
-                             comment,
-                             value = TRUE)
-    pen <- sub(".*penalty in final model =  ", "",
-                      selected_element)
-    output <- as.numeric(pen)
+    selected_element <- grep("^penalty in final model =", comment, value = TRUE)
+    output <- sub(".*penalty in final model = ?", "", selected_element)
+    output <- as.numeric(trimws(output))
   }
 
-  # penalty_in_final_model
   if (part == "mixture_in_final_model") {
-    selected_element <- grep("^mixture in final model =",
-                             comment,
-                             value = TRUE)
-    mix <- sub(".*mixture in final model =  ", "",
-               selected_element)
-    output <- as.numeric(mix)
+    selected_element <- grep("^mixture in final model =", comment, value = TRUE)
+    output <- sub(".*mixture in final model = ?", "", selected_element)
+    output <- as.numeric(trimws(output))
   }
 
-
-  # penalty_in_final_model
   if (part == "n_remove_threshold") {
-    selected_element <- grep("^n_remove_threshold =",
-                             comment,
-                             value = TRUE)
-    mix <- sub(".*n_remove_threshold =", "",
-               selected_element)
-    output <- as.numeric(mix)
+    selected_element <- grep("^n_remove_threshold =", comment, value = TRUE)
+    output <- sub(".*n_remove_threshold = ?", "", selected_element)
+    output <- as.numeric(trimws(output))
+  }
+
+  if (!is.null(output) && is.character(output)) {
+    output <- trimws(output)
   }
 
   return(output)

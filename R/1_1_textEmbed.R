@@ -2115,7 +2115,7 @@ textEmbed <- function(
 #' @param word_embeddings List of word embeddings or a single tibble
 #' @param dim_names Logical. If TRUE, the word embedding name or a custom name will be attached to the name of each dimension.
 #' If FALSE, the attached part of the name will be removed.
-#' @param name Optional character. If provided and dim_names = TRUE, this custom name will be attached instead of using the original list names.
+#' @param name Optional character. If provided and dim_names = TRUE, this custom name will be attached after each column (e.g., dim1_name).
 #' @return Word embeddings with changed names.
 #' @examples
 #' \donttest{
@@ -2135,9 +2135,11 @@ textEmbed <- function(
 #' }
 #' @seealso \code{\link{textEmbed}}
 #' @export
-textDimName <- function(word_embeddings,
-                        dim_names = TRUE,
-                        name = NULL) {
+textDimName <- function(
+    word_embeddings,
+    dim_names = TRUE,
+    name = NULL) {
+
   tokens <- NULL
   word_type <- NULL
 
