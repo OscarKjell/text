@@ -416,7 +416,7 @@ word_embedding_check <- function(word_embeddings, loaded_model) {
       )
     }
 
-    msg_lines <- c(msg_lines, "To ignore this, set `ignore_type_of_word_embeddings = TRUE`.")
+    msg_lines <- c(msg_lines, "To ignore this, set `check_matching_word_embeddings = FALSE`.")
     stop(colourise(paste(msg_lines, collapse = "\n"), "brown"))
   }
 
@@ -678,7 +678,8 @@ textPredictTextTrained <- function(
 
 
   #### Checking word_embedding and model specifications
-  if(check_matching_word_embeddings){
+  if(check_matching_word_embeddings &
+     length(word_embeddings) > 0){
     word_embedding_check(word_embeddings, loaded_model)
   }
 

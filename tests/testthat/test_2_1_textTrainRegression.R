@@ -480,7 +480,7 @@ test_that("training with only x_append (without word embeddings)", {
   testthat::expect_equal(model_no_append$results[[1]][[1]], 339.6473, tolerance = 0.1)
 
 
-  model_no_append_preds <- textPredict(
+  model_no_append_preds <- text::textPredict(
     model_info = model_no_append,
     word_embeddings = NULL,
     x_append = Language_based_assessment_data_8[6:7]
