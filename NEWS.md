@@ -1,6 +1,8 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.4.8
+- fixing bug in textAssess() for implicit motives where the participant id was incorrect. 
 
 # text 1.4.7
 - Added checks for matching `word_embeddings` and `model` requirements in the `textPredict()` function. 

@@ -18,15 +18,17 @@ implicit_motives <- function(
 
   num_persons <- length(table_uniques2)
 
-  # Define variables
-  user_id_column <- c()
-  current <- 0
-
-  # Create participant_id
-  for (i in 1:num_persons) {
-    current <- current + table_uniques2[[i]]
-    user_id_column <- c(user_id_column, participant_id[current])
-  }
+# Oscar: not sure why IDs are done in this way. why not just use unique()
+#  # Define variables
+#  user_id_column <- c()
+#  current <- 0
+#
+#  # Create participant_id i = 1; i = 2
+#  for (i in 1:num_persons) {
+#    current <- current + table_uniques2[[i]]
+#    user_id_column <- c(user_id_column, participant_id[current])
+#  }
+  user_id_column <- unique(participant_id)
 
   # Create dataframe
   summations <- data.frame(
