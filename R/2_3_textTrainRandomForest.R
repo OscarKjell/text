@@ -142,7 +142,21 @@ classification_results <- function(
 
   output <- list(predy_y, roc_curve_data, roc_curve_plot, fisher, chisq, results_collected)
   names(output) <- c("predy_y", "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_collected")
-  output
+
+  remove(predy_y)
+  remove(results_collected)
+  remove(roc_curve_plot)
+  remove(accuracy)
+  remove(bal_accuracy)
+  remove(sens)
+  remove(spec)
+  remove(precision)
+  remove(kappa)
+  remove(f_measure)
+  remove(roc_curve_data)
+  remove(roc_auc)
+
+  return(output)
 }
 
 #' Select evaluation measure and compute it (also used in logistic regression)

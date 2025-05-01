@@ -1,6 +1,9 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.4.9
+- added `save_output` = "only_model" in `textTrainRegression()` for  "logistic" and "multinomial" to reduce model size of saved objects.
+
 # text 1.4.8
 - fixing bug in textAssess() for implicit motives where the participant id was incorrect. 
 

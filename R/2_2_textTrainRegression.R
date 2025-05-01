@@ -1088,8 +1088,9 @@ create_manual_nested_cv <- function(
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it
 #'  (i.e., only on unix, not windows). Hence it makes the analyses considerably faster to run. Default is
 #'  "multi_cores_sys_default", where it automatically uses TRUE for Mac and Linux and FALSE for Windows.
-#' @param save_output (character) Option not to save all output; default = "all". see also "only_results"
-#'  and "only_results_predictions".
+#' @param save_output (character) Option not to save all output; default = "all". see also "only_model", "only_results",
+#'  and "only_results_predictions". Note that "only_model" is good when wanting to save a logistic or multnomial regression,
+#'  since those models get bloated when saving all result output.
 #' @param simulate.p.value (Boolean or string) From fisher.test: a logical indicating whether to compute p-values by
 #' Monte Carlo simulation, in larger than 2 * 2 tables. The test can be turned off if set to "turn_off".
 #' @param seed (numeric) Set different seed (default = 2020).
@@ -1708,11 +1709,12 @@ textTrainRegression <- function(
     nr_predictors
   )
 
+
   # Removing parts of the model not needed for prediction (primarily removing training data)
   final_predictive_model$pre$mold$predictors <- NULL
   final_predictive_model$pre$mold$outcomes <- NULL
   final_predictive_model$pre$mold$extras <- NULL
-
+  # saveSize(final_predictive_model)
 
   ##### NEW ENVIRONMENT END
 
@@ -1918,6 +1920,15 @@ textTrainRegression <- function(
         "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_metrics"
       )
       final_results
+    } else if (save_output == "only_model") {
+      final_results <- list(
+        final_predictive_model, model_description_detail
+      )
+      names(final_results) <- c(
+        "final_model", "model_description"
+      )
+      final_results
+      # saveSize(final_results)
     }
     final_results
   } else if (model == "multinomial") {
@@ -1952,6 +1963,14 @@ textTrainRegression <- function(
       names(final_results) <- c(
         "model_description",
         "roc_curve_data", "roc_curve_plot", "fisher", "chisq", "results_metrics"
+      )
+      final_results
+    } else if (save_output == "only_model") {
+      final_results <- list(
+        final_predictive_model, model_description_detail
+      )
+      names(final_results) <- c(
+        "final_model", "model_description"
       )
       final_results
     }
