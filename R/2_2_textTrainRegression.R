@@ -1965,6 +1965,7 @@ textTrainRegression <- function(
   remove(y)
   remove(x2)
   remove(xy)
+  remove(strata)
 
   remove(predy_y)
   remove(preprocessing_recipe_save)
