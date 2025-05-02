@@ -86,11 +86,6 @@ classification_results <- function(
   # Correlate predictions and observed help(all_of)
   chisq <- suppressWarnings(chisq.test(table(predy_y$truth, predy_y$estimate)))
 
-#  fisher <- stats::fisher.test(predy_y$truth,
-#    predy_y$estimate,
-#    simulate.p.value = simulate.p.value
-#  )
-
   if(is.logical(simulate.p.value)){
     fisher <- stats::fisher.test(
       predy_y$truth,
@@ -980,23 +975,6 @@ textTrainRandomForest <- function(
     ))
     results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
   }
-  # Old using the depcarated validation_split; not using it changes the results.
-##  if (cv_method == "validation_split") {
-##    results_nested_resampling <- rlang::expr(rsample::nested_cv(xy,
-##      outside = rsample::vfold_cv(
-##        v = !!outside_folds,
-##        repeats = 1,
-##        strata = !!outside_strata_y,
-##        breaks = !!outside_breaks
-##      ), #
-##      inside = rsample::validation_split(
-##        prop = !!inside_folds,
-##        strata = !!inside_strata_y,
-##        breaks = !!inside_breaks
-##      )
-##    ))
-##    results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
-##  }
 
   if (cv_method == "validation_split") {
 

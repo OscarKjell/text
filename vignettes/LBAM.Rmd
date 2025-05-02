@@ -13,8 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-
-The L-BAM library comprises information about pre-trained models. The models can be called with `textPredict()`, `textAssess()` or `textClassify()` like this:
+The L-BAM library comprises information about pre-trained models, including information about where they are located online so that they can be automatically downloaded in R. The models are continuously being tested using GitHub actions, and you can checkout the code for running each model [here](https://github.com/OscarKjell/text/blob/master/tests/testthat/test_2_10_lbam_models.R). The models can be called with `textPredict()`, `textAssess()` or `textClassify()` like this:
 
 ```{r textPredict_examples, eval = FALSE, echo=TRUE}
 library(text)

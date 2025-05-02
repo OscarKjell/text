@@ -1,4 +1,8 @@
 
+################
+#### Automatic unit testing for testing each model included in the L-BAM library
+################
+
 library(testthat)
 library(tibble)
 library(text)
@@ -111,8 +115,8 @@ test_that("Testing L-BAM models", {
   #res <- text::textAssess(model_info =  "implicitaffiliation_roberta23_nilsson2024", texts = "hello", dim_names = FALSE)
   #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
   #
-  #res <- text::textAssess(model_info =  "implicitaffiliation_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
+  res <- text::textAssess(model_info =  "implicitaffiliation_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], .997766, tolerance = 0.0001)
   #
   #res <- text::textAssess(model_info =  "implicitaffiliation_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
   #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)

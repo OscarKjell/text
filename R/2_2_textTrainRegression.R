@@ -1317,26 +1317,6 @@ textTrainRegression <- function(
     results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
   }
 
-  # Removed because rsample has deprecated validation_split
-#  if (cv_method == "validation_split") {
-#    print("old")
-#    results_nested_resampling <- rlang::expr(rsample::nested_cv(
-#      xy,
-#      outside = rsample::vfold_cv(
-#        v = !!outside_folds,
-#        repeats = 1,
-#        strata = !!outside_strata_y,
-#        breaks = !!outside_breaks
-#      ),
-#      inside = rsample::validation_split(
-#        prop = !!inside_folds,
-#        strata = !!inside_strata_y,
-#        breaks = !!inside_breaks
-#      )
-#    ))
-#    results_nested_resampling <- rlang::eval_tidy(results_nested_resampling)
-#  }
-
 
   if (cv_method == "validation_split") {
 
