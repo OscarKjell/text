@@ -10,8 +10,6 @@ test_that("Testing textEmbed as well as train", {
 #  textrpp_initialize(refresh_settings = T,
 #                     save_profile = T)
 
-
-
   harmony_word_embeddings <- text::textEmbed(
     texts = Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",
@@ -22,7 +20,6 @@ test_that("Testing textEmbed as well as train", {
     aggregation_from_tokens_to_word_types = "mean",
     batch_size = 5L
   )
-
 
   # Date comment:
   # comment(harmony_word_embeddings)
@@ -190,6 +187,30 @@ test_that("Testing textEmbed as well as train", {
 
   expect_equal(all_predictions[[1]][1], 11.89, tolerance = 0.1)
   expect_equal(all_predictions[[2]][1], 12.40038, tolerance = 0.01)
+
+
+  # Testing logistic regression
+  train_log <- text::textTrainRegression(
+    x = harmony_word_embeddings$texts["satisfactiontexts"],
+    y = Language_based_assessment_data_8["gender"][1:20, ],
+    penalty = 1e-16,
+    model = "logistic",
+    save_output = "no_plot"
+  )
+
+  saved_size2 <- saveSize(train_log)
+  testthat::expect_equal(saved_size2[[1]], 2800115, tolerance = 1000)
+
+  # Same as above with different input
+  gender_predicted <- text::textPredict(
+    model_info = train_log,
+    word_embeddings = harmony_word_embeddings$texts,
+    dim_names = TRUE
+  )
+  expect_that(gender_predicted[[1]], is_a("factor"))
+  expect_equal(as.character(gender_predicted[[1]][1]), "male")
+  expect_equal(gender_predicted[[2]][1:5],
+               c(0.9201514, 0.9186542, 0.1343529, 0.8966705, 0.9601496), tolerance = 0.0001)
 
 
   proj <- textProjection(

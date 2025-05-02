@@ -1926,7 +1926,8 @@ textTrainRegression <- function(
         collected_results$chisq, collected_results$results_collected
       )
       names(final_results) <- c(
-        "final_model", "model_description", "roc_curve_data",  "fisher", "chisq", "results_metrics"
+        "final_model", "model_description", "roc_curve_data",  "fisher",
+        "chisq", "results_metrics"
       )
       final_results
       # saveSize(final_results)

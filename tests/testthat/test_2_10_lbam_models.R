@@ -167,6 +167,12 @@ test_that("Testing L-BAM models", {
   res <- text::textAssess(model_info =  "satisfaction_text_bert23_mesquiti2026", texts = "hello everyone", dim_names = F)
   testthat::expect_equal(res[[1]], 7.404376, tolerance = 0.001)
 
+  res <- text::textAssess(model_info =  "mentalhealth_interview_mxbai23_kjell2025", texts =  "hello you", dim_names = F)
+  testthat::expect_equal(res[[1]], 56.10808, tolerance = 0.001)
+
+  res <- text::textAssess(model_info =  "physicalhealth_interview_mxbai23_kjell2025", texts =  "hello you", dim_names = F)
+  testthat::expect_equal(res[[1]], 29.80874, tolerance = 0.001)
+
 
   # list.files()
   delete <- c("autonomy_autonomy.RDS",
@@ -202,6 +208,7 @@ test_that("Testing L-BAM models", {
                "textPredict_941251617.RDS",
                "textPredict_3815411016.RDS",
                "textPredict_828972152.RDS",
+              "textPredict_337104597.RDS",
                "workengagement_words_mxbai23_nilsson2024.rds",
                "worryphrase_robertaL23_gad7_Gu2024.rds",
                "worryphrase_robertaL23_pswq_Gu2024_corrected.rds",
@@ -210,7 +217,9 @@ test_that("Testing L-BAM models", {
                "worrytext_robertaL23_gad7_Gu2024.rds",
                "worrytext_robertaL23_pswq_Gu2024_corrected.rds",
                "worryword_robertaL23_gad7_Gu2024.rds",
-               "worryword_robertaL23_pswq_Gu2024_corrected.rds")
+               "worryword_robertaL23_pswq_Gu2024_corrected.rds",
+              "models_mx_bai_MCS.rds",
+              "models_mx_bai_PCS.rds")
 
   file.remove(delete)
 
