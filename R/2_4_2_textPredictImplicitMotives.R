@@ -410,7 +410,8 @@ get_implicit_model_info <- function(
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_ger_be_l11_to_affiliation_open.rds" |
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_power_open_previous_sentence.rds" |
       model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_achievement_open_previous_sentence.rds" |
-      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_affiliation_open_previous_sentence.rds") {
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_affiliation_open_previous_sentence.rds"|
+      model_info == "https://github.com/AugustNilsson/Implicit-motive-models/raw/main/schone_training_rob_la_l23_to_power_open_may2.rds") {
 
       model_type <- "text-trained"
     } else {

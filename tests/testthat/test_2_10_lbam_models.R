@@ -87,43 +87,48 @@ test_that("Testing L-BAM models", {
   testthat::expect_equal(res[[1]], 5.142306, tolerance = 0.001)
 
 
-  #res <- text::textAssess(model_info =  "implicitpower_roberta23_nilsson2024", texts = tibble(texts = "hello"), dim_names = T)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
+  res <- text::textAssess(model_info =  "implicitpower_roberta23_nilsson2024", texts = tibble(texts = "hello"), dim_names = T)
+  testthat::expect_equal(res[[2]], 0.9879577, tolerance = 0.001)
   #
   res <- text::textAssess(model_info =  "implicitpower_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
-  testthat::expect_equal(res[[2]], .996, tolerance = 0.001)
-  #
-  #res <- text::textAssess(model_info =  "implicitpower_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
-  #
-  #
-  #res <- text::textAssess(model_info =  "implicitpower_roberta23_previoussentence_nilsson2024", texts = tibble(texts = "hello"), dim_names = T)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
-  #
-  #res <- text::textAssess(model_info =  "implicitachievement_roberta23_nilsson2024", texts = "hello", dim_names = FALSE)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
-  #
+  testthat::expect_equal(res[[2]],  0.9955019, tolerance = 0.001)
+
+  res <- text::textAssess(model_info =  "implicitachievement_roberta23_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], 0.9768399, tolerance = 0.001)
+
   res <- text::textAssess(model_info =  "implicitachievement_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[2]], .999077, tolerance = 0.001)
-  #
-  #res <- text::textAssess(model_info =  "implicitachievement_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
-  #
-  #res <- text::textAssess(model_info =  "implicitachievement_roberta23_previoussentence_nilsson2024", texts = "hello", dim_names = FALSE)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
-  #
-  #res <- text::textAssess(model_info =  "implicitaffiliation_roberta23_nilsson2024", texts = "hello", dim_names = FALSE)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
-  #
+
   res <- text::textAssess(model_info =  "implicitaffiliation_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[2]], .997766, tolerance = 0.0001)
+
+  ######
+  res <- text::textAssess(model_info =  "implicitpower_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], 0.996004, tolerance = 0.001)
   #
-  #res <- text::textAssess(model_info =  "implicitaffiliation_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
+  res <- text::textAssess(model_info =  "implicitpower_roberta23_previoussentence_nilsson2024", texts = tibble(texts = "hello"), dim_names = T)
+  testthat::expect_equal(res[[2]], .9854281, tolerance = 0.001)
   #
-  #res <- text::textAssess(model_info =  "implicitaffiliation_roberta23_previoussentence_nilsson2024", texts = "hello", dim_names = FALSE)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
+
+
+  res <- text::textAssess(model_info =  "implicitachievement_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], 0.9851559, tolerance = 0.001)
+
   #
+  res <- text::textAssess(model_info =  "implicitachievement_roberta23_previoussentence_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], .9623212, tolerance = 0.001)
+  #
+  res <- text::textAssess(model_info =  "implicitaffiliation_roberta23_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], .9269618, tolerance = 0.001)
+  #
+  res <- text::textAssess(model_info =  "implicitaffiliation_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], .9755044, tolerance = 0.001)
+  #
+  res <- text::textAssess(model_info =  "implicitaffiliation_roberta23_previoussentence_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], .8238421, tolerance = 0.001)
+
+  ######
+
 
   res <- text::textAssess(model_info =  "harmony_words_bert23_kjell2022", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[1]], 21.3629, tolerance = 0.001)
@@ -149,12 +154,11 @@ test_that("Testing L-BAM models", {
   res <- text::textAssess(model_info =  "satisfaction_text_roberta23_kjell2022", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[1]], 27.26928, tolerance = 0.001)
 
-
-  #res <- text::textAssess(model_info =  "harmony_balance_roberta23_lomas2024", texts = "hello", dim_names = T)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
+  res <- text::textAssess(model_info =  "harmony_balance_roberta23_lomas2024", texts = "hello", dim_names = T)
+  testthat::expect_equal(res[[2]], .581874, tolerance = 0.001)
   #
-  #res <- text::textAssess(model_info =  "harmony_balance_is_it_roberta23_lomas2024", texts = "hello", dim_names = FALSE)
-  #testthat::expect_equal(res[[1]], 10.9472, tolerance = 0.001)
+  res <- text::textAssess(model_info =  "harmony_balance_is_it_roberta23_lomas2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], .5067378, tolerance = 0.001)
 
   res <- text::textAssess(model_info =  "workengagement_words_mxbai23_nilsson2024", texts = "hello", dim_names = T)
   testthat::expect_equal(res[[1]], 11.22422, tolerance = 0.001)
