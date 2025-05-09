@@ -739,7 +739,7 @@ textPredictTextTrained <- function(
 
          class <- predicted_scores2 %>%
            dplyr::mutate(predicted_class = ifelse(.[[1]] >= threshold, 1, 0)) %>%
-           select(predicted_class)
+           dplyr::select(predicted_class)
           # dplyr::select(predicted_class, dplyr::everything())
 
          ################

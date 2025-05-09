@@ -372,7 +372,7 @@ model_address_lookup <- function(
 
   target_model <- lbam %>%
     dplyr::filter(Name == model_info) %>%
-    select(path = Path, model_type = Model_Type)
+    dplyr::select(path = Path, model_type = Model_Type)
 
   # If no information is retrieve from the L-BAM library, set model_type to "fine-tuned", to see whetehr the model
   # is hosted at huggingface
