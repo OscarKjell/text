@@ -160,8 +160,8 @@ if (n_embeddings == 1) {
       if (model == "regression") {
         parsnip::linear_reg(penalty = penalty, mixture = mixture) %>%
           parsnip::set_engine("glmnet") %>%
-          parsnip::set_mode("regression") %>%
-          parsnip::set_args(case_weights = TRUE)
+          parsnip::set_mode("regression") #%>%
+          #parsnip::set_args(case_weights = TRUE)
       } else if (model == "logistic") {
         parsnip::logistic_reg(penalty = penalty, mixture = mixture) %>%
           parsnip::set_engine("glmnet") %>%
@@ -175,15 +175,13 @@ if (n_embeddings == 1) {
     }
 
     # Create Workflow (to know variable roles from recipes) help(workflow)
+   # wf <- workflows::workflow() %>%
+   #   workflows::add_model(mod_spec) %>%
+   #   workflows::add_recipe(xy_recipe)
+
     wf <- workflows::workflow() %>%
       workflows::add_model(mod_spec) %>%
       workflows::add_recipe(xy_recipe)
-
-
-    if (!is.null(weights)) {
-      data_train <- data_train %>%
-        dplyr::mutate(.weights = hardhat::importance_weights(.data[[weights]]))
-    }
 
     mod <- workflows::fit(wf, data = data_train)
 
