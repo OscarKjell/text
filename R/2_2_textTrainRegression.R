@@ -43,7 +43,21 @@ fit_model_rmse <- function(object,
   data_train <- rsample::analysis(object)
   data_train <- tibble::as_tibble(data_train)
 
-weight_vector <- if (!is.null(weights)) data_train[[weights]] else NULL
+  if (!is.null(weights)) {
+    message("=== Sample weights in training data ===")
+    print(summary(data_train[[weights]]))
+
+    # Convert to importance_weights BEFORE creating the recipe
+    data_train[[weights]] <- hardhat::importance_weights(data_train[[weights]])
+  }
+
+#   weight_vector <- if (!is.null(weights)) data_train[[weights]] else NULL
+
+##   # Update role if weights are present
+##   if (!is.null(weights)) {
+##     rec <- rec %>%
+##       update_role(weight, new_role = "case_weights")
+##   }
 
 if (!is.na(first_n_predictors)) {
   Nvariable_totals <- length(data_train)
@@ -62,11 +76,17 @@ n_embeddings <- as.numeric(comment(eval_measure))
 # Recipe when using one embedding
 # ----------------------------------------
 if (n_embeddings == 1) {
+
+  if (!is.null(weights)) {
+    data_train[[weights]] <- hardhat::importance_weights(data_train[[weights]])
+  }
+
   xy_recipe <- data_train %>%
     recipes::recipe(y ~ .) %>%
     recipes::update_role(dplyr::all_of(variable_names), new_role = "Not_predictors") %>%
     recipes::update_role(id_nr, new_role = "id variable") %>%
     recipes::update_role(y, new_role = "outcome")
+
 
   if (!impute_missing) {
     xy_recipe <- recipes::step_naomit(xy_recipe, recipes::all_predictors(), skip = TRUE)
@@ -91,14 +111,35 @@ if (n_embeddings == 1) {
 
   xy_recipe_prep <- recipes::prep(xy_recipe)
 
+  message("=== Recipe roles summary ===")
+  print(class(xy_recipe_prep))
+  xy_recipe_prep_to_see_weights <- prep(xy_recipe)
+  print(summary(xy_recipe_prep_to_see_weights) %>% tail(5))
+  message("=== Recipe roles summary END===")
+#  recipe_summary <- workflow %>%
+#    workflows::extract_recipe() %>%
+#    summary()
+#
+#  # Check for case_weight role
+#  recipe_summary %>% dplyr::filter(role == "case_weight")
+
+#  print(workflow %>% extract_recipe() %>% summary() %>% tail(10))
+
   # ----------------------------------------
   # Recipe when using multiple embeddings
   # ----------------------------------------
 } else {
+
+  if (!is.null(weights)) {
+    data_train[[weights]] <- hardhat::importance_weights(data_train[[weights]])
+  }
+
   xy_recipe <- data_train %>%
     recipes::recipe(y ~ .) %>%
     recipes::update_role(id_nr, new_role = "id variable") %>%
     recipes::update_role(y, new_role = "outcome")
+
+
 
   if ("strata" %in% colnames(data_train)) {
     xy_recipe <- xy_recipe %>%
@@ -158,10 +199,37 @@ if (n_embeddings == 1) {
     # Create and fit model help(linear_reg)
     mod_spec <- {
       if (model == "regression") {
-        parsnip::linear_reg(penalty = penalty, mixture = mixture) %>%
-          parsnip::set_engine("glmnet") %>%
-          parsnip::set_mode("regression") #%>%
-          #parsnip::set_args(case_weights = TRUE)
+       # parsnip::linear_reg(penalty = penalty, mixture = mixture) %>%
+       #   parsnip::set_engine("glmnet") %>%
+       #   parsnip::set_mode("regression") #%>%
+       #   #parsnip::set_args(case_weights = TRUE)
+        # Model spec
+#        mod_spec <- parsnip::linear_reg(
+#          penalty = penalty,
+#          mixture = mixture
+#        ) %>%
+#          parsnip::set_engine("glmnet") %>%
+#          parsnip::set_mode("regression")
+#
+#        # Recipe (with weights)
+#        rec <- recipe(y ~ ., data = training_data) %>%
+#          recipes::update_role(weight, new_role = "case_weights")
+
+        mod_spec <- parsnip::linear_reg(
+          penalty = penalty,
+          mixture = mixture
+        ) %>%
+          parsnip::set_engine("glmnet", case_weights = TRUE) %>%
+          parsnip::set_mode("regression")
+
+        # Do NOT set the case_weights role manually
+        rec <- recipe(y ~ ., data = data_train)
+
+
+        message("=== Model spec (parsnip) ===")
+        print(mod_spec)
+
+
       } else if (model == "logistic") {
         parsnip::logistic_reg(penalty = penalty, mixture = mixture) %>%
           parsnip::set_engine("glmnet") %>%
@@ -320,9 +388,90 @@ if (n_embeddings == 1) {
       "id_nr"
     )
   }
+  print(mod$fit$fit$fit$call)
   output
 
 }
+
+
+
+# Updated fit_model_rmse
+#' Function to fit a model and compute RMSE.
+#'
+#' @param object An rsplit object (from results_nested_resampling tibble)
+#' @param model Type of model: "regression", "logistic", or "multinomial"
+#' @param eval_measure Evaluation metric (e.g., "rmse")
+#' @param penalty L2 penalty
+#' @param mixture L1/L2 mixture
+#' @param preprocess_PCA PCA threshold or component count
+#' @param variable_name_index_pca Variable prefixes for grouped PCA
+#' @param first_n_predictors If using only the first N predictors
+#' @param preprocess_step_center Whether to center predictors
+#' @param preprocess_step_scale Whether to scale predictors
+#' @param impute_missing Whether to impute missing values
+#' @param weights Optional column of observation weights (default = NULL)
+#'
+#' @return List with RMSE and predictions
+#' @importFrom hardhat importance_weights
+#' @noRd
+fit_model_rmse_weights <- function(
+    object,
+    model = "regression",
+    eval_measure = "rmse",
+    penalty = 1,
+    mixture = 1,
+    preprocess_PCA = NA,
+    variable_name_index_pca = NA,
+    first_n_predictors = NA,
+    preprocess_step_center = TRUE,
+    preprocess_step_scale = TRUE,
+    impute_missing = FALSE,
+    weights = NULL) {
+
+  if (model != "regression") {
+    stop("This fit_model_rmse_direct_glmnet() only supports regression.")
+  }
+
+  train_data <- rsample::analysis(object)
+  test_data  <- rsample::assessment(object)
+
+  y_train <- train_data$y
+  y_test <- test_data$y
+  X_train <- as.matrix(dplyr::select(train_data, tidyselect::starts_with("Dim")))
+  X_test  <- as.matrix(dplyr::select(test_data, tidyselect::starts_with("Dim")))
+
+  complete_idx_train <- complete.cases(X_train, y_train)
+  X_train <- X_train[complete_idx_train, ]
+  y_train <- y_train[complete_idx_train]
+  if (!is.null(weights)) {
+    weights <- train_data[[weights]][complete_idx_train]
+  }
+
+  complete_idx_test <- complete.cases(X_test, y_test)
+  X_test <- X_test[complete_idx_test, ]
+  y_test <- y_test[complete_idx_test]
+  id_nr <- test_data$id_nr[complete_idx_test]
+
+  if (!is.null(weights)) {
+    fit <- glmnet::glmnet(X_train, y_train, alpha = mixture, lambda = penalty, weights = weights)
+  } else {
+    fit <- glmnet::glmnet(X_train, y_train, alpha = mixture, lambda = penalty)
+  }
+
+  preds <- as.numeric(predict(fit, newx = X_test, s = penalty))
+  rmse <- yardstick::rmse_vec(truth = y_test, estimate = preds)
+
+  list(
+    eval_result = list(rmse),
+    predictions = list(preds),
+    y = list(y_test),
+    preprocess_PCA = list(preprocess_PCA),
+    id_nr = list(id_nr)
+  )
+}
+
+
+
 
 
 #' In some situations, we want to parameterize the function over the tuning parameter:
@@ -350,7 +499,14 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
                                    preprocess_step_scale = preprocess_step_scale,
                                    impute_missing = impute_missing,
                                    weights = weights) {
-  fit_model_rmse(object,
+
+  use_direct_glmnet <- !is.null(weights)
+
+  # Pick appropriate function
+  model_fitter <- if (use_direct_glmnet) fit_model_rmse_weights else fit_model_rmse
+
+
+  model_fitter(object,
                  model,
                  eval_measure,
                  penalty,

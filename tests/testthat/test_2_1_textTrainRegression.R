@@ -9,7 +9,7 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
   skip_on_cran()
 
   # Regression
-  model_reg <- textTrainRegression(
+  model_reg <- text::textTrainRegression(
     x = word_embeddings_4$texts$harmonytext,
     y = Language_based_assessment_data_8$hilstotal,
     outside_folds = 2,
