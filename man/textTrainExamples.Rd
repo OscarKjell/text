@@ -30,6 +30,11 @@ textTrainExamples(
   y_axis_range = NULL,
   grid_legend_x_axes_label = NULL,
   grid_legend_y_axes_label = NULL,
+  grid_legend_title = NULL,
+  grid_legend_number_size = 8,
+  grid_legend_number_color = "white",
+  grid_legend_title_color = "black",
+  grid_legend_title_size = 0,
   seed = 42
 )
 
@@ -58,6 +63,11 @@ textPredictExamples(
   y_axis_range = NULL,
   grid_legend_x_axes_label = NULL,
   grid_legend_y_axes_label = NULL,
+  grid_legend_title = NULL,
+  grid_legend_number_size = 8,
+  grid_legend_number_color = "white",
+  grid_legend_title_color = "black",
+  grid_legend_title_size = 0,
   seed = 42
 )
 }
@@ -106,9 +116,19 @@ For example: c(1,0,1) result in one dot in each quadrant except for the middle q
 
 \item{y_axis_range}{(numeric vector) range of y axis (e.g., c(1, 100)).}
 
-\item{grid_legend_x_axes_label}{x-axis label of the grid topic plot.}
+\item{grid_legend_x_axes_label}{(string) x-axis label of the grid topic plot.}
 
-\item{grid_legend_y_axes_label}{y-axis label of the grid topic plot.}
+\item{grid_legend_y_axes_label}{(string) y-axis label of the grid topic plot.}
+
+\item{grid_legend_title}{(string)}
+
+\item{grid_legend_number_size}{(integer)}
+
+\item{grid_legend_number_color}{(string)}
+
+\item{grid_legend_title_color}{(string)}
+
+\item{grid_legend_title_size}{(integer)}
 
 \item{seed}{(integer) The seed to set for reproducibility.}
 }

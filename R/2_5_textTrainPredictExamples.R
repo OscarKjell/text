@@ -111,8 +111,13 @@ reorder_columns <- function(
 #' @param scatter_legend_regression_line_colour (string) If a colour string is added, a regression line will be plotted.
 #' @param x_axis_range (numeric vector) range of x axis (e.g., c(1, 100)).
 #' @param y_axis_range (numeric vector) range of y axis (e.g., c(1, 100)).
-#' @param grid_legend_x_axes_label x-axis label of the grid topic plot.
-#' @param grid_legend_y_axes_label y-axis label of the grid topic plot.
+#' @param grid_legend_x_axes_label (string) x-axis label of the grid topic plot.
+#' @param grid_legend_y_axes_label (string) y-axis label of the grid topic plot.
+#' @param grid_legend_title (string)
+#' @param grid_legend_number_size (integer)
+#' @param grid_legend_number_color (string)
+#' @param grid_legend_title_color (string)
+#' @param grid_legend_title_size (integer)
 #' @param seed (integer) The seed to set for reproducibility.
 #' @returns A tibble including examples with descriptive variables.
 #' @importFrom dplyr filter select arrange slice slice_head group_by summarize mutate rename ntile case_when
@@ -151,11 +156,16 @@ textTrainExamples <- function(
     scatter_legend_bg_dots_alpha = .20,
   #  scatter_legend_n = c(3, 3, 3),
     scatter_show_axis_values = TRUE,
-  scatter_legend_regression_line_colour = NULL,
+    scatter_legend_regression_line_colour = NULL,
     x_axis_range = NULL,
     y_axis_range = NULL,
     grid_legend_x_axes_label = NULL,
     grid_legend_y_axes_label = NULL,
+    grid_legend_title = NULL,
+    grid_legend_number_size = 8,
+    grid_legend_number_color = "white",
+    grid_legend_title_color = "black",
+    grid_legend_title_size = 0,
     seed = 42
     ){
 
@@ -399,6 +409,7 @@ textTrainExamples <- function(
 
   #####
 
+  # Adding dot distribution scatter legened
   scatter_plot <- topics::topicsScatterLegend(
     bivariate_color_codes = distribution_color,
     filtered_test = df_for_distribution,
@@ -457,6 +468,27 @@ textTrainExamples <- function(
                   size = 0.5)
   }
 
+
+
+  # Adding matrix legened
+  legend <- topics::topicsGridLegend(
+    bivariate_color_codes = distribution_color,
+    filtered_test = df_for_distribution,
+ #   cor_var = df_for_distribution,
+    save_dir = NULL,
+    figure_format = figure_format,
+    seed = seed,
+    y_axes_1 = y_axes_1,
+    legend_title = grid_legend_title,
+   legend_title_size = grid_legend_title_size,
+    titles_color = grid_legend_title_color,
+    legend_x_axes_label = grid_legend_x_axes_label,
+    legend_y_axes_label = grid_legend_y_axes_label,
+    topic_data_all = df_for_distribution,
+    legend_number_color = grid_legend_number_color,
+    legend_number_size = grid_legend_number_size
+  )
+
   #### Sorting output ####
   # Renaming variable
   df_examples <- df_examples %>%
@@ -475,6 +507,7 @@ textTrainExamples <- function(
 
   # Always add these elements
   results$examples <- df_examples
+  results$legend <- legend
   results$scatter_plot <- scatter_plot$legend
 
   # Return the filtered and selected examples
