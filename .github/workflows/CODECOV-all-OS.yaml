@@ -95,8 +95,7 @@ jobs:
           libjpeg-dev \
           libfontconfig1-dev \
           libicu-dev \
-          libcairo2-dev
-          libcurl4-openssl-dev libgit2-dev libssl-dev \
+          libcairo2-dev \
           default-jdk
           sudo R CMD javareconf
 
