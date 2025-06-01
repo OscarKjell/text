@@ -76,30 +76,33 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
+
+      # Install system dependencies (Linux only)
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -y
           sudo apt-get install -y \
-            libcurl4-openssl-dev \
-            libgit2-dev \
-            libssl-dev \
-            libharfbuzz-dev \
-            libfribidi-dev \
-            libxml2-dev \
-            libfreetype6-dev \
-            libpng-dev \
-            libtiff5-dev \
-            libjpeg-dev \
-            libfontconfig1-dev \
-            libicu-dev \
-            libcairo2-dev
-            - name: Install dependencies
-              run: |
-                remotes::install_deps(dependencies = TRUE)
-                remotes::install_cran("rcmdcheck")
-                install.packages("stringi", type = "source")
-              shell: Rscript {0}
+          libcurl4-openssl-dev \
+          libgit2-dev \
+          libssl-dev \
+          libharfbuzz-dev \
+          libfribidi-dev \
+          libxml2-dev \
+          libfreetype6-dev \
+          libpng-dev \
+          libtiff5-dev \
+          libjpeg-dev \
+          libfontconfig1-dev \
+          libicu-dev \
+          libcairo2-dev
+
+      - name: Install dependencies
+        run: |
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
+          install.packages("stringi", type = "source")
+        shell: Rscript {0}
 
       - name: Fix Conda permissions on macOS
         if: runner.os == 'macOS'
