@@ -41,21 +41,6 @@ test_that("Bertopic", {
 
   # Create BERTopic model trained on data["text"] help(textTopics)
 
-
-    embedding_model = "distilroberta"
-    umap_model = "default"
-    hdbscan_model = "default"
-    vectorizer_model = "default"
-    representation_model = "mmr"
-    num_top_words = 10
-    n_gram_range = c(1, 3)
-    stopwords = "english"
-    min_df = 2
-    bm25_weighting = FALSE
-    reduce_frequent_words = TRUE
-    set_seed = 8
-    save_dir = save_dir_temp
-
   bert_model <- text::textTopics(
     data = data,
     variable_name = "text",
@@ -81,7 +66,6 @@ test_that("Bertopic", {
 #  Testing  how individual topics are associated with "score"
   test2 <- text::textTopicsTest(
     model = bert_model,
-   # data = data,
     x_variable = "score",
     test_method = "linear_regression"
     )

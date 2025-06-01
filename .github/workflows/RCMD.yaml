@@ -86,13 +86,24 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       # Install system dependencies (Linux only)
-      - name: Install System Dependencies
-        if: runner.os == 'Linux'
-        run: |
-          while read -r cmd; do
-            eval sudo $cmd
-          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "24.04"), sep = "\n")')
-          sudo apt-get update
+      - name: Install system dependencies
+       if: runner.os == 'Linux'
+       run: |
+         sudo apt-get update -y
+         sudo apt-get install -y \
+           libcurl4-openssl-dev \
+           libgit2-dev \
+           libssl-dev \
+           libharfbuzz-dev \
+           libfribidi-dev \
+           libxml2-dev \
+           libfreetype6-dev \
+           libpng-dev \
+           libtiff5-dev \
+           libjpeg-dev \
+           libfontconfig1-dev \
+           libicu-dev \
+           libcairo2-dev
 
       - name: Reinstall stringi from source on Ubuntu 24.04
         if: matrix.config.os == 'ubuntu-24.04'
