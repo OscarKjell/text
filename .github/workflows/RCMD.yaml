@@ -104,6 +104,9 @@ jobs:
           libfontconfig1-dev \
           libicu-dev \
           libcairo2-dev
+          libcurl4-openssl-dev libgit2-dev libssl-dev \
+          default-jdk
+          sudo R CMD javareconf
 
       - name: Reinstall stringi from source on Ubuntu 24.04
         if: matrix.config.os == 'ubuntu-24.04'
