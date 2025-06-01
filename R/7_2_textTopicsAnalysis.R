@@ -24,10 +24,10 @@ textTopicsTest <- function(
     ...) {
 
   # Extract components from the model
-  data <- model$train_data %>% tibble::as_tibble()
+  data1 <- model$train_data %>% tibble::as_tibble()
   preds <- model$preds %>% tibble::as_tibble()
   seed <- model$seed
-#  save_dir <- model$save_dir
+  save_dir <- model$save_dir
   ngrams <- model$ngrams
   model_summary <- model$model
 
@@ -37,7 +37,7 @@ textTopicsTest <- function(
 
   # Call topicsTest from the topics package
   results <- topics::topicsTest(
-    data = data,
+    data = data1,
     model = model_summary,
     preds = preds,
     ngrams = ngrams,
@@ -48,7 +48,7 @@ textTopicsTest <- function(
     test_method = test_method,
     p_adjust_method = p_adjust_method,
     seed = seed
-    #, ...
+    , ...
   )
   results
   return(results)
@@ -112,7 +112,7 @@ textTopicsTest <- function(
 # @param scale_size (logical) Whether to scale the size of the words.
 # @param plot_topics_idx (vector)  The index or indeces of the topics to plot
 # (e.g., look in the model-object for the indices; can for example, be c(1, 3:5) to plot topic t_1, t_3, t_4 and t_5) (optional).
-#' @param save_dir (string) The directory to save the plots.
+# @param save_dir (string) The directory to save the plots.
 # @param figure_format (string) Set the figure format, e.g., ".svg", or ".png".
 # @param width (integer) The width of the topic (units = "in").
 # @param height (integer) The width of the topic (units = "in").
@@ -134,7 +134,7 @@ textTopicsTest <- function(
 # @param grid_legend_y_axes_label The label of the y axes.
 # @param grid_legend_number_color The color in the text in the legend.
 # @param grid_legend_number_size The color in the text in the legend.
-#' @param ... Parameters from the topicsPlot() function in the topics pacakge.
+#' @param ... Parameters from the topicsPlot() function in the topics package.
 #' @return The function saves figures in the save_dir.
 #' @importFrom topics topicsPlot
 #' @export
@@ -142,35 +142,28 @@ textTopicsWordcloud <- function(
     model = NULL,
     ngrams = NULL,
     test = NULL,
-    save_dir,
     seed = 2024,
     ...) {
 
+
+  if(!is.null(test)){
+    message(colourise("The textTopics function does not return topics-prevalence, so all topics are assigned 1 in the visualisation.", "blue"))
+    test$test$prevalence <- rep(1, length(test$test$prevalence))
+  }
+
+  # Assign pseudo-phi values as descending importance scores (normalized from 1 to N)
+   message(colourise("Note: BERTopic does not provide true 'phi' values (i.e., P(word | topic)) as in probabilistic models like LDA. Instead, we assign descending normalized values to approximate word importance.", "blue"))
 
   plots <- topics::topicsPlot(
     model = model,
     ngrams = NULL,
     test = test,
-    save_dir = save_dir,
     seed = seed
-#    scatter_legend_dot_size = scatter_legend_dot_size,
-#    scatter_legend_bg_dot_size = scatter_legend_bg_dot_size,
-#    scatter_legend_n = scatter_legend_n,
-#    scatter_legend_method = scatter_legend_method,
-#    scatter_legend_specified_topics = scatter_legend_specified_topics,
-#    scatter_legend_topic_n = scatter_legend_topic_n,
-#    grid_legend_title = grid_legend_title,
-#    grid_legend_title_size = grid_legend_title_size,
-#    grid_legend_title_color = grid_legend_title_color,
-#    grid_legend_x_axes_label = grid_legend_x_axes_label,
-#    grid_legend_y_axes_label = grid_legend_y_axes_label,
-#    grid_legend_number_color = grid_legend_number_color,
-#    grid_legend_number_size = grid_legend_number_size,
-    #, ...
+    , ...
   )
 
-  completion_text <- paste0("The plots (p< p_alpha) are saved in ", save_dir, "/seed_", seed, "/wordclouds")
-  message(colourise(completion_text, "green"))
+  #completion_text <- paste0("The plots (p< p_alpha) are saved in ", save_dir, "/seed_", seed, "/wordclouds")
+  #message(colourise(completion_text, "green"))
 
   return(plots)
 }

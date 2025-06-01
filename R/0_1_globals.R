@@ -103,6 +103,9 @@ utils::globalVariables(c(
   "get_topic_tree",
 
   ## L-BAM table
-  "Model_Type", "Name", "Path"
+  "Model_Type", "Name", "Path",
+
+  ## textTopics
+  "preds", "train_data"
 
 ))

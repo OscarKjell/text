@@ -4,14 +4,7 @@
 \alias{textTopicsWordcloud}
 \title{Plot word clouds}
 \usage{
-textTopicsWordcloud(
-  model = NULL,
-  ngrams = NULL,
-  test = NULL,
-  save_dir,
-  seed = 2024,
-  ...
-)
+textTopicsWordcloud(model = NULL, ngrams = NULL, test = NULL, seed = 2024, ...)
 }
 \arguments{
 \item{model}{(list) A trained topics model. For examples from topicsModel(). Should be NULL if plotting ngrams.}
@@ -20,11 +13,9 @@ textTopicsWordcloud(
 
 \item{test}{(list) The test results; if plotting according to dimension(s) include the object from topicsTest() function.}
 
-\item{save_dir}{(string) The directory to save the plots.}
-
 \item{seed}{(integer) The seed to set for reproducibility; need to be the same seed number as in in}
 
-\item{...}{Parameters from the topicsPlot() function in the topics pacakge.}
+\item{...}{Parameters from the topicsPlot() function in the topics package.}
 }
 \value{
 The function saves figures in the save_dir.

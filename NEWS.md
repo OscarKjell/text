@@ -1,7 +1,13 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-# text 1.4.9
+
+# text 1.5.1
+- adding matrix/box legend for `textTrainExamples()`
+- improving functionality of `textTopics()`. 
+
+
+# text 1.5
 - added `save_output` = "no_plot" in `textTrainRegression()` for  "logistic" and "multinomial" to reduce model size of saved objects.
 
 # text 1.4.8

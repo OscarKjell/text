@@ -53,6 +53,7 @@ textTopics <- function(
     set_seed = 8,
     save_dir
     ) {
+
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
     "bert_topic.py",
@@ -82,7 +83,7 @@ textTopics <- function(
   preds <- data.frame(read.csv(
     paste0(save_dir, "/seed_", set_seed, "/topic_distr.csv")
   ))
-
+#
   train_data <- data.frame(read.csv(
     paste0(save_dir, "/seed_", set_seed, "/data.csv")
   ))
