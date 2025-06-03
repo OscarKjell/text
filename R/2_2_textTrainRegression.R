@@ -11,7 +11,7 @@ statisticalMode <- function(x) {
 #' Function to fit a model and compute RMSE.
 #'
 #' @param object An rsplit object (from results_nested_resampling tibble)
-#' object = results_nested_resampling$splits[[1]] OR results_nested_resampling$splits[[1]][[1]]
+#' object = results_nested_resampling$splits[[4]] OR results_nested_resampling$splits[[1]][[1]]
 #' object = results_nested_resampling$inner_resamples[[5]][[1]][[1]]
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
@@ -254,12 +254,13 @@ fit_model_rmse <- function(object,
     holdout_pred <-
       stats::predict(mod, xy_testing) %>%
       dplyr::bind_cols(rsample::assessment(object) %>%
-                         dplyr::select(y, id_nr))
+                         dplyr::select(y, id_nr, weights))
 
     # Get RMSE; eval_measure = "rmse" library(tidyverse)
     eval_result <- select_eval_measure_val(eval_measure,
                                            holdout_pred = holdout_pred,
-                                           truth = y, estimate = .pred
+                                           truth = y,
+                                           estimate = .pred
     )$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
     output <- list(
@@ -542,7 +543,7 @@ bestParameters <- function(data,
   if (eval_measure %in% c(
     "accuracy", "bal_accuracy", "sens", "spec",
     "precision", "kappa", "f_measure", "roc_auc",
-    "rsq", "cor_test")) {
+    "rsq", "cor_test", "weighted_correlation")) {
 
     eval_result_preference = "max"
   }
@@ -1044,6 +1045,46 @@ create_manual_nested_cv <- function(
 }
 
 
+
+#' Compute the weighted Pearson correlation between two numeric vectors
+#'
+#' @param x A numeric vector (e.g., variable 1)
+#' @param y A numeric vector (e.g., variable 2)
+#' @param w A numeric vector of non-negative weights (same length as x and y)
+#'
+#' @return A single numeric value: the weighted correlation between x and y
+#'
+cor_weighted <- function(x, y, w) {
+
+  # Remove any rows with NA in x, y, or w
+  complete <- complete.cases(x, y, w)
+  x <- x[complete]
+  y <- y[complete]
+  w <- w[complete]
+
+  # Compute the weighted mean of x and y
+  m_x <- weighted.mean(x, w)
+  m_y <- weighted.mean(y, w)
+
+  # Compute the weighted covariance between x and y
+  cov_xy <- sum(w * (x - m_x) * (y - m_y)) / sum(w)
+
+  # Compute the weighted standard deviations of x and y
+  sd_x <- sqrt(sum(w * (x - m_x)^2) / sum(w))
+  sd_y <- sqrt(sum(w * (y - m_y)^2) / sum(w))
+
+  # Return NA if any standard deviation is 0
+  if (sd_x == 0 || sd_y == 0) {
+    message(colourise(
+      "Note that the predicted values are constant, resulting in zero variance so we are assuming correlation = 0.", "brown"))
+    return(0)
+  }
+  # Return the weighted correlation: covariance divided by product of SDs
+  cov_xy / (sd_x * sd_y)
+}
+
+
+
 #' Train word embeddings to a numeric variable.
 #'
 #' textTrainRegression() trains word embeddings to a numeric or a factor variable.
@@ -1080,7 +1121,7 @@ create_manual_nested_cv <- function(
 #' @param eval_measure (character) Type of evaluative measure to select models from. Default = "rmse" for regression and
 #' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
 #'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
-#'  the yardstick package).
+#'  the yardstick package). See also the method_cor setting below.
 #' @param save_aggregated_word_embedding (boolean) If TRUE, the aggregated word embeddings (mean, min, and max) are saved
 #' for comparison with other language input when the model is applied to other types of data.
 #' @param language_distribution (Character column) If you provide the raw language data used for making the embeddings,
@@ -1113,8 +1154,8 @@ create_manual_nested_cv <- function(
 #' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
 #' then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
 #' This option is currently only possible for one embedding at the time.
-#' @param method_cor Type of correlation used in evaluation (default "pearson";
-#' can set to "spearman" or "kendall").
+#' @param method_cor Type of correlation used in final model estimation evaluation (default "pearson";
+#' can set to "spearman" or "kendall"). See also the eval_measure setting above.
 #' @param impute_missing Default FALSE (can be set to TRUE if something else than word_embeddings are trained).
 #' @param model_description (character) Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it
