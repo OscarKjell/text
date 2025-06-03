@@ -263,11 +263,21 @@ fit_model_rmse <- function(object,
                                            estimate = .pred
     )$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
+
+    # Check if weights are present in the data
+    has_weights <- "weights_in_text" %in% names(holdout_pred)
+
+    # Create output list with conditional inclusion of weights
     output <- list(
-      list(eval_result), list(holdout_pred$.pred), list(holdout_pred$y), list(preprocess_PCA),
-      list(holdout_pred$id_nr)
+      eval_result       = list(eval_result),
+      predictions       = list(holdout_pred$.pred),
+      y                 = list(holdout_pred$y),
+      weights_in_text   = if (has_weights) list(holdout_pred$weights_in_text) else list(NULL),
+      preprocess_PCA    = list(preprocess_PCA),
+      id_nr             = list(holdout_pred$id_nr)
     )
-    names(output) <- c("eval_result", "predictions", "y", "preprocess_PCA", "id_nr")
+
+
   } else if (model == "logistic") {
     holdout_pred_class <-
       stats::predict(mod, xy_testing, type = c("class")) %>%
@@ -1053,34 +1063,50 @@ create_manual_nested_cv <- function(
 #' @param w A numeric vector of non-negative weights (same length as x and y)
 #'
 #' @return A single numeric value: the weighted correlation between x and y
-#'
+#'@noRd
 cor_weighted <- function(x, y, w) {
-
-  # Remove any rows with NA in x, y, or w
+  # Remove rows with missing values
   complete <- complete.cases(x, y, w)
   x <- x[complete]
   y <- y[complete]
   w <- w[complete]
 
-  # Compute the weighted mean of x and y
+  # Compute weighted means
   m_x <- weighted.mean(x, w)
   m_y <- weighted.mean(y, w)
 
-  # Compute the weighted covariance between x and y
+  # Compute weighted covariance
   cov_xy <- sum(w * (x - m_x) * (y - m_y)) / sum(w)
 
-  # Compute the weighted standard deviations of x and y
+  # Compute weighted standard deviations
   sd_x <- sqrt(sum(w * (x - m_x)^2) / sum(w))
   sd_y <- sqrt(sum(w * (y - m_y)^2) / sum(w))
 
-  # Return NA if any standard deviation is 0
+  # Handle degenerate cases
   if (sd_x == 0 || sd_y == 0) {
     message(colourise(
       "Note that the predicted values are constant, resulting in zero variance so we are assuming correlation = 0.", "brown"))
-    return(0)
+    return(tibble(weighted_correlation = 0, p_value_experimental = NA))
   }
-  # Return the weighted correlation: covariance divided by product of SDs
-  cov_xy / (sd_x * sd_y)
+
+  # Compute weighted correlation
+  r <- cov_xy / (sd_x * sd_y)
+
+  # Estimate effective sample size (Kish's approximation)
+  Neff <- (sum(w))^2 / sum(w^2)
+
+  # Degrees of freedom
+  df <- Neff - 2
+
+  # Compute t-statistic and p-value
+  t_val <- r * sqrt(df / (1 - r^2))
+  p_val <- 2 * pt(-abs(t_val), df = df)
+
+  # Return as a tibble
+  tibble(
+    weighted_correlation = r,
+    p_value_experimental = p_val
+  )
 }
 
 
@@ -1118,9 +1144,9 @@ cor_weighted <- function(x, y, w) {
 #' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner
 #' cross-validation loop (default = 4).
 #' @param model Type of model. Default is "regression"; see also "logistic" and "multinomial" for classification.
-#' @param eval_measure (character) Type of evaluative measure to select models from. Default = "rmse" for regression and
-#' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
-#'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
+#' @param eval_measure (character) Type of evaluative measure to select models from. Default = "rmse" for regression, "weighted_correlations for
+#' weighted regression and "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
+#'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc", (for more details see
 #'  the yardstick package). See also the method_cor setting below.
 #' @param save_aggregated_word_embedding (boolean) If TRUE, the aggregated word embeddings (mean, min, and max) are saved
 #' for comparison with other language input when the model is applied to other types of data.
@@ -1155,7 +1181,7 @@ cor_weighted <- function(x, y, w) {
 #' then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
 #' This option is currently only possible for one embedding at the time.
 #' @param method_cor Type of correlation used in final model estimation evaluation (default "pearson";
-#' can set to "spearman" or "kendall"). See also the eval_measure setting above.
+#' can set to "spearman" or "kendall").
 #' @param impute_missing Default FALSE (can be set to TRUE if something else than word_embeddings are trained).
 #' @param model_description (character) Text to describe your model (optional; good when sharing the model with others).
 #' @param multi_cores If TRUE it enables the use of multiple cores if the computer system allows for it
@@ -1256,9 +1282,12 @@ textTrainRegression <- function(
     stop(message(colourise("Note: weights can only be used with model = regression at the moment.", "brown")))
   }
   # Select correct eval_measure depending on model when default
-  if (model == "regression" && eval_measure == "default") {
+  if (model == "regression" && eval_measure == "default" & is.null(weights)) {
     eval_measure <- "rmse"
-  } else if (model == "logistic" || model == "multinomial" && eval_measure == "default") {
+  } else if(model == "regression" && eval_measure == "default" & is.null(weights)) {
+    eval_measure <- "weighted_correlation"
+  }
+  else if (model == "logistic" || model == "multinomial" && eval_measure == "default") {
     eval_measure <- "bal_accuracy"
   }
 
@@ -1533,15 +1562,37 @@ textTrainRegression <- function(
   # Get overall evaluation measure between predicted and observed values
   if (model == "regression") {
     # Unnest predictions and y
+
     predy_y <- tibble::tibble(
       tidyr::unnest(outputlist_results_outer$predictions, cols = c(predictions)),
       tidyr::unnest(outputlist_results_outer$y, cols = c(y)),
+      if(!is.null(weights)) tidyr::unnest(outputlist_results_outer$weights_in_text, cols = c(weights_in_text)),
       tidyr::unnest(outputlist_results_outer$id_nr, cols = c(id_nr))
     )
     predy_y <- predy_y %>% dplyr::arrange(id_nr)
     # Correlate predictions and observed correlation
-    collected_results <- stats::cor.test(predy_y$predictions, predy_y$y, method = method_cor, alternative = "greater")
+    if(!is.null(weights)){
 
+      collected_results1 <- stats::cor.test(
+        predy_y$predictions,
+        predy_y$y,
+        method = method_cor,
+        alternative = "greater")
+
+      collected_results2 <- cor_weighted(
+        x = predy_y$predictions,
+        y = predy_y$y,
+        w = predy_y$weights_in_text)
+
+      collected_results <- list(collected_results1, collected_results2)
+
+    } else {
+      collected_results <- stats::cor.test(
+        predy_y$predictions,
+        predy_y$y,
+        method = method_cor,
+        alternative = "greater")
+    }
 
     collected_results <- list(predy_y, collected_results)
   } else if (model == "logistic") {

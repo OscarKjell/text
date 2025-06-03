@@ -89,7 +89,7 @@ cross-validation loop (default = 4).}
 \item{eval_measure}{(character) Type of evaluative measure to select models from. Default = "rmse" for regression and
 "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
- the yardstick package).}
+ the yardstick package). See also the method_cor setting below.}
 
 \item{save_aggregated_word_embedding}{(boolean) If TRUE, the aggregated word embeddings (mean, min, and max) are saved
 for comparison with other language input when the model is applied to other types of data.}
@@ -135,7 +135,7 @@ This option is currently only possible for one embedding at the time.}
 
 \item{impute_missing}{Default FALSE (can be set to TRUE if something else than word_embeddings are trained).}
 
-\item{method_cor}{Type of correlation used in evaluation (default "pearson";
+\item{method_cor}{Type of correlation used in final model estimation evaluation (default "pearson";
 can set to "spearman" or "kendall").}
 
 \item{model_description}{(character) Text to describe your model (optional; good when sharing the model with others).}

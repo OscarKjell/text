@@ -52,7 +52,7 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
       x = holdout_pred$y,
       y = holdout_pred$.pred,
       w = holdout_pred$weights_in_text
-    ))
+    )$weighted_correlation)
     print("using weighted_correlation in selection procedure.")
   }
   eval_measure_val
