@@ -1856,7 +1856,7 @@ textTrainRegression <- function(
     x_name_description,
     x_append_names_description,
     y_name_description,
-  #  weights_name_description,
+    weights_name_description,
     cv_method_description,
     strata_description,
     outside_folds_description,
