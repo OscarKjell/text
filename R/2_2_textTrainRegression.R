@@ -1607,9 +1607,25 @@ textTrainRegression <- function(
 
     ######### More than one word embeddings as input
   } else {
+#    final_recipe <- recipes::recipe(y ~ ., xy_all[0, ]) %>%
+#      recipes::update_role(id_nr, new_role = "id variable") %>%
+#      recipes::update_role(-id_nr, new_role = "predictor") %>%
+#      recipes::update_role(y, new_role = "outcome")
+
+
+    # Identify all variable names
+    all_vars <- colnames(xy_all)
+
+    # Check if a case weight column (e.g., 'weights_in_text') exists
+    has_weights <- "weights_in_text" %in% all_vars
+
+    # Variables to assign predictor role (exclude outcome, id, and weight if present)
+    predictor_vars <- setdiff(all_vars, c("id_nr", "y", if (has_weights) "weights_in_text"))
+
+    # Start recipe
     final_recipe <- recipes::recipe(y ~ ., xy_all[0, ]) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(-id_nr, new_role = "predictor") %>%
+      recipes::update_role(dplyr::all_of(predictor_vars), new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome")
 
     if (!impute_missing) {
