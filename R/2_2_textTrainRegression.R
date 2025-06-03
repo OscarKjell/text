@@ -25,7 +25,7 @@ statisticalMode <- function(x) {
 #' step_scale step_pca prep juice
 #' @importFrom dplyr matches select
 #' @importFrom parsnip linear_reg logistic_reg multinom_reg set_engine fit
-#' @importFrom workflows workflow add_model add_recipe
+#' @importFrom workflows workflow add_model add_recipe add_case_weights
 #' @noRd
 fit_model_rmse <- function(object,
                            model = "regression",
@@ -1063,17 +1063,18 @@ create_manual_nested_cv <- function(
 #' @param w A numeric vector of non-negative weights (same length as x and y)
 #'
 #' @return A single numeric value: the weighted correlation between x and y
+#' @importFrom stats pt weighted.mean
 #'@noRd
 cor_weighted <- function(x, y, w) {
   # Remove rows with missing values
-  complete <- complete.cases(x, y, w)
+  complete <- stats::complete.cases(x, y, w)
   x <- x[complete]
   y <- y[complete]
   w <- w[complete]
 
   # Compute weighted means
-  m_x <- weighted.mean(x, w)
-  m_y <- weighted.mean(y, w)
+  m_x <- stats::weighted.mean(x, w)
+  m_y <- stats::weighted.mean(y, w)
 
   # Compute weighted covariance
   cov_xy <- sum(w * (x - m_x) * (y - m_y)) / sum(w)
@@ -1100,7 +1101,7 @@ cor_weighted <- function(x, y, w) {
 
   # Compute t-statistic and p-value
   t_val <- r * sqrt(df / (1 - r^2))
-  p_val <- 2 * pt(-abs(t_val), df = df)
+  p_val <- 2 * stats::pt(-abs(t_val), df = df)
 
   # Return as a tibble
   tibble(
@@ -1192,7 +1193,7 @@ cor_weighted <- function(x, y, w) {
 #'  since the lot makes the saved object bloated when being saved.
 #' @param simulate.p.value (Boolean or string) From fisher.test: a logical indicating whether to compute p-values by
 #' Monte Carlo simulation, in larger than 2 * 2 tables. The test can be turned off if set to "turn_off".
-#' @param weights Optional vector containing weights (default = NULL); for details see importance_weights {hardhat}. For now only working for
+#' @param weights Optional vector containing weights (default = NULL); for details see importance_weights hardhat. For now only working for
 #' model = "regression".
 #' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
@@ -1236,6 +1237,7 @@ cor_weighted <- function(x, y, w) {
 #' @importFrom future plan multisession
 #' @importFrom furrr future_map
 #' @importFrom workflows workflow add_model add_recipe
+#' @importFrom hardhat importance_weights
 #' @export
 textTrainRegression <- function(
     x,
@@ -1281,13 +1283,13 @@ textTrainRegression <- function(
   if(!is.null(weights) & !model == "regression"){
     stop(message(colourise("Note: weights can only be used with model = regression at the moment.", "brown")))
   }
+
   # Select correct eval_measure depending on model when default
   if (model == "regression" && eval_measure == "default" & is.null(weights)) {
     eval_measure <- "rmse"
-  } else if(model == "regression" && eval_measure == "default" & is.null(weights)) {
+  } else if (model == "regression" && eval_measure == "default" & !is.null(weights)) {
     eval_measure <- "weighted_correlation"
-  }
-  else if (model == "logistic" || model == "multinomial" && eval_measure == "default") {
+  } else if (model == "logistic" || model == "multinomial" && eval_measure == "default") {
     eval_measure <- "bal_accuracy"
   }
 

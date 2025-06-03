@@ -41,7 +41,8 @@ Imports:
     workflows,
     yardstick,
     future,
-    furrr
+    furrr, 
+    hardhat
 RoxygenNote: 7.3.2
 Suggests: 
     knitr,

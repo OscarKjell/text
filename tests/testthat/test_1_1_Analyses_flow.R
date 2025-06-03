@@ -85,10 +85,9 @@ test_that("Testing textEmbed as well as train", {
     multi_cores = "multi_cores_sys_default"
   )
 
-  expect_that(text_train_results1$results$estimate[1], is_a("numeric"))
-  expect_equal(text_train_results1$results$estimate[[1]], -0.1154135, tolerance = 0.00001)
-
-
+  expect_equal(text_train_results1$results[[2]][[1]], -0.1468962, tolerance = 0.00001)
+  expect_equal(text_train_results1$results[[2]][[2]], 0.5931698, tolerance = 0.00001)
+  expect_equal(text_train_results1$results[[1]]$estimate[[1]], -0.1154135, tolerance = 0.00001)
 
   text_train_results1 <- text::textTrainRegression(
     x = harmony_word_embeddings$texts["satisfactiontexts"],
