@@ -32,7 +32,7 @@ textTrainRegression(
   first_n_predictors = NA,
   impute_missing = FALSE,
   method_cor = "pearson",
-  model_description = "Consider writing a description of your model here",
+  model_description = "Consider writing a description of your model here.",
   multi_cores = "multi_cores_sys_default",
   save_output = "all",
   simulate.p.value = FALSE,
@@ -153,7 +153,8 @@ Monte Carlo simulation, in larger than 2 * 2 tables. The test can be turned off 
 
 \item{seed}{(numeric) Set different seed (default = 2020).}
 
-\item{weights}{Optional vector containing weights (default = NULL); for details see importance_weights {hardhat}.}
+\item{weights}{Optional vector containing weights (default = NULL); for details see importance_weights {hardhat}. For now only working for
+model = "regression".}
 
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
