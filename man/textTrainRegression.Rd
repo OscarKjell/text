@@ -37,6 +37,7 @@ textTrainRegression(
   save_output = "all",
   simulate.p.value = FALSE,
   seed = 2020,
+  weights = NULL,
   ...
 )
 }
@@ -151,6 +152,8 @@ since the lot makes the saved object bloated when being saved.}
 Monte Carlo simulation, in larger than 2 * 2 tables. The test can be turned off if set to "turn_off".}
 
 \item{seed}{(numeric) Set different seed (default = 2020).}
+
+\item{weights}{Optional vector containing weights (default = NULL); for details see importance_weights {hardhat}.}
 
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
