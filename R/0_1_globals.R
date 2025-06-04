@@ -35,6 +35,7 @@ utils::globalVariables(c(
   "data_prepared_with_recipe",
   "bestParametersFunction", "eval_result",
   "fold", "fold_prop", "overall_n", "overall_prop",
+  "weights_in_text",
 
   # textTrainNPlot
   "sample_size", "percent", "std", "ymin", "ymax",

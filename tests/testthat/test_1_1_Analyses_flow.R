@@ -68,6 +68,26 @@ test_that("Testing textEmbed as well as train", {
   testthat::expect_equal(saved_size[[1]], 2778186, tolerance = 1000)
 
 
+  # WEIGHTS random weights
+  set.seed(1)
+  text_train_results1 <- text::textTrainRegression(
+    x = harmony_word_embeddings$texts["satisfactiontexts"],
+    y = Language_based_assessment_data_8["hilstotal"][1:20, ],
+    weights = runif(20),
+    cv_method = "cv_folds",
+    outside_folds = 2,
+    inside_folds = 2,
+    outside_strata_y = NULL,
+    inside_strata_y = NULL,
+    # preprocess_PCA = c(0.20),
+    preprocess_PCA = NA,
+    penalty = 1e-16,
+    multi_cores = "multi_cores_sys_default"
+  )
+
+  expect_equal(text_train_results1$results[[2]][[1]], -0.1468962, tolerance = 0.00001)
+  expect_equal(text_train_results1$results[[2]][[2]], 0.5931698, tolerance = 0.00001)
+  expect_equal(text_train_results1$results[[1]]$estimate[[1]], -0.1154135, tolerance = 0.00001)
 
   text_train_results1 <- text::textTrainRegression(
     x = harmony_word_embeddings$texts["satisfactiontexts"],

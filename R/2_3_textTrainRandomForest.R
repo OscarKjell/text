@@ -15,7 +15,8 @@
 select_eval_measure_val <- function(eval_measure = "bal_accuracy",
                                     holdout_pred = NULL,
                                     truth = y,
-                                    estimate = .pred_class, class,
+                                    estimate = .pred_class,
+                                    class,
                                     ...) {
   # Get accuracy
   if (eval_measure == "accuracy") {
@@ -46,6 +47,13 @@ select_eval_measure_val <- function(eval_measure = "bal_accuracy",
     estimator <- "standard"
     eval_measure_val <- tibble::tibble(metric, estimator, as.numeric(estimate1))
     colnames(eval_measure_val) <- c(".metric", ".estimator", ".estimate")
+  } else if (eval_measure == "weighted_correlation"){
+    eval_measure_val <- tibble(.estimate = cor_weighted(
+      x = holdout_pred$y,
+      y = holdout_pred$.pred,
+      w = holdout_pred$weights_in_text
+    )$weighted_correlation)
+    print("using weighted_correlation in selection procedure.")
   }
   eval_measure_val
 }

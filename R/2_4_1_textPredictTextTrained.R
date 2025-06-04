@@ -647,6 +647,9 @@ textPredictTextTrained <- function(
     # Get unique (keep the order the same)
     word_embeddings_names <- unique(We_names1_v_colnames)
 
+    # TO DO: weight should be a more specific name <-  tailored to the text-package unlikely to be a variable name.
+   # word_embeddings_names <- setdiff(word_embeddings_names, "weights_in_text")
+
     # Select the word embeddings
     word_embeddings <- word_embeddings[word_embeddings_names]
 

@@ -11,20 +11,21 @@ statisticalMode <- function(x) {
 #' Function to fit a model and compute RMSE.
 #'
 #' @param object An rsplit object (from results_nested_resampling tibble)
-#' object = results_nested_resampling$splits[[1]] OR results_nested_resampling$splits[[1]][[1]]
+#' object = results_nested_resampling$splits[[4]] OR results_nested_resampling$splits[[1]][[1]]
 #' object = results_nested_resampling$inner_resamples[[5]][[1]][[1]]
 #' @param penalty hyperparameter for ridge regression.
 #' @param mixture hyperparameter for ridge regression.
 #' @param preprocess_PCA threshold for pca; preprocess_PCA = NA
 #' @param variable_name_index_pca variable with names to know how to keep variables
 #' from same word embedding together in separate pca:s
+#' @param weights weights
 #' @return  RMSE.
 #' @importFrom rsample analysis assessment
 #' @importFrom recipes recipe update_role step_naomit step_impute_knn step_center
 #' step_scale step_pca prep juice
 #' @importFrom dplyr matches select
 #' @importFrom parsnip linear_reg logistic_reg multinom_reg set_engine fit
-#' @importFrom workflows workflow add_model add_recipe
+#' @importFrom workflows workflow add_model add_recipe add_case_weights
 #' @noRd
 fit_model_rmse <- function(object,
                            model = "regression",
@@ -36,10 +37,16 @@ fit_model_rmse <- function(object,
                            first_n_predictors = NA,
                            preprocess_step_center = TRUE,
                            preprocess_step_scale = TRUE,
-                           impute_missing = FALSE) {
+                           impute_missing = FALSE,
+                           weights = NULL) {
 
   data_train <- rsample::analysis(object)
   data_train <- tibble::as_tibble(data_train)
+
+  # If weights are supplied, wrap them using importance_weights BEFORE recipe
+  if (!is.null(weights)) {
+    data_train[[weights]] <- hardhat::importance_weights(data_train[[weights]])
+  }
 
   # If testing N first predictors help(step_scale) first_n_predictors = 3
   if (!is.na(first_n_predictors)) {
@@ -164,13 +171,22 @@ fit_model_rmse <- function(object,
     nr_predictors <- length(nr_predictors) - 2
   }
 
+
+  if(nr_predictors == 1 & !is.null(weights)){
+    message(colourise("Note: weights are not supported when only using one predictor.", "brown"))
+  }
+
   # Ridge and/or Lasso
   if (nr_predictors > 1) {
     # Create and fit model help(linear_reg)
     mod_spec <-
       {
         if (model == "regression") {
-          parsnip::linear_reg(penalty = penalty, mixture = mixture)
+          #parsnip::linear_reg(penalty = penalty, mixture = mixture)
+          parsnip::linear_reg(penalty = penalty, mixture = mixture) %>%
+            parsnip::set_engine("glmnet", case_weights = TRUE) %>%
+            parsnip::set_mode("regression")
+
         } else if (model == "logistic") {
           parsnip::logistic_reg(
             mode = "classification",
@@ -191,6 +207,16 @@ fit_model_rmse <- function(object,
     wf <- workflows::workflow() %>%
       workflows::add_model(mod_spec) %>%
       workflows::add_recipe(xy_recipe)
+
+   # # Add weights to the workflow if present
+   # if ("weights_in_text" %in% colnames(data_train)) {
+   #   wf <- wf %>% workflows::add_case_weights(weights_in_text)
+   # }
+
+    # Add weights to the workflow if present
+    if (!is.null(weights)) {
+      wf <- wf %>% workflows::add_case_weights(!!rlang::sym(weights))
+    }
 
     # Fit model
     mod <- parsnip::fit(wf, data = data_train)
@@ -228,19 +254,30 @@ fit_model_rmse <- function(object,
     holdout_pred <-
       stats::predict(mod, xy_testing) %>%
       dplyr::bind_cols(rsample::assessment(object) %>%
-                         dplyr::select(y, id_nr))
+                         dplyr::select(y, id_nr, weights))
 
     # Get RMSE; eval_measure = "rmse" library(tidyverse)
     eval_result <- select_eval_measure_val(eval_measure,
                                            holdout_pred = holdout_pred,
-                                           truth = y, estimate = .pred
+                                           truth = y,
+                                           estimate = .pred
     )$.estimate
     # Sort output of RMSE, predictions and truth (observed y)
+
+    # Check if weights are present in the data
+    has_weights <- "weights_in_text" %in% names(holdout_pred)
+
+    # Create output list with conditional inclusion of weights
     output <- list(
-      list(eval_result), list(holdout_pred$.pred), list(holdout_pred$y), list(preprocess_PCA),
-      list(holdout_pred$id_nr)
+      eval_result       = list(eval_result),
+      predictions       = list(holdout_pred$.pred),
+      y                 = list(holdout_pred$y),
+      weights_in_text   = if (has_weights) list(holdout_pred$weights_in_text) else list(NULL),
+      preprocess_PCA    = list(preprocess_PCA),
+      id_nr             = list(holdout_pred$id_nr)
     )
-    names(output) <- c("eval_result", "predictions", "y", "preprocess_PCA", "id_nr")
+
+
   } else if (model == "logistic") {
     holdout_pred_class <-
       stats::predict(mod, xy_testing, type = c("class")) %>%
@@ -351,7 +388,8 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
                                    first_n_predictors = first_n_predictors,
                                    preprocess_step_center = preprocess_step_center,
                                    preprocess_step_scale = preprocess_step_scale,
-                                   impute_missing = impute_missing) {
+                                   impute_missing = impute_missing,
+                                   weights = weights) {
   fit_model_rmse(object,
                  model,
                  eval_measure,
@@ -362,7 +400,8 @@ fit_model_rmse_wrapper <- function(penalty = penalty,
                  first_n_predictors = first_n_predictors,
                  preprocess_step_center = preprocess_step_center,
                  preprocess_step_scale = preprocess_step_scale,
-                 impute_missing = impute_missing
+                 impute_missing = impute_missing,
+                 weights = weights
   )
 }
 
@@ -389,7 +428,8 @@ tune_over_cost <- function(object,
                            preprocess_step_center = preprocess_step_center,
                            preprocess_step_scale = preprocess_step_scale,
                            impute_missing = impute_missing,
-                           parameter_selection_method = parameter_selection_method) {
+                           parameter_selection_method = parameter_selection_method,
+                           weights = weights) {
   T1 <- Sys.time()
 
   # Number of components or percent of variance to attain; min_halving; preprocess_PCA = NULL
@@ -452,7 +492,8 @@ tune_over_cost <- function(object,
     variable_name_index_pca = variable_name_index_pca,
     preprocess_step_center = preprocess_step_center,
     preprocess_step_scale = preprocess_step_scale,
-    impute_missing = impute_missing
+    impute_missing = impute_missing,
+    weights = weights
   )
 
   # Sort the output to separate the rmse, predictions and truth
@@ -512,7 +553,7 @@ bestParameters <- function(data,
   if (eval_measure %in% c(
     "accuracy", "bal_accuracy", "sens", "spec",
     "precision", "kappa", "f_measure", "roc_auc",
-    "rsq", "cor_test")) {
+    "rsq", "cor_test", "weighted_correlation")) {
 
     eval_result_preference = "max"
   }
@@ -649,7 +690,8 @@ summarize_tune_results <- function(object,
                                    preprocess_step_center = preprocess_step_center,
                                    preprocess_step_scale = preprocess_step_scale,
                                    impute_missing = impute_missing,
-                                   parameter_selection_method = parameter_selection_method) {
+                                   parameter_selection_method = parameter_selection_method,
+                                   weights = weights) {
   # Return row-bound tibble containing the INNER results
   results <- purrr::map_df(
     .x = object$splits,
@@ -664,7 +706,8 @@ summarize_tune_results <- function(object,
     preprocess_step_center = preprocess_step_center,
     preprocess_step_scale = preprocess_step_scale,
     impute_missing = impute_missing,
-    parameter_selection_method = parameter_selection_method
+    parameter_selection_method = parameter_selection_method,
+    weights = weights
   )
   return(results)
 }
@@ -1012,6 +1055,63 @@ create_manual_nested_cv <- function(
 }
 
 
+
+#' Compute the weighted Pearson correlation between two numeric vectors
+#'
+#' @param x A numeric vector (e.g., variable 1)
+#' @param y A numeric vector (e.g., variable 2)
+#' @param w A numeric vector of non-negative weights (same length as x and y)
+#'
+#' @return A single numeric value: the weighted correlation between x and y
+#' @importFrom stats pt weighted.mean
+#'@noRd
+cor_weighted <- function(x, y, w) {
+  # Remove rows with missing values
+  complete <- stats::complete.cases(x, y, w)
+  x <- x[complete]
+  y <- y[complete]
+  w <- w[complete]
+
+  # Compute weighted means
+  m_x <- stats::weighted.mean(x, w)
+  m_y <- stats::weighted.mean(y, w)
+
+  # Compute weighted covariance
+  cov_xy <- sum(w * (x - m_x) * (y - m_y)) / sum(w)
+
+  # Compute weighted standard deviations
+  sd_x <- sqrt(sum(w * (x - m_x)^2) / sum(w))
+  sd_y <- sqrt(sum(w * (y - m_y)^2) / sum(w))
+
+  # Handle degenerate cases
+  if (sd_x == 0 || sd_y == 0) {
+    message(colourise(
+      "Note that the predicted values are constant, resulting in zero variance so we are assuming correlation = 0.", "brown"))
+    return(tibble(weighted_correlation = 0, p_value_experimental = NA))
+  }
+
+  # Compute weighted correlation
+  r <- cov_xy / (sd_x * sd_y)
+
+  # Estimate effective sample size (Kish's approximation)
+  Neff <- (sum(w))^2 / sum(w^2)
+
+  # Degrees of freedom
+  df <- Neff - 2
+
+  # Compute t-statistic and p-value
+  t_val <- r * sqrt(df / (1 - r^2))
+  p_val <- 2 * stats::pt(-abs(t_val), df = df)
+
+  # Return as a tibble
+  tibble(
+    weighted_correlation = r,
+    p_value_experimental = p_val
+  )
+}
+
+
+
 #' Train word embeddings to a numeric variable.
 #'
 #' textTrainRegression() trains word embeddings to a numeric or a factor variable.
@@ -1045,10 +1145,10 @@ create_manual_nested_cv <- function(
 #' @param inside_breaks The number of bins wanted to stratify a numeric stratification variable in the inner
 #' cross-validation loop (default = 4).
 #' @param model Type of model. Default is "regression"; see also "logistic" and "multinomial" for classification.
-#' @param eval_measure (character) Type of evaluative measure to select models from. Default = "rmse" for regression and
-#' "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
-#'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
-#'  the yardstick package).
+#' @param eval_measure (character) Type of evaluative measure to select models from. Default = "rmse" for regression, "weighted_correlations for
+#' weighted regression and "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
+#'  "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc", (for more details see
+#'  the yardstick package). See also the method_cor setting below.
 #' @param save_aggregated_word_embedding (boolean) If TRUE, the aggregated word embeddings (mean, min, and max) are saved
 #' for comparison with other language input when the model is applied to other types of data.
 #' @param language_distribution (Character column) If you provide the raw language data used for making the embeddings,
@@ -1081,7 +1181,7 @@ create_manual_nested_cv <- function(
 #' using a sequence from Kjell et al., 2019 paper in Psychological Methods. Adding 1,
 #' then multiplying by 1.3 and finally rounding to the nearest integer (e.g., 1, 3, 5, 8).
 #' This option is currently only possible for one embedding at the time.
-#' @param method_cor Type of correlation used in evaluation (default "pearson";
+#' @param method_cor Type of correlation used in final model estimation evaluation (default "pearson";
 #' can set to "spearman" or "kendall").
 #' @param impute_missing Default FALSE (can be set to TRUE if something else than word_embeddings are trained).
 #' @param model_description (character) Text to describe your model (optional; good when sharing the model with others).
@@ -1093,6 +1193,8 @@ create_manual_nested_cv <- function(
 #'  since the lot makes the saved object bloated when being saved.
 #' @param simulate.p.value (Boolean or string) From fisher.test: a logical indicating whether to compute p-values by
 #' Monte Carlo simulation, in larger than 2 * 2 tables. The test can be turned off if set to "turn_off".
+#' @param weights Optional vector containing weights (default = NULL); for details see importance_weights hardhat. For now only working for
+#' model = "regression".
 #' @param seed (numeric) Set different seed (default = 2020).
 #' @param ... For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").
 #' @details
@@ -1135,6 +1237,7 @@ create_manual_nested_cv <- function(
 #' @importFrom future plan multisession
 #' @importFrom furrr future_map
 #' @importFrom workflows workflow add_model add_recipe
+#' @importFrom hardhat importance_weights
 #' @export
 textTrainRegression <- function(
     x,
@@ -1164,11 +1267,12 @@ textTrainRegression <- function(
     first_n_predictors = NA,
     impute_missing = FALSE,
     method_cor = "pearson",
-    model_description = "Consider writing a description of your model here",
+    model_description = "Consider writing a description of your model here.",
     multi_cores = "multi_cores_sys_default",
     save_output = "all",
     simulate.p.value = FALSE,
     seed = 2020,
+    weights = NULL,
     ...) {
 
   T1_textTrainRegression <- Sys.time()
@@ -1176,9 +1280,15 @@ textTrainRegression <- function(
 
   all_we <- x
 
+  if(!is.null(weights) & !model == "regression"){
+    stop(message(colourise("Note: weights can only be used with model = regression at the moment.", "brown")))
+  }
+
   # Select correct eval_measure depending on model when default
-  if (model == "regression" && eval_measure == "default") {
+  if (model == "regression" && eval_measure == "default" & is.null(weights)) {
     eval_measure <- "rmse"
+  } else if (model == "regression" && eval_measure == "default" & !is.null(weights)) {
+    eval_measure <- "weighted_correlation"
   } else if (model == "logistic" || model == "multinomial" && eval_measure == "default") {
     eval_measure <- "bal_accuracy"
   }
@@ -1242,6 +1352,27 @@ textTrainRegression <- function(
   rm(variables_and_names)
 
   xy <- dplyr::bind_cols(x2, y)
+
+  # Add weights as column if provided
+
+  # Add weights as column if provided
+  if(is.null(weights)){
+    weights_name_description = "no weights were used."
+  } else {
+    if (tibble::is_tibble(weights) || is.data.frame(weights)) {
+      weights_name_description <- colnames(weights)
+    } else {
+      weights_name_description <- deparse(substitute(weights))
+    }
+  }
+
+  if (!is.null(weights)) {
+    if (length(weights) != nrow(xy)) {
+      stop("Length of weights must match number of rows in data")
+    }
+    xy$weights_in_text <- weights  # Bind weights into xy
+    weights <- "weights_in_text"   # Update weights arg to pass as a column name
+  }
 
   xy$id_nr <- c(seq_len(nrow(xy)))
 
@@ -1364,7 +1495,8 @@ textTrainRegression <- function(
       preprocess_step_center = preprocess_step_center,
       preprocess_step_scale = preprocess_step_scale,
       impute_missing = impute_missing,
-      parameter_selection_method = parameter_selection_method
+      parameter_selection_method = parameter_selection_method,
+      weights = weights
     )
   } else if (multi_cores_use == TRUE) {
     # The multisession plan uses the local cores to process the inner resampling loop.
@@ -1384,7 +1516,8 @@ textTrainRegression <- function(
       preprocess_step_center = preprocess_step_center,
       preprocess_step_scale = preprocess_step_scale,
       impute_missing = impute_missing,
-      parameter_selection_method = parameter_selection_method
+      parameter_selection_method = parameter_selection_method,
+      weights = weights
     )
   }
 
@@ -1414,7 +1547,8 @@ textTrainRegression <- function(
       eval_measure = list(eval_measure),
       preprocess_step_center = preprocess_step_center,
       preprocess_step_scale = preprocess_step_scale,
-      impute_missing = impute_missing
+      impute_missing = impute_missing,
+      weights = list(weights)
     ),
     # this is THE function for the regression models
     fit_model_rmse
@@ -1430,15 +1564,37 @@ textTrainRegression <- function(
   # Get overall evaluation measure between predicted and observed values
   if (model == "regression") {
     # Unnest predictions and y
+
     predy_y <- tibble::tibble(
       tidyr::unnest(outputlist_results_outer$predictions, cols = c(predictions)),
       tidyr::unnest(outputlist_results_outer$y, cols = c(y)),
+      if(!is.null(weights)) tidyr::unnest(outputlist_results_outer$weights_in_text, cols = c(weights_in_text)),
       tidyr::unnest(outputlist_results_outer$id_nr, cols = c(id_nr))
     )
     predy_y <- predy_y %>% dplyr::arrange(id_nr)
     # Correlate predictions and observed correlation
-    collected_results <- stats::cor.test(predy_y$predictions, predy_y$y, method = method_cor, alternative = "greater")
+    if(!is.null(weights)){
 
+      collected_results1 <- stats::cor.test(
+        predy_y$predictions,
+        predy_y$y,
+        method = method_cor,
+        alternative = "greater")
+
+      collected_results2 <- cor_weighted(
+        x = predy_y$predictions,
+        y = predy_y$y,
+        w = predy_y$weights_in_text)
+
+      collected_results <- list(collected_results1, collected_results2)
+
+    } else {
+      collected_results <- stats::cor.test(
+        predy_y$predictions,
+        predy_y$y,
+        method = method_cor,
+        alternative = "greater")
+    }
 
     collected_results <- list(predy_y, collected_results)
   } else if (model == "logistic") {
@@ -1488,6 +1644,10 @@ textTrainRegression <- function(
     xy_all <- xy
   }
 
+  # If weights are used, wrap them correctly with importance_weights()
+  if (!is.null(weights) && "weights_in_text" %in% colnames(xy_all)) {
+    xy_all$weights_in_text <- hardhat::importance_weights(xy_all$weights_in_text)
+  }
 
   ######### One word embedding as input
   n_embbeddings <- as.numeric(comment(eval_measure))
@@ -1542,9 +1702,25 @@ textTrainRegression <- function(
 
     ######### More than one word embeddings as input
   } else {
+#    final_recipe <- recipes::recipe(y ~ ., xy_all[0, ]) %>%
+#      recipes::update_role(id_nr, new_role = "id variable") %>%
+#      recipes::update_role(-id_nr, new_role = "predictor") %>%
+#      recipes::update_role(y, new_role = "outcome")
+
+
+    # Identify all variable names
+    all_vars <- colnames(xy_all)
+
+    # Check if a case weight column (e.g., 'weights_in_text') exists
+    has_weights <- "weights_in_text" %in% all_vars
+
+    # Variables to assign predictor role (exclude outcome, id, and weight if present)
+    predictor_vars <- setdiff(all_vars, c("id_nr", "y", if (has_weights) "weights_in_text"))
+
+    # Start recipe
     final_recipe <- recipes::recipe(y ~ ., xy_all[0, ]) %>%
       recipes::update_role(id_nr, new_role = "id variable") %>%
-      recipes::update_role(-id_nr, new_role = "predictor") %>%
+      recipes::update_role(dplyr::all_of(predictor_vars), new_role = "predictor") %>%
       recipes::update_role(y, new_role = "outcome")
 
     if (!impute_missing) {
@@ -1647,14 +1823,20 @@ textTrainRegression <- function(
           }
 
         final_predictive_model_spec <- final_predictive_model_spec %>%
-          parsnip::set_engine("glmnet")
+          parsnip::set_engine("glmnet", case_weights = TRUE)
 
         # Create Workflow (to know variable roles from recipes) help(workflow)
         wf_final <- workflows::workflow() %>%
           workflows::add_model(final_predictive_model_spec) %>%
           workflows::add_recipe(final_recipe[[1]])
 
+        if ("weights_in_text" %in% colnames(xy_all)) {
+          wf_final <- wf_final %>%
+            workflows::add_case_weights(weights_in_text)
+        }
+
         parsnip::fit(wf_final, data = xy_all)
+
       } else if (nr_predictors == 3) {
         final_predictive_model_spec <-
           if (model == "regression") {
@@ -1704,6 +1886,7 @@ textTrainRegression <- function(
   x_name_description <- paste("x word_embeddings = ", x_name)
   x_append_names_description <- paste("x_append = ", x_append_names)
   y_name_description <- paste("y = ", y_name)
+  weights_name_description <- paste("weights = ", weights_name_description)
   cv_method_description <- paste("cv_method = ", deparse(cv_method))
   strata_description <- paste("strata = ", strata_name)
   outside_folds_description <- paste("outside_folds = ", deparse(outside_folds))
@@ -1768,6 +1951,7 @@ textTrainRegression <- function(
     x_name_description,
     x_append_names_description,
     y_name_description,
+    weights_name_description,
     cv_method_description,
     strata_description,
     outside_folds_description,

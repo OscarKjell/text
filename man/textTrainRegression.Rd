@@ -32,11 +32,12 @@ textTrainRegression(
   first_n_predictors = NA,
   impute_missing = FALSE,
   method_cor = "pearson",
-  model_description = "Consider writing a description of your model here",
+  model_description = "Consider writing a description of your model here.",
   multi_cores = "multi_cores_sys_default",
   save_output = "all",
   simulate.p.value = FALSE,
   seed = 2020,
+  weights = NULL,
   ...
 )
 }
@@ -85,10 +86,10 @@ cross-validation loop (default = 4).}
 
 \item{model}{Type of model. Default is "regression"; see also "logistic" and "multinomial" for classification.}
 
-\item{eval_measure}{(character) Type of evaluative measure to select models from. Default = "rmse" for regression and
-"bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
- "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc",(for more details see
- the yardstick package).}
+\item{eval_measure}{(character) Type of evaluative measure to select models from. Default = "rmse" for regression, "weighted_correlations for
+weighted regression and "bal_accuracy" for logistic. For regression use "rsq" or "rmse"; and for classification use "accuracy",
+ "bal_accuracy", "sens", "spec", "precision", "kappa", "f_measure", or "roc_auc", (for more details see
+ the yardstick package). See also the method_cor setting below.}
 
 \item{save_aggregated_word_embedding}{(boolean) If TRUE, the aggregated word embeddings (mean, min, and max) are saved
 for comparison with other language input when the model is applied to other types of data.}
@@ -134,7 +135,7 @@ This option is currently only possible for one embedding at the time.}
 
 \item{impute_missing}{Default FALSE (can be set to TRUE if something else than word_embeddings are trained).}
 
-\item{method_cor}{Type of correlation used in evaluation (default "pearson";
+\item{method_cor}{Type of correlation used in final model estimation evaluation (default "pearson";
 can set to "spearman" or "kendall").}
 
 \item{model_description}{(character) Text to describe your model (optional; good when sharing the model with others).}
@@ -151,6 +152,9 @@ since the lot makes the saved object bloated when being saved.}
 Monte Carlo simulation, in larger than 2 * 2 tables. The test can be turned off if set to "turn_off".}
 
 \item{seed}{(numeric) Set different seed (default = 2020).}
+
+\item{weights}{Optional vector containing weights (default = NULL); for details see importance_weights hardhat. For now only working for
+model = "regression".}
 
 \item{...}{For example settings in yardstick::accuracy to set event_level (e.g., event_level = "second").}
 }
