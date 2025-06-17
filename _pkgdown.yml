@@ -73,13 +73,12 @@ reference:
     - textTrainRandomForest
     - textTrainN
     - textTrainNPlot
-    - textTrainExamples
+    - textExamples
 - title: The text-predict functions
   contents:
     - textPredict
     - textAssess
     - textClassify
-    - textPredictExamples
     - textPredictTest
     - textPredictAll
     - textLBAM

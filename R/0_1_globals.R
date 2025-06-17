@@ -40,7 +40,7 @@ utils::globalVariables(c(
   # textTrainNPlot
   "sample_size", "percent", "std", "ymin", "ymax",
 
-  # textTrainExamples
+  # textExamples
   "category", "distance_to_mean", "error", "language", "topic",
   "height", "save_dir", "width", "y_axes_1",
   "check_random_x", "check_random_y", "color_categories", "ranking_criteria",

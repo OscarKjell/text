@@ -127,7 +127,7 @@ reorder_columns <- function(
 #' @importFrom ggplot2 geom_histogram aes labs theme_minimal scale_fill_manual geom_smooth
 #' @importFrom topics topicsScatterLegend
 #' @export
-textTrainExamples <- function(
+textExamples <- function(
     text,
     x_variable,
     y_variable = NULL,
@@ -252,10 +252,6 @@ textTrainExamples <- function(
            color_categories = factor(color_categories, levels = as.character(1:9))
     )
 
-  table(df$x_variable_grouped)
-
-
-
   # Handle square ranking criteria to get text examples separately for 1D and 2D cases #
   if (!is.null(y_variable)) {
     df <- df %>%
@@ -286,19 +282,30 @@ textTrainExamples <- function(
   #### Filter sentences/cases to show as examples ####
   # Filter rows to include only those with specified words in the language variable ####
   if (!is.null(filter_words)) {
-    df <- df %>%
+    df_examples <- df %>%
       dplyr::filter(
-        purrr::map_lgl(language, ~ all(
-          stringi::stri_detect_fixed(.x, filter_words)))
+        purrr::map_lgl(
+          text,
+          ~ all(stringi::stri_detect_regex(.x, paste0("\\b", filter_words, "\\b")))
+        )
       )
+
+    df_examples <- df_examples %>%
+      dplyr::group_by(color_categories) %>%
+      dplyr::arrange(desc(ranking_criteria)) %>%
+      dplyr::slice_head(n = n_examples) %>%
+      dplyr::ungroup()
+
+  } else {
+    # Select N most extreme per category
+    df_examples <- df %>%
+      dplyr::group_by(color_categories) %>%
+      dplyr::arrange(desc(ranking_criteria)) %>%
+      dplyr::slice_head(n = n_examples) %>%
+      dplyr::ungroup()
+
   }
 
-  # Select N most extreme per category
-  df_examples <- df %>%
-    dplyr::group_by(color_categories) %>%
-    dplyr::arrange(desc(ranking_criteria)) %>%
-    dplyr::slice_head(n = n_examples) %>%
-    dplyr::ungroup()
 
 
   #### Histogram of predictions and targets using the entire dataset ####
@@ -458,7 +465,7 @@ textTrainExamples <- function(
   )
 
   # Add regression/correlation line
-  if(!is.null(scatter_legend_regression_line_colour)) {
+  if(!is.null(scatter_legend_regression_line_colour) & !is.null(y_variable)) {
     scatter_plot$legend <- scatter_plot$legend +
       ggplot2::geom_smooth(aes(x = df_for_distribution$x_variable,
                       y = df_for_distribution$y_variable),
@@ -514,8 +521,4 @@ textTrainExamples <- function(
   return(results)
 }
 
-# Alias functions
-#' @rdname textTrainExamples
-#' @export
-textPredictExamples <- textTrainExamples
 

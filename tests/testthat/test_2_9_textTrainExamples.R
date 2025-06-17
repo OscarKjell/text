@@ -8,7 +8,7 @@ library(vdiffr)
 context("Testing tasks")
 
 
-test_that("textTrainExamples tests", {
+test_that("textExamples tests", {
   testthat::skip_on_os(c("linux", "windows"))  # Skip on Ubuntu (Linux) and Windows
   skip_on_cran()
 
@@ -20,7 +20,7 @@ test_that("textTrainExamples tests", {
 
 
   # One-dimensional plot
-  examples_1d <- text::textTrainExamples(
+  examples_1d <- text::textExamples(
     text = Language_based_assessment_data_8["harmonytexts"],
     x_variable = hil_model$predictions$predictions,
     y_variable = NULL,
@@ -48,7 +48,7 @@ test_that("textTrainExamples tests", {
                          "My thoughts feel scattered, contrived, and contradictory. Nothing in my life makes sense together anymore. I feel like I'm trying to put a puzzle together, but all the pieces come from different sets.")
 
   # Two-dimensional plot
-  examples_2d <- text::textTrainExamples(
+  examples_2d <- text::textExamples(
     text = Language_based_assessment_data_8["harmonytexts"],
     x_variable = hil_model$predictions$predictions,
     y_variable = hil_model$predictions$y,
@@ -78,7 +78,7 @@ test_that("textTrainExamples tests", {
                          "While in harmony with other people, I don't feel in harmony in my own life or with myself. I feel conflicted about listening to what my body needs. I don't know what direction to go with my life or how to get there. I feel completely overwhelmed with trying to figure that out. Part of me wants to give up, and part of me wants to keep going just to prove the people who think I can't do it wrong.")
 
   # Error plot
-  examples_error <- text::textTrainExamples(
+  examples_error <- text::textExamples(
     text = Language_based_assessment_data_8$harmonytexts, #Language_based_assessment_data_8["harmonytexts"],
     x_variable = hil_model$predictions["predictions"],
     y_variable = hil_model$predictions["y"],
