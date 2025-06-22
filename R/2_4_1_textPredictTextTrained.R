@@ -1080,7 +1080,7 @@ textPredictTest <- function(y1,
     if (statistic == "auc") {
       stats_on_bootstrap <- function(split) {
         yardstick::roc_auc_vec(as.factor(rsample::analysis(split)[[1]]),
-                               rsample::analysis(split)[[2]],
+                               as.matrix(rsample::analysis(split)[,2:ncol(rsample::analysis(split))]),
                                event_level = event_level
         )
       }
