@@ -1079,10 +1079,19 @@ textPredictTest <- function(y1,
     # AUC function
     if (statistic == "auc") {
       stats_on_bootstrap <- function(split) {
-        yardstick::roc_auc_vec(as.factor(rsample::analysis(split)[[1]]),
-                               rsample::analysis(split)[[2]],
-                               event_level = event_level
-        )
+        idx <- ncol(rsample::analysis(split))
+        if (idx > 2) {
+          idx <- 2:idx # multiple categories probs
+          yardstick::roc_auc_vec(as.factor(rsample::analysis(split)[[1]]),
+                                 as.matrix(rsample::analysis(split)[,idx]),
+                                 event_level = event_level
+          )
+        }else{
+          yardstick::roc_auc_vec(as.factor(rsample::analysis(split)[[1]]),
+                                 rsample::analysis(split)[[2]],
+                                 event_level = event_level
+          )
+        }
       }
     }
 
