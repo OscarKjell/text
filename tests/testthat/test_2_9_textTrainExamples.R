@@ -12,11 +12,19 @@ test_that("textExamples tests", {
   testthat::skip_on_os(c("linux", "windows"))  # Skip on Ubuntu (Linux) and Windows
   skip_on_cran()
 
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
+
   # Train word embeddings to assess depression
   # Examine the relationship between the embeddings and the depression scores
   hil_model <- text::textTrain(
     x = word_embeddings_4$texts["harmonytexts"],      # text embeddings as predictor
-    y = Language_based_assessment_data_8["hilstotal"])  # depression scores as target
+    y = Language_based_assessment_data_8["hilstotal"],
+    multi_cores = multi_cores
+    )  # depression scores as target
 
 
   # One-dimensional plot

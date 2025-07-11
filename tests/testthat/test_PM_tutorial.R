@@ -7,6 +7,12 @@ context("Testing PM tutorial")
 test_that("PM tutorial", {
   skip_on_cran()
 
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
+
   # Example text
   texts <- c("I am feeling relatedness with others", "That's great!")
 
@@ -76,6 +82,7 @@ test_that("PM tutorial", {
   model_satisfactiontext_swls <- text::textTrain(
     x = word_embeddings$texts$satisfactiontexts, # the predictor variables (i.e., the word embeddings)
     y = Language_based_assessment_data_8$swlstotal, # the criterion variable (i.e.,the rating scale score.
+    multi_cores = multi_cores,
     model_description = "author(s): Kjell, Giorgi, & Schwartz; data: N=40, population =  Online, Mechanical Turk; publication: title = Example for demo; description: swls = the satisfaction with life scale")
 
   # Examine the correlation between predicted and observed Harmony in life scale scores

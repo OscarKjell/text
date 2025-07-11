@@ -8,6 +8,12 @@ context("textTrainRegression")
 test_that("textTrainRegression, textTrainList and textPredcit", {
   skip_on_cran()
 
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
+
   # Regression
   model_reg <- textTrainRegression(
     x = word_embeddings_4$texts$harmonytext,
@@ -19,7 +25,7 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = NA,
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = multi_cores,
     save_output_size = "small_model" #"small_model" # NULL #"all" # "small_model"
   )
 
@@ -57,7 +63,7 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
      penalty = c(1),
      mixture = c(0),
      preprocess_PCA = 1,
-     multi_cores = "multi_cores_sys_default",
+     multi_cores = multi_cores,
      # force_train_method = "automatic",
      save_output = "all"
    )
@@ -87,7 +93,7 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
      penalty = c(1),
      mixture = c(0),
      preprocess_PCA = "min_halving",
-     multi_cores = "multi_cores_sys_default"
+     multi_cores = multi_cores
    )
 
    testthat::expect_that(model_multinomial4, testthat::is_a("list"))
@@ -105,7 +111,7 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
      penalty = c(1),
      mixture = c(0),
      preprocess_PCA = "min_halving",
-     multi_cores = "multi_cores_sys_default"
+     multi_cores = multi_cores
    )
 
    testthat::expect_that(model_logistic2, testthat::is_a("list"))
@@ -140,6 +146,7 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
      inside_folds = 3 / 4,
      penalty = c(1),
      mixture = c(0),
+     multi_cores = multi_cores
    )
 
    model_multinomial4_preds <- text::textPredictAll(
@@ -157,7 +164,11 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
 
 test_that("textTrain Regression without saving models", {
   skip_on_cran()
-
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
   # Do not save the model
   trained_min_halving <- text::textTrainRegression(
     x = word_embeddings_4$texts["harmonywords"],
@@ -196,7 +207,7 @@ test_that("textTrain Regression without saving models", {
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = "min_halving",
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = multi_cores,
     save_output = "only_results"
   )
   testthat::expect_that(trained_logistic, is_a("list"))
@@ -216,7 +227,7 @@ test_that("textTrain Regression without saving models", {
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = 1,
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = multi_cores,
     save_output = "only_results_predictions"
   )
   testthat::expect_that(trained_logistic2, is_a("list"))
@@ -233,7 +244,7 @@ test_that("textTrain Regression without saving models", {
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = NA,
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = multi_cores,
     force_train_method = "regression",
     save_output = "only_results_predictions"
   )
@@ -255,7 +266,7 @@ test_that("textTrain Regression without saving models", {
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = "min_halving",
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = multi_cores,
     save_output = "only_results"
   )
 
@@ -295,7 +306,11 @@ test_that("textTrain Regression without saving models", {
 
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
   skip_on_cran()
-
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
   # One word embedding and two rating scales help(textTrainRegression)
   model_list <- text::textTrainLists(
     x = word_embeddings_4$texts$harmonywords,
@@ -379,6 +394,11 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 test_that("textTrainRegression adding word_embedding together", {
   skip_on_cran()
 
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
   multi_we_PCA_09 <- text::textTrainRegression(
     x = word_embeddings_4$texts[1:2],
     y = Language_based_assessment_data_8$hilstotal,
@@ -442,6 +462,11 @@ test_that("textTrainRegression adding word_embedding together", {
 
 test_that("training with only x_append (without word embeddings)", {
   skip_on_cran()
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
 
   # help("textTrainRegression")
   # x_append and word embeddings
@@ -473,7 +498,8 @@ test_that("training with only x_append (without word embeddings)", {
     x = NULL,
     x_append = Language_based_assessment_data_8[6:7],
     y = Language_based_assessment_data_8[6],
-    outside_folds = 2
+    outside_folds = 2,
+    multi_cores = multi_cores
   )
 
   testthat::expect_that(model_no_append, testthat::is_a("list"))

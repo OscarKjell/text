@@ -2,8 +2,7 @@
 % Please edit documentation in R/2_4_1_textPredictTextTrained.R
 \name{textPredictTest}
 \alias{textPredictTest}
-\title{Significance testing correlations
-If only y1 is provided a t-test is computed, between the absolute error from yhat1-y1 and yhat2-y1.}
+\title{Significance testing for model prediction performance}
 \usage{
 textPredictTest(
   y1,
@@ -14,8 +13,8 @@ textPredictTest(
   statistic = "correlation",
   paired = TRUE,
   event_level = "first",
-  bootstraps_times = 1000,
-  seed = 6134,
+  bootstraps_times = 10000,
+  seed = 20250622,
   ...
 )
 }
@@ -30,9 +29,15 @@ compared (see description above).}
 
 \item{yhat2}{The predicted scores from model 2 that will be compared with model 1.}
 
-\item{method}{Set "t-test" if comparing predictions from models that predict the SAME outcome.
-Set "bootstrap" if comparing predictions from models that predict DIFFERENT outcomes or comparison from logistic
-regression computing AUC distributions.}
+\item{method}{Character string specifying the comparison approach.
+
+- "t-test": Use when comparing prediction errors from two models predicting the same outcome (only supported when statistic = "correlation"). Performs a paired t-test on absolute errors.
+
+- "bootstrap_difference": Use to compare AUCs from two models predicting either the same outcome (e.g., does Model A outperform Model B on the same classification task) or different outcomes (e.g., mental vs physical health). Bootstraps the difference in AUC across resamples to compute confidence intervals and p-values.
+
+- "bootstrap_overlap": Use when comparing predictions for different outcomes by generating bootstrap distributions of correlation or AUC values (depending on statistic), and testing overlap in distributions. (requires the overlapping package).
+
+Choose the method that aligns with your research question: error comparison on the same outcome, AUC difference testing on the same or different outcomes, or overlap of performance distributions across different outcomes.}
 
 \item{statistic}{Character ("correlation", "auc") describing statistic to be compared in bootstrapping.}
 
@@ -50,9 +55,26 @@ regression computing AUC distributions.}
 Comparison of correlations either a t-test or the overlap of a bootstrapped procedure (see $OV).
 }
 \description{
-If y2 is provided a bootstrapped procedure is used to compare the correlations between y1 and yhat1 versus
-y2 and yhat2. This is achieved by creating two distributions of correlations using bootstrapping; and then
-finally compute the distributions overlap.
+Compares predictive performance between two models, using either a paired t-test on errors
+or bootstrapped comparisons of correlation or AUC.
+}
+\details{
+- If `method = "t-test"` is chosen, the function compares the absolute prediction errors
+  (|yhat - y|) from two models predicting the **same** outcome using a paired t-test.
+  Only `y1`, `yhat1`, and `yhat2` are required.
+
+- If `method = "bootstrap_difference"` is chosen, the function compares differences in
+  correlation or AUC between **two outcomes** (or the same outcome if y1 = y2), using
+  bootstrapped resampling. Both `y1` and `y2` must be provided (and have the same length).
+
+- If `method = "bootstrap_overlap"` is chosen, the function generates
+  bootstrap distributions of correlation or AUC values for each outcome and tests the
+  overlap of these distributions, assessing similarity in predictive performance.
+
+Choose the method that aligns with your research question:
+- Error comparison on the same outcome
+- Bootstrapped difference testing on the same or different outcomes
+- Overlap of performance distributions across different outcomes
 }
 \examples{
 # Example random data
