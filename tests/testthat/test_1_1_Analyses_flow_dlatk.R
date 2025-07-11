@@ -81,7 +81,7 @@ test_that("Testing DLATK textEmbed as well as train", {
     # preprocess_PCA = c(0.20),
     preprocess_PCA = NA,
     penalty = 1e-16,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = multi_cores
   )
 
   expect_that(text_train_results1$results$estimate[1], is_a("numeric"))
@@ -115,7 +115,7 @@ test_that("Testing DLATK textEmbed as well as train", {
     # preprocess_PCA = c(0.20),
     preprocess_PCA = NA,
     penalty = 1e-16,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = multi_cores
   )
   expect_that(train_x_append$language_distribution, is_a("tbl_df"))
 
@@ -244,7 +244,7 @@ test_that("Testing DLATK textEmbed as well as train", {
     # preprocess_PCA = c(0.20),
     preprocess_PCA = NA,
     penalty = 1e-16,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = multi_cores
   )
 
   expect_that(text_train_results$results$estimate[1], is_a("numeric"))

@@ -66,7 +66,8 @@ test_that("textTrain with strata settings", {
     outside_folds = 5,
     inside_folds = 5,
     penalty = c(1, 10),
-    mixture = c(0)
+    mixture = c(0),
+    multi_cores = multi_cores
   )
   testthat::expect_equal(group_strata2$results[[4]][[1]], .6647223, tolerance = 0.0001)
 
@@ -79,7 +80,8 @@ test_that("textTrain with strata settings", {
     outside_folds = 5,
     inside_folds = 5,
     penalty = c(1, 10),
-    mixture = c(0)
+    mixture = c(0),
+  multi_cores = multi_cores
   )
   testthat::expect_equal(group_strata3$results[[4]][[1]], .6967453, tolerance = 0.0001)
 

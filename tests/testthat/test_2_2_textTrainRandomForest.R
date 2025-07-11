@@ -9,6 +9,12 @@ context("Random Forest")
 test_that("textTrain Random Forest produces list of results with prediction being categorical", {
   skip_on_cran()
 
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
+
  set.seed(1)
  example_categories1 <- sample(c(1, 2), 40, replace = T)
  example_categories1 <- as.factor(example_categories1)
@@ -28,7 +34,8 @@ test_that("textTrain Random Forest produces list of results with prediction bein
 
  rf <- text::textTrainRandomForest(
    x = harmony_word_embeddings2$texts["satisfactiontexts"],
-   y = Language_based_assessment_data_8["gender"][1:20,]
+   y = Language_based_assessment_data_8["gender"][1:20,],
+   multi_cores = multi_cores
   )
 
  testthat::expect_that(rf, testthat::is_a("list"))
@@ -128,6 +135,13 @@ test_that("textTrainRandomForest with Extremely
           with prediction being categorical", {
   skip_on_cran()
 
+            if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+              multi_cores = FALSE
+            } else {
+              multi_cores = "multi_cores_sys_default"
+            }
+
+
   example_categories <- as.factor(c(
     1, NA, 1, 2, 1, 2, 1, 2, 1, 2,
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
@@ -217,6 +231,12 @@ test_that("textTrainRandomForest with Extremely
 
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
   skip_on_cran()
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
+
   word_embedding <- word_embeddings_4$texts[1]
   ratings_data1 <- Language_based_assessment_data_8[5]
   ratings_data2 <- Language_based_assessment_data_8[6]
@@ -278,6 +298,11 @@ test_that("textTrainLists Regression produces a list of results with prediction 
 
 test_that("textTrainLists randomForest produces list of results with prediction being numeric", {
   skip_on_cran()
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
 
   x <- word_embeddings_4$texts[1]
 
@@ -385,6 +410,11 @@ test_that("textTrainLists randomForest produces list of results with prediction 
 
 test_that("textTrainRandomForest adding word_embedding together", {
   skip_on_cran()
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
   y <- as.factor(rep(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), 4))
 
   multi_we_RF_PCA_09 <- text::textTrainRandomForest(
@@ -454,6 +484,12 @@ test_that("textTrainRandomForest adding word_embedding together", {
 
 test_that("textTrainRandomForest running multiple categories in X", {
   skip_on_cran()
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
+
 
   set.seed(1)
   tibble_copy <- Language_based_assessment_data_8 %>%
@@ -496,13 +532,19 @@ test_that("textTrainRandomForest running multiple categories in X", {
 
 test_that("training with only x_append (without word embeddings)", {
   skip_on_cran()
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
 
   test_firstTRUE <- text::textTrainRandomForest(
     x = word_embeddings_4$texts$harmonywords,
     x_append = Language_based_assessment_data_8[6:7],
     y = Language_based_assessment_data_8["gender"],
     outside_folds = 2,
-    append_first = TRUE
+    append_first = TRUE,
+    multi_cores = multi_cores
   )
   testthat::expect_that(test_firstTRUE, testthat::is_a("list"))
 
@@ -510,7 +552,8 @@ test_that("training with only x_append (without word embeddings)", {
     x = NULL,
     x_append = Language_based_assessment_data_8[6:7],
     y = Language_based_assessment_data_8[8],
-    outside_folds = 2
+    outside_folds = 2,
+    multi_cores = multi_cores
   )
 
   testthat::expect_that(test2, testthat::is_a("list"))

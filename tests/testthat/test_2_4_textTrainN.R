@@ -64,7 +64,8 @@ test_that("training with only x_append (without word embeddings)", {
     sample_percents = c(40, 60),
     n_cross_val = 2,
     sampling_strategy = "subsets",
-    use_same_penalty_mixture = TRUE
+    use_same_penalty_mixture = TRUE,
+    multi_cores = multi_cores
   )
 
   # Old
@@ -95,7 +96,8 @@ test_that("training with only x_append (without word embeddings)", {
     n_cross_val = 1,
     handle_word_embeddings = "concatenate",
     sampling_strategy = "random",
-    use_same_penalty_mixture = FALSE
+    use_same_penalty_mixture = FALSE,
+    multi_cores = multi_cores
   )
 
   testthat::expect_that(tibble_to_plot_1$results, testthat::is_a("tbl"))
@@ -127,7 +129,8 @@ test_that("training with only x_append (without word embeddings)", {
     n_cross_val = 1,
     handle_word_embeddings = "concatenate",
     sampling_strategy = "subsets",
-    use_same_penalty_mixture = FALSE
+    use_same_penalty_mixture = FALSE,
+    multi_cores = multi_cores
   )
 
   testthat::expect_that(tibble_to_plot_2$results, testthat::is_a("tbl"))

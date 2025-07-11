@@ -88,7 +88,7 @@ test_that("Testing textEmbed as well as train", {
     # preprocess_PCA = c(0.20),
     preprocess_PCA = NA,
     penalty = 1e-16,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = multi_cores
   )
 
   expect_equal(text_train_results1$results[[2]][[1]], -0.1468962, tolerance = 0.00001)
@@ -106,7 +106,7 @@ test_that("Testing textEmbed as well as train", {
     # preprocess_PCA = c(0.20),
     preprocess_PCA = NA,
     penalty = 1e-16,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = multi_cores
   )
 
   expect_that(text_train_results1$results$estimate[1], is_a("numeric"))
@@ -140,7 +140,7 @@ test_that("Testing textEmbed as well as train", {
     # preprocess_PCA = c(0.20),
     preprocess_PCA = NA,
     penalty = 1e-16,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = multi_cores
   )
   expect_that(train_x_append$language_distribution, is_a("tbl_df"))
 
@@ -221,7 +221,8 @@ test_that("Testing textEmbed as well as train", {
     y = Language_based_assessment_data_8["gender"][1:20, ],
     penalty = 1e-16,
     model = "logistic",
-    save_output = "no_plot"
+    save_output = "no_plot",
+    multi_cores = multi_cores
   )
 
   saved_size2 <- saveSize(train_log)
@@ -293,7 +294,7 @@ test_that("Testing textEmbed as well as train", {
     # preprocess_PCA = c(0.20),
     preprocess_PCA = NA,
     penalty = 1e-16,
-    multi_cores = "multi_cores_sys_default"
+    multi_cores = multi_cores
   )
 
   expect_that(text_train_results$results$estimate[1], is_a("numeric"))
