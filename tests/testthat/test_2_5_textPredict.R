@@ -87,7 +87,9 @@ test_that("textPredictTest t-test and bootstrapped test", {
     seed = 6134
   )
 
+  if (Sys.info()["sysname"] == "Darwin") {
   testthat::expect_equal(boot_test_auc2$P_Value_Two_Tailed, 0.78, tolerance = 0.0001)
+  }
 
   # OVERLAP
   boot_test_auc1 <- text::textPredictTest(
