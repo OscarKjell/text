@@ -8,6 +8,12 @@ context("Training Functions")
 test_that("textTrain with strata settings", {
   skip_on_cran()
 
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
+
   id_nr <- tibble(id_nr = rep(1:40, 4))
   df1 <- Language_based_assessment_data_8[c(1, 5:8)]
   colnames(df1) <- c("text", "hilstotal", "swlstotal", "age", "gender")
@@ -35,7 +41,8 @@ test_that("textTrain with strata settings", {
     outside_folds = 5,
     inside_folds = 5,
     penalty = c(1, 10),
-    mixture = c(0)
+    mixture = c(0),
+    multi_cores = multi_cores
     )
 
   saveSize <- function(object) {

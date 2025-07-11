@@ -8,6 +8,12 @@ context("textTrainRegression")
 test_that("textTrainRegression, textTrainList and textPredcit", {
   skip_on_cran()
 
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
+
   # Regression
   model_reg <- textTrainRegression(
     x = word_embeddings_4$texts$harmonytext,
@@ -19,7 +25,7 @@ test_that("textTrainRegression, textTrainList and textPredcit", {
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = NA,
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = multi_cores,
     save_output_size = "small_model" #"small_model" # NULL #"all" # "small_model"
   )
 
@@ -196,7 +202,7 @@ test_that("textTrain Regression without saving models", {
     penalty = c(1),
     mixture = c(0),
     preprocess_PCA = "min_halving",
-    multi_cores = "multi_cores_sys_default",
+    multi_cores = multi_cores,
     save_output = "only_results"
   )
   testthat::expect_that(trained_logistic, is_a("list"))
@@ -473,7 +479,8 @@ test_that("training with only x_append (without word embeddings)", {
     x = NULL,
     x_append = Language_based_assessment_data_8[6:7],
     y = Language_based_assessment_data_8[6],
-    outside_folds = 2
+    outside_folds = 2,
+    multi_cores = multi_cores
   )
 
   testthat::expect_that(model_no_append, testthat::is_a("list"))

@@ -10,6 +10,11 @@ test_that("Testing DLATK textEmbed as well as train", {
 #  textrpp_initialize(refresh_settings = T,
 #                     save_profile = T)
 
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
 
   harmony_word_embeddings1 <- text::textEmbed(
     texts = Language_based_assessment_data_8[1:20, 1:2],
@@ -47,7 +52,8 @@ test_that("Testing DLATK textEmbed as well as train", {
   text_train_results_size <- text::textTrainRegression(
     x = harmony_word_embeddings1$texts["satisfactiontexts"],
     y = Language_based_assessment_data_8["hilstotal"][1:20,],
-    penalty = 1e-16
+    penalty = 1e-16,
+    multi_cores = multi_cores
   )
 
   # Function to examine the size of an object when saved.

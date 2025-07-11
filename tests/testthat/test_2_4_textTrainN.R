@@ -9,6 +9,13 @@ context("textTrainN")
 test_that("training with only x_append (without word embeddings)", {
   skip_on_cran()
 
+  if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+    multi_cores = FALSE
+  } else {
+    multi_cores = "multi_cores_sys_default"
+  }
+
+
   print("training with only x_append (without word embeddings)")
   # n_cross_val = 2
   tibble_to_plot_a <- text::textTrainN(
@@ -17,7 +24,8 @@ test_that("training with only x_append (without word embeddings)", {
     sample_percents = c(40, 60),
     n_cross_val = 2,
     sampling_strategy = "random",
-    use_same_penalty_mixture = FALSE
+    use_same_penalty_mixture = FALSE,
+    multi_cores = multi_cores
   )
 
   testthat::expect_that(tibble_to_plot_a$results, testthat::is_a("tbl"))
