@@ -1,6 +1,9 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.5.5
+- added bootstrap_difference and replaced "bootstrap" with "bootstrap_overlap" in the textPredictTest() function.
+
 # text 1.5.4
 - changing `textTrainExamples()` to `textExamples()` and improving the filter_word function. 
 
