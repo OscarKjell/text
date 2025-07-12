@@ -1206,8 +1206,8 @@ textPredictTest <- function(y1,
           levels1 <- length(unique(df$truth1))
           if (levels1 > 2) {
             auc1 <- yardstick::roc_auc_vec(
-              truth = df$truth1,
-              estimate = as.matrix(df[, grepl("^pred1_", names(df))]),
+              truth = as.factor(df$truth1),
+              estimate = as.matrix(df[, grepl("^pred1$", names(df))]),
               estimator = "macro_weighted"
             )
           } else {
@@ -1222,8 +1222,8 @@ textPredictTest <- function(y1,
           levels2 <- length(unique(df$truth2))
           if (levels2 > 2) {
             auc2 <- yardstick::roc_auc_vec(
-              truth = df$truth2,
-              estimate = as.matrix(df[, grepl("^pred2_", names(df))]),
+              truth = as.factor(df$truth2),
+              estimate = as.matrix(df[, grepl("^pred2$", names(df))]),
               estimator = "macro_weighted"
             )
           } else {
