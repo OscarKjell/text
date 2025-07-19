@@ -15,20 +15,30 @@
       text_version_nr1 <- ""
     }
   )
+  OMP_msg <- ""
+  if (Sys.info()["sysname"] == "Darwin") {
+    OMP_msg <- c("MacOS detected: Setting OpenMP environment variables to avoid potential crash due to libomp conflicts.")
+    Sys.setenv(OMP_NUM_THREADS = "1")
+    Sys.setenv(OMP_MAX_ACTIVE_LEVELS = "1")
+    Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
+  }
 
   packageStartupMessage(
     colourise(
-      paste("This is text",
-        text_version_nr,
+      paste(
+        "This is text", text_version_nr,
         ".\n",
         sep = ""
       ),
       fg = "blue", bg = NULL
     ),
-    colourise("Newer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art.",
+    colourise("Newer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art.\n",
       fg = "green", bg = NULL
     ),
-    colourise("\n\nFor more information about the package see www.r-text.org.",
+    colourise(OMP_msg,
+              fg = "purple", bg = NULL
+    ),
+    colourise("\nFor more information about the package see www.r-text.org.",
       fg = "purple", bg = NULL
     )
   )

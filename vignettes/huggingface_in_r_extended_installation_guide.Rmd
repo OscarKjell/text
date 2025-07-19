@@ -45,31 +45,26 @@ If you encounter any issues, please review the tests and check the workflow file
 To view the workflow file, select the three-dot menu on the right side of any GitHub Action run and choose <b>View workflow file</b>. This file specifies the operating systems, R versions, and additional libraries being tested.
 
 ## Solving OMP errors and R/Rstudio crashes
-Recently some text users (mainly on Mac), have experienced OMP errors - and that RStudio and R crashes. When this is happening we have found the following solutions for now:
+Some macOS users may experience a crash when running functions like textEmbed() from the text package. This is due to a known conflict between multiple OpenMP libraries (e.g., libomp.dylib and libiomp5.dylib) used by Python packages such as torch and transformers.
 
+✅ Temporary Workaround (Automatically Applied)
 
-```         
-Sys.setenv(OMP_NUM_THREADS = "1") #Limit the number of threads to prevent conflicts.
+To prevent this crash, the package sets the following environment variables when running on macOS:
 
-Sys.setenv(OMP_MAX_ACTIVE_LEVELS = "1") 
-
-# Also might have to restart R
-.rs.restartR()
-
-# If above does not work, you can also try this; although this solution might have some risks assocaited with it (for more information see https://github.com/dmlc/xgboost/issues/1715)
-Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE") #Temporarily allows execution despite duplicate OpenMP libraries.
-
-### This is how you can unset the settings
-Sys.unsetenv("OMP_NUM_THREADS")
-Sys.unsetenv("OMP_MAX_ACTIVE_LEVELS")
-Sys.unsetenv("KMP_DUPLICATE_LIB_OK")
-
-# This is how you can verify the settings
-print(Sys.getenv("DYLD_LIBRARY_PATH"))
-
-
-# Please let us know if you find any other solutions. 
 ```
+Sys.setenv(OMP_NUM_THREADS = "1")
+Sys.setenv(OMP_MAX_ACTIVE_LEVELS = "1")
+Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
+```
+
+These settings:
+	- Limit the number of OpenMP threads
+	- Avoid nested threading issues
+	- Instruct macOS to ignore duplicate OpenMP libraries
+
+This workaround is safe for most users and enables smooth functionality, but note that:
+	- It may slightly reduce parallel processing performance.
+	- It bypasses a system-level issue rather than solving it permanently.
 
 
 
