@@ -143,6 +143,17 @@ jobs:
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
+      - name: Force OMP Crash-Like Conditions
+        run: |
+          Rscript -e '
+            Sys.setenv(OMP_NUM_THREADS = "4")
+            Sys.setenv(OMP_MAX_ACTIVE_LEVELS = "4")
+            options(textrpp_condaenv = "textrpp_condaenv")
+            library(text)
+            textEmbed("force crash test")
+          '
+
+
       # Session Info
       - name: Session Info
         run: |
