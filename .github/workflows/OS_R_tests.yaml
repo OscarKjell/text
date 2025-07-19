@@ -19,8 +19,8 @@ jobs:
   ##        - {os: macOS-latest, r: 'release'}
   ##        - {os: windows-latest, r: 'release'}
   ##        - {os: ubuntu-24.04, r: 'release'}
-          - {os: macOS-latest, r: 'release', python: '3.9'}
-          - {os: macOS-latest, r: 'release', python: '3.10'}
+          - {os: macOS-latest, r: '4.0.0', python: '3.9'}
+          - {os: macOS-latest, r: '4.2.0', python: '3.9'}
           - {os: macOS-latest, r: 'release', python: '3.11'}
           - {os: ubuntu-24.04, r: 'release', python: '3.9'}
           - {os: windows-latest, r: 'release', python: '3.9'}
