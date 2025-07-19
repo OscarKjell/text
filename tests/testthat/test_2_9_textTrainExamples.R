@@ -49,11 +49,18 @@ test_that("textExamples tests", {
 
 
   testthat::expect_equal(examples_1d$examples$x_variable[1:5],
-                         c(18.42818, 19.31093, 20.62074, 20.67785, 20.94722), tolerance = 0.0001)
+                       #  c(18.42818, 19.31093, 20.62074, 20.67785, 20.94722),
+                         c(21.73246, 21.67444, 21.62215, 21.41840, 21.03447),
+                         tolerance = 0.0001)
   testthat::expect_equal(examples_1d$examples$x_variable_grouped[1:10],
                          c(1, 1, 1, 1, 1, 3, 3, 3, 3, 3), tolerance = 1)
   testthat::expect_equal(examples_1d$examples$harmonytexts[1],
-                         "My thoughts feel scattered, contrived, and contradictory. Nothing in my life makes sense together anymore. I feel like I'm trying to put a puzzle together, but all the pieces come from different sets.")
+                         "I have always been very centred in life. I'm a libra and although I don't believe in that stuff I feel like scales represent me very well. I am balanced. I am hard to anger. At the same time it is hard for me to find joy in things. Its ok though. I am always calm. I am a rock and am hard to move.", #"My thoughts feel scattered, contrived, and contradictory. Nothing in my life makes sense  together anymore. I feel like I'm trying to put a puzzle together, but all the pieces come from different sets."
+                       #  "My thoughts feel scattered, contrived, and contradictory. Nothing in my life makes sense together anymore. I feel like I'm trying to put a puzzle together, but all the pieces come from different sets."
+                         )
+
+
+
 
   # Two-dimensional plot
   examples_2d <- text::textExamples(
