@@ -41,21 +41,30 @@ textEmbed("hello")
 
 ## Having installation problems with the text-package?
 
-# 1. Ensure you have installation permissions
+### 1. Ensure you have installation permissions
 Can you install other pacakges, such as dplyr:
-```{r extended_installation_condaenv, eval = FALSE}
+```{r install_other_pacakge, eval = FALSE}
 install.packages("dplyr")
 ```
 
 Can you install other system dependencies such as python: 
-```{r extended_installation_condaenv, eval = FALSE}
-... 
+```{r reticulate_installation, eval = FALSE}
+library(reticulate)
+reticulate::install_miniconda()
 ```
 
-# 2. initialise python pacakges
-```{r extended_installation_condaenv, eval = FALSE}
+### 2. initialise python packages
+```{r initialise, eval = FALSE}
 textrpp_initialize() 
 ```
+
+
+### 3. inspect diagnostic infomration
+```{r textDiagnostics(), eval = FALSE}
+library(text)
+textDiagnostics() 
+```
+
 
 
 

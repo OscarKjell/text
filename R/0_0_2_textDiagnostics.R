@@ -1,124 +1,177 @@
 
-#' Print diagnostic information for the text package environment
+get_active_python_info <- function() {
+  if (!reticulate::py_available(initialize = FALSE)) {
+    return(list(
+      initialized = FALSE,
+      message = "Python environment is not initialized. Run `textrpp_initialize()`.",
+      python_path = NULL,
+      conda_env = NULL
+    ))
+  }
+
+  config <- reticulate::py_config()
+  python_path <- normalizePath(config$python, winslash = "/", mustWork = FALSE)
+
+  conda_envs <- tryCatch(reticulate::conda_list(), error = function(e) NULL)
+
+  matched_env <- NA
+  if (!is.null(conda_envs)) {
+    # Normalize for comparison
+    conda_envs$python <- normalizePath(conda_envs$python, winslash = "/", mustWork = FALSE)
+    match_idx <- which(conda_envs$python == python_path)
+
+    if (length(match_idx) == 1) {
+      matched_env <- conda_envs$name[match_idx]
+    } else {
+      # Fallback: match based on parent path structure
+      prefix_dirs <- normalizePath(conda_envs$prefix, winslash = "/", mustWork = FALSE)
+      match_idx2 <- which(dirname(python_path) == file.path(prefix_dirs, "bin"))
+      if (length(match_idx2) == 1) {
+        matched_env <- conda_envs$name[match_idx2]
+      }
+    }
+  }
+
+  list(
+    initialized = TRUE,
+    message = "Python environment is initialized.",
+    python_path = python_path,
+    conda_env = matched_env
+  )
+}
+
+
+#' Run diagnostics for the text package
 #'
-#' @param anonymise logical; if TRUE, personal paths and usernames are redacted before displaying output (default is FALSE).
-#' @param search_other_envs search different different python environments
-#' @param search_for_omp search for OMP related packages (most relevant for MacOS, that can get conflicts).
+#' This function prints system and environment diagnostics useful for debugging or user support.
+#'
+# @param anonymise Logical; if TRUE, user paths are anonymised.
+#' @param search_omp Logical; if TRUE, scans for OMP-related shared libraries.
+#' @param include_other_envs Logical; if TRUE, lists other available Python/Conda environments.
+#' @param full_session_info Logical; if TRUE, includes full sessionInfo() output.
+#'
+#' @return A named list with all diagnostic information (also printed with message()).
 #' @export
 textDiagnostics <- function(
-    anonymise = FALSE,
-    search_other_envs = FALSE,
-    search_omp = TRUE) {
+   # anonymise = FALSE,
+    include_other_envs = TRUE,
+    search_omp = FALSE,
+    full_session_info = FALSE) {
 
-  redact_path <- function(x) {
-    if (!anonymise) return(x)
-    if (is.null(x)) return(NULL)
-    gsub(Sys.getenv("HOME"), "<home>", x)
+#  redact_path <- function(x) {
+#    if (anonymise && is.character(x)) {
+#      x <- gsub(Sys.getenv("HOME"), "~", x, fixed = TRUE)
+#      x <- gsub(Sys.info()[["user"]], "<user>", x, fixed = TRUE)
+#    }
+#    x
+#  }
+
+  diagnostics <- list()
+
+  # Session info
+  if (full_session_info) {
+    diagnostics$session_info <- sessionInfo()
   }
 
-  get_paths <- function(pattern, dirs) {
-    all_paths <- unlist(lapply(dirs, function(d) {
-      if (dir.exists(d)) {
-        list.files(d, pattern = pattern, recursive = TRUE, full.names = TRUE)
-      } else {
-        character(0)
-      }
-    }))
-    all_paths[!dir.exists(all_paths)]
-  }
+  # Basic system info
+  diagnostics$OS <- Sys.info()[["sysname"]]
+#  diagnostics$User <- if (anonymise) "<user>" else Sys.info()[["user"]]
+  diagnostics$R_version <- R.version.string
 
-  get_executables <- function(bin_name) {
-    paths <- unlist(strsplit(Sys.getenv("PATH"), .Platform$path.sep))
-    found <- character(0)
-    for (dir in paths) {
-      path <- file.path(dir, bin_name)
-      if (file.exists(path) && file.access(path, 1) == 0) {
-        found <- c(found, normalizePath(path))
-      }
-    }
-    unique(found)
-  }
+  # R package versions
+  r_packages <- c("text", "topics", "reticulate")
+  r_versions <- lapply(r_packages, function(pkg) {
+    tryCatch(as.character(packageVersion(pkg)), error = function(e) NA)
+  })
+  names(r_versions) <- r_packages
+  diagnostics$R_package_versions <- r_versions
 
-  message_section <- function(title, content) {
-    message("\n", title, ":\n", paste(content, collapse = "\n"))
-  }
+  # Python info via reticulate
+  if (reticulate::py_available(initialize = FALSE)) {
+    diagnostics$py_config <- reticulate::py_config()
+    #diagnostics$Python <- list(
+    #  python = redact_path(py_config$python),
+    #  libpython = redact_path(py_config$libpython),
+    #  pythonhome = redact_path(py_config$pythonhome),
+    #  version = py_config$version
+    #)
 
-  # Collect system information
-  os <- Sys.info()["sysname"]
-  retic_env <- Sys.getenv("RETICULATE_PYTHON", unset = NA)
-  py_config <- tryCatch(reticulate::py_config(), error = function(e) NULL)
-  conda_envs <- tryCatch(reticulate::conda_list(), error = function(e) NULL)
-  conda_bin <- tryCatch(reticulate::conda_binary(), error = function(e) NULL)
-  conda_version <- tryCatch(system2(conda_bin, "--version", stdout = TRUE), error = function(e) NULL)
+    py_versions <- tryCatch({
+      reticulate::py_run_string(
+        "import importlib.metadata as m; versions = {pkg: m.version(pkg) for pkg in [
+        'torch',
+        'transformers',
+        'huggingface_hub',
+        'numpy',
+        'pandas',
+        'nltk',
+        'scikit-learn',
+        'datasets',
+        'evaluate',
+        'accelerate',
+        'bertopic',
+        'jsonschema',
+        'sentence-transformers',
+        'flair',
+        'umap-learn',
+        'hdbscan',
+        'scipy'
+        ]}"
+      )
+      reticulate::py$versions
+    }, error = function(e) {
+      warning("Could not retrieve Python package versions: ", e$message)
+      NULL
+    })
 
-  omp_libs <- if (search_omp) {
-    get_paths("libomp", c("/usr/local/lib", "/opt/homebrew/lib", "/usr/lib", Sys.getenv("HOME")))
+    diagnostics$Python_package_versions <- py_versions
   } else {
-    character(0)
+    diagnostics$Python <- "Python not available"
   }
 
-  other_pythons <- if (search_other_envs) get_executables("python3") else character(0)
-  other_condas <- if (search_other_envs) get_executables("conda") else character(0)
-
-  diagnostics <- list(
-    os = os,
-    python_forced_by_env = if (!is.na(retic_env)) redact_path(retic_env) else NULL,
-    python_version = if (!is.null(py_config)) py_config$version else NULL,
-    python_path = if (!is.null(py_config)) redact_path(py_config$python) else NULL,
-    libpython = if (!is.null(py_config)) redact_path(py_config$libpython) else NULL,
-    numpy = if (!is.null(py_config)) redact_path(py_config$numpy) else NULL,
-    numpy_version = if (!is.null(py_config)) py_config$numpy_version else NULL,
-    conda_path = redact_path(conda_bin),
-    conda_version = conda_version,
-    conda_envs = if (!is.null(conda_envs)) conda_envs$name else NULL,
-    omp_libraries = redact_path(omp_libs),
-    other_python_executables = redact_path(other_pythons),
-    other_conda_executables = redact_path(other_condas)
-  )
-
-  # Print summary
-  message("==== textDiagnostics() ====")
-  message("OS: ", diagnostics$os)
-
-  if (!is.null(diagnostics$python_forced_by_env)) {
-    message("NOTE: Python version was forced by RETICULATE_PYTHON")
-    message("RETICULATE_PYTHON: ", diagnostics$python_forced_by_env)
-  }
-
-  if (!is.null(diagnostics$python_version)) {
-    message("Python version: ", diagnostics$python_version)
-    message("Python path: ", diagnostics$python_path)
-    message("libpython: ", diagnostics$libpython)
-    message("numpy version: ", diagnostics$numpy_version)
-    message("numpy path: ", diagnostics$numpy)
+  # OMP libraries
+  if (search_omp) {
+    omp_libs <- system("find / -name 'libomp*' 2>/dev/null", intern = TRUE)
+    diagnostics$OMP_libraries_found <- if (length(omp_libs)) omp_libs else "None found"
   } else {
-    message("Python not configured.")
+    diagnostics$OMP_libraries_found <- "Search disabled"
   }
 
-  message("Conda binary: ", diagnostics$conda_path)
-  if (!is.null(diagnostics$conda_version)) {
-    message("Conda version: ", diagnostics$conda_version)
+  # Other environments
+  if (include_other_envs && reticulate::py_available(initialize = FALSE)) {
+    diagnostics$Other_Conda_Envs <- tryCatch(
+      reticulate::conda_list(),
+      error = function(e) "Unable to query conda environments"
+    )
+    diagnostics$Other_Python_Envs <- tryCatch(
+      reticulate::py_discover_config(),
+      error = function(e) "Unable to discover other Python environments"
+    )
   }
 
-  if (!is.null(diagnostics$conda_envs)) {
-    message("Conda environments:")
-    for (env in diagnostics$conda_envs) {
-      message("  - ", env)
-    }
+  python_initialized <- reticulate::py_available(initialize = FALSE)
+
+  if (!python_initialized) {
+    message("Python environment is not initialized. Run `textrpp_initialize()`.")
   }
 
-  if (search_omp && length(diagnostics$omp_libraries) > 0) {
-    message_section("OMP libraries found", diagnostics$omp_libraries)
+  diagnostics$python_initialized <- get_active_python_info()
+
+
+  # Print summary (not full)
+  message("\n--- textDiagnostics Summary ---")
+  message("OS:             ", diagnostics$OS)
+#  message("User:           ", diagnostics$User)
+  message("R Version:      ", diagnostics$R_version)
+  message("text version:   ", diagnostics$R_package_versions$text)
+  if (!is.null(diagnostics$py_config))
+    message("Python version: ", diagnostics$py_config)
+  if (!is.null(diagnostics$py_config)) {
+    message("Python packages:")
+    pkgs <- diagnostics$Python_package_versions
+    for (pkg in names(pkgs)) message("  ", pkg, ": ", pkgs[[pkg]])
   }
 
-  if (search_other_envs) {
-    if (length(diagnostics$other_python_executables) > 0) {
-      message_section("Other Python executables found", diagnostics$other_python_executables)
-    }
-    if (length(diagnostics$other_conda_executables) > 0) {
-      message_section("Other Conda executables found", diagnostics$other_conda_executables)
-    }
-  }
-
+  message("\nTo see more details, examine the returned object.")
   invisible(diagnostics)
 }

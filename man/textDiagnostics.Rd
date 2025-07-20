@@ -2,21 +2,24 @@
 % Please edit documentation in R/0_0_2_textDiagnostics.R
 \name{textDiagnostics}
 \alias{textDiagnostics}
-\title{Print diagnostic information for the text package environment}
+\title{Run diagnostics for the text package}
 \usage{
 textDiagnostics(
-  anonymise = FALSE,
-  search_other_envs = FALSE,
-  search_omp = TRUE
+  include_other_envs = TRUE,
+  search_omp = FALSE,
+  full_session_info = FALSE
 )
 }
 \arguments{
-\item{anonymise}{logical; if TRUE, personal paths and usernames are redacted before displaying output (default is FALSE).}
+\item{include_other_envs}{Logical; if TRUE, lists other available Python/Conda environments.}
 
-\item{search_other_envs}{search different different python environments}
+\item{search_omp}{Logical; if TRUE, scans for OMP-related shared libraries.}
 
-\item{search_for_omp}{search for OMP related packages (most relevant for MacOS, that can get conflicts).}
+\item{full_session_info}{Logical; if TRUE, includes full sessionInfo() output.}
+}
+\value{
+A named list with all diagnostic information (also printed with message()).
 }
 \description{
-Print diagnostic information for the text package environment
+This function prints system and environment diagnostics useful for debugging or user support.
 }
