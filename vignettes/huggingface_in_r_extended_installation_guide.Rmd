@@ -38,6 +38,28 @@ textEmbed("hello")
 ```
 
 
+
+## Having installation problems with the text-package?
+
+# 1. Ensure you have installation permissions
+Can you install other pacakges, such as dplyr:
+```{r extended_installation_condaenv, eval = FALSE}
+install.packages("dplyr")
+```
+
+Can you install other system dependencies such as python: 
+```{r extended_installation_condaenv, eval = FALSE}
+... 
+```
+
+# 2. initialise python pacakges
+```{r extended_installation_condaenv, eval = FALSE}
+textrpp_initialize() 
+```
+
+
+
+
 ## System-level set up and Github actions
 Because the text package requires some system-level setup, installation is automatically verified on Windows, macOS, and Ubuntu through our [GitHub Actions](https://github.com/OscarKjell/text/actions).
 If you encounter any issues, please review the tests and check the workflow file for details on system-specific installations.
@@ -66,6 +88,13 @@ This workaround is safe for most users and enables smooth functionality, but not
 	- It may slightly reduce parallel processing performance.
 	- It bypasses a system-level issue rather than solving it permanently.
 
+The text package sets OpenMP-related environment variables for compatibility with PyTorch to avoid crashes due to libomp.dylib conflicts.
+You can skip this behavior by setting:
+
+```
+Sys.setenv(TEXT_SKIP_OMP_PATCH = "TRUE")
+library(text)
+```
 
 
 ## Solving Mac OS errors

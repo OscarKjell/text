@@ -17,11 +17,8 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest, r: 'release'}
-          - {os: macOS-13, r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: windows-2019, r: 'release'}
           - {os: ubuntu-24.04, r: 'release'}
-          - {os: ubuntu-22.04, r: 'release'}
           - {os: macOS-latest, r: '4.3.0', python: '3.9'}
           - {os: macOS-latest, r: '4.3.0', python: '3.11'}
 

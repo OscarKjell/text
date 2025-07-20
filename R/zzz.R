@@ -1,6 +1,74 @@
+text_check_permissions <- function() {
+  if (tolower(Sys.getenv("TEXT_SKIP_PERM_CHECK", unset = "FALSE")) == "true") {
+    return(invisible(NULL))
+  }
+
+  sysname <- Sys.info()[["sysname"]]
+  os_type <- .Platform$OS.type
+
+  # A) Check R package install permission
+  lib_path <- .libPaths()[1]
+  can_write_lib <- file.access(lib_path, 2) == 0
+  if (!can_write_lib) {
+    message("[text]: You do not have permission to install R packages to your default library:\n",
+            "        ", lib_path, "\n",
+            "        Try running R with elevated permissions or contact your system administrator.")
+  }
+
+  # B) Check system dependency installation
+  if (os_type == "unix") {
+    # macOS-specific
+    if (sysname == "Darwin") {
+      brew_exists <- Sys.which("brew") != ""
+      has_sudo <- system("sudo -n true", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
+      if (!brew_exists && !has_sudo) {
+        message("[text]: You may not have permission to install system libraries (e.g., libomp) on macOS.\n",
+                "        Consider asking your system administrator to install Homebrew and libomp.")
+      }
+    }
+
+    # Linux-specific
+    if (sysname == "Linux") {
+      has_sudo <- system("sudo -n true", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
+      if (!has_sudo) {
+        message("[text]: You may not have permission to install system-level libraries (e.g., libomp, build tools).\n",
+                "        Consider contacting your system administrator.")
+      }
+    }
+  }
+
+  # C) Windows-specific
+  if (os_type == "windows") {
+    conda_exists <- Sys.which("conda") != ""
+    pip_exists <- Sys.which("pip") != ""
+    running_as_admin <- tryCatch({
+      shell("fsutil dirty query %systemdrive%", intern = TRUE)
+      TRUE
+    }, error = function(e) FALSE)
+
+    if (!conda_exists || !pip_exists) {
+      message("[text]: You may be missing Python tools required for language models (conda or pip).\n",
+              "         Please install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) and restart R.")
+    }
+
+    if (!running_as_admin) {
+      message("[text]: R does not appear to be running as Administrator.\n",
+              "        This might limit your ability to install system-level software.\n",
+              "        You can try right-clicking R or RStudio and choosing 'Run as administrator'.")
+    }
+  }
+
+  invisible(NULL)
+}
+
+
 #' @importFrom utils packageVersion
 #' @noRd
 .onAttach <- function(libname, pkgname) {
+
+  # Check installation permissions
+  text_check_permissions()
+
   if (!grepl(x = R.Version()$arch, pattern = "64")) {
     warning("The text package requires running R on a 64-bit systems
             as it is dependent on torch from ptyhon; and you're
@@ -16,12 +84,23 @@
     }
   )
   OMP_msg <- ""
-  if (Sys.info()["sysname"] == "Darwin") {
-    OMP_msg <- c("MacOS detected: Setting OpenMP environment variables to avoid potential crash due to libomp conflicts.")
-    Sys.setenv(OMP_NUM_THREADS = "1")
-    Sys.setenv(OMP_MAX_ACTIVE_LEVELS = "1")
-    Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
+  if (Sys.info()[["sysname"]] == "Darwin") {
+    skip_patch <- Sys.getenv("TEXT_SKIP_OMP_PATCH", unset = "FALSE")
+    if (tolower(skip_patch) != "true") {
+      Sys.setenv(OMP_NUM_THREADS = "1")
+      Sys.setenv(OMP_MAX_ACTIVE_LEVELS = "1")
+      Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
+      OMP_msg <- c("MacOS detected: Setting OpenMP environment variables to avoid potential crash due to libomp conflicts.")
+    } else {
+      OMP_msg <- c("Skipped setting OpenMP environment variables (TEXT_SKIP_OMP_PATCH is TRUE)")
+    }
   }
+#  if (Sys.info()["sysname"] == "Darwin") {
+#    OMP_msg <- c("MacOS detected: Setting OpenMP environment variables to avoid potential crash due to libomp conflicts.")
+#    Sys.setenv(OMP_NUM_THREADS = "1")
+#    Sys.setenv(OMP_MAX_ACTIVE_LEVELS = "1")
+#    Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
+#  }
 
   packageStartupMessage(
     colourise(

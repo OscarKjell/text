@@ -45,6 +45,7 @@ reference:
   - textrpp_install_virtualenv
   - textrpp_uninstall
   - textrpp_initialize
+  - textDiagnostics
 - title: Transform text to word embeddings
   contents:
   - textEmbed
