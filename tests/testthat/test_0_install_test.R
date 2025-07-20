@@ -27,22 +27,16 @@ test_that("installing text", {
     log1 <- text::textDiagnostics()
 
     logTRUE <- text::textDiagnostics(
-      anonymise = TRUE,
       include_other_envs = TRUE,
       search_omp = TRUE,
       full_session_info = TRUE
     )
 
     logFALSE <- text::textDiagnostics(
-      anonymise = FALSE,
       include_other_envs = FALSE,
       search_omp = FALSE,
       full_session_info = FALSE
     )
-
-
-
-
 
   }
 
