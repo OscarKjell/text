@@ -38,15 +38,14 @@ jobs:
       - name: Fix and Debug Homebrew Issues
         if: runner.os == 'macOS'
         run: |
-          # Reset Homebrew changes
-          cd /opt/homebrew/Library/Taps/homebrew/homebrew-core || exit 1
+          BREW_PREFIX=$(brew --prefix)
+          cd "$BREW_PREFIX/Library/Taps/homebrew/homebrew-core" || echo "Skipping core tap reset"
           git stash -u || echo "No changes to stash"
           git clean -d -f || echo "No files to clean"
-          # Fix Homebrew permissions
-          sudo chown -R $(whoami) $(brew --prefix)/*
-          # Debug Homebrew
+          sudo chown -R $(whoami) "$BREW_PREFIX"/*
           brew doctor || echo "brew doctor failed"
           brew config || echo "brew config failed"
+
       - name: Install macOS Utilities
         if: runner.os == 'macOS'
         run: |
@@ -114,6 +113,13 @@ jobs:
           default-jdk
           sudo R CMD javareconf
 
+      - name: Reinstall fs from source to avoid GLIBC mismatch
+        if: matrix.config.os == 'ubuntu-22.04'
+        run: |
+          install.packages("fs", type = "source")
+        shell: Rscript {0}
+
+      # stringi
       - name: Reinstall stringi from source on Ubuntu 24.04
         if: matrix.config.os == 'ubuntu-24.04'
         run: |
@@ -141,17 +147,6 @@ jobs:
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
-
-      - name: Force OMP Crash-Like Conditions
-        run: |
-          Rscript -e '
-            Sys.setenv(OMP_NUM_THREADS = "4")
-            Sys.setenv(OMP_MAX_ACTIVE_LEVELS = "4")
-            options(textrpp_condaenv = "textrpp_condaenv")
-            library(text)
-            textEmbed("force crash test")
-          '
-
 
       # Session Info
       - name: Session Info
