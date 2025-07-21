@@ -68,19 +68,20 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-      # Install "text" and check system
-      - name: Install and Test "text" Package
+      # textDiagnostics() -- Install "text" and check system
+      - name: textDiagnostics -- install text
         run: |
           install.packages("devtools")
           library(devtools)
           devtools::install_github("oscarkjell/text")
           library(text)
-          textDiagnostics()
+          log <- textDiagnostics()
+          log
         shell: Rscript {0}
 
 
-       # This is needed in macOS to solve OMP (for making embeddings)
-      - name: Install macOS Utilities
+       # macOS dependencies to solve OMP (for making embeddings)
+      - name: Install macOS OMP dependencies
         if: runner.os == 'macOS'
         run: |
           brew update || echo "Homebrew update failed"
@@ -91,7 +92,7 @@ jobs:
 
 
       # Install system dependencies fo Ubuntu
-      - name: Install system dependencies
+      - name: Install Ubuntu dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -y
@@ -113,14 +114,14 @@ jobs:
           sudo R CMD javareconf
 
       # textrpp_install()
-      - name: Install and Test "text" Package
+      - name: textrpp_install -- install the text
         run: |
           text::textrpp_install(prompt = FALSE)
         shell: Rscript {0}
 
 
       # textrpp_initialize()
-      - name: Install and Test "text" Package
+      - name: textrpp_initialize -- test embeddings
         run: |
           library(text)
           text::textrpp_initialize(textEmbed_test = TRUE)

@@ -49,43 +49,71 @@ get_active_python_info <- function() {
 # after textEmbed()'
 # You know, first installing no dependencies... failing gracefully with information provided what is needed... and then do that in the next github action section and try again... failing graecfully.
 
-check_macos_githubaction_dependencies <- function() {
+check_macos_githubaction_dependencies <- function(verbose = TRUE) {
   if (!is_osx()) return(invisible(NULL))
+
+  results <- list(
+    os = "macOS",
+    homebrew_installed = FALSE,
+    libomp_installed = NA,
+    qpdf_installed = NA,
+    summary_lines = character(0)
+  )
+
+  msg_lines <- c()
 
   brew_path <- Sys.which("brew")
   if (brew_path == "") {
-    warning("Homebrew is not installed. Please install it from https://brew.sh/.")
-    return(invisible(NULL))
+    warning("Homebrew is not installed. Please install it from https://brew.sh/")
+    msg_lines <- c(
+      "Homebrew is not installed.",
+      "To install it, open your Terminal and run:",
+      '  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+    )
+    if (verbose) message(paste(msg_lines, collapse = "\n"))
+    results$summary_lines <- msg_lines
+    return(invisible(results))
   }
 
-  # Check if libomp is installed
-  libomp_installed <- system("brew list libomp", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
-  if (!libomp_installed) {
-    warning(
-      "The 'libomp' library is not installed on your macOS system.\n",
-      "This is required for optimal performance of some text functions (e.g., transformers/tokenizers).\n",
-      "Install it using:\n  brew install libomp"
+  results$homebrew_installed <- TRUE
+  msg_lines <- c(msg_lines, "Homebrew is installed.")
+
+  results$libomp_installed <- system("brew list libomp", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
+  if (results$libomp_installed) {
+    msg_lines <- c(msg_lines, "'libomp' is installed.")
+  } else {
+    warning("The 'libomp' library is not installed. It is required for optimal performance.")
+    msg_lines <- c(
+      msg_lines,
+      "'libomp' is not installed.",
+      "To install it, run:",
+      "  brew install libomp"
     )
   }
 
-  # Optional: Check for qpdf if relevant
-  qpdf_installed <- system("brew list qpdf", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
-  if (!qpdf_installed) {
-    message("Optional: You may install 'qpdf' with Homebrew for PDF processing: brew install qpdf")
+  results$qpdf_installed <- system("brew list qpdf", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
+  if (results$qpdf_installed) {
+    msg_lines <- c(msg_lines, "'qpdf' is installed (optional).")
+  } else {
+    msg_lines <- c(
+      msg_lines,
+      "'qpdf' is not installed (optional).",
+      "You can install it using:",
+      "  brew install qpdf"
+    )
   }
 
-  invisible(NULL)
-}
+  results$summary_lines <- msg_lines
+  if (verbose) message(paste(msg_lines, collapse = "\n"))
 
+  invisible(results)
+}
 #macOS_deps <- check_macos_githubaction_dependencies()
 
 
-check_linux_githubaction_dependencies <- function() {
+check_linux_githubaction_dependencies <- function(verbose = TRUE) {
   if (!is_linux()) return(invisible(NULL))
 
-  missing <- c()
-
-  # Define the system libraries you expect
   required_libs <- c(
     "libcurl4-openssl-dev",
     "libgit2-dev",
@@ -103,22 +131,44 @@ check_linux_githubaction_dependencies <- function() {
     "default-jdk"
   )
 
-  # Check each one
+  status_list <- setNames(logical(length(required_libs)), required_libs)
+  summary_lines <- character()
+
   for (lib in required_libs) {
-    status <- system2("dpkg", c("-s", lib), stdout = NULL, stderr = NULL)
-    if (!identical(status, 0L)) missing <- c(missing, lib)
+    installed <- system2("dpkg", c("-s", lib), stdout = NULL, stderr = NULL) == 0
+    status_list[lib] <- installed
+
+    if (installed) {
+      summary_lines <- c(summary_lines, paste0(lib, " is installed."))
+    } else {
+      summary_lines <- c(summary_lines, paste0(lib, " is NOT installed."))
+    }
   }
+
+  missing <- names(status_list)[!status_list]
 
   if (length(missing) > 0) {
-    warning(
-      "The following system libraries are missing from your Linux system and may be required for full functionality:\n",
-      paste("  -", missing, collapse = "\n"), "\n\n",
-      "Install them using (for Debian/Ubuntu):\n",
-      "  sudo apt-get install -y ", paste(missing, collapse = " "), "\n"
+    install_instructions <- c(
+      "The following system libraries are missing from your Linux system and may be required for full functionality:",
+      paste("  -", missing),
+      "",
+      "To install them on Debian/Ubuntu systems, run:",
+      paste0("  sudo apt-get install -y ", paste(missing, collapse = " "))
     )
+    summary_lines <- c(summary_lines, "", install_instructions)
+    warning(paste(install_instructions, collapse = "\n"))
   }
 
-  invisible(NULL)
+  result <- list(
+    os = "Linux",
+    installed = status_list,
+    missing = missing,
+    summary_lines = summary_lines
+  )
+
+  if (verbose) message(paste(summary_lines, collapse = "\n"))
+
+  invisible(result)
 }
 
 
@@ -138,6 +188,13 @@ textDiagnostics <- function(
     include_other_envs = TRUE,
     search_omp = FALSE,
     full_session_info = FALSE) {
+
+  macos_log <- check_macos_githubaction_dependencies()
+  linux_log <- check_linux_githubaction_dependencies()
+
+
+  # Should potentially verbose stop here if something is
+  # Try continue with the installation or stop to first install the recommendations
 
   diagnostics <- list()
 
@@ -230,6 +287,8 @@ textDiagnostics <- function(
 
   diagnostics$python_initialized <- get_active_python_info()
 
+  diagnostics$macos_log <- macos_log
+  diagnostics$linux_log <- linux_log
 
   # Print summary (not full)
   message("\n--- textDiagnostics Summary ---")
@@ -244,6 +303,9 @@ textDiagnostics <- function(
     pkgs <- diagnostics$Python_package_versions
     for (pkg in names(pkgs)) message("  ", pkg, ": ", pkgs[[pkg]])
   }
+
+  message(macos_log$summary_lines)
+  message(linux_log$summary_lines)
 
   message("\nTo see more details, examine the returned object.")
   invisible(diagnostics)
