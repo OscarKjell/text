@@ -504,18 +504,31 @@ textrpp_uninstall <- function(conda = "auto",
 ###### see utils.R in spacyr
 # checking OS functions, thanks to r-tensorflow;
 
+#' Checking whether it is windows
+#' @return TRUE if is is windows otherwise FALSE
+#' @noRd
 is_windows <- function() {
   identical(.Platform$OS.type, "windows")
 }
 
+#' Checking whether it is unix
+#' @return TRUE if is is unix otherwise FALSE
+#' @noRd
 is_unix <- function() {
   identical(.Platform$OS.type, "unix")
 }
 
+
+#' Checking whether it is macOS
+#' @return TRUE if is is macOS otherwise FALSE
+#' @noRd
 is_osx <- function() {
   Sys.info()["sysname"] == "Darwin"
 }
 
+#' Checking whether it is linux
+#' @return TRUE if is is linux otherwise FALSE
+#' @noRd
 is_linux <- function() {
   identical(tolower(Sys.info()[["sysname"]]), "linux")
 }
