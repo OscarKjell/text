@@ -17,8 +17,8 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest, r: 'release'}
-#          - {os: windows-latest, r: 'release'}
-#          - {os: ubuntu-24.04, r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-24.04, r: 'release'}
 #          - {os: macOS-latest, r: '4.3.0', python: '3.9'}
 #          - {os: macOS-latest, r: '4.3.0', python: '3.11'}
 
@@ -78,7 +78,19 @@ jobs:
           textDiagnostics()
         shell: Rscript {0}
 
-      # Install system dependencies (Linux only)
+
+       # This is needed in macOS to solve OMP (for making embeddings)
+      - name: Install macOS Utilities
+        if: runner.os == 'macOS'
+        run: |
+          brew update || echo "Homebrew update failed"
+          brew install libomp || echo "libomp installation failed"
+          brew install qpdf || echo "qpdf installation failed but continuing"
+          export DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib
+          echo "DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib" >> $GITHUB_ENV
+
+
+      # Install system dependencies fo Ubuntu
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
@@ -100,15 +112,20 @@ jobs:
           default-jdk
           sudo R CMD javareconf
 
-      # Install and test "text" package
+      # textrpp_install()
       - name: Install and Test "text" Package
         run: |
-          install.packages("devtools")
-          library(devtools)
-          devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
-#######          text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
+
+
+      # textrpp_initialize()
+      - name: Install and Test "text" Package
+        run: |
+          library(text)
+          text::textrpp_initialize(textEmbed_test = TRUE)
+        shell: Rscript {0}
+
 
       # Session Info
       - name: Session Info
