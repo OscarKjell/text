@@ -40,7 +40,10 @@ get_active_python_info <- function() {
   )
 }
 
-
+#' Check macos githubaction dependencies
+#' @param verbose If TRUE provides verbose information
+#' @return infomration regrding system dependencies
+#' @noRd
 check_macos_githubaction_dependencies <- function(verbose = TRUE) {
   if (!is_osx()) return(invisible(NULL))
 
@@ -153,6 +156,11 @@ check_macos_githubaction_dependencies <- function(verbose = TRUE) {
   invisible(result)
 }
 
+
+#' Check linux githubaction dependencies
+#' @param verbose If TRUE provides verbose information
+#' @return infomration regrding system dependencies
+#' @noRd
 check_linux_githubaction_dependencies <- function(verbose = TRUE) {
   if (!is_linux()) return(invisible(NULL))
 
@@ -225,6 +233,8 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
 
   invisible(result)
 }
+
+
 #' Run diagnostics for the text package
 #'
 #' This function prints system and environment diagnostics useful for debugging or user support.
@@ -352,69 +362,3 @@ textDiagnostics <- function(
   message("\nTo see more details, examine the returned object.")
   invisible(diagnostics)
 }
-
-
-
-
-#check_user_install_permissions <- function() {
-#  message("Checking user installation permissions...\n")
-#
-#  # Check 1: Can user install R packages?
-#  r_lib <- Sys.getenv("R_LIBS_USER")
-#  if (r_lib == "") {
-#    r_lib <- .libPaths()[1]
-#  }
-#
-#  can_write_r_lib <- tryCatch({
-#    test_file <- file.path(r_lib, paste0(".__write_test__", Sys.getpid()))
-#    dir.create(r_lib, showWarnings = FALSE, recursive = TRUE)
-#    file.create(test_file)
-#    file.remove(test_file)
-#    TRUE
-#  }, error = function(e) FALSE)
-#
-#  if (can_write_r_lib) {
-#    message("You appear to have permission to install R packages (user library: ", r_lib, ").")
-#  } else {
-#    warning("You do NOT have permission to install R packages to your user library.\n",
-#            "You may need to run R with elevated privileges or request access.\n",
-#            "R_LIBS_USER: ", r_lib)
-#  }
-#
-#  # Check 2: Can user install system-level dependencies (e.g., python, conda)?
-#  has_write_access_system_dirs <- function(paths) {
-#    for (p in paths) {
-#      tryCatch({
-#        test_file <- file.path(p, paste0(".__write_test__", Sys.getpid()))
-#        if (dir.exists(p) && file.create(test_file)) {
-#          file.remove(test_file)
-#          return(TRUE)
-#        }
-#      }, error = function(e) {})
-#    }
-#    return(FALSE)
-#  }
-#
-#  # Candidate system locations (depending on OS)
-#  system_paths <- if (.Platform$OS.type == "windows") {
-#    c("C:/Program Files", "C:/Program Files (x86)")
-#  } else {
-#    c("/usr/local", "/opt", "/usr/bin", "/Library")
-#  }
-#
-#  can_install_system <- has_write_access_system_dirs(system_paths)
-#
-#  if (can_install_system) {
-#    message("You appear to have write access to system locations (needed for tools like Python or Conda).")
-#  } else {
-#    warning("You do NOT have write access to standard system locations.\n",
-#            "You may not be able to install Python/Conda or system packages without admin rights.\n",
-#            "If needed, install into a user-owned location or contact your system administrator.")
-#  }
-#
-#  invisible(list(
-#    can_write_r_lib = can_write_r_lib,
-#    can_install_system = can_install_system,
-#    r_lib_path = r_lib
-#  ))
-#}
