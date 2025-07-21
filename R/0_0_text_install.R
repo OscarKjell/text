@@ -156,15 +156,62 @@ install_rust_if_needed <- function(prompt = TRUE) {
 #' textrpp_install(conda = "~/anaconda/bin/")
 #' }
 #' @export
-textrpp_install <- function(conda = "auto",
-                            update_conda = FALSE,
-                            force_conda = FALSE,
-                            rpp_version = "rpp_version_system_specific_defaults",
-                            python_version = "python_version_system_specific_defaults",
-                            envname = "textrpp_condaenv",
-                            pip = TRUE,
-                            python_path = NULL,
-                            prompt = TRUE) {
+textrpp_install <- function(
+    conda = "auto",
+    update_conda = FALSE,
+    force_conda = FALSE,
+    rpp_version = "rpp_version_system_specific_defaults",
+    python_version = "python_version_system_specific_defaults",
+    envname = "textrpp_condaenv",
+    pip = TRUE,
+    python_path = NULL,
+    prompt = TRUE
+    ) {
+
+
+  # Check system-level dependencies
+  macos_log <- check_macos_githubaction_dependencies(verbose = prompt)
+  linux_log <- check_linux_githubaction_dependencies(verbose = prompt)
+
+  # Collect missing dependencies
+  critical_missing <- character()
+  terminal_command <- NULL
+
+  if (!is.null(macos_log$missing) && length(macos_log$missing) > 0) {
+    critical_missing <- c(critical_missing, macos_log$missing)
+    terminal_command <- paste0("brew install ", paste(macos_log$missing, collapse = " "))
+  }
+
+  if (!is.null(linux_log$missing) && length(linux_log$missing) > 0) {
+    critical_missing <- c(critical_missing, linux_log$missing)
+    terminal_command <- paste0("sudo apt-get install -y ", paste(linux_log$missing, collapse = " "))
+  }
+
+  # Stop or prompt depending on `prompt` setting
+  if (length(critical_missing) > 0) {
+    message("\nSystem dependency check identified the following missing libraries:")
+    for (pkg in critical_missing) {
+      message("  - ", pkg)
+    }
+
+    if (!is.null(terminal_command)) {
+      message("\nTo install them, open your terminal and run:")
+      message("  ", terminal_command)
+    }
+
+    if (!prompt) {
+      message("\nInstallation stopped. Set `prompt = TRUE` if you wish to override and proceed anyway.")
+      return(invisible(NULL))
+    } else {
+      ans <- utils::menu(c("No", "Yes"), title = "\nDo you still want to continue with installation?")
+      if (ans == 1) {
+        message("Installation cancelled due to missing system dependencies.")
+        return(invisible(NULL))
+      }
+    }
+  }
+
+
   # Set system specific default versions
   if (rpp_version[[1]] == "rpp_version_system_specific_defaults") {
     if (is_osx() || is_linux()) {

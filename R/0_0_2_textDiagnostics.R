@@ -108,7 +108,6 @@ check_macos_githubaction_dependencies <- function(verbose = TRUE) {
 
   invisible(results)
 }
-#macOS_deps <- check_macos_githubaction_dependencies()
 
 
 check_linux_githubaction_dependencies <- function(verbose = TRUE) {
@@ -132,31 +131,30 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
   )
 
   status_list <- setNames(logical(length(required_libs)), required_libs)
-  summary_lines <- character()
-
   for (lib in required_libs) {
     installed <- system2("dpkg", c("-s", lib), stdout = NULL, stderr = NULL) == 0
     status_list[lib] <- installed
-
-    if (installed) {
-      summary_lines <- c(summary_lines, paste0(lib, " is installed."))
-    } else {
-      summary_lines <- c(summary_lines, paste0(lib, " is NOT installed."))
-    }
   }
 
+  installed <- names(status_list)[status_list]
   missing <- names(status_list)[!status_list]
 
+  summary_lines <- character()
+  if (length(installed) > 0) {
+    summary_lines <- c(summary_lines, "Installed system libraries:", paste("  -", installed))
+  }
+
   if (length(missing) > 0) {
-    install_instructions <- c(
-      "The following system libraries are missing from your Linux system and may be required for full functionality:",
+    summary_lines <- c(
+      summary_lines,
+      "",
+      "Missing system libraries required for full functionality:",
       paste("  -", missing),
       "",
       "To install them on Debian/Ubuntu systems, run:",
       paste0("  sudo apt-get install -y ", paste(missing, collapse = " "))
     )
-    summary_lines <- c(summary_lines, "", install_instructions)
-    warning(paste(install_instructions, collapse = "\n"))
+    warning("Some required system libraries are missing. See message for details.")
   }
 
   result <- list(
@@ -170,7 +168,6 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
 
   invisible(result)
 }
-
 
 #' Run diagnostics for the text package
 #'
@@ -191,10 +188,6 @@ textDiagnostics <- function(
 
   macos_log <- check_macos_githubaction_dependencies()
   linux_log <- check_linux_githubaction_dependencies()
-
-
-  # Should potentially verbose stop here if something is
-  # Try continue with the installation or stop to first install the recommendations
 
   diagnostics <- list()
 
@@ -219,12 +212,6 @@ textDiagnostics <- function(
   # Python info via reticulate
   if (reticulate::py_available(initialize = FALSE)) {
     diagnostics$py_config <- reticulate::py_config()
-    #diagnostics$Python <- list(
-    #  python = redact_path(py_config$python),
-    #  libpython = redact_path(py_config$libpython),
-    #  pythonhome = redact_path(py_config$pythonhome),
-    #  version = py_config$version
-    #)
 
     py_versions <- tryCatch({
       reticulate::py_run_string(
@@ -293,7 +280,6 @@ textDiagnostics <- function(
   # Print summary (not full)
   message("\n--- textDiagnostics Summary ---")
   message("OS:             ", diagnostics$OS)
-#  message("User:           ", diagnostics$User)
   message("R Version:      ", diagnostics$R_version)
   message("text version:   ", diagnostics$R_package_versions$text)
   if (!is.null(diagnostics$py_config))
