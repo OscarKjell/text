@@ -40,6 +40,34 @@ get_active_python_info <- function() {
   )
 }
 
+check_macos_dependencies <- function() {
+  if (!is_osx()) return(invisible(NULL))
+
+  brew_path <- Sys.which("brew")
+  if (brew_path == "") {
+    warning("Homebrew is not installed. Please install it from https://brew.sh/.")
+    return(invisible(NULL))
+  }
+
+  # Check if libomp is installed
+  libomp_installed <- system("brew list libomp", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
+  if (!libomp_installed) {
+    warning(
+      "The 'libomp' library is not installed on your macOS system.\n",
+      "This is required for optimal performance of some text functions (e.g., transformers/tokenizers).\n",
+      "Install it using:\n  brew install libomp"
+    )
+  }
+
+  # Optional: Check for qpdf if relevant
+  qpdf_installed <- system("brew list qpdf", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
+  if (!qpdf_installed) {
+    message("Optional: You may install 'qpdf' with Homebrew for PDF processing: brew install qpdf")
+  }
+
+  invisible(NULL)
+}
+
 
 #' Run diagnostics for the text package
 #'
