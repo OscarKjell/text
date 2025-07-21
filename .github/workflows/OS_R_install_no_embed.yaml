@@ -54,12 +54,12 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.config.python }}
 
-      - name: Install Conda Dependencies
-        run: |
-          conda config --add channels defaults
-          conda config --set solver classic
-          conda install -c conda-forge numpy
-
+#      - name: Install Conda Dependencies
+#        run: |
+#          conda config --add channels defaults
+#          conda config --set solver classic
+#          conda install -c conda-forge numpy
+#
       - name: Query R Dependencies
         run: |
           install.packages('remotes')
