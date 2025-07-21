@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-     # This is needed
+     # This is needed for making embeddings
 #      - name: Install macOS Utilities
 #        if: runner.os == 'macOS'
 #        run: |
@@ -124,7 +124,7 @@ jobs:
           library(devtools)
           devtools::install_github("oscarkjell/text")
           text::textrpp_install(prompt = FALSE)
-#########         text::textrpp_initialize(textEmbed_test = TRUE)
+          text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
 
       # Session Info

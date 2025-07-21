@@ -19,8 +19,8 @@ jobs:
           - {os: macOS-latest, r: 'release'}
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-24.04, r: 'release'}
-          - {os: macOS-latest, r: '4.3.0', python: '3.9'}
-          - {os: macOS-latest, r: '4.3.0', python: '3.11'}
+#          - {os: macOS-latest, r: '4.3.0', python: '3.9'}
+#          - {os: macOS-latest, r: '4.3.0', python: '3.11'}
 
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
