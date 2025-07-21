@@ -38,12 +38,12 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2-branch
 
-#      # Install Miniconda (all OS)
+#      # Install Miniconda (all OS) (i think this is only needed for MacOS)
 #      - uses: conda-incubator/setup-miniconda@v3
 #        with:
 #          auto-update-conda: true
 #          python-version: ${{ matrix.config.python }}
-
+# I think below is not needed at all
 #      - name: Install Conda Dependencies
 #        run: |
 #          conda config --add channels defaults
@@ -102,10 +102,10 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-      # Fix Conda permissions (macOS only)
-      - name: Fix Conda Permissions
-        if: runner.os == 'macOS'
-        run: sudo chown -R $UID $CONDA
+#      # Fix Conda permissions (macOS only)
+#      - name: Fix Conda Permissions
+#        if: runner.os == 'macOS'
+#        run: sudo chown -R $UID $CONDA
 
       # Install and test "text" package
       - name: Install and Test "text" Package
