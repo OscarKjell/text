@@ -139,6 +139,7 @@ articles:
   contents:
   - LBAM
   - huggingface_in_r_extended_installation_guide
+  - reticulate
   - singularity_transformers_container
   - huggingface_in_r_and_computer_capacity
   - removing_huggingface_transformers_cache_files

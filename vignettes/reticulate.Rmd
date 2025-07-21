@@ -1,0 +1,102 @@
+---
+title: "Installing and Managing Python Environments with `reticulate`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Manually Install `textrpp`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Overview
+
+The `text` package relies on Python packages. While `textrpp_install()`  function offers an automated setup, manually installing the dependencies can help with troubleshooting and provides greater control for advanced users.
+
+This guide explains how to install everything step-by-step using the `reticulate` package in R.
+
+## Step 1: Install reticulate
+
+```r
+install.packages("reticulate")
+```
+
+## Step 2: Create a Conda Environment
+
+Use `reticulate` to install Miniconda:
+
+```r
+reticulate::install_miniconda()
+```
+
+Then create a new conda environment with Python 3.9:
+
+```r
+reticulate::conda_create("textrpp_reticulate", packages = "python=3.9")
+```
+
+## Step 3: Install Python Packages
+
+Install the required python packages (rpp) needed for the text-package:
+
+```r
+rpp_packages <- c(
+  "torch==2.2.0",
+  "transformers==4.38.0",
+  "huggingface_hub==0.20.0",
+  "numpy==1.26.0",
+  "pandas==2.0.3",
+  "nltk==3.8.1",
+  "scikit-learn==1.3.0",
+  "datasets==2.16.1",
+  "evaluate==0.4.0",
+  "accelerate==0.26.0",
+  "bertopic==0.16.3",
+  "jsonschema==4.19.2",
+  "sentence-transformers==2.2.2",
+  "flair==0.13.0",
+  "umap-learn==0.5.6",
+  "hdbscan==0.8.33",
+  "scipy==1.10.1",
+  "aiohappyeyeballs==2.4.4"
+)
+
+reticulate::conda_install("textrpp_reticulate", packages = rpp_packages, pip = TRUE)
+```
+
+## Step 4: Activate the Environment
+
+To use/initialize the environment in your R session:
+
+```r
+reticulate::use_condaenv("textrpp_reticulate", required = TRUE)
+```
+
+
+You now have a fully working manual installation of the `text`/`textrpp` Python environment using `reticulate`.
+
+
+# Show available conda environments
+```r
+reticulate::conda_list()
+
+```
+
+# Remove the conda environment
+```r
+# Restart R
+.rs.restartR()  # for RStudio automation
+
+
+# Now safely remove the environment
+# WARNING: this is irreversible
+reticulate::conda_remove(envname = "textrpp_reticulate")
+
+```
+
