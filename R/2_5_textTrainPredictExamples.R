@@ -294,12 +294,12 @@ textExamples <- function(
 
   } else {
     df <- df %>%
-      dplyr::mutate(
-        ranking_criteria = dplyr::case_when(
-          color_categories == 1 ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme low
-          color_categories == 3 ~ abs(x_variable - mean(x_variable, na.rm = TRUE)),  # Extreme high
-          color_categories == 2 ~ -abs(x_variable - mean(x_variable, na.rm = TRUE)), # Closest to mean
-          TRUE ~ 0
+      mutate(
+        ranking_criteria = case_when(
+          color_categories == "1" ~ abs(x_variable - min(x_variable, na.rm = TRUE)),  # Far left (low)
+          color_categories == "3" ~ abs(x_variable - max(x_variable, na.rm = TRUE)),  # Far right (high)
+          color_categories == "2" ~ abs(x_variable - mean(x_variable, na.rm = TRUE)), # Center (closest to mean)
+          TRUE ~ NA_real_
         )
       )
   }
@@ -503,8 +503,6 @@ textExamples <- function(
                   color = scatter_legend_regression_line_colour,
                   size = 0.5)
   }
-
-
 
   # Adding matrix legened
   legend <- topics::topicsGridLegend(
