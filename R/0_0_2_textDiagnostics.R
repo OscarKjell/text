@@ -41,86 +41,129 @@ get_active_python_info <- function() {
 }
 
 
-# Think about the output here; they should be useful and possible to inspect in github actions :)
-# Could maybe have to sections in github actions.
-# 1 after just install.packages(text)
-# 2 after textrpp_install()
-# 3 after textrpp_initialise()
-# after textEmbed()'
-# You know, first installing no dependencies... failing gracefully with information provided what is needed... and then do that in the next github action section and try again... failing graecfully.
-
 check_macos_githubaction_dependencies <- function(verbose = TRUE) {
   if (!is_osx()) return(invisible(NULL))
 
-  results <- list(
-    os = "macOS",
-    homebrew_installed = FALSE,
-    libomp_installed = NA,
-    qpdf_installed = NA,
-    summary_lines = character(0)
-  )
+  # Define required and optional dependencies
+  required_deps <- c("homebrew", "libomp")
+  optional_deps <- c("qpdf")
 
-  msg_lines <- c()
+  status_list <- setNames(logical(length(required_deps)), required_deps)
+  summary_lines <- c("== macOS Required Dependencies ==")
 
+  # Check Homebrew
   brew_path <- Sys.which("brew")
   if (brew_path == "") {
-    warning("Homebrew is not installed. Please install it from https://brew.sh/")
-    msg_lines <- c(
-      "Homebrew is not installed.",
+    status_list["homebrew"] <- FALSE
+    summary_lines <- c(
+      summary_lines,
+      "'homebrew' is NOT installed.",
       "To install it, open your Terminal and run:",
       '  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
     )
-    if (verbose) message(paste(msg_lines, collapse = "\n"))
-    results$summary_lines <- msg_lines
-    return(invisible(results))
+  } else {
+    status_list["homebrew"] <- TRUE
+    summary_lines <- c(summary_lines, "'homebrew' is installed.")
   }
 
-  results$homebrew_installed <- TRUE
-  msg_lines <- c(msg_lines, "Homebrew is installed.")
-
-  results$libomp_installed <- system("brew list libomp", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
-  if (results$libomp_installed) {
-    msg_lines <- c(msg_lines, "'libomp' is installed.")
+  # Check libomp (only if brew is available)
+  if (status_list["homebrew"]) {
+    status_list["libomp"] <- system("brew list libomp", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
+    if (status_list["libomp"]) {
+      summary_lines <- c(summary_lines, "'libomp' is installed.")
+    } else {
+      summary_lines <- c(
+        summary_lines,
+        "'libomp' is NOT installed.",
+        "To install it, open your Terminal and run:",
+        "  brew install libomp"
+      )
+    }
   } else {
-    warning("The 'libomp' library is not installed. It is required for optimal performance.")
-    msg_lines <- c(
-      msg_lines,
-      "'libomp' is not installed.",
-      "To install it, run:",
-      "  brew install libomp"
+    status_list["libomp"] <- FALSE
+  }
+
+  # Optional: Check qpdf
+  optional_status <- list()
+  if (status_list["homebrew"]) {
+    optional_status$qpdf <- system("brew list qpdf", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
+  } else {
+    optional_status$qpdf <- NA
+  }
+
+  # Identify installed/missing
+  installed <- names(status_list)[status_list]
+  missing <- names(status_list)[!status_list]
+
+  if (length(installed) > 0) {
+    summary_lines <- c(summary_lines, "", "Installed:", paste0("  - ", installed))
+  }
+
+  if (length(missing) > 0) {
+    summary_lines <- c(
+      summary_lines,
+      "",
+      "Missing (required):",
+      paste0("  - ", missing),
+      "",
+      "To install required tools, run:"
     )
+
+    if ("homebrew" %in% missing) {
+      summary_lines <- c(
+        summary_lines,
+        '  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+      )
+    } else {
+      summary_lines <- c(
+        summary_lines,
+        paste0("  brew install ", paste(missing[missing != "homebrew"], collapse = " "))
+      )
+    }
+
+    warning("Some required macOS system libraries are missing. See message for details.")
   }
 
-  results$qpdf_installed <- system("brew list qpdf", ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
-  if (results$qpdf_installed) {
-    msg_lines <- c(msg_lines, "'qpdf' is installed (optional).")
+  # Optional summary
+  summary_lines <- c(summary_lines, "", "== Optional Tools ==")
+  if (isTRUE(optional_status$qpdf)) {
+    summary_lines <- c(summary_lines, "'qpdf' is installed.")
   } else {
-    msg_lines <- c(
-      msg_lines,
-      "'qpdf' is not installed (optional).",
+    summary_lines <- c(
+      summary_lines,
+      "'qpdf' is NOT installed.",
       "You can install it using:",
       "  brew install qpdf"
     )
   }
 
-  results$summary_lines <- msg_lines
-  if (verbose) message(paste(msg_lines, collapse = "\n"))
+  # Return result
+  result <- list(
+    os = "macOS",
+    required_deps = required_deps,
+    optional_deps = optional_deps,
+    installed = status_list,
+    missing = missing,
+    optional = optional_status,
+    summary_lines = summary_lines,
+    required_all_ok = length(missing) == 0
+  )
 
-  invisible(results)
+  if (verbose) message(paste(summary_lines, collapse = "\n"))
+  invisible(result)
 }
-
 
 check_linux_githubaction_dependencies <- function(verbose = TRUE) {
   if (!is_linux()) return(invisible(NULL))
 
-  required_libs <- c(
+  # Define required and optional dependencies
+  required_deps <- c(
     "libcurl4-openssl-dev",
     "libgit2-dev",
     "libssl-dev",
     "libharfbuzz-dev",
     "libfribidi-dev",
     "libxml2-dev",
-    "libfreetype6-dev",
     "libpng-dev",
     "libtiff5-dev",
     "libjpeg-dev",
@@ -130,8 +173,11 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
     "default-jdk"
   )
 
-  status_list <- setNames(logical(length(required_libs)), required_libs)
-  for (lib in required_libs) {
+  optional_deps <- c("libfreetype6-dev")  # Add optional Linux deps here if needed
+
+  # Check installation status for required deps
+  status_list <- setNames(logical(length(required_deps)), required_deps)
+  for (lib in required_deps) {
     installed <- system2("dpkg", c("-s", lib), stdout = NULL, stderr = NULL) == 0
     status_list[lib] <- installed
   }
@@ -139,16 +185,18 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
   installed <- names(status_list)[status_list]
   missing <- names(status_list)[!status_list]
 
-  summary_lines <- character()
+  # Format output
+  summary_lines <- c("== Linux Required Dependencies ==")
+
   if (length(installed) > 0) {
-    summary_lines <- c(summary_lines, "Installed system libraries:", paste("  -", installed))
+    summary_lines <- c(summary_lines, "Installed:", paste("  -", installed))
   }
 
   if (length(missing) > 0) {
     summary_lines <- c(
       summary_lines,
       "",
-      "Missing system libraries required for full functionality:",
+      "Missing (required):",
       paste("  -", missing),
       "",
       "To install them on Debian/Ubuntu systems, run:",
@@ -157,18 +205,26 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
     warning("Some required system libraries are missing. See message for details.")
   }
 
+  # Optional deps (none currently defined)
+  if (length(optional_deps) > 0) {
+    summary_lines <- c(summary_lines, "", "== Optional Dependencies ==")
+    # Placeholder check logic for optional_deps if needed
+  }
+
   result <- list(
     os = "Linux",
+    required_deps = required_deps,
+    optional_deps = optional_deps,
     installed = status_list,
     missing = missing,
-    summary_lines = summary_lines
+    summary_lines = summary_lines,
+    required_all_ok = length(missing) == 0
   )
 
   if (verbose) message(paste(summary_lines, collapse = "\n"))
 
   invisible(result)
 }
-
 #' Run diagnostics for the text package
 #'
 #' This function prints system and environment diagnostics useful for debugging or user support.

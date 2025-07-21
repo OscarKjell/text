@@ -68,7 +68,7 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-      # textDiagnostics() -- Install "text" and check system
+      # TEST 1: test textDiagnostics() after package install and check system dependencies
       - name: textDiagnostics -- install text
         run: |
           install.packages("devtools")
@@ -79,7 +79,7 @@ jobs:
           log
         shell: Rscript {0}
 
-      # textrpp_install()
+      # Test 2: test textrpp_install() for stopping and informating which dependenies he user needs
       - name: textrpp_install -- Graceful Fail
         if: runner.os != 'Windows'
         run: |
@@ -87,7 +87,7 @@ jobs:
         shell: Rscript {0}
 
 
-       # macOS dependencies to solve OMP (for making embeddings)
+       # Intall macOS dependencies to solve OMP issues
       - name: Install macOS OMP dependencies
         if: runner.os == 'macOS'
         run: |
@@ -99,6 +99,7 @@ jobs:
 
 
       # Install system dependencies fo Ubuntu
+      # removed libfreetype6-dev \
       - name: Install Ubuntu dependencies
         if: runner.os == 'Linux'
         run: |
@@ -110,7 +111,6 @@ jobs:
           libharfbuzz-dev \
           libfribidi-dev \
           libxml2-dev \
-          libfreetype6-dev \
           libpng-dev \
           libtiff5-dev \
           libjpeg-dev \
@@ -120,14 +120,14 @@ jobs:
           default-jdk
           sudo R CMD javareconf
 
-      # textrpp_install()
+      # Test 3. textrpp_install() to actually install when dependencies are satisfied.
       - name: textrpp_install -- install the text
         run: |
           text::textrpp_install(prompt = FALSE)
         shell: Rscript {0}
 
 
-      # textrpp_initialize()
+      # Test 4. textrpp_initialize() and testing to make embeddings
       - name: textrpp_initialize -- test embeddings
         run: |
           library(text)
