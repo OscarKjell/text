@@ -99,14 +99,13 @@ jobs:
 
 
       # Install system dependencies fo Ubuntu
-      # removed libfreetype6-dev \
+      # removed libfreetype6-dev \ libgit2-dev \  libcairo2-dev \
       - name: Install Ubuntu dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -y
           sudo apt-get install -y \
           libcurl4-openssl-dev \
-          libgit2-dev \
           libssl-dev \
           libharfbuzz-dev \
           libfribidi-dev \
@@ -116,7 +115,6 @@ jobs:
           libjpeg-dev \
           libfontconfig1-dev \
           libicu-dev \
-          libcairo2-dev \
           default-jdk
           sudo R CMD javareconf
 
