@@ -71,8 +71,14 @@ text::textrpp_initialize(
 ) 
 ```
 
+### 3. Install the development version from GitHub.
 
-### 3. Force reinstallation of the environment
+```{r install_github, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("oscarkjell/text")
+```
+
+### 4. Force reinstallation of the environment
 
 ```{r textrpp_install(), eval = FALSE}
 library(text)
@@ -82,12 +88,12 @@ text::textrpp_install(
 )
 ```
 
-### 4. Install the python environment using reticulate
+### 5. Install the python environment using reticulate
 
 See the article [Installing and Managing Python Environments with `reticulate`]( https://www.r-text.org/articles/reticulate.html), for detailed information. 
 
 
-### 5. Inspect diagnostic information
+### 6. Inspect diagnostic information
 If something isn't working right, it is a good start to examine what is installed and running on your system.
 ```{r textDiagnostics(), eval = FALSE}
 library(text)
