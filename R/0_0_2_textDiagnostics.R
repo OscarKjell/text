@@ -51,6 +51,7 @@ get_active_python_info <- function() {
 #' @param full_session_info Logical; if TRUE, includes full sessionInfo() output.
 #'
 #' @return A named list with all diagnostic information (also printed with message()).
+#' @importFrom utils sessionInfo
 #' @export
 textDiagnostics <- function(
    # anonymise = FALSE,
@@ -65,7 +66,7 @@ textDiagnostics <- function(
 
   # Session info
   if (full_session_info) {
-    diagnostics$session_info <- sessionInfo()
+    diagnostics$session_info <- utils::sessionInfo()
   }
 
   # Basic system info

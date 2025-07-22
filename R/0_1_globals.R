@@ -48,7 +48,7 @@ utils::globalVariables(c(
 
 
   # textPredcitTest
-  "stats_on_bootstrap",
+  "stats_on_bootstrap", "auc_diff", 'auc_stats', "cor_diff", "cor_stats", "quantile",
 
   # textPredict
   ":=", "predicted_class", "osf_download", "osf_retrieve_file",

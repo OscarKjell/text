@@ -27,11 +27,19 @@
       Sys.setenv(OMP_NUM_THREADS = "1")
       Sys.setenv(OMP_MAX_ACTIVE_LEVELS = "1")
       Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
-      OMP_msg <- c("MacOS detected: Setting OpenMP environment variables to avoid potential crash due to libomp conflicts.")
+      OMP_msg <- c("MacOS detected: Setting OpenMP environment variables to avoid potential crash due to libomp conflicts. \n")
     } else {
       OMP_msg <- c("Skipped setting OpenMP environment variables (TEXT_SKIP_OMP_PATCH is TRUE)")
     }
   }
+
+  lbam <- paste0("When using the L-BAM library, be aware that models may be downloaded from external sources. ",
+                 "While vetted models come from verified contributors, using models may carry security risks, ",
+                 "including the possibility of malicious code in RDS files. Always review and trust the source ",
+                 "of any model you load.  \n")
+
+  nowarranty <- c("The text package is provided 'as is' without any warranty of any kind. \n")
+
 
   packageStartupMessage(
     colourise(
@@ -42,14 +50,20 @@
       ),
       fg = "blue", bg = NULL
     ),
-    colourise("Newer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art.\n",
+    colourise("Newer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art.\n\n",
       fg = "green", bg = NULL
     ),
     colourise(OMP_msg,
               fg = "purple", bg = NULL
     ),
-    colourise("\nFor more information about the package see www.r-text.org.",
-      fg = "purple", bg = NULL
+    colourise(lbam,
+              fg = "purple", bg = NULL
+    ),
+    colourise(nowarranty,
+              fg = "purple", bg = NULL
+    ),
+    colourise("\nFor more information about the package see www.r-text.org and www.r-topics.org.",
+      fg = "green", bg = NULL
     )
   )
 
