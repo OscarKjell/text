@@ -275,21 +275,25 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
 #' @return Invisibly returns NULL. Side effect is that it modifies the conda configuration.
 #' @noRd
 ensure_conda_forge <- function(conda) {
-  if (is.null(conda) || length(conda) == 0 || conda == "auto") {
-    conda_path <- reticulate::conda_binary("auto")
+  if (conda == "auto") {
+    conda_path <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
+    if (is.null(conda_path) || !file.exists(conda_path)) {
+      stop("Could not find conda binary. Ensure Miniconda is installed and available.")
+    }
   } else {
     conda_path <- conda
   }
 
-  system2(conda_path, c("config", "--remove", "channels", "defaults"))
+  # Remove defaults channel if it exists
+  remove_defaults <- system2(conda_path, c("config", "--remove", "channels", "defaults"), stderr = TRUE, stdout = TRUE)
+  if (any(grepl("KeyError", remove_defaults))) {
+    message("Skipping removal of 'defaults' channel (not found).")
+  }
+
+  # Add conda-forge to top
   system2(conda_path, c("config", "--add", "channels", "conda-forge"))
   system2(conda_path, c("config", "--set", "channel_priority", "strict"))
-  invisible(NULL)
 }
-
-
-
-
 
 
 #' Install text required python packages in conda or virtualenv environment
