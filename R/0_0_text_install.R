@@ -275,24 +275,20 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
 #' @return Invisibly returns NULL. Side effect is that it modifies the conda configuration.
 #' @noRd
 ensure_conda_forge <- function(conda) {
+  if (is.null(conda)) {
+    stop("Cannot configure conda-forge: conda binary is NULL.")
+  }
+
   if (conda == "auto") {
-    conda_path <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
-    if (is.null(conda_path) || !file.exists(conda_path)) {
-      stop("Could not find conda binary. Ensure Miniconda is installed and available.")
-    }
-  } else {
-    conda_path <- conda
+    conda <- reticulate::conda_binary("auto")
+    if (is.null(conda)) stop("Could not resolve conda binary with 'auto'.")
   }
 
-  # Remove defaults channel if it exists
-  remove_defaults <- system2(conda_path, c("config", "--remove", "channels", "defaults"), stderr = TRUE, stdout = TRUE)
-  if (any(grepl("KeyError", remove_defaults))) {
-    message("Skipping removal of 'defaults' channel (not found).")
-  }
+  system2(conda, c("config", "--remove", "channels", "defaults"), stdout = TRUE, stderr = TRUE)
+  system2(conda, c("config", "--add", "channels", "conda-forge"), stdout = TRUE, stderr = TRUE)
+  system2(conda, c("config", "--set", "channel_priority", "strict"), stdout = TRUE, stderr = TRUE)
 
-  # Add conda-forge to top
-  system2(conda_path, c("config", "--add", "channels", "conda-forge"))
-  system2(conda_path, c("config", "--set", "channel_priority", "strict"))
+  message("✔ conda-forge channel configured with strict priority.")
 }
 
 
@@ -491,7 +487,8 @@ textrpp_install <- function(
       }
       if (ans == 2) {
         reticulate::install_miniconda(update = update_conda)
-        conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
+        conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
+        if (is.null(conda)) stop("Miniconda installation succeeded, but conda binary could not be found.")
         # Ensure using forge channels to avoid having to accept Terms of Service from Anaconda
         if(conda_forge) ensure_conda_forge(conda)
       } else {
@@ -534,6 +531,7 @@ textrpp_install <- function(
       # OK adds help(install_miniconda)
       reticulate::install_miniconda(update = update_conda)
       conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
+      if (is.null(conda)) stop("Miniconda installation succeeded, but conda binary could not be found.")
     }
     # Update mini_conda
     if (have_conda && update_conda || have_conda && force_conda) {
