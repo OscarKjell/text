@@ -275,8 +275,7 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
 #' @return Invisibly returns NULL. Side effect is that it modifies the conda configuration.
 #' @noRd
 ensure_conda_forge <- function(conda) {
-
-  if (conda == "auto") {
+  if (is.null(conda) || length(conda) == 0 || conda == "auto") {
     conda_path <- reticulate::conda_binary("auto")
   } else {
     conda_path <- conda
@@ -285,9 +284,13 @@ ensure_conda_forge <- function(conda) {
   system2(conda_path, c("config", "--remove", "channels", "defaults"))
   system2(conda_path, c("config", "--add", "channels", "conda-forge"))
   system2(conda_path, c("config", "--set", "channel_priority", "strict"))
-
   invisible(NULL)
 }
+
+
+
+
+
 
 #' Install text required python packages in conda or virtualenv environment
 #'
