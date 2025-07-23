@@ -468,9 +468,6 @@ textrpp_install <- function(
 
   # resolve and look for conda help(conda_binary)
   conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
-  # Ensure using forge channels to avoid having to accept Terms of Service from Anaconda
-  if(conda_forge) ensure_conda_forge(conda)
-
   have_conda <- !is.null(conda)
 
   # Mac and linux
@@ -535,6 +532,9 @@ textrpp_install <- function(
     if (have_conda && update_conda || have_conda && force_conda) {
       reticulate::install_miniconda(update = update_conda, force = force_conda)
     }
+    # Ensure using forge channels to avoid having to accept Terms of Service from Anaconda
+    if(conda_forge) ensure_conda_forge(conda)
+
     # process the installation of text required python packages
     process_textrpp_installation_conda(conda,
       rpp_version,
