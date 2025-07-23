@@ -288,7 +288,7 @@ ensure_conda_forge <- function(conda) {
   system2(conda, c("config", "--add", "channels", "conda-forge"), stdout = TRUE, stderr = TRUE)
   system2(conda, c("config", "--set", "channel_priority", "strict"), stdout = TRUE, stderr = TRUE)
 
-  message("✔ conda-forge channel configured with strict priority.")
+  message("conda-forge channel configured with strict priority.")
 }
 
 
