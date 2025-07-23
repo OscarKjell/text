@@ -14,7 +14,8 @@ textrpp_install(
   envname = "textrpp_condaenv",
   pip = TRUE,
   python_path = NULL,
-  prompt = TRUE
+  prompt = TRUE,
+  conda_forge = TRUE
 )
 
 textrpp_install_virtualenv(
@@ -53,6 +54,9 @@ package manager with conda-forge channel will be used for installing rpp.}
 \item{python_path}{character; path to Python only for virtualenvironment installation}
 
 \item{prompt}{logical; ask whether to proceed during the installation}
+
+\item{conda_forge}{(boolean) TRUE ensures using forge channels to avoid having to accept
+Terms of Service from Anaconda}
 
 \item{pip_version}{character;}
 

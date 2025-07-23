@@ -469,7 +469,7 @@ textrpp_install <- function(
   # resolve and look for conda help(conda_binary)
   conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
   # Ensure using forge channels to avoid having to accept Terms of Service from Anaconda
-  if(conda_forge) ensure_conda_forge()
+  if(conda_forge) ensure_conda_forge(conda)
 
   have_conda <- !is.null(conda)
 
@@ -489,7 +489,7 @@ textrpp_install <- function(
         reticulate::install_miniconda(update = update_conda)
         conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
         # Ensure using forge channels to avoid having to accept Terms of Service from Anaconda
-        if(conda_forge) ensure_conda_forge()
+        if(conda_forge) ensure_conda_forge(conda)
       } else {
         stop("Conda environment installation failed (no conda binary found)\n", call. = FALSE)
       }
