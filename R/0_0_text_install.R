@@ -261,8 +261,33 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
   invisible(result)
 }
 
+#' Ensure that the conda-forge channel is used for conda installations
+#'
+#' This function configures the conda package manager to:
+#' 1. Remove the default Anaconda channels (which may now require Terms of Service acceptance),
+#' 2. Add the conda-forge channel, and
+#' 3. Set strict channel priority to ensure all packages are pulled from conda-forge.
+#'
+#' This is especially useful in non-interactive environments (e.g., CI/CD or automated setup scripts)
+#' where accepting Anaconda's Terms of Service is not feasible.
+#'
+#' @param conda Either "auto" or a path to the conda binary (e.g., from `reticulate::conda_binary()`).
+#' @return Invisibly returns NULL. Side effect is that it modifies the conda configuration.
+#' @noRd
+ensure_conda_forge <- function(conda) {
 
+  if (conda == "auto") {
+    conda_path <- reticulate::conda_binary("auto")
+  } else {
+    conda_path <- conda
+  }
 
+  system2(conda_path, c("config", "--remove", "channels", "defaults"))
+  system2(conda_path, c("config", "--add", "channels", "conda-forge"))
+  system2(conda_path, c("config", "--set", "channel_priority", "strict"))
+
+  invisible(NULL)
+}
 
 #' Install text required python packages in conda or virtualenv environment
 #'
@@ -296,6 +321,8 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
 #' @param envname character; name of the conda-environment to install text required python packages.
 #'   Default is "textrpp_condaenv".
 #' @param prompt logical; ask whether to proceed during the installation
+#' @param conda_forge (boolean) TRUE ensures using forge channels to avoid having to accept
+#' Terms of Service from Anaconda
 #' @examples
 #' \dontrun{
 #' # install text required python packages in a miniconda environment (macOS and Linux)
@@ -314,7 +341,8 @@ textrpp_install <- function(
     envname = "textrpp_condaenv",
     pip = TRUE,
     python_path = NULL,
-    prompt = TRUE
+    prompt = TRUE,
+    conda_forge = TRUE
     ) {
 
 
@@ -440,6 +468,9 @@ textrpp_install <- function(
 
   # resolve and look for conda help(conda_binary)
   conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
+  # Ensure using forge channels to avoid having to accept Terms of Service from Anaconda
+  if(conda_forge) ensure_conda_forge()
+
   have_conda <- !is.null(conda)
 
   # Mac and linux
@@ -456,7 +487,9 @@ textrpp_install <- function(
       }
       if (ans == 2) {
         reticulate::install_miniconda(update = update_conda)
-        conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
+        conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
+        # Ensure using forge channels to avoid having to accept Terms of Service from Anaconda
+        if(conda_forge) ensure_conda_forge()
       } else {
         stop("Conda environment installation failed (no conda binary found)\n", call. = FALSE)
       }
