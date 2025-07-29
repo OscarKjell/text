@@ -1,6 +1,10 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# text 1.6.1
+- improved installation procedure with more detailed feedback.
+
 # text 1.5.6
 - Improved selection of examples in textExamples()
 - On MacOS setting OMP settings at start-up.

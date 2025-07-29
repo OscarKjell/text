@@ -138,7 +138,7 @@ articles:
   navbar: ~
   contents:
   - LBAM
-  - huggingface_in_r_extended_installation_guide
+  - ext_install_guide
   - reticulate
   - singularity_transformers_container
   - huggingface_in_r_and_computer_capacity

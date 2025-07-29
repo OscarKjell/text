@@ -261,6 +261,96 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
   invisible(result)
 }
 
+
+
+#' Check Windows GitHub Action dependencies
+#'
+#' Checks if essential Windows dependencies for using the `text` and `talk` packages are available.
+#' Skips checks for Python/Miniconda (handled by `textrpp_install()`) and Java/7-Zip (not needed).
+#'
+#' @param verbose If TRUE, prints detailed messages
+#' @return A named list summarizing installed and missing dependencies
+#' @noRd
+check_windows_githubaction_dependencies <- function(verbose = TRUE) {
+  if (!is_windows()) return(invisible(NULL))
+
+  summary_lines <- c("== Windows Dependency Check ==")
+
+  # Check for Visual C++ Build Tools
+  vswhere_path <- Sys.getenv("ProgramFiles(x86)", "") |>
+    file.path("Microsoft Visual Studio", "Installer", "vswhere.exe")
+
+  has_cpp_buildtools <- file.exists(vswhere_path) &&
+    system(paste0('"', vswhere_path, '" -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64'),
+           ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
+
+  if (has_cpp_buildtools) {
+    summary_lines <- c(summary_lines, "Visual C++ Build Tools are installed.")
+  } else {
+    summary_lines <- c(
+      summary_lines,
+      "Visual C++ Build Tools are NOT installed.",
+      "Some Python packages (e.g., hdbscan) require them to compile.",
+      "To install, follow this link:",
+      "  https://visualstudio.microsoft.com/visual-cpp-build-tools/"
+    )
+  }
+
+  # Check if conda TOS for common channels are accepted
+  check_conda_tos <- function(miniconda_path = reticulate::miniconda_path()) {
+    conda_bin <- file.path(miniconda_path, "condabin", "conda.bat")
+    if (!file.exists(conda_bin)) return(NA)
+
+    channels <- c(
+      "https://repo.anaconda.com/pkgs/main",
+      "https://repo.anaconda.com/pkgs/r",
+      "https://repo.anaconda.com/pkgs/msys2"
+    )
+
+    accepted <- TRUE
+    for (channel in channels) {
+      cmd <- paste0('"', conda_bin, '" tos accept --override-channels --channel ', channel)
+      result <- tryCatch(system(cmd, intern = TRUE, ignore.stderr = TRUE), error = function(e) character(0))
+
+      if (any(grepl("Error|failed", result, ignore.case = TRUE))) {
+        accepted <- FALSE
+        summary_lines <<- c(
+          summary_lines,
+          paste0("ToS not accepted for: ", channel),
+          "To fix, run in Command Prompt (not R):",
+          paste0("  ", cmd)
+        )
+      }
+    }
+
+    accepted
+  }
+
+  tos_ok <- check_conda_tos()
+
+  if (isTRUE(tos_ok)) {
+    summary_lines <- c(summary_lines, "Conda channels ToS accepted.")
+  } else if (is.na(tos_ok)) {
+    summary_lines <- c(
+      summary_lines,
+      "Conda not found yet. It will be installed automatically using `textrpp_install()`."
+    )
+  } else {
+    summary_lines <- c(summary_lines, "Some conda channel ToS are not accepted.")
+  }
+
+  if (verbose) message(paste(summary_lines, collapse = "\n"))
+
+  invisible(list(
+    os = "Windows",
+    cpp_buildtools = has_cpp_buildtools,
+    conda_tos_ok = isTRUE(tos_ok),
+    summary_lines = summary_lines
+  ))
+}
+
+
+
 #' Ensure that the conda-forge channel is used for conda installations
 #'
 #' This function configures the conda package manager to:
@@ -284,11 +374,33 @@ ensure_conda_forge <- function(conda) {
     if (is.null(conda)) stop("Could not resolve conda binary with 'auto'.")
   }
 
-  system2(conda, c("config", "--remove", "channels", "defaults"), stdout = TRUE, stderr = TRUE)
+  # Try to remove 'defaults', but catch and warn if it fails
+  remove_defaults <- tryCatch({
+    system2(conda, c("config", "--remove", "channels", "defaults"), stdout = TRUE, stderr = TRUE)
+    TRUE
+  }, warning = function(w) {
+    warning("Could not remove 'defaults' channel from conda config. It may not have been listed explicitly.")
+    FALSE
+  }, error = function(e) {
+    warning("Failed to remove 'defaults' channel. This might be due to multiple .condarc files (e.g., user and system level).")
+    FALSE
+  })
+
+  # Ensure conda-forge is added
   system2(conda, c("config", "--add", "channels", "conda-forge"), stdout = TRUE, stderr = TRUE)
+
+  # Set strict channel priority
   system2(conda, c("config", "--set", "channel_priority", "strict"), stdout = TRUE, stderr = TRUE)
 
-  message("conda-forge channel configured with strict priority.")
+  message(" conda-forge channel configured with strict priority.")
+  if (!remove_defaults) {
+    message(
+      "\n Note: The 'defaults' channel may still be active due to system-level settings.\n",
+      "Check both these files manually and remove 'defaults' if necessary:\n",
+      "  %USERPROFILE%\\.condarc\n",
+      "  <conda-root>\\.condarc (e.g., C:\\Users\\<name>\\miniconda3\\.condarc)"
+    )
+  }
 }
 
 

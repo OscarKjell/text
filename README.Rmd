@@ -55,7 +55,7 @@ Please reference our tutorial article when using the `text` package: [The text-p
 
 ### Short installation guide
 Most users simply need to run below installation code. 
-For those experiencing problems or want more alternatives, please see the [Extended Installation Guide](https://www.r-text.org/articles/huggingface_in_r_extended_installation_guide.html).
+For those experiencing problems or want more alternatives, please see the [Extended Installation Guide](https://www.r-text.org/articles/ext_install_guide.html).
 
 For the text-package to work, you first have to install the text-package in R, and then make it work with text required python packages. 
 

@@ -59,8 +59,10 @@ textDiagnostics <- function(
     search_omp = FALSE,
     full_session_info = FALSE) {
 
-  macos_log <- check_macos_githubaction_dependencies()
-  linux_log <- check_linux_githubaction_dependencies()
+  macos_log   <- check_macos_githubaction_dependencies()
+  linux_log   <- check_linux_githubaction_dependencies()
+  windows_log <- check_windows_githubaction_dependencies()
+
 
   diagnostics <- list()
 
@@ -147,8 +149,9 @@ textDiagnostics <- function(
 
   diagnostics$python_initialized <- get_active_python_info()
 
-  diagnostics$macos_log <- macos_log
-  diagnostics$linux_log <- linux_log
+  diagnostics$macos_log   <- macos_log
+  diagnostics$linux_log   <- linux_log
+  diagnostics$windows_log <- windows_log
 
   # Print summary (not full)
   message("\n--- textDiagnostics Summary ---")
@@ -165,6 +168,7 @@ textDiagnostics <- function(
 
   message(macos_log$summary_lines)
   message(linux_log$summary_lines)
+  message(windows_log$summary_lines)
 
   message("\nTo see more details, examine the returned object.")
   invisible(diagnostics)

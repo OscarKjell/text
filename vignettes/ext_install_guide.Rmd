@@ -19,11 +19,11 @@ The *text*-package provides users access to HuggingFace Transformers in R throug
 To use these features, you need to install:
 	•	The text package in R
 	•	A Python environment with the required packages
+	• System-specific dependencies (see below)
 </br></br>
 The easiest way is to use `textrpp_install()` to install a preconfigured Conda environment and then initialize it with `textrpp_initialize()`.
 
 ## Set up a python environment for the text-package
-
 ```{r extended_installation_condaenv, eval = FALSE}
 library(text)
 library(reticulate)
@@ -42,8 +42,69 @@ textEmbed("hello")
 
 ```
 
+## System-level dependencies
 
-## Troubleshooting
+Different operating systems require different system-level dependencies, especially when working with Python packages that rely on compiled extensions or specialized libraries. Below is a summary of what’s commonly required and how to install it.
+
+### Windows
+#### Microsoft C++ Build Tools
+Some Python packages (e.g., hdbscan, flair) require compilation with Visual C++. Windows users may need to manually install <b>Microsoft C++ Build Tools</b>. You must have C++ build tools for Python packages that need compilation. <br>
+<br>
+Install the latest version of Microsoft C++ Build Tools:<br>
+1. Download and run the installer from https://visualstudio.microsoft.com/visual-cpp-build-tools/. <br>
+2. During installation, check: <br>
+- "C++ build tools". <br>
+- Esure "Windows 10 SDK" is also selected. <br>
+3. Complete installation and restart your computer. <br>
+<br>
+
+#### Terms of Service conflict -- Annaconda forge channel
+Python environments used by the text and talk packages rely on packages from the conda-forge channel.<br>
+
+You don’t need to install Anaconda manually – the textrpp_install() function will install Miniconda and set conda-forge as the default channel.<br>
+
+However, if you’ve previously installed Anaconda or changed channels, you might encounter ToS conflicts (Terms of Service).<br>
+
+If errors mention pkgs/main or tos accept, you can fix it by running the following in <b>Terminal/Command Prompt</b> (not R):<br>
+
+```{terminal windows, eval = FALSE}
+# Run this in your Terminal (not in R)
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+conda config --remove channels defaults
+```
+
+### MacOS
+On macOS, most system-level dependencies are typically pre-installed. For any missing components, the text package automatically detects them and provides clear instructions to guide the user through installation.
+
+#### 1 Homebrew & libomp
+Install Homebrew (if not already installed):
+```{sh macos1, eval = FALSE}
+# Run this in your Terminal (not in R)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+#### 2.	Install libomp:
+```{sh macos2, eval = FALSE}
+# Run this in your Terminal (not in R)
+brew install libomp
+```
+
+
+### Ubuntu
+On recent Ubuntu distributions (e.g., 22.04+), most core dependencies are available.
+
+If needed, you can install them with:
+```{sh ubuntu, eval = FALSE}
+# Run this in your Terminal (not in R)
+sudo apt update
+sudo apt install build-essential libomp-dev
+```
+build-essential: provides gcc, g++, and make <br>
+     libomp-dev: for OpenMP support <br>
+
+
+## General troubleshooting
 
 ### 1. Check if you have install permissions
 Can you install an R package like dplyr?
