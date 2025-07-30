@@ -1031,7 +1031,7 @@ textPredictAll <- function(models,
 #' @importFrom rsample analysis bootstraps
 #' @importFrom yardstick roc_auc_vec
 #' @export
-textPredictTest <- function(
+textPredictTest <- <- function(
     y1,
     y2,
     yhat1,
@@ -1044,7 +1044,8 @@ textPredictTest <- function(
     seed = 42,
     ...) {
   
-  y2 = y1
+  if (is.null(y2) && !is.null(y1)) y2 = y1
+  if (!is.null(y2) && is.null(y1)) y1 = y2
   set.seed(seed)
   
   if(method == "bootstrap"){
