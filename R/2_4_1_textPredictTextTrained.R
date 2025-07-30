@@ -1031,27 +1031,29 @@ textPredictAll <- function(models,
 #' @importFrom rsample analysis bootstraps
 #' @importFrom yardstick roc_auc_vec
 #' @export
-textPredictTest <- function(y1,
-                            y2,
-                            yhat1,
-                            yhat2,
-                            method = "t-test",
-                            statistic = "correlation",
-                            paired = TRUE,
-                            event_level = "first",
-                            bootstraps_times = 10000,
-                            seed = 20250622,
-                            ...) {
-
+textPredictTest <- function(
+    y1,
+    y2,
+    yhat1,
+    yhat2,
+    method = 'bootstrap_difference',
+    statistic = 'auc',
+    paired = TRUE,
+    event_level = "first",
+    bootstraps_times = 10000,
+    seed = 42,
+    ...) {
+  
+  y2 = y1
   set.seed(seed)
-
+  
   if(method == "bootstrap"){
     msg0 <- c("Note that method = bootstrap has changed to method = bootstrap_overlap; and now you can also use bootstrap_difference.")
     colourise(msg0, "brown")
   }
-
+  
   if (method == "bootstrap_difference" | method == "bootstrap_overlap") {
-
+    
     # Sanity check that both y1 and y2 are provided
     if (is.null(y1) || is.null(y2)) {
       msg1 <- c("For method = 'bootstrap_difference', you must supply both y1 and y2. They can be the same if comparing two models on the same outcome.")
@@ -1064,7 +1066,7 @@ textPredictTest <- function(y1,
       stop()
     }
   }
-
+  
   ## t-testing errors: If comparing predictions from models that predict the SAME outcome
   # Compare absolute prediction errors for two models on the same outcome using a paired t-test.
   # Computes mean and SD of absolute errors, effect size (Cohen's d), and the paired t-test result.
@@ -1073,11 +1075,11 @@ textPredictTest <- function(y1,
     yhat1_absolut_error <- abs(yhat1 - y1)
     yhat1_absolut_error_mean <- mean(yhat1_absolut_error)
     yhat1_absolut_error_sd <- sd(yhat1_absolut_error)
-
+    
     yhat2_absolut_error <- abs(yhat2 - y1)
     yhat2_absolut_error_mean <- mean(yhat2_absolut_error)
     yhat2_absolut_error_sd <- sd(yhat2_absolut_error)
-
+    
     # T-test
     t_test_results <- stats::t.test(yhat1_absolut_error,
                                     yhat2_absolut_error,
@@ -1097,13 +1099,13 @@ textPredictTest <- function(y1,
     output <- list(descriptives, cohensD, t_test_results)
     names(output) <- c("Descriptives", "Effect_size", "Test")
   }
-
+  
   # Bootstrapped test of difference in performance (e.g., AUC, correlation) between two predictive models.
   # Works for comparing models predicting the same outcome or different outcomes by resampling differences.
   if (method == "bootstrap_difference"){
-
+    
     if (statistic == "correlation") {
-
+      
       # Combine the data for paired resampling
       data_both <- tibble::tibble(
         truth1 = y1,
@@ -1111,76 +1113,76 @@ textPredictTest <- function(y1,
         truth2 = y2,
         pred2 = yhat2
       )
-
+      
       boots_both <- rsample::bootstraps(
         data_both,
         times = bootstraps_times,
         apparent = FALSE
       )
-
+      
       # Compute correlation for each outcome and their difference per resample
       boot_results <- boots_both %>%
         mutate(cor_stats = purrr::map(splits, ~ {
           df <- rsample::analysis(.x)
-
+          
           # Check if there's variance in both truth columns
           if (sd(df$truth1) == 0 || sd(df$truth2) == 0) {
             return(tibble(cor1 = NA_real_, cor2 = NA_real_, cor_diff = NA_real_))
           }
-
+          
           cor1 <- cor(df$truth1, df$pred1, use = "complete.obs")
           cor2 <- cor(df$truth2, df$pred2, use = "complete.obs")
           tibble(cor1 = cor1, cor2 = cor2, cor_diff = cor1 - cor2)
         })) %>%
         tidyr::unnest(cor_stats) %>%
         filter(!is.na(cor_diff))
-
+      
       # Summarize distributions
       mean_cor1 <- mean(boot_results$cor1)
       sd_cor1   <- sd(boot_results$cor1)
-      ci_cor1   <- stats::quantile(boot_results$cor1, c(0.025, 0.975))
-
+      ci_cor1   <- quantile(boot_results$cor1, c(0.025, 0.975))
+      
       mean_cor2 <- mean(boot_results$cor2)
       sd_cor2   <- sd(boot_results$cor2)
-      ci_cor2   <- stats::quantile(boot_results$cor2, c(0.025, 0.975))
-
+      ci_cor2   <- quantile(boot_results$cor2, c(0.025, 0.975))
+      
       mean_diff <- mean(boot_results$cor_diff)
       sd_diff   <- sd(boot_results$cor_diff)
-      ci_diff   <- stats::quantile(boot_results$cor_diff, c(0.025, 0.975))
-
+      ci_diff   <- quantile(boot_results$cor_diff, c(0.025, 0.975))
+      
       # One-tailed p-values in both directions
       p_value_one_tailed_greater <- mean(boot_results$cor_diff <= 0)
       p_value_one_tailed_less    <- mean(boot_results$cor_diff >= 0)
-
+      
       # Two-tailed p-value
       p_value_two_tailed <- 2 * min(p_value_one_tailed_greater, p_value_one_tailed_less)
-
+      
       # Return structured results
       output <- list(
         Cor1_Mean = mean_cor1,
         Cor1_SD = sd_cor1,
         Cor1_CI_Lower = ci_cor1[1],
         Cor1_CI_Upper = ci_cor1[2],
-
+        
         Cor2_Mean = mean_cor2,
         Cor2_SD = sd_cor2,
         Cor2_CI_Lower = ci_cor2[1],
         Cor2_CI_Upper = ci_cor2[2],
-
+        
         Diff_Mean = mean_diff,
         Diff_SD = sd_diff,
         Diff_CI_Lower = ci_diff[1],
         Diff_CI_Upper = ci_diff[2],
-
+        
         P_Value_One_Tailed_Greater = p_value_one_tailed_greater,
         P_Value_One_Tailed_Less = p_value_one_tailed_less,
         P_Value_Two_Tailed = p_value_two_tailed
       )
     }
-
-
+    
+    
     if (statistic == "auc") {
-
+      
       # Combine truth and prediction columns for paired resampling
       data_both <- tibble::tibble(
         truth1 = y1,
@@ -1188,118 +1190,118 @@ textPredictTest <- function(y1,
         truth2 = y2,
         pred2 = yhat2
       )
-
+      
       # Bootstrapping
       boots_both <- rsample::bootstraps(data_both, times = bootstraps_times)
-
+      
       # Compute AUC1, AUC2, and their difference per resample
       boot_results <- boots_both %>%
         mutate(auc_stats = purrr::map(splits, ~ {
           df <- rsample::analysis(.x)
-
+          
           # Check both outcomes have enough classes
           if (length(unique(df$truth1)) < 2 || length(unique(df$truth2)) < 2) {
             return(tibble(auc1 = NA_real_, auc2 = NA_real_, auc_diff = NA_real_))
           }
-
+          
           ## AUC1
           levels1 <- length(unique(df$truth1))
           if (levels1 > 2) {
             auc1 <- yardstick::roc_auc_vec(
               truth = as.factor(df$truth1),
               estimate = as.matrix(df[, grepl("^pred1$", names(df))]),
-              estimator = "macro_weighted"
+              estimator = "hand_till"
             )
           } else {
             auc1 <- yardstick::roc_auc_vec(
-              truth = df$truth1,
-              estimate = df$pred1,
+              truth = as.factor(df$truth1),
+              estimate = as.matrix(df$pred1)[,1],
               event_level = "first"
             )
           }
-
+          
           ## AUC2
           levels2 <- length(unique(df$truth2))
           if (levels2 > 2) {
             auc2 <- yardstick::roc_auc_vec(
               truth = as.factor(df$truth2),
               estimate = as.matrix(df[, grepl("^pred2$", names(df))]),
-              estimator = "macro_weighted"
+              estimator = "hand_till"
             )
           } else {
             auc2 <- yardstick::roc_auc_vec(
-              truth = df$truth2,
-              estimate = df$pred2,
+              truth = as.factor(df$truth2),
+              estimate = as.matrix(df$pred2)[,1],
               event_level = "first"
             )
           }
-
+          
           tibble(auc1 = auc1, auc2 = auc2, auc_diff = auc1 - auc2)
         })) %>%
         tidyr::unnest(auc_stats) %>%
         filter(!is.na(auc_diff))
-
+      
       # Summarize distributions
       mean_auc1 <- mean(boot_results$auc1)
       sd_auc1   <- sd(boot_results$auc1)
-      ci_auc1   <- stats::quantile(boot_results$auc1, c(0.025, 0.975))
-
+      ci_auc1   <- quantile(boot_results$auc1, c(0.025, 0.975))
+      
       mean_auc2 <- mean(boot_results$auc2)
       sd_auc2   <- sd(boot_results$auc2)
-      ci_auc2   <- stats::quantile(boot_results$auc2, c(0.025, 0.975))
-
+      ci_auc2   <- quantile(boot_results$auc2, c(0.025, 0.975))
+      
       mean_diff <- mean(boot_results$auc_diff)
       sd_diff   <- sd(boot_results$auc_diff)
-      ci_diff   <- stats::quantile(boot_results$auc_diff, c(0.025, 0.975))
-
+      ci_diff   <- quantile(boot_results$auc_diff, c(0.025, 0.975))
+      
       # One-tailed p-values in both directions
       p_value_one_tailed_greater <- mean(boot_results$auc_diff <= 0)
       p_value_one_tailed_less    <- mean(boot_results$auc_diff >= 0)
-
+      
       # Two-tailed p-value
       p_value_two_tailed <- 2 * min(p_value_one_tailed_greater, p_value_one_tailed_less)
-
+      
       # Report nicely
       output <- list(
         AUC1_Mean = mean_auc1,
         AUC1_SD = sd_auc1,
         AUC1_CI_Lower = ci_auc1[1],
         AUC1_CI_Upper = ci_auc1[2],
-
+        
         AUC2_Mean = mean_auc2,
         AUC2_SD = sd_auc2,
         AUC2_CI_Lower = ci_auc2[1],
         AUC2_CI_Upper = ci_auc2[2],
-
+        
         Diff_Mean = mean_diff,
         Diff_SD = sd_diff,
         Diff_CI_Lower = ci_diff[1],
         Diff_CI_Upper = ci_diff[2],
-
+        
         P_Value_One_Tailed_Greater = p_value_one_tailed_greater,
         P_Value_One_Tailed_Less = p_value_one_tailed_less,
         P_Value_Two_Tailed = p_value_two_tailed
       )
     }
-
+    
   }
-
-
+  
+  
   ## Original:
   # Bootstrap estimation of performance metric distributions (e.g., correlation or AUC) for two models.
   # Computes the overlap between distributions to assess similarity in predictive performance.
   if (method == "bootstrap_overlap") {
-
+    
     set.seed(seed)
-
+    
     if (!requireNamespace("overlapping", quietly = TRUE)) {
       msg <- c("overlapping is required for this test.\nPlease install it using install.packages('overlapping').")
-
+      
       message(colourise(msg, "brown"))
     }
-
+    
     # Bootstrap data to create distribution of correlations; help(bootstraps)
-
+    
     # Correlation function
     if (statistic == "correlation") {
       stats_on_bootstrap <- function(split) {
@@ -1309,7 +1311,7 @@ textPredictTest <- function(y1,
         )
       }
     }
-
+    
     if (statistic == "auc") {
       stats_on_bootstrap <- function(split) {
         idx <- ncol(rsample::analysis(split))
@@ -1327,49 +1329,49 @@ textPredictTest <- function(y1,
         }
       }
     }
-
-
+    
+    
     # Creating correlation distribution for y1 and yhat1
     y_yhat1_df <- tibble::tibble(y1, yhat1)
     boots_y1 <- rsample::bootstraps(y_yhat1_df,
                                     times = bootstraps_times,
                                     apparent = FALSE
     )
-
+    
     boot_corrss_y1 <- boots_y1 %>%
       dplyr::mutate(corr_y1 = purrr::map(splits, stats_on_bootstrap))
-
-
+    
+    
     boot_y1_distribution <- boot_corrss_y1 %>%
       tidyr::unnest(corr_y1) %>%
       dplyr::select(corr_y1)
-
+    
     # Creating correlation distribution for y2 and yhat2
     y_yhat2_df <- tibble::tibble(y2, yhat2)
     boots_y2 <- rsample::bootstraps(y_yhat2_df,
                                     times = bootstraps_times,
                                     apparent = FALSE
     )
-
+    
     boot_corrss_y2 <- boots_y2 %>%
       dplyr::mutate(corr_y2 = purrr::map(splits, stats_on_bootstrap))
-
+    
     boot_y2_distribution <- boot_corrss_y2 %>%
       tidyr::unnest(corr_y2) %>%
       dplyr::select(corr_y2)
-
-
+    
+    
     ### Examining the overlap
     x_list_dist <- list(boot_y1_distribution$corr_y1, boot_y2_distribution$corr_y2)
-
+    
     if (requireNamespace("text", quietly = TRUE)) {
-    output <- overlapping::overlap(x_list_dist)
-    output <- list(output$OV[[1]])
+      output <- overlapping::overlap(x_list_dist)
+      output <- list(output$OV[[1]])
     }
-
+    
     names(output) <- "overlapp_p_value"
   }
-
-
+  
+  
   return(output)
 }
