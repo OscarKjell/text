@@ -1,6 +1,14 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# text 1.6.1
+- improved installation procedure with more detailed feedback.
+
+# text 1.5.6
+- Improved selection of examples in textExamples()
+- On MacOS setting OMP settings at start-up.
+
 # text 1.5.5
 - added bootstrap_difference and replaced "bootstrap" with "bootstrap_overlap" in the textPredictTest() function.
 

@@ -1,5 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!-- -->
 
 # text <a href="https://r-text.org"><img src="man/figures/logo.png" align="right" height="138" alt="text website" /></a>
@@ -62,7 +63,7 @@ Learning](https://pubmed.ncbi.nlm.nih.gov/37126041/). <br>
 Most users simply need to run below installation code. For those
 experiencing problems or want more alternatives, please see the
 [Extended Installation
-Guide](https://www.r-text.org/articles/huggingface_in_r_extended_installation_guide.html).
+Guide](https://www.r-text.org/articles/ext_install_guide.html).
 
 For the text-package to work, you first have to install the text-package
 in R, and then make it work with text required python packages.
@@ -111,6 +112,13 @@ Multilingual language models can also represent several languages;
 multilingual BERT comprises *104 different languages*.
 
 *Table 1. Some of the available language models*
+
+    #> Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
+    #> Use 'xfun::attr2()' instead.
+    #> See help("Deprecated")
+    #> Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
+    #> Use 'xfun::attr2()' instead.
+    #> See help("Deprecated")
 
 | Models | References | Layers | Dimensions | Language |
 |:---|:---|:---|:---|:---|
@@ -191,6 +199,7 @@ plot_projection$final_plot
 ### Featured Bluesky Post
 
 <blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:tiigom2z6lcqsibxsgjdfea4/app.bsky.feed.post/3lduzt3lob22q" data-bluesky-cid="bafyreifgniodm6xkwh6g5ha4xe2663ohau56fy7nxulnkkhsouxkgq7q3y">
+
 <p lang="en">
 
 Version 1.3 of the \#r-text package is now available from \#CRAN.
@@ -202,9 +211,11 @@ assessments from the \#LBAM-library (r-text.org/articles/LBA…).
 \#NLP<br><br><a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4/post/3lduzt3lob22q?ref_src=embed">\[image
 or embed\]</a>
 </p>
+
 — Oscar Kjell
 (<a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4?ref_src=embed">@oscarkjell.bsky.social</a>)
 <a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4/post/3lduzt3lob22q?ref_src=embed">Dec
 22, 2024 at 9:48</a>
 </blockquote>
+
 <script async src="https://embed.bsky.app/static/embed.js" charset="utf-8"></script>

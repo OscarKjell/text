@@ -45,6 +45,7 @@ reference:
   - textrpp_install_virtualenv
   - textrpp_uninstall
   - textrpp_initialize
+  - textDiagnostics
 - title: Transform text to word embeddings
   contents:
   - textEmbed
@@ -137,7 +138,8 @@ articles:
   navbar: ~
   contents:
   - LBAM
-  - huggingface_in_r_extended_installation_guide
+  - ext_install_guide
+  - reticulate
   - singularity_transformers_container
   - huggingface_in_r_and_computer_capacity
   - removing_huggingface_transformers_cache_files

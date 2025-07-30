@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_5_textTrainPredictExamples.R
 \name{textExamples}
 \alias{textExamples}
-\title{Show language examples (Experimental)}
+\title{Identify language examples.}
 \usage{
 textExamples(
   text,
@@ -49,7 +49,16 @@ to produce two extra plots: distribution of scores and absolute error.}
 
 \item{n_tile}{(integer) the n tile to split the data in (to show the most extreme tiles in different colours).}
 
-\item{n_examples}{(integer) the number of language examples to show.}
+\item{n_examples}{(integer) the number of language examples to show/select in each quadrant.
+When providing both x_variable and y_variable, each example is categorized into one of nine bivariate quadrants
+based on its position in the scatterplot (e.g., low–low, high–high, center).
+Within each quadrant, the function selects the most extreme examples by computing the distance to that quadrant’s corner:
+Corner quadrants (1, 3, 7, 9):
+Examples closest to the corner points (e.g., min x & max y) are selected using Euclidean distance.
+Edge quadrants (2, 4, 6, 8):
+Examples furthest along the relevant axis (x or y) are selected.
+Center quadrant (5):
+Examples closest to the mean of both x and y are selected.}
 
 \item{jitter}{(integer) the percentage of jitter to add to the data for the scatter plot.}
 
@@ -65,7 +74,7 @@ to produce two extra plots: distribution of scores and absolute error.}
 
 \item{figure_format}{(string) file format of the figures.}
 
-\item{scatter_legend_dot_size}{(integer) The size of dots in the scatter legend.}
+\item{scatter_legend_dot_size}{(integer) The size of highlighted dots in the scatter legend.}
 
 \item{scatter_legend_bg_dot_size}{(integer) The size of background dots in the scatter legend.}
 
@@ -102,5 +111,6 @@ For example: c(1,0,1) result in one dot in each quadrant except for the middle q
 A tibble including examples with descriptive variables.
 }
 \description{
-This function selects language examples that been used in the textTrain() or textAssess() functions.
+This function identifies examples based on the frequency of use of n-grams (see the topics-pacakge),
+estimated topic prevalence (see the topics-pacakge), or  assessment scores from textTrain() or textPredict().
 }

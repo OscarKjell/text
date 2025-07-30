@@ -1024,7 +1024,7 @@ textPredictAll <- function(models,
 #'
 #' boot_test <- textPredictTest(y1, y2, yhat1, yhat2)
 #' @seealso see \code{\link{textTrain}} \code{\link{textPredict}}
-#' @importFrom stats t.test cor
+#' @importFrom stats t.test cor quantile
 #' @importFrom tibble is_tibble as_tibble_col
 #' @importFrom tidyr unnest
 #' @importFrom dplyr select mutate
@@ -1138,15 +1138,15 @@ textPredictTest <- function(y1,
       # Summarize distributions
       mean_cor1 <- mean(boot_results$cor1)
       sd_cor1   <- sd(boot_results$cor1)
-      ci_cor1   <- quantile(boot_results$cor1, c(0.025, 0.975))
+      ci_cor1   <- stats::quantile(boot_results$cor1, c(0.025, 0.975))
 
       mean_cor2 <- mean(boot_results$cor2)
       sd_cor2   <- sd(boot_results$cor2)
-      ci_cor2   <- quantile(boot_results$cor2, c(0.025, 0.975))
+      ci_cor2   <- stats::quantile(boot_results$cor2, c(0.025, 0.975))
 
       mean_diff <- mean(boot_results$cor_diff)
       sd_diff   <- sd(boot_results$cor_diff)
-      ci_diff   <- quantile(boot_results$cor_diff, c(0.025, 0.975))
+      ci_diff   <- stats::quantile(boot_results$cor_diff, c(0.025, 0.975))
 
       # One-tailed p-values in both directions
       p_value_one_tailed_greater <- mean(boot_results$cor_diff <= 0)
@@ -1242,15 +1242,15 @@ textPredictTest <- function(y1,
       # Summarize distributions
       mean_auc1 <- mean(boot_results$auc1)
       sd_auc1   <- sd(boot_results$auc1)
-      ci_auc1   <- quantile(boot_results$auc1, c(0.025, 0.975))
+      ci_auc1   <- stats::quantile(boot_results$auc1, c(0.025, 0.975))
 
       mean_auc2 <- mean(boot_results$auc2)
       sd_auc2   <- sd(boot_results$auc2)
-      ci_auc2   <- quantile(boot_results$auc2, c(0.025, 0.975))
+      ci_auc2   <- stats::quantile(boot_results$auc2, c(0.025, 0.975))
 
       mean_diff <- mean(boot_results$auc_diff)
       sd_diff   <- sd(boot_results$auc_diff)
-      ci_diff   <- quantile(boot_results$auc_diff, c(0.025, 0.975))
+      ci_diff   <- stats::quantile(boot_results$auc_diff, c(0.025, 0.975))
 
       # One-tailed p-values in both directions
       p_value_one_tailed_greater <- mean(boot_results$auc_diff <= 0)

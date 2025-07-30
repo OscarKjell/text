@@ -22,6 +22,22 @@ test_that("installing text", {
     text_test <- text::textEmbed("hello")
 
     expect_equal(text_test$tokens$texts[[1]]$Dim1[[1]], -0.9554495, tolerance = 0.0001)
+
+
+    log1 <- text::textDiagnostics()
+
+    logTRUE <- text::textDiagnostics(
+      include_other_envs = TRUE,
+      search_omp = TRUE,
+      full_session_info = TRUE
+    )
+
+    logFALSE <- text::textDiagnostics(
+      include_other_envs = FALSE,
+      search_omp = FALSE,
+      full_session_info = FALSE
+    )
+
   }
 
 #    INSTEAD SEE HOW IT IS BEING UNINSTALLED IN TEXT_ZZ... file
