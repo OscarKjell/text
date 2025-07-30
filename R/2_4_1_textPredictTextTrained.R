@@ -1031,7 +1031,7 @@ textPredictAll <- function(models,
 #' @importFrom rsample analysis bootstraps
 #' @importFrom yardstick roc_auc_vec
 #' @export
-textPredictTest <- <- function(
+textPredictTest <- function(
     y1,
     y2,
     yhat1,
