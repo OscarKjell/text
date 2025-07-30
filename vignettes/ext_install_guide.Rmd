@@ -14,14 +14,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-The *text*-package provides users access to HuggingFace Transformers in R through [reticulate](https://rstudio.github.io/reticulate/), which interfaces with [Python](https://www.python.org/). It relies on Python packages such as [torch](https://pytorch.org/) and [transformers](https://huggingface.co/docs/transformers/index). 
-</br></br>
-To use these features, you need to install:
-	•	The text package in R
-	•	A Python environment with the required packages
-	• System-specific dependencies (see below)
-</br></br>
-The easiest way is to use `textrpp_install()` to install a preconfigured Conda environment and then initialize it with `textrpp_initialize()`.
+
+To get started, follow these steps:<br>
+<br>
+<b>1) Install R and RStudio</b><br>
+Use the links below to download and install:<br>
+ - [R (version 4.0.0 or higher)](https://cran.rstudio.com/)<br>
+ - [RStudio (recommended)](https://posit.co/download/rstudio-desktop/)<br>
+<br>
+<b>2) Install and set up the text package </b><br>
+The text package gives you access to HuggingFace Transformers through [reticulate](https://rstudio.github.io/reticulate/) (enabling advanced language analysis), which connects R to [Python](https://www.python.org/) (while remaining in an R environment). It uses Python packages like torch and transformers.<br>
+<br>
+To make this easy, run:<br>
+- `textrpp_install()` – installs a ready-to-use Python/Conda environment<br>
+- `textrpp_initialize()` – activates the environment for use in R<br>
+<br>
+This setup will handle most Python and system dependencies automatically – however, you may be isntructed to install system level dependencis as further described below.
 
 ## Set up a python environment for the text-package
 ```{r extended_installation_condaenv, eval = FALSE}

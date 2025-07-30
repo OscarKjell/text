@@ -131,8 +131,12 @@ textCleanNonASCIIinfo <- function(
       dplyr::mutate(dplyr::across(dplyr::everything(), ~ purrr::map_chr(., clean_text)))
 
     message(colourise("Non-ASCII characters has been removed. \n", "green"))
-  }
 
+  } else {
+
+    cleaned_tibble <- data_tibble
+
+  }
 
   return(cleaned_tibble)
 }
