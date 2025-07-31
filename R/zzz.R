@@ -34,8 +34,8 @@
   }
 
   lbam <- paste0("When using the L-BAM library, be aware that models may be downloaded from external sources. ",
-                 "While vetted models come from verified contributors, using models may carry security risks, ",
-                 "including the possibility of malicious code in RDS files. Always review and trust the source ",
+                 "Using models may carry security risks, including the possibility of malicious code in RDS files. ",
+                 "Always review and trust the source ",
                  "of any model you load.  \n")
 
   nowarranty <- c("The text package is provided 'as is' without any warranty of any kind. \n")
