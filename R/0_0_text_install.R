@@ -232,7 +232,7 @@ check_macos_githubaction_dependencies <- function(verbose = TRUE) {
       )
     }
 
-    warning("Some required macOS system libraries are missing. See message for details.")
+    warning(" Some required macOS system libraries are missing. See message for details.")
   }
 
   # Optional summary
@@ -318,7 +318,7 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
       "To install them on Debian/Ubuntu systems, run:",
       paste0("  sudo apt-get install -y ", paste(missing, collapse = " "))
     )
-    warning("Some required system libraries are missing. See message for details.")
+    warning(" Some required system libraries are missing. See message for details.")
   }
 
   # Optional deps (none currently defined)
@@ -370,10 +370,10 @@ check_windows_githubaction_dependencies <- function(verbose = TRUE) {
   } else {
     summary_lines <- c(
       summary_lines,
-      "Visual C++ Build Tools are NOT installed.",
-      "Some Python packages (e.g., hdbscan) require them to compile.",
-      "To install, follow this link:",
-      "  https://visualstudio.microsoft.com/visual-cpp-build-tools/"
+      "Visual C++ Build Tools are NOT installed. ",
+      "Some Python packages (e.g., hdbscan) require them to compile. ",
+      "To install, follow this link:" ,
+      " https://visualstudio.microsoft.com/visual-cpp-build-tools/"
     )
     missing <- "visual_build_tools"
   }
@@ -581,7 +581,7 @@ textrpp_install <- function(
       message("  - ", pkg)
     }
 
-    if (!is.null(terminal_command)) {
+    if (!is.null(terminal_command) & is.null(windows_log)) {
       message("\nTo install them, open your terminal and run:")
       message("  ", terminal_command)
     }
@@ -590,7 +590,13 @@ textrpp_install <- function(
       message("\nInstallation stopped. Set `prompt = TRUE` if you wish to override and proceed anyway.")
       return(invisible(NULL))
     } else {
-      ans <- utils::menu(c("No", "Yes"), title = "\nDo you still want to continue with installation?")
+      title_message <- paste(
+        "\nSome required dependencies are missing (see messages above).",
+        "This will likely cause the installation to fail.",
+        "Do you still want to continue?"
+      )
+
+      ans <- utils::menu(c("No", "Yes"), title = title_message)
       if (ans == 1) {
         message("Installation cancelled due to missing system dependencies.")
         return(invisible(NULL))
