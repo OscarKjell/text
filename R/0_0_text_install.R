@@ -275,7 +275,7 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
   # Define required and optional dependencies
   required_deps <- c(
     "libcurl4-openssl-dev",
-   # "libgit2-dev",
+    "libgit2-dev", #
     "libssl-dev",
     "libharfbuzz-dev",
     "libfribidi-dev",
@@ -285,7 +285,7 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
     "libjpeg-dev",
     "libfontconfig1-dev",
     "libicu-dev",
-   # "libcairo2-dev",
+    "libcairo2-dev", #
     "default-jdk"
   )
 
