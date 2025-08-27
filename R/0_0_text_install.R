@@ -358,9 +358,10 @@ check_windows_githubaction_dependencies <- function(verbose = TRUE) {
   summary_lines <- c("== Windows Dependency Check ==")
 
   # Check for Visual C++ Build Tools
-  vswhere_path <- Sys.getenv("ProgramFiles(x86)", "") |>
-    file.path("Microsoft Visual Studio", "Installer", "vswhere.exe")
-
+  vswhere_path <- file.path(
+    Sys.getenv("ProgramFiles(x86)", ""),
+    "Microsoft Visual Studio", "Installer", "vswhere.exe"
+  )
   has_cpp_buildtools <- file.exists(vswhere_path) &&
     system(paste0('"', vswhere_path, '" -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64'),
            ignore.stdout = TRUE, ignore.stderr = TRUE) == 0
@@ -371,9 +372,12 @@ check_windows_githubaction_dependencies <- function(verbose = TRUE) {
     summary_lines <- c(
       summary_lines,
       "Visual C++ Build Tools are NOT installed. ",
-      "Some Python packages (e.g., hdbscan) require them to compile. ",
+      "Some important Python packages (e.g., hdbscan) require them to compile. ",
       "Please install it following this link:" ,
-      " https://visualstudio.microsoft.com/visual-cpp-build-tools/"
+      " https://visualstudio.microsoft.com/visual-cpp-build-tools/ ",
+      "Download Build Tools and run the installer file. During installation click Modify and then select Desktop development with C++",
+      " After installation you may have to RESTART R, Rstudio, or even Windows.",
+      " For more infomraiton see https://www.r-text.org/articles/ext_install_guide.html."
     )
     missing <- "visual_build_tools"
   }
@@ -573,7 +577,6 @@ textrpp_install <- function(
     critical_missing <- c(critical_missing, windows_log$missing)
 
     if (length(critical_missing) > 0) {
-      message(windows_log$summary_lines)
       stop("Please see the Windows Dependency Check above.")
     }
   }

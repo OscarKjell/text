@@ -61,8 +61,8 @@ Some Python packages (e.g., hdbscan, flair) require compilation with Visual C++.
 Install the latest version of Microsoft C++ Build Tools:<br>
 1. Download and run the installer from https://visualstudio.microsoft.com/visual-cpp-build-tools/. <br>
 2. During installation, check: <br>
-- "C++ build tools". <br>
-- Esure "Windows 10 SDK" is also selected. <br>
+- "Desktop development with C++" or "C++ build tools". <br>
+- Ensure "Windows 11 SDK" is also selected on the right menu. <br>
 3. Complete installation and restart your computer. <br>
 <br>
 
