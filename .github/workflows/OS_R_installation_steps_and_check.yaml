@@ -126,19 +126,19 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y \
+          libgit2-dev \
+          libfreetype6-dev \
+          libcairo2-dev \
           libcurl4-openssl-dev \
-          libgit2-dev \ #
           libssl-dev \
           libharfbuzz-dev \
           libfribidi-dev \
           libxml2-dev \
-          libfreetype6-dev \ #
           libpng-dev \
           libtiff5-dev \
           libjpeg-dev \
           libfontconfig1-dev \
           libicu-dev \
-          libcairo2-dev \ #
           default-jdk
           sudo R CMD javareconf
 # # #

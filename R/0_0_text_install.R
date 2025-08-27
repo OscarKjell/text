@@ -372,7 +372,7 @@ check_windows_githubaction_dependencies <- function(verbose = TRUE) {
       summary_lines,
       "Visual C++ Build Tools are NOT installed. ",
       "Some Python packages (e.g., hdbscan) require them to compile. ",
-      "To install, follow this link:" ,
+      "Please install it following this link:" ,
       " https://visualstudio.microsoft.com/visual-cpp-build-tools/"
     )
     missing <- "visual_build_tools"
@@ -571,7 +571,11 @@ textrpp_install <- function(
 
   if (!is.null(windows_log$missing) && length(windows_log$missing) > 0) {
     critical_missing <- c(critical_missing, windows_log$missing)
-    terminal_command <- windows_log$summary_lines
+
+    if (length(critical_missing) > 0) {
+      message(windows_log$summary_lines)
+      stop("Please see the Windows Dependency Check above.")
+    }
   }
 
   # Stop or prompt depending on `prompt` setting
