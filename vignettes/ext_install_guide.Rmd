@@ -15,6 +15,12 @@ knitr::opts_chunk$set(
 ```
 
 
+No one knows everything — and you don’t need to! Many of our users are not computer scientists, so some of the installation steps and technical terms may feel unfamiliar at first. That’s completely normal.  
+
+This guide is written to walk you through the process step by step, with explanations along the way. And remember: search engines (like DuckDuckGo) and chatbots (like ChatGPT) can be helpful allies if you ever get stuck or encounter a new concept.  
+
+If you run into issues that aren’t covered here, please reach out to us at: rtext.contact@gmail.com, so that we can improve the instructions for everyone. 
+
 To get started, follow these steps:<br>
 <br>
 <b>1) Install R and RStudio</b><br>
@@ -231,6 +237,3 @@ The exact way to install these packages may differ across systems. Please see:\
 [torch](https://pytorch.org/)\
 [transformers](https://huggingface.co/docs/transformers/index)
 
-## Share advise
-
-*If you find a good solution please feel free to email oscar [ d_o t] kjell [a_t] psy [DOT] lu [d_o_t]se so that we can update above instructions.*

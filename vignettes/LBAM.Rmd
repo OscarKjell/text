@@ -38,7 +38,7 @@ Important: Language-based assessments can be developed in one context—such as 
 
 Because of this, users are responsible for evaluating whether a model is appropriate for their specific use case. This means checking whether the training and evaluation conditions align with their own data—and, if needed, validating the model’s performance on a subset of their own data before making any conclusions. That’s why each model in the L-BAM Library comes with detailed documentation on its training data, performance metrics, and development process. Transparent documentation helps users make informed decisions and supports reproducible, trustworthy research (for more information see Nilsson et al., in progress).
 
-If you want to add a pre-trained model to the L-BAM library, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and email us (*oscar [ d_o t] kjell [a _ t] psy [DOT] lu [d_o_t]se*) so that we can update the table online.
+If you want to add a pre-trained model to the L-BAM library, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and email us (*rtext.contact@gmail.com*) so that we can update the table online.
 
 *Note that you can adjust the width of the columns when scrolling the table.*
 
@@ -108,6 +108,26 @@ reactable::reactable(
 ```
 
 
+> **Responsible Sharing and Use of Language-Based Assessment Models**
+>
+> **Guidelines for contributors**  
+> To support transparency, traceability, and responsible use, contributors should:  
+> - **Fill out the L-BAM Submission Sheet:** Complete the submission form at [r-text.org/articles/LBAM.html](https://r-text.org/articles/LBAM.html).  
+>   Include key metadata such as model name, outcome variable(s), model type, training data size, validation metrics, ethical considerations, and relevant meta data (e.g., links to papers or preprints).  
+> - **Public Hosting:** Host the model on a publicly accessible platform with version control (e.g., OSF, Hugging Face, GitHub, Bitbucket) to ensure reproducibility and long-term access.  
+> - **Contact:** Email a library maintainer (see contact details at [r-text.org/articles/LBAM.html](https://r-text.org/articles/LBAM.html)) using the same email address provided under `contact_details` in the metadata.  
+>
+> Once these steps are completed, the model will be published in the L-BAM library, making it accessible to the broader research community.  
+>
+> **Guidelines for users**  
+> Before using a model from the L-BAM library, we recommend the following steps to ensure its suitability for your research context:  
+> - **Verify Source and Contact Information:** Review the listed contact details. If in doubt, reach out to the model contributor for clarification.  
+>   - Using models may carry security risks (e.g., malicious code).  
+>   - Each model must include a designated contact person with a valid email address (not placeholder/fabricated) and must be hosted on a platform with version control (e.g., OSF) for transparency and traceability.  
+>   - Always review and trust the source before loading a model. For extra caution, consider loading models in secure, isolated environments (e.g., Docker).  
+>   - Check for linked preprints or peer-reviewed publications describing the model.  
+> - **Critically Evaluate Development and Validation Details:** Examine how the model has been validated, including reported performance metrics (e.g., RMSE, correlations) and the populations used. Ensure these align with your use case.  
+> - **Test Generalisability:** Apply the model to new data in your context (ideally with criterion variables available for at least a subset, e.g., 100 out of 10,000 texts). This allows you to directly test generalisability.  
 
 ### Overview of L-BAM pipelines
 Training and using models from the L-BAM library involves three key steps.

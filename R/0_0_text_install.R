@@ -453,6 +453,7 @@ check_windows_githubaction_dependencies <- function(verbose = TRUE) {
 #' @return Invisibly returns NULL. Side effect is that it modifies the conda configuration.
 #' @noRd
 ensure_conda_forge <- function(conda) {
+  is_windows <- identical(.Platform$OS.type, "windows")
   if (is.null(conda)) {
     stop("Cannot configure conda-forge: conda binary is NULL.")
   }
@@ -482,12 +483,27 @@ ensure_conda_forge <- function(conda) {
 
   message(" conda-forge channel configured with strict priority.")
   if (!remove_defaults) {
+
     message(
       "\n Note: The 'defaults' channel may still be active due to system-level settings.\n",
-      "Check both these files manually and remove 'defaults' if necessary:\n",
-      "  %USERPROFILE%\\.condarc\n",
-      "  <conda-root>\\.condarc (e.g., C:\\Users\\<name>\\miniconda3\\.condarc)"
-    )
+      "Please check your .condarc file, which contain the channel specifications. \n",
+      "In the terminal/comman prompt run: \n",
+      "conda config --add channels conda-forge \n",
+      "conda config --set channel_priority strict \n",
+      "conda config --remove channels defaults")
+
+    #if(is_windows) {
+    #  message(
+    #    "Check the .condarc files manually and remove 'defaults' if necessary.\n",
+    #    "In the terminal run the following to open the file: \n",
+    #    "  Notepad %USERPROFILE%\\.condarc\n\n",
+    #    "remove the word 'defaults' if it exist. \n",
+    #    "If the above does not work, look for the file at:\n",
+    #    "  <conda-root>\\.condarc\n",
+    #    "For example:\n",
+    #    " Notepad C:\\Users\\<name>\\miniconda3\\.condarc"
+    #  )
+    #}
   }
 }
 
@@ -937,9 +953,9 @@ textrpp_uninstall <- function(conda = "auto",
   conda_envs <- reticulate::conda_list(conda = conda)
   conda_env <- subset(conda_envs, conda_envs$name == envname)
   if (nrow(conda_env) != 1) {
-    stop("conda environment", envname, "is not found", call. = FALSE)
+    stop("The conda environment ", envname, " is not found", call. = FALSE)
   }
-  message("A conda environment", envname, "will be removed\n")
+  message("The conda environment ", envname, " will be removed\n")
   ans <- ifelse(prompt, utils::menu(c("No", "Yes"), title = "Proceed?"), 2)
   if (ans == 1) stop("condaenv removal is cancelled by user", call. = FALSE)
   python <- reticulate::conda_remove(envname = envname)
