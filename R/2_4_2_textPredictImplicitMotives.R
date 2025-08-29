@@ -699,7 +699,7 @@ textPredictImplicitMotives <- function(
     predicted_scores2 <- textClassifyPipe(
       x = texts,
       model = model_info,
-      device = "cpu",
+      device = device,
       tokenizer_parallelism = FALSE,
       logging_level = "error",
       force_return_results = TRUE,
