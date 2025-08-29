@@ -373,10 +373,11 @@ check_windows_githubaction_dependencies <- function(verbose = TRUE) {
       summary_lines,
       "Visual C++ Build Tools are NOT installed. ",
       "Some important Python packages (e.g., hdbscan) require them to compile. ",
-      "Please install it following this link:" ,
-      " https://visualstudio.microsoft.com/visual-cpp-build-tools/ ",
-      "Download Build Tools and run the installer file. During installation click Modify and then select Desktop development with C++",
-      " After installation you may have to RESTART R, Rstudio, or even Windows.",
+      "Please following these three steps: \n",
+      "1. install it following this link: " ,
+      " https://visualstudio.microsoft.com/visual-cpp-build-tools/ \n",
+      "2. Download Build Tools and run the installer file. IMPORTANT: During installation click Modify and then select Desktop development with C++. \n",
+      " After installation you may have to RESTART R, Rstudio, or even Windows. \n",
       " For more infomraiton see https://www.r-text.org/articles/ext_install_guide.html."
     )
     missing <- "visual_build_tools"

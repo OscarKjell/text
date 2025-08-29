@@ -403,7 +403,7 @@ textLBAM <- function(
   lbam <- utils::read.csv(
     system.file("extdata",
                 "The_L-BAM_Library.csv",
-                package = "text"), skip = 3)
+                package = "text"), skip = 6)
 
   if (!is.null(columns)){
     lbam <- lbam[,columns]
