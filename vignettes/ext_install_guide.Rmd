@@ -25,7 +25,7 @@ To get started, follow these steps:<br>
 <br>
 <b>1) Install R and RStudio</b><br>
 Use the links below to download and install:<br>
- - [R (version 4.0.0 or higher)](https://cran.rstudio.com/)<br>
+ - [R (version 4.0.0 or higher)](https://cloud.r-project.org/)<br>
  - [RStudio (recommended)](https://posit.co/download/rstudio-desktop/)<br>
 <br>
 <b>2) Install and set up the text package </b><br>
