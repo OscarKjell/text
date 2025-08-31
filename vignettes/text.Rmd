@@ -133,7 +133,7 @@ plot_projection_2D$final_plot
 
 [Natural language analyzed with AI‐based transformers predict traditional subjective well‐being measures approaching the theoretical upper limits in accuracy](https://www.nature.com/articles/s41598-022-07520-w) *Kjell et al., (2022). Scientific Reports*
 
-[Doing well-being: Self-reported activities are related to subjective well-being](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0270503).
+[Doing well-being: Self-reported activities are related to subjective well-being](https://doi.org/10.1371/journal.pone.0270503).
 *Nilsson, et al., (2022). PLOSONE*
 
 [Computational Language Assessments of Harmony in Life — Not Satisfaction With Life or Rating Scales — Correlate With Cooperative Behaviors](https://www.frontiersin.org/articles/10.3389/fpsyg.2021.601679/). *Kjell et al., (2021). Frontiers*
@@ -162,7 +162,7 @@ Facebook language predicts depression in medical records
 
 ***Social and Personality Psychology***     
 
-[Personality, gender, and age in the language of social media: The open-vocabulary approach](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0073791)  
+[Personality, gender, and age in the language of social media: The open-vocabulary approach](https://doi.org/10.1371/journal.pone.0073791)  
 *Schwartz, H. A., … & Seligman, M. E. (2013). PloSOne.*
 
 Automatic Personality Assessment Through Social Media Language  
