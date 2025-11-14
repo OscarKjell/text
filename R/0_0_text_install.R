@@ -377,8 +377,8 @@ check_windows_githubaction_dependencies <- function(verbose = TRUE) {
       "1. install it following this link: " ,
       " https://visualstudio.microsoft.com/visual-cpp-build-tools/ \n",
       "2. Download Build Tools and run the installer file. IMPORTANT: During installation click Modify and then select Desktop development with C++. \n",
-      " After installation you may have to RESTART R, Rstudio, or even Windows. \n",
-      " For more infomraiton see https://www.r-text.org/articles/ext_install_guide.html."
+      "3. After installation you may have to RESTART R, Rstudio, or even Windows. \n",
+      " For more information see https://www.r-text.org/articles/ext_install_guide.html."
     )
     missing <- "visual_build_tools"
   }

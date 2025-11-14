@@ -38,7 +38,7 @@ Important: Language-based assessments can be developed in one context—such as 
 
 Because of this, users are responsible for evaluating whether a model is appropriate for their specific use case. This means checking whether the training and evaluation conditions align with their own data—and, if needed, validating the model’s performance on a subset of their own data before making any conclusions. That’s why each model in the L-BAM Library comes with detailed documentation on its training data, performance metrics, and development process. Transparent documentation helps users make informed decisions and supports reproducible, trustworthy research (for more information see Nilsson et al., in progress).
 
-If you want to add a pre-trained model to the L-BAM library, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/1K16JdK7zOmuRktqgaYs5sgaHnkUVwB9v6ERxZdd9iW8/edit#gid=0) and email us (*rtext.contact@gmail.com*) so that we can update the table online.
+If you want to add a pre-trained model to the L-BAM library, please fill out the details in this [Google sheet](https://docs.google.com/spreadsheets/d/14PcfTwQJZCKbSh6ylOq1Qm1VT44X4RD0aR4-dt6bink/edit?gid=194707973#gid=194707973) and email us (*rtext.contact@gmail.com*) so that we can update the table online.
 
 *Note that you can adjust the width of the columns when scrolling the table.*
 

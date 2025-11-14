@@ -132,6 +132,8 @@ reference:
     - centrality_data_harmony
     - PC_projections_satisfactionwords_40
 
+installation:
+   one_page: true
 
 articles:
 - title: Set-up
