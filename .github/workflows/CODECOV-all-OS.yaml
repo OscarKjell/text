@@ -111,12 +111,20 @@ jobs:
         if: runner.os == 'macOS'
         run: sudo chown -R $UID $CONDA
 
-      - name: Installing text and testing it
+#      - name: Installing text and testing it
+#        run:  |
+#          install.packages("devtools")
+#          library(devtools)
+#          devtools::install_github("theharmonylab/topics")
+#          devtools::install_github("oscarkjell/text")
+#          text::textrpp_install(prompt = FALSE)
+#          text::textrpp_initialize(textEmbed_test = TRUE)
+#        shell: Rscript {0}
+
+      - name: Installing topics/text and testing text
         run:  |
-          install.packages("devtools")
-          library(devtools)
-          devtools::install_github("theharmonylab/topics")
-          devtools::install_github("oscarkjell/text")
+          remotes::install_github("theharmonylab/topics", dependencies = TRUE)
+          remotes::install_github("oscarkjell/text", dependencies = TRUE)
           text::textrpp_install(prompt = FALSE)
           text::textrpp_initialize(textEmbed_test = TRUE)
         shell: Rscript {0}
