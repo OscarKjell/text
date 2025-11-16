@@ -71,9 +71,7 @@ jobs:
       # TEST 1: test textDiagnostics() after package install and check system dependencies
       - name: textDiagnostics -- install text
         run: |
-          install.packages("devtools")
-          library(devtools)
-          devtools::install_github("oscarkjell/text")
+          remotes::install_github("oscarkjell/text", dependencies = TRUE)
           library(text)
           log <- textDiagnostics()
           log
@@ -98,34 +96,13 @@ jobs:
           echo "DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib" >> $GITHUB_ENV
 
 
-#      # Install system dependencies fo Ubuntu
-#      # removed libfreetype6-dev \ libgit2-dev \  libcairo2-dev \
-#      - name: Install Ubuntu dependencies
-#        if: runner.os == 'Linux'
-#        run: |
-#          sudo apt-get update -y
-#          sudo apt-get install -y \
-#          libcurl4-openssl-dev \
-#          libssl-dev \
-#          libharfbuzz-dev \
-#          libfribidi-dev \
-#          libxml2-dev \
-#          libpng-dev \
-#          libtiff5-dev \
-#          libjpeg-dev \
-#          libfontconfig1-dev \
-#          libicu-dev \
-#          default-jdk
-#          sudo R CMD javareconf
-
-# #
-
       # Install system dependencies (Linux only)
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -y
           sudo apt-get install -y \
+          pkg-config \
           libgit2-dev \
           libfreetype6-dev \
           libcairo2-dev \
