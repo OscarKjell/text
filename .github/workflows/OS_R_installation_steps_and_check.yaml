@@ -68,6 +68,30 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
+      # Install system dependencies (Linux only)
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y \
+          pkg-config \
+          libgit2-dev \
+          libfreetype6-dev \
+          libcairo2-dev \
+          libcurl4-openssl-dev \
+          libssl-dev \
+          libharfbuzz-dev \
+          libfribidi-dev \
+          libxml2-dev \
+          libpng-dev \
+          libtiff5-dev \
+          libjpeg-dev \
+          libfontconfig1-dev \
+          libicu-dev \
+          default-jdk
+          sudo R CMD javareconf
+# # #
+
       # TEST 1: test textDiagnostics() after package install and check system dependencies
       - name: textDiagnostics -- install text
         run: |
@@ -95,30 +119,6 @@ jobs:
           export DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib
           echo "DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib" >> $GITHUB_ENV
 
-
-      # Install system dependencies (Linux only)
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y \
-          pkg-config \
-          libgit2-dev \
-          libfreetype6-dev \
-          libcairo2-dev \
-          libcurl4-openssl-dev \
-          libssl-dev \
-          libharfbuzz-dev \
-          libfribidi-dev \
-          libxml2-dev \
-          libpng-dev \
-          libtiff5-dev \
-          libjpeg-dev \
-          libfontconfig1-dev \
-          libicu-dev \
-          default-jdk
-          sudo R CMD javareconf
-# # #
 
       # Test 3. textrpp_install() to actually install when dependencies are satisfied.
       - name: textrpp_install -- install the text
