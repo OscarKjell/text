@@ -1,0 +1,170 @@
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+name: R-CMD-check
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: macOS-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-24.04, r: 'release'}
+
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      RSPM: ${{ matrix.config.rspm }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # macOS-specific steps
+      - name: Fix and Debug Homebrew Issues
+        if: runner.os == 'macOS'
+        run: |
+          # Reset Homebrew changes
+          cd /opt/homebrew/Library/Taps/homebrew/homebrew-core || exit 1
+          git stash -u || echo "No changes to stash"
+          git clean -d -f || echo "No files to clean"
+          # Fix Homebrew permissions
+          sudo chown -R $(whoami) $(brew --prefix)/*
+          # Debug Homebrew
+          brew doctor || echo "brew doctor failed"
+          brew config || echo "brew config failed"
+      - name: Install macOS Utilities
+        if: runner.os == 'macOS'
+        run: |
+          brew update || echo "Homebrew update failed"
+          brew install libomp || echo "libomp installation failed"
+          brew install qpdf || echo "qpdf installation failed but continuing"
+          export DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib
+          echo "DYLD_LIBRARY_PATH=$(brew --prefix libomp)/lib" >> $GITHUB_ENV
+      # Set up R environment
+      - uses: r-lib/actions/setup-r@v2-branch
+        with:
+          r-version: ${{ matrix.config.r }}
+
+      - uses: r-lib/actions/setup-pandoc@v2-branch
+
+      # Install Miniconda (all OS)
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: 3.9
+          miniconda-version: "latest"
+
+      # Install system dependencies (Linux only)
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y \
+          pkg-config \
+          libcurl4-openssl-dev \
+          libgit2-dev \
+          libssl-dev \
+          libharfbuzz-dev \
+          libfribidi-dev \
+          libxml2-dev \
+          libfreetype6-dev \
+          libpng-dev \
+          libtiff5-dev \
+          libjpeg-dev \
+          libfontconfig1-dev \
+          libicu-dev \
+          libcairo2-dev \
+          default-jdk
+          sudo R CMD javareconf
+
+      - name: Install Conda Dependencies
+        run: |
+          conda config --add channels defaults
+          conda config --set solver classic
+          conda install -c conda-forge numpy
+      - name: Query R Dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
+      # Cache R packages
+      - name: Cache R Packages
+        if: runner.os != 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
+
+      - name: Reinstall stringi from source on Ubuntu 24.04
+        if: matrix.config.os == 'ubuntu-24.04'
+        run: |
+          install.packages("stringi", type = "source")
+        shell: Rscript {0}
+
+      # Install R dependencies
+      - name: Install R Dependencies
+        run: |
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
+        shell: Rscript {0}
+
+      # Fix Conda permissions (macOS only)
+      - name: Fix Conda Permissions
+        if: runner.os == 'macOS'
+        run: sudo chown -R $UID $CONDA
+
+#      # Install and test "text" package
+#      - name: Install and Test "text" Package
+#        run: |
+#          install.packages("devtools")
+#          library(devtools)
+#          devtools::install_github("theharmonylab/topics")
+#          devtools::install_github("oscarkjell/text")
+#          text::textrpp_install(prompt = FALSE)
+#          text::textrpp_initialize(textEmbed_test = TRUE)
+#        shell: Rscript {0}
+
+      - name: Installing topics/text and testing text
+        run:  |
+          remotes::install_github("theharmonylab/topics", dependencies = TRUE)
+          remotes::install_github("oscarkjell/text", dependencies = TRUE)
+          text::textrpp_install(prompt = FALSE)
+          text::textrpp_initialize(textEmbed_test = TRUE)
+        shell: Rscript {0}
+
+
+      # Session Info
+      - name: Session Info
+        run: |
+          options(width = 100)
+          pkgs <- installed.packages()[, "Package"]
+          sessioninfo::session_info(pkgs, include_base = TRUE)
+        shell: Rscript {0}
+
+      # Run R CMD check
+      - name: R CMD Check
+        env:
+          _R_CHECK_CRAN_INCOMING_: false
+          OMP_MAX_ACTIVE_LEVELS: 0
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+        shell: Rscript {0}
+
+      # Display testthat output
+      - name: Display Testthat Output
+        if: always()
+        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
