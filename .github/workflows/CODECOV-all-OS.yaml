@@ -136,13 +136,61 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      # Test coverage
+#      # Test coverage
+#      - name: Test coverage
+#        env:
+#          OMP_MAX_ACTIVE_LEVELS: 2
+#          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+#        run: covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
+#        shell: Rscript {0}
+
+
+      # This is to provide feedback/error output.
       - name: Test coverage
         env:
           OMP_MAX_ACTIVE_LEVELS: 2
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
+        run: |
+          tryCatch(
+            {
+              covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
+            },
+            error = function(e) {
+              message("covr::codecov() failed: ", conditionMessage(e))
+
+              # Look for testthat output files both in the repo and in tempdir()
+              paths <- unique(c(".", tempdir()))
+              rout_files <- unlist(
+                lapply(
+                  paths,
+                  function(p) {
+                    list.files(
+                      p,
+                      pattern = "\\.Rout(\\.fail)?$",
+                      recursive = TRUE,
+                      full.names = TRUE
+                    )
+                  }
+                )
+              )
+
+              rout_files <- unique(rout_files)
+
+              if (length(rout_files) == 0) {
+                message("No .Rout or .Rout.fail files found.")
+              } else {
+                message("Printing test output from .Rout/.Rout.fail files:")
+                for (f in rout_files) {
+                  cat("\n\n===== ", f, " =====\n", sep = "")
+                  cat(readLines(f, warn = FALSE), sep = "\n")
+                }
+              }
+
+              stop("Coverage failed. See test output above.")
+            }
+          )
         shell: Rscript {0}
+
 
       # Debugging step to confirm coverage files are generated
       - name: List files for debugging
