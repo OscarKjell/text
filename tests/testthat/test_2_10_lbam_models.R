@@ -177,7 +177,8 @@ test_that("Testing L-BAM models", {
   res <- text::textAssess(model_info =  "implicitaffiliation_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[2]], .9755044, tolerance = 0.001)
   #
-  textModelsRemove("bert-base-german-cased")
+  # This line provide error abt not finding the model despite being used above.
+#  textModelsRemove("bert-base-german-cased")
 
   ###### Bert
   res <- text::textAssess(model_info =  "harmony_words_bert23_kjell2022", texts = "hello", dim_names = FALSE)
