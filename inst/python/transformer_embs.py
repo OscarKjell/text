@@ -180,6 +180,27 @@ class textTransformerInterface:
     def no_context_preparation(self, messageRows, sent_tok_onthefly):
 
         return 
+    
+    def regular_context_preparation(self, groupedMessageRows):
+        # No sentence tokenization for regular context preparation
+
+        input_ids, token_type_ids, attention_mask = [], [], []
+        msgId_seq, cfId_seq = [], []
+
+        for cfRows in groupedMessageRows:
+            cfId = cfRows[0]
+            for messageRow in cfRows[1]:
+                message_id = messageRow[0]
+                message = messageRow[1]
+                tokenized_message = self.transformerTokenizer.encode_plus(message, add_special_tokens=True)
+                input_ids.append(torch.tensor(tokenized_message["input_ids"], dtype=torch.long))
+                token_type_ids.append(torch.tensor(tokenized_message["token_type_ids"], dtype=torch.long))
+                attention_mask.append(torch.tensor([1]*len(tokenized_message["input_ids"]), dtype=torch.long))
+                msgId_seq.append([message_id, len(tokenized_message["input_ids"]), 0])
+                cfId_seq.append(cfId)
+
+        assert len(input_ids) == len(msgId_seq) == len(cfId_seq) == len(attention_mask), "lengths of input_ids, msgId_seq, cfId_seq, attention_mask are not equal"
+        return {"input_ids": input_ids, "attention_mask": attention_mask, "token_type_ids": token_type_ids}, (cfId_seq, msgId_seq)
 
 ######################
 ######################
@@ -261,7 +282,7 @@ class transformer_embeddings:
         if noContext:
             tokenIdstokensDict, (cfId_seq, msgId_seq) = self.textToTokensInterface.no_context_preparation(groupedMessageRows, sent_tok_onthefly)
         else:
-            tokenIdsDict, (cfId_seq, msgId_seq) = self.textToTokensInterface.context_preparation(groupedMessageRows, sent_tok_onthefly)
+            tokenIdsDict, (cfId_seq, msgId_seq) = self.textToTokensInterface.regular_context_preparation(groupedMessageRows)
             
         #print ("Len cfs/msgs: ", len(cfId_seq), len(msgId_seq))
         #print ("Num unique cfs/message Ids: ", np.unique(cfId_seq), len(set(map(lambda x: x[0], msgId_seq))))

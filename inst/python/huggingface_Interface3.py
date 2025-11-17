@@ -848,7 +848,7 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
                 groupedMessageRows[cfId].append([msgId, msg])
         groupedMessageRows = [[cfId, groupedMessageRows[cfId]] for cfId in cfId_msgId_map]
             
-        tokenIdsDict, (cfId_seq, msgId_seq) = embedding_generator.prepare_messages(groupedMessageRows, sent_tok_onthefly=True)
+        tokenIdsDict, (cfId_seq, msgId_seq) = embedding_generator.prepare_messages(groupedMessageRows, sent_tok_onthefly=True, noContext=False)
         if len(tokenIdsDict["input_ids"]) == 0:
             continue
         
