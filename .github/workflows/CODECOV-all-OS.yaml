@@ -156,33 +156,46 @@ jobs:
               covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
             },
             error = function(e) {
-              message("covr::codecov() failed: ", conditionMessage(e))
+              msg <- conditionMessage(e)
+              message("covr::codecov() failed: ", msg)
 
-              # Look for testthat output files both in the repo and in tempdir()
-              paths <- unique(c(".", tempdir()))
-              rout_files <- unlist(
-                lapply(
-                  paths,
-                  function(p) {
-                    list.files(
-                      p,
-                      pattern = "\\.Rout(\\.fail)?$",
-                      recursive = TRUE,
-                      full.names = TRUE
-                    )
-                  }
+              ## 1) Try to extract the .Rout/.Rout.fail path from the error message
+              rout_path <- sub(".*`([^`]*\\.Rout(?:\\.fail)?)`.*", "\\1", msg)
+
+              printed <- FALSE
+              if (!identical(rout_path, msg) && file.exists(rout_path)) {
+                message("Printing testthat output from: ", rout_path)
+                cat("\n\n===== ", rout_path, " =====\n", sep = "")
+                cat(readLines(rout_path, warn = FALSE), sep = "\n")
+                printed <- TRUE
+              }
+
+              ## 2) Fallback: search for any .Rout/.Rout.fail files we can find
+              if (!printed) {
+                paths <- unique(c(".", tempdir()))
+                rout_files <- unlist(
+                  lapply(
+                    paths,
+                    function(p) {
+                      list.files(
+                        p,
+                        pattern = "\\.Rout(\\.fail)?$",
+                        recursive = TRUE,
+                        full.names = TRUE
+                      )
+                    }
+                  )
                 )
-              )
+                rout_files <- unique(rout_files)
 
-              rout_files <- unique(rout_files)
-
-              if (length(rout_files) == 0) {
-                message("No .Rout or .Rout.fail files found.")
-              } else {
-                message("Printing test output from .Rout/.Rout.fail files:")
-                for (f in rout_files) {
-                  cat("\n\n===== ", f, " =====\n", sep = "")
-                  cat(readLines(f, warn = FALSE), sep = "\n")
+                if (length(rout_files) == 0) {
+                  message("No .Rout or .Rout.fail files found.")
+                } else {
+                  message("Printing test output from .Rout/.Rout.fail files:")
+                  for (f in rout_files) {
+                    cat("\n\n===== ", f, " =====\n", sep = "")
+                    cat(readLines(f, warn = FALSE), sep = "\n")
+                  }
                 }
               }
 
@@ -190,7 +203,6 @@ jobs:
             }
           )
         shell: Rscript {0}
-
 
       # Debugging step to confirm coverage files are generated
       - name: List files for debugging
