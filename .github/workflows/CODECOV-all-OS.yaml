@@ -144,6 +144,23 @@ jobs:
 #        run: covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
 #        shell: Rscript {0}
 
+      - name: Clean caches in Ubuntu before R CMD check
+        if: runner.os == 'Linux'
+        run: |
+          echo "Disk usage before cleanup:"
+          df -h
+          du -sh ~/.cache || true
+          du -sh /home/runner/miniconda3 || true
+
+          # Clean conda caches
+          conda clean --all -y || true
+
+          # Clean huggingface / torch caches from previous runs in this job (if any)
+          rm -rf ~/.cache/huggingface || true
+          rm -rf ~/.cache/torch || true
+
+          echo "Disk usage after cleanup:"
+          df -h
 
       # This is to provide feedback/error output.
       - name: Test coverage

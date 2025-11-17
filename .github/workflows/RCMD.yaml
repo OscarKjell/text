@@ -155,12 +155,46 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      # Run R CMD check
+#      # Run R CMD check
+#      - name: R CMD Check
+#        env:
+#          _R_CHECK_CRAN_INCOMING_: false
+#          OMP_MAX_ACTIVE_LEVELS: 0
+#        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+#        shell: Rscript {0}
+
+
+      - name: Clean caches in Ubuntu before R CMD check
+        if: runner.os == 'Linux'
+        run: |
+          echo "Disk usage before cleanup:"
+          df -h
+          du -sh ~/.cache || true
+          du -sh /home/runner/miniconda3 || true
+
+          # Clean conda caches
+          conda clean --all -y || true
+
+          # Clean huggingface / torch caches from previous runs in this job (if any)
+          rm -rf ~/.cache/huggingface || true
+          rm -rf ~/.cache/torch || true
+
+          echo "Disk usage after cleanup:"
+          df -h
+
+
+
       - name: R CMD Check
         env:
           _R_CHECK_CRAN_INCOMING_: false
           OMP_MAX_ACTIVE_LEVELS: 0
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+        run: |
+          rcmdcheck::rcmdcheck(
+            args      = c("--no-manual", "--as-cran"),
+            error_on  = "warning",
+            check_dir = "check",
+            quiet     = FALSE   # <- force printing full output
+          )
         shell: Rscript {0}
 
       # Display testthat output
