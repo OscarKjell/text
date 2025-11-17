@@ -155,12 +155,14 @@ test_that("Testing L-BAM models", {
   # Fined tuned Roberta
   res <- text::textAssess(model_info =  "implicitachievement_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[2]], .999077, tolerance = 0.001)
+  textModelsRemove("theharmonylab/implicit-motives-achievement-roberta-large")
 
   res <- text::textAssess(model_info =  "implicitaffiliation_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[2]], .997766, tolerance = 0.0001)
-
-  textModelsRemove("theharmonylab/implicit-motives-achievement-roberta-large")
   textModelsRemove("theharmonylab/implicit-motives-affiliation-roberta-large")
+
+  res <- text::textAssess(model_info =  "implicitpower_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], .9955019, tolerance = 0.0001)
   textModelsRemove("theharmonylab/implicit-motives-power-roberta-large")
 
   ###### German BERT
