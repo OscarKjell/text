@@ -12,6 +12,8 @@ context("Testing L-BAM models")
 test_that("Testing L-BAM models", {
   skip_on_cran()
 
+
+  # Roberta
   res <- text::textAssess(model_info =  "depression_select_phq9_roberta23_gu2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[1]], 8.961579, tolerance = 0.001)
 
@@ -70,22 +72,12 @@ test_that("Testing L-BAM models", {
   res <- text::textAssess(model_info =  "worry_text_pswq_roberta23_gu2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[1]], 39.58207, tolerance = 0.001)
 
-  res <- text::textAssess(model_info =  "suicidalityrisk_suicidalitytext_mixedbread23_gu2025", texts = "hello", dim_names = TRUE)
-  testthat::expect_equal(res[[1]], 0.4167996, tolerance = 0.001)
-
-  res <- text::textAssess(model_info =  "selfharmrisk_selfharmtext_mixedbread23_gu2025", texts = "hello", dim_names = TRUE)
-  testthat::expect_equal(res[[1]], 0.3332303, tolerance = 0.001)
-
 
   res <- text::textAssess(model_info =  "valence_facebook_roberta23_eijsbroek2024", texts = "hello", dim_names = TRUE)
   testthat::expect_equal(res[[1]], 4.704488, tolerance = 0.001)
 
   res <- text::textAssess(model_info =  "valence_facebook_roberta23_eijsbroek2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[1]], 4.704488, tolerance = 0.001)
-
-  res <- textAssess(model_info =  "valence_facebook_mxbai23_eijsbroek2024", texts = "hello", dim_names = TRUE)
-  testthat::expect_equal(res[[1]], 5.142306, tolerance = 0.001)
-
 
   res <- text::textAssess(model_info =  "implicitpower_roberta23_nilsson2024", texts = tibble(texts = "hello"), dim_names = T)
   testthat::expect_equal(res[[2]], 0.9879577, tolerance = 0.001)
@@ -96,57 +88,24 @@ test_that("Testing L-BAM models", {
   res <- text::textAssess(model_info =  "implicitachievement_roberta23_nilsson2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[2]], 0.9768399, tolerance = 0.001)
 
-  res <- text::textAssess(model_info =  "implicitachievement_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
-  testthat::expect_equal(res[[2]], .999077, tolerance = 0.001)
-
-  res <- text::textAssess(model_info =  "implicitaffiliation_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
-  testthat::expect_equal(res[[2]], .997766, tolerance = 0.0001)
-
-  ######
-  res <- text::textAssess(model_info =  "implicitpower_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
-  testthat::expect_equal(res[[2]], 0.996004, tolerance = 0.001)
-  #
   res <- text::textAssess(model_info =  "implicitpower_roberta23_previoussentence_nilsson2024", texts = tibble(texts = "hello"), dim_names = T)
   testthat::expect_equal(res[[2]], .9854281, tolerance = 0.001)
   #
-
-
-  res <- text::textAssess(model_info =  "implicitachievement_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
-  testthat::expect_equal(res[[2]], 0.9851559, tolerance = 0.001)
-
-  #
   res <- text::textAssess(model_info =  "implicitachievement_roberta23_previoussentence_nilsson2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[2]], .9623212, tolerance = 0.001)
-  #
+
   res <- text::textAssess(model_info =  "implicitaffiliation_roberta23_nilsson2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[2]], .9269618, tolerance = 0.001)
-  #
-  res <- text::textAssess(model_info =  "implicitaffiliation_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
-  testthat::expect_equal(res[[2]], .9755044, tolerance = 0.001)
-  #
+
   res <- text::textAssess(model_info =  "implicitaffiliation_roberta23_previoussentence_nilsson2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[2]], .8238421, tolerance = 0.001)
 
-  ######
-
-
-  res <- text::textAssess(model_info =  "harmony_words_bert23_kjell2022", texts = "hello", dim_names = FALSE)
-  testthat::expect_equal(res[[1]], 21.3629, tolerance = 0.001)
-
-  res <- text::textAssess(model_info =  "harmony_text_bert23_kjell2022", texts = "hello", dim_names = FALSE)
-  testthat::expect_equal(res[[1]], 23.7938, tolerance = 0.001)
 
   res <- text::textAssess(model_info =  "harmony_words_roberta23_kjell2022", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[1]],  21.92362, tolerance = 0.001)
 
   res <- text::textAssess(model_info =  "harmony_text_roberta23_kjell2022", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[1]], 24.14056, tolerance = 0.001)
-
-  res <- text::textAssess(model_info =  "satisfaction_words_bert23_kjell2022", texts = "hello", dim_names = FALSE)
-  testthat::expect_equal(res[[1]], 24.72859, tolerance = 0.001)
-
-  res <- text::textAssess(model_info =  "satisfaction_text_bert23_kjell2022", texts = "hello", dim_names = FALSE)
-  testthat::expect_equal(res[[1]], 30.30167, tolerance = 0.001)
 
   res <- text::textAssess(model_info =  "satisfaction_words_roberta23_kjell2022", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[1]], 18.38246, tolerance = 0.001)
@@ -160,6 +119,19 @@ test_that("Testing L-BAM models", {
   res <- text::textAssess(model_info =  "harmony_balance_is_it_roberta23_lomas2024", texts = "hello", dim_names = FALSE)
   testthat::expect_equal(res[[2]], .5067378, tolerance = 0.001)
 
+  textModels()
+  textModelsRemove("roberta-large")
+
+  # Mixed Bread
+  res <- text::textAssess(model_info =  "suicidalityrisk_suicidalitytext_mixedbread23_gu2025", texts = "hello", dim_names = TRUE)
+  testthat::expect_equal(res[[1]], 0.4167996, tolerance = 0.001)
+
+  res <- text::textAssess(model_info =  "selfharmrisk_selfharmtext_mixedbread23_gu2025", texts = "hello", dim_names = TRUE)
+  testthat::expect_equal(res[[1]], 0.3332303, tolerance = 0.001)
+
+  res <- textAssess(model_info =  "valence_facebook_mxbai23_eijsbroek2024", texts = "hello", dim_names = TRUE)
+  testthat::expect_equal(res[[1]], 5.142306, tolerance = 0.001)
+
   res <- text::textAssess(model_info =  "workengagement_words_mxbai23_nilsson2024", texts = "hello", dim_names = T)
   testthat::expect_equal(res[[1]], 11.22422, tolerance = 0.001)
 
@@ -169,17 +141,61 @@ test_that("Testing L-BAM models", {
   res <- text::textAssess(model_info =  "mental_health_recommendations_mxbai_parsimonious_model_wiebel2024", texts = "hello", dim_names = T)
   testthat::expect_equal(res[[1]], 2.362874, tolerance = 0.001)
 
-  res <- text::textAssess(model_info =  "autonomy_text_bert23_mesquiti2025", texts =  "hello you", dim_names = F)
-  testthat::expect_equal(res[[1]], 4.704528, tolerance = 0.001)
-
-  res <- text::textAssess(model_info =  "satisfaction_text_bert23_mesquiti2026", texts = "hello everyone", dim_names = F)
-  testthat::expect_equal(res[[1]], 7.404376, tolerance = 0.001)
 
   res <- text::textAssess(model_info =  "mentalhealth_interview_mxbai23_kjell2025", texts =  "hello you", dim_names = F)
   testthat::expect_equal(res[[1]], 56.10808, tolerance = 0.001)
 
   res <- text::textAssess(model_info =  "physicalhealth_interview_mxbai23_kjell2025", texts =  "hello you", dim_names = F)
   testthat::expect_equal(res[[1]], 29.80874, tolerance = 0.001)
+
+  textModelsRemove("mixedbread-ai/mxbai-embed-large-v1")
+
+
+
+  # Fined tuned Roberta
+  res <- text::textAssess(model_info =  "implicitachievement_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], .999077, tolerance = 0.001)
+
+  res <- text::textAssess(model_info =  "implicitaffiliation_roberta_ft_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], .997766, tolerance = 0.0001)
+
+  textModelsRemove("theharmonylab/implicit-motives-achievement-roberta-large")
+  textModelsRemove("theharmonylab/implicit-motives-affiliation-roberta-large")
+  textModelsRemove("theharmonylab/implicit-motives-power-roberta-large")
+
+  ###### German BERT
+  res <- text::textAssess(model_info =  "implicitpower_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], 0.996004, tolerance = 0.001)
+  #
+
+  res <- text::textAssess(model_info =  "implicitachievement_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], 0.9851559, tolerance = 0.001)
+
+  #
+  res <- text::textAssess(model_info =  "implicitaffiliation_germanbert11_nilsson2024", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[2]], .9755044, tolerance = 0.001)
+  #
+  textModelsRemove("bert-base-german-cased")
+
+  ###### Bert
+  res <- text::textAssess(model_info =  "harmony_words_bert23_kjell2022", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[1]], 21.3629, tolerance = 0.001)
+
+  res <- text::textAssess(model_info =  "harmony_text_bert23_kjell2022", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[1]], 23.7938, tolerance = 0.001)
+
+  res <- text::textAssess(model_info =  "satisfaction_words_bert23_kjell2022", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[1]], 24.72859, tolerance = 0.001)
+
+  res <- text::textAssess(model_info =  "satisfaction_text_bert23_kjell2022", texts = "hello", dim_names = FALSE)
+  testthat::expect_equal(res[[1]], 30.30167, tolerance = 0.001)
+
+  res <- text::textAssess(model_info =  "autonomy_text_bert23_mesquiti2025", texts =  "hello you", dim_names = F)
+  testthat::expect_equal(res[[1]], 4.704528, tolerance = 0.001)
+
+  res <- text::textAssess(model_info =  "satisfaction_text_bert23_mesquiti2026", texts = "hello everyone", dim_names = F)
+  testthat::expect_equal(res[[1]], 7.404376, tolerance = 0.001)
+  textModelsRemove("bert-large-uncased")
 
 
   # list.files()
