@@ -408,8 +408,9 @@ grep_col_by_name_in_list <- function(l,
 #' "roberta-base", or "xlm-roberta-base".
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #' switching to embedding text sentence by sentence.
-#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-#' specific device number.
+#' @param device (character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+#' for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+#' depending on OS.
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
 #' (default the value stored for the associated model).
@@ -433,7 +434,7 @@ grep_col_by_name_in_list <- function(l,
 textTokenize <- function(texts,
                          model,
                          max_token_to_sentence = 4,
-                         device = "cpu",
+                         device = NULL,
                          tokenizer_parallelism = FALSE,
                          model_max_length = NULL,
                          hg_gated = FALSE,
@@ -493,7 +494,8 @@ textTokenize <- function(texts,
 #' @param keep_token_embeddings (boolean) Whether to keep token level embeddings in the output
 #' (when using word_types aggregation). (default= TRUE)
 #' @param device (character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
-#' for MacOS, where k is a specific device number. (default = "cpu")
+#' for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+#' depending on OS.
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism.
 #' (default = FALSE).
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the
@@ -537,7 +539,7 @@ textEmbedRawLayers <- function(
     word_type_embeddings = FALSE,
     decontextualize = FALSE,
     keep_token_embeddings = TRUE,
-    device = "cpu",
+    device = NULL,
     tokenizer_parallelism = FALSE,
     model_max_length = NULL,
     max_token_to_sentence = 4,
@@ -547,6 +549,18 @@ textEmbedRawLayers <- function(
     trust_remote_code = FALSE,
     logging_level = "error",
     sort = TRUE) {
+
+  # Setting device depending on OS
+  if(is.null(device)){
+    if(!is_osx()){
+      device = "gpu:0"
+    }
+    if(is_osx()){
+      device = "mps:0"
+    }
+  }
+
+
   if (decontextualize == TRUE && word_type_embeddings == FALSE) {
     stop(message(
       colourise("decontextualize = TRUE & word_type_embeddings = FALSE has not been
@@ -1152,8 +1166,9 @@ find_layer_number <- function(
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #' switching to embedding text sentence by sentence.
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
-#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-#' specific device number such as 'mps:1'.
+#' @param device (character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+#' for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+#' depending on OS.
 #' @param hg_gated Set to TRUE if the accessed model is gated.
 #' @param hg_token The token needed to access the gated model.
 #' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
@@ -1367,8 +1382,9 @@ text_embed_dlatk <- function(
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #' switching to embedding text sentence by sentence.
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
-#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-#' specific device number such as 'mps:1'.
+#' @param device (character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+#' for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+#' depending on OS.
 #' @param hg_gated Set to TRUE if the accessed model is gated.
 #' @param hg_token The token needed to access the gated model.
 #' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
@@ -1924,8 +1940,9 @@ combine_textEmbed_results <- function(
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #' switching to embedding text sentence by sentence.
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
-#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-#' specific device number such as 'mps:1'.
+#' @param device (character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+#' for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+#' depending on OS.
 #' @param hg_gated Set to TRUE if the accessed model is gated.
 #' @param hg_token The token needed to access the gated model.
 #' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
@@ -1987,7 +2004,7 @@ textEmbed <- function(
     model_max_length = NULL,
     max_token_to_sentence = 4,
     tokenizer_parallelism = FALSE,
-    device = "cpu",
+    device = NULL,
     hg_gated = FALSE,
     hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
                           unset = ""),
@@ -1997,6 +2014,16 @@ textEmbed <- function(
     ...) {
 
   T1 <- Sys.time()
+
+  # Setting device depending on OS
+  if(is.null(device)){
+    if(!is_osx()){
+      device = "gpu:0"
+    }
+    if(is_osx()){
+      device = "mps:0"
+    }
+  }
 
   if(!tibble::is_tibble(texts)){
     texts <- tibble::tibble(texts = texts)

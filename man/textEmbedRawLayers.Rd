@@ -12,7 +12,7 @@ textEmbedRawLayers(
   word_type_embeddings = FALSE,
   decontextualize = FALSE,
   keep_token_embeddings = TRUE,
-  device = "cpu",
+  device = NULL,
   tokenizer_parallelism = FALSE,
   model_max_length = NULL,
   max_token_to_sentence = 4,
@@ -55,7 +55,8 @@ at a time). (default = TRUE)}
 (when using word_types aggregation). (default= TRUE)}
 
 \item{device}{(character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
-for MacOS, where k is a specific device number. (default = "cpu")}
+for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+depending on OS.}
 
 \item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism.
 (default = FALSE).}

@@ -8,7 +8,7 @@ textTokenize(
   texts,
   model,
   max_token_to_sentence = 4,
-  device = "cpu",
+  device = NULL,
   tokenizer_parallelism = FALSE,
   model_max_length = NULL,
   hg_gated = FALSE,
@@ -30,8 +30,9 @@ textTokenize(
 \item{max_token_to_sentence}{(numeric) Maximum number of tokens in a string to handle before
 switching to embedding text sentence by sentence.}
 
-\item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-specific device number.}
+\item{device}{(character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+depending on OS.}
 
 \item{tokenizer_parallelism}{If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 
