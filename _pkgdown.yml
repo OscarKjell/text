@@ -16,6 +16,16 @@ template:
         </p>
       </div>
 
+navbar:
+  structure:
+    left:  [intro, installation, reference, articles, news]
+    right: [search, github, lightswitch]
+
+  components:
+    installation:
+      text: Installation
+      href: installation.html
+
 development:
   mode: default
 
@@ -131,9 +141,6 @@ reference:
     - DP_projections_HILS_SWLS_100
     - centrality_data_harmony
     - PC_projections_satisfactionwords_40
-
-installation:
-   one_page: true
 
 articles:
 - title: Set-up
