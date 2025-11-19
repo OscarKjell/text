@@ -224,6 +224,7 @@ textEmbeddingAggregation <- function(x,
 #' Also give word frequencies.
 #' @param x_characters A character column in a tibble.
 #' @param hg_tokenizer (boolean) Weather to use textTokenize
+#' @param device (string) device to use in textTokenize (e.g., "cpu", "mps:0", "gpu:0").
 #' @return A tibble with a unique words column and a column with their respective frequency.
 #' @importFrom tibble tibble
 #' @importFrom stringi stri_c stri_trans_tolower
@@ -232,6 +233,7 @@ textEmbeddingAggregation <- function(x,
 #' @noRd
 getUniqueWordsAndFreq <- function(x_characters,
                                   hg_tokenizer = NULL,
+                                  device = "cpu",
                                   ...) {
   if (is.null(hg_tokenizer)) {
     # Unite all text variables into one
@@ -251,7 +253,7 @@ getUniqueWordsAndFreq <- function(x_characters,
   }
 
   if (!is.null(hg_tokenizer)) {
-    x_characters4b <- lapply(list(x_characters), textTokenize, model = hg_tokenizer, ...)
+    x_characters4b <- lapply(list(x_characters), textTokenize, model = hg_tokenizer, device = device, ...)
     x_characters5 <- data.frame(sort(table(unlist(x_characters4b))))
   }
 
@@ -442,6 +444,17 @@ textTokenize <- function(texts,
                                                   unset = ""),
                          trust_remote_code = FALSE,
                          logging_level = "error") {
+
+  # Setting device depending on OS
+  if(is.null(device)){
+    if(!is_osx()){
+      device = "gpu:0"
+    }
+    if(is_osx()){
+      device = "mps:0"
+    }
+  }
+
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
                                         "huggingface_Interface3.py",
@@ -730,7 +743,8 @@ textEmbedRawLayers <- function(
       bind_rows()
 
     singlewords <- getUniqueWordsAndFreq(data_character_variables1[[1]],
-                                         hg_tokenizer = model
+                                         hg_tokenizer = model,
+                                         device = device
     )
     list_words <- sapply(singlewords$words, list)
     names(list_words) <- NULL
@@ -1205,6 +1219,7 @@ text_embed_dlatk <- function(
     batch_size = batch_size
     ){
 
+  device = "cpu"
   # Keeping comment consistent with original method based on textEmbedRawLayers and textEmbedLayerAggregation (to enable textPredict with text input).
   layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
   word_type_embeddings = FALSE
@@ -1950,8 +1965,9 @@ combine_textEmbed_results <- function(
 #' be set to avoid the need to enter the token each time.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param implementation (boolean; experiments) If TRUE the text is split using the DLATK-method; this method appears better for longer texts (but it does not
-#' return token level word embeddings, nor word_types embeddings at this stage).
+#' @param implementation (string; experimental) If "dlatk" the text is split using the DLATK-method; this method
+#' is faster and appears better for longer texts (but today it does not
+#' return token level word embeddings, nor word_types embeddings).
 #' @param trust_remote_code (boolean) use a model with custom code on the Huggingface Hub
 #' @param ... settings from textEmbedRawLayers().
 #' @return A tibble with tokens, a column for layer identifier and word embeddings.

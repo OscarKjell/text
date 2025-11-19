@@ -187,19 +187,22 @@ test_that("textEmbedRawLayers bert-base-uncased contexts=FALSE, decontexts = TRU
   text_to_test_import2 <- c("ön är vacker", "molnen svävar")
   x <- tibble::tibble(text_to_test_import1, text_to_test_import2)
 
-  embeddings2 <- text::textEmbedRawLayers(x,
+  # TO DO (try setting device to other settings)
+  embeddings2 <- text::textEmbedRawLayers(
+    texts = x,
     model = "bert-base-uncased",
     word_type_embeddings = TRUE,
     decontextualize = TRUE,
-    layers = "all"
+    layers = "all",
+    device = "cpu"
   )
-  expect_that(embeddings2, is_a("list"))
+  testthat::expect_that(embeddings2, testthat::is_a("list"))
 
   # Is the first value there and numeric
-  expect_that(embeddings2[[1]][[1]][[1]][[1]][[1]], is.character)
+  testthat::expect_that(embeddings2[[1]][[1]][[1]][[1]][[1]], is.character)
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
-  expect_that(ncol(embeddings2[[1]][[1]][[1]]), equals(771))
+  testthat::expect_that(ncol(embeddings2[[1]][[1]][[1]]), testthat::equals(771))
 })
 
 test_that("textEmbed", {
@@ -277,7 +280,8 @@ test_that("textDimName", {
 test_that("textTokenize", {
   skip_on_cran()
 
-  tokens <- textTokenize("hello are you?", model = "bert-base-uncased")
+  # To do: try setting device to default/NULL.
+  tokens <- textTokenize("hello are you?", model = "bert-base-uncased", device = "cpu")
   expect_equal(tokens[[1]]$tokens[2], "hello")
 
   textModelsRemove("bert-base-uncased")

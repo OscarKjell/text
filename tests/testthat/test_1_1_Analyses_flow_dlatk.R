@@ -16,6 +16,9 @@ test_that("Testing DLATK textEmbed as well as train", {
     multi_cores = "multi_cores_sys_default"
   }
 
+  # it works with original + MPS
+  # it works with dlatk + MPS does NOT work.
+  #
   harmony_word_embeddings1 <- text::textEmbed(
     texts = Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",
