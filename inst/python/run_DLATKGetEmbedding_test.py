@@ -37,7 +37,15 @@ if __name__ == "__main__":
     # print (np.array(msg_embs).shape, np.array(cf_embs).shape)
     
     group_ids = [i//2 for i in range(len(text_strings))]
-    cf_embs = basic_DLATKGetEmbedding_test(text_strings=text_strings, device="cuda", batch_size=16, 
+    cf_embs, token_embs, tokens = basic_DLATKGetEmbedding_test(text_strings=text_strings, device="cuda", batch_size=16, 
                                                     group_ids=group_ids)
     
     print (np.array(cf_embs).shape)
+
+    text_strings = ['a '*768]*10
+    group_ids = [i//2 for i in range(len(text_strings))]
+    cf_embs, token_embs, tokens = basic_DLATKGetEmbedding_test(text_strings=text_strings, device="cuda", batch_size=16, 
+                                                    group_ids=group_ids)
+    
+    print (np.array(cf_embs).shape)
+    import pdb; pdb.set_trace()

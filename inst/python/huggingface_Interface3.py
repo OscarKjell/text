@@ -731,7 +731,8 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
                                    logging_level = 'warning',
                                 #    sentence_tokenize = True
                                     batch_size = 1,
-                                    aggregations= ['mean']
+                                    aggregations= ['mean'],
+                                    return_token_embeddings = False
                                    ):
     """
     Simple Python method for embedding text with pretained Hugging Face models using DLATK's hypercontextualized embeddings.
@@ -830,6 +831,8 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
     
     msg_embeddings = []
     cf_embeddings = []
+    token_embeddings_all = []
+    tokens_all = []
     for cfGrp in tqdm(cfGroups):
         # mIdSeen = set() #currently seen message ids
         # mIdList = [] #only for keepMsgFeats
@@ -856,7 +859,7 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
 
         if encSelectedLayers is None:
             continue
-        
+
         msg_reps, msgIds_new, cfIds_new = embedding_generator.message_aggregate(encSelectedLayers, msgId_seq, cfId_seq)
         
         if all([len(cfId_msgId_map[cfId]) == 1 for cfId in cfId_msgId_map]):
@@ -868,10 +871,18 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
 
         msg_embeddings.extend(msg_reps)
         cf_embeddings.extend(cf_reps)
+        
+        if return_token_embeddings:
+            decoded_tokens = [tokenizer.convert_ids_to_tokens(input_ids) for input_ids in tokenIdsDict["input_ids"]]
+            tokens_all.extend(decoded_tokens)
+            token_embeddings = [encSelectedLayers[0][i, :len(decoded_tokens[i])].tolist() for i in range(len(encSelectedLayers[0]))]
+            token_embeddings_all.extend(token_embeddings)
     
     msg_embeddings = [msg_embeddings[i].tolist() for i in range(len(msg_embeddings))]
     cf_embeddings = [cf_embeddings[i].tolist() if isinstance(cf_embeddings[i], np.ndarray) else cf_embeddings[i] for i in range(len(cf_embeddings))] 
-#    return msg_embeddings, cf_embeddings
+
+    if return_token_embeddings:
+        return cf_embeddings, token_embeddings_all, tokens_all
     return cf_embeddings
 
 def hgTokenizerGetTokens(text_strings,
