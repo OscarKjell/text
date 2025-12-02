@@ -272,6 +272,7 @@ class transformer_embeddings:
         if modelObj is not None:
             self.transformerModel = modelObj
             self.cuda = self.transformerModel.device.type == 'cuda'
+            self.device = self.transformerModel.device
             self.config = self.transformerModel.config
         elif modelName is not None:
             self.config = AutoConfig.from_pretrained(modelName, output_hidden_states=True)
@@ -281,8 +282,14 @@ class transformer_embeddings:
             try:
                 self.transformerModel.to('cuda')
             except:
-                print (" unable to use CUDA (GPU) for BERT")
-                self.cuda = False
+                try:
+                    self.device = 'mps'
+                    self.transformerModel.to('mps')
+                except Exception as e:
+                    self.device = 'cpu'
+                    print ("WARNING: unable to use MPS (Mac M1+) or CUDA for BERT. Using CPU instead.")
+                    self.cuda = False
+                    self.device = 'cpu'
         self.transformerModel.eval()
         
         if tokenizerObj is not None:
@@ -359,11 +366,11 @@ class transformer_embeddings:
                 token_type_ids_padded = pad_sequence(tokenIdsDict["token_type_ids"][i*self.batchSize:(i+1)*self.batchSize], batch_first = True, padding_value=0)
             attention_mask_padded = pad_sequence(tokenIdsDict["attention_mask"][i*self.batchSize:(i+1)*self.batchSize], batch_first = True, padding_value=0)
 
-            if self.cuda:
-                input_ids_padded = input_ids_padded.to('cuda') 
+            if self.device != 'cpu':
+                input_ids_padded = input_ids_padded.to(self.device) 
                 if len(tokenIdsDict["token_type_ids"])>0:
-                    token_type_ids_padded = token_type_ids_padded.to('cuda')
-                attention_mask_padded = attention_mask_padded.to('cuda')
+                    token_type_ids_padded = token_type_ids_padded.to(self.device)
+                attention_mask_padded = attention_mask_padded.to(self.device)
 
             input_ids_padded = input_ids_padded.long()
             if len(tokenIdsDict["token_type_ids"])>0:
