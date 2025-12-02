@@ -720,8 +720,6 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
                                    group_ids = [],
                                    model = 'bert-large-uncased',
                                    layers = 'all',
-                                #    return_tokens = True,
-                                #    max_token_to_sentence = 4,
                                    device = 'cpu',
                                    tokenizer_parallelism = False,
                                    model_max_length = None,
@@ -729,10 +727,9 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
                                    hg_token = "",
                                    trust_remote_code = False,
                                    logging_level = 'warning',
-                                #    sentence_tokenize = True
                                     batch_size = 1,
                                     aggregations= ['mean'],
-                                    return_token_embeddings = False
+                                    return_tokens = False
                                    ):
     """
     Simple Python method for embedding text with pretained Hugging Face models using DLATK's hypercontextualized embeddings.
@@ -768,14 +765,18 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
         batch size for generating embeddings
     aggregations : list
         list of aggregation methods to use for aggregating embeddings from message to group level
+    return_tokens : bool
+        return token embeddings and tokens along with cf embeddings. This could take a bit longer. 
 
     Returns
     -------
-    msg_embeddings : list
-        embeddings for each item in text_strings
-    cf_embeddings : list, optional
+    cf_embeddings : list
         embeddings for each group of text_strings
-    """
+    token_embeddings : list, optional
+        embeddings for each token in text_strings
+    tokens : list, optional
+        tokenized version of text_strings
+    """ 
     def getMessagesForCorrelFieldGroups(cfGrp, text_strings, group_ids, text_ids):
         """ Return a list of list containing [cfId, msgId, msg] for the given cfGrp """
         filtered_rows = [(group_id, text_ids[i], text_strings[i]) for i, group_id in enumerate(group_ids) if group_id in cfGrp]
@@ -872,7 +873,7 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
         msg_embeddings.extend(msg_reps)
         cf_embeddings.extend(cf_reps)
         
-        if return_token_embeddings:
+        if return_tokens:
             decoded_tokens = [tokenizer.convert_ids_to_tokens(input_ids) for input_ids in tokenIdsDict["input_ids"]]
             tokens_all.extend(decoded_tokens)
             token_embeddings = [encSelectedLayers[0][i, :len(decoded_tokens[i])].tolist() for i in range(len(encSelectedLayers[0]))]
@@ -881,8 +882,7 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
     msg_embeddings = [msg_embeddings[i].tolist() for i in range(len(msg_embeddings))]
     cf_embeddings = [cf_embeddings[i].tolist() if isinstance(cf_embeddings[i], np.ndarray) else cf_embeddings[i] for i in range(len(cf_embeddings))] 
 
-    if return_token_embeddings:
-        return cf_embeddings, token_embeddings_all, tokens_all
+    if return_tokens: return cf_embeddings, token_embeddings_all, tokens_all
     return cf_embeddings
 
 def hgTokenizerGetTokens(text_strings,
