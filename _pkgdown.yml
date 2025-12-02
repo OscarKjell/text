@@ -18,13 +18,19 @@ template:
 
 navbar:
   structure:
-    left:  [intro, installation, reference, articles, news]
+    left:  [installation, reference, resources, news]
     right: [search, github, lightswitch]
 
   components:
     installation:
       text: Installation
       href: installation.html
+    reference:
+      text: Reference API
+      href: reference/index.html
+    resources:
+      text: Resources
+      href: articles/resources.html
 
 development:
   mode: default
@@ -143,6 +149,10 @@ reference:
     - PC_projections_satisfactionwords_40
 
 articles:
+- title: Resources
+  contents:
+  - resources
+
 - title: Set-up
   navbar: ~
   contents:
@@ -152,6 +162,7 @@ articles:
   - singularity_transformers_container
   - huggingface_in_r_and_computer_capacity
   - removing_huggingface_transformers_cache_files
+
 - title: Tutorials
   desc: >
     These tutorials go into detail about various text-analyses.
@@ -160,12 +171,9 @@ articles:
   - psychological_methods
   - lbam_tutorial
   - implicit_motives_tutorial
+
 - title: Comments
   desc: >
     General comments about text-analyses.
   contents:
   - pre_registration_and_transformers
-
-news:
-   one_page: true
-   cran_dates: true

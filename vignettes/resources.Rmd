@@ -1,0 +1,68 @@
+---
+title: "Resources"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{resources}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Resources
+
+## Article tutorials
+
+- **The *text* package tutorial**
+
+  [Full text on PsycNET](https://psycnet.apa.org/fulltext/2023-67479-001.html?casa_token=fZO33wCRWbQAAAAA:Fl1g2p8xXRHSSBwJ0UUYLqdQcnjXonsCphNWGc_UD-9K2z8EWIxIfncGyC2ujF9ccdfiU9v46zZNuW51VCilIYw).
+  
+  [Tutorial code](https://r-text.org/articles/psychological_methods.html)
+
+- **The Language-Based Assessment Model (L-BAM) Library** 
+
+  [OSF preprint](https://osf.io/preprints/psyarxiv/n8rza_v1)
+  
+  [Tutorial code](https://r-text.org/articles/lbam_tutorial.html)
+
+- **Multiple Methods for Visualizing Human Language: A Tutorial for Social and Behavioural Scientists** 
+
+  [OSF preprint](https://osf.io/preprints/psyarxiv/nxfvr_v1)
+
+## Selected published articles advancing the *text* package
+
+- Nilsson, A. H., Runge, J. M., Ganesan, A. V., Lövenstierne, C. V. N., Soni, N., & Kjell, O. N. (2025).  
+  *Automatic implicit motive codings are at least as accurate as humans’ and 99% faster.*  
+  *Journal of Personality and Social Psychology.*  
+  [Article link](https://psycnet.apa.org/fulltext/2026-03748-001.html)
+
+- Gu, Z., Kjell, K., Schwartz, H. A., & Kjell, O. (2025).  
+  *Natural language response formats for assessing depression and worry with large language models: A sequential evaluation with model pre-registration.*  
+  *Assessment, 10731911251364022.*  
+  [Article link](https://journals.sagepub.com/doi/full/10.1177/10731911251364022)
+
+- Nilsson, A. H., Eichstaedt, J. C., Lomas, T., Schwartz, A., & Kjell, O. (2024).  
+  *The Cantril Ladder elicits thoughts about power and wealth.*  
+  *Scientific Reports, 14(1), 2642.*  
+  [Article link](https://www.nature.com/articles/s41598-024-52939-y)
+
+## Blog posts and tutorials
+
+- [**Implicit Motives Tutorial**](https://r-text.org/articles/implicit_motives_tutorial.html)  
+
+- [**Installing and Managing Python Environments with `reticulate`**](https://r-text.org/articles/reticulate.html)
+
+- [**Creating a Singularity Container to Run HuggingFace Transformers Models in R**](https://r-text.org/articles/singularity_transformers_container.html) 
+
+- [**How to Best Manage Computationally Heavy Analyses**](https://r-text.org/articles/)  
+
+- [**HuggingFace Language Models Are Downloaded in `.cache`**](https://r-text.org/articles/removing_huggingface_transformers_cache_files.html)  
+
+- [**HuggingFace Transformers in R: Word Embeddings Defaults and Specifications**](https://r-text.org/articles/text.html)  
+
+- [**Pre-registration and Researcher Degrees of Freedom**](https://r-text.org/articles/pre_registration_and_transformers.html)  

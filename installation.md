@@ -1,56 +1,105 @@
 ---
 title: "Installation"
 ---
-
 # Installation
 
-Select your operating system below to see installation instructions for the **text** package and its Python backend.  
-The final tab contains general troubleshooting tips.
+## OS-specific instructions {.tabset}
 
-## Operating-system-specific instructions {.tabset}
+### Windows
+
+#### Installing on Windows
+
+<span style="font-size: 1.1em;"><b>Prerequisites</b></span>
+
+<b> 1) Install R and the recommended interface RStudio, if not already installed </b>
+
+Follow the instructions on the [CRAN](https://cran.r-project.org/) (for R) and [Posit](https://posit.co/downloads/) for (for RStudio) for Windows.
+
+<b> 2) Install Microsoft C++ build tools, if not already installed </b> <br>
+i) Download and run the installer from: https://visualstudio.microsoft.com/visual-cpp-build-tools/  
+ii) During installation, check:
+   - “Desktop development with C++” or “C++ build tools”.
+   - Ensure “Windows 11 SDK” is also selected on the right menu. <br>
+iii) Complete installation and restart your computer.
+
+<span style="font-size: 1.1em;"><b>Install and set up the `text` package</b></span>
+
+The text package requires a working Python environment, which can be set up directly from R. First install the text package in R, then configure it to install and use the required Python dependencies. During installation, you may see messages about additional, OS-specific system dependencies that need to be installed; see the sections below for more detailed instructions.
+install.packages("text")
+  
+    install.packages("text")
+
+    # Install text required python packages in a conda environment (with defaults).
+    text::textrpp_install()
+
+    # Initialize the installed conda environment.
+    text::textrpp_initialize(save_profile = TRUE)
+
+---
+
+### MacOS
+
+#### Installing on MacOS
+
+<span style="font-size: 1.1em;"><b>Prerequisites</b></span>
+
+<b> 1) Install R and the recommended interface RStudio for macOS, if not already installed </b>
+
+Follow the instructions on the [CRAN](https://cran.r-project.org/) (for R) and [Posit](https://posit.co/downloads/) for (for RStudio) for Mac.
+Remember to use arm64 if you have Apple’s OS family (e.g., M1, M2, M3) and x86_64 if you have an older Intel OS.
+
+
+<b> 2) Install Homebrew and libomp in the terminal (not in R), if not already installed </b>
+
+For Homebrew, run (in terminal)
+
+    /bin/bash -c "$(curl -fsSLhttps://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+For libomp, run (in terminal)
+
+    brew install libomp
+
+<span style="font-size: 1.1em;"><b>Install and set up the `text` package</b></span>
+
+The text package requires a working Python environment, which can be set up directly from R. First install the text package in R, then configure it to install and use the required Python dependencies. During installation, you may see messages about additional, OS-specific system dependencies that need to be installed; see the sections below for more detailed instructions.
+install.packages("text")
+  
+    install.packages("text")
+
+    # Install text required python packages in a conda environment (with defaults).
+    text::textrpp_install()
+
+    # Initialize the installed conda environment.
+    text::textrpp_initialize(save_profile = TRUE)
+
+---
+
 
 ### Linux
 
 #### Installing on Linux
 
-##### Prerequisites
+<span style="font-size: 1.1em;"><b>Prerequisites</b></span>
 
-Install R (and RStudio).  
-Use the links below to download and install:
+<b>1) Install R and the recommended interface RStudio, if not already installed </b>
 
-- R (version 4.0.0 or higher)  
-- RStudio (recommended)
+Follow the instructions on the [CRAN](https://cran.r-project.org/) (for R) and [Posit](https://posit.co/downloads/) for (for RStudio) for your Linux distribution.
 
-R for Linux: https://cran.r-project.org/  
-Click on “Download R for Linux”.  
-RStudio: https://posit.co/download/rstudio-desktop/
+<span style="font-size: 1.1em;"><b>Install and set up the `text` package</b></span>
 
-##### 1) Install R (and RStudio)
-
-Follow the instructions on the CRAN and Posit (RStudio) pages for your Linux distribution.
-
-##### 2) Install and set up the `text` package
-
-The **text** package gives you access to HuggingFace Transformers through **reticulate** (enabling advanced language analysis), which connects R to Python (while remaining in an R environment). It uses Python packages like **torch** and **transformers**.
-
-To make this easy, run:
-
-- `textrpp_install()` – installs a ready-to-use Python/Conda environment  
-- `textrpp_initialize()` – activates the environment for use in R  
-
-This setup will handle most Python and system dependencies automatically – however, you may be instructed to install system-level dependencies as further described below.
-
+The text package requires a working Python environment, which can be set up directly from R. First install the text package in R, then configure it to install and use the required Python dependencies. During installation, you may see messages about additional, OS-specific system dependencies that need to be installed; see the sections below for more detailed instructions.
+install.packages("text")
+  
     install.packages("text")
-    library(text)
 
     # Install text required python packages in a conda environment (with defaults).
-    textrpp_install()
+    text::textrpp_install()
 
     # Initialize the installed conda environment.
-    # save_profile = TRUE saves the settings so that you don't have to run
-    # textrpp_initialize() after restarting R.
-    textrpp_initialize(save_profile = TRUE)
+    text::textrpp_initialize(save_profile = TRUE)
 
+
+<b> Common pitfall </b> <br>
 On recent Ubuntu distributions (e.g., 22.04+), most core dependencies are available.  
 If needed, you can install them with (run this in your **Terminal**, not in R):
 
@@ -62,102 +111,11 @@ If needed, you can install them with (run this in your **Terminal**, not in R):
 
 ---
 
-### macOS
 
-#### Installing on Mac
-
-##### Prerequisites
-
-R for mac: https://cran.r-project.org/bin/macosx/
-
-- If arm64: click on `R-x.x.x-arm64.pkg`  
-- If x86_64: click on `R-x.x.x-x86_64.pkg`
-
-RStudio: https://posit.co/download/rstudio-desktop/  
-Homebrew  
-`libomp`
-
-##### Installation
-
-    install.packages("text")
-    library(text)
-
-    # Install text required python packages in a conda environment (with defaults).
-    textrpp_install()
-
-    # Initialize the installed conda environment.
-    # save_profile = TRUE saves the settings so that you don't have to run
-    # textrpp_initialize() after restarting R.
-    textrpp_initialize(save_profile = TRUE)
-
-On macOS, most system-level dependencies are typically pre-installed. For any missing components, the **text** package automatically detects them and provides clear instructions to guide the user through installation.
-
-##### 1) Homebrew & libomp
-
-Install Homebrew (if not already installed). Run this in your **Terminal** (not in R):
-
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-2) Install `libomp` (also in Terminal, not in R):
-
-    brew install libomp
-
----
-
-### Windows
-
-#### Installing on Windows
-
-##### Prerequisites
-
-- R for Windows: https://cran.r-project.org/bin/windows/base/  
-- RStudio: https://posit.co/download/rstudio-desktop/  
-- Microsoft C++ build tools  
-
-##### Installation
-
-    install.packages("text")
-    library(text)
-
-    # Install text required python packages in a conda environment (with defaults).
-    textrpp_install()
-
-    # Initialize the installed conda environment.
-    # save_profile = TRUE saves the settings so that you don't have to run
-    # textrpp_initialize() after restarting R.
-    textrpp_initialize(save_profile = TRUE)
-
-##### Microsoft C++ Build Tools
-
-Some Python packages (e.g., `hdbscan`, `flair`) require compilation with Visual C++. Windows users may need to manually install Microsoft C++ Build Tools. You must have C++ build tools for Python packages that need compilation.
-
-Install the latest version of Microsoft C++ Build Tools:
-
-1. Download and run the installer from: https://visualstudio.microsoft.com/visual-cpp-build-tools/  
-2. During installation, check:
-   - “Desktop development with C++” or “C++ build tools”.
-   - Ensure “Windows 11 SDK” is also selected on the right menu.
-3. Complete installation and restart your computer.
-
-##### Terms of Service conflict – Anaconda / conda-forge channel
-
-Python environments used by the **text** and **talk** packages rely on packages from the **conda-forge** channel.
-
-You don’t need to install Anaconda manually – the `textrpp_install()` function will install Miniconda and set `conda-forge` as the default channel.
-
-However, if you’ve previously installed Anaconda or changed channels, you might encounter ToS (Terms of Service) conflicts.
-
-If errors mention `pkgs/main` or `tos accept`, you can fix it by running the following in **Terminal / Command Prompt** (not in R):
-
-    conda config --add channels conda-forge
-    conda config --set channel_priority strict
-    conda config --remove channels defaults
-
----
 
 ### Troubleshooting
 
-#### 1. Check if you have install permissions
+<b> 1. Check if you have install permissions </b>
 
 Can you install an R package like **dplyr**?
 
@@ -170,7 +128,7 @@ Can you install system-level tools like Python / Miniconda?
 
 If you do not have permissions, please contact your administrator for advice.
 
-#### 2. Remember to initialize the Python environment
+<b> 2. Remember to initialize the Python environment </b>
 
 After restarting R, functions like `textEmbed()` can stop working again.
 
@@ -182,12 +140,12 @@ Solution: persist the initialization in your R profile:
       save_profile = TRUE
     )
 
-#### 3. Install the development version from GitHub
+<b>3. Install the development version from GitHub </b>
 
     # install.packages("devtools")
     devtools::install_github("oscarkjell/text")
 
-#### 4. Force reinstallation of the environment
+<b> 4. Force reinstallation of the environment </b>
 
     library(text)
     text::textrpp_install(
@@ -195,11 +153,11 @@ Solution: persist the initialization in your R profile:
       force_conda  = TRUE
     )
 
-#### 5. Install the Python environment using reticulate
+<b>5. Install the Python environment using `reticulate` </b>
 
-See the article *Installing and Managing Python Environments with reticulate* for detailed information.
+See the article [Installing and Managing Python Environments with reticulate](https://r-text.org/articles/reticulate.html) for detailed information.
 
-#### 6. Inspect diagnostic information
+<b> 6. Inspect diagnostic information </b>
 
 If something isn’t working right, it is a good start to examine what is installed and running on your system.
 
@@ -209,10 +167,54 @@ If something isn’t working right, it is a good start to examine what is instal
 
 Because the **text** package requires some system-level setup, installation is automatically verified on Windows, macOS, and Ubuntu through our GitHub Actions. If you encounter any issues, please review the tests and check the workflow file for details on system-specific installations.
 
-To view the workflow file, select the three-dot menu on the right side of any GitHub Action run and choose **“View workflow file”**. This file specifies the operating systems, R versions, and additional libraries being tested.
+To view the workflow file, select the three-dot menu on the right side of any GitHub Action run and choose [View workflow file](https://github.com/OscarKjell/text/actions). This file specifies the operating systems, R versions, and additional libraries being tested.
 
+
+<b> 7. GitHub Issues </b>
+<br>
+First check out [closed GitHub issues](https://github.com/OscarKjell/text/issues?q=is%3Aissue%20state%3Aclosed), and if you cannot find your problem being solved, please open a new issue.
+<br>
 If you run into issues that aren’t covered here, please reach out to us at:
 
     rtext.contact@gmail.com
 
 so that we can improve the instructions for everyone.
+
+
+
+```{=html}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Find the first tabset on the page (your OS-specific tabset)
+  var tabset = document.querySelector(".tabset, .panel-tabset");
+  if (!tabset) return;
+
+  // All tab headers
+  var navLinks = tabset.querySelectorAll("ul.nav-tabs a, .nav.nav-tabs .nav-link");
+  // All tab panes
+  var panes = tabset.querySelectorAll(".tab-content .tab-pane, .tab-content > .tab-pane");
+
+  if (navLinks.length === 0 || panes.length === 0) return;
+
+  // Remove 'active' from every tab header
+  navLinks.forEach(function(link) {
+    link.classList.remove("active");
+    link.setAttribute("aria-selected", "false");
+  });
+
+  // Hide every tab pane
+  panes.forEach(function(pane) {
+    pane.classList.remove("active", "show");
+  });
+});
+
+// Extra styling: separate the last tab (Troubleshooting) visually
+document.addEventListener("DOMContentLoaded", function() {
+  var lastTabLink = document.querySelector(".tabset .nav-tabs .nav-item:last-child .nav-link");
+  if (!lastTabLink) return;
+  lastTabLink.style.marginLeft = "2rem";
+  lastTabLink.style.borderLeft = "1px solid #ddd";
+  lastTabLink.style.paddingLeft = "1rem";
+});
+</script>
+```
