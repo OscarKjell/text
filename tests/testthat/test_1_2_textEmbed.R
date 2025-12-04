@@ -22,37 +22,51 @@ test_that("textEmbed handling NAs", {
   skip_on_cran()
 
   # testing NA and empty strings
-  embeddings_with_NA <- text::textEmbed(texts = c(
-    "hej",
-    NA,
-    "hej jag heter na",
-    "",
-    " ",
-    "    ",
-    "NA",
-    "Im NA"
-    ))
+  embeddings_with_NA <- text::textEmbed(
+    texts = c(
+    "hej",                  # 1 o
+    NA,                     # 2
+    "hej jag heter na",     # 3 o
+    "",                     # 4
+    " ",                    # 5
+    "    ",                 # 6
+    "NA",                   # 7
+    "Im NA"                 # 8 o
+    ),
+    implementation = "original")
 
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][1], -0.04640419, tolerance = 0.0001)
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][2], NaN)
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][3], 0.2512017, tolerance = 0.0001)
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][4], NaN)
-  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][5], NaN)
+  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][5], NaN) # space provide embedding
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][6], NaN)
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][7], NaN)
   testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][8], -0.4003294, tolerance = 0.0001)
 
 
-  dlatk_embeddings_with_NA <- text::textEmbed(texts = c("hej",
-                                                  NA,
-                                                  "hej jag heter na",
-                                                  "",
-                                                  " ",
-                                                  "    ",
-                                                  "NA",
-                                                  "Im NA"
-  ),
+  dlatk_embeddings_with_NA <- text::textEmbed(
+    texts = c(
+      "hej",                  # 1 o
+      NA,                     # 2
+      "hej jag heter na",     # 3 o
+      "",                     # 4
+      " ",                    # 5
+      "    ",                 # 6
+      "NA",                   # 7
+      "Im NA"                 # 8 o
+    ),
   implementation = "dlatk")
+
+  testthat::expect_equal(dlatk_embeddings_with_NA$texts$texts[1][[1]][1], -0.04640419, tolerance = 0.0001)
+  testthat::expect_equal(dlatk_embeddings_with_NA$texts$texts[1][[1]][2], NaN)
+  testthat::expect_equal(dlatk_embeddings_with_NA$texts$texts[1][[1]][3], 0.2512017, tolerance = 0.0001)
+  testthat::expect_equal(dlatk_embeddings_with_NA$texts$texts[1][[1]][4], NaN)
+  testthat::expect_equal(dlatk_embeddings_with_NA$texts$texts[1][[1]][5], -0.4003291) # space provide embedding
+  testthat::expect_equal(dlatk_embeddings_with_NA$texts$texts[1][[1]][6], NaN)
+  testthat::expect_equal(dlatk_embeddings_with_NA$texts$texts[1][[1]][7], NaN)
+  testthat::expect_equal(dlatk_embeddings_with_NA$texts$texts[1][[1]][8], NaN)
+
 
 
   })
@@ -176,7 +190,7 @@ test_that("textEmbedRawLayers contexts=TRUE, decontextualize = FALSE returns a l
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
   expect_that(ncol(embeddings1[[1]][[1]][[1]]), equals(771))
-  expect_equal(embeddings1[[1]][[1]][[1]][[4]][1], 0.1685506, tolerance = 0.0001)
+  expect_equal(embeddings1[[1]][[1]][[1]][[4]][1], -0.1869559, tolerance = 0.0001)
 })
 
 test_that("textEmbedRawLayers bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {

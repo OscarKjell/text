@@ -415,6 +415,7 @@ test_that("textTrainRandomForest adding word_embedding together", {
   } else {
     multi_cores = "multi_cores_sys_default"
   }
+
   y <- as.factor(rep(c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), 4))
 
   multi_we_RF_PCA_09 <- text::textTrainRandomForest(
@@ -489,7 +490,6 @@ test_that("textTrainRandomForest running multiple categories in X", {
   } else {
     multi_cores = "multi_cores_sys_default"
   }
-
 
   set.seed(1)
   tibble_copy <- Language_based_assessment_data_8 %>%

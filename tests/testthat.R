@@ -3,6 +3,7 @@ library(text)
 
 test_check("text")
 
+testthat::set_max_fails(Inf)
 
 # The submission to CRAN has been rejected several times because the
 # time to check the package is too long (>10 min). Thus,  we'll avoid running all tests on

@@ -1073,7 +1073,7 @@ textPlot <- function(
   # Exclude selected words and sample random words from the remaining
   word_data1_random_x <- word_data1 %>%
     dplyr::anti_join(selected_words_x, by = "words") %>%  # Exclude words already selected
-    dplyr::sample_n(min(plot_n_word_random, n()))  # Ensure it does not exceed available words
+    dplyr::sample_n(min(plot_n_word_random, dplyr::n()))  # Ensure it does not exceed available words
 
   # Select the middle range, order according to frequency and then select the plot_n_words_middle = 5
   mean_m_sd_x <- mean(word_data1$x_plotted, na.rm = TRUE) - (sd(word_data1$x_plotted, na.rm = TRUE) / 10)
@@ -1168,7 +1168,7 @@ textPlot <- function(
     # Exclude selected words and sample random words from the remaining
     word_data1_random_y <- word_data1 %>%
       dplyr::anti_join(selected_words, by = "words") %>%  # Exclude words already selected
-      dplyr::sample_n(min(plot_n_word_random, n()))  # Ensure it does not exceed available words
+      dplyr::sample_n(min(plot_n_word_random, dplyr::n()))  # Ensure it does not exceed available words
 
     # Select the middle range, order according to frequency and then select the plot_n_words_middle =5
     mean_m_sd_y <- mean(word_data1$y_plotted, na.rm = TRUE) - (sd(word_data1$y_plotted, na.rm = TRUE) / 10)
@@ -1300,8 +1300,8 @@ textPlot <- function(
         explore_words_aggregation = explore_words_aggregation,
         space = space,
         text_plot_comment = text_plot_comment,
-        scaling = scaling,
-        ...
+        scaling = scaling
+        , ...
       )
     }
 

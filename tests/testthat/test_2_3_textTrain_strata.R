@@ -54,7 +54,7 @@ test_that("textTrain with strata settings", {
 
   testthat::expect_equal(saveSize(group_strata1$final_model), 1397393, tolerance = 10000)
 
-  testthat::expect_equal(group_strata1$results[[4]][[1]], .6277968, tolerance = 0.0001)
+  testthat::expect_equal(group_strata1$results[[4]][[1]], .6400014, tolerance = 0.0001)
 
   #### cv_group WITH strat
   group_strata2 <- text::textTrainRegression(
@@ -69,7 +69,7 @@ test_that("textTrain with strata settings", {
     mixture = c(0),
     multi_cores = multi_cores
   )
-  testthat::expect_equal(group_strata2$results[[4]][[1]], .6647223, tolerance = 0.0001)
+  testthat::expect_equal(group_strata2$results[[4]][[1]], .680765, tolerance = 0.0001)
 
   group_strata3 <- text::textTrainRegression(
     x = df1_4_emb$texts[c("text")],
@@ -83,7 +83,7 @@ test_that("textTrain with strata settings", {
     mixture = c(0),
   multi_cores = multi_cores
   )
-  testthat::expect_equal(group_strata3$results[[4]][[1]], .6967453, tolerance = 0.0001)
+  testthat::expect_equal(group_strata3$results[[4]][[1]], .7071436, tolerance = 0.0001)
 
   #######
 
@@ -107,7 +107,7 @@ test_that("textTrain with strata settings", {
     save_output = "only_results"
   )
   strata_y$results[[4]]
-  testthat::expect_equal(strata_y$results[[4]][[1]], 0.7024823, tolerance = 0.0001)
+  testthat::expect_equal(strata_y$results[[4]][[1]], 0.7151224, tolerance = 0.0001)
 
   strata_ydf <- text::textTrainRegression(
     x = df1_4_emb$texts[c("text")],
@@ -129,7 +129,7 @@ test_that("textTrain with strata settings", {
     save_output = "only_results"
   )
   strata_ydf$results[[4]]
-  testthat::expect_equal(strata_ydf$results[[4]][[1]], .7024823, tolerance = 0.0001)
+  testthat::expect_equal(strata_ydf$results[[4]][[1]], .7151224, tolerance = 0.0001)
 
   strata_ydf_inner <- text::textTrainRegression(
     x = df1_4_emb$texts[c("text")],
@@ -151,7 +151,7 @@ test_that("textTrain with strata settings", {
     save_output = "only_results"
   )
   strata_ydf_inner$results[[4]]
-  testthat::expect_equal(strata_ydf_inner$results[[4]][[1]], .7024823, tolerance = 0.0001)
+  testthat::expect_equal(strata_ydf_inner$results[[4]][[1]], .7151224, tolerance = 0.0001)
 
 
   strata_ydf_outer <- text::textTrainRegression(
@@ -174,7 +174,7 @@ test_that("textTrain with strata settings", {
     save_output = "only_results"
   )
   strata_ydf_outer$results[[4]]
-  testthat::expect_equal(strata_ydf_outer$results[[4]][[1]], .6623173, tolerance = 0.0001)
+  testthat::expect_equal(strata_ydf_outer$results[[4]][[1]], .6746557, tolerance = 0.0001)
 
   strata_NO <- text::textTrainRegression(
     x = df1_4_emb$texts[c("text")],
@@ -196,7 +196,7 @@ test_that("textTrain with strata settings", {
     save_output = "only_results"
   )
   strata_NO$results[[4]]
-  testthat::expect_equal(strata_NO$results[[4]][[1]], .6623173, tolerance = 0.0001)
+  testthat::expect_equal(strata_NO$results[[4]][[1]], .6746557, tolerance = 0.0001)
 
   strata_gender_df <- text::textTrainRegression(
     x = df1_4_emb$texts[c("text")],
@@ -218,7 +218,7 @@ test_that("textTrain with strata settings", {
     save_output = "only_results"
   )
   strata_gender_df$results[[4]]
-  testthat::expect_equal(strata_gender_df$results[[4]][[1]], .6808301, tolerance = 0.0001)
+  testthat::expect_equal(strata_gender_df$results[[4]][[1]], .6958371, tolerance = 0.0001)
 
 
   strata_y$results[[4]]
@@ -280,8 +280,6 @@ test_that("textTrain with strata settings", {
     eval_measure = "kappa",
     save_output = "only_results_predictions"
   )
-
-  trained_rf_gender
 
   testthat::expect_equal(trained_rf_gender$results[[3]][[1]], .375, tolerance = 0.0001)
 

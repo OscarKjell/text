@@ -169,6 +169,7 @@ test_that("textTrain Regression without saving models", {
   } else {
     multi_cores = "multi_cores_sys_default"
   }
+
   # Do not save the model
   trained_min_halving <- text::textTrainRegression(
     x = word_embeddings_4$texts["harmonywords"],
@@ -306,11 +307,13 @@ test_that("textTrain Regression without saving models", {
 
 test_that("textTrainLists Regression produces a list of results with prediction being numeric", {
   skip_on_cran()
+
   if (Sys.getenv("GITHUB_ACTIONS") == "true") {
     multi_cores = FALSE
   } else {
     multi_cores = "multi_cores_sys_default"
   }
+
   # One word embedding and two rating scales help(textTrainRegression)
   model_list <- text::textTrainLists(
     x = word_embeddings_4$texts$harmonywords,
@@ -399,6 +402,8 @@ test_that("textTrainRegression adding word_embedding together", {
   } else {
     multi_cores = "multi_cores_sys_default"
   }
+
+
   multi_we_PCA_09 <- text::textTrainRegression(
     x = word_embeddings_4$texts[1:2],
     y = Language_based_assessment_data_8$hilstotal,
@@ -481,7 +486,7 @@ test_that("training with only x_append (without word embeddings)", {
   testthat::expect_that(emb_append, testthat::is_a("list"))
   testthat::expect_equal(emb_append$results[[1]][[1]], 8.180356, tolerance = 0.00001)
 
-  model_emb_append <- textPredict(
+  model_emb_append <- text::textPredict(
     model_info = emb_append,
     word_embeddings = word_embeddings_4$texts["harmonywords"],
     x_append = Language_based_assessment_data_8[6:7],

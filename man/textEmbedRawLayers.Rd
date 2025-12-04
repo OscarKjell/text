@@ -20,6 +20,7 @@ textEmbedRawLayers(
   hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
   trust_remote_code = FALSE,
   logging_level = "error",
+  implementation = "dlatk",
   sort = TRUE
 )
 }
@@ -77,6 +78,9 @@ be set to avoid the need to enter the token each time.}
 
 \item{logging_level}{(character) Set the logging level. (default ="error")
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
+
+\item{implementation}{(boolean; experiments) If TRUE the text is split using the DLATK-method; this method appears better for longer texts (but it does not
+return token level word embeddings, nor word_types embeddings at this stage).}
 
 \item{sort}{(boolean) If TRUE sort the output to tidy format. (default = TRUE)}
 }
