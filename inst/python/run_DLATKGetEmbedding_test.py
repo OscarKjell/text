@@ -54,3 +54,4 @@ if __name__ == "__main__":
     print (len(msg_ids))
     print (len(token_embs))
     print (len(tokens))
+    import pdb; pdb.set_trace()

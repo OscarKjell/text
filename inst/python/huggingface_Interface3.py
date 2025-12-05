@@ -772,11 +772,11 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
     -------
     cf_embeddings : list
         embeddings for each group of text_strings
-    msgIds_new : list
+    msg_ids_all : list
         list of unique identifiers for each message
-    token_embeddings : list, optional
+    token_embeddings_all_grouped : list, optional
         embeddings for each token in text_strings
-    tokens : list, optional
+    tokens_all_grouped : list, optional
         tokenized version of text_strings
     """ 
     def getMessagesForCorrelFieldGroups(cfGrp, text_strings, group_ids, text_ids):
@@ -864,7 +864,7 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
             continue
 
         msg_reps, msgIds_new, cfIds_new = embedding_generator.message_aggregate(encSelectedLayers, msgId_seq, cfId_seq)
-        
+
         if all([len(cfId_msgId_map[cfId]) == 1 for cfId in cfId_msgId_map]):
             cf_reps = msg_reps
         else:
@@ -884,8 +884,29 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
     msg_embeddings = [msg_embeddings[i].tolist() for i in range(len(msg_embeddings))]
     cf_embeddings = [cf_embeddings[i].tolist() if isinstance(cf_embeddings[i], np.ndarray) else cf_embeddings[i] for i in range(len(cf_embeddings))] 
 
-    if return_tokens: return cf_embeddings, msgIds_new, token_embeddings_all, tokens_all
-    return cf_embeddings, msgIds_new
+    if return_tokens: 
+        msg_ids_all = list(map(lambda x: x[0], msgId_seq))
+        assert len(msg_ids_all) == len(token_embeddings_all) == len(tokens_all), "Length of msg_ids_all, token_embeddings_all, tokens_all must be equal"
+        # Return cf_embeddings, msg ids, token embeddings and tokens.
+        # But msg_ids should be a unique list (currently msg_ids_all has repeated msg_ids whenever a message is split into multiple submessages).
+        # Then group token_embeddings for indices with same message_id, same for tokens
+
+        # Group token_embeddings for indices with same message_id, same for tokens
+        token_embeddings_all_grouped = {}
+        tokens_all_grouped = {}
+        for i in range(len(msg_ids_all)):
+            if msg_ids_all[i] not in token_embeddings_all_grouped:
+                token_embeddings_all_grouped[msg_ids_all[i]] = [token_embeddings_all[i]]
+                tokens_all_grouped[msg_ids_all[i]] = [tokens_all[i]]
+            else:
+                token_embeddings_all_grouped[msg_ids_all[i]].append(token_embeddings_all[i])
+                tokens_all_grouped[msg_ids_all[i]].append(tokens_all[i])
+        
+        msg_ids_all_grouped = sorted(token_embeddings_all_grouped.keys())
+        token_embeddings_all_grouped = [token_embeddings_all_grouped[msg_id] for msg_id in msg_ids_all_grouped]
+        tokens_all_grouped = [tokens_all_grouped[msg_id] for msg_id in msg_ids_all_grouped]
+        return cf_embeddings, msg_ids_all_grouped, token_embeddings_all_grouped, tokens_all_grouped
+    return cf_embeddings
 
 def hgTokenizerGetTokens(text_strings,
                               model = 'bert-large-uncased',
