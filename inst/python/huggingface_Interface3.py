@@ -772,6 +772,8 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
     -------
     cf_embeddings : list
         embeddings for each group of text_strings
+    msgIds_new : list
+        list of unique identifiers for each message
     token_embeddings : list, optional
         embeddings for each token in text_strings
     tokens : list, optional
@@ -882,8 +884,8 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
     msg_embeddings = [msg_embeddings[i].tolist() for i in range(len(msg_embeddings))]
     cf_embeddings = [cf_embeddings[i].tolist() if isinstance(cf_embeddings[i], np.ndarray) else cf_embeddings[i] for i in range(len(cf_embeddings))] 
 
-    if return_tokens: return cf_embeddings, token_embeddings_all, tokens_all
-    return cf_embeddings
+    if return_tokens: return cf_embeddings, msgIds_new, token_embeddings_all, tokens_all
+    return cf_embeddings, msgIds_new
 
 def hgTokenizerGetTokens(text_strings,
                               model = 'bert-large-uncased',
