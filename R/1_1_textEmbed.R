@@ -181,37 +181,93 @@ normalizeV <- function(x) {
 textEmbeddingAggregation <- function(x,
                                      aggregation = "min",
                                      weights = NULL) {
+
+  # --- 0. Basic shape checks -------------------------------------------------
+  if (is.vector(x) && !is.list(x)) {
+    x <- matrix(as.numeric(x), nrow = 1)
+  }
+
+  if (!is.matrix(x) && !is.data.frame(x)) {
+    stop("textEmbeddingAggregation(): x must be a matrix or data.frame/tibble.")
+  }
+
+  # --- 1. Restrict to Dim* columns ------------------------------------------
+  dim_cols <- grep("^Dim", colnames(x), value = TRUE)
+  if (length(dim_cols) > 0L) {
+    x <- x[, dim_cols, drop = FALSE]
+  }
+
+  # If nothing left, return empty tibble so bind_rows() doesn't choke
+  if (ncol(x) == 0L) {
+    return(tibble::tibble())
+  }
+
+  # --- 2. Force everything to numeric ----------------------------------------
+  x[] <- lapply(x, function(col) as.numeric(col))
+  mat <- as.matrix(x)
+
+  # --- 3. Aggregations -------------------------------------------------------
+
+  # 3a. Weighted mean
   if (!is.null(weights) && aggregation == "mean") {
-    # Weighted mean calculation
-    weighted_mean_vector <- colSums(x * weights, na.rm = TRUE) / sum(weights, na.rm = TRUE)
-    return(weighted_mean_vector)
-  } else if (aggregation == "min") {
-    min_vector <- unlist(purrr::map(x, min, na.rm = TRUE))
-    return(min_vector)
-  } else if (aggregation == "max") {
-    max_vector <- unlist(purrr::map(x, max, na.rm = TRUE))
-    return(max_vector)
-  } else if (aggregation == "mean") {
-    mean_vector <- colMeans(x, na.rm = TRUE)
-    return(mean_vector)
-  } else if (aggregation == "concatenate") {
-    long_vector <- c(t(x)) %>% tibble::as_tibble_row(.name_repair = "minimal")
-    colnames(long_vector) <- paste0("Dim", seq_len(length(long_vector)))
+    weights <- as.numeric(weights)
 
-    variable_name <- names(x)[1]
-
-    # If original name is not just Dim1, then add back Dim1_variable.name
-    if (!variable_name == "Dim1") {
-      variable_name <- sub(".*Dim1_", "", variable_name)
-      colnames(long_vector) <- paste0(names(long_vector), "_", variable_name)
+    if (length(weights) != nrow(mat)) {
+      stop(
+        "textEmbeddingAggregation(): length(weights) (", length(weights),
+        ") does not match nrow(x) (", nrow(mat), ")."
+      )
     }
-    return(long_vector)
+
+    w_sum <- sum(weights, na.rm = TRUE)
+    if (w_sum == 0) {
+      return(rep(NA_real_, ncol(mat)))
+    }
+
+    weighted_mean_vector <- colSums(mat * weights, na.rm = TRUE) / w_sum
+    return(weighted_mean_vector)
+  }
+
+  # 3b. Unweighted
+  if (aggregation == "min") {
+    min_vector <- apply(mat, 2, min, na.rm = TRUE)
+    return(min_vector)
+
+  } else if (aggregation == "max") {
+    max_vector <- apply(mat, 2, max, na.rm = TRUE)
+    return(max_vector)
+
+  } else if (aggregation == "mean") {
+    mean_vector <- colMeans(mat, na.rm = TRUE)
+    return(mean_vector)
+
+  } else if (aggregation == "concatenate") {
+    # Flatten row-wise
+    long_vector <- c(t(mat))
+
+    # Give the elements names *before* making a tibble row
+    dim_names <- paste0("Dim", seq_along(long_vector))
+    long_tbl <- tibble::as_tibble_row(
+      setNames(as.list(long_vector), dim_names),
+      .name_repair = "minimal"
+    )
+
+    # Optional: preserve suffix from original first Dim column
+    first_dim_name <- colnames(x)[1]
+    if (!identical(first_dim_name, "Dim1")) {
+      suffix <- sub(".*Dim1_", "", first_dim_name)
+      colnames(long_tbl) <- paste0(colnames(long_tbl), "_", suffix)
+    }
+
+    return(long_tbl)
+
   } else if (aggregation == "normalize") {
-    sum_vector <- unlist(purrr::map(x, sum, na.rm = TRUE))
+    sum_vector <- apply(mat, 2, sum, na.rm = TRUE)
     normalized_vector <- normalizeV(sum_vector)
     return(normalized_vector)
+
   } else {
-    stop("Invalid aggregation method provided.")
+    stop("Invalid aggregation method provided: ", aggregation)
   }
 }
 
@@ -272,123 +328,500 @@ getUniqueWordsAndFreq <- function(x_characters,
 #' @noRd
 sortingLayersDLATK <- function(x,
                                layers = "all",
-                               return_tokens = TRUE) {
+                               return_tokens = TRUE,
+                               all_ids = NULL) {
 
-  # x is expected to be a DLATK-style object:
-  # x[[1]] : aggregated embeddings (ignored here)
-  # x[[2]] : token-level embeddings:
-  #          list(text)[[text]] -> list(tokens)[[token]] ->
-  #          list(dims)[[dim]] -> numeric[n_layers]
-  # x[[3]] : tokens:
-  #          list(text)[[text]] -> character[token]
-  if (length(x) != 3L) {
-    stop("sortingLayersDLATK() expects a list of length 3: list(agg_embs, token_embs, tokens).")
-  }
+  # x is expected to be:
+  #   list(
+  #     agg_embs,                 # x[[1]]: cf_embeddings (group/text-level) or []
+  #     msg_ids_all_grouped,      # x[[2]]: IDs for texts that have embeddings/tokens
+  #     token_embeddings_grouped, # x[[3]]: list per text -> list per segment -> list per token -> numeric vec
+  #     tokens_grouped            # x[[4]]: list per text -> list per segment -> character tokens
+  #   )
 
-  token_embs <- x[[2]]
-  tokens_lst <- x[[3]]
-
-  n_texts <- length(tokens_lst)
-  if (n_texts == 0L) stop("No texts found in x[[3]].")
-
-  # --- Infer dimensions and number of layers from first text & token ---
-  first_tok_emb <- token_embs[[1]][[1]]   # list over dims
-  n_dims        <- length(first_tok_emb)  # e.g., 768
-  n_layers_obj  <- length(first_tok_emb[[1]])  # e.g., 2 (layers 11 & 12)
-
-  # --- Decide which layers to use & how to label them ---
-  if (is.character(layers)) {
-    # "all" -> use all available layers stored in the object.
-    layer_indices <- seq_len(n_layers_obj)          # indices into the numeric vectors
-    layer_labels  <- 0:(n_layers_obj - 1L)          # 0-based labels (for consistency with old "all")
-  } else {
-    # Numeric layer labels, e.g. c(11, 12)
-    if (length(layers) > n_layers_obj) {
-      warning(
-        "length(layers) (", length(layers),
-        ") is greater than the number of layers stored in the object (", n_layers_obj, "). ",
-        "Using only the first ", n_layers_obj, " entries of 'layers'."
-      )
-      layers <- layers[seq_len(n_layers_obj)]
-    }
-
-    # We assume the i-th numeric value in 'layers' corresponds to the i-th stored layer
-    # in the embedding vectors.
-    layer_indices <- seq_along(layers)  # 1, 2, ..., length(layers)
-    layer_labels  <- layers             # e.g., 11, 12
-  }
-
-  n_layers_sel <- length(layer_indices)
-
-  # --- Build tidy output per text ---
-  out_list <- purrr::map(seq_len(n_texts), function(text_i) {
-
-    tok_chars <- tokens_lst[[text_i]]
-    n_tok     <- length(tok_chars)
-
-    if (n_tok == 0L) {
-      return(tibble::tibble())
-    }
-
-    # Pre-allocate: rows = tokens * selected layers, cols = dims
-    mat <- matrix(
-      NA_real_,
-      nrow = n_tok * n_layers_sel,
-      ncol = n_dims
+  if (length(x) != 4L) {
+    stop(
+      "sortingLayersDLATK() expects a list of length 4:\n",
+      "  list(agg_embs, msg_ids, token_embs, tokens)"
     )
+  }
 
-    # Fill matrix in blocks: all tokens for layer 1, then all tokens for layer 2, etc.
-    for (j in seq_along(layer_indices)) {
-      lyr        <- layer_indices[j]           # which element in the numeric vectors to use
-      row_offset <- (j - 1L) * n_tok
+  agg_embs   <- x[[1]]
+  msg_ids    <- x[[2]]  # IDs Python actually returned
+  token_embs <- x[[3]]
+  tokens_lst <- x[[4]]
 
-      for (tok_i in seq_len(n_tok)) {
-        tok_emb <- token_embs[[text_i]][[tok_i]]  # list over dims; each dim is numeric[n_layers_obj]
+  # full set of IDs we want to see in the output (in this order)
+  if (is.null(all_ids)) {
+    all_ids <- msg_ids
+  }
+  n_all <- length(all_ids)
 
-        if (length(tok_emb) != n_dims) {
+  ## ---------- 1) TEXT-LEVEL (AGGREGATED) EMBEDDINGS WITH NA PADDING ----------
+
+  if (length(agg_embs) > 0L) {
+    ex_vec   <- as.numeric(unlist(agg_embs[[1]], recursive = TRUE, use.names = FALSE))
+    n_dims_t <- length(ex_vec)
+
+    text_mat <- matrix(NA_real_, nrow = n_all, ncol = n_dims_t)
+
+    pos_in_msg <- match(all_ids, msg_ids)  # NA if ID never came back from Python
+
+    for (i in seq_along(all_ids)) {
+      pos <- pos_in_msg[i]
+      if (!is.na(pos)) {
+        row_vec <- as.numeric(unlist(agg_embs[[pos]], recursive = TRUE, use.names = FALSE))
+        if (length(row_vec) != n_dims_t) {
           stop(
-            "Inconsistent number of dimensions for text ", text_i,
-            ", token ", tok_i, ". Expected ", n_dims,
-            " but got ", length(tok_emb), "."
+            "Inconsistent text-level embedding length for ID ", all_ids[i],
+            ": expected ", n_dims_t, " but got ", length(row_vec), "."
           )
         }
-
-        row_index <- row_offset + tok_i
-
-        # For this token & layer, extract all dimensions
-        mat[row_index, ] <- vapply(
-          tok_emb,
-          function(dim_vec) dim_vec[lyr],
-          numeric(1L)
-        )
+        text_mat[i, ] <- row_vec
       }
+      # else: leave row as NA
     }
 
-    df <- tibble::as_tibble(mat, .name_repair = "minimal")
-    colnames(df) <- paste0("Dim", seq_len(n_dims))
+    text_tbl <- tibble::as_tibble(text_mat, .name_repair = "minimal")
+    colnames(text_tbl) <- paste0("Dim", seq_len(n_dims_t))
+    text_tbl <- text_tbl |>
+      dplyr::mutate(ID = all_ids) |>
+      dplyr::relocate(ID)
 
-    token_id <- rep(seq_len(n_tok), times = n_layers_sel)
-    layer_number <- rep(layer_labels, each = n_tok)
+  } else {
+    # no aggregated embeddings returned from Python (e.g., aggregate_tokens_to_message = NULL)
+    text_tbl <- tibble::tibble(ID = all_ids)
+  }
 
-    if (isTRUE(return_tokens)) {
+  ## ---------- 2) TOKEN-LEVEL EMBEDDINGS WITH NA PADDING ----------
+
+  if (!isTRUE(return_tokens)) {
+    return(list(
+      text   = text_tbl,
+      tokens = NULL
+    ))
+  }
+
+  # infer *total* token embedding dimensionality from first non-empty text
+  total_dims_tok <- 0L
+  if (length(token_embs) > 0L) {
+    non_empty_idx <- which(vapply(tokens_lst, function(seg_list) {
+      length(unlist(seg_list, recursive = TRUE, use.names = FALSE)) > 0L
+    }, logical(1)))
+
+    if (length(non_empty_idx) > 0L) {
+      ti <- non_empty_idx[1]
+      first_seg_embs <- token_embs[[ti]][[1]]   # list of token vectors for first segment
+      first_tok_emb  <- first_seg_embs[[1]]     # embedding for first token
+      total_dims_tok <- length(as.numeric(unlist(first_tok_emb, recursive = TRUE, use.names = FALSE)))
+    }
+  }
+
+  ## Decide how many layers we are unpacking per token
+  if (is.numeric(layers)) {
+    layer_vec <- as.integer(layers)
+  } else {
+    layer_vec <- NA_integer_
+  }
+
+  if (is.numeric(layers) && length(layer_vec) > 1L) {
+    n_layers <- length(layer_vec)
+    if (total_dims_tok %% n_layers != 0L) {
+      warning(
+        "Total token embedding dims (", total_dims_tok,
+        ") is not divisible by number of layers (", n_layers,
+        "). Using floor division."
+      )
+    }
+    dims_per_layer <- total_dims_tok %/% n_layers
+  } else {
+    # single-layer or "all" (treated as single block)
+    n_layers      <- 1L
+    dims_per_layer <- total_dims_tok
+  }
+
+  pos_in_msg <- match(all_ids, msg_ids)  # map IDs -> index in msg_ids / token_embs / tokens_lst
+
+  token_list <- vector("list", n_all)
+
+  for (k in seq_along(all_ids)) {
+    id  <- all_ids[k]
+    pos <- pos_in_msg[k]
+
+    # --- case 1: ID has NO tokens/embeddings from Python -> 1-row NA tibble ---
+    if (is.na(pos) || dims_per_layer == 0L) {
+
+      if (dims_per_layer > 0L) {
+        dim_mat <- matrix(NA_real_, nrow = 1L, ncol = dims_per_layer)
+        dim_tbl <- tibble::as_tibble(dim_mat, .name_repair = "minimal")
+        colnames(dim_tbl) <- paste0("Dim", seq_len(dims_per_layer))
+      } else {
+        dim_tbl <- tibble::tibble()
+      }
+
       meta <- tibble::tibble(
-        tokens       = rep(tok_chars, times = n_layers_sel),
+        tokens       = NA_character_,
+        token_id     = NA_integer_,
+        layer_number = NA_real_
+      )
+
+      token_list[[k]] <- dplyr::bind_cols(meta, dim_tbl)
+      next
+    }
+
+    # --- case 2: ID has real token embeddings ---
+    seg_tokens <- tokens_lst[[pos]]  # list(segments), each character vector of tokens
+    tok_chars  <- unlist(seg_tokens, recursive = TRUE, use.names = FALSE)
+    n_tok      <- length(tok_chars)
+
+    seg_embs     <- token_embs[[pos]]        # list(segments)
+    tok_emb_flat <- do.call(c, seg_embs)     # list over tokens (each a numeric vector)
+    n_emb_tok    <- length(tok_emb_flat)
+
+    # Handle mismatch between tokens and embeddings for long texts
+    if (n_tok != n_emb_tok) {
+      warning(
+        "Token/embedding length mismatch for ID ", id, ": ",
+        "n_tok = ", n_tok, ", length(tok_emb_flat) = ", n_emb_tok,
+        ". Truncating both to their common minimum."
+      )
+      min_len   <- min(n_tok, n_emb_tok)
+      tok_chars <- tok_chars[seq_len(min_len)]
+      tok_emb_flat <- tok_emb_flat[seq_len(min_len)]
+      n_tok     <- min_len
+    }
+
+    if (n_tok == 0L) {
+      # treat as missing
+      dim_mat <- matrix(NA_real_, nrow = 1L, ncol = dims_per_layer)
+      dim_tbl <- tibble::as_tibble(dim_mat, .name_repair = "minimal")
+      colnames(dim_tbl) <- paste0("Dim", seq_len(dims_per_layer))
+
+      meta <- tibble::tibble(
+        tokens       = NA_character_,
+        token_id     = NA_integer_,
+        layer_number = NA_real_
+      )
+
+      token_list[[k]] <- dplyr::bind_cols(meta, dim_tbl)
+      next
+    }
+
+    ## --------- BUILD OUTPUT MATRIX: one row per token *per layer* ------------
+
+    if (n_layers == 1L) {
+      # ---------- SIMPLE CASE: ONE LAYER ONLY (as before) ----------
+      mat <- matrix(NA_real_, nrow = n_tok, ncol = dims_per_layer)
+
+      for (tok_i in seq_len(n_tok)) {
+        vec_num <- as.numeric(unlist(tok_emb_flat[[tok_i]], recursive = TRUE, use.names = FALSE))
+        if (length(vec_num) != dims_per_layer) {
+          stop(
+            "Inconsistent number of dimensions for ID ", id,
+            ", token ", tok_i, ". Expected ", dims_per_layer,
+            " but got ", length(vec_num), "."
+          )
+        }
+        mat[tok_i, ] <- vec_num
+      }
+
+      df <- tibble::as_tibble(mat, .name_repair = "minimal")
+      colnames(df) <- paste0("Dim", seq_len(dims_per_layer))
+
+      token_id <- seq_len(n_tok)
+
+      if (is.numeric(layers) && length(layer_vec) == 1L) {
+        layer_number <- rep(as.numeric(layer_vec), n_tok)
+      } else {
+        layer_number <- rep(NA_real_, n_tok)
+      }
+
+      meta <- tibble::tibble(
+        tokens       = tok_chars,
         token_id     = token_id,
         layer_number = layer_number
       )
+
+      token_list[[k]] <- dplyr::bind_cols(meta, df)
+
     } else {
+      # ---------- MULTI-LAYER CASE: SPLIT CONCATENATED VEC INTO LAYERS ----------
+      n_rows <- n_tok * n_layers
+      mat    <- matrix(NA_real_, nrow = n_rows, ncol = dims_per_layer)
+
+      tokens_rep      <- character(n_rows)
+      token_id_rep    <- integer(n_rows)
+      layer_number_rep <- integer(n_rows)
+
+      row_idx <- 1L
+
+      # order: all tokens for layer1, then all tokens for layer2, etc.
+      for (li in seq_len(n_layers)) {
+        this_layer <- layer_vec[li]
+
+        for (tok_i in seq_len(n_tok)) {
+          vec_num <- as.numeric(unlist(tok_emb_flat[[tok_i]], recursive = TRUE, use.names = FALSE))
+
+          if (length(vec_num) < dims_per_layer * n_layers) {
+            stop(
+              "For ID ", id, ", token ", tok_i,
+              ": expected at least ", dims_per_layer * n_layers,
+              " dims (", dims_per_layer, " per layer × ", n_layers,
+              " layers) but got ", length(vec_num), "."
+            )
+          }
+
+          idx_start <- (li - 1L) * dims_per_layer + 1L
+          idx_end   <- li * dims_per_layer
+          mat[row_idx, ] <- vec_num[idx_start:idx_end]
+
+          tokens_rep[row_idx]       <- tok_chars[tok_i]
+          token_id_rep[row_idx]     <- tok_i
+          layer_number_rep[row_idx] <- this_layer
+
+          row_idx <- row_idx + 1L
+        }
+      }
+
+      df <- tibble::as_tibble(mat, .name_repair = "minimal")
+      colnames(df) <- paste0("Dim", seq_len(dims_per_layer))
+
       meta <- tibble::tibble(
-        token_id     = token_id,
-        layer_number = layer_number
+        tokens       = tokens_rep,
+        token_id     = token_id_rep,
+        layer_number = layer_number_rep
       )
+
+      token_list[[k]] <- dplyr::bind_cols(meta, df)
     }
+  }
 
-    dplyr::bind_cols(meta, df)
-  })
-
-  out_list
+  list(
+    text   = text_tbl,
+    tokens = token_list
+  )
 }
 
+#sortingLayersDLATK <- function(x,
+#                               layers = "all",
+#                               return_tokens = TRUE,
+#                               all_ids = NULL) {
+#
+#  # x is expected to be:
+#  #   list(
+#  #     agg_embs,                 # x[[1]]: cf_embeddings (group/text-level) – often empty when aggregate_tokens_to_message = NULL
+#  #     msg_ids_all_grouped,      # x[[2]]: IDs for texts that have embeddings/tokens
+#  #     token_embeddings_grouped, # x[[3]]: list per text -> list per segment -> list per token -> numeric vector
+#  #     tokens_grouped            # x[[4]]: list per text -> list per segment -> character vector of tokens
+#  #   )
+#
+#  if (length(x) != 4L) {
+#    stop(
+#      "sortingLayersDLATK() expects a list of length 4:\n",
+#      "  list(agg_embs, msg_ids, token_embs, tokens)"
+#    )
+#  }
+#
+#  agg_embs   <- x[[1]]
+#  msg_ids    <- x[[2]]  # IDs that Python actually returned
+#  token_embs <- x[[3]]
+#  tokens_lst <- x[[4]]
+#
+#  # Full set of IDs we want in the output (in this order)
+#  if (is.null(all_ids)) {
+#    all_ids <- msg_ids
+#  }
+#  n_all <- length(all_ids)
+#
+#  ## ---------- 1) TEXT-LEVEL (AGGREGATED) EMBEDDINGS WITH NA PADDING ----------
+#
+#  if (length(agg_embs) > 0L) {
+#    # infer dimensionality from first entry
+#    ex_vec   <- as.numeric(unlist(agg_embs[[1]], recursive = TRUE, use.names = FALSE))
+#    n_dims_t <- length(ex_vec)
+#
+#    text_mat <- matrix(
+#      NA_real_,
+#      nrow = n_all,
+#      ncol = n_dims_t
+#    )
+#
+#    # map from full IDs to positions in msg_ids
+#    pos_in_msg <- match(all_ids, msg_ids)  # NA if that ID never came back from Python
+#
+#    for (i in seq_along(all_ids)) {
+#      pos <- pos_in_msg[i]
+#      if (!is.na(pos)) {
+#        row_vec <- as.numeric(unlist(agg_embs[[pos]],
+#                                     recursive = TRUE,
+#                                     use.names  = FALSE))
+#        if (length(row_vec) != n_dims_t) {
+#          stop(
+#            "Inconsistent text-level embedding length for ID ", all_ids[i],
+#            ": expected ", n_dims_t, " but got ", length(row_vec), "."
+#          )
+#        }
+#        text_mat[i, ] <- row_vec
+#      } # else leave NA row
+#    }
+#
+#    text_tbl <- tibble::as_tibble(text_mat, .name_repair = "minimal")
+#    colnames(text_tbl) <- paste0("Dim", seq_len(n_dims_t))
+#    text_tbl <- text_tbl |>
+#      dplyr::mutate(ID = all_ids) |>
+#      dplyr::relocate(ID)
+#  } else {
+#    # no aggregated embeddings returned from Python (aggregate_tokens_to_message = NULL)
+#    text_tbl <- tibble::tibble(ID = all_ids)
+#  }
+#
+#  ## ---------- 2) TOKEN-LEVEL EMBEDDINGS WITH NA PADDING ----------
+#
+#  if (!isTRUE(return_tokens)) {
+#    # only text-level embeddings requested
+#    return(list(
+#      text   = text_tbl,
+#      tokens = NULL
+#    ))
+#  }
+#
+#  # infer token embedding dimensionality from first non-empty text
+#  n_dims_tok <- 0L
+#  if (length(token_embs) > 0L) {
+#    non_empty_idx <- which(vapply(tokens_lst, function(seg_list) {
+#      length(unlist(seg_list, recursive = TRUE, use.names = FALSE)) > 0L
+#    }, logical(1)))
+#
+#    if (length(non_empty_idx) > 0L) {
+#      ti <- non_empty_idx[1]
+#      first_seg_embs <- token_embs[[ti]][[1]]   # list of token vectors (first segment)
+#      first_tok_emb  <- first_seg_embs[[1]]     # numeric vector for first token
+#      n_dims_tok     <- length(as.numeric(unlist(first_tok_emb,
+#                                                 recursive = TRUE,
+#                                                 use.names  = FALSE)))
+#    }
+#  }
+#
+#  # choose a layer label: since Python concatenates layers into one vector,
+#  # layer_number is more of a tag. If user passed a single numeric layer,
+#  # we label with that; otherwise we use 0.
+#  if (is.numeric(layers) && length(layers) == 1L) {
+#    layer_label <- layers
+#  } else {
+#    layer_label <- 0L
+#  }
+#
+#  # map IDs -> index in msg_ids / token_embs / tokens_lst
+#  pos_in_msg <- match(all_ids, msg_ids)
+#
+#  token_list <- vector("list", n_all)
+#
+#  for (k in seq_along(all_ids)) {
+#    id  <- all_ids[k]
+#    pos <- pos_in_msg[k]
+#
+#    # --- case 1: ID has NO tokens/embeddings from Python -> 1-row NA tibble ---
+#    if (is.na(pos) || n_dims_tok == 0L) {
+#
+#      if (n_dims_tok > 0L) {
+#        dim_mat <- matrix(NA_real_, nrow = 1L, ncol = n_dims_tok)
+#        dim_tbl <- tibble::as_tibble(dim_mat, .name_repair = "minimal")
+#        colnames(dim_tbl) <- paste0("Dim", seq_len(n_dims_tok))
+#      } else {
+#        dim_tbl <- tibble::tibble()
+#      }
+#
+#      meta <- tibble::tibble(
+#        tokens       = NA_character_,
+#        token_id     = NA_integer_,
+#        layer_number = as.numeric(layer_label)
+#      )
+#
+#      token_list[[k]] <- dplyr::bind_cols(meta, dim_tbl)
+#      next
+#    }
+#
+#    # --- case 2: ID has real token embeddings ---
+#    seg_tokens <- tokens_lst[[pos]]  # list(segments), each segment = character vector
+#    tok_chars  <- unlist(seg_tokens, recursive = TRUE, use.names = FALSE)
+#    n_tok      <- length(tok_chars)
+#
+#    if (n_tok == 0L || n_dims_tok == 0L) {
+#      # treat as missing
+#      dim_mat <- matrix(NA_real_, nrow = 1L, ncol = n_dims_tok)
+#      dim_tbl <- tibble::as_tibble(dim_mat, .name_repair = "minimal")
+#      colnames(dim_tbl) <- paste0("Dim", seq_len(n_dims_tok))
+#
+#      meta <- tibble::tibble(
+#        tokens       = NA_character_,
+#        token_id     = NA_integer_,
+#        layer_number = as.numeric(layer_label)
+#      )
+#
+#      token_list[[k]] <- dplyr::bind_cols(meta, dim_tbl)
+#      next
+#    }
+#
+#    seg_embs     <- token_embs[[pos]]   # list(segments), each is list(token_vectors)
+#    tok_emb_flat <- do.call(c, seg_embs)  # one element per token
+#
+#    # --- NEW: be tolerant to mismatches (long texts) ---------------------------
+#    if (length(tok_emb_flat) != n_tok) {
+#      warning(
+#        "Token/embedding length mismatch for ID ", id,
+#        ": n_tok = ", n_tok,
+#        ", length(tok_emb_flat) = ", length(tok_emb_flat),
+#        ". Truncating both to their common minimum."
+#      )
+#      n_eff <- min(n_tok, length(tok_emb_flat))
+#      tok_chars    <- tok_chars[seq_len(n_eff)]
+#      tok_emb_flat <- tok_emb_flat[seq_len(n_eff)]
+#      n_tok        <- n_eff
+#    }
+#
+#    mat <- matrix(
+#      NA_real_,
+#      nrow = n_tok,
+#      ncol = n_dims_tok
+#    )
+#
+#    for (tok_i in seq_len(n_tok)) {
+#      vec     <- tok_emb_flat[[tok_i]]
+#      vec_num <- as.numeric(unlist(vec, recursive = TRUE, use.names = FALSE))
+#
+#      if (length(vec_num) != n_dims_tok) {
+#        stop(
+#          "Inconsistent number of dimensions for ID ", id,
+#          ", token ", tok_i, ". Expected ", n_dims_tok,
+#          " but got ", length(vec_num), "."
+#        )
+#      }
+#
+#      mat[tok_i, ] <- vec_num
+#    }
+#
+#    df <- tibble::as_tibble(mat, .name_repair = "minimal")
+#    colnames(df) <- paste0("Dim", seq_len(n_dims_tok))
+#
+#    token_id     <- seq_len(n_tok)
+#    layer_number <- rep(layer_label, n_tok)
+#
+#    meta <- tibble::tibble(
+#      tokens       = tok_chars,
+#      token_id     = token_id,
+#      layer_number = layer_number
+#    )
+#
+#    token_list[[k]] <- dplyr::bind_cols(meta, df)
+#  }
+#
+#  ## ---------- RETURN BOTH ----------
+#
+#  list(
+#    text   = text_tbl,   # ID + Dim1..DimK, with NA rows for IDs never seen in Python
+#    tokens = token_list  # list of length length(all_ids), each a tibble
+#  )
+#}
 
 #' This is a function that sorts out (i.e., tidy) the embeddings from the huggingface interface.
 #' @param x list of layers.
@@ -396,9 +829,10 @@ sortingLayersDLATK <- function(x,
 #' @param return_tokens boolean whether tokens have been returned (setting comes from textEmbedRawLayers).
 #' @return Layers in tidy tibble format with each dimension column called Dim1, Dim2 etc.
 #' @noRd
-sortingLayersOriginal <- function(x,
-                          layers = layers,
-                          return_tokens = return_tokens) {
+sortingLayersOriginal <- function(
+    x,
+    layers = layers,
+    return_tokens = return_tokens) {
   # If selecting "all" layers, find out number of layers to help indicate layer index later in code
   if (is.character(layers)) {
     layers <- 0:(length(x[[1]][[1]]) - 1)
@@ -471,38 +905,117 @@ sortingLayersOriginal <- function(x,
 #' @param return_tokens (boolean) returns the tokens as the first column.
 #' @return Aggregated layers in tidy tibble format.
 #' @noRd
-layer_aggregation_helper <- function(x,
-                                     aggregation = aggregation,
-                                     return_tokens = FALSE) {
-  aggregated_layers_saved <- list()
+layer_aggregation_helper <- function(
+    x,
+    aggregation = "mean",
+    return_tokens = TRUE) {
 
-  # Get unique number of token ids in the variable starting with x$token_id ; i_token_id=1
-  number_of_ids <- unique(x[, grep("^token_id", names(x))][[1]])
-
-  # Loops over the number of tokens; i_token_id = 2; i_token_id = 3
-  for (i_token_id in number_of_ids) { # seq_len(length(number_of_ids))
-    # Selects all the layers for each token/token_id
-    x1 <- x[x[, grep("^token_id", names(x))][[1]] == i_token_id, ]
-    # Select only Dimensions
-    x2 <- dplyr::select(x1, dplyr::starts_with("Dim"))
-    # Aggregate the dimensions
-    x3 <- textEmbeddingAggregation(x2, aggregation = aggregation)
-
-    aggregated_layers_saved[[i_token_id]] <- x3
+  # --- basic sanity checks ----------------------------------------------------
+  if (nrow(x) == 0L) {
+    return(x)
   }
+
+  token_id_name <- names(x)[grep("^token_id", names(x))[1]]
+  token_id_col  <- x[[token_id_name]]
+
+  # all NA token_ids -> padding / placeholder, just pass through
+  if (all(is.na(token_id_col))) {
+    return(x)
+  }
+
+  # valid token IDs (drop NA)
+  token_ids <- sort(unique(token_id_col[!is.na(token_id_col)]))
+  if (length(token_ids) == 0L) {
+    return(x)
+  }
+
+  # dim columns (Dim1, Dim2, ...)
+  dim_cols <- grep("^Dim", names(x), value = TRUE)
+
+  aggregated_layers_saved <- vector("list", length(token_ids))
+
+  # --- loop over tokens -------------------------------------------------------
+  for (idx in seq_along(token_ids)) {
+    this_id <- token_ids[idx]
+
+    # rows for this token_id
+    x1 <- x[token_id_col == this_id, , drop = FALSE]
+
+    # only the Dim* columns
+    x2 <- x1[, dim_cols, drop = FALSE]
+
+    # if there are no Dim columns at all, store an empty tibble
+    if (ncol(x2) == 0L || nrow(x2) == 0L) {
+      aggregated_layers_saved[[idx]] <- tibble::tibble()
+      next
+    }
+
+    if (identical(aggregation, "concatenate")) {
+      # ----- custom concatenate: flatten row-wise across layers ---------------
+      x2[] <- lapply(x2, as.numeric)
+      mat <- as.matrix(x2)
+
+      long_vec <- c(t(mat))
+      names(long_vec) <- paste0("Dim", seq_along(long_vec))
+
+      aggregated_layers_saved[[idx]] <- tibble::as_tibble_row(
+        as.list(long_vec),
+        .name_repair = "minimal"
+      )
+
+    } else {
+      # ----- delegate to textEmbeddingAggregation for mean/min/max/etc. -------
+      x3 <- textEmbeddingAggregation(x2, aggregation = aggregation)
+
+      if (is.data.frame(x3)) {
+        aggregated_layers_saved[[idx]] <- x3
+
+      } else if (is.vector(x3) && !is.list(x3)) {
+        # numeric vector -> tibble row
+        if (is.null(names(x3))) {
+          names(x3) <- paste0("Dim", seq_along(x3))
+        }
+        aggregated_layers_saved[[idx]] <- tibble::as_tibble_row(
+          as.list(x3),
+          .name_repair = "minimal"
+        )
+
+      } else {
+        stop("layer_aggregation_helper(): unexpected output from textEmbeddingAggregation()")
+      }
+    }
+  }
+
+  # bind rows over tokens
   aggregated_layers_saved1 <- dplyr::bind_rows(aggregated_layers_saved)
 
-  if (return_tokens) {
-    # Number of ids
-    number_of_layers <- unique(x[, grep("^layer_number", names(x))][[1]])
-    n_layers <- length(number_of_layers)
-    tokens <- x$tokens[1:(length(x$tokens) / n_layers)]
-    tokens <- as_tibble_col(tokens, column_name = "tokens")
-    aggregated_layers_saved1 <- dplyr::bind_cols(tokens, aggregated_layers_saved1)
+  # --- add tokens column if requested ----------------------------------------
+  if (isTRUE(return_tokens)) {
+    tokens_name <- names(x)[grep("^tokens", names(x))[1]]
+    tokens_col  <- x[[tokens_name]]
+
+    # for each token_id, take the first token string
+    token_tokens <- vapply(
+      token_ids,
+      function(tid) {
+        idxs <- which(token_id_col == tid)
+        if (length(idxs) == 0L) {
+          NA_character_
+        } else {
+          as.character(tokens_col[idxs[1]])
+        }
+      },
+      character(1)
+    )
+
+    tokens_tbl <- tibble::tibble(tokens = token_tokens)
+
+    aggregated_layers_saved1 <- dplyr::bind_cols(tokens_tbl, aggregated_layers_saved1)
   }
 
-  return(aggregated_layers_saved1)
+  aggregated_layers_saved1
 }
+
 
 
 #' grep_col_by_name_in_list
@@ -592,6 +1105,16 @@ textTokenize <- function(texts,
 #' textEmbedRawLayers extracts layers of hidden states (word embeddings) for all character variables
 #' in a given dataframe.
 #' @param texts A character variable or a tibble with at least one character variable.
+#' @param text_ids (Numeric) Optional vector of unique identifiers for each
+#'   element in `text_strings`. Must be the same length as `text_strings`, and
+#'   each value should uniquely identify a single text (e.g., message ID,
+#'   row ID). If `NULL`, sequential IDs `1:length(text_strings)` are assigned
+#'   automatically.
+#' @param group_ids (Numeric) Optional vector of group identifiers, one per
+#'   element in `text_strings`. Must be the same length as `text_strings`.
+#'   Texts with the same `group_ids` value are aggregated into a single
+#'   group-level (cf) embedding. If `NULL`, each text is treated as its own
+#'   group (i.e., `group_ids` is set to `1:length(text_strings)`).
 #' @param model (character) Character string specifying pre-trained language model
 #' (default = 'bert-base-uncased'). For full list of options see pretrained models at
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
@@ -655,6 +1178,8 @@ textTokenize <- function(texts,
 #' @export
 textEmbedRawLayers <- function(
     texts,
+    text_ids = NULL,
+    group_ids = NULL,
     model = 'bert-base-uncased',
     layers = -2,
     return_tokens = TRUE,
@@ -675,6 +1200,7 @@ textEmbedRawLayers <- function(
 
   implementation <- match.arg(implementation)
 
+  # Message
   if (decontextualize == TRUE && word_type_embeddings == FALSE) {
     stop(message(
       colourise("decontextualize = TRUE & word_type_embeddings = FALSE has not been
@@ -741,6 +1267,7 @@ textEmbedRawLayers <- function(
           trust_remote_code = trust_remote_code,
           logging_level = logging_level
         )
+
         if (sort) {
           variable_x <- sortingLayersOriginal(
             x = hg_embeddings,
@@ -754,14 +1281,33 @@ textEmbedRawLayers <- function(
 
       if(implementation == "dlatk"){
 
-        # This set because we are not setting it in dlatk and we want the comment to reflect that
-        max_token_to_sentence = NULL
+# Problem: We get aggregated embeddings - but text is doing this in textLayersAggregations() <-  dont want to do it twice.
+#        x <-  list("hello how are you", "fine")
+#        x <-  list("hello how are you", "fine", "OK, fine")
+#        x <-  list("hello how are you")
+      #  text_ids = NULL
+       # group_ids = NULL
+        #short_text = "how are you?"
+        #x <- c(long_text_test, short_text, long_text_test)
+
+#
+        if(is.null(text_ids)){
+          text_ids  <- as.list(seq_along(x[[i_variables]]))  # c(1L, 2L)
+          #text_ids  <- as.list(seq_along(x))
+        }
+        if(is.null(group_ids)){
+          group_ids <- as.list(seq_along(x[[i_variables]]))
+          #group_ids <- as.list(seq_along(x))
+        }
+
         hg_embeddings <- hgDLATKTransformerGetEmbedding(
-          text_strings = x[[i_variables]],
+          text_strings =  x[[i_variables]],
+          #text_strings =  x,
+          text_ids = text_ids,
+          group_ids = group_ids,
           model = model,
           layers = reticulate::r_to_py(as.integer(layers)),
-          return_tokens = return_tokens,
-          #    max_token_to_sentence = 4,
+          return_tokens = TRUE,
           device = reticulate::r_to_py(device),
           tokenizer_parallelism = tokenizer_parallelism,
           model_max_length = model_max_length,
@@ -769,23 +1315,27 @@ textEmbedRawLayers <- function(
           hg_token = reticulate::r_to_py(hg_token),
           trust_remote_code = trust_remote_code,
           logging_level = logging_level,
-          batch_size = 1L#,
-          #aggregations = aggregation_from_tokens_to_texts
+          batch_size = 1L,
+          aggregations = list('mean'),
+          aggregate_tokens_to_message = NULL
         )
+
+       # hg_embeddings[1]
+       # hg_embeddings[2]
+       # str(hg_embeddings[3])
+       # hg_embeddings[4]
 
         if (sort) {
           variable_x <- sortingLayersDLATK(
             x = hg_embeddings,
             layers = layers,
-            return_tokens = return_tokens
-          )
+            return_tokens = return_tokens,
+            all_ids       = text_ids
+          )$tokens
         } else {
           variable_x <- hg_embeddings
         }
       }
-
-
-
 
       sorted_layers_ALL_variables$context_tokens[[i_variables]] <- variable_x
       names(sorted_layers_ALL_variables$context_tokens)[[i_variables]] <- names(x)[[i_variables]]
@@ -839,7 +1389,12 @@ textEmbedRawLayers <- function(
 
     # 1. Group individual tokens help(bind_rows)
     i_we <- suppressWarnings(dplyr::bind_rows(sorted_layers_ALL_variables$context_tokens))
-    i_we2 <- dplyr::group_split(i_we, i_we[, grep("^tokens", names(i_we))][[1]])
+
+    # old: this line procude a strange wolumn name called: i_we[, grep("^tokens", names(i_we))][[1]]: character
+    # i_we2 <- dplyr::group_split(i_we, i_we[, grep("^tokens", names(i_we))][[1]])
+    tok_col <- names(i_we)[grep("^tokens", names(i_we))[1]]
+    i_we2 <- dplyr::group_split(i_we, .data[[tok_col]])
+
     names(i_we2) <- paste(rep("word_type", length(i_we2)), seq_len(length(i_we2)), sep = "")
     individual_tokens$context_word_type <- i_we2
 
@@ -848,14 +1403,58 @@ textEmbedRawLayers <- function(
     num_layers <- length(layers)
 
     # Look over all token list objects to adjust the token_id. i_context = 1
-    for (i_context in seq_len(length(individual_tokens$context_word_type))) { # $word_type
-      token_id_df <- individual_tokens$context_word_type[[i_context]] # $word_type
+ #   for (i_context in seq_len(length(individual_tokens$context_word_type))) { # $word_type
+ #     token_id_df <- individual_tokens$context_word_type[[i_context]] # $word_type
+#
+ #     token_id_variable <- token_id_df[, grep("^token_id", names(token_id_df))][[1]]
+#
+ #     num_token <- length(token_id_variable) / num_layers
+ #     token_id <- sort(rep(1:num_token, num_layers))
+ #     individual_tokens$context_word_type[[i_context]][, grep("^token_id", names(token_id_df))][[1]] <- token_id
+ #   }
+    for (i_context in seq_along(individual_tokens$context_word_type)) {  # $word_type
+      token_id_df <- individual_tokens$context_word_type[[i_context]]
 
-      token_id_variable <- token_id_df[, grep("^token_id", names(token_id_df))][[1]]
+      # Skip completely empty
+      if (nrow(token_id_df) == 0L) {
+        next
+      }
 
-      num_token <- length(token_id_variable) / num_layers
-      token_id <- sort(rep(1:num_token, num_layers))
-      individual_tokens$context_word_type[[i_context]][, grep("^token_id", names(token_id_df))][[1]] <- token_id
+      # Locate token_id column
+      token_id_col_idx <- grep("^token_id", names(token_id_df))
+      if (length(token_id_col_idx) == 0L) {
+        next  # nothing to fix
+      }
+      token_id_col <- token_id_df[[token_id_col_idx]]
+
+      # How many layers actually present here?
+      layer_col_idx <- grep("^layer_number", names(token_id_df))
+      if (length(layer_col_idx) == 0L) {
+        n_layers_here <- 1L
+      } else {
+        layers_here <- unique(token_id_df[[layer_col_idx]][!is.na(token_id_df[[layer_col_idx]])])
+        if (length(layers_here) == 0L) {
+          n_layers_here <- 1L
+        } else {
+          n_layers_here <- length(layers_here)
+        }
+      }
+
+      n_rows <- nrow(token_id_df)
+
+      # Default: one row = one token
+      new_token_id <- seq_len(n_rows)
+
+      # If rows split nicely into (tokens × layers), do the original pattern
+      if (n_rows %% n_layers_here == 0L) {
+        num_token <- n_rows / n_layers_here
+        # same pattern as before, but guaranteed correct length
+        new_token_id <- sort(rep(seq_len(num_token), n_layers_here))
+      }
+
+      # Safe assignment: length(new_token_id) == nrow(token_id_df) guaranteed
+      token_id_df[[token_id_col_idx]] <- new_token_id
+      individual_tokens$context_word_type[[i_context]] <- token_id_df
     }
 
     # Get first element from each list.
@@ -863,7 +1462,7 @@ textEmbedRawLayers <- function(
     single_words <- tibble::as_tibble_col(single_words, column_name = "words")
 
     # n
-    n <- sapply(individual_tokens$context_word_type, function(x) length(x[[1]]) / num_layers) # $word_type
+    n <- sapply(individual_tokens$context_word_type, function(x) length(x[[1]])) # / num_layers) # $word_type
     n <- tibble::as_tibble_col(n, column_name = "n")
     single_words_n <- dplyr::bind_cols(single_words, n)
     individual_tokens$tokens <- single_words_n
@@ -959,7 +1558,6 @@ textEmbedRawLayers <- function(
 }
 
 
-
 #' Aggregate layers
 #'
 #' textEmbedLayerAggregation selects and aggregates layers of hidden states to form a word embedding.
@@ -1008,6 +1606,7 @@ textEmbedLayerAggregation <- function(
     return_tokens = FALSE,
     tokens_select = NULL,
     tokens_deselect = NULL) {
+
   if (return_tokens == TRUE && !is.null(aggregation_from_tokens_to_texts)) {
     stop(message(
       colourise("return_tokens = TRUE does not work with aggregation_from_tokens_to_texts not being NULL ", fg = "red"),
@@ -1268,7 +1867,6 @@ find_layer_number <- function(
 
   return(layers)
 }
-
 
 
 ## #
@@ -1652,7 +2250,7 @@ text_embed <- function(
 
   #### Get Layers & Aggregate layers ####
   outcome_list <- list()
-  #text_i = 1
+  # text_i = 1
   for (text_i in 1:ncol(data_character_variables)) {
     texts <- data_character_variables[text_i]
 
@@ -1683,7 +2281,7 @@ text_embed <- function(
     }
 
     # Generate placement vectors if there are NA:s in texts.
-    if (sum(is.na(texts) > 0)) {
+    if (sum(is.na(texts)) > 0) {
       all_wanted_layers <- generate_placement_vector(
         raw_layers = all_wanted_layers,
         texts = texts
@@ -1705,7 +2303,7 @@ text_embed <- function(
         output$tokens <- token_embeddings
       }
 
-      # 2. Get aggregated token layers; aggregation_from_tokens_to_texts = "mean"
+      #  2. Get aggregated token layers; aggregation_from_tokens_to_texts = "mean"
       if (!is.null(aggregation_from_tokens_to_texts)) {
         aggregated_token_embeddings <- textEmbedLayerAggregation(
           word_embeddings_layers = all_wanted_layers$context_tokens,
@@ -2212,8 +2810,11 @@ textEmbed <- function(
            hg_gated = hg_gated,
            hg_token = hg_token,
            logging_level = logging_level,
-           implementation = implementation,
-           , ...
+           implementation = implementation
+#,
+#batch_size =as.integer(batch_size),
+#trust_remote_code = trust_remote_code,
+  #         , ...
            ),
 
          error = function(e) {
