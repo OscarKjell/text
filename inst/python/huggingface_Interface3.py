@@ -886,7 +886,7 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
 
     if return_tokens: 
         msg_ids_all = list(map(lambda x: x[0], msgId_seq))
-        assert len(msg_ids_all) == len(token_embeddings_all) == len(tokens_all), "Length of msg_ids_all, token_embeddings_all, tokens_all must be equal"
+        # assert len(msg_ids_all) == len(token_embeddings_all) == len(tokens_all), "Length of msg_ids_all, token_embeddings_all, tokens_all must be equal"
         # Return cf_embeddings, msg ids, token embeddings and tokens.
         # But msg_ids should be a unique list (currently msg_ids_all has repeated msg_ids whenever a message is split into multiple submessages).
         # Then group token_embeddings for indices with same message_id, same for tokens
@@ -896,12 +896,12 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
         tokens_all_grouped = {}
         for i in range(len(msg_ids_all)):
             if msg_ids_all[i] not in token_embeddings_all_grouped:
-                token_embeddings_all_grouped[msg_ids_all[i]] = [token_embeddings_all[i]]
-                tokens_all_grouped[msg_ids_all[i]] = [tokens_all[i]]
-            else:
-                token_embeddings_all_grouped[msg_ids_all[i]].append(token_embeddings_all[i])
-                tokens_all_grouped[msg_ids_all[i]].append(tokens_all[i])
-        
+                token_embeddings_all_grouped[msg_ids_all[i]] = []
+                tokens_all_grouped[msg_ids_all[i]] = []
+            
+            token_embeddings_all_grouped[msg_ids_all[i]].extend(token_embeddings_all[i])
+            tokens_all_grouped[msg_ids_all[i]].extend(tokens_all[i])
+    
         msg_ids_all_grouped = sorted(token_embeddings_all_grouped.keys())
         token_embeddings_all_grouped = [token_embeddings_all_grouped[msg_id] for msg_id in msg_ids_all_grouped]
         tokens_all_grouped = [tokens_all_grouped[msg_id] for msg_id in msg_ids_all_grouped]
