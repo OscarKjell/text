@@ -180,6 +180,78 @@ class textTransformerInterface:
     def no_context_preparation(self, messageRows, sent_tok_onthefly):
 
         return 
+    
+    def regular_context_preparation(self, groupedMessageRows):
+        # No sentence tokenization for regular context preparation
+        # Add support to split messages into multiple submessages if the message is longer than the max sequence length
+
+        input_ids, token_type_ids, attention_mask = [], [], []
+        msgId_seq, cfId_seq = [], []
+
+        for cfRows in groupedMessageRows:            
+            cfId = cfRows[0]
+            # all messages from one cfId is inside cfRows[1]
+            for messageRow in cfRows[1]:
+                message_id = messageRow[0]
+                try:
+                    message = messageRow[1]
+                except Exception as e:
+                    print ("Warning: cannot load message, skipping. Exception: %s"%str(e))
+                    continue
+
+                if ((message_id not in self.msgIdSeen) and (len(message.strip()) > 0)):
+                    
+                    messageSents = [self.transformerTokenizer.tokenize(message)]
+                    # messageSents: [[Msg1_tok1, Msg1_tok2...]]
+                    i = 0
+                    while (i < len(messageSents)):
+                        if len(messageSents[i]) > self.maxSeqLen*2:
+                            temp = [messageSents[i][j:j+self.maxSeqLen*2] for j in range(0, len(messageSents[i]), self.maxSeqLen*2)]
+                            messageSents = messageSents[:i] + temp + messageSents[i+1:]
+                            i += len(temp) - 1
+                        i += 1
+                    messageSents_ids = [self.transformerTokenizer.convert_tokens_to_ids(sents) for sents in messageSents]
+                    
+                    for idx in range(len(messageSents_ids)):
+                        thisPair = messageSents_ids[idx:idx+1]
+                        encoded = self.transformerTokenizer.prepare_for_model(*thisPair, is_split_into_words=True)
+                        indexedToks = encoded['input_ids']
+                        segIds = encoded['token_type_ids'] if 'token_type_ids' in encoded else None
+                        
+                        input_ids.append(torch.tensor(indexedToks, dtype=torch.long))
+                        if 'token_type_ids' in encoded: token_type_ids.append(torch.tensor(segIds, dtype=torch.long))
+                        attention_mask.append(torch.tensor([1]*len(indexedToks), dtype=torch.long))
+                        if len(thisPair) > 1:
+                            msgId_seq.append([message_id, len(thisPair[0]), len(thisPair[1])])
+                        else:
+                            msgId_seq.append([message_id, len(thisPair[0]), 0])
+                        
+                        cfId_seq.append(cfId)
+                        
+                self.msgIdSeen.add(message_id)
+                
+        assert len(input_ids) == len(msgId_seq) == len(cfId_seq) == len(attention_mask), "lengths of input_ids, msgId_seq, cfId_seq, attention_mask are not equal"
+        return {"input_ids": input_ids, "attention_mask": attention_mask, "token_type_ids": token_type_ids}, (cfId_seq, msgId_seq)
+
+    # DEPRECATED IMPLEMENTATION
+    # def regular_context_preparation_single_message(self, groupedMessageRows):
+    #     input_ids, token_type_ids, attention_mask = [], [], []
+    #     msgId_seq, cfId_seq = [], []
+
+    #     for cfRows in groupedMessageRows:
+    #         cfId = cfRows[0]
+    #         for messageRow in cfRows[1]:
+    #             message_id = messageRow[0]
+    #             message = messageRow[1]
+    #             tokenized_message = self.transformerTokenizer.encode_plus(message, add_special_tokens=True)
+    #             input_ids.append(torch.tensor(tokenized_message["input_ids"], dtype=torch.long))
+    #             token_type_ids.append(torch.tensor(tokenized_message["token_type_ids"], dtype=torch.long))
+    #             attention_mask.append(torch.tensor([1]*len(tokenized_message["input_ids"]), dtype=torch.long))
+    #             msgId_seq.append([message_id, len(tokenized_message["input_ids"]), 0])
+    #             cfId_seq.append(cfId)
+
+    #     assert len(input_ids) == len(msgId_seq) == len(cfId_seq) == len(attention_mask), "lengths of input_ids, msgId_seq, cfId_seq, attention_mask are not equal"
+    #     return {"input_ids": input_ids, "attention_mask": attention_mask, "token_type_ids": token_type_ids}, (cfId_seq, msgId_seq)
 
 ######################
 ######################
@@ -200,6 +272,7 @@ class transformer_embeddings:
         if modelObj is not None:
             self.transformerModel = modelObj
             self.cuda = self.transformerModel.device.type == 'cuda'
+            self.device = self.transformerModel.device
             self.config = self.transformerModel.config
         elif modelName is not None:
             self.config = AutoConfig.from_pretrained(modelName, output_hidden_states=True)
@@ -209,8 +282,14 @@ class transformer_embeddings:
             try:
                 self.transformerModel.to('cuda')
             except:
-                print (" unable to use CUDA (GPU) for BERT")
-                self.cuda = False
+                try:
+                    self.device = 'mps'
+                    self.transformerModel.to('mps')
+                except Exception as e:
+                    self.device = 'cpu'
+                    print ("WARNING: unable to use MPS (Mac M1+) or CUDA for BERT. Using CPU instead.")
+                    self.cuda = False
+                    self.device = 'cpu'
         self.transformerModel.eval()
         
         if tokenizerObj is not None:
@@ -261,7 +340,7 @@ class transformer_embeddings:
         if noContext:
             tokenIdstokensDict, (cfId_seq, msgId_seq) = self.textToTokensInterface.no_context_preparation(groupedMessageRows, sent_tok_onthefly)
         else:
-            tokenIdsDict, (cfId_seq, msgId_seq) = self.textToTokensInterface.context_preparation(groupedMessageRows, sent_tok_onthefly)
+            tokenIdsDict, (cfId_seq, msgId_seq) = self.textToTokensInterface.regular_context_preparation(groupedMessageRows)
             
         #print ("Len cfs/msgs: ", len(cfId_seq), len(msgId_seq))
         #print ("Num unique cfs/message Ids: ", np.unique(cfId_seq), len(set(map(lambda x: x[0], msgId_seq))))
@@ -287,11 +366,11 @@ class transformer_embeddings:
                 token_type_ids_padded = pad_sequence(tokenIdsDict["token_type_ids"][i*self.batchSize:(i+1)*self.batchSize], batch_first = True, padding_value=0)
             attention_mask_padded = pad_sequence(tokenIdsDict["attention_mask"][i*self.batchSize:(i+1)*self.batchSize], batch_first = True, padding_value=0)
 
-            if self.cuda:
-                input_ids_padded = input_ids_padded.to('cuda') 
+            if self.device != 'cpu':
+                input_ids_padded = input_ids_padded.to(self.device) 
                 if len(tokenIdsDict["token_type_ids"])>0:
-                    token_type_ids_padded = token_type_ids_padded.to('cuda')
-                attention_mask_padded = attention_mask_padded.to('cuda')
+                    token_type_ids_padded = token_type_ids_padded.to(self.device)
+                attention_mask_padded = attention_mask_padded.to(self.device)
 
             input_ids_padded = input_ids_padded.long()
             if len(tokenIdsDict["token_type_ids"])>0:
