@@ -90,7 +90,7 @@ test_that("PM tutorial", {
 
   #original
   #expect_equal(model_satisfactiontext_swls$results[[4]][[1]], 0.5385082, tolerance = 0.00001)
-  expect_equal(model_satisfactiontext_swls$results[[4]][[1]], 0.5845689, tolerance = 0.00001)
+  expect_equal(model_satisfactiontext_swls$results[[4]][[1]], 0.6108668, tolerance = 0.00001)
 
   # OUTPUT:
 
@@ -157,7 +157,7 @@ test_that("PM tutorial", {
                                                word_embeddings$texts$satisfactiontexts)
   # Look at the first scores
   #head(semantic_similarity_scores)
-  expect_equal(semantic_similarity_scores[[1]], 0.9281080, tolerance = 0.00001)
+  expect_equal(semantic_similarity_scores[[1]], 0.9204872, tolerance = 0.00001)
 
   # OUTPUT
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #

@@ -6,6 +6,8 @@
 \usage{
 textEmbedRawLayers(
   texts,
+  text_ids = NULL,
+  group_ids = NULL,
   model = "bert-base-uncased",
   layers = -2,
   return_tokens = TRUE,
@@ -20,11 +22,24 @@ textEmbedRawLayers(
   hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
   trust_remote_code = FALSE,
   logging_level = "error",
+  implementation = c("dlatk", "original"),
   sort = TRUE
 )
 }
 \arguments{
 \item{texts}{A character variable or a tibble with at least one character variable.}
+
+\item{text_ids}{(Numeric) Optional vector of unique identifiers for each
+element in `text_strings`. Must be the same length as `text_strings`, and
+each value should uniquely identify a single text (e.g., message ID,
+row ID). If `NULL`, sequential IDs `1:length(text_strings)` are assigned
+automatically.}
+
+\item{group_ids}{(Numeric) Optional vector of group identifiers, one per
+element in `text_strings`. Must be the same length as `text_strings`.
+Texts with the same `group_ids` value are aggregated into a single
+group-level (cf) embedding. If `NULL`, each text is treated as its own
+group (i.e., `group_ids` is set to `1:length(text_strings)`).}
 
 \item{model}{(character) Character string specifying pre-trained language model
 (default = 'bert-base-uncased'). For full list of options see pretrained models at
@@ -77,6 +92,9 @@ be set to avoid the need to enter the token each time.}
 
 \item{logging_level}{(character) Set the logging level. (default ="error")
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
+
+\item{implementation}{(boolean; experiments) If TRUE the text is split using the DLATK-method; this method appears better for longer texts (but it does not
+return token level word embeddings, nor word_types embeddings at this stage).}
 
 \item{sort}{(boolean) If TRUE sort the output to tidy format. (default = TRUE)}
 }
