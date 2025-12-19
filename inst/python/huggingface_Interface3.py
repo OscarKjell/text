@@ -715,9 +715,9 @@ def hgTransformerGetEmbedding(text_strings,
     else:
         return all_embs
 
-def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
-                                   text_ids = [],
-                                   group_ids = [],
+def hgDLATKTransformerGetEmbedding(text_strings,
+                                   text_ids,
+                                   group_ids,
                                    model = 'bert-large-uncased',
                                    layers = 'all',
                                    device = 'cpu',
@@ -727,11 +727,10 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
                                    hg_token = "",
                                    trust_remote_code = False,
                                    logging_level = 'warning',
-                                   batch_size = 1,
-                                   aggregations = ['mean'],
-                                   aggregate_tokens_to_message = None,
-                                   return_tokens = False,
-                                   debug = False):
+                                    batch_size = 1,
+                                    aggregations= ['mean'],
+                                    return_tokens = True
+                                   ):
     """
     Simple Python method for embedding text with pretrained Hugging Face models
     using DLATK's hypercontextualized embeddings.
@@ -782,29 +781,17 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
 
     Returns
     -------
-    If return_tokens is False:
-        cf_embeddings : list
-            If aggregate_tokens_to_message is not None:
-                embeddings for each group of text_strings.
-            If aggregate_tokens_to_message is None:
-                empty list.
-    If return_tokens is True and aggregate_tokens_to_message is None:
-        cf_embeddings : list (empty)
-        msg_ids_all_grouped : list
-        token_embeddings_all_grouped : list
-        tokens_all_grouped : list
-
-        Token embeddings / tokens grouped by message id (text_id).
-    If return_tokens is True and aggregate_tokens_to_message is not None:
-        cf_embeddings : list
-        msg_ids_all_grouped : list
-        token_embeddings_all_grouped : list
-        tokens_all_grouped : list
-    """
-
-    # -------------------------------------------------------------------------
-    # Helper: build [cfId, msgId, msg] rows for a given group list
-    # -------------------------------------------------------------------------
+    cf_ids_all : list
+        list of unique identifiers for each group of text_strings (only returned if return_tokens is False)
+    cf_embeddings : list
+        embeddings for each group of text_strings (only returned if return_tokens is False)
+    msg_ids_all : list
+        list of unique identifiers for each message (only returned if return_tokens is True)
+    token_embeddings_all_grouped : list, optional
+        embeddings for each token in text_strings (only returned if return_tokens is True)
+    tokens_all_grouped : list, optional
+        tokenized version of text_strings (only returned if return_tokens is True)
+    """ 
     def getMessagesForCorrelFieldGroups(cfGrp, text_strings, group_ids, text_ids):
         """Return a list of [cfId, msgId, msg] for the given cfGrp."""
         filtered_rows = [
@@ -1059,19 +1046,18 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
         cfGroups[-1].append(cfId)
         msgsInBatch += cfNumMsgs
 
+    num_cfs = 0
     cfGroups = [cfGrp for cfGrp in cfGroups if cfGrp]
-
+    
     msg_embeddings = []
     cf_embeddings = []
     token_embeddings_all = []
     tokens_all = []
     msg_ids_all = []
-
-    # --- main loop over cfGroups ---
-    for batch_idx, cfGrp in enumerate(tqdm(cfGroups)):
-        if debug:
-            print(f"\n=== New cfGrp batch {batch_idx} ===")
-            print(f"cfGrp (group IDs in this batch): {cfGrp}")
+    cf_ids_all = []
+    for cfGrp in tqdm(cfGroups):
+        # mIdSeen = set() #currently seen message ids
+        # mIdList = [] #only for keepMsgFeats
 
         cfId_msgId_map = {}
         groupedMessageRows = {}
@@ -1094,28 +1080,10 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
             if msgId not in cfId_msgId_map[cfId]:
                 cfId_msgId_map[cfId].add(msgId)
                 groupedMessageRows[cfId].append([msgId, msg])
+        groupedMessageRows = [[cfId, groupedMessageRows[cfId]] for cfId in cfId_msgId_map]
 
-        groupedMessageRows = [
-            [cfId, groupedMessageRows[cfId]] for cfId in cfId_msgId_map
-        ]
-
-        tokenIdsDict, (cfId_seq, msgId_seq) = embedding_generator.prepare_messages(
-            groupedMessageRows,
-            sent_tok_onthefly=True,
-            noContext=False
-        )
-
-        n_segments = len(tokenIdsDict["input_ids"])
-        if debug:
-            print(f"prepare_messages: n_segments = {n_segments}")
-            if n_segments > 0:
-                first_lens = [len(ids) for ids in tokenIdsDict["input_ids"][:min(3, n_segments)]]
-                print(f"  first {len(first_lens)} segment lengths (input_ids): {first_lens}")
-                print(f"  cfId_seq length: {len(cfId_seq)}, msgId_seq length: {len(msgId_seq)}")
-
-        if n_segments == 0:
-            if debug:
-                print("prepare_messages returned 0 segments; skipping this batch.")
+        tokenIdsDict, (cfId_seq, msgId_seq) = embedding_generator.prepare_messages(groupedMessageRows, sent_tok_onthefly=True, noContext=False)
+        if len(tokenIdsDict["input_ids"]) == 0:
             continue
 
         encSelectedLayers = embedding_generator.generate_transformer_embeddings(
@@ -1126,49 +1094,20 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
                 print("generate_transformer_embeddings returned None; skipping this batch.")
             continue
 
-        if debug:
-            try:
-                arr = encSelectedLayers[0]
-                print(f"generate_transformer_embeddings: encSelectedLayers[0].shape = {arr.shape}")
-            except Exception as e:
-                print("Could not inspect encSelectedLayers[0].shape:", e)
+        msg_reps, msgIds_new, cfIds_new = embedding_generator.message_aggregate(encSelectedLayers, msgId_seq, cfId_seq)
 
-        # --- token -> message & message -> group aggregation (optional) ---
-        if do_aggregate:
-            msg_reps, msgIds_new, cfIds_new = embedding_generator.message_aggregate(
-                encSelectedLayers,
-                msgId_seq,
-                cfId_seq
-            )
+        if all([len(cfId_msgId_map[cfId]) == 1 for cfId in cfId_msgId_map]):
+            cf_reps = msg_reps
+        else:
+            msg_reps_dict = dict(zip([i for i in msgIds_new], [msg_reps[i] for i in range(len(msgIds_new))]))
+            cf_reps, cfIds_new = embedding_generator.correl_field_aggregate(msg_reps_dict, cfId_msgId_map)
+            cf_reps = [[cf_reps[i][j].rep for j in range(len(aggregations))] for i in range(len(cf_reps))]    
 
-            if debug:
-                print(f"message_aggregate: n_msg_reps = {len(msg_reps)}")
-                print("cfId_msgId_map sizes:",
-                      {cfId: len(msgIds) for cfId, msgIds in cfId_msgId_map.items()})
-                print(f"cfIds_new length: {len(cfIds_new)}")
+        msg_embeddings.extend(msg_reps)
+        cf_embeddings.extend(cf_reps)
+        msg_ids_all.extend(msgIds_new)
+        cf_ids_all.extend(cfIds_new)
 
-            if all(len(cfId_msgId_map[cfId]) == 1 for cfId in cfId_msgId_map):
-                cf_reps = msg_reps
-            else:
-                msg_reps_dict = dict(
-                    zip(
-                        [i for i in msgIds_new],
-                        [msg_reps[i] for i in range(len(msgIds_new))]
-                    )
-                )
-                cf_reps, cfIds_new = embedding_generator.correl_field_aggregate(
-                    msg_reps_dict,
-                    cfId_msgId_map
-                )
-                cf_reps = [
-                    [cf_reps[i][j].rep for j in range(len(aggregations))]
-                    for i in range(len(cf_reps))
-                ]
-
-            msg_embeddings.extend(msg_reps)
-            cf_embeddings.extend(cf_reps)
-
-        # --- token-level outputs ---
         if return_tokens:
             decoded_tokens = [
                 tokenizer.convert_ids_to_tokens(input_ids)
@@ -1207,86 +1146,35 @@ def hgDLATKTransformerGetEmbedding(text_strings = ["hello everyone"],
                 token_embeddings.append(seg_emb)
 
             token_embeddings_all.extend(token_embeddings)
+        # import pdb; pdb.set_trace()
+    
+    msg_embeddings = [msg_embeddings[i].tolist() for i in range(len(msg_embeddings))]
+    cf_embeddings = [cf_embeddings[i].tolist() if isinstance(cf_embeddings[i], np.ndarray) else cf_embeddings[i] for i in range(len(cf_embeddings))] 
 
-            # msg IDs per segment
-            if len(messageRows) == 1:
-                msg_id_single = messageRows[0][1]  # msgId
-                batch_msg_ids = [msg_id_single] * n_common
-            else:
-                batch_msg_ids = [m[0] for m in msgId_seq][:n_common]
+    if return_tokens: 
+        # msg_ids_all = list(map(lambda x: x[0], msgId_seq))
+        # print (msg_ids_all, msgId_seq)
+        # assert len(msg_ids_all) == len(token_embeddings_all) == len(tokens_all), "Length of msg_ids_all, token_embeddings_all, tokens_all must be equal"
+        # Return cf_embeddings, msg ids, token embeddings and tokens.
+        # But msg_ids should be a unique list (currently msg_ids_all has repeated msg_ids whenever a message is split into multiple submessages).
+        # Then group token_embeddings for indices with same message_id, same for tokens
 
-            msg_ids_all.extend(batch_msg_ids)
-            tokens_all.extend(decoded_tokens)
-
-        if debug and return_tokens:
-            print(f"Totals so far after this batch:")
-            print(f"  len(msg_ids_all)        = {len(msg_ids_all)}")
-            print(f"  len(token_embeddings_all) = {len(token_embeddings_all)}")
-            print(f"  len(tokens_all)           = {len(tokens_all)}")
-
-    # --- finalize cf_embeddings ---
-    if do_aggregate:
-        cf_embeddings = [
-            cf_embeddings[i].tolist()
-            if isinstance(cf_embeddings[i], np.ndarray)
-            else cf_embeddings[i]
-            for i in range(len(cf_embeddings))
-        ]
-    else:
-        cf_embeddings = []  # explicit: no aggregation performed
-
-    # --- finalize token-level outputs (aggregated path) ---
-    if return_tokens:
-        if not (len(msg_ids_all) == len(token_embeddings_all) == len(tokens_all)):
-            min_len = min(len(msg_ids_all), len(token_embeddings_all), len(tokens_all))
-            msg = (
-                f"Warning: length mismatch in hgDLATKTransformerGetEmbedding "
-                f"(msg_ids_all={len(msg_ids_all)}, "
-                f"token_embeddings_all={len(token_embeddings_all)}, "
-                f"tokens_all={len(tokens_all)}). "
-                f"Truncating to {min_len} entries."
-            )
-            print(msg)
-            if debug:
-                print(">>> DEBUG: Mismatch details at END (aggregated path):")
-                print(f"    msg_ids_all sample: {msg_ids_all[:10]}")
-                print(f"    #token_embeddings_all = {len(token_embeddings_all)}")
-                print(f"    #tokens_all = {len(tokens_all)}")
-            msg_ids_all = msg_ids_all[:min_len]
-            token_embeddings_all = token_embeddings_all[:min_len]
-            tokens_all = tokens_all[:min_len]
-
+        # Group token_embeddings for indices with same message_id, same for tokens
         token_embeddings_all_grouped = {}
         tokens_all_grouped = {}
         for i in range(len(msg_ids_all)):
-            msg_id = msg_ids_all[i]
-            if msg_id not in token_embeddings_all_grouped:
-                token_embeddings_all_grouped[msg_id] = [token_embeddings_all[i]]
-                tokens_all_grouped[msg_id] = [tokens_all[i]]
-            else:
-                token_embeddings_all_grouped[msg_id].append(token_embeddings_all[i])
-                tokens_all_grouped[msg_id].append(tokens_all[i])
-
+            if msg_ids_all[i] not in token_embeddings_all_grouped:
+                token_embeddings_all_grouped[msg_ids_all[i]] = []
+                tokens_all_grouped[msg_ids_all[i]] = []
+            
+            token_embeddings_all_grouped[msg_ids_all[i]].extend(token_embeddings_all[i])
+            tokens_all_grouped[msg_ids_all[i]].extend(tokens_all[i])
+    
         msg_ids_all_grouped = sorted(token_embeddings_all_grouped.keys())
-        token_embeddings_all_grouped = [
-            token_embeddings_all_grouped[msg_id]
-            for msg_id in msg_ids_all_grouped
-        ]
-        tokens_all_grouped = [
-            tokens_all_grouped[msg_id]
-            for msg_id in msg_ids_all_grouped
-        ]
-
-        if debug:
-            print("\n=== FINAL GROUPED SIZES (AGGREGATED PATH) ===")
-            print(f"msg_ids_all_grouped = {msg_ids_all_grouped}")
-            print(f"#token_embeddings_all_grouped = {len(token_embeddings_all_grouped)}")
-            print(f"#tokens_all_grouped           = {len(tokens_all_grouped)}")
-
+        token_embeddings_all_grouped = [token_embeddings_all_grouped[msg_id] for msg_id in msg_ids_all_grouped]
+        tokens_all_grouped = [tokens_all_grouped[msg_id] for msg_id in msg_ids_all_grouped]
         return cf_embeddings, msg_ids_all_grouped, token_embeddings_all_grouped, tokens_all_grouped
-
-    # If we get here, we are in cf-only mode
-    return cf_embeddings
+    return cf_ids_all, cf_embeddings
 
 def hgTokenizerGetTokens(text_strings,
                               model = 'bert-large-uncased',
