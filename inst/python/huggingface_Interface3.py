@@ -151,7 +151,7 @@ def get_device(device):
                 device_num = 0 # list(range(torch.cuda.device_count()))[0]
                 device = 'mps:' + str(device_num)
                 attached = True
-                print("Using Metal Performance Shaders (MPS) backend for GPU training acceleration!")
+               # print("Using Metal Performance Shaders (MPS) backend for GPU training acceleration!")
         else:
             attached = False
         if not attached:
@@ -729,7 +729,9 @@ def hgDLATKTransformerGetEmbedding(text_strings,
                                    logging_level = 'warning',
                                     batch_size = 1,
                                     aggregations= ['mean'],
-                                    return_tokens = True
+                                    aggregate_tokens_to_message = None,
+                                    return_tokens = True, 
+                                    debug = False
                                    ):
     """
     Simple Python method for embedding text with pretrained Hugging Face models
