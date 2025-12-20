@@ -30,6 +30,9 @@ test_that("Testing DLATK textEmbed as well as train", {
  #   batch_size = 5L
  # )
 
+  # it works with original + MPS
+  # it works with dlatk + MPS does NOT work.
+  #
   harmony_word_embeddings1 <- text::textEmbed(
     texts = Language_based_assessment_data_8[1:20, 1:2],
     model = "bert-base-uncased",

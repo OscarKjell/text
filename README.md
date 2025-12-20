@@ -24,20 +24,24 @@ Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-p
 <!--#![Modular and End-to-End #Solution](man/figures/modular_end_solution.png){width=85%}
  -->
 
-## Overview
+## R Language Analysis Suite
 
 An R-package for analyzing natural language with transformers-based
 large language models. The `text` package is part of the *R Language
-Analysis Suite*, including `talk`, `text` and `topics`.
+Analysis Suite*, including:
 
-- [`talk`](https://www.r-talk.org/) transforms voice recordings into
-  text, audio features, or embeddings.<br> <br>
-- [`text`](https://www.r-text.org/) provides many language tasks such as
-  converting digital text into word embeddings.<br> <br> `talk` and
-  `text` offer access to Large Language Models from Hugging Face.<br>
-  <br>
-- [`topics`](https://www.r-topics.org/) visualizes language patterns
-  into topics to generate psychological insights.<br> <br>
+- [`talk`](https://www.r-talk.org/) - a package that transforms voice
+  recordings into text, audio features, or embeddings.<br> <br>
+- [`text`](https://www.r-text.org/) - a package that provides tools for
+  many language tasks such as converting digital text into word
+  embeddings.<br> <br> `talk` and `text` offer access to Large Language
+  Models from Hugging Face.<br> <br>
+- [`topics`](https://www.r-topics.org/) a package with tools for
+  visualizing language patterns into topics.<br> <br>
+- [`the L-BAM Library`](https://r-text.org/articles/LBAM.html) a library
+  that provides pre-trained models for different psychological
+  assessments such as mental health issues, personality and related
+  behaviours.<br> <br>
 
 <img src="man/figures/talk_text_topics.svg" style="width:50.0%" />
 
@@ -58,45 +62,6 @@ scientists. <br> Please reference our tutorial article when using the
 Visualizing Human Language Using Natural Language Processing and Deep
 Learning](https://pubmed.ncbi.nlm.nih.gov/37126041/). <br>
 
-### Short installation guide
-
-Most users simply need to run below installation code. For those
-experiencing problems or want more alternatives, please see the
-[Extended Installation
-Guide](https://www.r-text.org/articles/ext_install_guide.html).
-
-For the text-package to work, you first have to install the text-package
-in R, and then make it work with text required python packages.
-
-1.  Install text-version (at the moment the second step only works using
-    the development version of text from GitHub).
-
-[GitHub](https://github.com/) development version:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("oscarkjell/text")
-```
-
-[CRAN](https://CRAN.R-project.org/package=text) version:
-
-``` r
-install.packages("text")
-```
-
-2.  Install and initialize text required python packages:
-
-``` r
-library(text)
-
-# Install text required python packages in a conda environment (with defaults).
-textrpp_install()
-
-# Initialize the installed conda environment.
-# save_profile = TRUE saves the settings so that you don't have to run textrpp_initialize() after restarting R. 
-textrpp_initialize(save_profile = TRUE)
-```
-
 ### Point solution for transforming text to embeddings
 
 Recent significant advances in NLP research have resulted in improved
@@ -113,13 +78,6 @@ multilingual BERT comprises *104 different languages*.
 
 *Table 1. Some of the available language models*
 
-    #> Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
-    #> Use 'xfun::attr2()' instead.
-    #> See help("Deprecated")
-    #> Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
-    #> Use 'xfun::attr2()' instead.
-    #> See help("Deprecated")
-
 | Models | References | Layers | Dimensions | Language |
 |:---|:---|:---|:---|:---|
 | ‘bert-base-uncased’ | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12 | 768 | English |
@@ -131,44 +89,6 @@ multilingual BERT comprises *104 different languages*.
 See [HuggingFace](https://huggingface.co/models/) for a more
 comprehensive list of models.
 
-The `textEmbed()` function is the main embedding function in text; and
-can output contextualized embeddings for tokens (i.e., the embeddings
-for each single word instance of each text) and texts (i.e., single
-embeddings per text taken from aggregating all token embeddings of the
-text).
-
-``` r
-library(text)
-# Transform the text data to BERT word embeddings
-
-# Example text
-texts <- c("I feel great!")
-
-# Defaults
-embeddings <- textEmbed(texts)
-embeddings
-```
-
-See [Get Started](https://www.r-text.org/articles/text.html) for more
-information.
-
-### Language Analysis Tasks
-
-It is also possible to access many language analysis tasks such as
-textClassify(), textGeneration(), and textTranslate().
-
-``` r
-library(text)
-
-# Generate text from the prompt "I am happy to"
-generated_text <- textGeneration("I am happy to",
-                                 model = "gpt2")
-generated_text
-```
-
-For a full list of language analysis tasks supported in text see the
-[References](https://www.r-text.org/reference/index.html)
-
 ### An end-to-end package
 
 *Text* also provides functions to analyse the word embeddings with
@@ -178,44 +98,3 @@ numerical variables. For example, the `textTrain()` function is used to
 examine how well the word embeddings from a text can predict a numeric
 or categorical variable. Another example is functions plotting
 statistically significant words in the word embedding space.
-
-``` r
-library(text) 
-# Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function; the preprocessed test-data included in the package is called: DP_projections_HILS_SWLS_100
-plot_projection <- textProjectionPlot(
-  word_data = DP_projections_HILS_SWLS_100,
-  y_axes = TRUE,
-  title_top = " Supervised Bicentroid Projection of Harmony in life words",
-  x_axes_label = "Low vs. High HILS score",
-  y_axes_label = "Low vs. High SWLS score",
-  position_jitter_hight = 0.5,
-  position_jitter_width = 0.8
-)
-plot_projection$final_plot
-```
-
-![](man/figures/README-DPP_plot-1.png)<!-- -->
-
-### Featured Bluesky Post
-
-<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:tiigom2z6lcqsibxsgjdfea4/app.bsky.feed.post/3lduzt3lob22q" data-bluesky-cid="bafyreifgniodm6xkwh6g5ha4xe2663ohau56fy7nxulnkkhsouxkgq7q3y">
-
-<p lang="en">
-
-Version 1.3 of the \#r-text package is now available from \#CRAN.
-
-This new version makes it easier to apply pre-trained language
-assessments from the \#LBAM-library (r-text.org/articles/LBA…).
-
-\#mlsky \#PsychSciSky \#Statistics \#PsychSciSky \#StatsSky
-\#NLP<br><br><a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4/post/3lduzt3lob22q?ref_src=embed">\[image
-or embed\]</a>
-</p>
-
-— Oscar Kjell
-(<a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4?ref_src=embed">@oscarkjell.bsky.social</a>)
-<a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4/post/3lduzt3lob22q?ref_src=embed">Dec
-22, 2024 at 9:48</a>
-</blockquote>
-
-<script async src="https://embed.bsky.app/static/embed.js" charset="utf-8"></script>

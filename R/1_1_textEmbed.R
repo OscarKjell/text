@@ -277,6 +277,7 @@ textEmbeddingAggregation <- function(x,
 #' Also give word frequencies.
 #' @param x_characters A character column in a tibble.
 #' @param hg_tokenizer (boolean) Weather to use textTokenize
+#' @param device (string) device to use in textTokenize (e.g., "cpu", "mps:0", "gpu:0").
 #' @return A tibble with a unique words column and a column with their respective frequency.
 #' @importFrom tibble tibble
 #' @importFrom stringi stri_c stri_trans_tolower
@@ -285,6 +286,7 @@ textEmbeddingAggregation <- function(x,
 #' @noRd
 getUniqueWordsAndFreq <- function(x_characters,
                                   hg_tokenizer = NULL,
+                                  device = "cpu",
                                   ...) {
   if (is.null(hg_tokenizer)) {
     # Unite all text variables into one
@@ -304,7 +306,7 @@ getUniqueWordsAndFreq <- function(x_characters,
   }
 
   if (!is.null(hg_tokenizer)) {
-    x_characters4b <- lapply(list(x_characters), textTokenize, model = hg_tokenizer, ...)
+    x_characters4b <- lapply(list(x_characters), textTokenize, model = hg_tokenizer, device = device, ...)
     x_characters5 <- data.frame(sort(table(unlist(x_characters4b))))
   }
 
@@ -822,8 +824,9 @@ grep_col_by_name_in_list <- function(l,
 #' "roberta-base", or "xlm-roberta-base".
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #' switching to embedding text sentence by sentence.
-#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-#' specific device number.
+#' @param device (character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+#' for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+#' depending on OS.
 #' @param tokenizer_parallelism If TRUE this will turn on tokenizer parallelism. Default FALSE.
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
 #' (default the value stored for the associated model).
@@ -847,7 +850,7 @@ grep_col_by_name_in_list <- function(l,
 textTokenize <- function(texts,
                          model,
                          max_token_to_sentence = 4,
-                         device = "cpu",
+                         device = NULL,
                          tokenizer_parallelism = FALSE,
                          model_max_length = NULL,
                          hg_gated = FALSE,
@@ -855,6 +858,17 @@ textTokenize <- function(texts,
                                                   unset = ""),
                          trust_remote_code = FALSE,
                          logging_level = "error") {
+
+  # Setting device depending on OS
+  if(is.null(device)){
+    if(!is_osx()){
+      device = "gpu:0"
+    }
+    if(is_osx()){
+      device = "mps:0"
+    }
+  }
+
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
                                         "huggingface_Interface3.py",
@@ -918,7 +932,8 @@ textTokenize <- function(texts,
 #' @param keep_token_embeddings (boolean) Whether to keep token level embeddings in the output
 #' (when using word_types aggregation). (default= TRUE)
 #' @param device (character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
-#' for MacOS, where k is a specific device number. (default = "cpu")
+#' for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+#' depending on OS.
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism.
 #' (default = FALSE).
 #' @param model_max_length The maximum length (in number of tokens) for the inputs to the
@@ -966,7 +981,7 @@ textEmbedRawLayers <- function(
     word_type_embeddings = FALSE,
     decontextualize = FALSE,
     keep_token_embeddings = TRUE,
-    device = "cpu",
+    device = NULL,
     tokenizer_parallelism = FALSE,
     model_max_length = NULL,
     max_token_to_sentence = 4,
@@ -981,6 +996,17 @@ textEmbedRawLayers <- function(
   implementation <- match.arg(implementation)
 
   # Message
+  # Setting device depending on OS
+  if(is.null(device)){
+    if(!is_osx()){
+      device = "gpu:0"
+    }
+    if(is_osx()){
+      device = "mps:0"
+    }
+  }
+
+
   if (decontextualize == TRUE && word_type_embeddings == FALSE) {
     stop(message(
       colourise("decontextualize = TRUE & word_type_embeddings = FALSE has not been
@@ -1259,7 +1285,8 @@ textEmbedRawLayers <- function(
       bind_rows()
 
     singlewords <- getUniqueWordsAndFreq(data_character_variables1[[1]],
-                                         hg_tokenizer = model
+                                         hg_tokenizer = model,
+                                         device = device
     )
     list_words <- sapply(singlewords$words, list)
     names(list_words) <- NULL
@@ -1865,6 +1892,7 @@ find_layer_number <- function(
 ## #   return(outcome_list)
 ## # }
 
+
 #' Helper function for textEmbed
 #'
 #' textEmbed() extracts layers and aggregate them to word embeddings, for all character variables in a given dataframe.
@@ -1910,8 +1938,226 @@ find_layer_number <- function(
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #' switching to embedding text sentence by sentence.
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
-#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-#' specific device number such as 'mps:1'.
+#' @param device (character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+#' for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+#' depending on OS.
+#' @param hg_gated Set to TRUE if the accessed model is gated.
+#' @param hg_token The token needed to access the gated model.
+#' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
+#' the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
+#' be set to avoid the need to enter the token each time.
+#' @param logging_level Set the logging level. Default: "warning".
+#' Options (ordered from less logging to more logging): critical, error, warning, info, debug
+#' @param ... settings from textEmbedRawLayers().
+#' @return A tibble with tokens.
+#' @importFrom reticulate source_python r_to_py
+#' @importFrom tidyr unnest_wider
+#' @noRd
+text_embed_dlatk <- function(
+    texts,
+    model,
+    layers,
+    dim_name,
+    #    aggregation_from_layers_to_tokens = aggregation_from_layers_to_tokens,
+    aggregation_from_tokens_to_texts = aggregation_from_tokens_to_texts,
+    #    aggregation_from_tokens_to_word_types = aggregation_from_tokens_to_word_types,
+    #   keep_token_embeddings = keep_token_embeddings,
+    remove_non_ascii = remove_non_ascii,
+    #    tokens_select = tokens_select,
+    #    tokens_deselect = tokens_deselect,
+    #    decontextualize = decontextualize,
+    model_max_length = model_max_length,
+    #    max_token_to_sentence = max_token_to_sentence,
+    tokenizer_parallelism = tokenizer_parallelism,
+    device = device,
+    hg_gated = hg_gated,
+    hg_token = hg_token,
+    trust_remote_code = trust_remote_code,
+    logging_level = logging_level,
+    batch_size = batch_size
+    ){
+
+  device = "cpu"
+  # Keeping comment consistent with original method based on textEmbedRawLayers and textEmbedLayerAggregation (to enable textPredict with text input).
+  layers_string <- paste(as.character(layers), sep = " ", collapse = " ")
+  word_type_embeddings = FALSE
+  max_token_to_sentence = NULL
+
+  original_comment <- paste("Information about the embeddings. implementation: dlatk ; textEmbedRawLayers: ",
+          "model: ", model, " ; ",
+          "layers: ", layers_string, " ; ",
+          "word_type_embeddings: ", word_type_embeddings, " ; ",
+          "max_token_to_sentence: ", max_token_to_sentence, " ; ",
+          "text_version: ", packageVersion("text"), ".",
+          sep = "",
+          collapse = "\n")
+
+  aggregation_from_layers_to_tokens = NULL
+  tokens_select = NULL
+  tokens_deselect = NULL
+
+  comment_to_save <- paste(
+    original_comment,
+    "textEmbedLayerAggregation: layers = ",
+    layers_string,
+    "aggregation_from_layers_to_tokens = ",
+    aggregation_from_layers_to_tokens,
+    "aggregation_from_tokens_to_texts = ",
+    aggregation_from_tokens_to_texts,
+    "tokens_select = ",
+    tokens_select,
+    "tokens_deselect = ",
+    tokens_deselect,
+    collapse = " ; ")
+
+  if (sum(is.na(texts) > 0)) {
+    warning("texts contain NA-values.")
+  }
+
+  T1_textEmbed <- Sys.time()
+
+  reticulate::source_python(system.file("python",
+                                        "huggingface_Interface3.py",
+                                        package = "text",
+                                        mustWork = TRUE
+  ))
+
+
+  # Number of layers to retrieve (if -2 is given; i.e., getting the second to last layer)
+  layers <- find_layer_number(model, layers, hg_gated, hg_token)
+  layers <- reticulate::r_to_py(as.integer(layers))
+
+  # Select all character variables and make them UTF-8 coded (e.g., BERT wants it that way).
+  data_character_variables <- select_character_v_utf8(texts)
+
+  # Check for ASCII characters
+  problematic_texts <- textFindNonASCII(data_character_variables)
+
+  #### Clean ASCII ####
+  if(nrow(problematic_texts)>0){
+    data_character_variables <- textCleanNonASCIIinfo(
+      data_tibble = data_character_variables,
+      problematic_texts = problematic_texts,
+      remove_non_ascii = remove_non_ascii
+    )
+  }
+
+
+  #### Get Layers & Aggregate layers ####
+  outcome_list <- list()
+  # text_i = 1
+  for (text_i in 1:ncol(data_character_variables)) {
+    texts <- data_character_variables[[text_i]]
+
+    dlatk_emb <- hgDLATKTransformerGetEmbedding(
+      text_strings = texts, # texts,
+      #text_ids = NULL,
+      #group_ids = NULL,
+      model = model,
+      layers = layers,
+      #    return_tokens = True,
+      #    max_token_to_sentence = 4,
+       device = device,
+       tokenizer_parallelism = tokenizer_parallelism,
+       model_max_length = model_max_length,
+       hg_gated = hg_gated,
+       hg_token = hg_token,
+       trust_remote_code = trust_remote_code,
+       logging_level = logging_level,
+      #    sentence_tokenize = True
+       batch_size = 1L, #as.numeric(batch_size),
+       aggregations = aggregation_from_tokens_to_texts
+    )
+
+    dlatk_emb_message <- dlatk_emb #[[1]] This is only needed if the pyhon function return "return msg_embeddings, cf_embeddings"
+
+    # Extract first embedding from each list item
+    dlatk_emb_message <- lapply(dlatk_emb_message, function(x) unlist(x[[1]]))
+
+    # Convert to tibble: 1 row per embedding, 1024 columns
+    dlatk_emb_message <- tibble(values = dlatk_emb_message) %>%
+      tidyr::unnest_wider(values, names_sep = "_", names_repair = "unique")
+
+
+    # Rename columns to Dim1, Dim2, ...
+    colnames(dlatk_emb_message) <- paste0("Dim", seq_along(dlatk_emb_message))
+
+
+
+    T2_textEmbed <- Sys.time()
+    Time_textEmbed <- T2_textEmbed - T1_textEmbed
+    Time_textEmbed <- sprintf("Duration to embed text: %f %s", Time_textEmbed, units(Time_textEmbed))
+    Date_textEmbed <- Sys.time()
+
+    comment(dlatk_emb_message) <- comment_to_save
+
+    outcome_list$texts[[text_i]] <- dlatk_emb_message
+
+    names(outcome_list$texts)[[text_i]] <- names(data_character_variables)[[text_i]]
+
+    if (dim_name == TRUE) {
+      outcome_list$texts[text_i] <- textDimName(outcome_list$texts[text_i])
+    }
+  }
+
+  comment(outcome_list) <- paste(
+    Time_textEmbed,
+    "; Date created: ", Date_textEmbed,
+    "; text_version: ", packageVersion("text"),
+    " ; implementation = TRUE", ".",
+    sep = "",
+    collapse = " ")
+  return(outcome_list)
+}
+
+#' Helper function for textEmbed
+#'
+#' textEmbed() extracts layers and aggregate them to word embeddings, for all character variables in a given dataframe.
+#' @param texts A character variable or a tibble/dataframe with at least one character variable.
+#' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
+#'  For full list of options see pretrained models at
+#'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
+#'  For example use "bert-base-multilingual-cased", "openai-gpt",
+#' "gpt2", "ctrl", "transfo-xl-wt103", "xlnet-base-cased", "xlm-mlm-enfr-1024", "distilbert-base-cased",
+#' "roberta-base", or "xlm-roberta-base". Only load models that you trust from HuggingFace; loading a
+#'  malicious model can execute arbitrary code on your computer).
+#' @param layers (string or numeric) Specify the layers that should be extracted
+#' (default -2 which give the second to last layer). It is more efficient to only extract the layers
+#' that you need (e.g., 11). You can also extract several (e.g., 11:12), or all by setting this parameter
+#' to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidden states) and
+#'  thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation
+#'  function.
+#' @param dim_name (boolean) If TRUE append the variable name after all variable-names in the output.
+#' (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name).
+#' see \code{\link{textDimName}} to change names back and forth.
+#' @param aggregation_from_layers_to_tokens (string) Aggregated layers of each token. Method to aggregate the
+#' contextualized layers (e.g., "mean", "min" or "max, which takes the minimum, maximum or mean, respectively,
+#' across each column; or "concatenate", which links  together each word embedding layer to one long row.
+#' @param aggregation_from_tokens_to_texts (string) Method to carry out the aggregation among the word embeddings
+#' for the words/tokens, including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+#' or "concatenate", which links together each layer of the word embedding to one long row (default = "mean"). If set to NULL, embeddings are not
+#' aggregated.
+#' @param aggregation_from_tokens_to_word_types (string) Aggregates to the word type (i.e., the individual words)
+#'  rather than texts. If set to "individually", then duplicate words are not aggregated, (i.e, the context of individual
+#'  is preserved). (default = NULL).
+#' @param keep_token_embeddings (boolean) Whether to also keep token embeddings when using texts or word
+#' types aggregation.
+#' @param remove_non_ascii (bolean) TRUE warns and removes non-ascii (using textFindNonASCII()).
+#' @param tokens_select Option to select word embeddings linked to specific tokens
+#' such as [CLS] and [SEP] for the context embeddings.
+#' @param tokens_deselect Option to deselect embeddings linked to specific tokens
+#' such as [CLS] and [SEP] for the context embeddings.
+#' @param decontextualize (boolean) Provide word embeddings of single words as input to the model
+#' (these embeddings are, e.g., used for plotting; default is to use ). If using this, then set
+#' single_context_embeddings to FALSE.
+#' @param model_max_length The maximum length (in number of tokens) for the inputs to the transformer model
+#' (default the value stored for the associated model).
+#' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
+#' switching to embedding text sentence by sentence.
+#' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
+#' @param device (character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+#' for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+#' depending on OS.
 #' @param hg_gated Set to TRUE if the accessed model is gated.
 #' @param hg_token The token needed to access the gated model.
 #' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
@@ -2472,8 +2718,9 @@ combine_textEmbed_results <- function(
 #' @param max_token_to_sentence (numeric) Maximum number of tokens in a string to handle before
 #' switching to embedding text sentence by sentence.
 #' @param tokenizer_parallelism (boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.
-#' @param device Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-#' specific device number such as 'mps:1'.
+#' @param device (character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+#' for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+#' depending on OS.
 #' @param hg_gated Set to TRUE if the accessed model is gated.
 #' @param hg_token The token needed to access the gated model.
 #' Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
@@ -2481,8 +2728,9 @@ combine_textEmbed_results <- function(
 #' be set to avoid the need to enter the token each time.
 #' @param logging_level Set the logging level. Default: "warning".
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param implementation (boolean; experiments) If TRUE the text is split using the DLATK-method; this method appears better for longer texts (but it does not
-#' return token level word embeddings, nor word_types embeddings at this stage).
+#' @param implementation (string; experimental) If "dlatk" the text is split using the DLATK-method; this method
+#' is faster and appears better for longer texts (but today it does not
+#' return token level word embeddings, nor word_types embeddings).
 #' @param trust_remote_code (boolean) use a model with custom code on the Huggingface Hub
 #' @param ... settings from textEmbedRawLayers().
 #' @return A tibble with tokens, a column for layer identifier and word embeddings.
@@ -2535,7 +2783,7 @@ textEmbed <- function(
     model_max_length = NULL,
     max_token_to_sentence = 4,
     tokenizer_parallelism = FALSE,
-    device = "cpu",
+    device = NULL,
     hg_gated = FALSE,
     hg_token = Sys.getenv("HUGGINGFACE_TOKEN",
                           unset = ""),
@@ -2547,6 +2795,16 @@ textEmbed <- function(
   implementation <- match.arg(implementation)
 
   T1 <- Sys.time()
+
+  # Setting device depending on OS
+  if(is.null(device)){
+    if(!is_osx()){
+      device = "gpu:0"
+    }
+    if(is_osx()){
+      device = "mps:0"
+    }
+  }
 
   if(!tibble::is_tibble(texts)){
     texts <- tibble::tibble(texts = texts)

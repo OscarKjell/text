@@ -21,7 +21,7 @@ textEmbed(
   model_max_length = NULL,
   max_token_to_sentence = 4,
   tokenizer_parallelism = FALSE,
-  device = "cpu",
+  device = NULL,
   hg_gated = FALSE,
   hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
   logging_level = "error",
@@ -90,8 +90,9 @@ switching to embedding text sentence by sentence.}
 
 \item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 
-\item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-specific device number such as 'mps:1'.}
+\item{device}{(character) Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k'
+for MacOS, where k is a specific device number. (default = "cpu"). Default is NULL, which sets gpu:0/mps:0
+depending on OS.}
 
 \item{hg_gated}{Set to TRUE if the accessed model is gated.}
 
@@ -103,8 +104,9 @@ be set to avoid the need to enter the token each time.}
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{implementation}{(boolean; experiments) If TRUE the text is split using the DLATK-method; this method appears better for longer texts (but it does not
-return token level word embeddings, nor word_types embeddings at this stage).}
+\item{implementation}{(string; experimental) If "dlatk" the text is split using the DLATK-method; this method
+is faster and appears better for longer texts (but today it does not
+return token level word embeddings, nor word_types embeddings).}
 
 \item{trust_remote_code}{(boolean) use a model with custom code on the Huggingface Hub}
 

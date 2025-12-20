@@ -27,16 +27,18 @@ knitr::opts_chunk$set(
 
 <!--#![Modular and End-to-End #Solution](man/figures/modular_end_solution.png){width=85%}
  -->
-## Overview
-An R-package for analyzing natural language with transformers-based large language models. The `text` package is part of the *R Language Analysis Suite*, including `talk`, `text` and `topics`.
+## R Language Analysis Suite
+An R-package for analyzing natural language with transformers-based large language models. The `text` package is part of the *R Language Analysis Suite*, including:
 
-+ [`talk`](https://www.r-talk.org/) transforms voice recordings into text, audio features, or embeddings.<br>
++ [`talk`](https://www.r-talk.org/) - a package that transforms voice recordings into text, audio features, or embeddings.<br>
 <br>
-+ [`text`](https://www.r-text.org/) provides many language tasks such as converting digital text into word embeddings.<br>
++ [`text`](https://www.r-text.org/) - a package that provides tools for many language tasks such as converting text into word embeddings.<br>
 <br>
 `talk` and `text` offer access to Large Language Models from Hugging Face.<br>
 <br>
-+ [`topics`](https://www.r-topics.org/) visualizes language patterns into topics to generate psychological insights.<br>
++ [`topics`](https://www.r-topics.org/) a package with tools for visualizing language patterns into topics.<br>
+ <br>
++ [`the L-BAM Library`](https://r-text.org/articles/LBAM.html) a library that provides pre-trained models for different psychological assessments such as mental health issues, personality and related behaviours.<br>
  <br>
  
 ![](man/figures/talk_text_topics.svg){width=50%}
@@ -53,48 +55,15 @@ The *text*-package has two main objectives:
 Please reference our tutorial article when using the `text` package: [The text-package: An R-package for Analyzing and Visualizing Human Language Using Natural Language Processing and Deep Learning](https://pubmed.ncbi.nlm.nih.gov/37126041/).
 <br>
 
-### Short installation guide
-Most users simply need to run below installation code. 
-For those experiencing problems or want more alternatives, please see the [Extended Installation Guide](https://www.r-text.org/articles/ext_install_guide.html).
-
-For the text-package to work, you first have to install the text-package in R, and then make it work with text required python packages. 
-
-1. Install text-version (at the moment the second step only works using the development version of text from GitHub).
-
-[GitHub](https://github.com/) development version:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("oscarkjell/text")
-```
-
-[CRAN](https://CRAN.R-project.org/package=text) version:
-
-``` r
-install.packages("text")
-```
-
-2. Install and initialize text required python packages:
-
-``` r
-library(text)
-
-# Install text required python packages in a conda environment (with defaults).
-textrpp_install()
-
-# Initialize the installed conda environment.
-# save_profile = TRUE saves the settings so that you don't have to run textrpp_initialize() after restarting R. 
-textrpp_initialize(save_profile = TRUE)
-```
 
 
-### Point solution for transforming text to embeddings
+### Point solution for converting text to embeddings
 Recent significant advances in NLP research have resulted in improved representations of human language (i.e., language models). These language models have produced big performance gains in tasks related to understanding human language. Text are making these SOTA models  easily accessible through an interface to [HuggingFace](https://huggingface.co/docs/transformers/index) in Python.
 
 *Text* provides many of the contemporary state-of-the-art language models that are based on deep learning to model word order and context. Multilingual language models can also represent several languages; multilingual BERT comprises *104 different languages*. 
 
 *Table 1. Some of the available language models*
-``` {r HuggingFface_tabble_short, echo=FALSE, results='asis'}
+``` {r HuggingFface_tabble_short, warning = FALSE, echo=FALSE, results='asis'}
 library(magrittr)
 
 Models <- c("'bert-base-uncased'",
@@ -137,68 +106,10 @@ knitr::kable(Tables_short, caption="", bootstrap_options = c("hover"), full_widt
 See [HuggingFace](https://huggingface.co/models/) for a more comprehensive list of models. 
 
 
-The ```textEmbed()``` function is the main embedding function in text; and can output contextualized embeddings for tokens (i.e., the embeddings for each single word  instance of each text) and texts (i.e., single embeddings per text taken from aggregating all token embeddings of the text).
-
-```{r short_word_embedding_example, eval = FALSE, warning=FALSE, message=FALSE}
-library(text)
-# Transform the text data to BERT word embeddings
-
-# Example text
-texts <- c("I feel great!")
-
-# Defaults
-embeddings <- textEmbed(texts)
-embeddings
-```
-See [Get Started](https://www.r-text.org/articles/text.html) for more information. 
-
-### Language Analysis Tasks
-It is also possible to access many language analysis tasks such as textClassify(), textGeneration(), and textTranslate().
-
-```{r language_analysis_task_examples, eval = FALSE, warning=FALSE, message=FALSE}
-library(text)
-
-# Generate text from the prompt "I am happy to"
-generated_text <- textGeneration("I am happy to",
-                                 model = "gpt2")
-generated_text
-```
-
-For a full list of language analysis tasks supported in text see the [References](https://www.r-text.org/reference/index.html)
 
 ### An end-to-end package
 *Text* also provides functions to analyse the word embeddings with well-tested machine learning algorithms and statistics. The focus is to analyze and visualize text, and their relation to other text or numerical variables. For example, the `textTrain()` function is used to examine how well the word embeddings from a text can predict a numeric or categorical variable. Another example is functions plotting statistically significant words in the word embedding space.   
 
-```{r DPP_plot, message=FALSE, warning=FALSE}
-library(text) 
-# Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function; the preprocessed test-data included in the package is called: DP_projections_HILS_SWLS_100
-plot_projection <- textProjectionPlot(
-  word_data = DP_projections_HILS_SWLS_100,
-  y_axes = TRUE,
-  title_top = " Supervised Bicentroid Projection of Harmony in life words",
-  x_axes_label = "Low vs. High HILS score",
-  y_axes_label = "Low vs. High SWLS score",
-  position_jitter_hight = 0.5,
-  position_jitter_width = 0.8
-)
-plot_projection$final_plot
-
-```
 
 
-### Featured Bluesky Post
-
-```{r, echo = FALSE, results = 'asis'}
-cat('
-<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:tiigom2z6lcqsibxsgjdfea4/app.bsky.feed.post/3lduzt3lob22q" data-bluesky-cid="bafyreifgniodm6xkwh6g5ha4xe2663ohau56fy7nxulnkkhsouxkgq7q3y">
-<p lang="en">Version 1.3 of the #r-text package is now available from #CRAN. 
-
-This new version makes it easier to apply pre-trained language assessments from the #LBAM-library (r-text.org/articles/LBA...).
-
-#mlsky #PsychSciSky #Statistics #PsychSciSky #StatsSky #NLP<br><br><a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4/post/3lduzt3lob22q?ref_src=embed">[image or embed]</a></p>&mdash; Oscar Kjell (<a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4?ref_src=embed">@oscarkjell.bsky.social</a>) <a href="https://bsky.app/profile/did:plc:tiigom2z6lcqsibxsgjdfea4/post/3lduzt3lob22q?ref_src=embed">Dec 22, 2024 at 9:48</a>
-</blockquote>
-<script async src="https://embed.bsky.app/static/embed.js" charset="utf-8"></script>
-')
-
-```
 

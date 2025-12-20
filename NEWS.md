@@ -1,6 +1,13 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.7.0
+- Streamlines the installation procedure and adds clearer feedback about required system-level dependencies.
+- Uses `textrpp-py 0.1.0` by default to set up the Python environment in a robust and reproducible way.
+- Updates and expands the installation instructions on the website.
+- Sets the default of the `device` argument to GPU when available, to take advantage of hardware acceleration.
+<!-- - Implements a faster method for retrieving embeddings. -->
+
 # text 1.6.2
 - corrected `remove_non_ascii` parameter in `textEmbed()`.
 # text 1.6.1

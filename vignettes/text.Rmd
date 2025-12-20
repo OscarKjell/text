@@ -14,7 +14,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-<a rel="me" href="https://mastodon.online/@oscarkjell">Oscar Kjell</a>
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -98,35 +97,22 @@ projection_results$word_data
 
 
 ### textProjectionPlot(): A two-dimensional word plot
-```{r, eval = evaluate, warning=FALSE, message=FALSE, dpi=300}
-library(text)
-# Supervised Dimension Projection Plot
-# To avoid warnings -- and that words do not get plotted, first increase the max.overlaps for the entire session: 
-options(ggrepel.max.overlaps = 1000)
 
-# Supervised Dimension Projection Plot
-plot_projection_2D <- textProjectionPlot(
-  word_data = projection_results,
- min_freq_words_plot = 1,
- plot_n_word_extreme = 10,
- plot_n_word_frequency = 5,
- plot_n_words_middle = 5,
- y_axes = TRUE,
- p_alpha = 0.05,
- p_adjust_method = "fdr",
-  title_top = "Harmony Words Responses (Supervised Dimension Projection)",
-  x_axes_label = "Low vs. High Harmony in Life Scale Score",
-  y_axes_label = "Low vs.High Age",
-  bivariate_color_codes = c("#E07f6a", "#60A1F7", "#85DB8E",
-                            "#FF0000", "#EAEAEA", "#5dc688",
-                            "#E07f6a", "#60A1F7", "#85DB8E"
-))
-# View plot
-plot_projection_2D$final_plot
-
+```{r DPP_plot, message=FALSE, warning=FALSE}
+library(text) 
+# Use data (DP_projections_HILS_SWLS_100) that have been pre-processed with the textProjectionData function; the preprocessed test-data included in the package is called: DP_projections_HILS_SWLS_100
+plot_projection <- textProjectionPlot(
+  word_data = DP_projections_HILS_SWLS_100,
+  y_axes = TRUE,
+  title_top = " Supervised Bicentroid Projection of Harmony in life words",
+  x_axes_label = "Low vs. High HILS score",
+  y_axes_label = "Low vs. High SWLS score",
+  position_jitter_hight = 0.5,
+  position_jitter_width = 0.8
+)
+plot_projection$final_plot
 
 ```
-
 
 ### Articles using the text-package
 [Beyond rating scales: With targeted evaluation, large language models are poised for psychological assessment](https://doi.org/10.1016/j.psychres.2023.115667) *Kjell, Kjell and Schwartz. (2024). Psychiatry Research*
@@ -190,3 +176,4 @@ Psychological language on Twitter predicts county-level heart disease mortality
 
 
 
+<a rel="me" href="https://mastodon.online/@oscarkjell">Oscar Kjell</a>
