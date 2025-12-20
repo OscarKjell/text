@@ -16,6 +16,20 @@ test_that("Testing DLATK textEmbed as well as train", {
     multi_cores = "multi_cores_sys_default"
   }
 
+
+ #
+ # harmony_word_embeddings1 <- text::textEmbed(
+ #   texts = Language_based_assessment_data_8[1:20, 1:2],
+ #   model = "bert-base-uncased",
+ #   dim_name = TRUE,
+ #   layers = c(11),
+ #   aggregation_from_layers_to_tokens = "concatenate",
+ #   aggregation_from_tokens_to_texts = "mean",
+ #   aggregation_from_tokens_to_word_types = "mean",
+ #   implementation = "dlatk",
+ #   batch_size = 5L
+ # )
+
   # it works with original + MPS
   # it works with dlatk + MPS does NOT work.
   #
@@ -31,16 +45,16 @@ test_that("Testing DLATK textEmbed as well as train", {
     batch_size = 5L
   )
   original_comment <- paste0(
-    "Information about the embeddings. implementation: dlatk ; textEmbedRawLayers: model: bert-base-uncased ; layers: 11 12 ; word_type_embeddings: FALSE ; max_token_to_sentence:  ; text_version: ",
+    "Information about the embeddings. textEmbedRawLayers: model: bert-base-uncased ; layers: 11 12 ; word_type_embeddings: TRUE ; max_token_to_sentence: 4 ; implementation: dlatk ; text_version: ",
     packageVersion("text"),
-    ". textEmbedLayerAggregation: layers =  11 12 aggregation_from_layers_to_tokens =   aggregation_from_tokens_to_texts =  mean tokens_select =   tokens_deselect =  ")
+    ". textEmbedLayerAggregation: layers =  11 12 aggregation_from_layers_to_tokens =  concatenate aggregation_from_tokens_to_texts =  mean tokens_select =   tokens_deselect =  ")
   new_comment <- comment(harmony_word_embeddings1$texts$satisfactiontexts)
 
-  expect_equal(original_comment, new_comment)
+  testthat::expect_equal(original_comment, new_comment)
 
 #  textModelsRemove("bert-base-uncased")
-  expect_equal(harmony_word_embeddings1$texts$satisfactiontexts[[1]][1], 0.2391714, tolerance = 0.0001)
-  expect_equal(harmony_word_embeddings1$texts$satisfactiontexts[[1]][2], 0.02277972, tolerance = 0.00001)
+  expect_equal(harmony_word_embeddings1$texts$satisfactiontexts[[1]][1], 0.3036513, tolerance = 0.0001)
+  expect_equal(harmony_word_embeddings1$texts$satisfactiontexts[[1]][2], 0.1215991, tolerance = 0.00001)
 
 #  dim1for1 <- harmony_word_embeddings1$word_types$harmonytexts[[3]][harmony_word_embeddings1$word_types$harmonytexts$words == "you"]
 #  expect_equal(dim1for1, -0.2809616, tolerance = 0.00001)
@@ -70,8 +84,8 @@ test_that("Testing DLATK textEmbed as well as train", {
   saved_size
   testthat::expect_equal(saved_size[[1]], 2778186, tolerance = 1000)
 
-  testthat::expect_equal(text_train_results_size$results$estimate[[1]], .4527607, tolerance = 0.001)
-  testthat::expect_equal(text_train_results_size$results$p.value[[1]], 0.02250343, tolerance = 0.001)
+  testthat::expect_equal(text_train_results_size$results$estimate[[1]], .4515965, tolerance = 0.001)
+  testthat::expect_equal(text_train_results_size$results$p.value[[1]], .02281519, tolerance = 0.001)
 
   text_train_results1 <- text::textTrainRegression(
     x = harmony_word_embeddings1$texts["satisfactiontexts"],
@@ -89,7 +103,7 @@ test_that("Testing DLATK textEmbed as well as train", {
 
   expect_that(text_train_results1$results$estimate[1], is_a("numeric"))
   expect_gt(text_train_results1$results$estimate[1], .3)
-  expect_equal(text_train_results1$results$estimate[[1]], .4079596, tolerance = 0.00001)
+  expect_equal(text_train_results1$results$estimate[[1]], .4722592, tolerance = 0.00001)
 
 
   hils_predicted_scores1 <- text::textPredict(
@@ -99,8 +113,8 @@ test_that("Testing DLATK textEmbed as well as train", {
   )
 
   expect_that(hils_predicted_scores1[[1]], is_a("numeric"))
-  expect_equal(hils_predicted_scores1[[1]][1], 11.88353, tolerance = 0.0001)
-  expect_equal(hils_predicted_scores1[[1]][2], 26.02205, tolerance = 0.0001)
+  expect_equal(hils_predicted_scores1[[1]][1], 11.51011, tolerance = 0.0001)
+  expect_equal(hils_predicted_scores1[[1]][2], 26.25087, tolerance = 0.0001)
 
 #### testing testing
   # Train with x_variable
@@ -177,7 +191,7 @@ test_that("Testing DLATK textEmbed as well as train", {
     # x_append = Language_based_assessment_data_8[1:20, c(5,6) ], # missing one throws error
     dim_names = TRUE
   )
-  expect_equal(hils_predicted_scores1[[1]][1], 12.19023, tolerance = 0.01)
+  expect_equal(hils_predicted_scores1[[1]][1], 11.71492, tolerance = 0.01)
 
 
   # Predict ALL
@@ -190,7 +204,7 @@ test_that("Testing DLATK textEmbed as well as train", {
   )
 
   expect_equal(all_predictions[[1]][1], 11.88353, tolerance = 0.1)
-  expect_equal(all_predictions[[2]][1], 12.19023, tolerance = 0.01)
+  expect_equal(all_predictions[[2]][1], 11.71492, tolerance = 0.01)
 
 
 #  proj <- textProjection(
@@ -252,7 +266,7 @@ test_that("Testing DLATK textEmbed as well as train", {
 
   expect_that(text_train_results$results$estimate[1], is_a("numeric"))
   expect_gt(text_train_results$results$estimate[1], 0.3)
-  expect_equal(text_train_results$results$estimate[[1]], 0.4079596, tolerance = 0.0001)
+  expect_equal(text_train_results$results$estimate[[1]], 0.4722592, tolerance = 0.0001)
 
 
   # Predict
@@ -262,7 +276,7 @@ test_that("Testing DLATK textEmbed as well as train", {
   )
 
   expect_that(hils_predicted_scores1[[1]][1], is_a("numeric"))
-  expect_equal(hils_predicted_scores1[[1]][1], 11.88353, tolerance = 0.000001)
+  expect_equal(hils_predicted_scores1[[1]][1], 11.50999, tolerance = 0.000001)
 
   rm(harmony_word_embeddings1)
   })

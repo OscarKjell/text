@@ -23,7 +23,8 @@ test_that("Testing textEmbed as well as train", {
     aggregation_from_layers_to_tokens = "concatenate",
     aggregation_from_tokens_to_texts = "mean",
     aggregation_from_tokens_to_word_types = "mean",
-    batch_size = 5L
+    batch_size = 5L,
+    implementation = "original"
   )
 
   # Date comment:
@@ -32,7 +33,7 @@ test_that("Testing textEmbed as well as train", {
   # comment(harmony_word_embeddings$texts)
 
   original_comment <- paste0(
-    "Information about the embeddings. textEmbedRawLayers: model: bert-base-uncased ; layers: 11 12 ; word_type_embeddings: TRUE ; max_token_to_sentence: 4 ; text_version: ",
+    "Information about the embeddings. textEmbedRawLayers: model: bert-base-uncased ; layers: 11 12 ; word_type_embeddings: TRUE ; max_token_to_sentence: 4 ; implementation: original ; text_version: ",
     packageVersion("text"),
     ". textEmbedLayerAggregation: layers =  11 12 aggregation_from_layers_to_tokens =  concatenate aggregation_from_tokens_to_texts =  mean tokens_select =   tokens_deselect =  ")
   new_comment <- comment(harmony_word_embeddings$texts$satisfactiontexts)
@@ -319,7 +320,8 @@ test_that("Testing textEmbedReduce as well as train", {
     Language_based_assessment_data_3_100[1, 1],
     model = "roberta-base",
     layer = 11,
-    aggregation_from_tokens_to_word_types = "mean"
+    aggregation_from_tokens_to_word_types = "mean",
+    implementation = "original"
   )
 
 #  textModelsRemove("roberta-base")

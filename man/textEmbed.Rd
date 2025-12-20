@@ -25,7 +25,7 @@ textEmbed(
   hg_gated = FALSE,
   hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
   logging_level = "error",
-  implementation = "original",
+  implementation = c("dlatk", "original"),
   trust_remote_code = FALSE,
   ...
 )
