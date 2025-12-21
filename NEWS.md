@@ -1,6 +1,10 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.8.0
+- Implementing a faster way to embed (textEmbed() get slightly different embeddings for longer texts, because we are using a sliding window when there are two many tokens for the LLM.)
+- Provides an id variable in the text embedding output.
+
 # text 1.7.0
 - Streamlines the installation procedure and adds clearer feedback about required system-level dependencies.
 - Uses `textrpp-py 0.1.0` by default to set up the Python environment in a robust and reproducible way.

@@ -19,7 +19,7 @@ utils::globalVariables(c(
 
 
   # EMBEDDINGS OBJECTS
-  "layer_index", "token_index",
+  "layer_index", "token_index", "ID",
 
   # TRAINING OBJECTS
   "id_nr",

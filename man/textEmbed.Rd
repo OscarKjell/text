@@ -6,6 +6,8 @@
 \usage{
 textEmbed(
   texts,
+  text_ids = NULL,
+  group_ids = NULL,
   model = "bert-base-uncased",
   layers = -2,
   dim_name = TRUE,
