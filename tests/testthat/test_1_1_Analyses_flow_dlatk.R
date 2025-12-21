@@ -25,8 +25,7 @@ test_that("Testing DLATK textEmbed as well as train", {
  #   layers = c(11),
  #   aggregation_from_layers_to_tokens = "concatenate",
  #   aggregation_from_tokens_to_texts = "mean",
- #   aggregation_from_tokens_to_word_types = "mean",
- #   implementation = "dlatk",
+ #   aggregation_from_tokens_to_word_types = "mean"
  #   batch_size = 5L
  # )
 
@@ -41,11 +40,10 @@ test_that("Testing DLATK textEmbed as well as train", {
     aggregation_from_layers_to_tokens = "concatenate",
     aggregation_from_tokens_to_texts = "mean",
     aggregation_from_tokens_to_word_types = "mean",
-    implementation = "dlatk",
     batch_size = 5L
   )
   original_comment <- paste0(
-    "Information about the embeddings. textEmbedRawLayers: model: bert-base-uncased ; layers: 11 12 ; word_type_embeddings: TRUE ; max_token_to_sentence: 4 ; implementation: dlatk ; text_version: ",
+    "Information about the embeddings. textEmbedRawLayers: model: bert-base-uncased ; layers: 11 12 ; word_type_embeddings: TRUE ; max_token_to_sentence: 4 ; text_version: ",
     packageVersion("text"),
     ". textEmbedLayerAggregation: layers =  11 12 aggregation_from_layers_to_tokens =  concatenate aggregation_from_tokens_to_texts =  mean tokens_select =   tokens_deselect =  ")
   new_comment <- comment(harmony_word_embeddings1$texts$satisfactiontexts)
@@ -53,8 +51,8 @@ test_that("Testing DLATK textEmbed as well as train", {
   testthat::expect_equal(original_comment, new_comment)
 
 #  textModelsRemove("bert-base-uncased")
-  expect_equal(harmony_word_embeddings1$texts$satisfactiontexts[[1]][1], 0.3036513, tolerance = 0.0001)
-  expect_equal(harmony_word_embeddings1$texts$satisfactiontexts[[1]][2], 0.1215991, tolerance = 0.00001)
+  testthat::expect_equal(harmony_word_embeddings1$texts$satisfactiontexts[[2]][1], 0.3036513, tolerance = 0.0001)
+  testthat::expect_equal(harmony_word_embeddings1$texts$satisfactiontexts[[2]][2], 0.1215991, tolerance = 0.00001)
 
 #  dim1for1 <- harmony_word_embeddings1$word_types$harmonytexts[[3]][harmony_word_embeddings1$word_types$harmonytexts$words == "you"]
 #  expect_equal(dim1for1, -0.2809616, tolerance = 0.00001)

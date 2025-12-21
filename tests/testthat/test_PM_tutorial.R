@@ -20,8 +20,8 @@ test_that("PM tutorial", {
   embeddings <- textEmbed(texts)
 
   # Output
-  expect_equal(embeddings$tokens$texts[[1]][1][[1]][2], "i")
-  expect_equal(embeddings$tokens$texts[[1]][2][[1]][2], 0.46768242, tolerance = 0.00001)
+  testthat::expect_equal(embeddings$tokens$texts[[1]][1][[1]][2], "i")
+  testthat::expect_equal(embeddings$tokens$texts[[1]][3][[1]][2], 0.46768242, tolerance = 0.00001)
 
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -50,8 +50,8 @@ test_that("PM tutorial", {
   imf_embeddings_11_12
 
   #OUTPUT
-  expect_equal(imf_embeddings_11_12$context_tokens$texts[[1]][[1]][1][[1]], "[CLS]")
-  expect_equal(imf_embeddings_11_12$context_tokens$texts[[1]][[4]][1], 0.2663715, tolerance = 0.00001)
+  expect_equal(imf_embeddings_11_12$context_tokens$texts[[1]][[2]][1][[1]], "[CLS]")
+  expect_equal(imf_embeddings_11_12$context_tokens$texts[[1]][[5]][1], 0.2663715, tolerance = 0.00001)
 
 
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -63,7 +63,7 @@ test_that("PM tutorial", {
                             aggregation_from_layers_to_tokens = "concatenate",
                             aggregation_from_tokens_to_texts = "mean")
   # OUTPUT
-  expect_equal(agg1$texts[[1]], 0.3110354, tolerance = 0.00001)
+  expect_equal(agg1$texts[[2]], 0.3110354, tolerance = 0.00001)
 
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -73,7 +73,7 @@ test_that("PM tutorial", {
                             aggregation_from_tokens_to_texts = "mean")
 
   # OUTPUT
-  expect_equal(agg2$texts[[1]], 0.3110354, tolerance = 0.00001)
+  expect_equal(agg2$texts[[2]], 0.3110354, tolerance = 0.00001)
 
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

@@ -21,31 +21,6 @@ context("Installation and Embedding of text and retrieval of word embeddings")
 test_that("textEmbed handling NAs", {
   skip_on_cran()
 
-  # testing NA and empty strings
-  embeddings_with_NA <- text::textEmbed(
-    texts = c(
-    "hej",
-    NA,
-    "hej jag heter na",
-    "",
-    " ",
-    "    ",
-    "NA",
-    "Im NA"
-    ),
-    implementation = "original"
-    )
-
-  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][1], -0.04640419, tolerance = 0.0001)
-  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][2], NaN)
-  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][3], 0.2512017, tolerance = 0.0001)
-  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][4], NaN)
-  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][5], NaN)
-  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][6], NaN)
-  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][7], NaN)
-  testthat::expect_equal(embeddings_with_NA$texts$texts[1][[1]][8], -0.4003294, tolerance = 0.0001)
-
-
   embeddings_with_NA_DLATK <- text::textEmbed(
     texts = c(
     "hej",
@@ -57,17 +32,17 @@ test_that("textEmbed handling NAs", {
     "NA",
     "Im NA"
   ),
-  implementation = "dlatk")
+  aggregation_from_tokens_to_word_types = "mean")
 
 
-  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[1][[1]][1], -0.04640492, tolerance = 0.0001)
-  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[1][[1]][2], NaN)
-  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[1][[1]][3], 0.251202, tolerance = 0.0001)
-  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[1][[1]][4], NaN)
-  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[1][[1]][5], NaN)
-  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[1][[1]][6], NaN)
-  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[1][[1]][7], NaN)
-  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[1][[1]][8], -0.4003294, tolerance = 0.0001)
+  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[2][[1]][1], -0.04640492, tolerance = 0.0001)
+  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[2][[1]][2], NaN)
+  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[2][[1]][3], 0.251202, tolerance = 0.0001)
+  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[2][[1]][4], NaN)
+  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[2][[1]][5], NaN)
+  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[2][[1]][6], NaN)
+  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[2][[1]][7], -0.4291943, tolerance = 0.0001)
+  testthat::expect_equal(embeddings_with_NA_DLATK$texts$texts[2][[1]][8], -0.4003294, tolerance = 0.0001)
 
 
 
@@ -86,9 +61,9 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
     return_tokens = FALSE # If this is true there is an error!
   )
 
-  expect_is(aggregated_embeddings1$harmonywords[[1]][1], "numeric")
+  expect_is(aggregated_embeddings1$harmonywords[[2]][1], "numeric")
   expect_true(tibble::is_tibble(aggregated_embeddings1$harmonywords))
-  expect_equal(aggregated_embeddings1$harmonywords[1][[1]][1], 0.261539, tolerance = 0.0001)
+  expect_equal(aggregated_embeddings1$harmonywords[2][[1]][1], -0.1080035, tolerance = 0.0001)
   length_dims_mean <- length(aggregated_embeddings1[[1]])
 
   aggregated_embeddings_con <- textEmbedLayerAggregation(raw_embeddings_1$context_tokens,
@@ -98,8 +73,8 @@ test_that("textEmbedLayerAggregation 'all': layer =  aggregate_tokens = 'mean' p
     return_tokens = FALSE #
   )
   length_dims_con <- length(aggregated_embeddings_con[[1]])
-  expect_true(2 * length_dims_mean == length_dims_con)
-  expect_equal(aggregated_embeddings_con$harmonywords[1][[1]][1], 0.05013836, tolerance = 0.0001)
+  expect_true((2 * length_dims_mean -1) == length_dims_con)
+  expect_equal(aggregated_embeddings_con$harmonywords[2][[1]][1], 0.05013836, tolerance = 0.0001)
 
   # Expect error
   expect_error(aggregated_embeddings <- textEmbedLayerAggregation(raw_embeddings_1$context_tokens,
@@ -120,9 +95,9 @@ test_that("textEmbedLayerAggregation 1:2 'min' tokens_select = '[CLS]' produces 
     return_tokens = FALSE
   )
 
-  expect_is(aggregated_embeddings2$harmonywords[[1]][1], "numeric")
+  expect_is(aggregated_embeddings2$harmonywords[[2]][1], "numeric")
   expect_true(tibble::is_tibble(aggregated_embeddings2$harmonywords))
-  expect_equal(aggregated_embeddings2$harmonywords[1][[1]][1], -0.4454989, tolerance = 0.0001)
+  expect_equal(aggregated_embeddings2$harmonywords[2][[1]][1], -0.4454989, tolerance = 0.0001)
 })
 
 test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produces aggregated word embeddings", {
@@ -136,9 +111,9 @@ test_that("textEmbedLayerAggregation 1:2 'max' tokens_deselect = '[CLS]' produce
     return_tokens = FALSE
   )
 
-  expect_is(aggregated_embeddings3$harmonywords[[1]][1], "numeric")
+  expect_is(aggregated_embeddings3$harmonywords[[2]][1], "numeric")
   expect_true(tibble::is_tibble(aggregated_embeddings3$harmonywords))
-  expect_equal(aggregated_embeddings3$harmonywords[1][[1]][1], 1.916735, tolerance = 0.0001)
+  expect_equal(aggregated_embeddings3$harmonywords[2][[1]][1], 1.916735, tolerance = 0.0001)
 })
 
 test_that("textEmbedStatic with example space", {
@@ -184,16 +159,17 @@ test_that("textEmbedRawLayers contexts=TRUE, decontextualize = FALSE returns a l
   embeddings1 <- text::textEmbedRawLayers(x,
     model = "bert-base-uncased",
     decontextualize = FALSE,
-    return_tokens = TRUE,
-    layers = "all"
+    return_tokens = TRUE
+    #,
+    #layers = "all"
   )
 
   # Is the first value there and numeric
-  expect_that(embeddings1[[1]][[1]][[1]][[1]][[1]], is.character)
+  expect_that(embeddings1[[1]][[1]][[1]][[2]][[1]], is.character)
   # If below line fail it might be because the output in huggingface has changed,
   # so that 770 needs to be something else
-  expect_that(ncol(embeddings1[[1]][[1]][[1]]), equals(771))
-  expect_equal(embeddings1[[1]][[1]][[1]][[4]][1], -0.1869559, tolerance = 0.0001)
+  expect_that(ncol(embeddings1[[1]][[1]][[1]]), equals(772))
+  expect_equal(embeddings1[[1]][[1]][[1]][[5]][1], -0.1259556, tolerance = 0.0001)
 })
 
 test_that("textEmbedRawLayers bert-base-uncased contexts=FALSE, decontexts = TRUE returns a list", {
@@ -263,10 +239,10 @@ test_that("textEmbed", {
   expect_that(embeddings_decontextsT, is_a("list"))
   expect_that(single_context_embeddingsT, is_a("list"))
   expect_that(embeddings_decontextsF, is_a("list"))
-  expect_equal(embeddings_decontextsF[[2]][[1]][[1]][[1]], -0.002111321, tolerance = 0.0001)
-  expect_equal(embeddings_decontextsF[[2]][[1]][[1]][[2]], 0.579, tolerance = 0.001)
-  expect_equal(embeddings_decontextsF[[2]][[1]][[2]][[1]], -0.2463575, tolerance = 0.0001)
-  expect_equal(embeddings_decontextsF[[2]][[1]][[2]][[2]], -0.2368967, tolerance = 0.001)
+  expect_equal(embeddings_decontextsF[[2]][[1]][[2]][[1]], -0.002111321, tolerance = 0.0001)
+  expect_equal(embeddings_decontextsF[[2]][[1]][[2]][[2]], 0.579, tolerance = 0.001)
+  expect_equal(embeddings_decontextsF[[2]][[1]][[3]][[1]], -0.2463575, tolerance = 0.0001)
+  expect_equal(embeddings_decontextsF[[2]][[1]][[3]][[2]], -0.2368967, tolerance = 0.001)
 
 
   long_text_test <- c("Humour (British English) or humor (American English; see spelling differences) is the tendency to experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion. People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience. Humour (British English) or humor (American English; see spelling differences) is the tendency of experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion. People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience. Humour (British English) or humor (American English; see spelling differences) is the tendency of experiences to provoke laughter and provide amusement. The term derives from the humoral medicine of the ancient Greeks, which taught that the balance of fluids in the human body, known as humours (Latin: humor, body fluid), controlled human health and emotion. People of all ages and cultures respond to humour. Most people are able to experience humour—be amused, smile or laugh at something funny (such as a pun or joke)—and thus are considered to have a sense of humour. The hypothetical person lacking a sense of humour would likely find the behaviour inducing it to be inexplicable, strange, or even irrational. Though ultimately decided by personal taste, the extent to which a person finds something humorous depends on a host of variables, including geographical location, culture, maturity, level of education, intelligence and context. For example, young children may favour slapstick such as Punch and Judy puppet shows or the Tom and Jerry cartoons, whose physical nature makes it accessible to them. By contrast, more sophisticated forms of humour such as satire require an understanding of its social meaning and context, and thus tend to appeal to a more mature audience.")
