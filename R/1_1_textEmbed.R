@@ -933,16 +933,8 @@ textTokenize <- function(texts,
 #' textEmbedRawLayers extracts layers of hidden states (word embeddings) for all character variables
 #' in a given dataframe.
 #' @param texts A character variable or a tibble with at least one character variable.
-#' @param text_ids (Numeric) Optional vector of unique identifiers for each
-#'   element in `text_strings`. Must be the same length as `text_strings`, and
-#'   each value should uniquely identify a single text (e.g., message ID,
-#'   row ID). If `NULL`, sequential IDs `1:length(text_strings)` are assigned
-#'   automatically.
-#' @param group_ids (Numeric) Optional vector of group identifiers, one per
-#'   element in `text_strings`. Must be the same length as `text_strings`.
-#'   Texts with the same `group_ids` value are aggregated into a single
-#'   group-level (cf) embedding. If `NULL`, each text is treated as its own
-#'   group (i.e., `group_ids` is set to `1:length(text_strings)`).
+#' @param text_ids (Numeric) unique identifiers for each text_string. If empty, it will be defaulted to 1:nrow(texts).
+#' @param group_ids (Numeric; experimental) unique identifiers incase there are group ids. If empty, it will be defaulted to 1:nrow(texts).
 #' @param model (character) Character string specifying pre-trained language model
 #' (default = 'bert-base-uncased'). For full list of options see pretrained models at
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
@@ -1555,100 +1547,6 @@ textEmbedLayerAggregation <- function(
   selected_layers_aggregated_tibble
 }
 
-
-#' Generate_placement_vector input from textEmbedRawLayers and inserts NA-placeholder vectors for NA values.
-#' @param raw_layers Layers returned by the textEmbedRawLayers function with NA values.
-#' @return Layers returned by the textEmbedRawLayers with inserted NA-placeholder vectors.
-#' @noRd
-generate_placement_vector <- function(
-    raw_layers,
-    texts) {
-  # Extract column name, if there is one.
-  column_name <- colnames(texts)
-
-  context_tokens <- NULL
-
-  if (!is.null(raw_layers$context_tokens$value)) {
-    context_tokens <- raw_layers$context_tokens$value
-  }
-  # If raw_layers$context_tokens$value is NULL, check if raw_layers$context_tokens$texts is not NULL and use it
-
-  if (!is.null(raw_layers$context_tokens$texts)) {
-    context_tokens <- raw_layers$context_tokens$texts
-  }
-
-  # Try with column name
-  if (!is.null(column_name)) {
-    context_tokens <- raw_layers$context_tokens[[column_name]]
-  }
-
-  # Check if raw_layers$context_tokens$value is not NULL, and use it
-  if (is.null(context_tokens)) {
-    stop("Neither raw_layers$context_tokens$value nor raw_layers$context_tokens$texts found or both are NULL.")
-  }
-
-  # Loop through the hidden states
-  for (i in 1:length(context_tokens)) {
-    token_embedding <- context_tokens[[i]]
-
-    # Find the corresponding token of each hidden state
-    elements <- context_tokens[[i]][1]
-
-    # Check if "na" or "NA" is represented as a token
-    if (any(sapply(elements, function(element) "na" %in% element)) ||
-        any(sapply(elements, function(element) "NA" %in% element))) {
-      # If so, then check for "NA" or "na" in the token-embedding
-      if (any(grepl("na", token_embedding$tokens, ignore.case = TRUE)) ||
-          any(grepl("NA", token_embedding$tokens, ignore.case = TRUE))) {
-        # Store the dimensions of the token-embedding with NA:s
-        dimensions <- dim(context_tokens[[i]])
-      }
-    }
-  }
-
-  # Create a placeholder tibble with NA values of the same shape as the original token embedding
-  template_na <- tibble::as_tibble(matrix(NA, nrow = dimensions[1], ncol = dimensions[2] - 2), .name_repair = "unique_quiet")
-  colnames(template_na) <- c("tokens", paste0("Dim", 1:(dimensions[2] - 3)))
-
-  # Create a list to store the modified embeddings
-  modified_embeddings <- list()
-
-  # Iterate over each context token in the original embedding list
-  for (i in 1:length(context_tokens)) {
-    token_embedding <- context_tokens[[i]]
-    elements <- context_tokens[[i]][1]
-
-    # Check if "na" or "" is present in any element of the list
-    if ((((any(sapply(elements, function(element) "na" %in% element)) ||
-         any(sapply(elements, function(element) "NA" %in% element))) &&
-         nrow(token_embedding) == 3))||
-         nrow(token_embedding) == 2){
-
-      # If so, then check for "na" (or "") in the token-embedding
-      if (any(grepl("na", token_embedding$tokens, ignore.case = TRUE)) ||
-          any(grepl("NA", token_embedding$tokens, ignore.case = TRUE)) ||
-          length(token_embedding$tokens) == 2) {
-        # Replace only the numerical columns with NA values while keeping the first three columns
-        token_embedding[, -(1:3)] <- NA # Exclude the first three columns
-      }
-    }
-    modified_embeddings[[i]] <- token_embedding
-  }
-
-  # Replace the original layers with the modified
-  if (!is.null(raw_layers$context_tokens$value)) {
-    raw_layers$context_tokens$value <- modified_embeddings
-  }
-  if (!is.null(raw_layers$context_tokens$texts)) {
-    raw_layers$context_tokens$texts <- modified_embeddings
-  }
-  if (!is.null(raw_layers$context_tokens[[column_name]])) {
-    raw_layers$context_tokens[[column_name]] <- modified_embeddings
-  }
-
-  return(raw_layers)
-}
-
 #' The number of layers to retrieve
 #' @param layers The number of layers to retrieve.
 #' @return The number of layers to us (if -2; i.e., the second to last layer)
@@ -1672,6 +1570,8 @@ find_layer_number <- function(
 #'
 #' textEmbed() extracts layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
+#' @param text_ids (Numeric) unique identifiers for each text_string. If empty, it will be defaulted to 1:nrow(texts).
+#' @param group_ids (Numeric; experimental) unique identifiers incase there are group ids. If empty, it will be defaulted to 1:nrow(texts).
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
 #'  For full list of options see pretrained models at
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.
@@ -2246,6 +2146,8 @@ combine_textEmbed_results <- function(
 
 #' textEmbed() extracts layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 #' @param texts A character variable or a tibble/dataframe with at least one character variable.
+#' @param text_ids (Numeric) unique identifiers for each text_string. If empty, it will be defaulted to 1:nrow(texts).
+#' @param group_ids (Numeric; experimental) unique identifiers incase there are group ids. If empty, it will be defaulted to 1:nrow(texts).
 #' @param model Character string specifying pre-trained language model (default 'bert-base-uncased').
 #'  For full list of options see pretrained models at
 #'  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.

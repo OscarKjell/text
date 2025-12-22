@@ -34,6 +34,10 @@ textEmbed(
 \arguments{
 \item{texts}{A character variable or a tibble/dataframe with at least one character variable.}
 
+\item{text_ids}{(Numeric) unique identifiers for each text_string. If empty, it will be defaulted to 1:nrow(texts).}
+
+\item{group_ids}{(Numeric; experimental) unique identifiers incase there are group ids. If empty, it will be defaulted to 1:nrow(texts).}
+
 \item{model}{Character string specifying pre-trained language model (default 'bert-base-uncased').
  For full list of options see pretrained models at
  \href{https://huggingface.co/transformers/pretrained_models.html}{HuggingFace}.

@@ -26,7 +26,7 @@ textTrainRegression(
   preprocess_step_center = TRUE,
   preprocess_step_scale = TRUE,
   preprocess_PCA = NA,
-  penalty = 10^seq(-6, 6),
+  penalty = 10^seq(-3, 3),
   parameter_selection_method = "lowest_penalty",
   mixture = c(0),
   first_n_predictors = NA,

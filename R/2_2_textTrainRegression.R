@@ -1261,7 +1261,7 @@ textTrainRegression <- function(
     preprocess_step_center = TRUE,
     preprocess_step_scale = TRUE,
     preprocess_PCA = NA,
-    penalty = 10^seq(-6, 6),
+    penalty = 10^seq(-3, 3),
     parameter_selection_method = "lowest_penalty",
     mixture = c(0),
     first_n_predictors = NA,
@@ -1978,6 +1978,17 @@ textTrainRegression <- function(
     time_date,
     text_version
   )
+
+    if(min(penalty) == statisticalMode(results_split_parameter$penalty) |
+       max(penalty) == statisticalMode(results_split_parameter$penalty)){
+      message(colourise(
+       paste("The final penalty was", statisticalMode(results_split_parameter$penalty),
+       " which is at the edge of the penalty search grid. This indicates you may not have the optimal penalty.",
+       " Consider increasing the penalty grid and rerun the function until this warning disapear. ",
+       " Increasing the grid range may give you better results, but it will take more time to run."),
+       "brown"))
+    }
+
 
   ###### Saving and arranging output ######
   ##########################################

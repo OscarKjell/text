@@ -9,20 +9,20 @@ title: "Installation"
 
 #### Installing on Windows
 
-<span style="font-size: 1.1em;"><b>Prerequisites</b></span>
+<span style="font-size: 1.1em;"><b>1. Prerequisites</b></span>
 
-<b> 1) Install R and the recommended interface RStudio, if not already installed </b>
+<b> a) Install R and the recommended interface RStudio, if not already installed </b>
 
 Follow the instructions on the [CRAN](https://cran.r-project.org/) (for R) and [Posit](https://posit.co/downloads/) for (for RStudio) for Windows.
 
-<b> 2) Install Microsoft C++ build tools, if not already installed </b> <br>
+<b> b) Install Microsoft C++ build tools, if not already installed </b> <br>
 i) Download and run the installer from: https://visualstudio.microsoft.com/visual-cpp-build-tools/  
 ii) During installation, check:
    - “Desktop development with C++” or “C++ build tools”.
    - Ensure “Windows 11 SDK” is also selected on the right menu. <br>
 iii) Complete installation and restart your computer.
 
-<span style="font-size: 1.1em;"><b>Install and set up the `text` package</b></span>
+<span style="font-size: 1.1em;"><b>2. Install and set up the `text` package</b></span>
 
 The text package requires a working Python environment, which can be set up directly from R. First install the text package in R, then configure it to install and use the required Python dependencies. During installation, you may see messages about additional, OS-specific system dependencies that need to be installed; see the sections below for more detailed instructions.
 install.packages("text")
@@ -41,15 +41,15 @@ install.packages("text")
 
 #### Installing on MacOS
 
-<span style="font-size: 1.1em;"><b>Prerequisites</b></span>
+<span style="font-size: 1.1em;"><b>1. Prerequisites</b></span>
 
-<b> 1) Install R and the recommended interface RStudio for macOS, if not already installed </b>
+<b> a) Install R and the recommended interface RStudio for macOS, if not already installed </b>
 
 Follow the instructions on the [CRAN](https://cran.r-project.org/) (for R) and [Posit](https://posit.co/downloads/) for (for RStudio) for Mac.
 Remember to use arm64 if you have Apple’s OS family (e.g., M1, M2, M3) and x86_64 if you have an older Intel OS.
 
 
-<b> 2) Install Homebrew and libomp in the terminal (not in R), if not already installed </b>
+<b> b) Install Homebrew and libomp in the terminal (not in R), if not already installed </b>
 
 For Homebrew, run (in terminal)
 
@@ -59,7 +59,7 @@ For libomp, run (in terminal)
 
     brew install libomp
 
-<span style="font-size: 1.1em;"><b>Install and set up the `text` package</b></span>
+<span style="font-size: 1.1em;"><b>2. Install and set up the `text` package</b></span>
 
 The text package requires a working Python environment, which can be set up directly from R. First install the text package in R, then configure it to install and use the required Python dependencies. During installation, you may see messages about additional, OS-specific system dependencies that need to be installed; see the sections below for more detailed instructions.
 install.packages("text")
@@ -79,13 +79,13 @@ install.packages("text")
 
 #### Installing on Linux
 
-<span style="font-size: 1.1em;"><b>Prerequisites</b></span>
+<span style="font-size: 1.1em;"><b>1. Prerequisites</b></span>
 
-<b>1) Install R and the recommended interface RStudio, if not already installed </b>
+<b>Install R and the recommended interface RStudio, if not already installed </b>
 
 Follow the instructions on the [CRAN](https://cran.r-project.org/) (for R) and [Posit](https://posit.co/downloads/) for (for RStudio) for your Linux distribution.
 
-<span style="font-size: 1.1em;"><b>Install and set up the `text` package</b></span>
+<span style="font-size: 1.1em;"><b>2. Install and set up the `text` package</b></span>
 
 The text package requires a working Python environment, which can be set up directly from R. First install the text package in R, then configure it to install and use the required Python dependencies. During installation, you may see messages about additional, OS-specific system dependencies that need to be installed; see the sections below for more detailed instructions.
 install.packages("text")
