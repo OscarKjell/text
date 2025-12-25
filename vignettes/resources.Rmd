@@ -20,7 +20,9 @@ knitr::opts_chunk$set(
 
 - **The *text* package tutorial**
 
-  [Full text on PsycNET](https://psycnet.apa.org/fulltext/2023-67479-001.html?casa_token=fZO33wCRWbQAAAAA:Fl1g2p8xXRHSSBwJ0UUYLqdQcnjXonsCphNWGc_UD-9K2z8EWIxIfncGyC2ujF9ccdfiU9v46zZNuW51VCilIYw).
+  [Full text on PsycNET](https://psycnet.apa.org/buy/2023-67479-001).
+  
+  [OSF preprint](https://osf.io/preprints/psyarxiv/293kt_v1).
   
   [Tutorial code](https://r-text.org/articles/psychological_methods.html)
 

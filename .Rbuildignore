@@ -8,3 +8,5 @@
 ^\.github$
 ^\.travis\.yml$
 ^codecov\.yml$
+^installation\.md$
+^vignettes/resources.Rmd

@@ -43,7 +43,7 @@ Imports:
     future,
     furrr, 
     hardhat
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Suggests: 
     knitr,
     rmarkdown,
@@ -62,4 +62,4 @@ Suggests:
     vdiffr,
     svglite
 VignetteBuilder: knitr
-Depends: R (>= 4.00)
+Depends: R (>= 4.1.0)
