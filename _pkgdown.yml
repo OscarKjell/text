@@ -18,7 +18,7 @@ template:
 
 navbar:
   structure:
-    left:  [installation, reference, resources, news]
+    left:  [installation, reference, lbam, resources, news]
     right: [search, github, lightswitch]
 
   components:
@@ -28,6 +28,9 @@ navbar:
     reference:
       text: Reference API
       href: reference/index.html
+    lbam:
+      text: L-BAM Library
+      href: articles/LBAM.html
     resources:
       text: Resources
       href: articles/resources.html
