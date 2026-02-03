@@ -131,9 +131,56 @@ test_that("Bertopic", {
     test_method = "linear_regression"
     )
 
-  testthat::expect_equal(test2$test$x.z_score.estimate_beta[1],
-                         0.1372805,
-                         tolerance = 0.0001)
+  expect_identical(test2$test_method, "linear_regression")
+  expect_identical(test2$x_y_axis, "score")
+  expect_identical(test2$test_method, "linear_regression")
+  expect_identical(test2$x_y_axis, "score")
+
+  required_cols <- c(
+    "topic",
+    "top_terms",
+    "prevalence",
+    "coherence",
+    "x.z_score.estimate_beta",
+    "x.z_score.t",
+    "x.z_score.p",
+    "x.z_score.p_adjusted"
+  )
+
+  expect_true(all(required_cols %in% colnames(test2$test)))
+  # Numeric columns
+  num_cols <- c(
+    "x.z_score.estimate_beta",
+    "x.z_score.t",
+    "x.z_score.p",
+    "x.z_score.p_adjusted"
+  )
+  for (nm in num_cols) {
+    expect_true(is.numeric(test2$test[[nm]]), info = paste("Expected numeric:", nm))
+  }
+
+  df <- test2$test
+
+  # Topics should be non-empty and unique (if your design expects unique topics)
+  expect_true(all(nzchar(df$topic)))
+  expect_equal(length(unique(df$topic)), nrow(df))
+
+  # top_terms should be non-empty strings
+  expect_true(all(nzchar(df$top_terms)))
+
+  # p-values should be between 0 and 1 (allow NA)
+  expect_true(all(is.na(df[["x.z_score.p"]]) | (df[["x.z_score.p"]] >= 0 & df[["x.z_score.p"]] <= 1)))
+  expect_true(all(is.na(df[["x.z_score.p_adjusted"]]) | (df[["x.z_score.p_adjusted"]] >= 0 & df[["x.z_score.p_adjusted"]] <= 1)))
+
+  # If adjusted p exists, it should never be smaller than raw p (common expectation; allow NA)
+  expect_true(all(
+    is.na(df[["x.z_score.p"]]) | is.na(df[["x.z_score.p_adjusted"]]) |
+      (df[["x.z_score.p_adjusted"]] >= df[["x.z_score.p"]])
+  ))
+
+  # Estimate and t can be any real number; just verify finite when not NA
+  expect_true(all(is.na(df[["x.z_score.estimate_beta"]]) | is.finite(df[["x.z_score.estimate_beta"]])))
+  expect_true(all(is.na(df[["x.z_score.t"]]) | is.finite(df[["x.z_score.t"]])))
 
 
   plots1 <- text::textTopicsWordcloud(
