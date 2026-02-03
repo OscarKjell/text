@@ -29,7 +29,8 @@ textTopicsTest <- function(
   seed <- model$seed
   save_dir <- model$save_dir
   ngrams <- model$ngrams
-  model_summary <- model$model
+  model_summary <- list()
+  model_summary$summary <- model$model[[2]] %>% tibble::as_tibble()
 
   # Adding dummy for prevalence and coherence to fit the topics package
   model_summary$summary$prevalence <- NA
@@ -43,12 +44,11 @@ textTopicsTest <- function(
     ngrams = ngrams,
     x_variable = x_variable,
     y_variable = y_variable,
-#    group_var = group_var,
     controls = controls,
     test_method = test_method,
     p_adjust_method = p_adjust_method,
     seed = seed
-    , ...
+ #   , ...
   )
   results
   return(results)
@@ -154,11 +154,19 @@ textTopicsWordcloud <- function(
   # Assign pseudo-phi values as descending importance scores (normalized from 1 to N)
    message(colourise("Note: BERTopic does not provide true 'phi' values (i.e., P(word | topic)) as in probabilistic models like LDA. Instead, we assign descending normalized values to approximate word importance.", "blue"))
 
+
+  if(is.null(test)){
+    plot_topics_idx = "textTopics"
+  } else {
+    plot_topics_idx = NULL
+  }
+
   plots <- topics::topicsPlot(
     model = model,
     ngrams = NULL,
     test = test,
-    seed = seed
+    seed = seed,
+    plot_topics_idx = plot_topics_idx
     , ...
   )
 

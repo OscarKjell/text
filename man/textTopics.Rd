@@ -2,73 +2,146 @@
 % Please edit documentation in R/7_1_textTopics.R
 \name{textTopics}
 \alias{textTopics}
-\title{BERTopics}
+\title{BERTopic}
 \usage{
 textTopics(
   data,
   variable_name,
   embedding_model = "distilroberta",
-  umap_model = "default",
-  hdbscan_model = "default",
-  vectorizer_model = "default",
-  representation_model = "mmr",
-  num_top_words = 10,
-  n_gram_range = c(1, 3),
+  representation_model = c("mmr", "keybert"),
+  umap_n_neighbors = 15L,
+  umap_n_components = 5L,
+  umap_min_dist = 0,
+  umap_metric = "cosine",
+  hdbscan_min_cluster_size = 5L,
+  hdbscan_min_samples = NULL,
+  hdbscan_metric = "euclidean",
+  hdbscan_cluster_selection_method = "eom",
+  hdbscan_prediction_data = TRUE,
+  num_top_words = 10L,
+  n_gram_range = c(1L, 3L),
   stopwords = "english",
-  min_df = 5,
+  min_df = 5L,
   bm25_weighting = FALSE,
   reduce_frequent_words = TRUE,
-  set_seed = 8,
+  set_seed = 8L,
   save_dir
 )
 }
 \arguments{
-\item{data}{(tibble/data.frame) A tibble with a text-variable to be analysed, and optional
-numeric/categorical variables that you might want to use for later analyses testing the
-significance of topics in relation to these variables.}
+\item{data}{A \code{tibble}/\code{data.frame} containing a text variable to analyze and,
+optionally, additional numeric/categorical variables that can be used in later analyses
+(e.g., testing topic prevalence differences across groups).}
 
-\item{variable_name}{(string)  Name of the text-variable in the data tibble that you want
+\item{variable_name}{A character string giving the name of the text variable in \code{data}
 to perform topic modeling on.}
 
-\item{embedding_model}{(string) Name of the embedding model to use such as "miniLM", "mpnet",
-"multi-mpnet", "distilroberta".}
+\item{embedding_model}{A character string specifying which embedding model to use.
+Common options include \code{"miniLM"}, \code{"mpnet"}, \code{"multi-mpnet"},
+and \code{"distilroberta"}. The choice affects topic quality, speed, and memory usage.}
 
-\item{umap_model}{(string) The dimension reduction algorithm, currently only "default"
-is supported.}
+\item{representation_model}{A character string specifying the topic representation method.
+Must be one of \code{"mmr"} or \code{"keybert"}.
+\itemize{
+  \item \code{"keybert"} uses embedding similarity to select representative words/phrases.
+  \item \code{"mmr"} (Maximal Marginal Relevance) promotes diversity among selected terms.
+}}
 
-\item{hdbscan_model}{(string) The clustering algorithm to use, currently only "default"
-is supported.}
+\item{umap_n_neighbors}{Integer. Number of neighbors used by UMAP to balance local versus
+global structure. Smaller values emphasize local clusters; larger values emphasize global structure.}
 
-\item{vectorizer_model}{(string) Name of the vectorizer model, currently only "default"
-is supported.}
+\item{umap_n_components}{Integer. Number of dimensions to reduce to with UMAP (the embedding
+space used for clustering).}
 
-\item{representation_model}{(string) Name of the representation model used for topics,
-including "keybert" or "mmr".}
+\item{umap_min_dist}{Numeric. Minimum distance between embedded points in UMAP. Smaller values
+typically yield tighter clusters.}
 
-\item{num_top_words}{(integer) Determine the number of top words presented for each topic.}
+\item{umap_metric}{Character string specifying the distance metric used by UMAP, e.g.
+\code{"cosine"}.}
 
-\item{n_gram_range}{(vector) Two-dimensional vector indicating the ngram range used for
-the vectorizer model.}
+\item{hdbscan_min_cluster_size}{Integer. The minimum cluster size for HDBSCAN. Larger values
+yield fewer, broader topics; smaller values yield more, finer-grained topics.}
 
-\item{stopwords}{(string) Name of the stopword dictionary to use.}
+\item{hdbscan_min_samples}{Integer or \code{NULL}. Controls how conservative clustering is.
+If \code{NULL}, HDBSCAN chooses a default.}
 
-\item{min_df}{(integer) The minimum document frequency of terms.}
+\item{hdbscan_metric}{Character string specifying the metric used by HDBSCAN, typically
+\code{"euclidean"} when clustering in reduced UMAP space.}
 
-\item{bm25_weighting}{(boolean) Determine whether bm25_weighting is used for ClassTfidfTransformer.}
+\item{hdbscan_cluster_selection_method}{Character string specifying cluster selection strategy.
+Either \code{"eom"} (excess of mass; often yields more stable clusters) or \code{"leaf"}
+(can yield more fine-grained clusters).}
 
-\item{reduce_frequent_words}{(boolean) Determine whether frequent words are reduced by ClassTfidfTransformer.}
+\item{hdbscan_prediction_data}{Logical. If \code{TRUE}, stores additional information enabling
+approximate topic prediction for new documents (when supported by the underlying pipeline).}
 
-\item{set_seed}{(integer) The random seed for initialization of the umap model.}
+\item{num_top_words}{Integer. Number of top terms to return per topic.}
 
-\item{save_dir}{(string) The directory for saving results.}
+\item{n_gram_range}{Integer vector of length 2 giving the min and max n-gram length used by
+the vectorizer (e.g., \code{c(1L, 3L)}).}
+
+\item{stopwords}{Character string naming the stopword dictionary to use (e.g. \code{"english"}).}
+
+\item{min_df}{Integer. Minimum document frequency for terms included in the vectorizer.}
+
+\item{bm25_weighting}{Logical. If \code{TRUE}, uses BM25 weighting in the class-based TF-IDF
+transformer (can improve term weighting in some corpora).}
+
+\item{reduce_frequent_words}{Logical. If \code{TRUE}, down-weights very frequent words using
+the class-based TF-IDF transformer.}
+
+\item{set_seed}{Integer. Random seed used to initialize UMAP (and other stochastic components)
+for reproducibility.}
+
+\item{save_dir}{Character string specifying the directory where outputs should be saved.
+A folder will be created (or reused) to store the fitted model and derived outputs.}
 }
 \value{
-A folder containing the model, data, folder with terms and values for each topic,
-and the document-topic matrix. Moreover the model itself is returned formatted as a data.frame
-together with metdata.
-See \code{\link{textTopicsReduce}} \code{\link{textTopicsTest}} and \code{\link{textTopicsWordcloud}}.
+A named list containing:
+\describe{
+  \item{train_data}{The training data used to fit the model (or loaded from disk if available).}
+\item{preds}{A document-by-topic matrix of normalized topic mixtures (LDA-like).
+  Rows typically sum to 1; rows of zeros can occur if no topic mass was assigned.}
+  \item{doc_info}{Document-level outputs including hard topic labels (\code{-1} indicates outliers).}
+  \item{topic_info}{Topic-level outputs including topic sizes and top terms.}
+  \item{model}{The fitted BERTopic model object (Python-backed).}
+  \item{model_type}{Model identifier (currently \code{"bert_topic"}).}
+  \item{seed}{Random seed used.}
+  \item{save_dir}{Directory where artifacts were saved.}
+}
 }
 \description{
-textTopics creates and trains a BERTopic model (based on bertopic python packaged) on a
-text-variable in a tibble/data.frame. (EXPERIMENTAL)
+\code{textTopics()} trains a BERTopic model (via the \pkg{bertopic} Python package) on a
+text variable in a \code{tibble}/\code{data.frame}. The function embeds documents, reduces
+dimensionality (UMAP), clusters documents (HDBSCAN), and extracts topic representations
+using c-TF-IDF with optional KeyBERT/MMR-based representation. (EXPERIMENTAL)
+}
+\details{
+Typical tuning levers:
+\itemize{
+  \item \strong{More topics / finer clusters}: decrease \code{hdbscan_min_cluster_size},
+    decrease \code{umap_n_neighbors}, and/or increase \code{umap_n_components}.
+  \item \strong{Fewer topics / broader clusters}: increase \code{hdbscan_min_cluster_size}
+    and/or increase \code{umap_n_neighbors}.
+  \item \strong{More phrase-like terms}: increase \code{n_gram_range} max (e.g., up to 3).
+  \item \strong{Cleaner vocabulary}: increase \code{min_df}, and use \code{reduce_frequent_words = TRUE}.
+}
+}
+\examples{
+\dontrun{
+res <- textTopics(
+  data = Language_based_assessment_data_8,
+  variable_name = "harmonytexts",
+  embedding_model = "distilroberta",
+  representation_model = "mmr",
+  min_df = 3,
+  save_dir = "bertopic_results"
+)
+
+}
+
+}
+\seealso{
+\code{\link{textTopicsReduce}}, \code{\link{textTopicsTest}},
+  \code{\link{textTopicsWordcloud}}
 }

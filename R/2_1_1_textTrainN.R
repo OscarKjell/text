@@ -506,8 +506,6 @@ textTrainN <- function(
 #' (default = FALSE).
 #' @return A plot with correlation coefficient on y-axis and sample size in quantity or percent on x axis.
 #' If number och cross-validations exceed 1, then error bars measuring standard deviations will be plotted.
-#' @section Plot Example: Example of a plot created by textTrainNPlot.
-#' \if{html}{\figure{textTrainNPlot.image.png}{options: width=100\%}}
 #' @examples
 #' # Plot cross-validated correlation coefficients across different sample-sizes from the object
 #' # returned by the textTrainN function.
