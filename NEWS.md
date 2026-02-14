@@ -1,8 +1,11 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.8.1
+- Adding parameters and overview plot in `textTopics()`.
+
 # text 1.8.0
-- Implementing a faster way to embed (textEmbed() get slightly different embeddings for longer texts, because we are using a sliding window when there are two many tokens for the LLM.)
+- Implementing a faster way to embed (`textEmbed()` get slightly different embeddings for longer texts, because we are using a sliding window when there are two many tokens for the LLM.)
 - Provides an id variable in the text embedding output.
 
 # text 1.7.0
