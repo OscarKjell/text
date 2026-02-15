@@ -32,15 +32,18 @@ jobs:
           echo "R_LIBS_USER=${RUNNER_TEMP}/Rlib" >> $GITHUB_ENV
         shell: bash
 
-      # ---- OS prerequisites (keep minimal; adjust as needed) ----
-      - name: Linux system deps (minimal)
+      # ---- OS prerequisites ----
+      - name: Linux system deps (incl Java)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
+            default-jdk \
             libcurl4-openssl-dev libssl-dev libxml2-dev \
             libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
             libharfbuzz-dev libfribidi-dev libcairo2-dev libgit2-dev
+          # Optional but nice if anything uses Java config:
+          sudo R CMD javareconf || true
         shell: bash
 
       - name: macOS deps (libomp + qpdf)
@@ -94,6 +97,7 @@ jobs:
           )
 
           # Time the Python backend install
+          # (This should now actually run on Linux since default-jdk is installed.)
           t_textrpp <- run_timed(
             "textrpp_install",
             { library(text, lib.loc = userlib); text::textrpp_install(prompt = FALSE) }
