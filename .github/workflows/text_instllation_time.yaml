@@ -18,8 +18,6 @@ jobs:
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      # Force a clean R library location for this run
-      R_LIBS_USER: ${{ runner.temp }}/Rlib
 
     steps:
       - uses: actions/checkout@v4
@@ -28,12 +26,19 @@ jobs:
         with:
           r-version: "release"
 
+      # Set a clean R library folder for the run (works across OS)
+      - name: Set clean R library path
+        run: |
+          echo "R_LIBS_USER=${RUNNER_TEMP}/Rlib" >> $GITHUB_ENV
+        shell: bash
+
       # ---- OS prerequisites (keep minimal; adjust as needed) ----
       - name: Linux system deps (minimal)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev \
+          sudo apt-get install -y \
+            libcurl4-openssl-dev libssl-dev libxml2-dev \
             libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
             libharfbuzz-dev libfribidi-dev libcairo2-dev libgit2-dev
         shell: bash
@@ -50,9 +55,14 @@ jobs:
       # ---- Benchmark script ----
       - name: Benchmark install (R + textrpp)
         run: |
-          dir.create(Sys.getenv("R_LIBS_USER"), recursive = TRUE, showWarnings = FALSE)
+          # Ensure R uses the user library FIRST (avoids /opt/R not writable on Linux)
+          userlib <- Sys.getenv("R_LIBS_USER")
+          dir.create(userlib, recursive = TRUE, showWarnings = FALSE)
+          .libPaths(c(userlib, .libPaths()))
 
-          # helper for timing
+          cat("R_LIBS_USER:", userlib, "\n")
+          cat("libPaths:\n"); print(.libPaths())
+
           run_timed <- function(label, expr) {
             gc()
             t0 <- Sys.time()
@@ -63,30 +73,41 @@ jobs:
             return(secs)
           }
 
-          # Make sure we have basic tooling
-          run_timed("install_remotes", install.packages("remotes", repos = "https://cloud.r-project.org"))
+          repos <- "https://cloud.r-project.org"
 
-          # Install 'text' from GitHub (your main measurement)
+          # Tooling
+          run_timed(
+            "install_remotes",
+            install.packages("remotes", repos = repos, lib = userlib)
+          )
+          library(remotes, lib.loc = userlib)
+
+          # Install 'text' from GitHub (main measurement)
           t_text <- run_timed(
             "install_text_from_github",
-            remotes::install_github("oscarkjell/text", upgrade = "never", dependencies = TRUE)
+            remotes::install_github(
+              "oscarkjell/text",
+              upgrade = "never",
+              dependencies = TRUE,
+              lib = userlib
+            )
           )
 
           # Time the Python backend install
           t_textrpp <- run_timed(
             "textrpp_install",
-            { library(text); text::textrpp_install(prompt = FALSE) }
+            { library(text, lib.loc = userlib); text::textrpp_install(prompt = FALSE) }
           )
 
           # Optional sanity check (separate number)
           t_init <- run_timed(
             "textrpp_initialize_test",
-            { library(text); text::textrpp_initialize(textEmbed_test = TRUE) }
+            { library(text, lib.loc = userlib); text::textrpp_initialize(textEmbed_test = TRUE) }
           )
 
-          # Write a tiny machine-readable summary
           out <- data.frame(
             os = Sys.info()[["sysname"]],
+            r_version = as.character(getRversion()),
             install_text_from_github_s = t_text,
             textrpp_install_s = t_textrpp,
             textrpp_initialize_test_s = t_init,
@@ -101,5 +122,5 @@ jobs:
       - name: Upload benchmark artifact
         uses: actions/upload-artifact@v4
         with:
-          name: install-benchmark-${{ matrix.os }}
+          name: install-benchmark-text-${{ matrix.os }}
           path: bench/install-benchmark.csv
