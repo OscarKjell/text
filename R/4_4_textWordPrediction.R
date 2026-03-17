@@ -24,11 +24,11 @@
 #'
 #' For every row in `words` the function counts how many times `target_word`
 #' appears (case-optionally). It then computes a frequency-weighted mean of
-#' `x_value` — i.e., the average numeric score for rows that contain the word.
+#' `x_value` - i.e., the average numeric score for rows that contain the word.
 #'
 #' @param words        Character vector of text responses (one per participant).
 #' @param target_word  The specific word whose mean x-value we want.
-#' @param x_value      Numeric vector (same length as `words`) — the outcome
+#' @param x_value      Numeric vector (same length as `words`) - the outcome
 #'                     variable (e.g., a well-being scale score).
 #' @param case_insensitive Logical. If TRUE, matching ignores capitalisation.
 #' @return A single numeric value: the frequency-weighted mean of `x_value`
@@ -46,7 +46,7 @@ wordsMeanValue <- function(words, target_word, x_value, case_insensitive) {
   )
 
   # Frequency-weighted mean: sum(count_i * score_i) / sum(count_i)
-  # If the word never appears, sum(word_freq_row) == 0 → returns NaN (handled
+  # If the word never appears, sum(word_freq_row) == 0 -> returns NaN (handled
   # downstream with complete.cases()).
   mean_value <- sum(word_freq_row * x_value) / sum(word_freq_row)
   return(mean_value)
@@ -60,26 +60,26 @@ wordsMeanValue <- function(words, target_word, x_value, case_insensitive) {
 #'
 #' ## Strategy: "null model fits + bootstrap"
 #'
-#' **Level 1 — `n_models` NULL model fits (expensive):**
-#' Each model is trained on *shuffled* x labels (H₀: x is unrelated to words).
-#' Each null model produces cross-validated out-of-sample prediction scores —
+#' **Level 1 - `n_models` NULL model fits (expensive):**
+#' Each model is trained on *shuffled* x labels (H0: x is unrelated to words).
+#' Each null model produces cross-validated out-of-sample prediction scores -
 #' one per word. These are genuine null scores because the model learned from
 #' a world where x had no relationship to word use.
 #'
 #' Each model uses a different label permutation AND a different CV seed, so
 #' the `n_models` null fits sample independently from the null distribution.
 #'
-#' **Level 2 — bootstrap to smooth the null distribution (cheap):**
+#' **Level 2 - bootstrap to smooth the null distribution (cheap):**
 #' With `n_models` null fits we have `n_models` null scores per word. We
 #' bootstrap-resample from these to obtain `n_permutations` null samples per
 #' word. This smooths the null distribution without any additional model fits.
 #' The minimum achievable p-value is 1 / n_permutations (after bootstrapping),
 #' but p-value *resolution* is ultimately limited by n_models:
-#' unique p-value steps ≈ 1 / n_models (e.g., 0.04 steps with n_models = 25).
+#' unique p-value steps `almost equal to` 1 / n_models (e.g., 0.04 steps with n_models = 25).
 #'
 #' **Recommended defaults:** n_models = 25, n_permutations = 10 000.
 #' With 25 null fits the smallest non-trivial p-value is 1/25 = 0.04, which
-#' falls just below the conventional α = 0.05 threshold.
+#' falls just below the conventional alpha = 0.05 threshold.
 #'
 #' @param words_sorted        Tibble with columns `words` and `n`.
 #' @param words_raw           Raw character vector of all text responses.
@@ -90,7 +90,7 @@ wordsMeanValue <- function(words, target_word, x_value, case_insensitive) {
 #'                            scores from the real model (one per unique word).
 #' @param n_models            Number of null ridge models to fit (each on a
 #'                            different permuted x vector). Determines p-value
-#'                            resolution: min step ≈ 1/n_models. Default 25.
+#'                            resolution: min step `almost equal to` 1/n_models. Default 25.
 #' @param n_permutations      Bootstrap samples drawn from the n_models null
 #'                            scores to smooth the null distribution. Default
 #'                            10000. Set to 0 to skip p-values entirely.
@@ -131,11 +131,11 @@ permutationPValue <- function(words_sorted,
   observed_trainable <- observed_scores[trainable_idx]
 
   # ---------------------------------------------------------------------------
-  # 2. Fit n_models NULL ridge regressions (Level 1 — expensive).
+  # 2. Fit n_models NULL ridge regressions (Level 1 - expensive).
   #
-  #    Each model is trained on SHUFFLED x labels so it learns under H₀.
+  #    Each model is trained on SHUFFLED x labels so it learns under H0.
   #    Cross-validated out-of-sample predictions from each null model give one
-  #    genuine null score per word — no approximation needed.
+  #    genuine null score per word - no approximation needed.
   #
   #    Null model i uses set.seed(seed + i) for BOTH the label shuffle and the
   #    CV split, ensuring full reproducibility.
@@ -152,7 +152,7 @@ permutationPValue <- function(words_sorted,
 
     set.seed(seed + model_i)   # governs BOTH the shuffle and the CV split
 
-    # Shuffle x labels → break any real word–outcome association
+    # Shuffle x labels -> break any real word-outcome association
     x_shuffled <- sample(x_value)
 
     # Recompute per-word means under the null labels
@@ -165,8 +165,8 @@ permutationPValue <- function(words_sorted,
     ))
     null_means_trainable <- null_means_all[trainable_idx]
 
-    # Skip if any mean is undefined (word appears in every response → no
-    # variance in which participants "have" it → mean is always global mean)
+    # Skip if any mean is undefined (word appears in every response -> no
+    # variance in which participants "have" it -> mean is always global mean)
     if (any(is.na(null_means_trainable))) {
       warning(sprintf("Null model %d: NA means after shuffle, skipping.", model_i))
       next
@@ -188,7 +188,7 @@ permutationPValue <- function(words_sorted,
 
     # Extract cross-validated out-of-sample predictions (one per trainable word).
     # textTrainRegression returns a list where $predictions is a tibble with a
-    # $predictions column — so the actual numeric vector is two levels deep.
+    # $predictions column - so the actual numeric vector is two levels deep.
     cv_preds <- tryCatch(
       as.numeric(null_model$predictions$predictions),
       error = function(e) NULL
@@ -219,7 +219,7 @@ permutationPValue <- function(words_sorted,
   }
 
   # ---------------------------------------------------------------------------
-  # 3. Bootstrap the null distribution (Level 2 — cheap).
+  # 3. Bootstrap the null distribution (Level 2 - cheap).
   #
   #    For each word we now have n_fitted null scores (one per null model).
   #    We resample these with replacement n_permutations times to smooth the
@@ -284,7 +284,7 @@ permutationPValue <- function(words_sorted,
 #'         participants whose response contained that word.
 #'   \item Looks up the **decontextualised embedding** for that word from
 #'         `word_types_embeddings`.
-#'   \item Trains a **ridge regression** model: embedding → mean x score. The
+#'   \item Trains a **ridge regression** model: embedding -> mean x score. The
 #'         out-of-sample predictions become the `x_plotted` plotting coordinate,
 #'         allowing generalisation to words unseen in training.
 #'   \item Optionally computes **permutation-based p-values** (see
@@ -300,7 +300,7 @@ permutationPValue <- function(words_sorted,
 #'                            free-text responses (one per participant).
 #' @param word_types_embeddings
 #'                            Word-type embeddings from \code{\link{textEmbed}}
-#'                            — specifically the `$word_types` component. These
+#'                            - specifically the `$word_types` component. These
 #'                            are *decontextualised*: one fixed vector per
 #'                            unique word type.
 #' @param x                   Numeric vector (or single-column tibble) of the
@@ -311,7 +311,7 @@ permutationPValue <- function(words_sorted,
 #' @param n_models            Number of null ridge regression models to fit,
 #'                            each trained on a *different* permuted x vector.
 #'                            Each null fit produces genuine cross-validated
-#'                            out-of-sample null scores — one per word.
+#'                            out-of-sample null scores - one per word.
 #'                            Determines p-value resolution: the minimum
 #'                            non-trivial p-value step is approximately
 #'                            \code{1/n_models} (e.g., 0.04 with 25 models,
@@ -355,7 +355,7 @@ permutationPValue <- function(words_sorted,
 #'   word_types_embeddings = embeddings$word_types,
 #'   x                     = Language_based_assessment_data_8$hilstotal,
 #'   n_models              = 5,      # 5 real fits with different CV seeds
-#'   n_permutations        = 10000,  # 5 × 10 000 = 50 000 total null samples
+#'   n_permutations        = 10000,  # 5 x 10 000 = 50 000 total null samples
 #'   seed                  = 1003
 #' )
 #'
@@ -464,14 +464,14 @@ textWordPrediction <- function(words,
   # ---------------------------------------------------------------------------
   # applysemrep() is an internal text helper: given a word string it looks it
   # up in the word_types_embeddings object and returns its embedding vector.
-  # sapply over all unique words → matrix (embedding_dim × n_words); we
+  # sapply over all unique words -> matrix (embedding_dim x n_words); we
   # transpose so rows = words, columns = embedding dimensions.
   word_emb_matrix <- tibble::as_tibble(
     t(sapply(words_mean_x$words, applysemrep, word_types_embeddings))
   )
 
   # ---------------------------------------------------------------------------
-  # 5a. Train ridge regression: embedding → mean x value  (x-axis model)
+  # 5a. Train ridge regression: embedding -> mean x value  (x-axis model)
   # ---------------------------------------------------------------------------
   # The out-of-sample predictions give each word a score on the x-axis that
   # is grounded in its *semantic embedding*, not just its observed mean.
@@ -508,14 +508,14 @@ textWordPrediction <- function(words,
   # 6. Compute permutation-based p-values
   # ---------------------------------------------------------------------------
   # We build a null distribution by repeatedly shuffling x (breaking the
-  # word–score link) and re-running the whole pipeline. The p-value for each
+  # word-score link) and re-running the whole pipeline. The p-value for each
   # word is the fraction of null predictions at least as extreme as observed.
   #
-  # Set n_permutations = 0 to skip (returns NA — useful during development).
+  # Set n_permutations = 0 to skip (returns NA - useful during development).
   if (n_permutations > 0) {
 
     message(sprintf(
-      "Running %d models × %d permutations = %d null samples for x-axis p-values...",
+      "Running %d models x %d permutations = %d null samples for x-axis p-values...",
       n_models, n_permutations, n_models * n_permutations
     ))
 
@@ -533,7 +533,7 @@ textWordPrediction <- function(words,
 
     if (!is.null(y)) {
       message(sprintf(
-        "Running %d models × %d permutations for y-axis p-values...",
+        "Running %d models x %d permutations for y-axis p-values...",
         n_models, n_permutations
       ))
 
@@ -551,7 +551,7 @@ textWordPrediction <- function(words,
     }
 
   } else {
-    # Permutations skipped — fill with NA so downstream code still works
+    # Permutations skipped - fill with NA so downstream code still works
     p_values_x <- rep(NA_real_, nrow(words_mean_x))
     if (!is.null(y)) p_values_y <- rep(NA_real_, nrow(words_mean_y))
   }
@@ -638,9 +638,9 @@ if (FALSE) {  # wrapped in FALSE so it doesn't execute on source(); run manually
   # ---------------------------------------------------------------------------
   # textEmbed() returns a named list where each text column gets its own entry.
   # Each entry contains:
-  #   $texts      — one aggregated vector per response (contextualized)
-  #   $word_types — one vector per unique word type (decontextualized)
-  #     └── $texts — the actual tibble of embeddings (words × dims)
+  #   $texts      - one aggregated vector per response (contextualized)
+  #   $word_types - one vector per unique word type (decontextualized)
+  #     --$texts - the actual tibble of embeddings (words x dims)
   #
   # We need $word_types$texts for textWordPrediction.
 
@@ -653,11 +653,11 @@ if (FALSE) {  # wrapped in FALSE so it doesn't execute on source(); run manually
     aggregation_from_tokens_to_word_types     = "mean"
   )
 
-  # Check what we got — should be a tibble: words × 768
+  # Check what we got - should be a tibble: words x 768
   str(embeddings$word_types$texts, max.level = 1)
 
   # ---------------------------------------------------------------------------
-  # C. Run textWordPrediction — x-axis only (1D projection)
+  # C. Run textWordPrediction - x-axis only (1D projection)
   # ---------------------------------------------------------------------------
   result_1d <- textWordPrediction(
     words                 = Language_based_assessment_data_8$harmonywords,
@@ -683,13 +683,13 @@ if (FALSE) {  # wrapped in FALSE so it doesn't execute on source(); run manually
     arrange(p_values_x)
 
   # ---------------------------------------------------------------------------
-  # D. Run textWordPrediction — with y-axis (2D projection)
+  # D. Run textWordPrediction - with y-axis (2D projection)
   # ---------------------------------------------------------------------------
   result_2d <- textWordPrediction(
     words                 = Language_based_assessment_data_8$harmonywords,
     word_types_embeddings = embeddings$word_types$texts,
-    x                     = Language_based_assessment_data_8$hilstotal,  # Harmony → x
-    y                     = Language_based_assessment_data_8$swlstotal,  # Satisfaction → y
+    x                     = Language_based_assessment_data_8$hilstotal,  # Harmony -> x
+    y                     = Language_based_assessment_data_8$swlstotal,  # Satisfaction -> y
     n_models              = 2,
     n_permutations        = 10000,
     seed                  = 1003,

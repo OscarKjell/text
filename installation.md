@@ -105,6 +105,25 @@ If needed, you can install them with (run this in your **Terminal**, not in R):
 
     sudo apt update
     sudo apt install build-essential libomp-dev
+    sudo apt-get install -y \
+          build-essential \
+          libomp-dev \
+          pkg-config \
+          libcurl4-openssl-dev \
+          libgit2-dev \
+          libssl-dev \
+          libharfbuzz-dev \
+          libfribidi-dev \
+          libxml2-dev \
+          libfreetype6-dev \
+          libpng-dev \
+          libtiff5-dev \
+          libjpeg-dev \
+          libfontconfig1-dev \
+          libicu-dev \
+          libcairo2-dev \
+          default-jdk
+          sudo R CMD javareconf
 
 - `build-essential`: provides gcc, g++, and make  
 - `libomp-dev`: for OpenMP support  
