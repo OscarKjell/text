@@ -21,7 +21,7 @@ textTopics(
   num_top_words = 10L,
   n_gram_range = c(1L, 3L),
   stopwords = "english",
-  min_df = 5L,
+  min_df = "default",
   max_df = 1,
   bm25_weighting = FALSE,
   reduce_frequent_words = TRUE,
@@ -83,9 +83,11 @@ the vectorizer (e.g., \code{c(1L, 3L)}).}
 
 \item{stopwords}{Character string naming the stopword dictionary to use (e.g. \code{"english"}).}
 
-\item{min_df}{Integer. Minimum number of documents a term must appear in to be
-included in the vocabulary. Higher values remove rare terms and noise.
-Defaults to \code{5}.}
+\item{min_df}{Integer or \code{NULL}. Minimum number of documents a term must
+appear in to be included in the vocabulary. Higher values remove rare terms
+and noise. If \code{NULL} or "default", the value is set automatically based on data
+size: \code{1} for fewer than 500 data rows, \code{2} for 500–999,
+\code{5} for 1,000–49,999, and \code{10} for larger datasets.}
 
 \item{max_df}{Integer or float. Maximum document frequency for terms included
 in the vocabulary. If an integer, terms appearing in more than \code{max_df}

@@ -47,9 +47,11 @@
 #' @param n_gram_range Integer vector of length 2 giving the min and max n-gram length used by
 #'   the vectorizer (e.g., \code{c(1L, 3L)}).
 #' @param stopwords Character string naming the stopword dictionary to use (e.g. \code{"english"}).
-#' @param min_df Integer. Minimum number of documents a term must appear in to be
-#'   included in the vocabulary. Higher values remove rare terms and noise.
-#'   Defaults to \code{5}.
+#' @param min_df Integer or \code{NULL}. Minimum number of documents a term must
+#'   appear in to be included in the vocabulary. Higher values remove rare terms
+#'   and noise. If \code{NULL} or "default", the value is set automatically based on data
+#'   size: \code{1} for fewer than 500 data rows, \code{2} for 500–999,
+#'   \code{5} for 1,000–49,999, and \code{10} for larger datasets.
 #' @param max_df Integer or float. Maximum document frequency for terms included
 #'   in the vocabulary. If an integer, terms appearing in more than \code{max_df}
 #'   documents are excluded. If a float between 0.0 and 1.0, it is interpreted
@@ -129,7 +131,7 @@ textTopics <- function(
     num_top_words = 10L,
     n_gram_range = c(1L, 3L),
     stopwords = "english",
-    min_df = 5L,
+    min_df = "default",
     max_df = 1,
 
     bm25_weighting = FALSE,
@@ -141,6 +143,17 @@ textTopics <- function(
 
   representation_model <- match.arg(representation_model)
   embedding_model <- as.character(embedding_model)[1]
+
+  if (is.null(min_df) || min_df == "default") {
+    n_docs <- nrow(data)
+    min_df <- dplyr::case_when(
+      n_docs < 500  ~ 1L,
+      n_docs < 1000 ~ 2L,
+      n_docs < 50000 ~ 5L,
+      TRUE ~ 10L
+    )
+    message("min_df automatically set to ", min_df, " based on corpus size (", n_docs, " documents)")
+  }
 
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
