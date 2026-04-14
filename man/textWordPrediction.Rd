@@ -22,7 +22,7 @@ textWordPrediction(
 free-text responses (one per participant).}
 
 \item{word_types_embeddings}{Word-type embeddings from \code{\link{textEmbed}}
-— specifically the `$word_types` component. These
+- specifically the `$word_types` component. These
 are *decontextualised*: one fixed vector per
 unique word type.}
 
@@ -36,7 +36,7 @@ project onto the y-axis. Default \code{NULL}.}
 \item{n_models}{Number of null ridge regression models to fit,
 each trained on a *different* permuted x vector.
 Each null fit produces genuine cross-validated
-out-of-sample null scores — one per word.
+out-of-sample null scores - one per word.
 Determines p-value resolution: the minimum
 non-trivial p-value step is approximately
 \code{1/n_models} (e.g., 0.04 with 25 models,
@@ -80,7 +80,7 @@ For each unique word in `words` the function:
         participants whose response contained that word.
   \item Looks up the **decontextualised embedding** for that word from
         `word_types_embeddings`.
-  \item Trains a **ridge regression** model: embedding → mean x score. The
+  \item Trains a **ridge regression** model: embedding -> mean x score. The
         out-of-sample predictions become the `x_plotted` plotting coordinate,
         allowing generalisation to words unseen in training.
   \item Optionally computes **permutation-based p-values** (see
@@ -105,7 +105,7 @@ result <- textWordPrediction(
   word_types_embeddings = embeddings$word_types,
   x                     = Language_based_assessment_data_8$hilstotal,
   n_models              = 5,      # 5 real fits with different CV seeds
-  n_permutations        = 10000,  # 5 × 10 000 = 50 000 total null samples
+  n_permutations        = 10000,  # 5 x 10 000 = 50 000 total null samples
   seed                  = 1003
 )
 

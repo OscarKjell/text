@@ -63,6 +63,7 @@ def create_bertopic_model(
     top_n_words=10,
     n_gram_range=(1, 3),
     min_df=5,
+    max_df=1.0,
     stop_words="english",
     bm25_weighting=False,
     reduce_frequent_words=True,
@@ -146,6 +147,7 @@ def create_bertopic_model(
     vectorizer_model_obj = CountVectorizer(
         stop_words=stop_words,
         min_df=min_df,
+        max_df=max_df,
         ngram_range=n_gram_range
     )
 

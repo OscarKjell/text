@@ -22,6 +22,7 @@ textTopics(
   n_gram_range = c(1L, 3L),
   stopwords = "english",
   min_df = 5L,
+  max_df = 1,
   bm25_weighting = FALSE,
   reduce_frequent_words = TRUE,
   set_seed = 8L,
@@ -82,7 +83,15 @@ the vectorizer (e.g., \code{c(1L, 3L)}).}
 
 \item{stopwords}{Character string naming the stopword dictionary to use (e.g. \code{"english"}).}
 
-\item{min_df}{Integer. Minimum document frequency for terms included in the vectorizer.}
+\item{min_df}{Integer. Minimum number of documents a term must appear in to be
+included in the vocabulary. Higher values remove rare terms and noise.
+Defaults to \code{5}.}
+
+\item{max_df}{Integer or float. Maximum document frequency for terms included
+in the vocabulary. If an integer, terms appearing in more than \code{max_df}
+documents are excluded. If a float between 0.0 and 1.0, it is interpreted
+as a proportion of documents. Use this to filter out overly common terms
+not captured by stop words. Defaults to \code{1.0} (no upper limit).}
 
 \item{bm25_weighting}{Logical. If \code{TRUE}, uses BM25 weighting in the class-based TF-IDF
 transformer (can improve term weighting in some corpora).}

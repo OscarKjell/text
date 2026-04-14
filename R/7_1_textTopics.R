@@ -47,8 +47,14 @@
 #' @param n_gram_range Integer vector of length 2 giving the min and max n-gram length used by
 #'   the vectorizer (e.g., \code{c(1L, 3L)}).
 #' @param stopwords Character string naming the stopword dictionary to use (e.g. \code{"english"}).
-#' @param min_df Integer. Minimum document frequency for terms included in the vectorizer.
-#'
+#' @param min_df Integer. Minimum number of documents a term must appear in to be
+#'   included in the vocabulary. Higher values remove rare terms and noise.
+#'   Defaults to \code{5}.
+#' @param max_df Integer or float. Maximum document frequency for terms included
+#'   in the vocabulary. If an integer, terms appearing in more than \code{max_df}
+#'   documents are excluded. If a float between 0.0 and 1.0, it is interpreted
+#'   as a proportion of documents. Use this to filter out overly common terms
+#'   not captured by stop words. Defaults to \code{1.0} (no upper limit).
 #' @param bm25_weighting Logical. If \code{TRUE}, uses BM25 weighting in the class-based TF-IDF
 #'   transformer (can improve term weighting in some corpora).
 #' @param reduce_frequent_words Logical. If \code{TRUE}, down-weights very frequent words using
@@ -124,6 +130,7 @@ textTopics <- function(
     n_gram_range = c(1L, 3L),
     stopwords = "english",
     min_df = 5L,
+    max_df = 1,
 
     bm25_weighting = FALSE,
     reduce_frequent_words = TRUE,
@@ -162,6 +169,7 @@ textTopics <- function(
     top_n_words = as.integer(num_top_words),
     n_gram_range = as.integer(n_gram_range),
     min_df = as.integer(min_df),
+    max_df = as.integer(max_df),
     stop_words = stopwords,
 
     bm25_weighting = isTRUE(bm25_weighting),
