@@ -45,7 +45,7 @@ test_that("Bertopic", {
     data = data,
     variable_name = "text",
     embedding_model = "distilroberta",
-    min_df = 2,
+    min_df = 1,
     set_seed = 42,
     save_dir = save_dir_temp)
 
