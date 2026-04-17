@@ -2,6 +2,7 @@
 
 export(find_textrpp_env)
 export(textAssess)
+export(textBERTopics)
 export(textCentrality)
 export(textCentralityPlot)
 export(textClassify)

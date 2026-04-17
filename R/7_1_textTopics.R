@@ -50,8 +50,8 @@
 #' @param min_df Integer or \code{NULL}. Minimum number of documents a term must
 #'   appear in to be included in the vocabulary. Higher values remove rare terms
 #'   and noise. If \code{NULL} or "default", the value is set automatically based on data
-#'   size: \code{1} for fewer than 500 data rows, \code{2} for 500–999,
-#'   \code{5} for 1,000–49,999, and \code{10} for larger datasets.
+#'   size: \code{1} for fewer than 3,000 data rows, \code{2} for 3,000–4,999,
+#'   \code{3} for 5,000–49,999, and \code{5} for larger datasets.
 #' @param max_df Integer or float. Maximum document frequency for terms included
 #'   in the vocabulary. If an integer, terms appearing in more than \code{max_df}
 #'   documents are excluded. If a float between 0.0 and 1.0, it is interpreted
@@ -147,14 +147,13 @@ textTopics <- function(
   if (is.null(min_df) || min_df == "default") {
     n_docs <- nrow(data)
     min_df <- dplyr::case_when(
-      n_docs < 500  ~ 1L,
-      n_docs < 1000 ~ 2L,
-      n_docs < 50000 ~ 5L,
-      TRUE ~ 10L
+      n_docs < 3000  ~ 1L,
+      n_docs < 5000  ~ 2L,
+      n_docs < 50000 ~ 3L,
+      TRUE           ~ 5L
     )
     message("min_df automatically set to ", min_df, " based on corpus size (", n_docs, " documents)")
   }
-
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
     "bert_topic.py",
@@ -244,6 +243,11 @@ textTopics <- function(
   ))
 }
 
+# Alias functions
+#' @rdname textTopics
+# @examples textAssess("hello")
+#' @export
+textBERTopics <- textTopics
 
 #' textTopicsReduce (EXPERIMENTAL)
 #' @param data (tibble/data.frame) A tibble with a text-variable to be analysed, and optional

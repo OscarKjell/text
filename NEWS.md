@@ -2,7 +2,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 # text 1.8.2
-- Adding max_df parameter to `textTopics()`. 
+- Adding max_df parameter to `textTopics()`.
 
 # text 1.8.1
 - Adding parameters and overview plot in `textTopics()`.

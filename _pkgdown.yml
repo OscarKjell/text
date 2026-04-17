@@ -123,6 +123,7 @@ reference:
 - title: BERTopics
   contents:
     - textTopics
+    - textBERTopics
     - textTopicsTest
     - textTopicsWordcloud
     - textTopicsReduce
