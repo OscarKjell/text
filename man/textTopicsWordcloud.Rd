@@ -4,7 +4,14 @@
 \alias{textTopicsWordcloud}
 \title{Plot word clouds}
 \usage{
-textTopicsWordcloud(model = NULL, ngrams = NULL, test = NULL, seed = 2024, ...)
+textTopicsWordcloud(
+  model = NULL,
+  ngrams = NULL,
+  test = NULL,
+  num_top_words = 10L,
+  seed = 2024,
+  ...
+)
 }
 \arguments{
 \item{model}{(list) A trained topics model. For examples from topicsModel(). Should be NULL if plotting ngrams.}
@@ -12,6 +19,8 @@ textTopicsWordcloud(model = NULL, ngrams = NULL, test = NULL, seed = 2024, ...)
 \item{ngrams}{(list) The output from the the topicsGram() function . Should be NULL if plotting topics.}
 
 \item{test}{(list) The test results; if plotting according to dimension(s) include the object from topicsTest() function.}
+
+\item{num_top_words}{Integer. Number of top terms to return per topic.}
 
 \item{seed}{(integer) The seed to set for reproducibility; need to be the same seed number as in in}
 

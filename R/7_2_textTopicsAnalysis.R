@@ -60,6 +60,7 @@ textTopicsTest <- function(
 #' @param model (list) A trained topics model. For examples from topicsModel(). Should be NULL if plotting ngrams.
 #' @param ngrams (list) The output from the the topicsGram() function . Should be NULL if plotting topics.
 #' @param test (list) The test results; if plotting according to dimension(s) include the object from topicsTest() function.
+#' @param num_top_words Integer. Number of top terms to return per topic.
 # @param p_threshold (integer) The p-value threshold to use for significance testing.
 # @param color_scheme (string 'default' or vector) The color scheme.
 #
@@ -142,9 +143,23 @@ textTopicsWordcloud <- function(
     model = NULL,
     ngrams = NULL,
     test = NULL,
+    num_top_words = 10L,
     seed = 2024,
     ...) {
 
+
+  if (!is.null(num_top_words) && !is.null(model)) {
+    model_copy <- model
+    model_copy$model$summary$top_terms <- sapply(
+      model$model$summary$top_terms, function(terms_string) {
+        words <- unlist(strsplit(terms_string, ",\\s*"))
+        words <- head(words, num_top_words)
+        words <- gsub("\\s+", "_", words)
+        paste(words, collapse = ", ")
+      }, USE.NAMES = FALSE
+    )
+    model <- model_copy
+  }
 
   if(!is.null(test)){
     message(colourise("The textTopics function does not return topics-prevalence, so all topics are assigned 1 in the visualisation.", "blue"))
