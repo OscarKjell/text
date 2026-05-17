@@ -281,7 +281,7 @@ check_linux_githubaction_dependencies <- function(verbose = TRUE) {
     "libfribidi-dev",
     "libxml2-dev",
     "libpng-dev",
-    "libtiff5-dev",
+    "libtiff-dev",
     "libjpeg-dev",
     "libfontconfig1-dev",
     "libicu-dev",
