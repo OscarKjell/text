@@ -10,3 +10,5 @@
 ^codecov\.yml$
 ^installation\.md$
 ^vignettes/resources.Rmd
+^\.positai$
+^\.claude$

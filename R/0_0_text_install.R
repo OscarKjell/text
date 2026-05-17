@@ -823,8 +823,9 @@ process_textrpp_installation_conda <- function(conda,
       paste(rpp_version, collapse = ", "), "will be installed.  "
     )
     message("Creating", envname, "conda environment for text installation...\n")
-    python_packages <- ifelse(is.null(python_version), "python=3.9",
-      sprintf("python=%s", python_version)
+    python_packages <- c(
+      ifelse(is.null(python_version), "python=3.11", sprintf("python=%s", python_version)),
+      "pip"
     )
     python <- reticulate::conda_create(envname, packages = python_packages, conda = conda)
   }

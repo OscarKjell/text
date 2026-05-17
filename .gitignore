@@ -22,3 +22,4 @@ docs
 [#]*#
 *~
 __pycache__/
+.positai
