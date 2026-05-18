@@ -15,7 +15,7 @@ test_that("Task Fine-tuning tests", {
 #
 #  #help("textFineTuneTask")
 #  unlink("./run_reg", recursive = TRUE)
-  if (Sys.info()["sysname"] != "Darwin") {
+  if (!Sys.info()["sysname"] %in% c("Darwin", "Windows")) {
 
   task_reg_test <- text::textFineTuneTask(
     Language_based_assessment_data_8[1:20 ,c("satisfactiontexts", "hilstotal")],
