@@ -49,7 +49,7 @@ Layers <- c("12",
 Language <- c("English",
               "English", 
               "English",
-              "[104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias)",
+              "104 top languages at Wikipedia",
               "[100 language](https://huggingface.co/bert-base-multilingual-cased)")
 
 Dimensions <- c("768", 

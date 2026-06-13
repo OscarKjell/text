@@ -50,7 +50,10 @@ class sentenceTokenizer:
         except ImportError:
              print("warning: unable to import nltk.tree or nltk.corpus or nltk.data")
 
-        self.sentDetector = nltk.data.load('tokenizers/punkt/english.pickle')
+        try:
+            self.sentDetector = nltk.data.load('tokenizers/punkt_tab/english/')
+        except Exception:
+            self.sentDetector = nltk.data.load('tokenizers/punkt/english.pickle')
 
     def __call__(self, messageRows):
         #Input: List of (msg Id, msg) pairs
