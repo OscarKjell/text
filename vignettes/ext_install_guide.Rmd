@@ -26,7 +26,7 @@ To get started, follow these steps:<br>
 <b>1) Install R and RStudio</b><br>
 Use the links below to download and install:<br>
  - [R (version 4.0.0 or higher)](https://CRAN.R-project.org/)<br>
- - [RStudio (recommended)](https://posit.co/download/rstudio-desktop/)<br>
+ - [RStudio (recommended)](https://docs.posit.co/ide/user/#rstudio-ide-oss-downloads)<br>
 <br>
 <b>2) Install and set up the text package </b><br>
 The text package gives you access to HuggingFace Transformers through [reticulate](https://rstudio.github.io/reticulate/) (enabling advanced language analysis), which connects R to [Python](https://www.python.org/) (while remaining in an R environment). It uses Python packages like torch and transformers.<br>

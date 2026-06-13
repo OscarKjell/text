@@ -138,6 +138,7 @@ textTopicsTest <- function(
 #' @param ... Parameters from the topicsPlot() function in the topics package.
 #' @return The function saves figures in the save_dir.
 #' @importFrom topics topicsPlot
+#' @importFrom utils head
 #' @export
 textTopicsWordcloud <- function(
     model = NULL,
