@@ -1,6 +1,9 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.9
+- Harmonized with tutorial and submitted to CRAN. 
+
 # text 1.8.2
 - Adding max_df parameter to `textTopics()`.
 

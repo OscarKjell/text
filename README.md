@@ -62,6 +62,13 @@ scientists. <br> Please reference our tutorial article when using the
 Visualizing Human Language Using Natural Language Processing and Deep
 Learning](https://pubmed.ncbi.nlm.nih.gov/37126041/). <br>
 
+> ### 📣 Online Workshop: *Analysing Human Language using R*
+> **August 11–13, 2026** — three half-day sessions (2:00–5:00 pm CEST / 8:00–11:00 am ET)
+>
+> Learn the full *R Language Analysis Suite* — [`talk`](https://www.r-talk.org/), [`text`](https://www.r-text.org/), and [`topics`](https://www.r-topics.org/) — with Oscar Kjell.
+>
+> **[Read more & register →](https://smart-workshops.com/lang-r-info)**
+
 ### Point solution for transforming text to embeddings
 
 Recent significant advances in NLP research have resulted in improved

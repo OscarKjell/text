@@ -41,6 +41,12 @@ development:
 home:
   title: text
   description: Analyses of Text using Transformers from HuggingFace, Natural Language Processing and Machine Learning.
+  sidebar:
+    structure: [workshop, links, license, community, citation, authors, dev]
+    components:
+      workshop:
+        title: Workshop
+        text: "📣 [**Aug 11–13, 2026:** Analysing Human Language using R](https://smart-workshops.com/lang-r-info)"
   links:
   - text: Ask a question about text using the r-text tag
     href: https://stackoverflow.com/
