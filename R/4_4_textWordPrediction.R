@@ -282,7 +282,7 @@ permutationPValue <- function(words_sorted,
 #' \enumerate{
 #'   \item Computes the **mean value of `x`** (and optionally `y`) across all
 #'         participants whose response contained that word.
-#'   \item Looks up the **decontextualised embedding** for that word from
+#'   \item Looks up the embedding for that word from
 #'         `word_types_embeddings`.
 #'   \item Trains a **ridge regression** model: embedding -> mean x score. The
 #'         out-of-sample predictions become the `x_plotted` plotting coordinate,
@@ -295,6 +295,12 @@ permutationPValue <- function(words_sorted,
 #' The returned `word_data` tibble has column names that match the expectations
 #' of \code{\link{textProjectionPlot}}: `x_plotted` (and `y_plotted`) for coordinates
 #' and `p_values_x` (and `p_values_y`) for significance.
+#'
+#' Words that have no embedding in `word_types_embeddings` cannot be scored and
+#' are skipped: they are dropped before the ridge regression is trained (a
+#' message reports how many and which words were skipped) and do not appear in
+#' `word_data`. The function stops with an informative error if fewer than three
+#' words have a valid embedding.
 #'
 #' @param words               Character vector **or** single-column tibble of
 #'                            free-text responses (one per participant).
@@ -334,10 +340,11 @@ permutationPValue <- function(words_sorted,
 #' \describe{
 #'   \item{model_x}{The fitted \code{textTrainRegression} model for the x-axis.}
 #'   \item{model_y}{(Only if `y` is supplied) Fitted model for the y-axis.}
-#'   \item{word_data}{A tibble with one row per unique word containing:
-#'     \code{words}, \code{n} (frequency), \code{word_mean_value_x},
-#'     \code{x_plotted} (embedding-based prediction), \code{p_values_x}; plus
-#'     the y-equivalents when `y` is provided.}
+#'   \item{word_data}{A tibble with one row per unique word \emph{that has a
+#'     valid embedding} (words missing from \code{word_types_embeddings} are
+#'     skipped) containing: \code{words}, \code{n} (frequency),
+#'     \code{word_mean_value_x}, \code{x_plotted} (embedding-based prediction),
+#'     \code{p_values_x}; plus the y-equivalents when `y` is provided.}
 #' }
 #' The comment attribute on the output stores a human-readable description of
 #' all call parameters for reproducibility.
@@ -463,12 +470,57 @@ textWordPrediction <- function(words,
   # 4. Retrieve decontextualised embeddings for each unique word
   # ---------------------------------------------------------------------------
   # applysemrep() is an internal text helper: given a word string it looks it
-  # up in the word_types_embeddings object and returns its embedding vector.
+  # up in the word_types_embeddings object and returns its embedding vector
+  # (an all-NA vector when the word is absent from word_types_embeddings).
   # sapply over all unique words -> matrix (embedding_dim x n_words); we
   # transpose so rows = words, columns = embedding dimensions.
   word_emb_matrix <- tibble::as_tibble(
     t(sapply(words_mean_x$words, applysemrep, word_types_embeddings))
   )
+
+  # ---------------------------------------------------------------------------
+  # 4b. Drop words that have no embedding
+  # ---------------------------------------------------------------------------
+  # Words missing from word_types_embeddings produce all-NA embedding rows,
+  # which would crash the ridge regression at the standardisation step. We drop
+  # them here - keeping word_emb_matrix, words_mean_x (and words_mean_y) in the
+  # same row order - so the models train only on words that have a semantic
+  # representation. A message tells the user exactly which words were skipped.
+  has_valid_embedding <- apply(word_emb_matrix, 1, function(row) !any(is.na(row)))
+
+  n_missing <- sum(!has_valid_embedding)
+  if (n_missing > 0) {
+    missing_words <- words_mean_x$words[!has_valid_embedding]
+    preview       <- paste(missing_words[seq_len(min(10, n_missing))], collapse = ", ")
+    if (n_missing > 10) preview <- paste0(preview, ", ...")
+    message(sprintf(
+      "Skipping %d of %d word(s) with no embedding in word_types_embeddings: %s",
+      n_missing, nrow(word_emb_matrix), preview
+    ))
+  }
+
+  if (sum(has_valid_embedding) < 3) {
+    stop(
+      "Fewer than 3 words have a valid embedding in word_types_embeddings; ",
+      "cannot train a prediction model. Check that word_types_embeddings ",
+      "covers the vocabulary used in `words`.",
+      call. = FALSE
+    )
+  }
+
+  # Apply the mask so the embedding matrix and the mean-value table(s) stay
+  # aligned: row i refers to the same word everywhere downstream.
+  word_emb_matrix <- word_emb_matrix[has_valid_embedding, ]
+  words_mean_x    <- words_mean_x[has_valid_embedding, ]
+  if (!is.null(y)) {
+    # Reorder words_mean_y onto the (now filtered) words_mean_x word order.
+    words_mean_y <- words_mean_y[match(words_mean_x$words, words_mean_y$words), ]
+  }
+
+  message(sprintf(
+    "Training ridge regression on %d word(s) with valid embeddings...",
+    nrow(word_emb_matrix)
+  ))
 
   # ---------------------------------------------------------------------------
   # 5a. Train ridge regression: embedding -> mean x value  (x-axis model)
@@ -582,10 +634,12 @@ textWordPrediction <- function(words,
 
   } else {
 
-    # Merge x and y mean-value columns (both share words/n from words_sorted)
+    # Merge x and y mean-value columns. words_mean_y is aligned to words_mean_x
+    # (same row order) by the embedding filter in section 4b.
     word_data <- dplyr::bind_cols(
       words_mean_x,                                     # words, n, word_mean_value_x
-      mean_y_col[complete.cases(mean_y_col), , drop = FALSE], # word_mean_value_y
+      tibble::as_tibble_col(words_mean_y$word_mean_value_y,
+                            column_name = "word_mean_value_y"),
       pred_x_col,                                       # x_plotted
       p_val_x_col,                                      # p_values_x
       pred_y_col,                                       # y_plotted
@@ -603,116 +657,4 @@ textWordPrediction <- function(words,
   comment(output) <- call_description
 
   return(output)
-}
-
-
-# =============================================================================
-# EXAMPLE DATA & USAGE DEMO
-# =============================================================================
-# Run this section interactively to verify the function end-to-end.
-# It uses the built-in Language_based_assessment_data_8 dataset that ships
-# with the text package (100 participants, harmony/satisfaction text + scales).
-# =============================================================================
-
-if (FALSE) {  # wrapped in FALSE so it doesn't execute on source(); run manually
-
-  library(text)
-  library(dplyr)
-
-  # ---------------------------------------------------------------------------
-  # A. Inspect the built-in example data
-  # ---------------------------------------------------------------------------
-  # Language_based_assessment_data_8 ships with the text package.
-  # It contains 40 participants with open-ended text responses and numeric
-  # scale scores:
-  #   - harmonywords     : "describe your harmony in life"
-  #   - satisfactionwords: "describe your satisfaction with life"
-  #   - hilstotal        : Harmony In Life Scale total score (numeric)
-  #   - swlstotal        : Satisfaction With Life Scale total score (numeric)
-
-  head(Language_based_assessment_data_8[, c("harmonywords", "satisfactionwords",
-                                            "hilstotal", "swlstotal")])
-
-  # ---------------------------------------------------------------------------
-  # B. Embed the text variable
-  # ---------------------------------------------------------------------------
-  # textEmbed() returns a named list where each text column gets its own entry.
-  # Each entry contains:
-  #   $texts      - one aggregated vector per response (contextualized)
-  #   $word_types - one vector per unique word type (decontextualized)
-  #     --$texts - the actual tibble of embeddings (words x dims)
-  #
-  # We need $word_types$texts for textWordPrediction.
-
-  embeddings <- textEmbed(
-    texts           = Language_based_assessment_data_8["harmonywords"],
-    model           = "bert-base-uncased",   # swap for any HuggingFace model
-    layers          = -2,                    # second-to-last layer (common default)
-    aggregation_from_layers_to_tokens         = "mean",
-    aggregation_from_tokens_to_texts          = "mean",
-    aggregation_from_tokens_to_word_types     = "mean"
-  )
-
-  # Check what we got - should be a tibble: words x 768
-  str(embeddings$word_types$texts, max.level = 1)
-
-  # ---------------------------------------------------------------------------
-  # C. Run textWordPrediction - x-axis only (1D projection)
-  # ---------------------------------------------------------------------------
-  result_1d <- textWordPrediction(
-    words                 = Language_based_assessment_data_8$harmonywords,
-    word_types_embeddings = embeddings$word_types$texts,
-    y                     = NULL,                                         # 1D only
-    n_models              = 2,        # set low for quick testing; increase for real use
-    n_permutations        = 10000,   # bootstrap samples from the 25 null scores; use 0 to skip
-    seed                  = 1003,
-    case_insensitive      = TRUE
-  )
-
-  # Inspect the word-level output table
-  result_1d$word_data
-
-  # Top words with highest (most positive) x_plotted score
-  result_1d$word_data |>
-    arrange(desc(x_plotted)) |>
-    head(10)
-
-  # Words with significant p-values (< .05)
-  result_1d$word_data |>
-    filter(p_values_x < .05) |>
-    arrange(p_values_x)
-
-  # ---------------------------------------------------------------------------
-  # D. Run textWordPrediction - with y-axis (2D projection)
-  # ---------------------------------------------------------------------------
-  result_2d <- textWordPrediction(
-    words                 = Language_based_assessment_data_8$harmonywords,
-    word_types_embeddings = embeddings$word_types$texts,
-    x                     = Language_based_assessment_data_8$hilstotal,  # Harmony -> x
-    y                     = Language_based_assessment_data_8$swlstotal,  # Satisfaction -> y
-    n_models              = 2,
-    n_permutations        = 10000,
-    seed                  = 1003,
-    case_insensitive      = TRUE
-  )
-
-  result_2d$word_data
-
-  # ---------------------------------------------------------------------------
-  # E. Pass directly to textProjectionPlot()
-  # ---------------------------------------------------------------------------
-  # textProjectionPlot expects the list with a $word_data component whose
-  # columns include: words, n, x_plotted, p_values_x (+ y_plotted, p_values_y)
-
-  plot_out <- textProjectionPlot(
-    word_data       = result_2d,
-    y_axes          = TRUE,
-    title_top       = "textWordPrediction: Harmony Words",
-    x_axes_label    = "Harmony In Life (HILS)",
-    y_axes_label    = "Satisfaction With Life (SWLS)",
-    p_alpha         = 0.05
-  )
-
-  plot_out$final_plot
-
 }

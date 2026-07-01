@@ -65,10 +65,11 @@ A named list:
 \describe{
   \item{model_x}{The fitted \code{textTrainRegression} model for the x-axis.}
   \item{model_y}{(Only if `y` is supplied) Fitted model for the y-axis.}
-  \item{word_data}{A tibble with one row per unique word containing:
-    \code{words}, \code{n} (frequency), \code{word_mean_value_x},
-    \code{x_plotted} (embedding-based prediction), \code{p_values_x}; plus
-    the y-equivalents when `y` is provided.}
+  \item{word_data}{A tibble with one row per unique word \emph{that has a
+    valid embedding} (words missing from \code{word_types_embeddings} are
+    skipped) containing: \code{words}, \code{n} (frequency),
+    \code{word_mean_value_x}, \code{x_plotted} (embedding-based prediction),
+    \code{p_values_x}; plus the y-equivalents when `y` is provided.}
 }
 The comment attribute on the output stores a human-readable description of
 all call parameters for reproducibility.
@@ -78,7 +79,7 @@ For each unique word in `words` the function:
 \enumerate{
   \item Computes the **mean value of `x`** (and optionally `y`) across all
         participants whose response contained that word.
-  \item Looks up the **decontextualised embedding** for that word from
+  \item Looks up the embedding for that word from
         `word_types_embeddings`.
   \item Trains a **ridge regression** model: embedding -> mean x score. The
         out-of-sample predictions become the `x_plotted` plotting coordinate,
@@ -91,6 +92,12 @@ For each unique word in `words` the function:
 The returned `word_data` tibble has column names that match the expectations
 of \code{\link{textProjectionPlot}}: `x_plotted` (and `y_plotted`) for coordinates
 and `p_values_x` (and `p_values_y`) for significance.
+
+Words that have no embedding in `word_types_embeddings` cannot be scored and
+are skipped: they are dropped before the ridge regression is trained (a
+message reports how many and which words were skipped) and do not appear in
+`word_data`. The function stops with an informative error if fewer than three
+words have a valid embedding.
 }
 \examples{
 \dontrun{
