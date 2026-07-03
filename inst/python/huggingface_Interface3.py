@@ -14,14 +14,28 @@ except ImportError:
 
 import numpy as np
 import nltk
-try:
-    nltk.data.find('tokenizers/punkt/PY3/english.pickle')
-except:
-    nltk.download('punkt')
-try:
-    nltk.data.find('tokenizers/punkt_tab/english/')
-except:
-    nltk.download('punkt_tab')
+
+def _ensure_nltk_data(resource, data_path):
+    try:
+        nltk.data.find(data_path)
+        return
+    except LookupError:
+        pass
+    if not nltk.download(resource):
+        # Retry with certifi's CA bundle: some environments (e.g., conda on
+        # Windows) ship a broken default OpenSSL cert bundle, which makes
+        # nltk.download() fail silently and later raise LookupError.
+        try:
+            import os
+            import certifi
+            os.environ['SSL_CERT_FILE'] = certifi.where()
+            if not nltk.download(resource):
+                print("Warning: unable to download nltk resource: " + resource)
+        except Exception as e:
+            print("Warning: unable to download nltk resource " + resource + ": " + str(e))
+
+_ensure_nltk_data('punkt', 'tokenizers/punkt/PY3/english.pickle')
+_ensure_nltk_data('punkt_tab', 'tokenizers/punkt_tab/english/')
 
 from nltk.tokenize import sent_tokenize
 

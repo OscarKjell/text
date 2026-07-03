@@ -64,6 +64,25 @@ jobs:
           python-version: 3.9
           miniconda-version: "latest"
 
+      # nltk.download() inside the conda env fails silently when the env's
+      # OpenSSL cert bundle is broken, leaving punkt/punkt_tab missing and
+      # failing most tests. Fetch the tokenizer data with Windows-native TLS
+      # and point Python's ssl module at a valid CA bundle.
+      - name: Provide NLTK data and CA bundle (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $dest = Join-Path $env:USERPROFILE "nltk_data\tokenizers"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          foreach ($pkg in @("punkt", "punkt_tab")) {
+            $zip = Join-Path $env:TEMP "$pkg.zip"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/tokenizers/$pkg.zip" -OutFile $zip
+            Expand-Archive -Path $zip -DestinationPath $dest -Force
+          }
+          $ca = Join-Path $env:USERPROFILE "cacert.pem"
+          Invoke-WebRequest -Uri "https://curl.se/ca/cacert.pem" -OutFile $ca
+          "SSL_CERT_FILE=$ca" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
       # Install system dependencies (Linux only)
       - name: Install system dependencies
         if: runner.os == 'Linux'
