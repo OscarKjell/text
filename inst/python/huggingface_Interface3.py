@@ -13,29 +13,37 @@ except ImportError:
     print("Warning: Unable to importing transformers.utils logging")
 
 import numpy as np
+import os
 import nltk
 
-def _ensure_nltk_data(resource, data_path):
+def _nltk_data_installed(resource):
+    # Check the filesystem directly instead of nltk.data.find(): find() on
+    # "punkt" paths is unreliable across nltk versions (>= 3.9 rewrites punkt
+    # paths to punkt_tab and can raise OSError instead of LookupError).
+    for _dir in nltk.data.path:
+        if os.path.isdir(os.path.join(_dir, 'tokenizers', resource)):
+            return True
+    return False
+
+def _download_nltk_data(resource):
     try:
-        nltk.data.find(data_path)
-        return
-    except LookupError:
-        pass
-    if not nltk.download(resource):
+        if nltk.download(resource):
+            return True
         # Retry with certifi's CA bundle: some environments (e.g., conda on
         # Windows) ship a broken default OpenSSL cert bundle, which makes
-        # nltk.download() fail silently and later raise LookupError.
-        try:
-            import os
-            import certifi
-            os.environ['SSL_CERT_FILE'] = certifi.where()
-            if not nltk.download(resource):
-                print("Warning: unable to download nltk resource: " + resource)
-        except Exception as e:
-            print("Warning: unable to download nltk resource " + resource + ": " + str(e))
+        # nltk.download() fail silently.
+        import certifi
+        os.environ['SSL_CERT_FILE'] = certifi.where()
+        return bool(nltk.download(resource))
+    except Exception as e:
+        print("Warning: unable to download nltk resource " + resource + ": " + str(e))
+        return False
 
-_ensure_nltk_data('punkt', 'tokenizers/punkt/PY3/english.pickle')
-_ensure_nltk_data('punkt_tab', 'tokenizers/punkt_tab/english/')
+for _punkt_resource in ('punkt', 'punkt_tab'):
+    if not _nltk_data_installed(_punkt_resource):
+        if not _download_nltk_data(_punkt_resource):
+            print("Warning: nltk resource " + _punkt_resource +
+                  " is not available; tokenization may fail.")
 
 from nltk.tokenize import sent_tokenize
 
