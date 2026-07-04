@@ -1,3 +1,36 @@
+# Repair broken SSL certificate configuration before any imports that download
+# models: some conda installations (notably on Windows) point SSL_CERT_FILE or
+# OpenSSL's default verify path at a missing/corrupt cacert.pem, which raises
+# ssl.SSLError "[ASN1: NOT_ENOUGH_DATA]" when an SSL context loads it.
+import os
+import ssl
+
+def _ca_bundle_is_loadable(path):
+    if not path or not os.path.isfile(path):
+        return False
+    try:
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        ctx.load_verify_locations(cafile=path)
+        return True
+    except Exception:
+        return False
+
+try:
+    import certifi
+    _good_ca_bundle = certifi.where() if _ca_bundle_is_loadable(certifi.where()) else None
+except ImportError:
+    _good_ca_bundle = None
+
+if _good_ca_bundle:
+    for _ca_var in ("SSL_CERT_FILE", "REQUESTS_CA_BUNDLE", "CURL_CA_BUNDLE"):
+        _ca_val = os.environ.get(_ca_var)
+        if _ca_val is not None and not _ca_bundle_is_loadable(_ca_val):
+            os.environ[_ca_var] = _good_ca_bundle
+    try:
+        ssl.create_default_context()
+    except Exception:
+        os.environ["SSL_CERT_FILE"] = _good_ca_bundle
+
 from bertopic import BERTopic
 import json
 import pandas as pd
