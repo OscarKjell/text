@@ -41,13 +41,26 @@ test_that("Bertopic", {
 
   # Create BERTopic model trained on data["text"] help(textTopics)
 
-  bert_model <- text::textTopics(
-    data = data,
-    variable_name = "text",
-    embedding_model = "distilroberta",
-    min_df = 1,
-    set_seed = 42,
-    save_dir = save_dir_temp)
+  bert_model <- tryCatch(
+    text::textTopics(
+      data = data,
+      variable_name = "text",
+      embedding_model = "distilroberta",
+      min_df = 1,
+      set_seed = 42,
+      save_dir = save_dir_temp),
+    error = function(e) {
+      # Print the full Python traceback so CI logs show where a
+      # reticulate/Python error actually originated.
+      pe <- tryCatch(reticulate::py_last_error(), error = function(e2) NULL)
+      if (!is.null(pe)) {
+        message("---- Python traceback (py_last_error) ----")
+        message(paste(pe$traceback, collapse = "\n"))
+        message(pe$type, ": ", pe$value)
+        message("------------------------------------------")
+      }
+      stop(e)
+    })
 
   testthat::expect_equal(bert_model$model_type, "bert_topic")
   testthat::expect_true(is.numeric(bert_model$seed) || is.integer(bert_model$seed))

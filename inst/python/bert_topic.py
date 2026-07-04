@@ -30,6 +30,12 @@ if _good_ca_bundle:
         ssl.create_default_context()
     except Exception:
         os.environ["SSL_CERT_FILE"] = _good_ca_bundle
+        try:
+            ssl.create_default_context()
+        except Exception:
+            # A broken SSL_CERT_DIR (or compiled-in capath) can also make
+            # default-context creation fail; drop it and rely on the CA file.
+            os.environ.pop("SSL_CERT_DIR", None)
 
 from bertopic import BERTopic
 import json
@@ -51,11 +57,19 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 #from sentence_transformers import SentenceTransformer
 
 
-embedding_models = {"miniLM":SentenceTransformer("all-MiniLM-L6-v2"),
-                    #"roberta": TransformerDocumentEmbeddings('roberta-base'),
-                    "mpnet": SentenceTransformer("all-mpnet-base-v2"),
-                    "multi-mpnet": SentenceTransformer("multi-qa-mpnet-base-dot-v1"),
-                    "distilroberta": SentenceTransformer("all-distilroberta-v1")}
+# Load sentence-transformer models lazily: only the requested model is
+# downloaded/instantiated (instead of all of them at import time).
+_embedding_model_names = {"miniLM": "all-MiniLM-L6-v2",
+                          #"roberta": "roberta-base",
+                          "mpnet": "all-mpnet-base-v2",
+                          "multi-mpnet": "multi-qa-mpnet-base-dot-v1",
+                          "distilroberta": "all-distilroberta-v1"}
+_embedding_model_cache = {}
+
+def get_embedding_model(name):
+    if name not in _embedding_model_cache:
+        _embedding_model_cache[name] = SentenceTransformer(_embedding_model_names[name])
+    return _embedding_model_cache[name]
 def get_umap_models(umap_model, seed):
     umap_models = {"default": UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=seed)}
     return umap_models[umap_model]
@@ -154,7 +168,7 @@ def create_bertopic_model(
     data.to_csv(f"{save_path}/data.csv", index=False)
 
     # ---- Embeddings
-    embedding_model_used = embedding_models[embedding_model]
+    embedding_model_used = get_embedding_model(embedding_model)
     embeddings = embedding_model_used.encode(data[data_var], show_progress_bar=False)
 
     # ---- Build pipeline objects from explicit params
@@ -290,7 +304,7 @@ def reduce_topics(data,
  
     # To reset the indices
     data = data.reset_index(drop=True)
-    embedding_model_used = embedding_models[embedding_model]
+    embedding_model_used = get_embedding_model(embedding_model)
 
     # Load the model
     topic_model = BERTopic.load(load_path, embedding_model_used)
