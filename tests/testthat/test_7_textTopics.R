@@ -50,15 +50,41 @@ test_that("Bertopic", {
       set_seed = 42,
       save_dir = save_dir_temp),
     error = function(e) {
-      # Print the full Python traceback so CI logs show where a
-      # reticulate/Python error actually originated.
+      # Print full diagnostics so CI logs show where a reticulate/Python
+      # error actually originated (cat(): testthat may swallow message()).
+      cat("\n---- textTopics failure diagnostics ----\n")
       pe <- tryCatch(reticulate::py_last_error(), error = function(e2) NULL)
       if (!is.null(pe)) {
-        message("---- Python traceback (py_last_error) ----")
-        message(paste(pe$traceback, collapse = "\n"))
-        message(pe$type, ": ", pe$value)
-        message("------------------------------------------")
+        cat("Python traceback:\n")
+        cat(paste(pe$traceback, collapse = "\n"), "\n")
+        cat(pe$type, ": ", pe$value, "\n", sep = "")
       }
+      tryCatch(
+        reticulate::py_run_string("
+import os, ssl
+print('env:')
+for _v in ('SSL_CERT_FILE', 'SSL_CERT_DIR', 'REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
+    print(' ', _v, '=', os.environ.get(_v))
+print('  default_verify_paths =', ssl.get_default_verify_paths())
+try:
+    import certifi
+    print('  certifi =', certifi.where())
+except Exception as _e:
+    print('  certifi import failed:', repr(_e))
+print('import probe:')
+for _m in ('requests', 'urllib3', 'httpx', 'certifi', 'huggingface_hub',
+           'bertopic', 'pandas', 'sentence_transformers', 'umap', 'hdbscan',
+           'sklearn.feature_extraction.text', 'bertopic.representation',
+           'bertopic.vectorizers'):
+    try:
+        _mod = __import__(_m)
+        print('  OK  ', _m, getattr(_mod, '__version__', ''))
+    except Exception as _e:
+        print('  FAIL', _m, '->', repr(_e)[:300])
+"),
+        error = function(e2) cat("diagnostics py_run_string failed: ",
+                                 conditionMessage(e2), "\n"))
+      cat("----------------------------------------\n")
       stop(e)
     })
 

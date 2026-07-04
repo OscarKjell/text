@@ -42,14 +42,12 @@ import json
 import pandas as pd
 import csv
 import pandas as pd
-from bertopic.representation import KeyBERTInspired
 from sentence_transformers import SentenceTransformer
-from flair.embeddings import TransformerDocumentEmbeddings
 from umap import UMAP
 from hdbscan import HDBSCAN
 from sklearn.feature_extraction.text import CountVectorizer
 from bertopic.vectorizers import ClassTfidfTransformer
-from bertopic.representation import KeyBERTInspired, MaximalMarginalRelevance, PartOfSpeech
+from bertopic.representation import KeyBERTInspired, MaximalMarginalRelevance
 import os
 
 # turning off parallelism for transformers
