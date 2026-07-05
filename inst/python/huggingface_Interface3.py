@@ -27,14 +27,15 @@ def _nltk_data_installed(resource):
 
 def _download_nltk_data(resource):
     try:
-        if nltk.download(resource):
+        print("Downloading nltk resource: " + resource)
+        if nltk.download(resource, quiet=True):
             return True
         # Retry with certifi's CA bundle: some environments (e.g., conda on
         # Windows) ship a broken default OpenSSL cert bundle, which makes
         # nltk.download() fail silently.
         import certifi
         os.environ['SSL_CERT_FILE'] = certifi.where()
-        return bool(nltk.download(resource))
+        return bool(nltk.download(resource, quiet=True))
     except Exception as e:
         print("Warning: unable to download nltk resource " + resource + ": " + str(e))
         return False
