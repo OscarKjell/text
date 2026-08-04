@@ -200,6 +200,10 @@ If you run into issues that aren’t covered here, please reach out to us at:
 so that we can improve the instructions for everyone.
 
 
+## Try text in the browser
+
+💡 Want to try text without installing anything? Open our [Google Colab notebook](https://colab.research.google.com/drive/1BSbRps2z0lOjUygqDCxYylSjrTvFOXnS#scrollTo=oneClickSetup) and run text directly in your browser.
+
 
 ```{=html}
 <script>

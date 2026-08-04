@@ -167,7 +167,9 @@ def create_bertopic_model(
 
     # ---- Embeddings
     embedding_model_used = get_embedding_model(embedding_model)
-    embeddings = embedding_model_used.encode(data[data_var], show_progress_bar=False)
+    # sentence-transformers >= 3 no longer accepts a pandas Series
+    docs = data[data_var].astype(str).tolist()
+    embeddings = embedding_model_used.encode(docs, show_progress_bar=False)
 
     # ---- Build pipeline objects from explicit params
     umap_model_obj = UMAP(
@@ -215,14 +217,14 @@ def create_bertopic_model(
     )
 
     # ---- Fit
-    topics, probs = topic_model.fit_transform(data[data_var], embeddings=embeddings)
+    topics, probs = topic_model.fit_transform(docs, embeddings=embeddings)
 
     # quick diagnostics (optional)
     print("topics[:10] =", topics[:10])
     print("probs type:", type(probs))
     
     # --- Save doc_info (hard assignments etc.) ---
-    doc_info = topic_model.get_document_info(data[data_var].astype(str).tolist())
+    doc_info = topic_model.get_document_info(docs)
     doc_info.to_csv(f"{save_path}/doc_info.csv", index=False)
 
     # --- Save topic_info (topic metadata) ---
@@ -231,7 +233,7 @@ def create_bertopic_model(
     
     # --- Save topic probabilities (best default for R: dense doc-topic mixture) ---
     if probs is None:
-        _, probs = topic_model.transform(data[data_var], embeddings=embeddings)
+        _, probs = topic_model.transform(docs, embeddings=embeddings)
 
     probs_cols = [f"t_{i}" for i in range(1, probs.shape[1] + 1)]
     with open(f"{save_path}/topic_probs.csv", "w", newline="") as csv_file:
@@ -241,7 +243,7 @@ def create_bertopic_model(
 
     # --- Optional: approximate_distribution (often sparse; keep for diagnostics) ---
     topic_distr, topic_token_distr = topic_model.approximate_distribution(
-        data[data_var], calculate_tokens=True
+        docs, calculate_tokens=True
     )
     distr_cols = [f"t_{i}" for i in range(1, topic_distr.shape[1] + 1)]
     with open(f"{save_path}/topic_distr_approx.csv", "w", newline="") as csv_file:
@@ -307,10 +309,13 @@ def reduce_topics(data,
     # Load the model
     topic_model = BERTopic.load(load_path, embedding_model_used)
 
+    # sentence-transformers >= 3 no longer accepts a pandas Series
+    docs = data[data_var].astype(str).tolist()
+
     # Reduce the number of topics
-    topic_model.reduce_topics(data[data_var], nr_topics=n_topics)
-    topics, probs = topic_model.transform(data[data_var])
-    topic_distr, topic_token_distr = topic_model.approximate_distribution(data[data_var], calculate_tokens=True)
+    topic_model.reduce_topics(docs, nr_topics=n_topics)
+    topics, probs = topic_model.transform(docs)
+    topic_distr, topic_token_distr = topic_model.approximate_distribution(docs, calculate_tokens=True)
     columns = ["t_" + str(i) for i in range(1,topic_distr.shape[1]+1)]
     
     # Create the directory if it doesn't exist
@@ -335,5 +340,5 @@ def reduce_topics(data,
 
 def get_topic_tree(topic_model, data, data_var):
     topic_model = topic_model[0]
-    hierarchical_topics = topic_model.hierarchical_topics(data[data_var])
+    hierarchical_topics = topic_model.hierarchical_topics(data[data_var].astype(str).tolist())
     print(topic_model.get_topic_tree(hierarchical_topics))
