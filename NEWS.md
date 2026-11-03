@@ -1,6 +1,9 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.9.2
+- Added `textLLM()` (EXPERIMENTAL): send texts and prompts to Large Language Model APIs (OpenAI and OpenAI-compatible endpoints) for annotating, labelling and transforming language data.
+
 # text 1.9
 - Harmonized with tutorial and submitted to CRAN. 
 
