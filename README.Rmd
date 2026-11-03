@@ -41,7 +41,7 @@ An R-package for analyzing natural language with transformers-based large langua
 + [`the L-BAM Library`](https://r-text.org/articles/LBAM.html) a library that provides pre-trained models for different psychological assessments such as mental health issues, personality and related behaviours.<br>
  <br>
  
-![](man/figures/talk_text_topics.svg){width=50%}
+![Overview of the R Language Analysis Suite: the talk package transforms voice recordings to text, the text package transforms text to embeddings and analyses, and the topics package models topics.](man/figures/talk_text_topics.svg){width=50%}
 
 <br>
 The *R Language Analysis Suite* is created through a collaboration between psychology and computer science to address research needs and ensure state-of-the-art techniques. The suite is continuously tested on Ubuntu, Mac OS and Windows using the latest stable R version.

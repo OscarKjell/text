@@ -3,6 +3,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 # text 1.9.2
 - Added `textLLM()` (EXPERIMENTAL): send texts and prompts to Large Language Model APIs (OpenAI and OpenAI-compatible endpoints) for annotating, labelling and transforming language data.
+- `textrpp_install()` now pins `pyarrow < 22`, since newer pyarrow requires NumPy >= 2.0 which conflicts with the pinned numpy 1.26 (this caused `ImportError: pyarrow requires NumPy 2.0 or newer` in `textFineTuneTask()`).
 
 # text 1.9.1
 - Added a participant-permutation null to `textProjection()` (`null_method = "participant"`): x (and y) are shuffled across participants, the whole projection is recomputed each permutation, and every word is compared with its own null distribution. The default (`null_method = "token"`) is unchanged. With the participant method, the output also includes `p_z_dot` columns (a normal approximation from each word's own null).

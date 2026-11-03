@@ -632,7 +632,12 @@ textrpp_install <- function(
   # Set system specific default versions
   if (rpp_version[[1]] == "rpp_version_system_specific_defaults") {
 
-    rpp_version = c("textrpp_py") # https://pypi.org/project/textrpp-py/
+    rpp_version = c(
+      "textrpp_py", # https://pypi.org/project/textrpp-py/
+      # textrpp_py pins numpy==1.26.0 but its dependency datasets leaves pyarrow
+      # unpinned; pyarrow >= 22 requires numpy >= 2.0 and fails at import.
+      "pyarrow<22"
+    )
     #if (is_osx() || is_linux()) {
     #  rpp_version <- c(
     #    "torch==2.2.0",

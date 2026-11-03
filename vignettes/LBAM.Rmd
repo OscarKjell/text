@@ -143,7 +143,7 @@ Finally, the trained model can be applied to new texts for evaluation or classif
 
 You can find a detailed guide on how to transform language into embeddings and train L-BAMs using the text package in Kjell et al. (2023).
 Below, we briefly introduce the embedding and training process before showing how to apply models from the L-BAM library.
-![](l_bam_overview.png){width=500px}
+![Overview of the L-BAM library workflow: pre-trained language-based assessment models are downloaded and applied to text with textPredict().](l_bam_overview.png){width=500px}
 
 <br>
 Figure from Nilsson et al. (in progress). 

@@ -16,6 +16,16 @@ knitr::opts_chunk$set(
 
 # Resources
 
+## Quick references
+
+- **Cheatsheet: Task to Function** — minimal runnable code for common tasks, for humans and AI coding assistants
+
+  [Cheatsheet](https://r-text.org/articles/cheatsheet.html)
+
+- **Machine-readable package overview** (for LLMs/AI assistants)
+
+  [llms.txt](https://r-text.org/llms.txt)
+
 ## Article tutorials
 
 - **The *text* package tutorial**
