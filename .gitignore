@@ -23,3 +23,6 @@ docs
 *~
 __pycache__/
 .positai
+check/
+.DS_Store
+**/.DS_Store
