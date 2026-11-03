@@ -259,7 +259,7 @@ ngram_plots <- topicsPlot(
 ngram_plots
 ```
 
-![](visualizations_figs/figure_1.png)
+![Two differential word clouds: words associated with lower depression severity in orange on the left and higher depression severity in blue on the right; font size shows word prevalence and color gradient shows association strength.](visualizations_figs/figure_1.png)
 
 *Fig. 1. Differential word clouds of words associated with (left) lower (orange) and (right) higher (blue) depression severity. The font size represents word prevalence, calculated as the relative frequency of each word in the data set (i.e., the number of times the word appears divided by the total number of words). The color gradient reflects the estimate, the standardized beta coefficient indicating the strength of the association with depression severity, controlling for age and gender. The color type reflects the direction of the association: Orange = significantly associated with lower depression severity (negative β); blue = significantly associated with higher depression severity (positive β). Only significant words are visualized; p values are corrected for multiple comparisons using the false-discovery-rate procedure (Benjamini & Hochberg, 1995). Participants: N = 500; responses: N = 1,000. Figure 1 was made using the topics package in R and edited in Google Drawings.*
 
@@ -303,7 +303,7 @@ topics_DTM_Eval$frequency_plot_30_most    # Show the 30 most frequent n-grams
 topics_DTM_Eval$frequency_plot_30_least   # Show the 30 least frequent n-grams
 ```
 
-![](visualizations_figs/figure_2.png)
+![Bar plots of n-gram frequencies in the document-term matrix: all n-grams at the top, the 30 least frequent at the bottom left, and the 30 most frequent at the bottom right.](visualizations_figs/figure_2.png)
 
 *Fig. 2. The frequencies of the words and phrases in the document-term matrix. The document-term matrix was created, allowing for 1- to 3-grams, and includes a total of 157 words and phrases. (Top) Frequencies of all n-grams (i.e., in how many responses each n-gram appears), Mdn = 16 (SD = 25.6) responses. (Bottom, left) The 30 least frequent words and phrases, in which the least frequent appears in 10 responses (i.e., "annoyed"). (Bottom, right) The 30 most frequent words and phrases, in which the most frequent word appears in 205 responses (i.e., "anxious"). Participants: N = 500; responses: N = 1,000. Figure 2 was made using the topics package in R and edited in Google Drawings.*
 
@@ -334,7 +334,7 @@ prevalent_topics_plots <- topicsPlot(
 prevalent_topics_plots
 ```
 
-![](visualizations_figs/figure_3.png)
+![Word clouds of the 10 most prevalent LDA topics with their prevalence percentages; word size and color gradient reflect each word's probability within its topic.](visualizations_figs/figure_3.png)
 
 *Fig. 3. The 10 most prevalent topics identified by the latent Dirichlet allocation (LDA) model. Topics were generated using LDA (Blei et al., 2003) trained with 1- to 3-grams and set to extract 20 topics in total. Top 10 terms are shown for each topic. The topic labels are the most dominant or representative words in each cluster and can be found in the output of the `topicsModel()` function. The percentages next to each topic label indicate the topic's prevalence, defined as the proportion of responses in which the topic appears. In each topic cluster, the font size and color gradient reflect how representative each word is of that topic—that is, the word's probability of appearing within the topic. This corresponds to the φ (phi) parameter in the LDA model: φ = P(word | topic), which indicates the prevalence of words within each topic. Participants: N = 500; responses: N = 1,000. Figure 3 was made using the topics package in R and edited in Google Drawings.*
 
@@ -387,7 +387,7 @@ significant_topics_plots <- topicsPlot(
 significant_topics_plots
 ```
 
-![](visualizations_figs/figure_4.png)
+![LDA topic word clouds ordered along an axis of standardized beta coefficients, showing topics significantly associated with lower depression severity in orange and higher depression severity in blue.](visualizations_figs/figure_4.png)
 
 *Fig. 4. Latent Dirichlet allocation (LDA) topics associated with (left) lower (orange) and (right) higher (blue) depression severity. Topics were generated using LDA (Blei et al., 2003) trained with 1- to 3-grams and set to extract 20 topics in total. Top 10 terms are shown for each topic. The dot position on the x-axis represents the standardized beta coefficient, indicating the strength and direction of association between each topic and depression severity, controlling for gender and age. The size of the dots on the axis represents the prevalence of the topic in the data set. The color type reflects the direction and statistical significance of the association: Orange = significantly associated with lower depression severity (negative β); blue = significantly associated with higher depression severity (positive β); gray = not statistically significant. Significance testing was corrected for multiple comparisons using the false-discovery-rate procedure (Benjamini & Hochberg, 1995). The number of significant topics in each direction is shown in the colored boxes below the plot. In each topic cluster, the size and color gradient of the words indicate how representative they are of that topic (i.e., their probability of appearing in the topic). This corresponds to the φ (phi) parameter in the LDA model: φ = P(word | topic), which indicates the prevalence of words within each topic. Participants: N = 500; responses: N = 1,000. Figure 4 was made using the topics package in R and edited in Google Drawings. Asterisks indicate \*p < .05 and \*\*p < .01.*
 
@@ -451,7 +451,7 @@ bert_topics_plots <- textTopicsWordcloud(
 bert_topics_plots
 ```
 
-![](visualizations_figs/figure_5.png)
+![BERTopic topic word clouds ordered along an axis of standardized beta coefficients, with topics associated with lower depression severity in orange and higher in blue.](visualizations_figs/figure_5.png)
 
 *Fig. 5. BERTopics associated with (left) lower (orange) and (right) higher (blue) depression severity. Topics were generated using the BERTopic method (Grootendorst, 2022) trained with 1- to 3-grams. Top 10 terms are shown for each topic. The dot position on the x-axis represents the standardized beta coefficient, indicating the strength and direction of association between each topic and depression severity, controlling for gender and age. The size of the dots on the x-axis is the same for each topic because the `textTopics()` function does not return topic prevalences, so all topics are assigned 1 in the visualization. The color type reflects the direction and statistical significance of the association: Orange = significantly associated with lower depression severity (negative β); blue = significantly associated with higher depression severity (positive β); gray = not statistically significant. Significance testing was corrected for multiple comparisons using the false-discovery-rate procedure (Benjamini & Hochberg, 1995). The number of significant clusters in each direction is shown in the colored boxes below the plot. In each topic cluster, the size and color gradient of the words indicate how representative they are of that topic: BERTopic does not provide true φ (phi) values, φ = P(word | topic), as in probabilistic models, such as latent Dirichlet allocation; instead, descending normalized values to approximate word importance are assigned. Participants: N = 500; responses: N = 1,000. Figure 5 was made using the text package in R and edited in Google Drawings. Asterisks indicate \*p < .05 and \*\*p < .01.*
 
@@ -518,7 +518,7 @@ projection_plots <- textProjectionPlot(
 projection_plots
 ```
 
-![](visualizations_figs/figure_6.png)
+![Supervised dimension projection plot where words are placed from left to right by their association with lower (orange) to higher (blue) depression severity; word size shows frequency.](visualizations_figs/figure_6.png)
 
 *Fig. 6. Supervised dimension projection of words associated with (left) lower (orange) and (right) higher (blue) depression severity. Individual words are displayed in the word-embedding space using supervised dimension projection (O. Kjell, Giorgi, & Schwartz, 2023). Words' embeddings (numerical representations) are projected onto a supervised dimension representing low to high depression severity based on embeddings from responses corresponding to the lower and upper quartiles of the depression-severity scores. The projection is computed using the dot product between each word embedding and the supervised dimension. Words to the left (in orange) are significantly associated with lower depression severity, and words to the right (in blue) are significantly associated with higher depression severity. Words in gray show no significant association. The horizontal position of each word reflects its dot product projection, and the size of each word represents its frequency in the data set. The colored boxes at the bottom indicate the number of significantly negative, nonsignificant, and significantly positive word associations. Significance testing was corrected for multiple comparisons using the false-discovery-rate procedure (Benjamini & Hochberg, 1995). Participants: N = 500; responses: N = 1,000. Figure 6 was made using the text package in R and edited in Google Drawings.*
 
@@ -577,7 +577,7 @@ assessment_examples <- textExamples(
 assessment_examples$examples
 ```
 
-![](visualizations_figs/figure_7.png)
+![Example participant responses selected for the highest user frequency of the n-gram lack, the highest prevalence of the topic feeling, and the highest language-based assessed depression severity.](visualizations_figs/figure_7.png)
 
 *Fig. 7. Examples of complete responses in relation to (a) user frequency of the n-gram "lack," (b) prevalence of the topic "feeling," and (c) language-based assessed depression severity. Complete responses to the questions "Over the last 2 weeks, have you been depressed or not?" and "Over the last 2 weeks, have you been worried or not?" are visualized. Participants were instructed to describe their level of depression and worry by writing five descriptive words or phrases. The example responses are selected based on the (a) highest user frequency of the n-gram "lack," (b) highest estimated prevalence of the topic "feeling," and (c) highest language-based assessed depression severity. The language-based assessment model was trained to assess the depression-severity scores (nine-item Patient Health Questionnaire ratings). The targeted depression-severity scores ranged from 0 to 27 (M = 11.49, SD = 7.53), and the assessed scores ranged from 0.59 to 22.16 (M = 11.50, SD = 4.76). The mean absolute error of the language-based assessment is 4.56 (SD = 3.29, range = 0.00–18.98; i.e., absolute difference between assessed and targeted scores), and the assessed scores correlate with the targeted scores at r = .67 (p < .001). Participants: N = 500; responses: N = 1,000. Figure 7 was made using the text package in R and edited in Google Drawings.*
 
@@ -632,7 +632,7 @@ topics_plots_2D <- topicsPlot(
 topics_plots_2D
 ```
 
-![](visualizations_figs/figure_8.png)
+![Two-dimensional plot of LDA topic word clouds with depression severity on the y-axis and depression versus worry language (log odds) on the x-axis; dot size shows topic prevalence.](visualizations_figs/figure_8.png)
 
 *Fig. 8. Two-dimensional visualization of topics in relation to language type and depression severity. Topics were generated using latent Dirichlet allocation (LDA; Blei et al., 2003) trained with 1- to 3-grams and set to extract 20 topics in total. Figure 8 visualizes associations between topics and two variables: depression severity (y-axis) and type of language response (x-axis: depression language vs. worry language). The y-axis shows standardized beta coefficients, indicating the strength and direction of each topic's association with depression severity. The x-axis shows log odds, representing the probability of a topic appearing in response to the worry question versus the depression question. Analyses controlled for gender and age, correcting for multiple comparisons using the false-discovery-rate procedure (Benjamini & Hochberg, 1995). Dot size reflects the prevalence of each topic in the data set. Dot position indicates the strength of the association with the variables of interest (the size of the standardized beta coefficients and log odds). The font size and color gradient of the words in each topic indicate how representative each word is for that topic (i.e., its probability in the topic). This corresponds to the φ (phi) parameter in the LDA model: φ = P(word | topic), which indicates the prevalence of words in each topic. The colored matrix in the bottom right corner displays the number of significant topics in each quadrant. Participants: N = 500; responses: N = 1,000. Figure 8 was made using the topics package in R and edited in Google Drawings. Asterisks indicate \*p < .05 and \*\*p < .01.*
 
@@ -673,7 +673,7 @@ projection_plots_2D <- textProjectionPlot(
 projection_plots_2D
 ```
 
-![](visualizations_figs/figure_9.png)
+![Two-dimensional supervised dimension projection with words plotted by association with depression severity on the y-axis and worry versus depression language on the x-axis.](visualizations_figs/figure_9.png)
 
 *Fig. 9. Two-dimensional supervised dimension projection of words in relation to language type and depression severity. The words are visualized in the word-embedding space using two-dimensional supervised dimension projection (O. Kjell, Giorgi, & Schwartz, 2023). Each word is projected based on two supervised dimensions: one reflecting low to high depression severity (y-axis) and the other distinguishing between worry language and depression language (x-axis). These dimensions are constructed from word embeddings based on depression severity (lower quartiles vs. upper quartiles) and the language type (worry question vs. depression question). Font size reflects word frequency in the data set. The position of each word is determined by the dot product between its embedding and each supervised dimension. Font color indicates the statistical significance and direction of the association. The colored matrix at the bottom left shows the number of significant word associations across both dimensions. Significance testing was corrected for multiple comparisons using the false-discovery-rate procedure (Benjamini & Hochberg, 1995). Participants: N = 500; responses: N = 1,000. Figure 9 was made using the text package in R and edited in Google Drawings.*
 
@@ -699,7 +699,7 @@ assessment_examples_2D <- textExamples(
 assessment_examples_2D
 ```
 
-![](visualizations_figs/figure_10.png)
+![Scatterplot of language-based assessed versus targeted depression severity scores divided into nine quadrants, with example responses and a gray regression line.](visualizations_figs/figure_10.png)
 
 *Fig. 10. Examples of complete responses in a language-based assessment of depression severity. The scatterplot displays language-based assessments of depression severity from a model trained to the participants' Patient Health Questionnaire (PHQ) ratings based on the depression and worry responses. The colored matrix in the bottom right corner shows how many responses are included in each of the nine quadrants. For each example response, the language-based assessed and targeted depression-severity scores are displayed along with the absolute error (the absolute difference between the assessed and targeted scores). The mean absolute error of the language-based assessments is 4.56 (SD = 3.29, range = 0.00–18.98), and the assessment scores correlate to the targeted scores at r = .67 (p < .001). The gray diagonal line represents the best fitting linear regression line, which summarizes the overall relationship between the two dimensions. The targeted depression-severity scores (PHQ ratings) ranged from 0 to 27 (M = 11.49, SD = 7.53), and the language-based assessed scores ranged from 0.59 to 22.16 (M = 11.50, SD = 4.76). Participants: N = 500; responses: N = 1,000. Figure 10 was made using the text package in R and edited in Google Drawings.*
 

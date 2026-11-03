@@ -43,7 +43,7 @@ Analysis Suite*, including:
   assessments such as mental health issues, personality and related
   behaviours.<br> <br>
 
-<img src="man/figures/talk_text_topics.svg" style="width:50.0%" />
+<img src="man/figures/talk_text_topics.svg" style="width:50.0%" alt="Overview of the R Language Analysis Suite: the talk package transforms voice recordings to text, the text package transforms text to embeddings and analyses, and the topics package models topics." />
 
 <br> The *R Language Analysis Suite* is created through a collaboration
 between psychology and computer science to address research needs and
