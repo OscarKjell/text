@@ -179,6 +179,7 @@ articles:
   contents:
   - huggingface_in_r
   - psychological_methods
+  - articles/visualizations
   - lbam_tutorial
   - implicit_motives_tutorial
 

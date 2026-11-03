@@ -263,6 +263,15 @@ projection_results <- textProjection(
 
 projection_results$word_data
 
+# The p-values can be based on two different null distributions (null_method):
+# "token" (the default) compares every word with one pooled null distribution,
+# created by assigning the groups' word tokens at random to two random groups;
+# it describes the texts at hand. "participant" shuffles x (and y) across
+# participants, recomputes the whole projection each permutation, and compares
+# every word with its own null distribution; it tests whether a word's
+# association with x is expected to generalize to new participants (and adds
+# p_z_dot columns: a normal approximation from each word's own null).
+
 # To avoid warnings -- and that words do not get plotted, first increase the max.overlaps for the entire session:
 options(ggrepel.max.overlaps = 1000)
 
