@@ -1,6 +1,11 @@
 # text (development versions)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+# text 1.9.1
+- Added a participant-permutation null to `textProjection()` (`null_method = "participant"`): x (and y) are shuffled across participants, the whole projection is recomputed each permutation, and every word is compared with its own null distribution. The default (`null_method = "token"`) is unchanged. With the participant method, the output also includes `p_z_dot` columns (a normal approximation from each word's own null).
+- `textWordPrediction()` now computes p-values from full participant permutations using an exact leave-one-out ridge shortcut, which makes 10,000 permutations run in seconds; words are counted as tokens, and a new `centre = "token_mean"` option separates word-specific signal from verbosity effects. `n_models` is deprecated.
+- Word types from the embeddings are normalised at lookup time in `textProjection()` and `textWordPrediction()` (RoBERTa/SentencePiece markers and case are removed), and both functions now report the share of word types and tokens that have an embedding.
+
 # text 1.9
 - Harmonized with tutorial and submitted to CRAN. 
 

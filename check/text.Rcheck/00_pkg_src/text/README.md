@@ -1,0 +1,107 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+<!-- -->
+
+# text <a href="https://r-text.org"><img src="man/figures/logo.png" align="right" height="138" alt="text website" /></a>
+
+<!-- badges: start -->
+
+[![CRAN
+Status](https://www.r-pkg.org/badges/version/text)](https://CRAN.R-project.org/package=text)
+[![Github build
+status](https://github.com/oscarkjell/text/workflows/R-CMD-check/badge.svg)](https://github.com/oscarkjell/text/actions)
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing-1)
+[![CRAN
+Downloads](https://cranlogs.r-pkg.org/badges/grand-total/text)](https://CRAN.R-project.org/package=text)
+[![codecov](https://codecov.io/gh/oscarkjell/text/branch/master/graph/badge.svg?)](https://app.codecov.io/gh/oscarkjell/text)
+<!-- badges: end -->
+
+<!--#![Modular and End-to-End #Solution](man/figures/modular_end_solution.png){width=85%}
+ -->
+
+## R Language Analysis Suite
+
+An R-package for analyzing natural language with transformers-based
+large language models. The `text` package is part of the *R Language
+Analysis Suite*, including:
+
+- [`talk`](https://www.r-talk.org/) - a package that transforms voice
+  recordings into text, audio features, or embeddings.<br> <br>
+- [`text`](https://www.r-text.org/) - a package that provides tools for
+  many language tasks such as converting digital text into word
+  embeddings.<br> <br> `talk` and `text` offer access to Large Language
+  Models from Hugging Face.<br> <br>
+- [`topics`](https://www.r-topics.org/) a package with tools for
+  visualizing language patterns into topics.<br> <br>
+- [`the L-BAM Library`](https://r-text.org/articles/LBAM.html) a library
+  that provides pre-trained models for different psychological
+  assessments such as mental health issues, personality and related
+  behaviours.<br> <br>
+
+<img src="man/figures/talk_text_topics.svg" style="width:50.0%" />
+
+<br> The *R Language Analysis Suite* is created through a collaboration
+between psychology and computer science to address research needs and
+ensure state-of-the-art techniques. The suite is continuously tested on
+Ubuntu, Mac OS and Windows using the latest stable R version.
+
+The *text*-package has two main objectives: <br> \* First, to serve
+R-users as a *point solution* for transforming text to state-of-the-art
+word embeddings that are ready to be used for downstream tasks. The
+package provides a user-friendly link to language models based on
+transformers from [Hugging Face](https://huggingface.co/). <br> \*
+Second, to serve as an *end-to-end solution* that provides
+state-of-the-art AI techniques tailored for social and behavioral
+scientists. <br> Please reference our tutorial article when using the
+`text` package: [The text-package: An R-package for Analyzing and
+Visualizing Human Language Using Natural Language Processing and Deep
+Learning](https://pubmed.ncbi.nlm.nih.gov/37126041/). <br>
+
+> ### 📣 Online Workshop: *Analysing Human Language using R*
+> **August 11–13, 2026** — three half-day sessions (2:00–5:00 pm CEST / 8:00–11:00 am ET)
+>
+> Learn the full *R Language Analysis Suite* — [`talk`](https://www.r-talk.org/), [`text`](https://www.r-text.org/), and [`topics`](https://www.r-topics.org/) — with Oscar Kjell.
+>
+> **[Read more & register →](https://smart-workshops.com/lang-r-info)**
+
+### Point solution for transforming text to embeddings
+
+Recent significant advances in NLP research have resulted in improved
+representations of human language (i.e., language models). These
+language models have produced big performance gains in tasks related to
+understanding human language. Text are making these SOTA models easily
+accessible through an interface to
+[HuggingFace](https://huggingface.co/docs/transformers/index) in Python.
+
+*Text* provides many of the contemporary state-of-the-art language
+models that are based on deep learning to model word order and context.
+Multilingual language models can also represent several languages;
+multilingual BERT comprises *104 different languages*.
+
+*Table 1. Some of the available language models*
+
+| Models | References | Layers | Dimensions | Language |
+|:---|:---|:---|:---|:---|
+| ‘bert-base-uncased’ | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12 | 768 | English |
+| ‘roberta-base’ | [Liu et al. 2019](https://arxiv.org/abs/1907.11692) | 12 | 768 | English |
+| ‘distilbert-base-cased’ | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108) | 6 | 768 | English |
+| ‘bert-base-multilingual-cased’ | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12 | 768 | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
+| ‘xlm-roberta-large’ | [Liu et al](https://arxiv.org/pdf/1907.11692) | 24 | 1024 | [100 language](https://huggingface.co/docs/transformers/multilingual) |
+
+See [HuggingFace](https://huggingface.co/models/) for a more
+comprehensive list of models.
+
+### An end-to-end package
+
+*Text* also provides functions to analyse the word embeddings with
+well-tested machine learning algorithms and statistics. The focus is to
+analyze and visualize text, and their relation to other text or
+numerical variables. For example, the `textTrain()` function is used to
+examine how well the word embeddings from a text can predict a numeric
+or categorical variable. Another example is functions plotting
+statistically significant words in the word embedding space.

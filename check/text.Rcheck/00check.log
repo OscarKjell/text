@@ -1,0 +1,121 @@
+* using log directory ‘/Users/oscarkjell/Desktop/1 Projects/0 Research/0_text/text/check/text.Rcheck’
+* using R version 4.5.2 (2025-10-31)
+* using platform: aarch64-apple-darwin20
+* R was compiled by
+    Apple clang version 16.0.0 (clang-1600.0.26.6)
+    GNU Fortran (GCC) 14.2.0
+* running under: macOS 27.0.1
+* using session charset: UTF-8
+* using options ‘--no-manual --as-cran’
+* checking for file ‘text/DESCRIPTION’ ... OK
+* checking extension type ... Package
+* this is package ‘text’ version ‘1.9.1’
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ... [4s/137s] NOTE
+Maintainer: ‘Oscar Kjell <oscar.kjell@psy.lu.se>’
+
+Found the following (possibly) invalid URLs:
+  URL: https://open.lnu.se/index.php/metapsychology/article/view/892/
+    From: inst/doc/singularity_transformers_container.html
+    Status: 503
+    Message: Service Unavailable
+  URL: https://pubmed.ncbi.nlm.nih.gov/29963879/
+    From: inst/doc/text.html
+    Status: 203
+    Message: Non-Authoritative Information
+  URL: https://pubmed.ncbi.nlm.nih.gov/37126041/
+    From: man/Language_based_assessment_data_8.Rd
+          inst/CITATION
+          inst/doc/huggingface_in_r.html
+          inst/doc/text.html
+          README.md
+    Status: 203
+    Message: Non-Authoritative Information
+  URL: https://www.r-talk.org/
+    From: README.md
+    Status: Error
+    Message: libcurl error code 60:
+      	SSL certificate problem: self signed certificate in certificate chain
+      	(Status without verification: )
+Please use DOIs for the following publisher URLs:
+  https://pubmed.ncbi.nlm.nih.gov/29963879/
+  https://pubmed.ncbi.nlm.nih.gov/37126041/
+
+Size of tarball: 21762452 bytes
+* checking package namespace information ... OK
+* checking package dependencies ... INFO
+Imports includes 22 non-default packages.
+Importing from so many packages makes the package vulnerable to any of
+them becoming unavailable.  Move as many as possible to Suggests and
+use conditionally.
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘text’ can be installed ... OK
+* checking installed package size ... INFO
+  installed size is  5.0Mb
+  sub-directories of 1Mb or more:
+    doc    2.0Mb
+    help   1.9Mb
+* checking package directory ... OK
+* checking for future file timestamps ... NOTE
+unable to verify current time
+* checking ‘build’ directory ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... NOTE
+Non-standard file/directory found at top level:
+  ‘dev’
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking whether startup messages can be suppressed ... OK
+* checking use of S3 registration ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... [21s/27s] NOTE
+textWordPrediction: no visible binding for global variable
+  ‘word_mean_value’
+textWordPrediction: no visible binding for global variable ‘plotted’
+textWordPrediction: no visible binding for global variable ‘p_values’
+textWordPrediction: no visible binding for global variable ‘p_z’
+Undefined global functions or variables:
+  p_values p_z plotted word_mean_value
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd line widths ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking contents of ‘data’ directory ... OK
+* checking data for non-ASCII characters ... OK
+* checking LazyData ... OK
+* checking data for ASCII and uncompressed saves ... OK
+* checking installed files from ‘inst/doc’ ... OK
+* checking files in ‘vignettes’ ... OK
+* checking examples ... [11s/15s] OK
+* checking examples with --run-donttest ... [12s/17s] OK
+* checking for unstated dependencies in ‘tests’ ... OK
+* checking tests ... OK
+  Running ‘testthat.R’
+* checking for unstated dependencies in vignettes ... OK
+* checking package vignettes ... OK
+* checking re-building of vignette outputs ... [15s/26s] OK
+* checking for non-standard things in the check directory ... OK
+* checking for detritus in the temp directory ... OK
+* DONE
+Status: 4 NOTEs

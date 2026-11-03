@@ -95,6 +95,21 @@ projection_results$word_data
 
 ```
 
+The p-values in `textProjection()` can be based on two different null distributions, set with the `null_method` parameter. The default, `"token"`, pools the words of the low- and high-scoring groups, assigns each token at random to one of two random groups, and compares every word with this pooled null distribution; it asks whether a word leans further toward one group than words do when labels are assigned at random to individual tokens, so it describes the texts at hand. The alternative, `"participant"`, shuffles the x (and y) values across participants, recomputes the entire projection for each permutation, and compares every word with its own null distribution; each participant counts as one independent observation, so it asks whether the word's association with x is expected to generalize to new participants. The two methods answer different questions, and the participant method additionally returns `p_z_dot` columns (a normal approximation from each word's own null, useful when correcting many words for multiple comparisons).
+
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
+# Participant-permutation null: every word is compared with its own null distribution
+projection_results_participant <- textProjection(
+  words = Language_based_assessment_data_8$harmonywords,
+  word_embeddings = word_embeddings$texts,
+  word_types_embeddings = word_embeddings$word_types,
+  x = Language_based_assessment_data_8$hilstotal,
+  null_method = "participant",
+  Npermutations = 10000
+)
+```
+
+Relatedly, `textWordPrediction()` scores each unique word by the mean x of the participants who used it, predicts that mean from the word's decontextualized embedding with ridge regression, and computes p-values by permuting x across participants, with every word compared with its own null distribution. Its `centre = "token_mean"` option separates word-specific signal from verbosity effects (when x is related to how much people write).
 
 ### textProjectionPlot(): A two-dimensional word plot
 

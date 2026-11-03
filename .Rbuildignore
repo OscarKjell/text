@@ -12,3 +12,6 @@
 ^vignettes/resources.Rmd
 ^\.positai$
 ^\.claude$
+^text_handoff_to_be_incorporated$
+^dev$
+^vignettes/articles$

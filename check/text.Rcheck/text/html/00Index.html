@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head><title>R: Analyses of Text using Transformers Models from HuggingFace,
+Natural Language Processing and Machine Learning</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body><div class="container">
+<h1> Analyses of Text using Transformers Models from HuggingFace,
+Natural Language Processing and Machine Learning
+<img class="toplogo" src="../../../doc/html/Rlogo.svg" alt="[R logo]">
+</h1>
+<hr>
+<div style="text-align: center;">
+<a href="../../../doc/html/packages.html"><img class="arrow" src="../../../doc/html/left.jpg" alt="[Up]"></a>
+<a href="../../../doc/html/index.html"><img class="arrow" src="../../../doc/html/up.jpg" alt="[Top]"></a>
+</div><h2>Documentation for package &lsquo;text&rsquo; version 1.9.1</h2>
+
+<ul><li><a href="../DESCRIPTION" type="text/plain; charset=utf-8">DESCRIPTION file</a>.</li>
+<li><a href="../doc/index.html">User guides, package vignettes and other documentation.</a></li>
+<li><a href="../NEWS.md">Package NEWS</a>.</li>
+</ul>
+
+<h2>Help Pages</h2>
+
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="centrality_data_harmony.html">centrality_data_harmony</a></td>
+<td>Example data for plotting a Semantic Centrality Plot.</td></tr>
+<tr><td style="width: 25%;"><a href="DP_projections_HILS_SWLS_100.html">DP_projections_HILS_SWLS_100</a></td>
+<td>Data for plotting a Dot Product Projection Plot.</td></tr>
+<tr><td style="width: 25%;"><a href="Language_based_assessment_data_3_100.html">Language_based_assessment_data_3_100</a></td>
+<td>Example text and numeric data.</td></tr>
+<tr><td style="width: 25%;"><a href="Language_based_assessment_data_8.html">Language_based_assessment_data_8</a></td>
+<td>Text and numeric data for 10 participants.</td></tr>
+<tr><td style="width: 25%;"><a href="PC_projections_satisfactionwords_40.html">PC_projections_satisfactionwords_40</a></td>
+<td>Example data for plotting a Principle Component Projection Plot.</td></tr>
+<tr><td style="width: 25%;"><a href="raw_embeddings_1.html">raw_embeddings_1</a></td>
+<td>Word embeddings from textEmbedRawLayers function</td></tr>
+<tr><td style="width: 25%;"><a href="textPredict.html">textAssess</a></td>
+<td>textPredict, textAssess and textClassify</td></tr>
+<tr><td style="width: 25%;"><a href="textTopics.html">textBERTopics</a></td>
+<td>BERTopic</td></tr>
+<tr><td style="width: 25%;"><a href="textCentrality.html">textCentrality</a></td>
+<td>Semantic similarity score between single words' and an aggregated word embeddings</td></tr>
+<tr><td style="width: 25%;"><a href="textCentralityPlot.html">textCentralityPlot</a></td>
+<td>Plots words from textCentrality()</td></tr>
+<tr><td style="width: 25%;"><a href="textPredict.html">textClassify</a></td>
+<td>textPredict, textAssess and textClassify</td></tr>
+<tr><td style="width: 25%;"><a href="textClean.html">textClean</a></td>
+<td>Cleans text from standard personal information</td></tr>
+<tr><td style="width: 25%;"><a href="textCleanNonASCII.html">textCleanNonASCII</a></td>
+<td>Clean non-ASCII characters</td></tr>
+<tr><td style="width: 25%;"><a href="textDescriptives.html">textDescriptives</a></td>
+<td>Compute descriptive statistics of character variables.</td></tr>
+<tr><td style="width: 25%;"><a href="textDiagnostics.html">textDiagnostics</a></td>
+<td>Run diagnostics for the text package</td></tr>
+<tr><td style="width: 25%;"><a href="textDimName.html">textDimName</a></td>
+<td>Change dimension names</td></tr>
+<tr><td style="width: 25%;"><a href="textDistance.html">textDistance</a></td>
+<td>Semantic distance</td></tr>
+<tr><td style="width: 25%;"><a href="textDistanceMatrix.html">textDistanceMatrix</a></td>
+<td>Semantic distance across multiple word embeddings</td></tr>
+<tr><td style="width: 25%;"><a href="textDistanceNorm.html">textDistanceNorm</a></td>
+<td>Semantic distance between a text variable and a word norm</td></tr>
+<tr><td style="width: 25%;"><a href="textDomainCompare.html">textDomainCompare</a></td>
+<td>Compare two language domains</td></tr>
+<tr><td style="width: 25%;"><a href="textEmbed.html">textEmbed</a></td>
+<td>textEmbed() extracts layers and aggregate them to word embeddings, for all character variables in a given dataframe.</td></tr>
+<tr><td style="width: 25%;"><a href="textEmbedLayerAggregation.html">textEmbedLayerAggregation</a></td>
+<td>Aggregate layers</td></tr>
+<tr><td style="width: 25%;"><a href="textEmbedRawLayers.html">textEmbedRawLayers</a></td>
+<td>Extract layers of hidden states</td></tr>
+<tr><td style="width: 25%;"><a href="textEmbedReduce.html">textEmbedReduce</a></td>
+<td>Pre-trained dimension reduction (experimental)</td></tr>
+<tr><td style="width: 25%;"><a href="textEmbedStatic.html">textEmbedStatic</a></td>
+<td>Apply static word embeddings</td></tr>
+<tr><td style="width: 25%;"><a href="textExamples.html">textExamples</a></td>
+<td>Identify language examples.</td></tr>
+<tr><td style="width: 25%;"><a href="textFindNonASCII.html">textFindNonASCII</a></td>
+<td>Detect non-ASCII characters</td></tr>
+<tr><td style="width: 25%;"><a href="textFineTuneDomain.html">textFineTuneDomain</a></td>
+<td>Domain Adapted Pre-Training (EXPERIMENTAL - under development)</td></tr>
+<tr><td style="width: 25%;"><a href="textFineTuneTask.html">textFineTuneTask</a></td>
+<td>Task Adapted Pre-Training (EXPERIMENTAL - under development)</td></tr>
+<tr><td style="width: 25%;"><a href="textGeneration.html">textGeneration</a></td>
+<td>Text generation</td></tr>
+<tr><td style="width: 25%;"><a href="textLBAM.html">textLBAM</a></td>
+<td>The LBAM library</td></tr>
+<tr><td style="width: 25%;"><a href="textModelLayers.html">textModelLayers</a></td>
+<td>Number of layers</td></tr>
+<tr><td style="width: 25%;"><a href="textModels.html">textModels</a></td>
+<td>Check downloaded, available models.</td></tr>
+<tr><td style="width: 25%;"><a href="textModelsRemove.html">textModelsRemove</a></td>
+<td>Delete a specified model</td></tr>
+<tr><td style="width: 25%;"><a href="textNER.html">textNER</a></td>
+<td>Named Entity Recognition. (experimental)</td></tr>
+<tr><td style="width: 25%;"><a href="textPCA.html">textPCA</a></td>
+<td>textPCA()</td></tr>
+<tr><td style="width: 25%;"><a href="textPCAPlot.html">textPCAPlot</a></td>
+<td>textPCAPlot</td></tr>
+<tr><td style="width: 25%;"><a href="textPlot.html">textPlot</a></td>
+<td>Plot words</td></tr>
+<tr><td style="width: 25%;"><a href="textPredict.html">textPredict</a></td>
+<td>textPredict, textAssess and textClassify</td></tr>
+<tr><td style="width: 25%;"><a href="textPredictAll.html">textPredictAll</a></td>
+<td>Predict from several models, selecting the correct input</td></tr>
+<tr><td style="width: 25%;"><a href="textPredictTest.html">textPredictTest</a></td>
+<td>Significance testing for model prediction performance</td></tr>
+<tr><td style="width: 25%;"><a href="textProjection.html">textProjection</a></td>
+<td>Supervised Dimension Projection</td></tr>
+<tr><td style="width: 25%;"><a href="textProjectionPlot.html">textProjectionPlot</a></td>
+<td>Plot Supervised Dimension Projection</td></tr>
+<tr><td style="width: 25%;"><a href="textQA.html">textQA</a></td>
+<td>Question Answering. (experimental)</td></tr>
+<tr><td style="width: 25%;"><a href="textrpp_initialize.html">textrpp_initialize</a></td>
+<td>Initialize text required python packages</td></tr>
+<tr><td style="width: 25%;"><a href="textrpp_install.html">textrpp_install</a></td>
+<td>Install text required python packages in conda or virtualenv environment</td></tr>
+<tr><td style="width: 25%;"><a href="textrpp_install.html">textrpp_install_virtualenv</a></td>
+<td>Install text required python packages in conda or virtualenv environment</td></tr>
+<tr><td style="width: 25%;"><a href="textrpp_uninstall.html">textrpp_uninstall</a></td>
+<td>Uninstall textrpp conda environment</td></tr>
+<tr><td style="width: 25%;"><a href="textSimilarity.html">textSimilarity</a></td>
+<td>Semantic Similarity</td></tr>
+<tr><td style="width: 25%;"><a href="textSimilarityMatrix.html">textSimilarityMatrix</a></td>
+<td>Semantic similarity across multiple word embeddings</td></tr>
+<tr><td style="width: 25%;"><a href="textSimilarityNorm.html">textSimilarityNorm</a></td>
+<td>Semantic similarity between a text variable and a word norm</td></tr>
+<tr><td style="width: 25%;"><a href="textSum.html">textSum</a></td>
+<td>Summarize texts. (experimental)</td></tr>
+<tr><td style="width: 25%;"><a href="textTokenize.html">textTokenize</a></td>
+<td>Tokenize text-variables</td></tr>
+<tr><td style="width: 25%;"><a href="textTokenizeAndCount.html">textTokenizeAndCount</a></td>
+<td>Tokenize and count</td></tr>
+<tr><td style="width: 25%;"><a href="textTopics.html">textTopics</a></td>
+<td>BERTopic</td></tr>
+<tr><td style="width: 25%;"><a href="textTopicsReduce.html">textTopicsReduce</a></td>
+<td>textTopicsReduce (EXPERIMENTAL)</td></tr>
+<tr><td style="width: 25%;"><a href="textTopicsTest.html">textTopicsTest</a></td>
+<td>Wrapper for topicsTest function from the topics package</td></tr>
+<tr><td style="width: 25%;"><a href="textTopicsTree.html">textTopicsTree</a></td>
+<td>textTopicsTest (EXPERIMENTAL) to get the hierarchical topic tree</td></tr>
+<tr><td style="width: 25%;"><a href="textTopicsWordcloud.html">textTopicsWordcloud</a></td>
+<td>Plot word clouds</td></tr>
+<tr><td style="width: 25%;"><a href="textTrain.html">textTrain</a></td>
+<td>Trains word embeddings</td></tr>
+<tr><td style="width: 25%;"><a href="textTrainLists.html">textTrainLists</a></td>
+<td>Train lists of word embeddings</td></tr>
+<tr><td style="width: 25%;"><a href="textTrainN.html">textTrainN</a></td>
+<td>Cross-validated accuracies across sample-sizes</td></tr>
+<tr><td style="width: 25%;"><a href="textTrainNPlot.html">textTrainNPlot</a></td>
+<td>Plot cross-validated accuracies across sample sizes</td></tr>
+<tr><td style="width: 25%;"><a href="textTrainRandomForest.html">textTrainRandomForest</a></td>
+<td>Trains word embeddings usig random forest</td></tr>
+<tr><td style="width: 25%;"><a href="textTrainRegression.html">textTrainRegression</a></td>
+<td>Train word embeddings to a numeric variable.</td></tr>
+<tr><td style="width: 25%;"><a href="textTranslate.html">textTranslate</a></td>
+<td>Translation. (experimental)</td></tr>
+<tr><td style="width: 25%;"><a href="textWordPrediction.html">textWordPrediction</a></td>
+<td>Compute word-level prediction scores and permutation-based p-values</td></tr>
+<tr><td style="width: 25%;"><a href="textZeroShot.html">textZeroShot</a></td>
+<td>Zero Shot Classification (Experimental)</td></tr>
+<tr><td style="width: 25%;"><a href="word_embeddings_4.html">word_embeddings_4</a></td>
+<td>Word embeddings for 4 text variables for 40 participants</td></tr>
+</table>
+</div></body></html>
