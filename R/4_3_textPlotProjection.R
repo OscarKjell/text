@@ -29,6 +29,22 @@
 #' @param mean_centering (boolean) Separately mean centering the Group 1 split aggregation embedding,
 #' and the Group 2 split aggregation embedding
 #' @param mean_centering2 (boolean) Separately mean centering the G1 and G2 split aggregation embeddings
+#' @param null_method (character) Method for the null distribution that the p-values are based on
+#' (null_method = "token", reproduces the original version of the function).
+#' "token": the words of the two groups are pooled, each token is randomly assigned to one of two
+#' random groups to create a random projection axis, and every word is compared with this
+#' pooled null distribution. This asks whether a word leans further toward one group than words do
+#' when labels are assigned at random to individual tokens, so it describes the texts at hand.
+#' "participant": the x (and y) values are shuffled across participants, the entire projection is
+#' recomputed for each permutation, and every word is compared with its own null distribution;
+#' p = (1 + number of |null| >= |observed|) / (Npermutations + 1). Each participant counts as one
+#' independent observation, so this tests whether the word is related to x in a way expected to
+#' generalize to new participants. With "participant", the output also contains p_z_dot columns:
+#' a normal approximation from each word's own null distribution, which has no
+#' 1/(Npermutations + 1) floor (useful when correcting many words for multiple comparisons).
+#' For two-dimensional plots, x and y are permuted separately.
+#' The "participant" method currently requires the default settings for pca, aggregation,
+#' word_weight_power, mean_centering and mean_centering2, and split = "quartile" or "mean".
 #' @param Npermutations (numeric) Number of permutations in the creation of the null distribution (default = 10000).
 #' @param n_per_split (numeric) Setting to split Npermutations to avoid reaching computer memory limits;
 #' set it lower than Npermutations <- and the higher it is set the faster the computation completes,
@@ -72,6 +88,7 @@ textProjection <- function(
     min_freq_words_test = 0,
     mean_centering = FALSE,
     mean_centering2 = FALSE,
+    null_method = "token",
     Npermutations = 10000,
     n_per_split = 50000,
     seed = 1003) {
@@ -79,6 +96,39 @@ textProjection <- function(
   # If there only is one word_types in a list, get it:
   if (length(word_types_embeddings) == 1) {
     word_types_embeddings <- word_types_embeddings[[1]]
+  }
+
+  if (!null_method %in% c("token", "participant")) {
+    stop("null_method must be \"token\" or \"participant\".")
+  }
+  if (null_method == "participant") {
+    if (is.numeric(pca) || aggregation != "mean" || word_weight_power != 1 ||
+      isTRUE(mean_centering) || isTRUE(mean_centering2) ||
+      !split %in% c("quartile", "mean")) {
+      stop(
+        "null_method = \"participant\" currently requires the default settings for ",
+        "pca, aggregation, word_weight_power, mean_centering and mean_centering2, ",
+        "and split = \"quartile\" or \"mean\"."
+      )
+    }
+  }
+
+  # Normalise word types for lookup (strips RoBERTa/SentencePiece markers and
+  # case; leaves lower-cased vocabularies such as bert-base-uncased unchanged).
+  # NOT applied when pca is numeric: the PCA branch below looks words up by
+  # the RAW tokenizer tokens (hg_tokenizer with tolower = FALSE), so the
+  # vocabulary must keep its markers, case and word-piece tokens there.
+  if (!is.numeric(pca)) {
+    word_types_embeddings <- normalise_word_types(word_types_embeddings)
+
+    # Report the share of the language that has an embedding
+    uw_all <- unique_freq_words(if (is.data.frame(words)) words[[1]] else words)
+    matched <- uw_all$words %in% word_types_embeddings$words
+    message(colourise(paste0(
+      "Coverage: ", round(100 * mean(matched), 1), "% of word types and ",
+      round(100 * sum(uw_all$n[matched]) / sum(uw_all$n), 1),
+      "% of tokens have an embedding.\n"
+    ), "blue"))
   }
 
   # Description to include as a comment in the end of function
@@ -94,10 +144,19 @@ textProjection <- function(
     "split = ", split,
     "word_weight_power =", word_weight_power,
     "min_freq_words_test =", min_freq_words_test,
+    "null_method =", null_method,
     "Npermutations =", Npermutations,
     "n_per_split =", n_per_split,
     sep = " ", collapse = " "
   )
+
+  # Set up the sparse count-matrix machinery for the participant permutation
+  if (null_method == "participant") {
+    perm_S <- perm_setup(
+      perm_count_matrix(if (is.data.frame(words)) words[[1]] else words),
+      word_types_embeddings
+    )
+  }
 
   set.seed(seed)
   # PCA on word_types_embeddings
@@ -496,6 +555,24 @@ textProjection <- function(
     dot_result$n_g1_g2.x[is.na(dot_result$n_g1_g2.x)] <- 0
     colnames(dot_result) <- c("words", "n", "dot", "p_values_dot", "n_g1", "n_g2")
 
+    # Participant permutation: every word is compared with its own null
+    # distribution; x (and y) are permuted separately per dimension.
+    if (null_method == "participant") {
+      set.seed(seed + i_dim)
+      perm_res <- perm_test_participant(
+        S = perm_S,
+        x = as.numeric(x1$value),
+        split = split,
+        floor_n = min_freq_words_test,
+        Npermutations = Npermutations
+      )
+      i_match <- match(dot_result$words, perm_res$words)
+      ok <- !is.na(i_match)
+      dot_result$p_values_dot[ok] <- perm_res$p[i_match[ok]]
+      dot_result$p_z_dot <- NA_real_
+      dot_result$p_z_dot[ok] <- perm_res$p_z[i_match[ok]]
+    }
+
     to_be_saved_below <- list(
       tibble::as_tibble_row(Aggregated_word_embedding_group1),
       tibble::as_tibble_row(Aggregated_word_embedding_group2),
@@ -524,8 +601,10 @@ textProjection <- function(
   # Arranging it to one tibble; accounting for x versus x and y input
   if (is.null(y) == TRUE) {
     word_data_tibble <- word_data_list[[1]]
-    colnames(word_data_tibble) <-
-      c("words", "n", "dot.x", "p_values_dot.x", "n_g1.x", "n_g2.x")
+    colnames(word_data_tibble) <- c(
+      "words", "n",
+      paste0(setdiff(colnames(word_data_tibble), c("words", "n")), ".x")
+    )
     word_data_tibble$n.percent <- word_data_tibble$n / sum(word_data_tibble$n)
     word_data_tibble$N_participant_responses <- c(rep(N_participant_responses, nrow(word_data_tibble)))
 

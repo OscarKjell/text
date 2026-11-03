@@ -1,0 +1,38 @@
+This is text (version 1.9.1).
+Newer versions may have improved functions and updated defaults to reflect current understandings of the state-of-the-art.
+
+MacOS detected: Setting OpenMP environment variables to avoid potential crash due to libomp conflicts. 
+When using the L-BAM library, be aware that models may be downloaded from external sources. Using models may carry security risks, including the possibility of malicious code in RDS files. Always review and trust the source of any model you load.  
+The text package is provided 'as is' without any warranty of any kind. 
+
+For more information about the package see www.r-text.org and www.r-topics.org.
+
+Successfully initialized text required python packages.
+
+Python options: 
+ type = "textrpp_condaenv", 
+ name = "textrpp_condaenv".
+[12:07:37] textProjection, null_method = token (back-compat check) ...
+Coverage: 84.1% of word types and 96.1% of tokens have an embedding.
+
+Creating null distribution. 1/1 of permutations computed. (duration: 3.452744 secs).
+
+token back-compat: words matched: 2621 / 2621 | max |dot diff|: 3.11e-15 | max |p diff|: 0.209 
+[12:08:00] textProjection, null_method = participant: real ...
+Coverage: 84.1% of word types and 96.1% of tokens have an embedding.
+
+Creating null distribution. 1/1 of permutations computed. (duration: 3.659473 secs).
+
+real : participant FDR-significant = 325 of 869 | seconds = 106 | max |dot diff| vs token run: 0 
+  p_z present: TRUE | p floor respected: TRUE 
+[12:09:46] textProjection, null_method = participant: noise ...
+Coverage: 84.1% of word types and 96.1% of tokens have an embedding.
+
+Creating null distribution. 1/1 of permutations computed. (duration: 11.193281 secs).
+
+noise : participant FDR-significant = 0 of 869 | seconds = 151  
+[12:12:17] textWordPrediction (new implementation), PHQ-9 ...
+Coverage: 84.1% of word types and 96.1% of tokens have an embedding.
+
+word prediction: tested = 867 | FDR-significant = 51 | min p = 1e-04 | lambda = 1580 | loo_r = 0.492 | seconds = 29 
+[12:12:45] 90_package_verification.R DONE

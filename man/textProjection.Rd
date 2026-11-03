@@ -17,6 +17,7 @@ textProjection(
   min_freq_words_test = 0,
   mean_centering = FALSE,
   mean_centering2 = FALSE,
+  null_method = "token",
   Npermutations = 10000,
   n_per_split = 50000,
   seed = 1003
@@ -60,6 +61,23 @@ times (default = 0); when creating the Supervised Dimension Projection line
 and the Group 2 split aggregation embedding}
 
 \item{mean_centering2}{(boolean) Separately mean centering the G1 and G2 split aggregation embeddings}
+
+\item{null_method}{(character) Method for the null distribution that the p-values are based on
+(null_method = "token", reproduces the original version of the function).
+"token": the words of the two groups are pooled, each token is randomly assigned to one of two
+random groups to create a random projection axis, and every word is compared with this
+pooled null distribution. This asks whether a word leans further toward one group than words do
+when labels are assigned at random to individual tokens, so it describes the texts at hand.
+"participant": the x (and y) values are shuffled across participants, the entire projection is
+recomputed for each permutation, and every word is compared with its own null distribution;
+p = (1 + number of |null| >= |observed|) / (Npermutations + 1). Each participant counts as one
+independent observation, so this tests whether the word is related to x in a way expected to
+generalize to new participants. With "participant", the output also contains p_z_dot columns:
+a normal approximation from each word's own null distribution, which has no
+1/(Npermutations + 1) floor (useful when correcting many words for multiple comparisons).
+For two-dimensional plots, x and y are permuted separately.
+The "participant" method currently requires the default settings for pca, aggregation,
+word_weight_power, mean_centering and mean_centering2, and split = "quartile" or "mean".}
 
 \item{Npermutations}{(numeric) Number of permutations in the creation of the null distribution (default = 10000).}
 

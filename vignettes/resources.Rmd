@@ -20,19 +20,21 @@ knitr::opts_chunk$set(
 
 - **The *text* package tutorial**
 
-  [Full text on PsycNET](https://doi.org/10.1037/met0000542).
-  
-  [OSF preprint](https://osf.io/preprints/psyarxiv/293kt_v1).
-  
   [Tutorial code](https://r-text.org/articles/psychological_methods.html)
 
-- **The Language-Based Assessment Model (L-BAM) Library** 
+  [Full text on PsycNET](https://doi.org/10.1037/met0000542).
 
-  [OSF preprint](https://osf.io/preprints/psyarxiv/n8rza_v1)
-  
+  [OSF preprint](https://osf.io/preprints/psyarxiv/293kt_v1).
+
+- **The Language-Based Assessment Model (L-BAM) Library**
+
   [Tutorial code](https://r-text.org/articles/lbam_tutorial.html)
 
-- **Multiple Methods for Visualizing Human Language: A Tutorial for Social and Behavioural Scientists** 
+  [OSF preprint](https://osf.io/preprints/psyarxiv/n8rza_v1)
+
+- **Multiple Methods for Visualizing Human Language: A Tutorial for Social and Behavioural Scientists**
+
+  [Tutorial Paper](https://r-text.org/articles/visualizations.html)
 
   [OSF preprint](https://osf.io/preprints/psyarxiv/nxfvr_v1)
 

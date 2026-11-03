@@ -26,6 +26,7 @@ Imports:
     dplyr,
     tibble,
     stringi,
+    Matrix,
     tidyr,
     ggplot2,
     ggrepel,

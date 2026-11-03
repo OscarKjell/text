@@ -8,6 +8,7 @@ utils::globalVariables(c(
   "textTrainRandomForest", "textCentrality", "textCentralityPlot", "textEmbed", "textEmbedLayersOutput",
 
   # HELPER FUNCTIONS
+  "word_mean_value", "plotted", "p_values", "p_z",
   "addEqualNrNArows", "applysemrep",
 
   # PYTHON FUNCTIONS
