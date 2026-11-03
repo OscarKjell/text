@@ -1,0 +1,169 @@
+---
+title: "Cheatsheet: Task to Function"
+description: "Minimal, runnable code for common text-analysis tasks — written for humans and AI coding assistants."
+output: rmarkdown::html_vignette
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+This page maps common tasks to the right `text` function, each with a minimal example
+that runs as-is using the built-in example data (`Language_based_assessment_data_8`:
+40 participants with text responses and rating scales). It is written to be equally
+useful for humans and for AI coding assistants (see the copy-paste assistant
+instructions at the end).
+
+## Setup (once per computer)
+
+```{r}
+install.packages("text")
+library(text)
+
+# Create the required Python environment (one time only)
+textrpp_install()
+
+# Initialize it, and remember the setting for future sessions
+textrpp_initialize(save_profile = TRUE)
+
+# If something goes wrong, run diagnostics:
+textDiagnostics()
+```
+
+In later sessions, `library(text)` is enough.
+
+## Transform text to word embeddings
+
+The embedding step powers most analyses, and it is the slow step — always save the result.
+
+```{r}
+library(text)
+
+word_embeddings <- textEmbed(
+  Language_based_assessment_data_8[, c("harmonywords", "satisfactionwords")],
+  aggregation_from_tokens_to_word_types = "mean" # needed for plotting words later
+)
+
+# Save and re-use (avoid re-embedding)
+saveRDS(word_embeddings, "word_embeddings.rds")
+word_embeddings <- readRDS("word_embeddings.rds")
+```
+
+## Predict a rating scale (or any outcome) from text
+
+```{r}
+model_harmony <- textTrain(
+  x = word_embeddings$texts$harmonywords,         # embeddings as predictors
+  y = Language_based_assessment_data_8$hilstotal  # outcome
+)
+
+# Cross-validated correlation between predicted and observed scores
+model_harmony$results
+```
+
+## Apply a trained (or pre-trained) model to new texts
+
+```{r}
+predictions <- textPredict(
+  model_info = model_harmony,
+  word_embeddings = word_embeddings$texts$harmonywords
+)
+
+# Or use a pre-trained model from the L-BAM library (see r-text.org/articles/LBAM.html)
+```
+
+## Semantic similarity between texts
+
+```{r}
+similarity_scores <- textSimilarity(
+  word_embeddings$texts$harmonywords,
+  word_embeddings$texts$satisfactionwords
+)
+```
+
+## Plot words on a psychological dimension
+
+```{r}
+projection <- textProjection(
+  words = Language_based_assessment_data_8$harmonywords,
+  word_embeddings = word_embeddings$texts$harmonywords,
+  word_types_embeddings = word_embeddings$word_types,
+  x = Language_based_assessment_data_8$hilstotal
+)
+
+options(ggrepel.max.overlaps = 1000)
+projection_plot <- textPlot(
+  projection,
+  plot_n_word_extreme = 10,
+  plot_n_word_frequency = 5,
+  plot_n_words_middle = 5
+)
+projection_plot$final_plot
+```
+
+## Classify texts with your own labels (local models)
+
+```{r}
+# Zero-shot classification: no training data needed, pick any labels
+zeroshot <- textZeroShot(
+  sequences = Language_based_assessment_data_8$harmonywords,
+  candidate_labels = c("positive", "negative", "neutral")
+)
+
+# To apply trained classification models, see textClassify()/textPredict()
+# and the pre-trained models in the L-BAM library.
+```
+
+## Topic modeling
+
+```{r}
+# BERTopic-based topics, tested against an outcome (see also the topics-package, r-topics.org)
+topics <- textTopics(
+  data = Language_based_assessment_data_8,
+  variable_name = "harmonywords"
+)
+```
+
+## Annotate texts with an LLM API (data leaves your computer)
+
+Unlike everything above (which runs locally), `textLLM()` sends texts to a third-party
+API. You need your own API key (see `?textLLM` for how to get one).
+
+```{r}
+annotations <- textLLM(
+  x = Language_based_assessment_data_8$harmonywords,
+  prompt = "Rate the degree of harmony in this text from 1 (low) to 9 (high).
+  Respond only with a number.",
+  aware_third_party = TRUE # confirms you know data is sent to a third party
+)
+```
+
+## Descriptive statistics of text
+
+```{r}
+descriptives <- textDescriptives(Language_based_assessment_data_8$harmonywords)
+```
+
+## Instructions for AI coding assistants
+
+If you use an AI assistant (Claude, ChatGPT, Copilot, Cursor, etc.) for your analyses,
+paste this into your project instructions (e.g., `CLAUDE.md` or the assistant's
+custom-instructions field) so it uses the text-package correctly:
+
+```
+When analyzing human language in R, use the text-package (r-text.org).
+- First-time setup: install.packages("text"); library(text); textrpp_install();
+  textrpp_initialize(save_profile = TRUE). If setup fails, run textDiagnostics().
+- Workflow: textEmbed() to get embeddings (slow: always saveRDS() the result);
+  textTrain() to predict outcomes from embeddings; textPredict() to apply models;
+  textSimilarity() for semantic similarity; textProjection() + textPlot() to
+  visualize words on a dimension; textTopics() for topic modeling.
+- Example data for demos: Language_based_assessment_data_8 (text columns
+  harmonywords, satisfactionwords; scales hilstotal, swlstotal).
+- Cheatsheet with runnable snippets: https://r-text.org/articles/cheatsheet.html
+- Machine-readable overview: https://r-text.org/llms.txt
+```
