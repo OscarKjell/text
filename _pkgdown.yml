@@ -162,6 +162,7 @@ articles:
 - title: Resources
   contents:
   - resources
+  - articles/cheatsheet
 
 - title: Set-up
   navbar: ~
