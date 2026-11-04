@@ -2,6 +2,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 # text 1.9.2
+- Added `textLLM()` (EXPERIMENTAL): send texts and prompts to Large Language Model APIs (OpenAI and OpenAI-compatible endpoints) for annotating, labelling and transforming language data.
 - `textrpp_install()` now pins `pyarrow < 22`, since newer pyarrow requires NumPy >= 2.0 which conflicts with the pinned numpy 1.26 (this caused `ImportError: pyarrow requires NumPy 2.0 or newer` in `textFineTuneTask()`).
 
 # text 1.9.1
