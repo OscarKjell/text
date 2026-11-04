@@ -27,9 +27,23 @@ jobs:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      # The python installation (torch + CUDA wheels) is several GB; do not
+      # also keep copies of the downloaded wheels in pip's cache.
+      PIP_NO_CACHE_DIR: "1"
 
     steps:
       - uses: actions/checkout@v3
+
+      # Ubuntu runners have ~14 GB free, which is not enough for the conda env
+      # plus torch/CUDA wheels. Remove large preinstalled toolchains (~25 GB).
+      - name: Free disk space on Ubuntu
+        if: runner.os == 'Linux'
+        run: |
+          echo "Disk before cleanup:"; df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+            /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          sudo docker image prune --all --force || true
+          echo "Disk after cleanup:"; df -h /
 
       # Set up R environment
       - uses: r-lib/actions/setup-r@v2-branch
