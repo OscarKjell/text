@@ -65,6 +65,10 @@ textPlot(
   n_contrast_group_remove = FALSE,
   space = NULL,
   scaling = FALSE,
+  show_texts = FALSE,
+  texts_point_size = 1,
+  texts_point_alpha = 0.4,
+  texts_point_color = "#707070",
   ...
 )
 }
@@ -227,6 +231,20 @@ opposite side of its dot product projection (default = FALSE).}
 \item{space}{Provide a semantic space if using static embeddings and wanting to explore words (default = NULL).}
 
 \item{scaling}{Scaling word embeddings before aggregation (default = FALSE).}
+
+\item{show_texts}{(boolean) Overlay each entire text/response as a point on the same
+supervised dimension(s) as the words (default = FALSE). Requires word_data from
+textProjection(..., project_texts = TRUE), which adds the text_data element with the texts'
+projections. With projection_metric = "dot_product" texts and words are on the same scale;
+with "cohens_d" note that words are standardised by the pooled token null whereas each text
+is standardised by its own participant-permutation null. In 1-dimensional plots the text
+points are drawn at y = 0.}
+
+\item{texts_point_size}{Size of the points showing the texts (default = 1).}
+
+\item{texts_point_alpha}{Transparency of the points showing the texts (default = 0.4).}
+
+\item{texts_point_color}{Color of the points showing the texts (default = "#707070").}
 
 \item{...}{Settings for textOwnWordsProjection().}
 }

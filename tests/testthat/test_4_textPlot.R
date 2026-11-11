@@ -353,3 +353,39 @@ test_that("textProjection project_texts = TRUE returns text_data with finite pro
     "project_texts"
   )
 })
+
+test_that("textPlot show_texts overlays text points and warns without text_data", {
+  skip_on_cran()
+
+  proj_texts <- text::textProjection(
+    words = Language_based_assessment_data_8$harmonywords,
+    word_embeddings = word_embeddings_4$texts$harmonywords,
+    word_types_embeddings = word_embeddings_4$word_types,
+    x = Language_based_assessment_data_8$hilstotal,
+    Npermutations = 20,
+    n_per_split = 20,
+    project_texts = TRUE
+  )
+
+  p <- suppressWarnings(text::textPlot(
+    proj_texts,
+    show_texts = TRUE,
+    plot_n_word_extreme = 3,
+    plot_n_word_frequency = 3,
+    plot_n_words_middle = 3
+  ))
+  testthat::expect_true(ggplot2::is_ggplot(p$final_plot))
+
+  proj_no_texts <- proj_texts
+  proj_no_texts$text_data <- NULL
+  testthat::expect_warning(
+    text::textPlot(
+      proj_no_texts,
+      show_texts = TRUE,
+      plot_n_word_extreme = 3,
+      plot_n_word_frequency = 3,
+      plot_n_words_middle = 3
+    ),
+    "project_texts"
+  )
+})

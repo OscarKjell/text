@@ -829,6 +829,12 @@ textProjection <- function(
 #' @param n_contrast_group_remove Remove words that have higher frequency (N) on the other
 #' opposite side of its dot product projection (default = FALSE).
 #' @param scaling Scaling word embeddings before aggregation.
+#' @param show_texts (boolean) Overlay each entire text/response as a point on the same
+#' supervised dimension(s) as the words (default = FALSE). Requires word_data from
+#' textProjection(..., project_texts = TRUE); see textPlot for details.
+#' @param texts_point_size Size of the points showing the texts (default = 1).
+#' @param texts_point_alpha Transparency of the points showing the texts (default = 0.4).
+#' @param texts_point_color Color of the points showing the texts (default = "#707070").
 #' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.
 #' @examples
 #' # The test-data included in the package is called: DP_projections_HILS_SWLS_100.
@@ -930,7 +936,11 @@ textProjectionPlot <- function(
     n_contrast_group_color = NULL,
     n_contrast_group_remove = FALSE,
     space = NULL,
-    scaling = FALSE) {
+    scaling = FALSE,
+    show_texts = FALSE,
+    texts_point_size = 1,
+    texts_point_alpha = 0.4,
+    texts_point_color = "#707070") {
 
   plot <- textPlot(
     word_data = word_data,
@@ -990,7 +1000,11 @@ textProjectionPlot <- function(
     n_contrast_group_color = n_contrast_group_color,
     n_contrast_group_remove = n_contrast_group_remove,
     space = space,
-    scaling = scaling
+    scaling = scaling,
+    show_texts = show_texts,
+    texts_point_size = texts_point_size,
+    texts_point_alpha = texts_point_alpha,
+    texts_point_color = texts_point_color
   )
 
   return(plot)

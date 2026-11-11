@@ -63,7 +63,11 @@ textProjectionPlot(
   n_contrast_group_color = NULL,
   n_contrast_group_remove = FALSE,
   space = NULL,
-  scaling = FALSE
+  scaling = FALSE,
+  show_texts = FALSE,
+  texts_point_size = 1,
+  texts_point_alpha = 0.4,
+  texts_point_color = "#707070"
 )
 }
 \arguments{
@@ -211,6 +215,16 @@ opposite side of its dot product projection (default = FALSE).}
 \item{space}{Provide a semantic space if using static embeddings and wanting to explore words.}
 
 \item{scaling}{Scaling word embeddings before aggregation.}
+
+\item{show_texts}{(boolean) Overlay each entire text/response as a point on the same
+supervised dimension(s) as the words (default = FALSE). Requires word_data from
+textProjection(..., project_texts = TRUE); see textPlot for details.}
+
+\item{texts_point_size}{Size of the points showing the texts (default = 1).}
+
+\item{texts_point_alpha}{Transparency of the points showing the texts (default = 0.4).}
+
+\item{texts_point_color}{Color of the points showing the texts (default = "#707070").}
 }
 \value{
 A 1- or 2-dimensional word plot, as well as tibble with processed data used to plot.

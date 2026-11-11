@@ -743,6 +743,16 @@ adjust_for_plot_type <- function(
 #' @param n_contrast_group_remove Remove words that have higher frequency (N) on the other
 #' opposite side of its dot product projection (default = FALSE).
 #' @param scaling Scaling word embeddings before aggregation (default = FALSE).
+#' @param show_texts (boolean) Overlay each entire text/response as a point on the same
+#' supervised dimension(s) as the words (default = FALSE). Requires word_data from
+#' textProjection(..., project_texts = TRUE), which adds the text_data element with the texts'
+#' projections. With projection_metric = "dot_product" texts and words are on the same scale;
+#' with "cohens_d" note that words are standardised by the pooled token null whereas each text
+#' is standardised by its own participant-permutation null. In 1-dimensional plots the text
+#' points are drawn at y = 0.
+#' @param texts_point_size Size of the points showing the texts (default = 1).
+#' @param texts_point_alpha Transparency of the points showing the texts (default = 0.4).
+#' @param texts_point_color Color of the points showing the texts (default = "#707070").
 #' @param ... Settings for textOwnWordsProjection().
 #' @return A 1- or 2-dimensional word plot, as well as tibble with processed data used
 #' to plot.
@@ -845,6 +855,10 @@ textPlot <- function(
     n_contrast_group_remove = FALSE,
     space = NULL,
     scaling = FALSE,
+    show_texts = FALSE,
+    texts_point_size = 1,
+    texts_point_alpha = 0.4,
+    texts_point_color = "#707070",
     ...) {
 
   ##### Comment to be saved ####
@@ -866,6 +880,7 @@ textPlot <- function(
     "overlapping", overlapping,
     "p_adjust_method = ", p_adjust_method,
     "projection_metric = ", projection_metric,
+    "show_texts = ", show_texts,
     "bivariate_color_codes =", paste(bivariate_color_codes, collapse = " "),
     "word_size_range =", paste(word_size_range, sep = "-", collapse = " - "),
     "position_jitter_hight =", position_jitter_hight,
@@ -1357,6 +1372,42 @@ textPlot <- function(
     y_axes_label = y_axes_label,
     y_axes_values = y_axes_values
   )
+
+  #### Overlay entire texts/responses as points ####
+  if (isTRUE(show_texts)) {
+    if (is.null(word_data$text_data)) {
+      warning(
+        "show_texts = TRUE requires word_data from ",
+        "textProjection(..., project_texts = TRUE); no text_data found, ",
+        "so no text points are plotted."
+      )
+    } else {
+      text_points <- tibble::tibble(
+        texts_x = if (projection_metric == "cohens_d") {
+          word_data$text_data$cohens_d.x
+        } else {
+          word_data$text_data$dot.x
+        }
+      )
+      if (y_axes == TRUE) {
+        text_points$texts_y <- if (projection_metric == "cohens_d") {
+          word_data$text_data$cohens_d.y
+        } else {
+          word_data$text_data$dot.y
+        }
+      } else {
+        text_points$texts_y <- 0
+      }
+      plot <- plot + ggplot2::geom_point(
+        data = text_points,
+        ggplot2::aes(x = texts_x, y = texts_y),
+        inherit.aes = FALSE,
+        size = texts_point_size,
+        alpha = texts_point_alpha,
+        color = texts_point_color
+      )
+    }
+  }
 
   #### Reset overlapping ####
   options(ggrepel.max.overlaps = 10)
