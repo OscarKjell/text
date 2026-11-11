@@ -315,7 +315,8 @@ test_that("textProjection project_texts = TRUE returns text_data with finite pro
     x = Language_based_assessment_data_8$hilstotal,
     Npermutations = 20,
     n_per_split = 20,
-    project_texts = TRUE
+    project_texts = TRUE,
+    project_texts_unit = "texts"
   )
 
   testthat::expect_named(proj_texts, c("background", "word_data", "text_data"))
@@ -323,8 +324,9 @@ test_that("textProjection project_texts = TRUE returns text_data with finite pro
   testthat::expect_true(tibble::is_tibble(td))
   testthat::expect_equal(nrow(td), length(Language_based_assessment_data_8$harmonywords))
   testthat::expect_true(all(c(
-    "texts", "value.x", "dot.x", "p_values_dot.x", "p_z_dot.x", "cohens_d.x"
+    "participant_id", "texts", "value.x", "dot.x", "p_values_dot.x", "p_z_dot.x", "cohens_d.x"
   ) %in% names(td)))
+  testthat::expect_equal(td$participant_id, seq_along(Language_based_assessment_data_8$harmonywords))
   testthat::expect_true(all(is.finite(td$dot.x)))
   testthat::expect_true(all(td$p_values_dot.x > 0 & td$p_values_dot.x <= 1))
   testthat::expect_equal(td$value.x, Language_based_assessment_data_8$hilstotal)
@@ -352,6 +354,52 @@ test_that("textProjection project_texts = TRUE returns text_data with finite pro
     ),
     "project_texts"
   )
+})
+
+test_that("textProjection project_texts default splits responses into sentences", {
+  skip_on_cran()
+
+  texts <- Language_based_assessment_data_8$harmonywords
+  proj_sent <- text::textProjection(
+    words = texts,
+    word_embeddings = word_embeddings_4$texts$harmonywords,
+    word_types_embeddings = word_embeddings_4$word_types,
+    x = Language_based_assessment_data_8$hilstotal,
+    Npermutations = 20,
+    n_per_split = 20,
+    project_texts = TRUE
+  )
+
+  td <- proj_sent$text_data
+  testthat::expect_true(all(c(
+    "participant_id", "texts", "n_tokens", "value.x",
+    "dot.x", "p_values_dot.x", "p_z_dot.x", "cohens_d.x"
+  ) %in% names(td)))
+  testthat::expect_true(all(td$participant_id %in% seq_along(texts)))
+  testthat::expect_true(all(td$n_tokens >= 1))
+  testthat::expect_true(all(is.finite(td$dot.x)))
+  testthat::expect_true(all(td$p_values_dot.x > 0 & td$p_values_dot.x <= 1))
+  # Each sentence carries its participant's x value
+  testthat::expect_equal(
+    td$value.x,
+    Language_based_assessment_data_8$hilstotal[td$participant_id]
+  )
+
+  # The observed sentence dot products equal a direct projection of the
+  # reconstructed sentence embeddings (mean of word-type embeddings) onto
+  # the returned axis.
+  wt <- text:::normalise_word_types(word_embeddings_4$word_types)
+  S <- text:::perm_setup(text:::perm_count_matrix(texts), wt)
+  sdf <- text:::perm_split_sentences(texts)
+  se <- text:::perm_sentence_embeddings(sdf$sentences, S)
+  keep <- se$n_tokens > 0
+  testthat::expect_equal(nrow(td), sum(keep))
+  testthat::expect_equal(td$texts, sdf$sentences[keep])
+  g1 <- as.numeric(proj_sent$background[[1]]$Aggregated_word_embedding_group1.x)
+  g2 <- as.numeric(proj_sent$background[[1]]$Aggregated_word_embedding_group2.x)
+  direct <- as.vector(se$Tm[keep, , drop = FALSE] %*% (g2 - g1)) -
+    sum((g1 + g2) / 2 * (g2 - g1))
+  testthat::expect_equal(td$dot.x, direct, tolerance = 1e-8)
 })
 
 test_that("textPlot show_texts overlays text points and warns without text_data", {

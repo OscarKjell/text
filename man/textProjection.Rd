@@ -21,6 +21,7 @@ textProjection(
   Npermutations = 10000,
   n_per_split = 50000,
   project_texts = FALSE,
+  project_texts_unit = "sentences",
   seed = 1003
 )
 }
@@ -86,15 +87,25 @@ word_weight_power, mean_centering and mean_centering2, and split = "quartile" or
 set it lower than Npermutations <- and the higher it is set the faster the computation completes,
  but too high may lead to abortion (default = 50000).}
 
-\item{project_texts}{(boolean) If TRUE, each entire text/response (its aggregated embedding in
-word_embeddings) is also projected onto the same supervised dimension(s) as the words, and the
-output gains a text_data tibble (one row per text, with dot product, p-value and effect size per
-dimension). Because texts are participant-level units, their p-values always come from a
+\item{project_texts}{(boolean) If TRUE, the responses are also projected onto the same
+supervised dimension(s) as the words, and the output gains a text_data tibble (one row per
+projected unit, with dot product, p-value and effect size per dimension). What gets projected
+is set by project_texts_unit (individual sentences by default). Because texts and sentences
+are participant-level units, their p-values always come from a
 participant permutation: x (and y) are shuffled across participants, the projection is
-recomputed each time, and every text is compared with its own null distribution
+recomputed each time, and every unit is compared with its own null distribution
 (p = (1 + number of |null| >= |observed|) / (Npermutations + 1); p_z_dot is a normal
-approximation from the text's own null; cohens_d standardises the dot product by that null).
+approximation from the unit's own null; cohens_d standardises the dot product by that null).
 This requires the same default settings as null_method = "participant" (see above).}
+
+\item{project_texts_unit}{(character) What to project when project_texts = TRUE.
+"sentences" (default): each response is split into individual sentences (NLTK sent_tokenize),
+and each sentence is projected; a sentence's embedding is the mean of the word-type embeddings
+of its words (the same aggregation the projection axis is built with), so sentences whose words
+have no embedding are dropped (with a note). text_data then has one row per sentence, with
+participant_id linking each sentence to its response and n_tokens giving the number of embedded
+words. "texts": each entire response is projected using its (contextual) embedding in
+word_embeddings; one row per response.}
 
 \item{seed}{(numeric) Set different seed (default = 1003).}
 }
@@ -102,8 +113,9 @@ This requires the same default settings as null_method = "participant" (see abov
 A list with word_data: a tibble with variables (e.g., including Supervised Dimension
 Projection, frequencies, p-values) for the individual words, used for plotting in the textPlot
 function; background: the aggregated group embeddings and null distributions; and, when
-project_texts = TRUE, text_data: a tibble with one row per text/response (texts, value, dot
-product, p-values and effect size per dimension).
+project_texts = TRUE, text_data: a tibble with one row per projected unit -- individual
+sentences by default, entire responses with project_texts_unit = "texts" -- (participant_id,
+texts, value, dot product, p-values and effect size per dimension).
 }
 \description{
 textProjection() computes Supervised Dimension Projection and related variables for plotting words.

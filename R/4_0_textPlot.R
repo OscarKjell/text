@@ -743,13 +743,14 @@ adjust_for_plot_type <- function(
 #' @param n_contrast_group_remove Remove words that have higher frequency (N) on the other
 #' opposite side of its dot product projection (default = FALSE).
 #' @param scaling Scaling word embeddings before aggregation (default = FALSE).
-#' @param show_texts (boolean) Overlay each entire text/response as a point on the same
-#' supervised dimension(s) as the words (default = FALSE). Requires word_data from
-#' textProjection(..., project_texts = TRUE), which adds the text_data element with the texts'
-#' projections. With projection_metric = "dot_product" texts and words are on the same scale;
-#' with "cohens_d" note that words are standardised by the pooled token null whereas each text
-#' is standardised by its own participant-permutation null. In 1-dimensional plots the text
-#' points are drawn at y = 0.
+#' @param show_texts (boolean) Overlay the projected responses as points on the same
+#' supervised dimension(s) as the words (default = FALSE) -- one point per individual sentence
+#' by default, or per entire response with textProjection(..., project_texts_unit = "texts").
+#' Requires word_data from textProjection(..., project_texts = TRUE), which adds the text_data
+#' element with the projections. With projection_metric = "dot_product" the points and words are
+#' on the same scale; with "cohens_d" note that words are standardised by the pooled token null
+#' whereas each sentence/text is standardised by its own participant-permutation null. In
+#' 1-dimensional plots the points are drawn at y = 0.
 #' @param texts_point_size Size of the points showing the texts (default = 1).
 #' @param texts_point_alpha Transparency of the points showing the texts (default = 0.4).
 #' @param texts_point_color Color of the points showing the texts (default = "#707070").

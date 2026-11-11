@@ -49,21 +49,31 @@
 #' @param n_per_split (numeric) Setting to split Npermutations to avoid reaching computer memory limits;
 #' set it lower than Npermutations <- and the higher it is set the faster the computation completes,
 #'  but too high may lead to abortion (default = 50000).
-#' @param project_texts (boolean) If TRUE, each entire text/response (its aggregated embedding in
-#' word_embeddings) is also projected onto the same supervised dimension(s) as the words, and the
-#' output gains a text_data tibble (one row per text, with dot product, p-value and effect size per
-#' dimension). Because texts are participant-level units, their p-values always come from a
+#' @param project_texts (boolean) If TRUE, the responses are also projected onto the same
+#' supervised dimension(s) as the words, and the output gains a text_data tibble (one row per
+#' projected unit, with dot product, p-value and effect size per dimension). What gets projected
+#' is set by project_texts_unit (individual sentences by default). Because texts and sentences
+#' are participant-level units, their p-values always come from a
 #' participant permutation: x (and y) are shuffled across participants, the projection is
-#' recomputed each time, and every text is compared with its own null distribution
+#' recomputed each time, and every unit is compared with its own null distribution
 #' (p = (1 + number of |null| >= |observed|) / (Npermutations + 1); p_z_dot is a normal
-#' approximation from the text's own null; cohens_d standardises the dot product by that null).
+#' approximation from the unit's own null; cohens_d standardises the dot product by that null).
 #' This requires the same default settings as null_method = "participant" (see above).
+#' @param project_texts_unit (character) What to project when project_texts = TRUE.
+#' "sentences" (default): each response is split into individual sentences (NLTK sent_tokenize),
+#' and each sentence is projected; a sentence's embedding is the mean of the word-type embeddings
+#' of its words (the same aggregation the projection axis is built with), so sentences whose words
+#' have no embedding are dropped (with a note). text_data then has one row per sentence, with
+#' participant_id linking each sentence to its response and n_tokens giving the number of embedded
+#' words. "texts": each entire response is projected using its (contextual) embedding in
+#' word_embeddings; one row per response.
 #' @param seed (numeric) Set different seed (default = 1003).
 #' @return A list with word_data: a tibble with variables (e.g., including Supervised Dimension
 #' Projection, frequencies, p-values) for the individual words, used for plotting in the textPlot
 #' function; background: the aggregated group embeddings and null distributions; and, when
-#' project_texts = TRUE, text_data: a tibble with one row per text/response (texts, value, dot
-#' product, p-values and effect size per dimension).
+#' project_texts = TRUE, text_data: a tibble with one row per projected unit -- individual
+#' sentences by default, entire responses with project_texts_unit = "texts" -- (participant_id,
+#' texts, value, dot product, p-values and effect size per dimension).
 #' @examples
 #' # Pre-processing data for plotting.
 #' \dontrun{
@@ -104,6 +114,7 @@ textProjection <- function(
     Npermutations = 10000,
     n_per_split = 50000,
     project_texts = FALSE,
+    project_texts_unit = "sentences",
     seed = 1003) {
   # This avoids breaking the Psych Method tutorial code
   # If there only is one word_types in a list, get it:
@@ -113,6 +124,9 @@ textProjection <- function(
 
   if (!null_method %in% c("token", "participant")) {
     stop("null_method must be \"token\" or \"participant\".")
+  }
+  if (!project_texts_unit %in% c("sentences", "texts")) {
+    stop("project_texts_unit must be \"sentences\" or \"texts\".")
   }
   if (null_method == "participant" || isTRUE(project_texts)) {
     if (is.numeric(pca) || aggregation != "mean" || word_weight_power != 1 ||
@@ -162,6 +176,7 @@ textProjection <- function(
     "Npermutations =", Npermutations,
     "n_per_split =", n_per_split,
     "project_texts =", project_texts,
+    "project_texts_unit =", project_texts_unit,
     sep = " ", collapse = " "
   )
 
@@ -172,6 +187,30 @@ textProjection <- function(
       perm_count_matrix(if (is.data.frame(words)) words[[1]] else words),
       word_types_embeddings
     )
+  }
+
+  # Split the responses into sentences and embed each sentence as the mean of
+  # its words' word-type embeddings (the same space the projection axis lives
+  # in); sentences without any embedded word cannot be projected.
+  if (isTRUE(project_texts) && project_texts_unit == "sentences") {
+    sentence_df <- perm_split_sentences(if (is.data.frame(words)) words[[1]] else words)
+    sent_emb <- perm_sentence_embeddings(sentence_df$sentences, perm_S)
+    keep_sent <- sent_emb$n_tokens > 0
+    if (!any(keep_sent)) {
+      stop(
+        "project_texts: none of the sentences contain a word with an embedding; ",
+        "check that words and word_types_embeddings come from the same data."
+      )
+    }
+    if (!all(keep_sent)) {
+      message(colourise(paste0(
+        sum(!keep_sent), " of ", length(keep_sent),
+        " sentences had no word with an embedding and were not projected.\n"
+      ), "blue"))
+    }
+    sentence_df <- sentence_df[keep_sent, , drop = FALSE]
+    sentence_df$n_tokens <- sent_emb$n_tokens[keep_sent]
+    sentence_embeddings <- sent_emb$Tm[keep_sent, , drop = FALSE]
   }
 
   set.seed(seed)
@@ -590,13 +629,19 @@ textProjection <- function(
       dot_result$p_z_dot[ok] <- perm_res$p_z[i_match[ok]]
     }
 
-    # Project entire texts/responses onto the same supervised dimension;
-    # each text is compared with its own participant-permutation null.
+    # Project the responses (individual sentences by default, or entire
+    # texts) onto the same supervised dimension; each unit is compared with
+    # its own participant-permutation null (x is shuffled across
+    # participants, never across sentences).
     if (isTRUE(project_texts)) {
       set.seed(seed + 1000 + i_dim)
       text_data_list[[i_dim]] <- perm_test_texts(
         S = perm_S,
-        Tm = as.matrix(dplyr::select(x2, dplyr::starts_with("Dim"))),
+        Tm = if (project_texts_unit == "sentences") {
+          sentence_embeddings
+        } else {
+          as.matrix(dplyr::select(x2, dplyr::starts_with("Dim")))
+        },
         x = as.numeric(x1$value),
         split = split,
         floor_n = min_freq_words_test,
@@ -710,19 +755,30 @@ textProjection <- function(
   word_data_tibble1 <- list(aggregated_embeddings_dot_null_distribution, word_data_tibble)
   names(word_data_tibble1) <- c("background", "word_data")
 
-  # Entire texts projected on the supervised dimension(s)
+  # The responses (sentences or entire texts) projected on the supervised
+  # dimension(s); participant_id links every row back to its response, and
+  # value carries that participant's x (and y).
   if (isTRUE(project_texts)) {
-    text_data_tibble <- tibble::tibble(
-      texts = as.character(if (is.data.frame(words)) words[[1]] else words)
-    )
-    text_data_tibble$value.x <- as.numeric(x[[1]])
+    if (project_texts_unit == "sentences") {
+      text_data_tibble <- tibble::tibble(
+        participant_id = sentence_df$participant_id,
+        texts = sentence_df$sentences,
+        n_tokens = sentence_df$n_tokens
+      )
+    } else {
+      text_data_tibble <- tibble::tibble(
+        participant_id = seq_len(N_participant_responses),
+        texts = as.character(if (is.data.frame(words)) words[[1]] else words)
+      )
+    }
+    text_data_tibble$value.x <- as.numeric(x[[1]])[text_data_tibble$participant_id]
     text_data_tibble$dot.x <- text_data_list[[1]]$dot
     text_data_tibble$p_values_dot.x <- text_data_list[[1]]$p
     text_data_tibble$p_z_dot.x <- text_data_list[[1]]$p_z
     text_data_tibble$cohens_d.x <- text_data_list[[1]]$cohens_d
 
     if (!is.null(y)) {
-      text_data_tibble$value.y <- as.numeric(x[[2]])
+      text_data_tibble$value.y <- as.numeric(x[[2]])[text_data_tibble$participant_id]
       text_data_tibble$dot.y <- text_data_list[[2]]$dot
       text_data_tibble$p_values_dot.y <- text_data_list[[2]]$p
       text_data_tibble$p_z_dot.y <- text_data_list[[2]]$p_z
@@ -829,8 +885,9 @@ textProjection <- function(
 #' @param n_contrast_group_remove Remove words that have higher frequency (N) on the other
 #' opposite side of its dot product projection (default = FALSE).
 #' @param scaling Scaling word embeddings before aggregation.
-#' @param show_texts (boolean) Overlay each entire text/response as a point on the same
-#' supervised dimension(s) as the words (default = FALSE). Requires word_data from
+#' @param show_texts (boolean) Overlay the projected responses (individual sentences by
+#' default, or entire texts) as points on the same supervised dimension(s) as the words
+#' (default = FALSE). Requires word_data from
 #' textProjection(..., project_texts = TRUE); see textPlot for details.
 #' @param texts_point_size Size of the points showing the texts (default = 1).
 #' @param texts_point_alpha Transparency of the points showing the texts (default = 0.4).

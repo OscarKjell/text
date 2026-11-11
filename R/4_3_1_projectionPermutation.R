@@ -246,6 +246,59 @@ perm_test_texts <- function(S, Tm, x, split = "quartile", floor_n = 0,
 }
 
 
+#' Split texts into sentences
+#'
+#' Uses NLTK's sent_tokenize (the same Python environment and tokenizer family
+#' as perm_count_matrix). A text that yields no sentence (e.g., empty string)
+#' is kept as one unit so every participant stays represented until the
+#' embedding step decides.
+#'
+#' @param texts Character vector, one text per participant.
+#' @return tibble(participant_id, sentences).
+#' @noRd
+perm_split_sentences <- function(texts) {
+  nltk <- reticulate::import("nltk")
+  texts <- as.character(texts)
+  sent_list <- lapply(texts, function(txt) {
+    s <- nltk$tokenize$sent_tokenize(txt)
+    if (length(s) == 0) txt else s
+  })
+  tibble::tibble(
+    participant_id = rep(seq_along(sent_list), lengths(sent_list)),
+    sentences = unlist(sent_list)
+  )
+}
+
+
+#' Decontextualised sentence embeddings from the word-type embeddings
+#'
+#' Each sentence's embedding is the mean of the word-type embeddings of its
+#' tokens (word_weight_power = 1, aggregation = "mean"): the same aggregation
+#' the projection axis is built with, so sentences live in the same space as
+#' the words. Sentences whose tokens have no embedding get NaN rows; the
+#' caller drops them using n_tokens.
+#'
+#' @param sentences Character vector of sentences.
+#' @param S Setup from perm_setup() (supplies the embedded vocabulary E).
+#' @return list(Tm = sentences x dims matrix, n_tokens = embedded tokens per
+#'   sentence).
+#' @noRd
+perm_sentence_embeddings <- function(sentences, S) {
+  Cs <- perm_count_matrix(sentences)
+  keep <- intersect(colnames(Cs), rownames(S$E))
+  if (length(keep) == 0) {
+    return(list(
+      Tm = matrix(NA_real_, length(sentences), ncol(S$E)),
+      n_tokens = numeric(length(sentences))
+    ))
+  }
+  Cs <- Cs[, keep, drop = FALSE]
+  n_tokens <- as.vector(Matrix::rowSums(Cs))
+  Tm <- as.matrix(Cs %*% S$E[keep, , drop = FALSE]) / n_tokens
+  list(Tm = Tm, n_tokens = n_tokens)
+}
+
+
 # =============================================================================
 # Linear-smoother functions for textWordPrediction()
 # =============================================================================

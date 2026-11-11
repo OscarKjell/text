@@ -216,8 +216,9 @@ opposite side of its dot product projection (default = FALSE).}
 
 \item{scaling}{Scaling word embeddings before aggregation.}
 
-\item{show_texts}{(boolean) Overlay each entire text/response as a point on the same
-supervised dimension(s) as the words (default = FALSE). Requires word_data from
+\item{show_texts}{(boolean) Overlay the projected responses (individual sentences by
+default, or entire texts) as points on the same supervised dimension(s) as the words
+(default = FALSE). Requires word_data from
 textProjection(..., project_texts = TRUE); see textPlot for details.}
 
 \item{texts_point_size}{Size of the points showing the texts (default = 1).}
