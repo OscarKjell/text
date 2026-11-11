@@ -152,17 +152,97 @@ perm_test_participant <- function(S, x, split = "quartile", floor_n = 0,
   exceed <- numeric(length(obs))
   s1 <- numeric(length(obs))
   s2 <- numeric(length(obs))
+  used <- 0
   for (b in seq_len(Npermutations)) {
     nul <- perm_dots(S, x[sample.int(n)], split, floor_n)
+    # A shuffled group can end up with no embedded tokens (sum(cnt) = 0),
+    # which leaves the axis undefined; such draws are skipped and the
+    # p-values use the number of valid permutations.
+    if (anyNA(nul)) next
+    used <- used + 1
     exceed <- exceed + (abs(nul) >= abs(obs) - 1e-12)
     s1 <- s1 + nul
     s2 <- s2 + nul^2
   }
-  p <- (1 + exceed) / (Npermutations + 1)
-  mu <- s1 / Npermutations
-  sdv <- sqrt(pmax(0, (s2 - Npermutations * mu^2) / (Npermutations - 1)))
+  if (used == 0) {
+    warning("No valid permutations (a group had no embedded tokens in every draw); p-values are NA.")
+    return(tibble::tibble(words = S$words, p = NA_real_, p_z = NA_real_))
+  }
+  p <- (1 + exceed) / (used + 1)
+  mu <- s1 / used
+  sdv <- sqrt(pmax(0, (s2 - used * mu^2) / (used - 1)))
   p_z <- 2 * stats::pnorm(-abs((obs - mu) / sdv))
   tibble::tibble(words = S$words, p = p, p_z = p_z)
+}
+
+
+#' Project entire texts with participant-permutation p-values
+#'
+#' Projects each participant's response embedding onto the supervised
+#' dimension: the axis d = mean_high - mean_low and the anchoring midpoint
+#' are rebuilt from the word machinery (identical to textProjection()'s
+#' observed axis under default settings), and each text's dot product is
+#' text_embedding %*% d - anchor %*% d. The null shuffles x across
+#' participants and recomputes the whole statistic, so every text is
+#' compared with its own null distribution (texts are participant-level
+#' units, which is why the token null is not offered here):
+#' p = (1 + #\{|null| >= |observed|\}) / (Npermutations + 1); p_z is the
+#' normal approximation from the text's own null; cohens_d standardises the
+#' observed dot by that null's mean and SD.
+#'
+#' @param S Setup from perm_setup().
+#' @param Tm Matrix participants x embedding dimensions (response embeddings).
+#' @param x Numeric, one value per participant.
+#' @return tibble(dot, p, p_z, cohens_d), one row per participant.
+#' @noRd
+perm_test_texts <- function(S, Tm, x, split = "quartile", floor_n = 0,
+                            Npermutations = 10000) {
+  if (ncol(Tm) != ncol(S$E)) {
+    stop(
+      "project_texts: word_embeddings have ", ncol(Tm),
+      " dimensions but word_types_embeddings have ", ncol(S$E),
+      "; both must come from the same model/layers."
+    )
+  }
+  text_dots <- function(xx) {
+    gr <- perm_groups(xx, split)
+    m1 <- perm_group_mean(S, gr$g1, floor_n)
+    m2 <- perm_group_mean(S, gr$g2, floor_n)
+    d <- m2 - m1
+    as.vector(Tm %*% d) - sum((m1 + m2) / 2 * d)
+  }
+  obs <- text_dots(x)
+  n <- length(x)
+  exceed <- numeric(length(obs))
+  s1 <- numeric(length(obs))
+  s2 <- numeric(length(obs))
+  used <- 0
+  for (b in seq_len(Npermutations)) {
+    nul <- text_dots(x[sample.int(n)])
+    # A shuffled group can end up with no embedded tokens (sum(cnt) = 0),
+    # which leaves the axis undefined; such draws are skipped and the
+    # p-values use the number of valid permutations.
+    if (anyNA(nul)) next
+    used <- used + 1
+    exceed <- exceed + (abs(nul) >= abs(obs) - 1e-12)
+    s1 <- s1 + nul
+    s2 <- s2 + nul^2
+  }
+  if (used == 0) {
+    warning("No valid permutations (a group had no embedded tokens in every draw); p-values are NA.")
+    return(tibble::tibble(
+      dot = obs, p = NA_real_, p_z = NA_real_, cohens_d = NA_real_
+    ))
+  }
+  p <- (1 + exceed) / (used + 1)
+  mu <- s1 / used
+  sdv <- sqrt(pmax(0, (s2 - used * mu^2) / (used - 1)))
+  tibble::tibble(
+    dot = obs,
+    p = p,
+    p_z = 2 * stats::pnorm(-abs((obs - mu) / sdv)),
+    cohens_d = (obs - mu) / sdv
+  )
 }
 
 

@@ -49,9 +49,21 @@
 #' @param n_per_split (numeric) Setting to split Npermutations to avoid reaching computer memory limits;
 #' set it lower than Npermutations <- and the higher it is set the faster the computation completes,
 #'  but too high may lead to abortion (default = 50000).
+#' @param project_texts (boolean) If TRUE, each entire text/response (its aggregated embedding in
+#' word_embeddings) is also projected onto the same supervised dimension(s) as the words, and the
+#' output gains a text_data tibble (one row per text, with dot product, p-value and effect size per
+#' dimension). Because texts are participant-level units, their p-values always come from a
+#' participant permutation: x (and y) are shuffled across participants, the projection is
+#' recomputed each time, and every text is compared with its own null distribution
+#' (p = (1 + number of |null| >= |observed|) / (Npermutations + 1); p_z_dot is a normal
+#' approximation from the text's own null; cohens_d standardises the dot product by that null).
+#' This requires the same default settings as null_method = "participant" (see above).
 #' @param seed (numeric) Set different seed (default = 1003).
-#' @return A dataframe with variables (e.g., including Supervised Dimension Projection, frequencies, p-values)
-#' for the individual words that is used for the plotting in the textProjectionPlot function.
+#' @return A list with word_data: a tibble with variables (e.g., including Supervised Dimension
+#' Projection, frequencies, p-values) for the individual words, used for plotting in the textPlot
+#' function; background: the aggregated group embeddings and null distributions; and, when
+#' project_texts = TRUE, text_data: a tibble with one row per text/response (texts, value, dot
+#' product, p-values and effect size per dimension).
 #' @examples
 #' # Pre-processing data for plotting.
 #' \dontrun{
@@ -91,6 +103,7 @@ textProjection <- function(
     null_method = "token",
     Npermutations = 10000,
     n_per_split = 50000,
+    project_texts = FALSE,
     seed = 1003) {
   # This avoids breaking the Psych Method tutorial code
   # If there only is one word_types in a list, get it:
@@ -101,12 +114,13 @@ textProjection <- function(
   if (!null_method %in% c("token", "participant")) {
     stop("null_method must be \"token\" or \"participant\".")
   }
-  if (null_method == "participant") {
+  if (null_method == "participant" || isTRUE(project_texts)) {
     if (is.numeric(pca) || aggregation != "mean" || word_weight_power != 1 ||
       isTRUE(mean_centering) || isTRUE(mean_centering2) ||
       !split %in% c("quartile", "mean")) {
       stop(
-        "null_method = \"participant\" currently requires the default settings for ",
+        if (null_method == "participant") "null_method = \"participant\"" else "project_texts = TRUE",
+        " currently requires the default settings for ",
         "pca, aggregation, word_weight_power, mean_centering and mean_centering2, ",
         "and split = \"quartile\" or \"mean\"."
       )
@@ -147,11 +161,13 @@ textProjection <- function(
     "null_method =", null_method,
     "Npermutations =", Npermutations,
     "n_per_split =", n_per_split,
+    "project_texts =", project_texts,
     sep = " ", collapse = " "
   )
 
   # Set up the sparse count-matrix machinery for the participant permutation
-  if (null_method == "participant") {
+  # (also used to project entire texts, whose null is always participant-based)
+  if (null_method == "participant" || isTRUE(project_texts)) {
     perm_S <- perm_setup(
       perm_count_matrix(if (is.data.frame(words)) words[[1]] else words),
       word_types_embeddings
@@ -207,6 +223,7 @@ textProjection <- function(
   # so that these can be saved and used for when manually adding words to the plot in the next step.
   word_data_list <- list()
   aggregated_embeddings_dot_null_distribution <- list()
+  text_data_list <- list()
 
   # For-loop for x and y input/dimensions; i.e., y if the plot has two dimensions (i_dim=1 i_dim=2) remove(i_dim)
   for (i_dim in seq_len(ncol(x))) {
@@ -573,6 +590,20 @@ textProjection <- function(
       dot_result$p_z_dot[ok] <- perm_res$p_z[i_match[ok]]
     }
 
+    # Project entire texts/responses onto the same supervised dimension;
+    # each text is compared with its own participant-permutation null.
+    if (isTRUE(project_texts)) {
+      set.seed(seed + 1000 + i_dim)
+      text_data_list[[i_dim]] <- perm_test_texts(
+        S = perm_S,
+        Tm = as.matrix(dplyr::select(x2, dplyr::starts_with("Dim"))),
+        x = as.numeric(x1$value),
+        split = split,
+        floor_n = min_freq_words_test,
+        Npermutations = Npermutations
+      )
+    }
+
     to_be_saved_below <- list(
       tibble::as_tibble_row(Aggregated_word_embedding_group1),
       tibble::as_tibble_row(Aggregated_word_embedding_group2),
@@ -678,6 +709,27 @@ textProjection <- function(
 
   word_data_tibble1 <- list(aggregated_embeddings_dot_null_distribution, word_data_tibble)
   names(word_data_tibble1) <- c("background", "word_data")
+
+  # Entire texts projected on the supervised dimension(s)
+  if (isTRUE(project_texts)) {
+    text_data_tibble <- tibble::tibble(
+      texts = as.character(if (is.data.frame(words)) words[[1]] else words)
+    )
+    text_data_tibble$value.x <- as.numeric(x[[1]])
+    text_data_tibble$dot.x <- text_data_list[[1]]$dot
+    text_data_tibble$p_values_dot.x <- text_data_list[[1]]$p
+    text_data_tibble$p_z_dot.x <- text_data_list[[1]]$p_z
+    text_data_tibble$cohens_d.x <- text_data_list[[1]]$cohens_d
+
+    if (!is.null(y)) {
+      text_data_tibble$value.y <- as.numeric(x[[2]])
+      text_data_tibble$dot.y <- text_data_list[[2]]$dot
+      text_data_tibble$p_values_dot.y <- text_data_list[[2]]$p
+      text_data_tibble$p_z_dot.y <- text_data_list[[2]]$p_z
+      text_data_tibble$cohens_d.y <- text_data_list[[2]]$cohens_d
+    }
+    word_data_tibble1$text_data <- text_data_tibble
+  }
 
   comment(word_data_tibble1) <- textProjection_descriptions
 

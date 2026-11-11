@@ -304,3 +304,52 @@ test_that("textPCAPlot produces a plot.", {
   expect_true(ggplot2::is.ggplot(principle_component_plot_projection$final_plot))
   expect_equal(principle_component_plot_projection$processed_word_data$n[2], 2)
 })
+
+test_that("textProjection project_texts = TRUE returns text_data with finite projections", {
+  skip_on_cran()
+
+  proj_texts <- text::textProjection(
+    words = Language_based_assessment_data_8$harmonywords,
+    word_embeddings = word_embeddings_4$texts$harmonywords,
+    word_types_embeddings = word_embeddings_4$word_types,
+    x = Language_based_assessment_data_8$hilstotal,
+    Npermutations = 20,
+    n_per_split = 20,
+    project_texts = TRUE
+  )
+
+  testthat::expect_named(proj_texts, c("background", "word_data", "text_data"))
+  td <- proj_texts$text_data
+  testthat::expect_true(tibble::is_tibble(td))
+  testthat::expect_equal(nrow(td), length(Language_based_assessment_data_8$harmonywords))
+  testthat::expect_true(all(c(
+    "texts", "value.x", "dot.x", "p_values_dot.x", "p_z_dot.x", "cohens_d.x"
+  ) %in% names(td)))
+  testthat::expect_true(all(is.finite(td$dot.x)))
+  testthat::expect_true(all(td$p_values_dot.x > 0 & td$p_values_dot.x <= 1))
+  testthat::expect_equal(td$value.x, Language_based_assessment_data_8$hilstotal)
+
+  # The observed text dot products equal a direct projection onto the
+  # returned axis (same anchoring and direction as the words).
+  g1 <- as.numeric(proj_texts$background[[1]]$Aggregated_word_embedding_group1.x)
+  g2 <- as.numeric(proj_texts$background[[1]]$Aggregated_word_embedding_group2.x)
+  Tm <- as.matrix(dplyr::select(
+    word_embeddings_4$texts$harmonywords,
+    dplyr::starts_with("Dim")
+  ))
+  direct <- as.vector(Tm %*% (g2 - g1)) - sum((g1 + g2) / 2 * (g2 - g1))
+  testthat::expect_equal(td$dot.x, direct, tolerance = 1e-8)
+
+  # project_texts requires the default settings (same as the participant null)
+  testthat::expect_error(
+    text::textProjection(
+      words = Language_based_assessment_data_8$harmonywords,
+      word_embeddings = word_embeddings_4$texts$harmonywords,
+      word_types_embeddings = word_embeddings_4$word_types,
+      x = Language_based_assessment_data_8$hilstotal,
+      pca = 2,
+      project_texts = TRUE
+    ),
+    "project_texts"
+  )
+})

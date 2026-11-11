@@ -122,3 +122,74 @@ test_that("word counts are tokens, not substrings", {
   )
   expect_equal(unname(Matrix::colSums(C)[["he"]]), 0)
 })
+
+test_that("perm_test_texts observed dots equal a direct computation", {
+  skip_on_cran()
+  d <- make_toy()
+  S <- text:::perm_setup(d$C, d$wt)
+  set.seed(2)
+  Tm <- matrix(stats::rnorm(d$n * ncol(S$E)), d$n, ncol(S$E))
+  x <- stats::rnorm(d$n)
+  q <- stats::quantile(x, c(.25, .75))
+  g1 <- x <= q[1]
+  g2 <- x >= q[2]
+  m1 <- colSums(as.matrix(d$C[g1, ]) %*% S$E) / sum(d$C[g1, ])
+  m2 <- colSums(as.matrix(d$C[g2, ]) %*% S$E) / sum(d$C[g2, ])
+  direct <- as.vector(sweep(Tm, 2, (m1 + m2) / 2) %*% (m2 - m1))
+  res <- text:::perm_test_texts(S, Tm, x, Npermutations = 5)
+  expect_equal(res$dot, direct, tolerance = 1e-10)
+})
+
+test_that("perm_test_texts p-values are roughly uniform under the null", {
+  skip_on_cran()
+  d <- make_toy(n = 200)
+  S <- text:::perm_setup(d$C, d$wt)
+  p <- unlist(lapply(1:20, function(i) {
+    set.seed(i)
+    Tm <- matrix(stats::rnorm(d$n * ncol(S$E)), d$n, ncol(S$E))
+    text:::perm_test_texts(S, Tm, stats::rnorm(d$n), Npermutations = 199)$p
+  }))
+  expect_true(all(p > 0 & p <= 1))
+  expect_gt(mean(p < .05), .02)
+  expect_lt(mean(p < .05), .09)
+})
+
+test_that("permutations with an empty embedded group are skipped, not poisoned", {
+  skip_on_cran()
+  # Only 3 of 12 participants have any embedded tokens, so many shuffles put
+  # none of them in a group (sum(cnt) = 0 -> undefined axis); those draws
+  # must be skipped and the p-values must stay finite.
+  set.seed(3)
+  n <- 12
+  C <- Matrix::Matrix(0, n, 4, sparse = TRUE)
+  C[1, ] <- c(3, 1, 0, 0)
+  C[2, ] <- c(0, 2, 2, 0)
+  C[3, ] <- c(1, 0, 0, 3)
+  colnames(C) <- paste0("w", 1:4)
+  wt <- tibble::tibble(words = colnames(C), n = as.integer(Matrix::colSums(C)))
+  wt <- dplyr::bind_cols(wt, tibble::as_tibble(matrix(stats::rnorm(4 * 5), 4, 5),
+    .name_repair = ~ paste0("Dim", 1:5)
+  ))
+  S <- text:::perm_setup(C, wt)
+  # Participants 1-2 (tokens) land in the observed low group and participant 3
+  # (tokens) in the observed high group, so the observed axis is defined;
+  # random shuffles still often leave a group with no embedded tokens.
+  x <- c(1, 2, 20, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+  Tm <- matrix(stats::rnorm(n * 5), n, 5)
+  res <- text:::perm_test_texts(S, Tm, x, Npermutations = 199)
+  expect_true(all(is.finite(res$p)))
+  expect_true(all(res$p > 0 & res$p <= 1))
+  pw <- text:::perm_test_participant(S, x, Npermutations = 199)
+  expect_true(all(is.finite(pw$p)))
+})
+
+test_that("perm_test_texts rejects mismatched embedding dimensions", {
+  skip_on_cran()
+  d <- make_toy()
+  S <- text:::perm_setup(d$C, d$wt)
+  Tm <- matrix(stats::rnorm(d$n * 3), d$n, 3)
+  expect_error(
+    text:::perm_test_texts(S, Tm, stats::rnorm(d$n)),
+    "dimensions"
+  )
+})

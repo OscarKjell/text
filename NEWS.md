@@ -3,6 +3,8 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 # text 1.9.2
 - Added `textLLM()` (EXPERIMENTAL): send texts and prompts to Large Language Model APIs (OpenAI and OpenAI-compatible endpoints) for annotating, labelling and transforming language data.
+- `textProjection()` gains `project_texts = TRUE`: entire texts/responses are projected onto the same supervised dimension(s) as the words, returned as `text_data` (one row per text with dot product, participant-permutation p-values, `p_z_dot` and `cohens_d` per dimension). Because texts are participant-level units, their p-values always come from the participant permutation; it requires the same default settings as `null_method = "participant"`.
+- Permutations in which a shuffled group contains no embedded tokens (undefined projection axis) are now skipped instead of producing NA p-values in `textProjection()`.
 - `textrpp_install()` now pins `pyarrow < 22`, since newer pyarrow requires NumPy >= 2.0 which conflicts with the pinned numpy 1.26 (this caused `ImportError: pyarrow requires NumPy 2.0 or newer` in `textFineTuneTask()`).
 
 # text 1.9.1
