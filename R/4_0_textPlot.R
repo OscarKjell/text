@@ -750,7 +750,10 @@ adjust_for_plot_type <- function(
 #' element with the projections. With projection_metric = "dot_product" the points and words are
 #' on the same scale; with "cohens_d" note that words are standardised by the pooled token null
 #' whereas each sentence/text is standardised by its own participant-permutation null. In
-#' 1-dimensional plots the points are drawn at y = 0.
+#' 1-dimensional plots the points are drawn at y = 0. The output then also contains
+#' texts_distribution_plot: a plot of the observed sentence/text projections (histogram, with
+#' significance marked in the rug) against their pooled participant-permutation null
+#' distribution (density), in dot-product units.
 #' @param texts_point_size Size of the points showing the texts (default = 1).
 #' @param texts_point_alpha Transparency of the points showing the texts (default = 0.4).
 #' @param texts_point_color Color of the points showing the texts (default = "#707070").
@@ -1374,7 +1377,8 @@ textPlot <- function(
     y_axes_values = y_axes_values
   )
 
-  #### Overlay entire texts/responses as points ####
+  #### Overlay the projected sentences/texts as points ####
+  texts_distribution_plot <- NULL
   if (isTRUE(show_texts)) {
     if (is.null(word_data$text_data)) {
       warning(
@@ -1407,6 +1411,79 @@ textPlot <- function(
         alpha = texts_point_alpha,
         color = texts_point_color
       )
+
+      #### Distribution of the projections against their null ####
+      # Observed sentence/text dot products (histogram) against the pooled
+      # participant-permutation null (density); always in dot-product units,
+      # since the null is generated on that scale.
+      if (!is.null(word_data$text_null_distribution) &&
+        nrow(word_data$text_null_distribution) > 0) {
+        td_dist <- word_data$text_data
+        unit_label <- if ("n_tokens" %in% names(td_dist)) "sentences" else "texts"
+        obs_df <- tibble::tibble(
+          dot = td_dist$dot.x,
+          dimension = "x",
+          significance = ifelse(td_dist$p_values_dot.x < .05,
+            "p < .05", "p >= .05"
+          )
+        )
+        null_df <- word_data$text_null_distribution
+        if (y_axes == TRUE && "dot.y" %in% names(td_dist)) {
+          obs_df <- rbind(obs_df, tibble::tibble(
+            dot = td_dist$dot.y,
+            dimension = "y",
+            significance = ifelse(td_dist$p_values_dot.y < .05,
+              "p < .05", "p >= .05"
+            )
+          ))
+        } else {
+          null_df <- null_df[null_df$dimension == "x", , drop = FALSE]
+        }
+        texts_distribution_plot <- ggplot2::ggplot() +
+          ggplot2::geom_density(
+            data = null_df,
+            ggplot2::aes(x = value, fill = "Null distribution"),
+            color = NA, alpha = 0.5
+          ) +
+          ggplot2::geom_histogram(
+            data = obs_df,
+            ggplot2::aes(
+              x = dot, y = ggplot2::after_stat(density),
+              fill = paste0("Observed ", unit_label)
+            ),
+            bins = 30, alpha = 0.6
+          ) +
+          ggplot2::geom_rug(
+            data = obs_df,
+            ggplot2::aes(x = dot, color = significance),
+            length = ggplot2::unit(0.035, "npc")
+          ) +
+          ggplot2::scale_fill_manual(
+            name = NULL,
+            values = stats::setNames(
+              c("grey75", texts_point_color),
+              c("Null distribution", paste0("Observed ", unit_label))
+            )
+          ) +
+          ggplot2::scale_color_manual(
+            name = NULL,
+            values = c("p < .05" = "#2c7fb8", "p >= .05" = "grey55")
+          ) +
+          ggplot2::labs(
+            title = paste0(
+              "Projected ", unit_label,
+              " vs. their participant-permutation null"
+            ),
+            x = "Dot product projection",
+            y = "Density"
+          ) +
+          ggplot2::theme_minimal() +
+          ggplot2::theme(plot.title = ggplot2::element_text(colour = titles_color))
+        if (length(unique(obs_df$dimension)) > 1) {
+          texts_distribution_plot <- texts_distribution_plot +
+            ggplot2::facet_wrap(~dimension, ncol = 1, scales = "free")
+        }
+      }
     }
   }
 
@@ -1443,5 +1520,8 @@ textPlot <- function(
 
   output_plot_data <- list(final_plot, text_plot_comment, word_data_all)
   names(output_plot_data) <- c("final_plot", "description", "processed_word_data")
+  if (!is.null(texts_distribution_plot)) {
+    output_plot_data$texts_distribution_plot <- texts_distribution_plot
+  }
   output_plot_data
 }

@@ -191,12 +191,16 @@ perm_test_participant <- function(S, x, split = "quartile", floor_n = 0,
 #' observed dot by that null's mean and SD.
 #'
 #' @param S Setup from perm_setup().
-#' @param Tm Matrix participants x embedding dimensions (response embeddings).
+#' @param Tm Matrix units x embedding dimensions (sentence/response embeddings).
 #' @param x Numeric, one value per participant.
-#' @return tibble(dot, p, p_z, cohens_d), one row per participant.
+#' @return tibble(dot, p, p_z, null_mean, null_sd, cohens_d), one row per
+#'   unit (null_mean and null_sd describe each unit's own null distribution).
+#'   The attribute "null_sample" carries a pooled sample of the null dot
+#'   products (capped at 100,000 values) for plotting the null distribution.
 #' @noRd
 perm_test_texts <- function(S, Tm, x, split = "quartile", floor_n = 0,
                             Npermutations = 10000) {
+  null_sample_cap <- 100000
   if (ncol(Tm) != ncol(S$E)) {
     stop(
       "project_texts: word_embeddings have ", ncol(Tm),
@@ -217,6 +221,8 @@ perm_test_texts <- function(S, Tm, x, split = "quartile", floor_n = 0,
   s1 <- numeric(length(obs))
   s2 <- numeric(length(obs))
   used <- 0
+  null_keep <- list()
+  null_kept <- 0
   for (b in seq_len(Npermutations)) {
     nul <- text_dots(x[sample.int(n)])
     # A shuffled group can end up with no embedded tokens (sum(cnt) = 0),
@@ -227,22 +233,36 @@ perm_test_texts <- function(S, Tm, x, split = "quartile", floor_n = 0,
     exceed <- exceed + (abs(nul) >= abs(obs) - 1e-12)
     s1 <- s1 + nul
     s2 <- s2 + nul^2
+    # Pooled sample of the null for plotting; permutations are exchangeable,
+    # so keeping the first ones up to the cap is an unbiased sample.
+    if (null_kept < null_sample_cap) {
+      null_keep[[length(null_keep) + 1]] <- nul
+      null_kept <- null_kept + length(nul)
+    }
   }
+  null_sample <- unlist(null_keep, use.names = FALSE)
   if (used == 0) {
     warning("No valid permutations (a group had no embedded tokens in every draw); p-values are NA.")
-    return(tibble::tibble(
-      dot = obs, p = NA_real_, p_z = NA_real_, cohens_d = NA_real_
-    ))
+    out <- tibble::tibble(
+      dot = obs, p = NA_real_, p_z = NA_real_,
+      null_mean = NA_real_, null_sd = NA_real_, cohens_d = NA_real_
+    )
+    attr(out, "null_sample") <- numeric(0)
+    return(out)
   }
   p <- (1 + exceed) / (used + 1)
   mu <- s1 / used
   sdv <- sqrt(pmax(0, (s2 - used * mu^2) / (used - 1)))
-  tibble::tibble(
+  out <- tibble::tibble(
     dot = obs,
     p = p,
     p_z = 2 * stats::pnorm(-abs((obs - mu) / sdv)),
+    null_mean = mu,
+    null_sd = sdv,
     cohens_d = (obs - mu) / sdv
   )
+  attr(out, "null_sample") <- null_sample
+  out
 }
 
 

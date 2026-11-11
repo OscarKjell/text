@@ -239,7 +239,10 @@ Requires word_data from textProjection(..., project_texts = TRUE), which adds th
 element with the projections. With projection_metric = "dot_product" the points and words are
 on the same scale; with "cohens_d" note that words are standardised by the pooled token null
 whereas each sentence/text is standardised by its own participant-permutation null. In
-1-dimensional plots the points are drawn at y = 0.}
+1-dimensional plots the points are drawn at y = 0. The output then also contains
+texts_distribution_plot: a plot of the observed sentence/text projections (histogram, with
+significance marked in the rug) against their pooled participant-permutation null
+distribution (density), in dot-product units.}
 
 \item{texts_point_size}{Size of the points showing the texts (default = 1).}
 

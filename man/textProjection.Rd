@@ -95,7 +95,10 @@ are participant-level units, their p-values always come from a
 participant permutation: x (and y) are shuffled across participants, the projection is
 recomputed each time, and every unit is compared with its own null distribution
 (p = (1 + number of |null| >= |observed|) / (Npermutations + 1); p_z_dot is a normal
-approximation from the unit's own null; cohens_d standardises the dot product by that null).
+approximation from the unit's own null; null_mean and null_sd describe that null; cohens_d
+standardises the dot product by it). A pooled sample of the null distributions is returned
+as text_null_distribution, which textPlot(show_texts = TRUE) plots as the
+texts_distribution_plot.
 This requires the same default settings as null_method = "participant" (see above).}
 
 \item{project_texts_unit}{(character) What to project when project_texts = TRUE.
@@ -115,7 +118,9 @@ Projection, frequencies, p-values) for the individual words, used for plotting i
 function; background: the aggregated group embeddings and null distributions; and, when
 project_texts = TRUE, text_data: a tibble with one row per projected unit -- individual
 sentences by default, entire responses with project_texts_unit = "texts" -- (participant_id,
-texts, value, dot product, p-values and effect size per dimension).
+texts, value, dot product, p-values, the mean and SD of the unit's own null distribution,
+and effect size per dimension); and text_null_distribution: a pooled sample of the
+null dot products per dimension (used by textPlot for the texts_distribution_plot).
 }
 \description{
 textProjection() computes Supervised Dimension Projection and related variables for plotting words.

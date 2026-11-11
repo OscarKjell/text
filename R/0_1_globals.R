@@ -79,7 +79,7 @@ utils::globalVariables(c(
   "check_middle_y", "extremes_all_x", "extremes_all_y",
   "central_cosine",
   "SS", "p_values.x", "p_values.y", "words", "n.x", "n.y",
-  "texts_x", "texts_y",
+  "texts_x", "texts_y", "dot", "significance", "dimension",
   "word_types_embeddings_df", "Ndim",
   "semanticrepresentation", "single_word_embeddings2",
   "guide_legend", "Dim1",

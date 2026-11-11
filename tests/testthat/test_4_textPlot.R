@@ -319,13 +319,29 @@ test_that("textProjection project_texts = TRUE returns text_data with finite pro
     project_texts_unit = "texts"
   )
 
-  testthat::expect_named(proj_texts, c("background", "word_data", "text_data"))
+  testthat::expect_named(
+    proj_texts,
+    c("background", "word_data", "text_data", "text_null_distribution")
+  )
   td <- proj_texts$text_data
   testthat::expect_true(tibble::is_tibble(td))
   testthat::expect_equal(nrow(td), length(Language_based_assessment_data_8$harmonywords))
   testthat::expect_true(all(c(
-    "participant_id", "texts", "value.x", "dot.x", "p_values_dot.x", "p_z_dot.x", "cohens_d.x"
+    "participant_id", "texts", "value.x", "dot.x", "p_values_dot.x", "p_z_dot.x",
+    "null_mean.x", "null_sd.x", "cohens_d.x"
   ) %in% names(td)))
+  # cohens_d is the dot standardised by the unit's own null distribution
+  testthat::expect_equal(
+    td$cohens_d.x,
+    (td$dot.x - td$null_mean.x) / td$null_sd.x,
+    tolerance = 1e-10
+  )
+  # pooled null sample for the distribution plot
+  nd <- proj_texts$text_null_distribution
+  testthat::expect_true(tibble::is_tibble(nd))
+  testthat::expect_true(nrow(nd) > 0)
+  testthat::expect_true(all(is.finite(nd$value)))
+  testthat::expect_true(all(nd$dimension == "x"))
   testthat::expect_equal(td$participant_id, seq_along(Language_based_assessment_data_8$harmonywords))
   testthat::expect_true(all(is.finite(td$dot.x)))
   testthat::expect_true(all(td$p_values_dot.x > 0 & td$p_values_dot.x <= 1))
@@ -373,7 +389,7 @@ test_that("textProjection project_texts default splits responses into sentences"
   td <- proj_sent$text_data
   testthat::expect_true(all(c(
     "participant_id", "texts", "n_tokens", "value.x",
-    "dot.x", "p_values_dot.x", "p_z_dot.x", "cohens_d.x"
+    "dot.x", "p_values_dot.x", "p_z_dot.x", "null_mean.x", "null_sd.x", "cohens_d.x"
   ) %in% names(td)))
   testthat::expect_true(all(td$participant_id %in% seq_along(texts)))
   testthat::expect_true(all(td$n_tokens >= 1))
@@ -423,6 +439,9 @@ test_that("textPlot show_texts overlays text points and warns without text_data"
     plot_n_words_middle = 3
   ))
   testthat::expect_true(ggplot2::is_ggplot(p$final_plot))
+  # The sentences/texts also get their own distribution plot (observed
+  # projections vs. the pooled participant-permutation null).
+  testthat::expect_true(ggplot2::is_ggplot(p$texts_distribution_plot))
 
   proj_no_texts <- proj_texts
   proj_no_texts$text_data <- NULL

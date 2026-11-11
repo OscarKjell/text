@@ -57,7 +57,10 @@
 #' participant permutation: x (and y) are shuffled across participants, the projection is
 #' recomputed each time, and every unit is compared with its own null distribution
 #' (p = (1 + number of |null| >= |observed|) / (Npermutations + 1); p_z_dot is a normal
-#' approximation from the unit's own null; cohens_d standardises the dot product by that null).
+#' approximation from the unit's own null; null_mean and null_sd describe that null; cohens_d
+#' standardises the dot product by it). A pooled sample of the null distributions is returned
+#' as text_null_distribution, which textPlot(show_texts = TRUE) plots as the
+#' texts_distribution_plot.
 #' This requires the same default settings as null_method = "participant" (see above).
 #' @param project_texts_unit (character) What to project when project_texts = TRUE.
 #' "sentences" (default): each response is split into individual sentences (NLTK sent_tokenize),
@@ -73,7 +76,9 @@
 #' function; background: the aggregated group embeddings and null distributions; and, when
 #' project_texts = TRUE, text_data: a tibble with one row per projected unit -- individual
 #' sentences by default, entire responses with project_texts_unit = "texts" -- (participant_id,
-#' texts, value, dot product, p-values and effect size per dimension).
+#' texts, value, dot product, p-values, the mean and SD of the unit's own null distribution,
+#' and effect size per dimension); and text_null_distribution: a pooled sample of the
+#' null dot products per dimension (used by textPlot for the texts_distribution_plot).
 #' @examples
 #' # Pre-processing data for plotting.
 #' \dontrun{
@@ -775,16 +780,33 @@ textProjection <- function(
     text_data_tibble$dot.x <- text_data_list[[1]]$dot
     text_data_tibble$p_values_dot.x <- text_data_list[[1]]$p
     text_data_tibble$p_z_dot.x <- text_data_list[[1]]$p_z
+    text_data_tibble$null_mean.x <- text_data_list[[1]]$null_mean
+    text_data_tibble$null_sd.x <- text_data_list[[1]]$null_sd
     text_data_tibble$cohens_d.x <- text_data_list[[1]]$cohens_d
+
+    text_null_tibble <- tibble::tibble(
+      value = attr(text_data_list[[1]], "null_sample"),
+      dimension = "x"
+    )
 
     if (!is.null(y)) {
       text_data_tibble$value.y <- as.numeric(x[[2]])[text_data_tibble$participant_id]
       text_data_tibble$dot.y <- text_data_list[[2]]$dot
       text_data_tibble$p_values_dot.y <- text_data_list[[2]]$p
       text_data_tibble$p_z_dot.y <- text_data_list[[2]]$p_z
+      text_data_tibble$null_mean.y <- text_data_list[[2]]$null_mean
+      text_data_tibble$null_sd.y <- text_data_list[[2]]$null_sd
       text_data_tibble$cohens_d.y <- text_data_list[[2]]$cohens_d
+
+      text_null_tibble <- rbind(text_null_tibble, tibble::tibble(
+        value = attr(text_data_list[[2]], "null_sample"),
+        dimension = "y"
+      ))
     }
     word_data_tibble1$text_data <- text_data_tibble
+    # Pooled sample of the sentence/text null distributions (one per
+    # dimension), used by textPlot() for the texts_distribution_plot.
+    word_data_tibble1$text_null_distribution <- text_null_tibble
   }
 
   comment(word_data_tibble1) <- textProjection_descriptions
@@ -887,7 +909,8 @@ textProjection <- function(
 #' @param scaling Scaling word embeddings before aggregation.
 #' @param show_texts (boolean) Overlay the projected responses (individual sentences by
 #' default, or entire texts) as points on the same supervised dimension(s) as the words
-#' (default = FALSE). Requires word_data from
+#' (default = FALSE), and return a texts_distribution_plot of their projections against
+#' their participant-permutation null distribution. Requires word_data from
 #' textProjection(..., project_texts = TRUE); see textPlot for details.
 #' @param texts_point_size Size of the points showing the texts (default = 1).
 #' @param texts_point_alpha Transparency of the points showing the texts (default = 0.4).

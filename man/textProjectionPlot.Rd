@@ -218,7 +218,8 @@ opposite side of its dot product projection (default = FALSE).}
 
 \item{show_texts}{(boolean) Overlay the projected responses (individual sentences by
 default, or entire texts) as points on the same supervised dimension(s) as the words
-(default = FALSE). Requires word_data from
+(default = FALSE), and return a texts_distribution_plot of their projections against
+their participant-permutation null distribution. Requires word_data from
 textProjection(..., project_texts = TRUE); see textPlot for details.}
 
 \item{texts_point_size}{Size of the points showing the texts (default = 1).}
