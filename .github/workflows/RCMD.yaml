@@ -49,12 +49,15 @@ jobs:
       - name: Fix and Debug Homebrew Issues
         if: runner.os == 'macOS'
         run: |
-          # Reset Homebrew changes
-          cd /opt/homebrew/Library/Taps/homebrew/homebrew-core || exit 1
-          git stash -u || echo "No changes to stash"
-          git clean -d -f || echo "No files to clean"
+          # Reset Homebrew changes (the tap is absent on modern runners,
+          # where Homebrew uses its JSON API instead of a git checkout)
+          if [ -d "/opt/homebrew/Library/Taps/homebrew/homebrew-core" ]; then
+              cd /opt/homebrew/Library/Taps/homebrew/homebrew-core
+              git stash -u || echo "No changes to stash"
+              git clean -d -f || echo "No files to clean"
+          fi
           # Fix Homebrew permissions
-          sudo chown -R $(whoami) $(brew --prefix)/*
+          sudo chown -R $(whoami) $(brew --prefix)/* || echo "chown failed"
           # Debug Homebrew
           brew doctor || echo "brew doctor failed"
           brew config || echo "brew config failed"
